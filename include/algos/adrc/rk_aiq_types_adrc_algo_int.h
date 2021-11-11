@@ -12,7 +12,7 @@
 #define __RK_AIQ_TYPES_ADRC_ALGO_INT_H__
 
 #include "RkAiqCalibDbTypes.h"
-#include "RkAiqCalibDbTypesV2.h"
+#include "adrc_head.h"
 #include "rk_aiq_types_adrc_stat_v200.h"
 
 #define AIQ_ISP3X_DRC_Y_NUM 17

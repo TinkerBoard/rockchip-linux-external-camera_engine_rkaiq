@@ -12,8 +12,7 @@
 #define __RK_AIQ_TYPES_AMERGE_ALGO_INT_H__
 
 #include "RkAiqCalibDbTypes.h"
-#include "RkAiqCalibDbTypesV2.h"
-
+#include "amerge_head.h"
 
 typedef struct mgeCtrlData_S
 {

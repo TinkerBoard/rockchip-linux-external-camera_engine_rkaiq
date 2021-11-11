@@ -20,6 +20,7 @@
 #include "poll_thread.h"
 #include "xcam_mutex.h"
 #include "TnrStatsStream.h"
+#include "af_head.h"
 
 using namespace XCam;
 

@@ -40,7 +40,9 @@
  * @{
  *
  */
-#include "RkAiqCalibDbTypesV2.h"
+#include "moduleinfo_head.h"
+#include "aec_head.h"
+#include "sensorinfo_head.h"
 #include "rk_aiq_types_ae_algo.h"
 
 

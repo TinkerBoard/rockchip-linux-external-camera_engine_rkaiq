@@ -20,7 +20,7 @@
 #ifndef _RK_AIQ_TYPE_ADEHAZE_ALGO_INT_H_
 #define _RK_AIQ_TYPE_ADEHAZE_ALGO_INT_H_
 #include "RkAiqCalibDbTypes.h"
-#include "RkAiqCalibDbTypesV2.h"
+#include "adehaze_head.h"
 #include "adehaze/rk_aiq_types_adehaze_algo.h"
 
 typedef enum AdehazeVersion_e {

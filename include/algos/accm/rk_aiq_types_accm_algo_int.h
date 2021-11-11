@@ -20,8 +20,7 @@
 #ifndef _RK_AIQ_TYPES_ACCM_ALGO_INT_H_
 #define _RK_AIQ_TYPES_ACCM_ALGO_INT_H_
 #include "RkAiqCalibDbTypes.h"
-#include "RkAiqCalibDbTypesV2.h"
-
+#include "ccm_head.h"
 #include "accm/rk_aiq_types_accm_algo.h"
 
 RKAIQ_BEGIN_DECLARE

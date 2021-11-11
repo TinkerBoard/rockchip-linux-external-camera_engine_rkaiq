@@ -9,6 +9,7 @@
 
 #include "rk_aiq_acnr_algo_cnr_v2.h"
 #include "rk_aiq_types_acnr_algo_prvt_v2.h"
+#include "RkAiqCalibDbV2Helper.h"
 
 RKAIQ_BEGIN_DECLARE
 

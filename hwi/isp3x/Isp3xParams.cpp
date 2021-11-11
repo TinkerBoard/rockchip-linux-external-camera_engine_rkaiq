@@ -16,6 +16,7 @@
  */
 
 #include "Isp3xParams.h"
+#include "cac_head.h"
 
 namespace RkCam {
 
