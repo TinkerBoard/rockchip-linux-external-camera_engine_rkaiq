@@ -97,11 +97,11 @@ ADD_EXECUTABLE(rkaiq_3A_server rkaiq_3A_server.cpp)
 target_link_libraries(rkaiq_3A_server ${RK_AIQ_LIB} pthread dl)
 
 install(TARGETS rkaiq_3A_server
-	RUNTIME DESTINATION /usr/bin
-	LIBRARY DESTINATION /usr/lib
+	RUNTIME DESTINATION "usr/bin"
+	LIBRARY DESTINATION "usr/lib"
 )
 
-install(FILES S40rkaiq_3A DESTINATION /etc/init.d/
+install(FILES S40rkaiq_3A DESTINATION "etc/init.d/"
 	PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
 		    GROUP_EXECUTE GROUP_READ
 		    WORLD_EXECUTE WORLD_READ)
