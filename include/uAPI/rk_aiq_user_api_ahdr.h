@@ -19,7 +19,6 @@
 #define _RK_AIQ_USER_API_AHDR_H_
 
 #include "RkAiqCalibDbTypes.h"
-#include "RkAiqCalibDbTypesV2.h"
 #include "uAPI2/rk_aiq_user_api2_atmo.h"
 #include "uAPI2/rk_aiq_user_api2_amerge.h"
 

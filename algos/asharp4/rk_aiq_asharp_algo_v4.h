@@ -9,6 +9,7 @@
 
 #include "rk_aiq_asharp_algo_sharp_v4.h"
 #include "rk_aiq_types_asharp_algo_prvt_v4.h"
+#include "RkAiqCalibDbV2Helper.h"
 
 RKAIQ_BEGIN_DECLARE
 

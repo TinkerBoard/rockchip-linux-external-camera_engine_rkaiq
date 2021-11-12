@@ -22,6 +22,7 @@
 
 
 #include "rk_aiq_algo_types.h"
+#include "RkAiqCalibDbV2Helper.h"
 
 typedef struct rk_aiq_singlecam_3a_result_s {
     uint8_t _camId;

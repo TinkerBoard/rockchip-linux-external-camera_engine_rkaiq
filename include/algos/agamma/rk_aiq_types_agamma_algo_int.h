@@ -21,8 +21,7 @@
 #define _RK_AIQ_TYPE_AGAMMA_ALGO_INT_H_
 #include "agamma/rk_aiq_types_agamma_algo.h"
 #include "RkAiqCalibDbTypes.h"
-#include "RkAiqCalibDbTypesV2.h"
-
+#include "agamma_head.h"
 
 typedef enum rk_gamma_curve_type_s {
     RK_GAMMA_CURVE_TYPE_DEFUALT                     = 0,        /**< USE IQ GAMMA CURVE */

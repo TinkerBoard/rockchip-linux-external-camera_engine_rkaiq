@@ -22,8 +22,7 @@
 #define _RK_AIQ_TYPE_ABLC_ALGO_INT_H_
 #include "ablc/rk_aiq_types_ablc_algo.h"
 #include "RkAiqCalibDbTypes.h"
-#include "RkAiqCalibDbTypesV2.h"
-
+#include "ablc_head.h"
 
 #define ABLC_RECALCULATE_DELTE_ISO  (10)
 

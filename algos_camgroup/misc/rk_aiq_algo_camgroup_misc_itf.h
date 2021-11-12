@@ -21,6 +21,7 @@
 #define _RK_AIQ_ALGO_CAMGROUP_MISC_ITF_H_
 
 #include "rk_aiq_algo_des.h"
+#include "RkAiqCalibDbV2Helper.h"
 
 XCAM_BEGIN_DECLARE
 

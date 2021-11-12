@@ -26,6 +26,7 @@
 #include "xcam_log.h"
 #include "xcam_common.h"
 #include "list.h"
+#include "RkAiqCalibDbV2Helper.h"
 
 RKAIQ_BEGIN_DECLARE
 typedef const CalibDbV2_LscTableProfile_t* pLscTableProfile_t;

@@ -18,8 +18,6 @@
 #ifndef __ADRC_UAPI_HEAD_H__
 #define __ADRC_UAPI_HEAD_H__
 
-#include "RkAiqCalibDbTypesV2.h"
-
 enum { ADRC_NORMAL = 0, ADRC_HDR = 1, ADRC_NIGHT = 2 };
 
 typedef enum drc_OpMode_s {
