@@ -395,21 +395,33 @@ FakeSensorHw::enqueue_rawbuffer(struct rk_aiq_vbuf *vbuf, bool sync)
         exp_param_prx->data()->aecExpInfo.LinearExp.exp_sensor_params.coarse_integration_time = vbuf->buf_info[0].exp_time_reg;
         exp_param_prx->data()->aecExpInfo.LinearExp.exp_real_params.analog_gain               = vbuf->buf_info[0].exp_gain;
         exp_param_prx->data()->aecExpInfo.LinearExp.exp_real_params.integration_time          = vbuf->buf_info[0].exp_time;
+        exp_param_prx->data()->aecExpInfo.LinearExp.exp_sensor_params.digital_gain_global = 1;
+        exp_param_prx->data()->aecExpInfo.LinearExp.exp_sensor_params.isp_digital_gain = 1;
+        exp_param_prx->data()->aecExpInfo.LinearExp.exp_real_params.digital_gain = 1.0f;
 
         exp_param_prx->data()->aecExpInfo.HdrExp[2].exp_sensor_params.analog_gain_code_global = vbuf->buf_info[2].exp_gain_reg;
         exp_param_prx->data()->aecExpInfo.HdrExp[2].exp_sensor_params.coarse_integration_time = vbuf->buf_info[2].exp_time_reg;
         exp_param_prx->data()->aecExpInfo.HdrExp[2].exp_real_params.analog_gain               = vbuf->buf_info[2].exp_gain;
         exp_param_prx->data()->aecExpInfo.HdrExp[2].exp_real_params.integration_time          = vbuf->buf_info[2].exp_time;
+        exp_param_prx->data()->aecExpInfo.HdrExp[2].exp_sensor_params.digital_gain_global = 1;
+        exp_param_prx->data()->aecExpInfo.HdrExp[2].exp_sensor_params.isp_digital_gain = 1;
+        exp_param_prx->data()->aecExpInfo.HdrExp[2].exp_real_params.digital_gain = 1.0f;
 
         exp_param_prx->data()->aecExpInfo.HdrExp[1].exp_sensor_params.analog_gain_code_global = vbuf->buf_info[1].exp_gain_reg;
         exp_param_prx->data()->aecExpInfo.HdrExp[1].exp_sensor_params.coarse_integration_time = vbuf->buf_info[1].exp_time_reg;
         exp_param_prx->data()->aecExpInfo.HdrExp[1].exp_real_params.analog_gain               = vbuf->buf_info[1].exp_gain;
         exp_param_prx->data()->aecExpInfo.HdrExp[1].exp_real_params.integration_time          = vbuf->buf_info[1].exp_time;
+        exp_param_prx->data()->aecExpInfo.HdrExp[1].exp_sensor_params.digital_gain_global = 1;
+        exp_param_prx->data()->aecExpInfo.HdrExp[1].exp_sensor_params.isp_digital_gain = 1;
+        exp_param_prx->data()->aecExpInfo.HdrExp[1].exp_real_params.digital_gain = 1.0f;
 
         exp_param_prx->data()->aecExpInfo.HdrExp[0].exp_sensor_params.analog_gain_code_global = vbuf->buf_info[0].exp_gain_reg;
         exp_param_prx->data()->aecExpInfo.HdrExp[0].exp_sensor_params.coarse_integration_time = vbuf->buf_info[0].exp_time_reg;
         exp_param_prx->data()->aecExpInfo.HdrExp[0].exp_real_params.analog_gain               = vbuf->buf_info[0].exp_gain;
         exp_param_prx->data()->aecExpInfo.HdrExp[0].exp_real_params.integration_time          = vbuf->buf_info[0].exp_time;
+        exp_param_prx->data()->aecExpInfo.HdrExp[0].exp_sensor_params.digital_gain_global = 1;
+        exp_param_prx->data()->aecExpInfo.HdrExp[0].exp_sensor_params.isp_digital_gain = 1;
+        exp_param_prx->data()->aecExpInfo.HdrExp[0].exp_real_params.digital_gain = 1.0f;
         _effecting_exp_map[fid] = exp_param_prx;
         LOGD_CAMHW_SUBM(FAKECAM_SUBM, "add id[%d] to the effected exp map", fid);
     } else {

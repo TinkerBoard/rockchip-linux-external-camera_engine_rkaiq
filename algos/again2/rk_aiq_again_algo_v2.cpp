@@ -77,7 +77,7 @@ Again_result_V2_t Again_Init_V2(Again_Context_V2_t **ppAgainCtx, CamCalibDbV2Con
     pAgainCtx->eMode = AGAINV2_OP_MODE_AUTO;
     pAgainCtx->isIQParaUpdate = false;
     pAgainCtx->isGrayMode = false;
-
+    pAgainCtx->isReCalculate = 1;
 #if AGAIN_USE_JSON_FILE_V2
 
 #if 0

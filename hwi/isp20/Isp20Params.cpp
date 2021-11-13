@@ -1445,7 +1445,7 @@ void Isp20Params::convertAiqAdehazeToIsp20Params(T& isp_cfg,
     cfg->gaus_h1    = dhaze.gaus_h1;
     cfg->gaus_h2    = dhaze.gaus_h2;
 
-    for(int i = 0; i < 6; i++) {
+    for(int i = 0; i < ISP2X_DHAZ_CONV_COEFF_NUM; i++) {
         cfg->conv_t0[i]   = dhaze.conv_t0[i];
         cfg->conv_t1[i]   = dhaze.conv_t1[i];
         cfg->conv_t2[i]   = dhaze.conv_t2[i];
@@ -1510,7 +1510,7 @@ void Isp20Params::convertAiqAdehazeToIsp20Params(T& isp_cfg,
     cfg->gaus_h1    = int(dhaze.dehaze_gaus_h[1]);
     cfg->gaus_h2    = int(dhaze.dehaze_gaus_h[0]);
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < ISP2X_DHAZ_CONV_COEFF_NUM; i++)
     {
         cfg->conv_t0[i]     = int(dhaze.dehaze_hist_t0[i]);
         cfg->conv_t1[i]     = int(dhaze.dehaze_hist_t1[i]);

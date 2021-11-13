@@ -57,6 +57,7 @@ destroy_context(RkAiqAlgoContext *context)
 
     ret = AdehazeRelease(AdehazeHandle);
 
+    LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;
 }
 
@@ -102,12 +103,17 @@ prepare(RkAiqAlgoCom* params)
                 (CalibDbV2_dehaze_V30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib_v30));
             if (calibv2_adehaze_calib_V30)
                 memcpy(&AdehazeHandle->Calib.Dehaze_v30, calibv2_adehaze_calib_V30, sizeof(CalibDbV2_dehaze_V30_t));
+
+            //dehaze local gain
+            CalibDbV2_YnrV3_t*  calibv2_Ynr =
+                (CalibDbV2_YnrV3_t *)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ynr_v3));
+            if (calibv2_Ynr)
+                memcpy(&AdehazeHandle->Calib.Dehaze_v30.YnrCalibPara, &calibv2_Ynr->CalibPara, sizeof(CalibDbV2_YnrV3_CalibPara_t));
         }
     }
 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;
-
 }
 
 static XCamReturn
@@ -134,12 +140,24 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     AdehazeHandle_t * AdehazeHandle = (AdehazeHandle_t *)inparams->ctx;
-    RkAiqAlgoProcAdhazInt* procPara = (RkAiqAlgoProcAdhazInt*)inparams;
-    RkAiqAlgoProcResAdhaz* procResPara = (RkAiqAlgoProcResAdhaz*)outparams;
+    RkAiqAlgoProcAdhazInt* pProcPara = (RkAiqAlgoProcAdhazInt*)inparams;
+    RkAiqAlgoProcResAdhaz* pProcRes = (RkAiqAlgoProcResAdhaz*)outparams;
 
     LOGD_ADEHAZE("/*************************Adehaze Start******************/ \n");
 
-    AdehazeGetCurrData(AdehazeHandle, procPara);
+    AdehazeGetCurrData(AdehazeHandle, pProcPara);
+
+    //get ynr snr mode
+    if(AdehazeHandle->HWversion == ADEHAZE_ISP30) {
+        if(pProcPara->rk_com.u.proc.curExp->CISFeature.SNR == 0)
+            AdehazeHandle->CurrData.V30.SnrMode = YNRSNRMODE_LSNR;
+        else if(pProcPara->rk_com.u.proc.curExp->CISFeature.SNR == 1)
+            AdehazeHandle->CurrData.V30.SnrMode = YNRSNRMODE_HSNR;
+        else {
+            LOGI_ADEHAZE("%s(%d) Adehaze Get Wrong Snr Mode!!!, Using LSNR Params \n", __func__, __LINE__);
+            AdehazeHandle->CurrData.V30.SnrMode = YNRSNRMODE_LSNR;
+        }
+    }
 
     //process
     if(!(AdehazeByPassProcessing(AdehazeHandle)))
@@ -152,7 +170,6 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         AdehazeHandle->PreData.V21.ApiMode = AdehazeHandle->AdehazeAtrr.AdehazeAtrrV21.mode;
     else if(AdehazeHandle->HWversion == ADEHAZE_ISP30)
         AdehazeHandle->PreData.V30.ApiMode = AdehazeHandle->AdehazeAtrr.AdehazeAtrrV30.mode;
-
 
     //proc res
     if(AdehazeHandle->HWversion == ADEHAZE_ISP20) {
@@ -167,7 +184,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         AdehazeHandle->ProcRes.ProcResV30.enable = true;
         AdehazeHandle->ProcRes.ProcResV30.update = !(AdehazeHandle->byPassProc);
     }
-    memcpy(&procResPara->AdehzeProcRes, &AdehazeHandle->ProcRes, sizeof(RkAiqAdehazeProcResult_t));
+    memcpy(&pProcRes->AdehzeProcRes, &AdehazeHandle->ProcRes, sizeof(RkAiqAdehazeProcResult_t));
 
     LOGD_ADEHAZE("/*************************Adehaze over******************/ \n");
 

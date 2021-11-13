@@ -244,8 +244,8 @@ Aynr_result_V3_t ynr_fix_transfer_V3(RK_YNR_Params_V3_Select_t* pSelect, RK_YNR_
     int EE = ((*number_ptr) >> 23) & (0x0ff);
     EE = -(EE - 127 + 1);
     int MM = (*number_ptr) & 0x7fffff;
-    tmp = ((MM / float(1 << 23)) + 1) / 2;
-    MM = int(256 * tmp + 0.5);
+    float tmp2 = ((MM / float(1 << 23)) + 1) / 2;
+    MM = int(256 * tmp2 + 0.5);
     tmp = (MM << 5) + EE;
     pFix->ynr_rnr_max_r = CLIP(tmp, 0, 0x3fff);
     pFix->ynr_local_gainscale = 0x80;
@@ -372,6 +372,11 @@ Aynr_result_V3_t ynr_fix_printf_V3(RK_YNR_Fix_V3_t * pFix)
         return AYNRV3_RET_NULL_POINTER;
     }
 
+    // YNR_2700_GLOBAL_CTRL (0x0000)
+    LOGD_ANR("(0x0000) sw_ynr_thumb_mix_cur_en:0x%x sw_ynr_gate_dis:0x%x \n ynr_flt1x1_bypass_sel:0x%x	sw_ynr_rnr_en:0x%x \n ynr_flt1x1_bypass:0x%x  \n",
+             pFix->ynr_thumb_mix_cur_en,
+             pFix->ynr_gate_dis,
+             pFix->ynr_rnr_en);
 
     // YNR_2700_GLOBAL_CTRL (0x0000)
     LOGD_ANR("(0x0000) ynr_global_gain_alpha:0x%x ynr_global_gain:0x%x \n ynr_flt1x1_bypass_sel:0x%x  ynr_sft5x5_bypass:0x%x \n ynr_flt1x1_bypass:0x%x  ynr_lgft3x3_bypass:0x%x \n ynr_lbft5x5_bypass:0x%x  ynr_bft3x3_bypass:0x%x \n ynr_en:0x%x\n",

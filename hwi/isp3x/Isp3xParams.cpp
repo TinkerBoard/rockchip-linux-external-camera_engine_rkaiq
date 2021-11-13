@@ -1016,7 +1016,7 @@ void Isp3xParams::convertAiqCacToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
         isp_cfg.module_cfg_update |= ISP3X_MODULE_CAC;
     }
     else {
-        isp_cfg.module_en_update |= ISP3X_MODULE_CAC;
+        isp_cfg.module_en_update &= ~(ISP3X_MODULE_CAC);
         isp_cfg.module_ens &= ~(ISP3X_MODULE_CAC);
         isp_cfg.module_cfg_update &= ~(ISP3X_MODULE_CAC);
     }
@@ -1111,14 +1111,21 @@ void Isp3xParams::convertAiqAdehazeToIsp3xParams(struct isp3x_isp_params_cfg& is
     for(int i = 0; i < ISP3X_DHAZ_SIGMA_IDX_NUM; i++)
         cfg->sigma_idx[i]   = dhaze.ProcResV30.sigma_idx[i];
 
-    for(int i = 0; i < ISP3X_DHAZ_ENH_CURVE_NUM; i++) {
+    for(int i = 0; i < ISP3X_DHAZ_ENH_CURVE_NUM; i++)
         cfg->enh_curve[i]   = dhaze.ProcResV30.enh_curve[i];
+
+    for(int i = 0; i < ISP3X_DHAZ_SIGMA_LUT_NUM; i++)
         cfg->sigma_lut[i]   = dhaze.ProcResV30.sigma_lut[i];
-    }
 
     for(int i = 0; i < ISP3X_DHAZ_HIST_WR_NUM; i++)
         cfg->hist_wr[i]   = dhaze.ProcResV30.hist_wr[i];
 
+#if 0
+    LOGE_ADEHAZE("%s(%d) dehaze local gain IDX(0~5): 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", __func__, __LINE__, cfg->sigma_idx[0], cfg->sigma_idx[1],
+                 cfg->sigma_idx[2], cfg->sigma_idx[3], cfg->sigma_idx[4], cfg->sigma_idx[5]);
+    LOGE_ADEHAZE("%s(%d) dehaze local gain LUT(0~5): 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", __func__, __LINE__, cfg->sigma_lut[0], cfg->sigma_lut[1],
+                 cfg->sigma_lut[2], cfg->sigma_lut[3], cfg->sigma_lut[4], cfg->sigma_lut[5]);
+#endif
 }
 
 bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,

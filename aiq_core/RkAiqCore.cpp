@@ -1709,7 +1709,7 @@ RkAiqCore::genIspAdhazResult(RkAiqFullParams* params)
         dehaze_param->result.gaus_h1    = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV20.gaus_h1;
         dehaze_param->result.gaus_h2    = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV20.gaus_h2;
 
-        for(int i = 0; i < 6; i++) {
+        for(int i = 0; i < ISP2X_DHAZ_CONV_COEFF_NUM; i++) {
             dehaze_param->result.conv_t0[i]   = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV20.conv_t0[i];
             dehaze_param->result.conv_t1[i]   = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV20.conv_t1[i];
             dehaze_param->result.conv_t2[i]   = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV20.conv_t2[i];

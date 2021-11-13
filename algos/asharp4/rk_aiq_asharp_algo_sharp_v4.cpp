@@ -232,8 +232,8 @@ Asharp4_result_t sharp_fix_transfer_V4(RK_SHARP_Params_V4_Select_t *pSelect, RK_
     }
 
     // SHARP_SHARP_SIGMA_SHIFT (0x00024)
-    pFix->sharp_pbf_sigma_shift = CLIP(bf_sigma_shift, 0, 15);
-    pFix->sharp_bf_sigma_shift = CLIP(pbf_sigma_shift, 0, 15);
+    pFix->sharp_pbf_sigma_shift = CLIP(pbf_sigma_shift, 0, 15);
+    pFix->sharp_bf_sigma_shift = CLIP(bf_sigma_shift, 0, 15);
 
     // SHARP_SHARP_EHF_TH_0 (0x0028 -  0x0030)
     // wgt = hf * ehf_th

@@ -251,8 +251,10 @@ enum cam_thread_type_e {
 typedef struct {
     int  model_idx;
     int  logic_id;
+    int  phy_id; // physical isp id
     int  linked_sensor;
-    bool is_multi_isp_mode;
+    bool is_multi_isp_mode; // isp-unit mode, 2 isp to 1
+    bool isMultiplex;      // muliplex mode, virtually sed by more than one sensor
     bool linked_dvp;
     bool valid;
     char media_dev_path[DEV_PATH_LEN];

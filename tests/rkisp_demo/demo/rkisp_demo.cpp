@@ -173,7 +173,7 @@ void test_update_iqfile(const demo_context_t* demo_ctx)
     printf("\nspecial an new iqfile:\n");
     strcat(iqfile, demo_ctx->iqpath);
     strcat(iqfile, "/");
-    fgets(iqfile + strlen(iqfile), IQFILE_PATH_MAX_LEN, stdin);
+    char* ret = fgets(iqfile + strlen(iqfile), IQFILE_PATH_MAX_LEN, stdin);
 
     char* json = strstr(iqfile, "json");
 
@@ -499,7 +499,6 @@ void test_imgproc(const demo_context_t* demo_ctx) {
         attr.manual_meascfg.winb_v_size = 300;
 
         attr.manual_meascfg.gamma_flt_en = 1;
-        attr.manual_meascfg.gamma_y[RKAIQ_RAWAF_GAMMA_NUM];
         memcpy(attr.manual_meascfg.gamma_y, gamma_y, RKAIQ_RAWAF_GAMMA_NUM * sizeof(uint16_t));
 
         attr.manual_meascfg.gaus_flt_en = 1;
@@ -787,7 +786,7 @@ void test_imgproc(const demo_context_t* demo_ctx) {
         rk_aiq_cpsl_cap_t cpsl_cap;
         rk_aiq_uapi2_sysctl_getCpsLtInfo(ctx, &cpsl_info);
         rk_aiq_uapi2_sysctl_queryCpsLtCap(ctx, &cpsl_cap);
-        printf("sensitivity: %d, %d\n", cpsl_info.sensitivity, cpsl_cap.sensitivity);
+        printf("sensitivity: %f\n", cpsl_info.sensitivity, cpsl_cap.sensitivity);
         rk_aiq_cpsl_cfg_t cpsl_cfg;
         rk_aiq_uapi2_sysctl_setCpsLtCfg(ctx, &cpsl_cfg);
     }
@@ -1099,7 +1098,7 @@ static int read_frame_pp_oneframe(demo_context_t *ctx)
 {
     struct v4l2_buffer buf;
     struct v4l2_buffer buf_pp;
-    int i, ii, bytesused;
+    int i, ii = 0, bytesused;
     static int first_time = 1;
 
     CLEAR(buf);
@@ -1802,7 +1801,7 @@ static void* test_offline_thread(void* args) {
     struct dirent* dir_ent = NULL;
     std::vector<std::string> raw_files;
     if (dir) {
-        while (dir_ent = readdir(dir)) {
+        while ((dir_ent = readdir(dir))) {
             if (dir_ent->d_type == DT_REG) {
                 // is raw file
                 if (strstr(dir_ent->d_name, ".raw")) {
@@ -1879,7 +1878,6 @@ static void set_af_manual_meascfg(const rk_aiq_sys_ctx_t* ctx)
     attr.manual_meascfg.winb_v_size = 300;
 
     attr.manual_meascfg.gamma_flt_en = 1;
-    attr.manual_meascfg.gamma_y[RKAIQ_RAWAF_GAMMA_NUM];
     memcpy(attr.manual_meascfg.gamma_y, gamma_y, RKAIQ_RAWAF_GAMMA_NUM * sizeof(uint16_t));
 
     attr.manual_meascfg.gaus_flt_en = 1;

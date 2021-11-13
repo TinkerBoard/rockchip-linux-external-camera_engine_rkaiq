@@ -347,19 +347,9 @@ typedef struct CalibDbV2_dehaze_V21_s {
     CalibDbDehazeV21_t DehazeTuningPara;
 } CalibDbV2_dehaze_V21_t;
 
-
-typedef struct CalibDbV2_dehaze_V30_Gain_Table_s {
-    // M4_ARRAY_DESC("sigma_idx", "u8", M4_SIZE(1,15),  M4_RANGE(0, 255), "[16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 205,224,240]", M4_DIGIT(0), M4_DYNAMIC(0))
-    int sigma_idx[ISP3X_DHAZ_SIGMA_IDX_NUM];
-    // M4_ARRAY_DESC("sigma_lut", "u16", M4_SIZE(1,17),  M4_RANGE(0, 1023), "[512, 512, 512, 512,512, 512, 512, 512, 512, 512, 512, 512, 512,512,512,512,512]", M4_DIGIT(0), M4_DYNAMIC(0))
-    int sigma_lut[ISP3X_DHAZ_SIGMA_LUT_NUM];
-} CalibDbV2_dehaze_V30_Gain_Table_t;
-
 typedef struct CalibDbV2_dehaze_V30_s {
     // M4_STRUCT_DESC("DehazeTuningPara", "normal_ui_style")
     CalibDbDehazeV21_t DehazeTuningPara;
-    // M4_STRUCT_DESC("DehazeCalibPara", "normal_ui_style")
-    CalibDbV2_dehaze_V30_Gain_Table_t DehazeCalibPara;
 } CalibDbV2_dehaze_V30_t;
 
 

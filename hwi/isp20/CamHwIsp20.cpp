@@ -433,6 +433,7 @@ get_isp_subdevs(struct media_device *device, const char *devpath, rk_aiq_isp_t* 
             if (vir) {
                 int vir_idx = atoi(vir + strlen("vir"));
                 model_idx = isp_idx * 4 + vir_idx;
+                isp_info[index].phy_id = isp_idx;
             }
         }
     }
@@ -591,20 +592,34 @@ get_isp_subdevs(struct media_device *device, const char *devpath, rk_aiq_isp_t* 
     entity = media_get_entity_by_name(device, "rkcif_dvp", strlen("rkcif_dvp"));
     if(entity)
         isp_info[index].linked_dvp = true;
-
-    entity = media_get_entity_by_name(device, "rkcif_mipi_lvds", strlen("rkcif_mipi_lvds"));
-    if(entity)
+    else
         isp_info[index].linked_dvp = false;
 
-    if ((entity = media_get_entity_by_name(device, "rkcif_dvp", strlen("rkcif_dvp"))) ||
-            (entity = media_get_entity_by_name(device, "rkcif_lite_mipi_lvds", strlen("rkcif_lite_mipi_lvds"))) ||
-            (entity = media_get_entity_by_name(device, "rkcif_mipi_lvds", strlen("rkcif_mipi_lvds"))) ||
-            (entity = media_get_entity_by_name(device, "rkcif_mipi_lvds0", strlen("rkcif_mipi_lvds0"))) ||
-            (entity = media_get_entity_by_name(device, "rkcif_mipi_lvds1", strlen("rkcif_mipi_lvds1"))) ||
-            (entity = media_get_entity_by_name(device, "rkcif_mipi_lvds2", strlen("rkcif_mipi_lvds2"))) ||
-            (entity = media_get_entity_by_name(device, "rkcif_mipi_lvds3", strlen("rkcif_mipi_lvds3")))) {
-        strncpy(isp_info[index].linked_vicap, entity->info.name, sizeof(isp_info[index].linked_vicap));
-        isp_info[index].linked_sensor = true;
+    const char* linked_entity_name_strs[] = {
+        "rkcif_dvp",
+        "rkcif_lite_mipi_lvds",
+        "rkcif_mipi_lvds",
+        "rkcif_mipi_lvds1",
+        "rkcif_mipi_lvds2",
+        "rkcif_mipi_lvds3",
+        "rkcif_mipi_lvds4",
+        "rkcif_mipi_lvds5",
+        "rkcif-mipi-lvds",
+        "rkcif-mipi-lvds1",
+        "rkcif-mipi-lvds2",
+        "rkcif-mipi-lvds3",
+        "rkcif-mipi-lvds4",
+        "rkcif-mipi-lvds5",
+        NULL
+    };
+
+    for (int i = 0; linked_entity_name_strs[i] != NULL; i++) {
+        entity = media_get_entity_by_name(device, linked_entity_name_strs[i], strlen(linked_entity_name_strs[i]));
+        if (entity) {
+            strncpy(isp_info[index].linked_vicap, entity->info.name, sizeof(isp_info[index].linked_vicap));
+            isp_info[index].linked_sensor = true;
+            break;
+        }
     }
 
     LOGI_CAMHW_SUBM(ISP20HW_SUBM, "model(%s): isp_info(%d): ispp-subdev entity name: %s\n",
@@ -970,7 +985,7 @@ CamHwIsp20::initCamHwInfos()
     char sys_path[64], devpath[32];
     FILE *fp = NULL;
     struct media_device *device = NULL;
-    uint32_t nents, j = 0, i = 0, node_index = 0;
+    int nents, j = 0, i = 0, node_index = 0;
     const struct media_entity_desc *entity_info = NULL;
     struct media_entity *entity = NULL;
 
@@ -1020,6 +1035,7 @@ CamHwIsp20::initCamHwInfos()
         } else if (strcmp(device->info.model, "rkcif") == 0 ||
                    strcmp(device->info.model, "rkcif_dvp") == 0 ||
                    strstr(device->info.model, "rkcif_mipi_lvds") ||
+                   strstr(device->info.model, "rkcif-mipi-lvds") ||
                    strcmp(device->info.model, "rkcif_lite_mipi_lvds") == 0) {
             cif_info = get_cif_subdevs(device, sys_path, CamHwIsp20::mCifHwInfos.cif_info);
             strncpy(cif_info->model_str, device->info.model, sizeof(cif_info->model_str));
@@ -1053,6 +1069,7 @@ CamHwIsp20::initCamHwInfos()
                 } else if (isp_info) {
                     s_full_info->linked_to_isp = true;
                     isp_info->linked_sensor = true;
+                    isp_info->isMultiplex = false;
                     s_full_info->isp_info = isp_info;
                 } else {
                     LOGE_CAMHW_SUBM(ISP20HW_SUBM, "sensor device mount error!\n");
@@ -1078,6 +1095,20 @@ CamHwIsp20::initCamHwInfos()
 
 media_unref:
         media_device_unref (device);
+    }
+
+    // judge isp if multiplex by multiple cams
+    rk_aiq_isp_t* isp_info = NULL;
+    for (i = 0; i < MAX_CAM_NUM; i++) {
+        isp_info = &CamHwIsp20::mIspHwInfos.isp_info[i];
+        if (isp_info->valid) {
+            for (j = i - 1; j >= 0; j--) {
+                if (isp_info->phy_id == CamHwIsp20::mIspHwInfos.isp_info[j].phy_id) {
+                    isp_info->isMultiplex = true;
+                    CamHwIsp20::mIspHwInfos.isp_info[j].isMultiplex = true;
+                }
+            }
+        }
     }
 
     std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator iter;
@@ -2138,11 +2169,28 @@ CamHwIsp20::prepare(uint32_t width, uint32_t height, int mode, int t_delay, int 
 
     Isp20Params::set_working_mode(_hdr_mode);
 
+    std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator it;
+    if ((it = mSensorHwInfos.find(sns_name)) == mSensorHwInfos.end()) {
+        LOGE_CAMHW_SUBM(ISP20HW_SUBM, "can't find sensor %s", sns_name);
+        return XCAM_RETURN_ERROR_SENSOR;
+    }
+
+    rk_sensor_full_info_t *s_info = it->second.ptr();
+    int isp_index = s_info->isp_info->logic_id;
+    LOGI_CAMHW_SUBM(ISP20HW_SUBM, "sensor_name(%s) is linked to isp_index(%d)",
+                    sns_name, isp_index);
+
     if ((_hdr_mode > 0 && isOnlineByWorkingMode()) ||
             (!_linked_to_isp && !mVicapIspPhyLinkSupported)) {
         LOGI_CAMHW_SUBM(ISP20HW_SUBM, "use read back mode!");
         mNoReadBack = false;
     }
+
+    // multimplex mode should be using readback mode
+    if (s_info->isp_info->isMultiplex)
+        mNoReadBack = false;
+
+    LOGI_CAMHW_SUBM(ISP20HW_SUBM, "isp hw working mode: %s !", mNoReadBack ? "online" : "readback");
 
     //sof event
     if (!mIspSofStream.ptr()) {
@@ -2157,16 +2205,6 @@ CamHwIsp20::prepare(uint32_t width, uint32_t height, int mode, int t_delay, int 
         mIspSofStream->setPollCallback (this);
     }
 
-    std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator it;
-    if ((it = mSensorHwInfos.find(sns_name)) == mSensorHwInfos.end()) {
-        LOGE_CAMHW_SUBM(ISP20HW_SUBM, "can't find sensor %s", sns_name);
-        return XCAM_RETURN_ERROR_SENSOR;
-    }
-
-    rk_sensor_full_info_t *s_info = it->second.ptr();
-    int isp_index = s_info->isp_info->logic_id;
-    LOGI_CAMHW_SUBM(ISP20HW_SUBM, "sensor_name(%s) is linked to isp_index(%d)",
-                    sns_name, isp_index);
     if (!mNoReadBack) {
         setupHdrLink(RK_AIQ_HDR_GET_WORKING_MODE(_hdr_mode), isp_index, true);
         if (!_linked_to_isp) {

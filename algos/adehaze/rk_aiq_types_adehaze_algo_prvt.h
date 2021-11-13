@@ -23,9 +23,7 @@
 #include "adehaze/rk_aiq_types_adehaze_algo_int.h"
 #include "RkAiqCalibDbTypes.h"
 #include "RkAiqCalibDbTypesV2.h"
-
 #include "rk_aiq_types_adehaze_stat.h"
-
 #include "rk_aiq_algo_types.h"
 #include "xcam_log.h"
 
@@ -37,10 +35,22 @@
 #define RK_DEHAZE_ISO_NUM 9
 #define FUNCTION_ENABLE 1
 #define FUNCTION_DISABLE 0
-
 #define ENVLVMAX     (1.0)
 #define ENVLVMIN     (0.0)
+#define ADHZ10BITMAX     (1023)
+#define ADHZ10BITMIN     (0)
 
+//define for dehaze local gain
+#define YNR_BIT_CALIB (12)
+#define YNR_ISO_CURVE_POINT_BIT             (4)
+#define YNR_ISO_CURVE_SECT_VALUE   (1 << (YNR_BIT_CALIB - YNR_ISO_CURVE_POINT_BIT))
+#define YNR_ISO_CURVE_SECT_VALUE1   (1 << YNR_BIT_CALIB)
+#define YNR_CURVE_STEP             (16)
+
+typedef enum YnrSnrMode_e {
+    YNRSNRMODE_LSNR     = 0,
+    YNRSNRMODE_HSNR     = 1,
+} YnrSnrMode_t;
 
 typedef struct AdehazeAePreResV20_s {
     float ISO;
@@ -49,6 +59,8 @@ typedef struct AdehazeAePreResV20_s {
 
 typedef struct AdehazeAePreResV21_s {
     float EnvLv;
+    float ISO;
+    YnrSnrMode_t SnrMode;
     dehaze_api_mode_t ApiMode;
 } AdehazeAePreResV21_t;
 
@@ -60,14 +72,18 @@ typedef struct AdehazeAePreRes_s {
     };
 } AdehazeAePreRes_t;
 
+typedef struct CalibDbV2_dehaze_V30_prvt_s {
+    CalibDbDehazeV21_t DehazeTuningPara;
+    CalibDbV2_YnrV3_CalibPara_t  YnrCalibPara;
+} CalibDbV2_dehaze_V30_prvt_t;
+
 typedef struct CalibDbDehazePrvt_s {
     union {
         CalibDbV2_dehaze_V20_t Dehaze_v20;
         CalibDbV2_dehaze_V21_t Dehaze_v21;
-        CalibDbV2_dehaze_V30_t Dehaze_v30;
+        CalibDbV2_dehaze_V30_prvt_t Dehaze_v30;
     };
 } CalibDbDehazePrvt_t;
-
 
 typedef struct AdehazeHandle_s {
     adehaze_sw_V2_t AdehazeAtrr;
@@ -87,6 +103,4 @@ typedef struct AdehazeHandle_s {
     int FrameID;
 } AdehazeHandle_t;
 
-
 #endif
-

@@ -64,7 +64,7 @@ static const uint8_t CacStrengthDistance   = 128;
 static const uint8_t CacPsfKernelSize      = 7 * 5;
 static const uint8_t CacPsfKernelWordSizeInMemory =
     DIV_ROUND_UP((CacPsfKernelSize - 1) * BITS_PER_BYTE, BITS_PER_WORD);
-static const uint8_t CacChannelCount   = 1;
+static const uint8_t CacChannelCount   = 2;
 static const uint32_t CacPsfCountLimit = 1632;
 
 static const uint8_t CacPsfBufferCount = ISP2X_MESH_BUF_NUM;
@@ -105,11 +105,6 @@ static inline void CalcCacLutConfig(uint32_t width, uint32_t height, bool is_big
      * CAC stores one PSF point's kernel in 9 words, one kernel size is 8 bytes.
      * (8bytes*8bits/byte + 32 - 1) / 32bits/word = 9 words.
      */
-    // config.LutHWordSize *= CacPsfKernelWordSizeInMemory;
-    /**
-     * CAC processes R & B channels.
-     */
-    // config.LutVSize *= CacChannelCount;
 }
 
 struct LutBuffer {
@@ -188,14 +183,14 @@ CacAlgoAdaptor::~CacAlgoAdaptor() {
 XCamReturn CacAlgoAdaptor::Config(const AlgoCtxInstanceCfgInt* config,
                                   const CalibDbV2_Cac_t* calib) {
     LOGD_ACAC("%s : Enter", __func__);
-    enable_ = calib->enable;
+    enable_ = calib ? calib->SettingPara.enable : false;
     calib_  = calib;
     if (!enable_) {
         return XCAM_RETURN_BYPASS;
     }
 
-    if (access(calib->Params.psf_path, O_RDONLY)) {
-        LOGE_ACAC("The PSF file path %s cannot be accessed", calib->Params.psf_path);
+    if (access(calib->SettingPara.psf_path, O_RDONLY)) {
+        LOGE_ACAC("The PSF file path %s cannot be accessed", calib->SettingPara.psf_path);
         valid_ = false;
         return XCAM_RETURN_ERROR_FILE;
     }
@@ -212,7 +207,7 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcacInt* config) {
 
     LOGD_ACAC("%s : Enter", __func__);
 
-    if (!enable_) {
+    if (!enable_ || !valid_) {
         return XCAM_RETURN_BYPASS;
     }
 
@@ -233,17 +228,32 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcacInt* config) {
         XCAM_ASSERT(current_lut_[1] != nullptr);
     }
 
-    std::ifstream ifs(calib_->Params.psf_path, std::ios::binary);
+    std::ifstream ifs(calib_->SettingPara.psf_path, std::ios::binary);
     if (!ifs.is_open()) {
-        LOGE_ACAC("Failed to open PSF file %s", calib_->Params.psf_path);
-        XCAM_ASSERT(0);
+        LOGE_ACAC("Failed to open PSF file %s", calib_->SettingPara.psf_path);
+        valid_ = false;
         return XCAM_RETURN_ERROR_FILE;
     } else {
-        // TODO(Cody) CAC PSF LUT binary only have one channel by now
         if (!config->is_multi_isp) {
-            // B channel
-            ifs.read(reinterpret_cast<char*>(current_lut_[0]->Addr),
-                     lut_config.PsfCfgCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD);
+            uint32_t line_offset = lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
+            uint32_t size = lut_config.LutHCount * lut_config.LutVCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
+            for (int ch = 0; ch < CacChannelCount; ch++) {
+                char* addr0 = reinterpret_cast<char*>(current_lut_[0]->Addr) +
+                              ch * size;
+                ifs.read(addr0, size);
+            }
+#if 0
+            for (uint32_t i = 0; i < lut_config.LutVCount; i++) {
+                char* addr0 = reinterpret_cast<char*>(current_lut_[0]->Addr) + line_offset * i;
+                memset(addr0 + line_offset / 2, 0, line_offset / 2);
+            }
+            memset(reinterpret_cast<char*>(current_lut_[0]->Addr) + size, 0, size);
+#endif
+#if 0
+            //memset(reinterpret_cast<char*>(current_lut_[0]->Addr) + size, 0, size);
+            memcpy(reinterpret_cast<char*>(current_lut_[0]->Addr) + size,
+                   reinterpret_cast<char*>(current_lut_[0]->Addr), size);
+#endif
         } else {
             // Read and Split Memory
             //   a == line_size - line_offset
@@ -261,21 +271,21 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcacInt* config) {
             // - +---------------------------+
             //   |<---------line_size------->|
             //
-            uint32_t line_offset =
-                lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
-            uint32_t line_size =
-                full_lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
+            //uint32_t line_offset = lut_config.LutHCount * (CacPsfKernelSize - 1);
+            uint32_t line_offset = lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
+            //uint32_t line_size   = full_lut_config.LutHCount * (CacPsfKernelSize - 1);
+            uint32_t line_size = full_lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
             for (int ch = 0; ch < CacChannelCount; ch++) {
+                char* addr0 = reinterpret_cast<char*>(current_lut_[0]->Addr) +
+                              ch * line_offset * lut_config.LutVCount;
+                char* addr1 = reinterpret_cast<char*>(current_lut_[1]->Addr) +
+                              ch * line_offset * lut_config.LutVCount;
                 for (uint32_t i = 0; i < full_lut_config.LutVCount; i++) {
-                    ifs.read(reinterpret_cast<char*>(current_lut_[0]->Addr) + (i * line_offset),
-                             line_offset);
-                    memcpy(reinterpret_cast<char*>(current_lut_[1]->Addr) + (i * line_offset),
-                           reinterpret_cast<char*>(current_lut_[0]->Addr) + (i * line_offset) +
-                               line_size - line_offset,
+                    ifs.read(addr0 + (i * line_offset), line_offset);
+                    memcpy(addr1 + (i * line_offset),
+                           addr0 + (i * line_offset) + line_size - line_offset,
                            2 * line_offset - line_size);
-                    ifs.read(reinterpret_cast<char*>(current_lut_[1]->Addr) + (i * line_size) +
-                                 line_offset,
-                             line_size - line_offset);
+                    ifs.read(addr1 + (i * line_size) + line_offset, line_size - line_offset);
                 }
             }
         }
@@ -292,15 +302,13 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcacInt* input,
     int gain_high, gain_low;
     float ratio;
     int iso_div      = 50;
-    int max_iso_step = calib_->Params.iso_len;
+    int max_iso_step = RKCAC_MAX_ISO_LEVEL;
     int iso          = input->iso;
     LOGD_ACAC("%s : Enter", __func__);
 
     if (!enable_ || !valid_) {
-        // TODO(Cody)
         output->config[0].bypass_en = 1;
         output->config[1].bypass_en = 1;
-        LOGD_ACAC("%s : bypassed enable:%d valid:%d", __func__, enable_, valid_);
         return;
     }
 
@@ -328,28 +336,54 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcacInt* input,
     XCAM_ASSERT(gain_low >= 0 && gain_low < max_iso_step);
     XCAM_ASSERT(gain_high >= 0 && gain_high < max_iso_step);
 
+#if 0
+    output->config[0].strength[0] = 128;
+    output->config[0].strength[1] = 256;
+    output->config[0].strength[2] = 384;
+    output->config[0].strength[3] = 512;
+    output->config[0].strength[4] = 640;
+    output->config[0].strength[5] = 768;
+    output->config[0].strength[6] = 896;
+    output->config[0].strength[7] = 1024;
+    output->config[0].strength[8] = 1152;
+    output->config[0].strength[9] = 1280;
+    output->config[0].strength[10] = 1408;
+    output->config[0].strength[11] = 1536;
+    output->config[0].strength[12] = 1568;
+    output->config[0].strength[13] = 1600;
+    output->config[0].strength[14] = 1632;
+    output->config[0].strength[15] = 1664;
+    output->config[0].strength[16] = 1696;
+    output->config[0].strength[17] = 1728;
+    output->config[0].strength[18] = 1760;
+    output->config[0].strength[19] = 1792;
+    output->config[0].strength[20] = 1824;
+    output->config[0].strength[21] = 2047;
+#endif
+    float strength[RKCAC_STRENGTH_TABLE_LEN] = {1.0f};
     for (i = 0; i < RKCAC_STRENGTH_TABLE_LEN; i++) {
-        output->config[0].strength[i] =
-            INTERP_CAC(calib_->Params.strength_table[gain_low][i],
-                       calib_->Params.strength_table[gain_high][i], ratio);
+        strength[i] =
+            INTERP_CAC(calib_->TuningPara.SettingByIso[gain_low].strength_table[i],
+                       calib_->TuningPara.SettingByIso[gain_high].strength_table[i], ratio);
+        output->config[0].strength[i] = ROUND_F(strength[i] * (1 << RKCAC_STRENGTH_FIX_BITS));
     }
     output->config[0].bypass_en =
-        INTERP_CAC(calib_->Params.bypass[gain_low], calib_->Params.bypass[gain_high], ratio);
-    output->config[0].center_en     = calib_->Params.center_en;
-    output->config[0].center_width  = calib_->Params.center_x;
-    output->config[0].center_height = calib_->Params.center_y;
-    output->config[0].psf_sft_bit   = calib_->Params.psf_shift_bits;
+        INTERP_CAC(calib_->TuningPara.SettingByIso[gain_low].bypass,
+                   calib_->TuningPara.SettingByIso[gain_high].bypass, ratio);
+    output->config[0].center_en     = calib_->SettingPara.center_en;
+    output->config[0].center_width  = calib_->SettingPara.center_x;
+    output->config[0].center_height = calib_->SettingPara.center_y;
+    output->config[0].psf_sft_bit   = calib_->SettingPara.psf_shift_bits;
     output->config[0].cfg_num       = current_lut_[0]->Config.PsfCfgCount;
     output->config[0].buf_fd        = current_lut_[0]->Fd;
-    output->config[0].hsize         = current_lut_[0]->Config.LutHCount * (CacPsfKernelSize - 1);
+    output->config[0].hsize         = current_lut_[0]->Config.LutHCount * CacPsfKernelWordSizeInMemory;
     output->config[0].vsize         = current_lut_[0]->Config.LutVCount * CacChannelCount;
     if (current_lut_[1]) {
         memcpy(&output->config[1], &output->config[0], sizeof(output->config[0]));
         output->config[1].buf_fd = current_lut_[1]->Fd;
     }
 
-    LOGD_ACAC("global en : %d", calib_->enable);
-    LOGD_ACAC("global bypass: %d", calib_->bypass);
+    LOGD_ACAC("global en : %d", calib_->SettingPara.enable);
     LOGD_ACAC("current bypass: %d", output->config[0].bypass_en);
     LOGD_ACAC("center en: %d", output->config[0].center_en);
     LOGD_ACAC("center x: %u", output->config[0].center_width);

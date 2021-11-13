@@ -38,8 +38,6 @@ XCamReturn AdehazeInit(AdehazeHandle_t** para, CamCalibDbV2Context_t* calib);
 XCamReturn AdehazeRelease(AdehazeHandle_t* para);
 XCamReturn AdehazeProcess(AdehazeHandle_t* para, AdehazeVersion_t version);
 bool AdehazeByPassProcessing(AdehazeHandle_t* pAdehazeCtx);
-void AdehazeGetEnvLv(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoPreResAeInt* pAecPreRes);
-
 
 RKAIQ_END_DECLARE
 

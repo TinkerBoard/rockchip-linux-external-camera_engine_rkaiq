@@ -417,7 +417,7 @@ Abayer2dnr_result_V2_t bayer2dnr_fix_transfer_V2(RK_Bayer2dnr_Params_V2_Select_t
     // ISP_BAYNR_3A00_THLD
     tmp = LUTPRECISION_FIX;
     pFix->baynr_diff_thld = CLIP(tmp, 0, 0x3ff);
-    tmp = (int)(pSelect->bayernrv2_filter_soft_threshold_ratio / fStrength * (1 << 10));
+    tmp = (int)(pSelect->bayernrv2_filter_soft_threshold_ratio / pSelect->bayernrv2_filter_strength / fStrength * (1 << 10));
     pFix->baynr_softthld = CLIP(tmp, 0, 0x3ff);
 
     // ISP_BAYNR_3A00_W1_STRENG

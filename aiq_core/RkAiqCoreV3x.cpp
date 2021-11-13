@@ -1018,17 +1018,17 @@ RkAiqCoreV3x::genIspAdhazResult(RkAiqFullParams* params)
         dehaze_param->result.ProcResV30.adp_tmax_wr    = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV30.adp_tmax_wr;
         dehaze_param->result.ProcResV30.adp_gratio_wr    = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV30.adp_gratio_wr;
 
-        for(int i = 0; i < 15; i++)
+        for(int i = 0; i < ISP3X_DHAZ_SIGMA_IDX_NUM; i++)
             dehaze_param->result.ProcResV30.sigma_idx[i]     = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV30.sigma_idx[i];
 
-        for(int i = 0; i < 17; i++) {
+        for(int i = 0; i < ISP3X_DHAZ_ENH_CURVE_NUM; i++)
             dehaze_param->result.ProcResV30.enh_curve[i]     = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV30.enh_curve[i];
+
+        for(int i = 0; i < ISP3X_DHAZ_SIGMA_LUT_NUM; i++)
             dehaze_param->result.ProcResV30.sigma_lut[i]     = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV30.sigma_lut[i];
-        }
 
-        for(int i = 0; i < 64; i++)
+        for(int i = 0; i < ISP3X_DHAZ_HIST_WR_NUM; i++)
             dehaze_param->result.ProcResV30.hist_wr[i]     = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV30.hist_wr[i];
-
     }
 
     EXIT_ANALYZER_FUNCTION();
@@ -1261,6 +1261,7 @@ RkAiqCoreV3x::genIspAfResult(RkAiqFullParams* params)
         isp_param->af_cfg_update = af_rk->af_proc_res_com.af_cfg_update;
 #else
         setResultExpectedEffId(af_param->frame_id, RK_AIQ_ALGO_TYPE_AF);
+        setResultExpectedEffId(focus_param->frame_id, RK_AIQ_ALGO_TYPE_AF);
         af_param->result = af_rk->af_proc_res_com.af_isp_param_v3x;
         // isp_param->af_cfg_update = af_rk->af_proc_res_com.af_cfg_update;
 #endif

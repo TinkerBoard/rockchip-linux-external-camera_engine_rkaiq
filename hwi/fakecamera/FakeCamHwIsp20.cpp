@@ -452,9 +452,9 @@ FakeCamHwIsp20::parse_rk_rawdata(void *rawdata, struct rk_aiq_vbuf *vbuf)
                                       vbuf->buf_info[0].exp_gain_reg,
                                       vbuf->buf_info[0].exp_time_reg);
          if (is_actual_rawdata) {
-            vbuf->buf_info[1].data_addr = actual_raw[2];//actual_raw[1]
+            vbuf->buf_info[1].data_addr = actual_raw[1];//actual_raw[1]
             vbuf->buf_info[1].data_fd = 0;
-            vbuf->buf_info[1].data_length = actual_raw_len[2];//actual_raw_len[1]
+            vbuf->buf_info[1].data_length = actual_raw_len[1];//actual_raw_len[1]
          } else {
              if (_rawbuf_type == RK_AIQ_RAW_ADDR) {
                  if (sizeof(uint8_t*) == 4)

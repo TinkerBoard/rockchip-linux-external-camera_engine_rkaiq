@@ -55,12 +55,14 @@ int initDrmDsp() {
     return -1;
   }
 
-  pDrmDsp->test_crtc = &pDrmDsp->dev->crtcs[0];
+  pDrmDsp->test_crtc = &pDrmDsp->dev->crtcs[3];
   pDrmDsp->num_test_planes = pDrmDsp->test_crtc->num_planes;
   for (i = 0; i < pDrmDsp->test_crtc->num_planes; i++) {
     pDrmDsp->plane[i] = get_sp_plane(pDrmDsp->dev, pDrmDsp->test_crtc);
-    if (is_supported_format(pDrmDsp->plane[i], DRM_FORMAT_NV12))
+    if (is_supported_format(pDrmDsp->plane[i], DRM_FORMAT_NV12)) {
       pDrmDsp->test_plane = pDrmDsp->plane[i];
+	  break;
+	}
   }
   if (!pDrmDsp->test_plane)
     return -1;
@@ -68,6 +70,7 @@ int initDrmDsp() {
 #ifndef ARCH_FPGA
   rkRgaInit();
 #endif
+  return ret;
 }
 
 void deInitDrmDsp() {
@@ -340,4 +343,5 @@ int drmDspFrame(int srcWidth, int srcHeight, int dispWidth, int dispHeight,
   else
     pDrmDsp->nextbo = pDrmDsp->bo[0];
 #endif
+  return ret;
 }

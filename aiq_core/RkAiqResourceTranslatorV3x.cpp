@@ -1597,7 +1597,7 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
             blk_w = org_af.win[0].h_size / ISP2X_RAWAF_SUMDATA_ROW;
             l_blknum = (l_isp_ed - x_st + blk_w - 1) / blk_w;
             r_blknum = ISP2X_RAWAF_SUMDATA_ROW - l_blknum;
-            l_win_ed = l_isp_ed;
+            l_win_ed = l_isp_ed - 2;
             l_win_st = l_win_ed - blk_w * ISP2X_RAWAF_SUMDATA_ROW;
             if (blk_w < ov_w) {
                 r_skip_blknum = ov_w / blk_w;
@@ -1619,10 +1619,10 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
         // af win >= one isp width
         else {
             l_win_st = x_st;
-            l_win_ed = l_isp_ed;
+            l_win_ed = l_isp_ed - 2;
             blk_w = (l_win_ed - l_win_st) / (ISP2X_RAWAF_SUMDATA_ROW + 1);
             l_win_st = l_win_ed - blk_w * ISP2X_RAWAF_SUMDATA_ROW;
-            l_blknum = ((l_win_ed - x_st) * ISP2X_RAWAF_SUMDATA_ROW + org_af.win[0].h_size - 1) / org_af.win[0].h_size;
+            l_blknum = ((l_win_ed - l_win_st) * ISP2X_RAWAF_SUMDATA_ROW + org_af.win[0].h_size - 1) / org_af.win[0].h_size;
             r_blknum = ISP2X_RAWAF_SUMDATA_ROW - l_blknum;
             if (blk_w < ov_w) {
                 r_skip_blknum = ov_w / blk_w;
@@ -1677,8 +1677,8 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
     if ((x_st < r_isp_st) && (x_ed > l_isp_ed)) {
         af_split_info.winb_side_info = LEFT_AND_RIGHT_MODE;
         l_win_st = x_st;
-        l_win_ed = l_isp_ed;
-        r_win_st = ov_w;
+        l_win_ed = l_isp_ed - 2;
+        r_win_st = ov_w - 2;
         r_win_ed = x_ed - right_isp_rect_.x;
         // blend winB by width of left isp winB and right isp winB
         af_split_info.winb_l_ratio = (float)(l_win_ed - l_win_st) / (float)(x_ed - x_st);
@@ -1687,8 +1687,8 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
     // af win in right side
     else if ((x_st >= r_isp_st) && (x_ed > l_isp_ed)) {
         af_split_info.winb_side_info = RIGHT_MODE;
-        af_split_info.winb_l_ratio = 1;
-        af_split_info.winb_r_ratio = 0;
+        af_split_info.winb_l_ratio = 0;
+        af_split_info.winb_r_ratio = 1;
         r_win_st = x_st - right_isp_rect_.x;
         r_win_ed = x_ed - right_isp_rect_.x;
         l_win_st = r_win_st;
@@ -1697,8 +1697,8 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
     // af win in left side
     else {
         af_split_info.winb_side_info = LEFT_MODE;
-        af_split_info.winb_l_ratio = 0;
-        af_split_info.winb_r_ratio = 1;
+        af_split_info.winb_l_ratio = 1;
+        af_split_info.winb_r_ratio = 0;
         l_win_st = x_st;
         l_win_ed = x_ed;
         r_win_st = l_win_st;
@@ -1862,6 +1862,7 @@ RkAiqResourceTranslatorV3x::translateAfStats (const SmartPtr<VideoBuffer> &from,
 
     SmartPtr<RkAiqAfInfoProxy> afParams = buf->get_af_params();
 
+    memset(&statsInt->af_stats_v3x, 0, sizeof(rk_aiq_isp_af_stats_v3x_t));
     statsInt->frame_id = stats->frame_id;
 
     //af

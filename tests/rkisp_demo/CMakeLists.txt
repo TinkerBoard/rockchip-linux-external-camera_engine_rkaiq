@@ -61,7 +61,7 @@ SET(LINK_ASAN asan)
 endif()
 
 if(ADD_RK_AIQ)
-add_compile_options(-std=c++11)
+#add_compile_options(-std=c++11)
 add_compile_options(-Os)
 add_compile_options(-DADD_RK_AIQ)
 if(NOT ARCH STREQUAL "fpga")

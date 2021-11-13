@@ -926,59 +926,51 @@ void Isp21Params::convertAiqAgicToIsp21Params(T& isp_cfg,
         isp_cfg.module_cfg_update &= ~(1LL << RK_ISP2X_GIC_ID);
     }
 
-    if (std::is_trivial<rk_aiq_isp_gic_v3x_t>::value &&
-            std::is_standard_layout<rk_aiq_isp_gic_v3x_t>::value) {
-        memcpy(&isp_cfg.others.gic_cfg, &agic, sizeof(isp_cfg.others.gic_cfg));
-    } else {
-        isp_cfg.others.gic_cfg.regmingradthrdark2 = agic.ProcResV21.regmingradthrdark2;
-        isp_cfg.others.gic_cfg.regmingradthrdark1 = agic.ProcResV21.regmingradthrdark1;
-        isp_cfg.others.gic_cfg.regminbusythre     = agic.ProcResV21.regminbusythre;
-        isp_cfg.others.gic_cfg.regdarkthre        = agic.ProcResV21.regdarkthre;
+    isp_cfg.others.gic_cfg.regmingradthrdark2 = agic.ProcResV21.regmingradthrdark2;
+    isp_cfg.others.gic_cfg.regmingradthrdark1 = agic.ProcResV21.regmingradthrdark1;
+    isp_cfg.others.gic_cfg.regminbusythre     = agic.ProcResV21.regminbusythre;
+    isp_cfg.others.gic_cfg.regdarkthre        = agic.ProcResV21.regdarkthre;
 
-        isp_cfg.others.gic_cfg.regmaxcorvboth        = agic.ProcResV21.regmaxcorvboth;
-        isp_cfg.others.gic_cfg.regdarktthrehi        = agic.ProcResV21.regdarktthrehi;
-        isp_cfg.others.gic_cfg.regkgrad2dark         = agic.ProcResV21.regkgrad2dark;
-        isp_cfg.others.gic_cfg.regkgrad1dark         = agic.ProcResV21.regkgrad1dark;
-        isp_cfg.others.gic_cfg.regstrengthglobal_fix = agic.ProcResV21.regstrengthglobal_fix;
-        isp_cfg.others.gic_cfg.regdarkthrestep       = agic.ProcResV21.regdarkthrestep;
-        isp_cfg.others.gic_cfg.regkgrad2             = agic.ProcResV21.regkgrad2;
-        isp_cfg.others.gic_cfg.regkgrad1             = agic.ProcResV21.regkgrad1;
-        isp_cfg.others.gic_cfg.reggbthre             = agic.ProcResV21.reggbthre;
+    isp_cfg.others.gic_cfg.regmaxcorvboth        = agic.ProcResV21.regmaxcorvboth;
+    isp_cfg.others.gic_cfg.regdarktthrehi        = agic.ProcResV21.regdarktthrehi;
+    isp_cfg.others.gic_cfg.regkgrad2dark         = agic.ProcResV21.regkgrad2dark;
+    isp_cfg.others.gic_cfg.regkgrad1dark         = agic.ProcResV21.regkgrad1dark;
+    isp_cfg.others.gic_cfg.regstrengthglobal_fix = agic.ProcResV21.regstrengthglobal_fix;
+    isp_cfg.others.gic_cfg.regdarkthrestep       = agic.ProcResV21.regdarkthrestep;
+    isp_cfg.others.gic_cfg.regkgrad2             = agic.ProcResV21.regkgrad2;
+    isp_cfg.others.gic_cfg.regkgrad1             = agic.ProcResV21.regkgrad1;
+    isp_cfg.others.gic_cfg.reggbthre             = agic.ProcResV21.reggbthre;
 
-        isp_cfg.others.gic_cfg.regmaxcorv     = agic.ProcResV21.regmaxcorv;
-        isp_cfg.others.gic_cfg.regmingradthr2 = agic.ProcResV21.regmingradthr2;
-        isp_cfg.others.gic_cfg.regmingradthr1 = agic.ProcResV21.regmingradthr1;
-        isp_cfg.others.gic_cfg.gr_ratio       = agic.ProcResV21.gr_ratio;
-        isp_cfg.others.gic_cfg.noise_scale    = agic.ProcResV21.noise_scale;
-        isp_cfg.others.gic_cfg.noise_base     = agic.ProcResV21.noise_base;
-        isp_cfg.others.gic_cfg.diff_clip      = agic.ProcResV21.diff_clip;
-        for (int i = 0; i < 15; i++) isp_cfg.others.gic_cfg.sigma_y[i] = agic.ProcResV21.sigma_y[i];
-    }
+    isp_cfg.others.gic_cfg.regmaxcorv     = agic.ProcResV21.regmaxcorv;
+    isp_cfg.others.gic_cfg.regmingradthr2 = agic.ProcResV21.regmingradthr2;
+    isp_cfg.others.gic_cfg.regmingradthr1 = agic.ProcResV21.regmingradthr1;
+    isp_cfg.others.gic_cfg.gr_ratio       = agic.ProcResV21.gr_ratio;
+    isp_cfg.others.gic_cfg.noise_scale    = agic.ProcResV21.noise_scale;
+    isp_cfg.others.gic_cfg.noise_base     = agic.ProcResV21.noise_base;
+    isp_cfg.others.gic_cfg.diff_clip      = agic.ProcResV21.diff_clip;
+    for (int i = 0; i < 15; i++) isp_cfg.others.gic_cfg.sigma_y[i] = agic.ProcResV21.sigma_y[i];
 
-#if 0
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regmingradthrdark2 %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regmingradthrdark2);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regmingradthrdark1 %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regmingradthrdark1);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regminbusythre %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regminbusythre);
+    LOGD_AGIC("%d: regmingradthrdark2 %d", __LINE__, isp_cfg.others.gic_cfg.regmingradthrdark2);
+    LOGD_AGIC("%d: regmingradthrdark1 %d", __LINE__, isp_cfg.others.gic_cfg.regmingradthrdark1);
+    LOGD_AGIC("%d: regminbusythre %d", __LINE__, isp_cfg.others.gic_cfg.regminbusythre);
 
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regdarkthre %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regdarkthre);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regmaxcorvboth %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regmaxcorvboth);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regdarktthrehi %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regdarktthrehi);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regkgrad2dark %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regkgrad2dark);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regkgrad1dark %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regkgrad1dark);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regstrengthglobal_fix %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regstrengthglobal_fix);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regdarkthrestep %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regdarkthrestep);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regkgrad2 %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regkgrad2);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regkgrad1 %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regkgrad1);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: reggbthre %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.reggbthre);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regmaxcorv %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regmaxcorv);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regmingradthr2 %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regmingradthr2);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: regmingradthr1 %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.regmingradthr1);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: gr_ratio %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.gr_ratio);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: noise_scale %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.noise_scale);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: noise_base %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.noise_base);
-    LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: diff_clip %d", __LINE__, isp_cfg.others.gic_cfg.drc_cfg.diff_clip);
-
-#endif
+    LOGD_AGIC("%d: regdarkthre %d", __LINE__, isp_cfg.others.gic_cfg.regdarkthre);
+    LOGD_AGIC("%d: regmaxcorvboth %d", __LINE__, isp_cfg.others.gic_cfg.regmaxcorvboth);
+    LOGD_AGIC("%d: regdarktthrehi %d", __LINE__, isp_cfg.others.gic_cfg.regdarktthrehi);
+    LOGD_AGIC("%d: regkgrad2dark %d", __LINE__, isp_cfg.others.gic_cfg.regkgrad2dark);
+    LOGD_AGIC("%d: regkgrad1dark %d", __LINE__, isp_cfg.others.gic_cfg.regkgrad1dark);
+    LOGD_AGIC("%d: regstrengthglobal_fix %d", __LINE__, isp_cfg.others.gic_cfg.regstrengthglobal_fix);
+    LOGD_AGIC("%d: regdarkthrestep %d", __LINE__, isp_cfg.others.gic_cfg.regdarkthrestep);
+    LOGD_AGIC("%d: regkgrad2 %d", __LINE__, isp_cfg.others.gic_cfg.regkgrad2);
+    LOGD_AGIC("%d: regkgrad1 %d", __LINE__, isp_cfg.others.gic_cfg.regkgrad1);
+    LOGD_AGIC("%d: reggbthre %d", __LINE__, isp_cfg.others.gic_cfg.reggbthre);
+    LOGD_AGIC("%d: regmaxcorv %d", __LINE__, isp_cfg.others.gic_cfg.regmaxcorv);
+    LOGD_AGIC("%d: regmingradthr2 %d", __LINE__, isp_cfg.others.gic_cfg.regmingradthr2);
+    LOGD_AGIC("%d: regmingradthr1 %d", __LINE__, isp_cfg.others.gic_cfg.regmingradthr1);
+    LOGD_AGIC("%d: gr_ratio %d", __LINE__, isp_cfg.others.gic_cfg.gr_ratio);
+    LOGD_AGIC("%d: noise_scale %d", __LINE__, isp_cfg.others.gic_cfg.noise_scale);
+    LOGD_AGIC("%d: noise_base %d", __LINE__, isp_cfg.others.gic_cfg.noise_base);
+    LOGD_AGIC("%d: diff_clip %d", __LINE__, isp_cfg.others.gic_cfg.diff_clip);
 }
 
 bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,

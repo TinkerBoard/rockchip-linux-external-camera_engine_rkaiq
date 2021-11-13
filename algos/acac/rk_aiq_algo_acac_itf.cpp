@@ -82,11 +82,6 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     RkAiqAlgoProcResAcacInt* output = (RkAiqAlgoProcResAcacInt*)outparams;
     CacAlgoAdaptor* adaptor         = static_cast<CacAlgoAdaptor*>(inparams->ctx->handle);
 
-    if (!adaptor->IsEnabled()) {
-        LOGD_ACAC("CAC is not enabled");
-        return XCAM_RETURN_NO_ERROR;
-    }
-
     adaptor->OnFrameEvent(input, output);
 
     return XCAM_RETURN_NO_ERROR;

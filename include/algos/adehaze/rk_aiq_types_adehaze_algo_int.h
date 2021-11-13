@@ -257,13 +257,13 @@ typedef struct AdehazeV30ProcResult_s
     int gaus_h2;
     int gaus_h1;
     int gaus_h0;
-    int sigma_idx[15];
-    int sigma_lut[17];
-    int adp_wt_wr;
-    int adp_air_wr;
-    int adp_tmax_wr;
-    int adp_gratio_wr;
-    int hist_wr[64];
+    int sigma_idx[ISP3X_DHAZ_SIGMA_IDX_NUM];
+    int sigma_lut[ISP3X_DHAZ_SIGMA_LUT_NUM];
+    int adp_wt_wr;//calc in kernel
+    int adp_air_wr;//calc in kernel
+    int adp_tmax_wr;//calc in kernel
+    int adp_gratio_wr;//calc in kernel
+    int hist_wr[64];//calc in kernel
 } AdehazeV30ProcResult_t;
 
 typedef struct RkAiqAdehazeProcResult_s

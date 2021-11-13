@@ -1043,7 +1043,7 @@ RkAiqCoreV21::genIspAdhazResult(RkAiqFullParams* params)
 
         //LOGE_ANALYZER("dc_en%d enhance_en:%d",dehaze_param->result.ProcResV21.dc_en,dehaze_param->result.ProcResV21.enhance_en);
 
-        for(int i = 0; i < 17; i++)
+        for(int i = 0; i < ISP21_DHAZ_ENH_CURVE_NUM; i++)
             dehaze_param->result.ProcResV21.enh_curve[i]     = adhaz_rk->adhaz_proc_res_com.AdehzeProcRes.ProcResV21.enh_curve[i];
 
     }
