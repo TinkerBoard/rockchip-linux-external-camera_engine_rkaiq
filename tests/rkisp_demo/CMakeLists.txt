@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 2.8)
 PROJECT(rkisp_demo)
 
 #set BUILROOT_BUILD_PROJECT
-set(BUILROOT_BUILD_PROJECT true)
+#set(BUILROOT_BUILD_PROJECT true)
 #set(ENABLE_ASAN true)
 
 #add_compile_options(${ISP_HW_VERSION})
@@ -52,7 +52,7 @@ set(ADD_RK_AIQ true)
 option(ENABLE_IIO_API "Enable IIO API for EIS algorithm" OFF)
 
 #SET RK_AIQ SOURCE DIR
-set(RK_AIQ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/../rk_aiq)
+set(RK_AIQ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/../..)
 message("rkaiq src path" ${RK_AIQ_SOURCE_DIR})
 
 if(ENABLE_ASAN)
@@ -70,7 +70,7 @@ else ()
 	add_compile_options(-DARCH_FPGA)
 endif()
 # add_compile_options(-v)
-SET(RK_AIQ_LIB_DIR ${RK_AIQ_SOURCE_DIR}/build/linux/output/${ARCH}/all_lib/${CMAKE_BUILD_TYPE})
+SET(RK_AIQ_LIB_DIR ${RK_AIQ_SOURCE_DIR}/all_lib/${CMAKE_BUILD_TYPE})
 message("rkaiq lib path" ${RK_AIQ_LIB_DIR})
 SET(RK_AIQ_INCLUDE_DIR
 ${RK_AIQ_SOURCE_DIR}
@@ -159,4 +159,4 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${RK_DRM_LIB_DIR}" "${IIO_LIB_DIR}")
 #add executable file
 add_executable(rkisp_demo ${DIR_SRCS})
-target_link_libraries(rkisp_demo ${RK_AIQ_LIB} ${RK_DRM_LIB} ${RK_RGA_LIB} ${IIO_LIBS} ${LINK_ASAN} pthread)
+target_link_libraries(rkisp_demo ${RK_AIQ_LIB} ${RK_DRM_LIB} ${RK_RGA_LIB} ${IIO_LIBS} ${LINK_ASAN} pthread dl)

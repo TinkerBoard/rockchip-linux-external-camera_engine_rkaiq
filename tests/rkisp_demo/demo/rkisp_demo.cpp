@@ -786,7 +786,7 @@ void test_imgproc(const demo_context_t* demo_ctx) {
         rk_aiq_cpsl_cap_t cpsl_cap;
         rk_aiq_uapi2_sysctl_getCpsLtInfo(ctx, &cpsl_info);
         rk_aiq_uapi2_sysctl_queryCpsLtCap(ctx, &cpsl_cap);
-        printf("sensitivity: %f\n", cpsl_info.sensitivity, cpsl_cap.sensitivity);
+        printf("cpsl_info.sensitivity: %f, cpsl_cap.sensitivity.min: %f\n", cpsl_info.sensitivity, cpsl_cap.sensitivity.min);
         rk_aiq_cpsl_cfg_t cpsl_cfg;
         rk_aiq_uapi2_sysctl_setCpsLtCfg(ctx, &cpsl_cfg);
     }
