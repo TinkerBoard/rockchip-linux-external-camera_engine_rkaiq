@@ -18,12 +18,12 @@ PROJECT(rkaiq_3A_server)
 # ----------------------------------------------------------------------------
 # SET THE COMPILER PATH
 # ----------------------------------------------------------------------------
-if(BUILDROOT_BUILD_PROJECT)
+#if(BUILDROOT_BUILD_PROJECT)
     # buildroot will set the compiler
-else()
-    SET(CMAKE_C_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/arm/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc") 
-    SET(CMAKE_CXX_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/arm/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++")
-endif()
+#else()
+#    SET(CMAKE_C_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/arm/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc") 
+#    SET(CMAKE_CXX_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/arm/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++")
+#endif()
 
 # ----------------------------------------------------------------------------
 # ADD SYMBOL TABLE FOR GDB
@@ -96,12 +96,25 @@ ADD_EXECUTABLE(rkaiq_3A_server rkaiq_3A_server.cpp)
 
 target_link_libraries(rkaiq_3A_server ${RK_AIQ_LIB} pthread dl)
 
-install(TARGETS rkaiq_3A_server
-	RUNTIME DESTINATION "usr/bin"
-	LIBRARY DESTINATION "usr/lib"
-)
+#FIXME: buildroot and ipc sdk shall use the same setting
+if(BUILDROOT_BUILD_PROJECT)
+	install(TARGETS rkaiq_3A_server
+		RUNTIME DESTINATION /usr/bin
+		LIBRARY DESTINATION /usr/lib
+		)
 
-install(FILES S40rkaiq_3A DESTINATION "etc/init.d/"
-	PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-		    GROUP_EXECUTE GROUP_READ
-		    WORLD_EXECUTE WORLD_READ)
+	install(FILES S40rkaiq_3A DESTINATION /etc/init.d/
+		PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+		GROUP_EXECUTE GROUP_READ
+		WORLD_EXECUTE WORLD_READ)
+else()
+	install(TARGETS rkaiq_3A_server
+		RUNTIME DESTINATION "usr/bin"
+		LIBRARY DESTINATION "usr/lib"
+		)
+
+	install(FILES S40rkaiq_3A DESTINATION "etc/init.d"
+		PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+		GROUP_EXECUTE GROUP_READ
+		WORLD_EXECUTE WORLD_READ)
+endif()
