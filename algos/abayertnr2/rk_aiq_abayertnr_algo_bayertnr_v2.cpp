@@ -231,7 +231,9 @@ Abayertnr_result_V2_t bayertnr_fix_transfer_V2(RK_Bayertnr_Params_V2_Select_t* p
 
     for(int i = 0; i < 16; i++) {
         // BAY3D_BAY3D_SIG_X0  0x2c14 - 0x2c30
-        tmp = bayertnr_get_trans_V2(pSelect->bayertnrv2_tnr_luma_point[i]);
+        //no need transfer to log domain
+        //tmp = bayertnr_get_trans_V2(pSelect->bayertnrv2_tnr_luma_point[i]);
+        tmp = pSelect->bayertnrv2_tnr_luma_point[i];
         pFix->bay3d_sig0_x[i] = CLIP(tmp, 0, 0xffff);
 
         // BAY3D_BAY3D_SIG0_Y0 0x2c34 - 0x2c50

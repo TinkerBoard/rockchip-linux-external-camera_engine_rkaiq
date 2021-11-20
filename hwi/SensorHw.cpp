@@ -833,6 +833,19 @@ BaseSensorHw::get_v4l2_pixelformat(uint32_t pixelcode)
 }
 
 XCamReturn
+SensorHw::set_sync_mode(uint32_t mode)
+{
+    if (io_control(RKMODULE_SET_SYNC_MODE, &mode) < 0) {
+        LOGE_CAMHW_SUBM(SENSOR_SUBM,"failed to set sync mode %d", mode);
+        //return XCAM_RETURN_ERROR_IOCTL;
+    }
+
+    LOGI_CAMHW_SUBM(SENSOR_SUBM,"set sync mode %d", mode);
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
 SensorHw::set_working_mode(int mode)
 {
     rkmodule_hdr_cfg hdr_cfg;
@@ -1005,6 +1018,7 @@ SensorHw::stop()
     _delayed_dcg_gain_mode_list.clear();
     _frame_sequence = 0;
     _first = true;
+    set_sync_mode(NO_SYNC_MODE);
     V4l2SubDevice::stop();
     EXIT_CAMHW_FUNCTION();
     return XCAM_RETURN_NO_ERROR;

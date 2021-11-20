@@ -26,6 +26,7 @@
 typedef struct RK_Bayer2dnr_Fix_V2_s {
 
     //ISP_BAYNR_3A00_CTRL
+    uint8_t baynr_lg2_mode;
     uint8_t baynr_gauss_en;
     uint8_t baynr_log_bypass;
     uint8_t baynr_en;
@@ -52,6 +53,11 @@ typedef struct RK_Bayer2dnr_Fix_V2_s {
 
     // ISP_BAYNR_3A00_WRIT_D
     uint16_t weit_d[3];
+
+    uint16_t lg2_lgoff;
+    uint16_t lg2_off;
+
+    uint32_t dat_max;
 } RK_Bayer2dnr_Fix_V2_t;
 
 

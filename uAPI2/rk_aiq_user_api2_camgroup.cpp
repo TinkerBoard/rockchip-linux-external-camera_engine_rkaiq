@@ -53,7 +53,9 @@ _cam_group_bind(rk_aiq_camgroup_ctx_t* camgroup_ctx, rk_aiq_sys_ctx_t* aiq_ctx)
     // bind group to aiq
     aiq_ctx->_camGroupManager = camgroup_ctx->cam_group_manager.ptr();
     aiq_ctx->_analyzer->setCamGroupManager(aiq_ctx->_camGroupManager);
-    aiq_ctx->_rkAiqManager->setCamGroupManager(aiq_ctx->_camGroupManager);
+    // set first one as main cam
+    aiq_ctx->_rkAiqManager->setCamGroupManager(aiq_ctx->_camGroupManager,
+                                               camgroup_ctx->cam_ctxs_num == 0 ? true : false);
 
     camgroup_ctx->cam_ctxs_num++;
     camgroup_ctx->cam_ctxs_array[aiq_ctx->_camPhyId] = aiq_ctx;
@@ -79,7 +81,7 @@ _cam_group_unbind(rk_aiq_camgroup_ctx_t* camgroup_ctx, rk_aiq_sys_ctx_t* aiq_ctx
     }
     aiq_ctx->_camGroupManager = NULL;
     aiq_ctx->_analyzer->setCamGroupManager(NULL);
-    aiq_ctx->_rkAiqManager->setCamGroupManager(NULL);
+    aiq_ctx->_rkAiqManager->setCamGroupManager(NULL, false);
     camgroup_ctx->cam_ctxs_array[aiq_ctx->_camPhyId] = NULL;
     camgroup_ctx->cam_ctxs_num--;
 
@@ -337,6 +339,12 @@ rk_aiq_uapi2_camgroup_stop(rk_aiq_camgroup_ctx_t* camgroup_ctx)
 
     RKAIQ_API_SMART_LOCK(camgroup_ctx);
 
+    ret = camgroup_ctx->cam_group_manager->stop();
+    if (ret) {
+        LOGE("%s: stop failed !", __func__);
+        return ret;
+    }
+
     for (int i = 0; i < RK_AIQ_CAM_GROUP_MAX_CAMS; i++) {
         rk_aiq_sys_ctx_t* aiq_ctx = camgroup_ctx->cam_ctxs_array[i];
         if (aiq_ctx) {
@@ -346,12 +354,6 @@ rk_aiq_uapi2_camgroup_stop(rk_aiq_camgroup_ctx_t* camgroup_ctx)
                 continue;
             }
         }
-    }
-
-    ret = camgroup_ctx->cam_group_manager->stop();
-    if (ret) {
-        LOGE("%s: stop failed !", __func__);
-        return ret;
     }
 
     LOGD("%s: stop camgroup success !", __func__);

@@ -79,6 +79,10 @@ typedef struct RK_YNR_Fix_V3_s {
     // YNR_2700_HIGHNR_BASE_FILTER_WEIGHT  (0x0028)
     uint8_t ynr_base_filter_weight[3];
 
+    // YNR_2700_HIGHNR_BASE_FILTER_WEIGHT  (0x002c)
+    uint32_t ynr_frame_full_size;
+    uint16_t ynr_lbf_weight_thres;
+
     // YNR_2700_GAUSS1_COEFF  (0x0030)
     uint16_t ynr_low_gauss1_coeff[3];
 

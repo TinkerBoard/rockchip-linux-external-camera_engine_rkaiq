@@ -786,7 +786,7 @@ void test_imgproc(const demo_context_t* demo_ctx) {
         rk_aiq_cpsl_cap_t cpsl_cap;
         rk_aiq_uapi2_sysctl_getCpsLtInfo(ctx, &cpsl_info);
         rk_aiq_uapi2_sysctl_queryCpsLtCap(ctx, &cpsl_cap);
-        printf("cpsl_info.sensitivity: %f, cpsl_cap.sensitivity.min: %f\n", cpsl_info.sensitivity, cpsl_cap.sensitivity.min);
+        printf("sensitivity: %f\n", cpsl_info.sensitivity);
         rk_aiq_cpsl_cfg_t cpsl_cfg;
         rk_aiq_uapi2_sysctl_setCpsLtCfg(ctx, &cpsl_cfg);
     }
@@ -1268,6 +1268,8 @@ static void start_capturing_pp_oneframe(demo_context_t *ctx)
 static void uninit_device(demo_context_t *ctx)
 {
     unsigned int i;
+    if (ctx->n_buffers == 0)
+        return;
 
     for (i = 0; i < ctx->n_buffers; ++i) {
         if (-1 == munmap(ctx->buffers[i].start, ctx->buffers[i].length))
@@ -1277,6 +1279,7 @@ static void uninit_device(demo_context_t *ctx)
     }
 
     free(ctx->buffers);
+    ctx->n_buffers = 0;
 }
 
 static void uninit_device_pp_oneframe(demo_context_t *ctx)
@@ -1729,6 +1732,9 @@ static void parse_args(int argc, char **argv, demo_context_t *ctx)
 
 static void deinit(demo_context_t *ctx)
 {
+    if (!ctx->camgroup_ctx)
+        stop_capturing(ctx);
+
     if (ctx->pponeframe)
         stop_capturing_pp_oneframe(ctx);
     if (ctx->aiq_ctx) {
@@ -1741,7 +1747,6 @@ static void deinit(demo_context_t *ctx)
         }
     }
 
-    stop_capturing(ctx);
     if (ctx->aiq_ctx) {
         printf("%s:-------- deinit aiq -------------\n", get_sensor_name(ctx));
         rk_aiq_uapi2_sysctl_deinit(ctx->aiq_ctx);
@@ -1771,6 +1776,9 @@ static void signal_handle(int signo)
 
     if (g_main_ctx) {
         g_main_ctx->frame_count = 0;
+        stop_capturing(g_main_ctx);
+        if (g_main_ctx->camGroup && g_second_ctx)
+            stop_capturing(g_second_ctx);
         deinit(g_main_ctx);
         g_main_ctx = NULL;
     }

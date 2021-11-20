@@ -97,7 +97,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         if(awb_res) {
             if(awb_res->awb_gain_algo.grgain < DIVMIN ||
                     awb_res->awb_gain_algo.gbgain < DIVMIN ) {
-                LOGW("get wrong awb gain from AWB module ,use default value ");
+                LOGW_ACCM("get wrong awb gain from AWB module ,use default value ");
             } else {
                 hAccm->accmSwInfo.awbGain[0] =
                     awb_res->awb_gain_algo.rgain / awb_res->awb_gain_algo.grgain;
@@ -109,10 +109,10 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             hAccm->accmSwInfo.varianceLuma = awb_res_int->varianceLuma;
             hAccm->accmSwInfo.awbConverged = awb_res_int->awbConverged;
         } else {
-            LOGW("fail to get awb gain form AWB module,use default value ");
+            LOGW_ACCM("fail to get awb gain form AWB module,use default value ");
         }
     } else {
-        LOGW("fail to get awb gain form AWB module,use default value ");
+        LOGW_ACCM("fail to get awb gain form AWB module,use default value ");
     }
 
     if(scam_3a_res->aec._bEffAecExpValid) {
@@ -123,22 +123,22 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                     * pCurExp->LinearExp.exp_real_params.isp_dgain;
         } else if((rk_aiq_working_mode_t)procParaGroup->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2
                   && (rk_aiq_working_mode_t)procParaGroup->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR3)  {
-            LOGD("sensor gain choose from second hdr frame for accm");
+            LOGD_ACCM("sensor gain choose from second hdr frame for accm");
             hAccm->accmSwInfo.sensorGain = pCurExp->HdrExp[1].exp_real_params.analog_gain
                     * pCurExp->HdrExp[1].exp_real_params.digital_gain
                     * pCurExp->HdrExp[1].exp_real_params.isp_dgain;
         } else if((rk_aiq_working_mode_t)procParaGroup->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2
                   && (rk_aiq_working_mode_t)procParaGroup->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR3)  {
-            LOGD("sensor gain choose from third hdr frame for accm");
+            LOGD_ACCM("sensor gain choose from third hdr frame for accm");
             hAccm->accmSwInfo.sensorGain = pCurExp->HdrExp[2].exp_real_params.analog_gain
                     * pCurExp->HdrExp[2].exp_real_params.digital_gain
                     * pCurExp->HdrExp[2].exp_real_params.isp_dgain;
         } else {
-            LOGW("working_mode (%d) is invaild ,fail to get sensor gain form AE module,use default value ",
+            LOGW_ACCM("working_mode (%d) is invaild ,fail to get sensor gain form AE module,use default value ",
                  procParaGroup->working_mode);
         }
     } else {
-        LOGW("fail to get sensor gain form AE module,use default value ");
+        LOGW_ACCM("fail to get sensor gain form AE module,use default value ");
     }
 
     //LOGI_ACCM( "%s accm_proc_com.u.init:%d \n", __FUNCTION__, inparams->u.proc.init);

@@ -474,12 +474,15 @@ RkAiqCamGroupManager::sofSync(RkAiqManager* aiqManager, SmartPtr<VideoBuffer>& s
     rk_aiq_groupcam_sofsync_t* camGroupSofsync = getGroupCamSofsync(frameId);
     camGroupSofsync->_singleCamSofEvt[camId] = sof_evt;
 
+    bool sync_done = false;
     {
         SmartLock locker (mCamGroupResMutex);
         camGroupSofsync->_validCamSofSyncBits |= ((uint8_t)1) << camId;
+        if (camGroupSofsync->_validCamSofSyncBits == mRequiredCamsResMask)
+            sync_done = true;
     }
 
-    if (camGroupSofsync->_validCamSofSyncBits == mRequiredCamsResMask) {
+    if (sync_done) {
         {
             SmartLock locker (mCamGroupApiSyncMutex);
             for (int i = 0; i < RK_AIQ_CAM_GROUP_MAX_CAMS; i++) {

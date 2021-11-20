@@ -140,6 +140,7 @@ public:
         mCamPhyId = phyId;
     }
     virtual int getCamPhyId() { return mCamPhyId;}
+    virtual void setGroupMode(bool bGroup, bool bMain) { mIsGroupMode = bGroup; mIsMain = bMain;}
     HwResListener* mHwResLintener;
 protected:
     SmartPtr<V4l2Device> mIsppFecParamsDev;
@@ -160,6 +161,8 @@ protected:
     const CamCalibDbV2Context_t* mCalibDbV2;
     bool mKpHwSt;
     int mCamPhyId;
+    bool mIsGroupMode;
+    bool mIsMain;
 private:
     XCAM_DEAD_COPY (CamHwBase);
 };

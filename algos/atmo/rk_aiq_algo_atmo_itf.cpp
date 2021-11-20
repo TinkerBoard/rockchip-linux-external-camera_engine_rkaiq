@@ -95,7 +95,7 @@ static XCamReturn AtmoPrepare(RkAiqAlgoCom* params)
         (CalibDbV2_tmo_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDbv2, atmo_calib));
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
-        LOGD_ATMO("%s: Ahdr Reload Para!\n", __FUNCTION__);
+        LOGI_ATMO("%s: Ahdr Reload Para!\n", __FUNCTION__);
         memcpy(&pAtmoCtx->pCalibDB, calibv2_atmo_calib, sizeof(CalibDbV2_tmo_t));//load iq paras
     }
 
@@ -114,7 +114,7 @@ static XCamReturn AtmoPrepare(RkAiqAlgoCom* params)
     pAtmoCtx->CurrAeResult.AecDelayframe = MAX(aec->CommCtrl.AecDelayFrmNum.BlackDelay,
                                            aec->CommCtrl.AecDelayFrmNum.WhiteDelay);
 
-    LOGD_ATMO("%s:AecDelayframe:%d\n", __FUNCTION__, pAtmoCtx->CurrAeResult.AecDelayframe);
+    LOGI_ATMO("%s:AecDelayframe:%d\n", __FUNCTION__, pAtmoCtx->CurrAeResult.AecDelayframe);
 
     LOG1_ATMO("%s:Exit!\n", __FUNCTION__);
     return(XCAM_RETURN_NO_ERROR);

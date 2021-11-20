@@ -122,6 +122,7 @@ public:
         else
             return RK_ISP_STREAM_MODE_OFFLNIE;
     }
+    void notify_isp_stream_status(bool on);
 private:
     XCamReturn handlePpReslut(SmartPtr<cam3aResult> &result);
     XCamReturn setPpConfig(SmartPtr<cam3aResult> &result);
@@ -270,6 +271,7 @@ protected:
     SmartPtr<RKStream>          mIspParamStream;
     SmartPtr<RKSofEventStream>  mIspSofStream;
     SmartPtr<SPStreamProcUnit> mSpStreamUnit;
+    SmartPtr<RkStreamEventPollThread> mIspStremEvtTh;
 
     SmartPtr<RawStreamCapUnit> mRawCapUnit;
     SmartPtr<RawStreamProcUnit> mRawProcUnit;
@@ -287,6 +289,12 @@ protected:
     uint32_t mPpModuleInitEns;
     bool mVicapIspPhyLinkSupported; // if phsical link between vicap and isp, only isp3x support now
     SmartPtr<IspParamsSplitter> mParamsSplitter;
+    enum ISP_STREAM_STATUS_E {
+        ISP_STREAM_STATUS_INVALID,
+        ISP_STREAM_STATUS_STREAM_ON,
+        ISP_STREAM_STATUS_STREAM_OFF,
+    };
+    int _isp_stream_status;
 };
 
 };

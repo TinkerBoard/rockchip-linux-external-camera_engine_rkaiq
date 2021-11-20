@@ -222,6 +222,7 @@ enum cam_thread_type_e {
     ISP_NR_IMG,
     ISPP_GAIN_KG,
     ISPP_GAIN_WR,
+    ISP_POLL_ISPSTREAMSYNC,
     ISP_POLL_POST_MAX,
 };
 

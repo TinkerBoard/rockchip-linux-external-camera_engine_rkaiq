@@ -126,21 +126,9 @@ typedef struct LocalDataV2_s
     int LoLitContrast_len;
 } LocalDataV2_t;
 
-typedef struct MotionData_s
-{
-    // M4_ARRAY_DESC("MotionCoef", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(2), M4_DYNAMIC(1))
-    float*            MotionCoef;
-    int MotionCoef_len;
-    // M4_ARRAY_DESC("MotionStr", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(3), M4_DYNAMIC(1))
-    float*            MotionStr;  //sw_drc_bilat_wt_off, range[0 , 1], step: 1/255
-    int MotionStr_len;
-} MotionData_t;
-
 typedef struct localV2_s {
     // M4_ARRAY_TABLE_DESC("LocalData", "array_table_ui", "none")
     LocalDataV2_t LocalData;
-    // M4_ARRAY_TABLE_DESC("MotionData", "array_table_ui", "none")
-    MotionData_t MotionData;
     // M4_NUMBER_DESC("curPixWeit", "f32", M4_RANGE(0,1), "0.37", M4_DIGIT(3))
     float curPixWeit; //sw_drc_weicur_pix,  range[0,1],step: 1/255
     // M4_NUMBER_DESC("preFrameWeit", "f32", M4_RANGE(0,1), "1.0", M4_DIGIT(3))

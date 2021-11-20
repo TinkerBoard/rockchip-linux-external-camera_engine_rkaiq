@@ -377,7 +377,10 @@ public:
     XCamReturn set_sp_resolution(int &width, int &height, int &aligned_w, int &aligned_h);
 
     void setMulCamConc(bool cc) { mAlogsComSharedParams.is_multi_sensor = cc; };
-    void setCamPhyId(int phyId) { mAlogsComSharedParams.mCamPhyId = phyId;}
+    void setCamPhyId(int phyId) {
+        mAlogsComSharedParams.mCamPhyId = phyId;
+        mTranslator->setCamPhyId(phyId);
+    }
     int getCamPhyId() { return mAlogsComSharedParams.mCamPhyId;}
 public:
     // following vars shared by all algo handlers

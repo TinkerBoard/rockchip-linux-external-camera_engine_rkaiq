@@ -3256,7 +3256,6 @@ RkAiqCore::pushEvts(SmartPtr<ispHwEvt_t> &evts)
 
     if (evts->evt_code == V4L2_EVENT_FRAME_SYNC)
         mRkAiqCoreEvtsTh->push_evts(evts);
-
     EXIT_ANALYZER_FUNCTION();
 
     return XCAM_RETURN_NO_ERROR;
@@ -3887,7 +3886,8 @@ RkAiqCore::events_analyze(const SmartPtr<ispHwEvt_t> &evts)
         id = mLastAnalyzedId + 1 > sequence ? mLastAnalyzedId + 1 : sequence;
     maxId = sequence + isp20Evts->expDelay;
 
-    LOGD_ANALYZER("sequence(%d), expDelay(%d), id(%d), maxId(%d)",
+    LOGD_ANALYZER("camId:%d, sequence(%d), expDelay(%d), id(%d), maxId(%d)",
+                  mAlogsComSharedParams.mCamPhyId,
                   isp20Evts->sequence, isp20Evts->expDelay,
                   id, maxId);
 

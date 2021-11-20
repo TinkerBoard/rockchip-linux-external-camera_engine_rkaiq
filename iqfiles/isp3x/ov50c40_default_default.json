@@ -29441,43 +29441,6 @@
 										],
 										"LoLitContrast_len": 13
 									},
-									"MotionData": 
-									{
-										"MotionCoef": 
-										[
-											0,
-											0.005,
-											0.01,
-											0.05,
-											0.1,
-											0.15,
-											0.2,
-											0.3,
-											0.4,
-											0.5,
-											0.6,
-											0.8,
-											1
-										],
-										"MotionCoef_len": 13,
-										"MotionStr": 
-										[
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0,
-											0
-										],
-										"MotionStr_len": 13
-									},
 									"curPixWeit": 0.376471,
 									"preFrameWeit": 1,
 									"Range_force_sgm": 0,

@@ -30,7 +30,7 @@ namespace RkCam {
 
 class IRkAiqResourceTranslator {
 public:
-    IRkAiqResourceTranslator ()          {};
+    IRkAiqResourceTranslator ():mCamPhyId(-1){};
     virtual ~IRkAiqResourceTranslator () {};
 
     virtual XCamReturn translateIspStats (const SmartPtr<VideoBuffer> &from,
@@ -47,6 +47,9 @@ public:
                                    SmartPtr<RkAiqAtmoStatsProxy> &to) = 0;
     virtual XCamReturn translateAdehazeStats (const SmartPtr<VideoBuffer> &from,
                                       SmartPtr<RkAiqAdehazeStatsProxy> &to) = 0;
+    void setCamPhyId(int phyId) { mCamPhyId = phyId;}
+protected:
+    int mCamPhyId;
 
 private:
     XCAM_DEAD_COPY (IRkAiqResourceTranslator);

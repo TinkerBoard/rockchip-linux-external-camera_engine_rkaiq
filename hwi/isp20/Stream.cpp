@@ -44,6 +44,7 @@ RKStream::poll_type_to_str[ISP_POLL_POST_MAX] =
     "isp_tx_poll",
     "isp_rx_poll",
     "isp_sp_poll",
+    "isp_stream_sync_poll",
 };
 
 RkPollThread::RkPollThread (const char* thName, int type, SmartPtr<V4l2Device> dev, RKStream *stream)
@@ -65,6 +66,7 @@ RkPollThread::RkPollThread (const char* thName, int type, SmartPtr<V4l2SubDevice
     ,_poll_callback (NULL)
     ,frameid (0)
     ,_subdev(dev)
+    ,_dev(dev)
     ,_stream(stream)
     ,_dev_type(type)
 {
@@ -134,7 +136,8 @@ XCamReturn RkPollThread::start ()
 
 XCamReturn RkPollThread::stop ()
 {
-    XCAM_LOG_DEBUG ("RkPollThread stop");
+    XCAM_LOG_INFO ("RkPollThread %s:%s stop", get_name(),
+                   _dev.ptr() ? _dev->get_device_name() : _subdev->get_device_name());
     if (_poll_stop_fd[1] != -1) {
         char buf = 0xf;  // random value to write to flush fd.
         unsigned int size = write(_poll_stop_fd[1], &buf, sizeof(char));
@@ -143,7 +146,7 @@ XCamReturn RkPollThread::stop ()
     }
     Thread::stop();
     destroy_stop_fds ();
-
+    XCAM_LOG_INFO ("stop done");
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -206,8 +209,14 @@ RkPollThread::poll_buffer_loop ()
     return ret;
 }
 
-RkEventPollThread::RkEventPollThread (const char* thName, int type, SmartPtr<V4l2SubDevice> dev, RKStream *stream)
+RkEventPollThread::RkEventPollThread (const char* thName, int type, SmartPtr<V4l2Device> dev, RKStream *stream)
     :RkPollThread(thName, type, dev, stream)
+{
+    XCAM_LOG_DEBUG ("RkEventPollThread constructed");
+}
+
+RkEventPollThread::RkEventPollThread (const char* thName, int type, SmartPtr<V4l2SubDevice> subdev, RKStream *stream)
+    :RkPollThread(thName, type, subdev, stream)
 {
     XCAM_LOG_DEBUG ("RkEventPollThread constructed");
 }
@@ -223,14 +232,13 @@ RkEventPollThread::poll_event_loop ()
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     int poll_ret = 0;
-    struct v4l2_event event;
     int stop_fd = -1;
 
     stop_fd = _poll_stop_fd[0];
-    poll_ret = _subdev->poll_event (RkPollThread::default_poll_timeout, stop_fd);
+    poll_ret = _dev->poll_event (RkPollThread::default_poll_timeout, stop_fd);
 
     if (poll_ret == POLL_STOP_RET) {
-        XCAM_LOG_DEBUG ("poll event stop success !");
+        XCAM_LOG_INFO ("%s: poll event stop success !", get_name());
         // stop success, return error to stop the poll thread
         return XCAM_RETURN_ERROR_UNKNOWN;
     }
@@ -246,20 +254,66 @@ RkEventPollThread::poll_event_loop ()
         XCAM_LOG_WARNING ("poll event timeout and continue");
         return XCAM_RETURN_ERROR_TIMEOUT;
     }
-    xcam_mem_clear (event);
+    xcam_mem_clear (_event);
 
-    ret = _subdev->dequeue_event (event);
+    ret = _dev->dequeue_event (_event);
     if (ret != XCAM_RETURN_NO_ERROR) {
         XCAM_LOG_WARNING ("dequeue event failed on dev:%s", XCAM_STR(_subdev->get_device_name()));
         return XCAM_RETURN_ERROR_IOCTL;
     }
 
-    if (_poll_callback) {
-        SmartPtr<VideoBuffer> video_buf = _stream->new_video_buffer(event, _subdev);
+    if (_poll_callback && _stream) {
+        SmartPtr<VideoBuffer> video_buf = _stream->new_video_buffer(_event, _subdev);
         _poll_callback->poll_buffer_ready (video_buf);
     }
 
 
+    return ret;
+}
+
+/*--------------------ISP evt poll ---------------------------*/
+
+XCamReturn
+RkStreamEventPollThread::poll_event_loop () {
+    XCamReturn ret = RkEventPollThread::poll_event_loop();
+    if (ret == XCAM_RETURN_NO_ERROR) {
+        if (_event.type == CIFISP_V4L2_EVENT_STREAM_START) {
+            XCAM_LOG_INFO ("%s: poll stream on evt success", _dev->get_device_name());
+            _pIsp->notify_isp_stream_status(true);
+        } else if (_event.type == CIFISP_V4L2_EVENT_STREAM_STOP) {
+            XCAM_LOG_INFO ("%s: poll stream off evt success", _dev->get_device_name());
+            _pIsp->notify_isp_stream_status(false);
+            // quit loop
+            emit_stop ();
+            return XCAM_RETURN_ERROR_UNKNOWN;
+        }
+    }
+    return ret;
+}
+
+XCamReturn
+RkStreamEventPollThread::start()
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    ret = _dev->open();
+    if (ret) {
+       return ret;
+    }
+    _dev->subscribe_event(CIFISP_V4L2_EVENT_STREAM_START);
+    _dev->subscribe_event(CIFISP_V4L2_EVENT_STREAM_STOP);
+    return RkEventPollThread::start();
+}
+
+XCamReturn
+RkStreamEventPollThread::stop ()
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    ret = RkEventPollThread::stop();
+    _dev->unsubscribe_event(CIFISP_V4L2_EVENT_STREAM_START);
+    _dev->unsubscribe_event(CIFISP_V4L2_EVENT_STREAM_STOP);
+    ret = _dev->close();
     return ret;
 }
 
@@ -471,8 +525,8 @@ void
 RKSofEventStream::start()
 {
     _subdev->start(_dev_prepared);
-    _subdev->subscribe_event(V4L2_EVENT_FRAME_SYNC);
     _poll_thread->start();
+    _subdev->subscribe_event(V4L2_EVENT_FRAME_SYNC);
 }
 
 void

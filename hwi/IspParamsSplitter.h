@@ -71,6 +71,10 @@ private:
     XCamReturn SplitAwbParams(U* ori, U* left, U* right);
     template <typename U>
     XCamReturn SplitAfParams(U* ori, U* left, U* right);
+    // LSC
+    template <typename U>
+    XCamReturn SplitAlscParams(U* ori, U* left, U* right);
+
 
     Rectangle pic_rect_;
     Rectangle left_isp_rect_;

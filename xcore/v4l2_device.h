@@ -132,6 +132,9 @@ public:
     virtual int get_use_type() { return 0;}
     virtual void set_use_type(int type) {}
     SmartPtr<V4l2Buffer> get_available_buffer ();
+    virtual XCamReturn subscribe_event (int event);
+    virtual XCamReturn unsubscribe_event (int event);
+    virtual XCamReturn dequeue_event (struct v4l2_event &event);
 
 protected:
 
@@ -183,9 +186,6 @@ class V4l2SubDevice
 public:
     explicit V4l2SubDevice (const char *name = NULL);
 
-    virtual XCamReturn subscribe_event (int event);
-    virtual XCamReturn unsubscribe_event (int event);
-    virtual XCamReturn dequeue_event (struct v4l2_event &event);
     virtual XCamReturn get_selection (int pad, uint32_t target, struct v4l2_subdev_selection &select);
     virtual XCamReturn setFormat(struct v4l2_subdev_format &aFormat);
     virtual XCamReturn getFormat(struct v4l2_subdev_format &aFormat);

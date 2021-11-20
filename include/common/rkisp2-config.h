@@ -61,6 +61,12 @@
 
 /*************************************************************/
 
+/* Private v4l2 event */
+#define CIFISP_V4L2_EVENT_STREAM_START	\
+				(V4L2_EVENT_PRIVATE_START + 1)
+#define CIFISP_V4L2_EVENT_STREAM_STOP	\
+				(V4L2_EVENT_PRIVATE_START + 2)
+
 #define ISP2X_ID_DPCC			(0)
 #define ISP2X_ID_BLS			(1)
 #define ISP2X_ID_SDG			(2)

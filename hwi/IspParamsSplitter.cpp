@@ -351,11 +351,11 @@ void SplitAwbCalcBlockSize(
     while (loop_en && *block_h > 0) {
 
         left_win->h_size = (*block_h  * wnd_num) << ds_awb;
-        
+
         right_win->h_offs = (left_win->h_size + left_win->h_offs > right_isp_rect_.x) ?
                             left_win->h_size + left_win->h_offs - right_isp_rect_.x : 0;
-		
-        if (u32(right_win->h_offs + left_win->h_size) > right_isp_rect_.w ) {	
+
+        if (u32(right_win->h_offs + left_win->h_size) > right_isp_rect_.w ) {
             (*block_h)--;
         }
         else {
@@ -390,9 +390,8 @@ void SplitAwbWin(
     //win only locate in left isp, actually stats of right isp would not be used
     if (ori_win->h_offs + ori_win_hsize_clip <= left_isp_rect_.w) {
 
-#ifdef DEBUG
-        printf("win locate in left isp\n");
-#endif
+        LOG1_AWB("win locate in left isp\n");
+
         *mode = LEFT_MODE;
 
         left_win->h_offs = ori_win->h_offs;
@@ -407,9 +406,8 @@ void SplitAwbWin(
     }
     else if (ori_win->h_offs >= right_isp_rect_.x) {
 
-#ifdef DEBUG
-        printf("win locate in right isp\n");
-#endif
+        LOG1_AWB("win locate in right isp\n");
+
         *mode = RIGHT_MODE;
 
         //win only locate in right isp, actually stats of left isp would not be used
@@ -428,9 +426,9 @@ void SplitAwbWin(
 
         if ((ori_win->h_offs + ori_win->h_size / 2) <= left_isp_rect_.w
                 && right_isp_rect_.x <= (ori_win->h_offs + ori_win->h_size / 2)) {
-#ifdef DEBUG
-            printf(" win locate at left&right isp,and center line locate in overlapping zone!\n");
-#endif
+
+            LOG1_AWB(" win locate at left&right isp,and center line locate in overlapping zone!\n");
+
             *mode = LEFT_AND_RIGHT_MODE;
 
             //win center locate at overlap zone
@@ -445,16 +443,16 @@ void SplitAwbWin(
             u16 block_h = win_ds_hsize / (2 * wnd_num);
 
             left_win->h_size = (block_h  * wnd_num) << ds_awb;
-        
+
             right_win->h_offs = (left_win->h_size + left_win->h_offs > right_isp_rect_.x) ?
                             left_win->h_size + left_win->h_offs - right_isp_rect_.x : 0;
             right_win->h_offs = right_win->h_offs & 0xfffe;
             right_win->h_size = (win_ds_hsize - block_h * wnd_num) << ds_awb ;
         }
         else {
-#ifdef DEBUG
-            printf(" win locate at left&right isp,but center line not locate in overlapping zone!\n");
-#endif
+
+            LOG1_AWB(" win locate at left&right isp,but center line not locate in overlapping zone!\n");
+
             if ((ori_win->h_offs + ori_win->h_size / 2) < right_isp_rect_.x) {
 
                 left_win->h_offs = ori_win->h_offs;
@@ -468,9 +466,9 @@ void SplitAwbWin(
                 u16 h_size_tmp2 = (right_isp_rect_.x - ori_win->h_offs) * 2;
 
                 if (abs(ori_win_hsize_clip - h_size_tmp1) < abs(ori_win_hsize_clip - h_size_tmp2)) {
-#ifdef DEBUG
-                    printf("correct glb.h_size %d to %d\n", ori_win->h_size, h_size_tmp1);
-#endif
+
+                    LOG1_AWB("correct glb.h_size %d to %d\n", ori_win->h_size, h_size_tmp1);
+
                     *mode = LEFT_MODE;
 
                     ori_win->h_size = h_size_tmp1;
@@ -481,7 +479,7 @@ void SplitAwbWin(
                     right_win->h_size = ori_win->h_size;
                 }
                 else {
-                    printf("correct glb.h_size %d to %d\n", ori_win->h_size, h_size_tmp2);
+                    LOG1_AWB("correct glb.h_size %d to %d\n", ori_win->h_size, h_size_tmp2);
                     *mode = LEFT_AND_RIGHT_MODE;
 
                     ori_win->h_size = h_size_tmp2;
@@ -489,7 +487,7 @@ void SplitAwbWin(
 
                     u16 block_h = win_ds_hsize / (2 * wnd_num);
 
-                    SplitAwbCalcBlockSize(left_win, right_win, ds_awb, wnd_num, right_isp_rect_, &block_h);  
+                    SplitAwbCalcBlockSize(left_win, right_win, ds_awb, wnd_num, right_isp_rect_, &block_h);
                 }
             }
             else {
@@ -504,10 +502,8 @@ void SplitAwbWin(
 
                 if (abs(ori_win_hsize_clip - h_size_tmp1) < abs(ori_win_hsize_clip - h_size_tmp2)) {
 
-#ifdef DEBUG
-                    printf("correct glb.h_off %d to %d\n", ori_win->h_offs, right_isp_rect_.x);
-                    printf("correct glb.h_size %d to %d\n", ori_win->h_size, h_size_tmp1);
-#endif
+                    LOG1_AWB("correct glb.h_off %d to %d\n", ori_win->h_offs, right_isp_rect_.x);
+                    LOG1_AWB("correct glb.h_size %d to %d\n", ori_win->h_size, h_size_tmp1);
 
                     *mode = RIGHT_MODE;
 
@@ -522,11 +518,11 @@ void SplitAwbWin(
                     left_win->h_size = ori_win->h_size;
                 }
                 else {
-#ifdef DEBUG
-                    printf("correct glb.h_off %d to %d\n", ori_win->h_offs,
+
+                    LOG1_AWB("correct glb.h_off %d to %d\n", ori_win->h_offs,
                            ori_win->h_offs + ori_win->h_size - (ori_win->h_offs + ori_win->h_size - left_isp_rect_.w) * 2);
-                    printf("correct glb.h_size %d to %d\n", ori_win->h_size, h_size_tmp2);
-#endif
+                    LOG1_AWB("correct glb.h_size %d to %d\n", ori_win->h_size, h_size_tmp2);
+
                     *mode = LEFT_AND_RIGHT_MODE;
 
                     ori_win->h_offs = ori_win->h_offs + ori_win->h_size - (ori_win->h_offs + ori_win->h_size - left_isp_rect_.w) * 2;
@@ -536,7 +532,7 @@ void SplitAwbWin(
                     win_ds_hsize = ori_win->h_size >> ds_awb;
 
                     u16 block_h = win_ds_hsize / (2 * wnd_num);
-					
+
                     SplitAwbCalcBlockSize(left_win, right_win, ds_awb, wnd_num, right_isp_rect_, &block_h);
                 }
             }
@@ -548,14 +544,16 @@ void SplitAwbMultiWin(
     struct isp2x_window* ori_win,
     struct isp2x_window* left_win,
     struct isp2x_window* right_win,
+    struct isp2x_window* main_left_win,
+    struct isp2x_window* main_right_win,
     IspParamsSplitter::Rectangle left_isp_rect_,
     IspParamsSplitter::Rectangle right_isp_rect_,
     WinSplitMode* mode
 ) {
-    if (ori_win->h_offs + ori_win->h_size <= left_isp_rect_.w) {
-#ifdef DEBUG
-        printf("win locate in left isp\n");
-#endif
+    if (ori_win->h_offs + ori_win->h_size <= main_left_win->h_offs + main_left_win->h_size) {
+
+        LOG1_AWB("win locate in left isp\n");
+
         *mode = LEFT_MODE;
 
         left_win->h_offs = ori_win->h_offs;
@@ -568,10 +566,10 @@ void SplitAwbMultiWin(
         right_win->v_offs = 0;
         right_win->v_size = 0;
     }
-    else if (ori_win->h_offs >= right_isp_rect_.x) {
-#ifdef DEBUG
-        printf("win locate in right isp\n");
-#endif
+    else if (ori_win->h_offs >= right_isp_rect_.x + main_right_win->h_offs) {
+
+        LOG1_AWB("win locate in right isp\n");
+
         *mode = RIGHT_MODE;
 
         //win only locate in right isp, actually stats of left isp would not be used
@@ -580,25 +578,25 @@ void SplitAwbMultiWin(
         left_win->v_offs = 0;
         left_win->v_size = 0;
 
-        right_win->h_offs = ori_win->h_offs - right_isp_rect_.x;
+        right_win->h_offs = MAX(main_right_win->h_offs, ori_win->h_offs - right_isp_rect_.x);
         right_win->h_size = ori_win->h_size;
         right_win->v_offs = ori_win->v_offs;
         right_win->v_size = ori_win->v_size;
 
     }
     else {
-#ifdef DEBUG
-        printf(" win locate at left&right isp\n");
-#endif
+
+        LOG1_AWB(" win locate at left&right isp\n");
+
         *mode = LEFT_AND_RIGHT_MODE;
 
         left_win->h_offs = ori_win->h_offs;
-        left_win->h_size = MAX(0, left_isp_rect_.w - left_win->h_offs);
+        left_win->h_size = MAX(0, main_left_win->h_offs + main_left_win->h_size - left_win->h_offs);
         left_win->v_offs = ori_win->v_offs;
         left_win->v_size = ori_win->v_size;
 
 
-        right_win->h_offs = left_win->h_offs + left_win->h_size - right_isp_rect_.x;
+        right_win->h_offs = MAX(main_right_win->h_offs, left_win->h_offs + left_win->h_size - right_isp_rect_.x);
         right_win->h_size = MAX(0, ori_win->h_size - left_win->h_size);
         right_win->v_offs = ori_win->v_offs;
         right_win->v_size = ori_win->v_size;
@@ -815,7 +813,7 @@ XCamReturn IspParamsSplitter::SplitAwbParams<struct isp3x_isp_params_cfg>(
     else
         awb_ds = 3;
 	u16 min_hsize = wnd_num << awb_ds;
-		
+
     SplitAwbWin(&ori_win, &left_win, &right_win, awb_ds, wnd_num, left_isp_rect_, right_isp_rect_, &mode);
     if (ori_win.h_size < min_hsize) {
         ori->meas.rawawb.sw_rawawb_blk_measure_enable = 0;
@@ -824,9 +822,9 @@ XCamReturn IspParamsSplitter::SplitAwbParams<struct isp3x_isp_params_cfg>(
     }
     else {
         if (mode == LEFT_AND_RIGHT_MODE) {
-            if (left_win.h_size < min_hsize) 
+            if (left_win.h_size < min_hsize)
                 left->meas.rawawb.sw_rawawb_blk_measure_enable = 0;
-            if (right_win.h_size < min_hsize) 
+            if (right_win.h_size < min_hsize)
                 right->meas.rawawb.sw_rawawb_blk_measure_enable = 0;
         }
     }
@@ -834,7 +832,7 @@ XCamReturn IspParamsSplitter::SplitAwbParams<struct isp3x_isp_params_cfg>(
     // Awb blk_wei_w
     //SplitAwbWeight(&ori_win, &left_win, &right_win, ori->meas.rawawb.sw_rawawb_wp_blk_wei_w, left->meas.rawawb.sw_rawawb_wp_blk_wei_w, right->meas.rawawb.sw_rawawb_wp_blk_wei_w, mode, wnd_num);
     SplitAecWeight(ori->meas.rawawb.sw_rawawb_wp_blk_wei_w, left->meas.rawawb.sw_rawawb_wp_blk_wei_w, right->meas.rawawb.sw_rawawb_wp_blk_wei_w, mode, wnd_num);
-    
+
     left->meas.rawawb.sw_rawawb_h_offs = left_win.h_offs;
     left->meas.rawawb.sw_rawawb_h_size = left_win.h_size;
     left->meas.rawawb.sw_rawawb_v_offs = left_win.v_offs;
@@ -845,140 +843,218 @@ XCamReturn IspParamsSplitter::SplitAwbParams<struct isp3x_isp_params_cfg>(
     right->meas.rawawb.sw_rawawb_v_offs = right_win.v_offs;
     right->meas.rawawb.sw_rawawb_v_size = right_win.v_size;
 
-#ifdef DEBUG
-printf("Awb measure window  left=%d-%d-%d-%d, right=%d-%d-%d-%d\n", left_win.h_offs, left_win.v_offs,
+LOGD_AWB("Awb measure window  left=%d-%d-%d-%d, right=%d-%d-%d-%d\n", left_win.h_offs, left_win.v_offs,
        left_win.h_size, left_win.v_size, right_win.h_offs, right_win.v_offs,
        right_win.h_size, right_win.v_size);
 
-printf("Awb block weight: \n LEFT = { \n");
+LOGV_AWB("Awb block weight: \n LEFT = { \n");
 
 for (int i = 0; i < wnd_num; i++) {
        for (int j = 0; j < wnd_num; j++)
-           printf("%d ", left->meas.rawawb.sw_rawawb_wp_blk_wei_w[i * wnd_num + j]);
-       printf("\n");
+           LOGV_AWB("%d ", left->meas.rawawb.sw_rawawb_wp_blk_wei_w[i * wnd_num + j]);
+       LOGV_AWB("\n");
    }
-   printf("} \n RIGHT = { \n");
+   LOGV_AWB("} \n RIGHT = { \n");
 
    for (int i = 0; i < wnd_num; i++) {
        for (int j = 0; j < wnd_num; j++)
-           printf("%d ", right->meas.rawawb.sw_rawawb_wp_blk_wei_w[i * wnd_num + j]);
-       printf("\n");
+           LOGV_AWB("%d ", right->meas.rawawb.sw_rawawb_wp_blk_wei_w[i * wnd_num + j]);
+       LOGV_AWB("\n");
    }
-   printf("}  \n");
-
-#endif
+   LOGV_AWB("}  \n");
 
     // Awb Multi Window
     isp2x_window sub_ori_win;
     isp2x_window sub_left_win;
     isp2x_window sub_right_win;
+    u16 sub_win_st = 0;
+    u16 sub_win_ed = 0;
+    u16 main_win_st = 0;
+    u16 main_win_ed = 0;
+
     if (ori->meas.rawawb.sw_rawawb_multiwindow_en) {
         // Awb Multi window 0
         sub_ori_win.h_offs = ori->meas.rawawb.sw_rawawb_multiwindow0_h_offs;
-        sub_ori_win.h_size = ori->meas.rawawb.sw_rawawb_multiwindow0_h_size;
+        sub_ori_win.h_size = ori->meas.rawawb.sw_rawawb_multiwindow0_h_size-ori->meas.rawawb.sw_rawawb_multiwindow0_h_offs;
         sub_ori_win.v_offs = ori->meas.rawawb.sw_rawawb_multiwindow0_v_offs;
-        sub_ori_win.v_size = ori->meas.rawawb.sw_rawawb_multiwindow0_v_size;
+        sub_ori_win.v_size = ori->meas.rawawb.sw_rawawb_multiwindow0_v_size-ori->meas.rawawb.sw_rawawb_multiwindow0_v_offs;
+
+        sub_win_st = left_isp_rect_.x + sub_ori_win.h_offs;
+        sub_win_ed = sub_win_st + sub_ori_win.h_size;
+        main_win_st = left_isp_rect_.x + ori_win.h_offs;
+        main_win_ed = main_win_st + ori_win.h_size;
+
+        if ((sub_win_ed <= main_win_st) || (sub_win_st >= main_win_ed)) {
+            LOGW_AWB("multiwindow_0 [hoffs(%d) hsize(%d)] reset to [0 0] \n", sub_ori_win.h_offs, sub_ori_win.h_size);
+            sub_ori_win.h_offs = 0;
+            sub_ori_win.h_size = 0;
+        } else if ((sub_win_st < main_win_st) && (sub_win_ed <= main_win_ed)) {
+            LOGW_AWB("multiwindow_0 hoffs(%d) reset as same as main window offs(%d) \n", sub_ori_win.h_offs, ori_win.h_offs);
+            sub_ori_win.h_offs = left_isp_rect_.x + ori_win.h_offs;
+        } else if ((sub_win_st < main_win_st) && (sub_win_ed > main_win_ed)) {
+            LOGW_AWB("multiwindow_0 [hoffs(%d) hsize(%d)] reset as same as main window [%d %d] \n", sub_ori_win.h_offs, sub_ori_win.h_size, ori_win.h_offs, ori_win.h_size);
+            sub_ori_win.h_offs = ori_win.h_offs;
+            sub_ori_win.h_size = ori_win.h_size;
+        } else if ((sub_win_st >= main_win_st) && (sub_win_ed > main_win_ed)) {
+            LOGW_AWB("multiwindow_0 hsize(%d) reset to %d (main_win_ed %d - sub_win_st %d) \n", sub_ori_win.h_size, main_win_ed-sub_win_st, main_win_ed, sub_win_st);
+            sub_ori_win.h_size = main_win_ed-sub_win_st;
+        }
 
         memcpy(&sub_left_win, &sub_ori_win, sizeof(sub_ori_win));
         memcpy(&sub_right_win, &sub_ori_win, sizeof(sub_ori_win));
 
-        SplitAwbMultiWin(&sub_ori_win, &sub_left_win, &sub_right_win, left_isp_rect_, right_isp_rect_, &mode);
+        SplitAwbMultiWin(&sub_ori_win, &sub_left_win, &sub_right_win, &left_win, &right_win, left_isp_rect_, right_isp_rect_, &mode);
         left->meas.rawawb.sw_rawawb_multiwindow0_h_offs = sub_left_win.h_offs;
-        left->meas.rawawb.sw_rawawb_multiwindow0_h_size = sub_left_win.h_size;
+        left->meas.rawawb.sw_rawawb_multiwindow0_h_size = sub_left_win.h_size + sub_left_win.h_offs;
         left->meas.rawawb.sw_rawawb_multiwindow0_v_offs = sub_left_win.v_offs;
-        left->meas.rawawb.sw_rawawb_multiwindow0_v_size = sub_left_win.v_size;
+        left->meas.rawawb.sw_rawawb_multiwindow0_v_size = sub_left_win.v_size + sub_left_win.v_offs;
 
         right->meas.rawawb.sw_rawawb_multiwindow0_h_offs = sub_right_win.h_offs;
-        right->meas.rawawb.sw_rawawb_multiwindow0_h_size = sub_right_win.h_size;
+        right->meas.rawawb.sw_rawawb_multiwindow0_h_size = sub_right_win.h_size + sub_right_win.h_offs;
         right->meas.rawawb.sw_rawawb_multiwindow0_v_offs = sub_right_win.v_offs;
-        right->meas.rawawb.sw_rawawb_multiwindow0_v_size = sub_right_win.v_size;
+        right->meas.rawawb.sw_rawawb_multiwindow0_v_size = sub_right_win.v_size + sub_right_win.v_offs;
 
-#ifdef DEBUG
-    printf("Awb Multi window 0 left=%d-%d-%d-%d, right=%d-%d-%d-%d\n", sub_left_win.h_offs, sub_left_win.v_offs,
+    LOGD_AWB("Awb Multi window 0 left=%d-%d-%d-%d, right=%d-%d-%d-%d\n", sub_left_win.h_offs, sub_left_win.v_offs,
            sub_left_win.h_size, sub_left_win.v_size, sub_right_win.h_offs, sub_right_win.v_offs,
            sub_right_win.h_size, sub_right_win.v_size);
-
-#endif
 
        // Awb Multi window 1
         sub_ori_win.h_offs = ori->meas.rawawb.sw_rawawb_multiwindow1_h_offs;
-        sub_ori_win.h_size = ori->meas.rawawb.sw_rawawb_multiwindow1_h_size;
+        sub_ori_win.h_size = ori->meas.rawawb.sw_rawawb_multiwindow1_h_size - ori->meas.rawawb.sw_rawawb_multiwindow1_h_offs;
         sub_ori_win.v_offs = ori->meas.rawawb.sw_rawawb_multiwindow1_v_offs;
-        sub_ori_win.v_size = ori->meas.rawawb.sw_rawawb_multiwindow1_v_size;
+        sub_ori_win.v_size = ori->meas.rawawb.sw_rawawb_multiwindow1_v_size - ori->meas.rawawb.sw_rawawb_multiwindow1_v_offs;
+
+        sub_win_st = left_isp_rect_.x + sub_ori_win.h_offs;
+        sub_win_ed = sub_win_st + sub_ori_win.h_size;
+        main_win_st = left_isp_rect_.x + ori_win.h_offs;
+        main_win_ed = main_win_st + ori_win.h_size;
+
+        if ((sub_win_ed <= main_win_st) || (sub_win_st >= main_win_ed)) {
+            LOGW_AWB("multiwindow_1 [hoffs(%d) hsize(%d)] reset to [0 0] \n", sub_ori_win.h_offs, sub_ori_win.h_size);
+            sub_ori_win.h_offs = 0;
+            sub_ori_win.h_size = 0;
+        } else if ((sub_win_st < main_win_st) && (sub_win_ed <= main_win_ed)) {
+            LOGW_AWB("multiwindow_1 hoffs(%d) reset as same as main window offs(%d) \n", sub_ori_win.h_offs, ori_win.h_offs);
+            sub_ori_win.h_offs = left_isp_rect_.x + ori_win.h_offs;
+        } else if ((sub_win_st < main_win_st) && (sub_win_ed > main_win_ed)) {
+            LOGW_AWB("multiwindow_1 [hoffs(%d) hsize(%d)] reset as same as main window [%d %d] \n", sub_ori_win.h_offs, sub_ori_win.h_size, ori_win.h_offs, ori_win.h_size);
+            sub_ori_win.h_offs = ori_win.h_offs;
+            sub_ori_win.h_size = ori_win.h_size;
+        } else if ((sub_win_st >= main_win_st) && (sub_win_ed > main_win_ed)) {
+            LOGW_AWB("multiwindow_1 hsize(%d) reset to %d (main_win_ed %d - sub_win_st %d) \n", sub_ori_win.h_size, main_win_ed-sub_win_st, main_win_ed, sub_win_st);
+            sub_ori_win.h_size = main_win_ed-sub_win_st;
+        }
+
 
         memcpy(&sub_left_win, &sub_ori_win, sizeof(sub_ori_win));
         memcpy(&sub_right_win, &sub_ori_win, sizeof(sub_ori_win));
 
-        SplitAwbMultiWin(&sub_ori_win, &sub_left_win, &sub_right_win, left_isp_rect_, right_isp_rect_, &mode);
+        SplitAwbMultiWin(&sub_ori_win, &sub_left_win, &sub_right_win, &left_win, &right_win, left_isp_rect_, right_isp_rect_, &mode);
         left->meas.rawawb.sw_rawawb_multiwindow1_h_offs = sub_left_win.h_offs;
-        left->meas.rawawb.sw_rawawb_multiwindow1_h_size = sub_left_win.h_size;
+        left->meas.rawawb.sw_rawawb_multiwindow1_h_size = sub_left_win.h_size + sub_left_win.h_offs;
         left->meas.rawawb.sw_rawawb_multiwindow1_v_offs = sub_left_win.v_offs;
-        left->meas.rawawb.sw_rawawb_multiwindow1_v_size = sub_left_win.v_size;
+        left->meas.rawawb.sw_rawawb_multiwindow1_v_size = sub_left_win.v_size + sub_left_win.v_offs;
 
         right->meas.rawawb.sw_rawawb_multiwindow1_h_offs = sub_right_win.h_offs;
-        right->meas.rawawb.sw_rawawb_multiwindow1_h_size = sub_right_win.h_size;
+        right->meas.rawawb.sw_rawawb_multiwindow1_h_size = sub_right_win.h_size + sub_right_win.h_offs;
         right->meas.rawawb.sw_rawawb_multiwindow1_v_offs = sub_right_win.v_offs;
-        right->meas.rawawb.sw_rawawb_multiwindow1_v_size = sub_right_win.v_size;
+        right->meas.rawawb.sw_rawawb_multiwindow1_v_size = sub_right_win.v_size + sub_right_win.v_offs;
 
-#ifdef DEBUG
-        printf("Awb Multi window 1 left=%d-%d-%d-%d, right=%d-%d-%d-%d\n", sub_left_win.h_offs, sub_left_win.v_offs,
+        LOGD_AWB("Awb Multi window 1 left=%d-%d-%d-%d, right=%d-%d-%d-%d\n", sub_left_win.h_offs, sub_left_win.v_offs,
            sub_left_win.h_size, sub_left_win.v_size, sub_right_win.h_offs, sub_right_win.v_offs,
            sub_right_win.h_size, sub_right_win.v_size);
-
-#endif
 
         // Awb Multi window 2
         sub_ori_win.h_offs = ori->meas.rawawb.sw_rawawb_multiwindow2_h_offs;
-        sub_ori_win.h_size = ori->meas.rawawb.sw_rawawb_multiwindow2_h_size;
+        sub_ori_win.h_size = ori->meas.rawawb.sw_rawawb_multiwindow2_h_size - ori->meas.rawawb.sw_rawawb_multiwindow2_h_offs;
         sub_ori_win.v_offs = ori->meas.rawawb.sw_rawawb_multiwindow2_v_offs;
-        sub_ori_win.v_size = ori->meas.rawawb.sw_rawawb_multiwindow2_v_size;
+        sub_ori_win.v_size = ori->meas.rawawb.sw_rawawb_multiwindow2_v_size - ori->meas.rawawb.sw_rawawb_multiwindow2_v_offs;
+
+        sub_win_st = left_isp_rect_.x + sub_ori_win.h_offs;
+        sub_win_ed = sub_win_st + sub_ori_win.h_size;
+        main_win_st = left_isp_rect_.x + ori_win.h_offs;
+        main_win_ed = main_win_st + ori_win.h_size;
+
+        if ((sub_win_ed <= main_win_st) || (sub_win_st >= main_win_ed)) {
+            LOGW_AWB("multiwindow_2 [hoffs(%d) hsize(%d)] reset to [0 0] \n", sub_ori_win.h_offs, sub_ori_win.h_size);
+            sub_ori_win.h_offs = 0;
+            sub_ori_win.h_size = 0;
+        } else if ((sub_win_st < main_win_st) && (sub_win_ed <= main_win_ed)) {
+            LOGW_AWB("multiwindow_2 hoffs(%d) reset as same as main window offs(%d) \n", sub_ori_win.h_offs, ori_win.h_offs);
+            sub_ori_win.h_offs = left_isp_rect_.x + ori_win.h_offs;
+        } else if ((sub_win_st < main_win_st) && (sub_win_ed > main_win_ed)) {
+            LOGW_AWB("multiwindow_2 [hoffs(%d) hsize(%d)] reset as same as main window [%d %d] \n", sub_ori_win.h_offs, sub_ori_win.h_size, ori_win.h_offs, ori_win.h_size);
+            sub_ori_win.h_offs = ori_win.h_offs;
+            sub_ori_win.h_size = ori_win.h_size;
+        } else if ((sub_win_st >= main_win_st) && (sub_win_ed > main_win_ed)) {
+            LOGW_AWB("multiwindow_2 hsize(%d) reset to %d (main_win_ed %d - sub_win_st %d) \n", sub_ori_win.h_size, main_win_ed-sub_win_st, main_win_ed, sub_win_st);
+            sub_ori_win.h_size = main_win_ed-sub_win_st;
+        }
+
 
         memcpy(&sub_left_win, &sub_ori_win, sizeof(sub_ori_win));
         memcpy(&sub_right_win, &sub_ori_win, sizeof(sub_ori_win));
 
-        SplitAwbMultiWin(&sub_ori_win, &sub_left_win, &sub_right_win, left_isp_rect_, right_isp_rect_, &mode);
+        SplitAwbMultiWin(&sub_ori_win, &sub_left_win, &sub_right_win, &left_win, &right_win, left_isp_rect_, right_isp_rect_, &mode);
         left->meas.rawawb.sw_rawawb_multiwindow2_h_offs = sub_left_win.h_offs;
-        left->meas.rawawb.sw_rawawb_multiwindow2_h_size = sub_left_win.h_size;
+        left->meas.rawawb.sw_rawawb_multiwindow2_h_size = sub_left_win.h_size + sub_left_win.h_offs;
         left->meas.rawawb.sw_rawawb_multiwindow2_v_offs = sub_left_win.v_offs;
-        left->meas.rawawb.sw_rawawb_multiwindow2_v_size = sub_left_win.v_size;
+        left->meas.rawawb.sw_rawawb_multiwindow2_v_size = sub_left_win.v_size + sub_left_win.v_offs;
 
         right->meas.rawawb.sw_rawawb_multiwindow2_h_offs = sub_right_win.h_offs;
-        right->meas.rawawb.sw_rawawb_multiwindow2_h_size = sub_right_win.h_size;
+        right->meas.rawawb.sw_rawawb_multiwindow2_h_size = sub_right_win.h_size + sub_right_win.h_offs;
         right->meas.rawawb.sw_rawawb_multiwindow2_v_offs = sub_right_win.v_offs;
-        right->meas.rawawb.sw_rawawb_multiwindow2_v_size = sub_right_win.v_size;
+        right->meas.rawawb.sw_rawawb_multiwindow2_v_size = sub_right_win.v_size + sub_right_win.v_offs;
 
-#ifdef DEBUG
-        printf("Awb Multi window 2 left=%d-%d-%d-%d, right=%d-%d-%d-%d\n", sub_left_win.h_offs, sub_left_win.v_offs,
+        LOGD_AWB("Awb Multi window 2 left=%d-%d-%d-%d, right=%d-%d-%d-%d\n", sub_left_win.h_offs, sub_left_win.v_offs,
            sub_left_win.h_size, sub_left_win.v_size, sub_right_win.h_offs, sub_right_win.v_offs,
            sub_right_win.h_size, sub_right_win.v_size);
-
-#endif
 
         // Awb Multi window 3
         sub_ori_win.h_offs = ori->meas.rawawb.sw_rawawb_multiwindow3_h_offs;
-        sub_ori_win.h_size = ori->meas.rawawb.sw_rawawb_multiwindow3_h_size;
+        sub_ori_win.h_size = ori->meas.rawawb.sw_rawawb_multiwindow3_h_size - ori->meas.rawawb.sw_rawawb_multiwindow3_h_offs;
         sub_ori_win.v_offs = ori->meas.rawawb.sw_rawawb_multiwindow3_v_offs;
-        sub_ori_win.v_size = ori->meas.rawawb.sw_rawawb_multiwindow3_v_size;
+        sub_ori_win.v_size = ori->meas.rawawb.sw_rawawb_multiwindow3_v_size -ori->meas.rawawb.sw_rawawb_multiwindow3_v_offs ;
+
+        sub_win_st = left_isp_rect_.x + sub_ori_win.h_offs;
+        sub_win_ed = sub_win_st + sub_ori_win.h_size;
+        main_win_st = left_isp_rect_.x + ori_win.h_offs;
+        main_win_ed = main_win_st + ori_win.h_size;
+
+        if ((sub_win_ed <= main_win_st) || (sub_win_st >= main_win_ed)) {
+            LOGW_AWB("multiwindow_3 [hoffs(%d) hsize(%d)] reset to [0 0] \n", sub_ori_win.h_offs, sub_ori_win.h_size);
+            sub_ori_win.h_offs = 0;
+            sub_ori_win.h_size = 0;
+        } else if ((sub_win_st < main_win_st) && (sub_win_ed <= main_win_ed)) {
+            LOGW_AWB("multiwindow_3 hoffs(%d) reset as same as main window offs(%d) \n", sub_ori_win.h_offs, ori_win.h_offs);
+            sub_ori_win.h_offs = left_isp_rect_.x + ori_win.h_offs;
+        } else if ((sub_win_st < main_win_st) && (sub_win_ed > main_win_ed)) {
+            LOGW_AWB("multiwindow_3 [hoffs(%d) hsize(%d)] reset as same as main window [%d %d] \n", sub_ori_win.h_offs, sub_ori_win.h_size, ori_win.h_offs, ori_win.h_size);
+            sub_ori_win.h_offs = ori_win.h_offs;
+            sub_ori_win.h_size = ori_win.h_size;
+        } else if ((sub_win_st >= main_win_st) && (sub_win_ed > main_win_ed)) {
+            LOGW_AWB("multiwindow_3 hsize(%d) reset to %d (main_win_ed %d - sub_win_st %d) \n", sub_ori_win.h_size, main_win_ed-sub_win_st, main_win_ed, sub_win_st);
+            sub_ori_win.h_size = main_win_ed-sub_win_st;
+        }
+
 
         memcpy(&sub_left_win, &sub_ori_win, sizeof(sub_ori_win));
         memcpy(&sub_right_win, &sub_ori_win, sizeof(sub_ori_win));
 
-        SplitAwbMultiWin(&sub_ori_win, &sub_left_win, &sub_right_win, left_isp_rect_, right_isp_rect_, &mode);
+        SplitAwbMultiWin(&sub_ori_win, &sub_left_win, &sub_right_win, &left_win, &right_win, left_isp_rect_, right_isp_rect_, &mode);
         left->meas.rawawb.sw_rawawb_multiwindow3_h_offs = sub_left_win.h_offs;
-        left->meas.rawawb.sw_rawawb_multiwindow3_h_size = sub_left_win.h_size;
+        left->meas.rawawb.sw_rawawb_multiwindow3_h_size = sub_left_win.h_size + sub_left_win.h_offs;
         left->meas.rawawb.sw_rawawb_multiwindow3_v_offs = sub_left_win.v_offs;
-        left->meas.rawawb.sw_rawawb_multiwindow3_v_size = sub_left_win.v_size;
+        left->meas.rawawb.sw_rawawb_multiwindow3_v_size = sub_left_win.v_size + sub_left_win.v_offs ;
 
         right->meas.rawawb.sw_rawawb_multiwindow3_h_offs = sub_right_win.h_offs;
-        right->meas.rawawb.sw_rawawb_multiwindow3_h_size = sub_right_win.h_size;
+        right->meas.rawawb.sw_rawawb_multiwindow3_h_size = sub_right_win.h_size + sub_right_win.h_offs;
         right->meas.rawawb.sw_rawawb_multiwindow3_v_offs = sub_right_win.v_offs;
-        right->meas.rawawb.sw_rawawb_multiwindow3_v_size = sub_right_win.v_size;
+        right->meas.rawawb.sw_rawawb_multiwindow3_v_size = sub_right_win.v_size + sub_right_win.v_offs;
 
-#ifdef DEBUG
-        printf("Awb Multi window 3 left=%d-%d-%d-%d, right=%d-%d-%d-%d\n", sub_left_win.h_offs, sub_left_win.v_offs,
+        LOGD_AWB("Awb Multi window 3 left=%d-%d-%d-%d, right=%d-%d-%d-%d\n", sub_left_win.h_offs, sub_left_win.v_offs,
            sub_left_win.h_size, sub_left_win.v_size, sub_right_win.h_offs, sub_right_win.v_offs,
            sub_right_win.h_size, sub_right_win.v_size);
-#endif
     }
 
     return ret;
@@ -1137,6 +1213,185 @@ XCamReturn IspParamsSplitter::SplitAfParams<struct isp3x_isp_params_cfg>(
     return XCAM_RETURN_NO_ERROR;
 }
 
+int AlscMatrixScale(unsigned short in_array[], unsigned short dst_array[],
+                    int in_rows, int in_cols, int dst_rows, int dst_cols) {
+  float sx = (float)dst_rows / in_rows;
+  float sy = (float)dst_cols / in_cols;
+
+  for (int i = 0; i < dst_rows; i++) {
+    double index_i = (i + 0.5) / sx - 0.5;
+    if (index_i < 0) index_i = 0;
+    if (index_i >= in_rows - 1) index_i = in_rows - 2;
+    int apex1 = floor(index_i);
+    int apex2 = ceil(index_i);
+    double u = index_i - apex1;
+    for (int j = 0; j < dst_cols; j++) {
+      double index_j = (j + 0.5) / sy - 0.5;
+      if (index_j < 0) index_j = 0;
+      if (index_j >= in_cols - 1) index_j = in_cols - 2;
+      int j1 = floor(index_j);
+      int j2 = ceil(index_j);
+      double v = index_j - j1;
+      dst_array[i * dst_cols + j] =
+          (1 - u) * (1 - v) * in_array[apex1 * in_cols + j1] +
+          (1 - u) * v * in_array[apex1 * in_cols + j2] +
+          u * (1 - v) * in_array[apex2 * in_cols + j1] +
+          u * v * in_array[apex2 * in_cols + j2];
+    }
+  }
+  return 0;
+}
+
+int AlscMatrixSplit(const unsigned short* ori_matrix, int cols, int rows, unsigned short left[],
+                    unsigned short right[]) {
+    int out_cols                = cols / 2 + cols % 2;
+    int out_rows                = rows;
+    int left_start_addr         = 0;
+    int right_start_addr        = cols - out_cols;
+    unsigned short* left_index  = left;
+    unsigned short* right_index = right;
+
+    while (out_rows--) {
+        memcpy(left_index, ori_matrix + left_start_addr, out_cols * sizeof(unsigned short));
+        memcpy(right_index, ori_matrix + right_start_addr, out_cols * sizeof(unsigned short));
+        left_index += out_cols;
+        right_index += out_cols;
+        left_start_addr += cols;
+        right_start_addr += cols;
+    }
+
+    return 0;
+}
+
+int SplitAlscXtable(const unsigned short* in_array, int in_size, int ori_imgw,
+                          unsigned short* dst_left, unsigned short* dst_right,
+                          int left_w, int right_w) {
+  int in_index = 0;
+  int left_index = 0;
+  int right_index = 0;
+  for (in_index = 0; in_index < in_size; in_index++) {
+    if (in_index < (in_size / 2)) {
+      dst_left[left_index++] =
+          ceil(in_array[in_index] * 1.0 / ori_imgw * left_w);
+      dst_left[left_index++] =
+          floor(in_array[in_index] * 1.0 / ori_imgw * left_w);
+    } else {
+      dst_right[right_index++] =
+          ceil(in_array[in_index] * 1.0 / ori_imgw * right_w);
+      dst_right[right_index++] =
+          floor(in_array[in_index] * 1.0 / ori_imgw * right_w);
+    }
+  }
+
+  return 0;
+}
+
+int lscGradUpdate(unsigned short xgrad_tbl[],
+                  unsigned short ygrad_tbl[],
+                  unsigned short x_sect_tbl[],
+                  unsigned short y_sect_tbl[],
+                  int x_sect_size,
+                  int y_sect_size) {
+    uint32_t x_size = x_sect_size;
+    uint32_t y_size = y_sect_size;
+
+    for (uint32_t i = 0; i < x_size; i++) {
+        if (0 < x_sect_tbl[i]) {
+            xgrad_tbl[i] = (uint16_t)((double)(1UL << 15) / x_sect_tbl[i] + 0.5);
+        } else {
+            return XCAM_RETURN_ERROR_PARAM;
+        }
+    }
+    for (uint32_t i = 0; i < y_size; i++) {
+        if (0 < y_sect_tbl[i]) {
+            ygrad_tbl[i] = (uint16_t)((double)(1UL << 15) / y_sect_tbl[i] + 0.5);
+        } else {
+            return XCAM_RETURN_ERROR_PARAM;
+        }
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+template <>
+XCamReturn IspParamsSplitter::SplitAlscParams<struct isp3x_isp_params_cfg>(
+    struct isp3x_isp_params_cfg* ori, struct isp3x_isp_params_cfg* left,
+    struct isp3x_isp_params_cfg* right) {
+  struct isp3x_lsc_cfg* lsc_cfg_ori = &ori->others.lsc_cfg;
+  struct isp3x_lsc_cfg* lsc_cfg_lef = &left->others.lsc_cfg;
+  struct isp3x_lsc_cfg* lsc_cfg_rht = &right->others.lsc_cfg;
+
+  unsigned short matrixScaled[(ISP3X_LSC_SIZE_TBL_SIZE + 1) *
+                              (ISP3X_LSC_SIZE_TBL_SIZE + 1) * 2] = {0};
+
+  memcpy(lsc_cfg_lef->y_size_tbl, lsc_cfg_ori->y_size_tbl, ISP3X_LSC_SIZE_TBL_SIZE);
+  memcpy(lsc_cfg_lef->x_grad_tbl, lsc_cfg_ori->x_grad_tbl, ISP3X_LSC_GRAD_TBL_SIZE);
+  memcpy(lsc_cfg_lef->y_grad_tbl, lsc_cfg_ori->y_grad_tbl, ISP3X_LSC_GRAD_TBL_SIZE);
+
+  memcpy(lsc_cfg_rht->y_size_tbl, lsc_cfg_ori->y_size_tbl, ISP3X_LSC_SIZE_TBL_SIZE);
+  memcpy(lsc_cfg_rht->x_grad_tbl, lsc_cfg_ori->x_grad_tbl, ISP3X_LSC_GRAD_TBL_SIZE);
+  memcpy(lsc_cfg_rht->y_grad_tbl, lsc_cfg_ori->y_grad_tbl, ISP3X_LSC_GRAD_TBL_SIZE);
+
+  SplitAlscXtable(lsc_cfg_ori->x_size_tbl, ISP3X_LSC_SIZE_TBL_SIZE,
+                  pic_rect_.w,
+                  lsc_cfg_lef->x_size_tbl,
+                  lsc_cfg_rht->x_size_tbl,
+                  left_isp_rect_.w,
+                  right_isp_rect_.w);
+
+  // 17*17 ---> 34*17 ---> [17*17][17*17]
+  AlscMatrixScale(lsc_cfg_ori->r_data_tbl, matrixScaled,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  (ISP3X_LSC_SIZE_TBL_SIZE + 1) * 2);
+  AlscMatrixSplit(matrixScaled,
+                  (ISP3X_LSC_SIZE_TBL_SIZE + 1) * 2,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  lsc_cfg_lef->r_data_tbl,
+                  lsc_cfg_rht->r_data_tbl);
+  AlscMatrixScale(lsc_cfg_ori->gr_data_tbl, matrixScaled,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  (ISP3X_LSC_SIZE_TBL_SIZE + 1) * 2);
+  AlscMatrixSplit(matrixScaled,
+                  (ISP3X_LSC_SIZE_TBL_SIZE + 1) * 2,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  lsc_cfg_lef->gr_data_tbl,
+                  lsc_cfg_rht->gr_data_tbl);
+  AlscMatrixScale(lsc_cfg_ori->gb_data_tbl, matrixScaled,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  (ISP3X_LSC_SIZE_TBL_SIZE + 1) * 2);
+  AlscMatrixSplit(matrixScaled,
+                  (ISP3X_LSC_SIZE_TBL_SIZE + 1) * 2,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  lsc_cfg_lef->gb_data_tbl,
+                  lsc_cfg_rht->gb_data_tbl);
+  AlscMatrixScale(lsc_cfg_ori->b_data_tbl, matrixScaled,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  (ISP3X_LSC_SIZE_TBL_SIZE + 1) * 2);
+  AlscMatrixSplit(matrixScaled,
+                  (ISP3X_LSC_SIZE_TBL_SIZE + 1) * 2,
+                  ISP3X_LSC_SIZE_TBL_SIZE + 1,
+                  lsc_cfg_lef->b_data_tbl,
+                  lsc_cfg_rht->b_data_tbl);
+
+  lscGradUpdate(lsc_cfg_lef->x_grad_tbl, lsc_cfg_lef->y_grad_tbl,
+                lsc_cfg_lef->x_size_tbl, lsc_cfg_lef->y_size_tbl,
+                ISP3X_LSC_GRAD_TBL_SIZE, ISP3X_LSC_GRAD_TBL_SIZE);
+
+  lscGradUpdate(lsc_cfg_rht->x_grad_tbl, lsc_cfg_rht->y_grad_tbl,
+                lsc_cfg_rht->x_size_tbl, lsc_cfg_rht->y_size_tbl,
+                ISP3X_LSC_GRAD_TBL_SIZE, ISP3X_LSC_GRAD_TBL_SIZE);
+
+  return XCAM_RETURN_NO_ERROR;
+}
+
 IspParamsSplitter& IspParamsSplitter::SetPicInfo(IspParamsSplitter::Rectangle&& pic_rect) {
     pic_rect_ = std::move(pic_rect);
     return *this;
@@ -1198,6 +1453,7 @@ XCamReturn IspParamsSplitter::SplitIspParams<struct isp3x_isp_params_cfg>(
     // Should return failure ?
     ret = SplitAwbParams(orig_isp_params, left_isp_params, right_isp_params);
     ret = SplitAfParams(orig_isp_params, left_isp_params, right_isp_params);
+    ret = SplitAlscParams(orig_isp_params, left_isp_params, right_isp_params);
 
     LOGD_CAMHW("Split ISP Params: left %p right %p size %d",
                left_isp_params,

@@ -180,6 +180,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         stExpInfo.hdr_mode = 2;
     }
     stExpInfo.snr_mode = 0;
+    stExpInfo.gray_mode = pAbayernrCtx->isGrayMode;
 
 #if 1// TODO Merge:
     XCamVideoBuffer* xCamAePreRes = pAbayernrProcParams->rk_com.u.proc.res_comb->ae_pre_res;
@@ -200,14 +201,34 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         stExpInfo.snr_mode = curExp->CISFeature.SNR;
         if(pAbayernrProcParams->hdr_mode == RK_AIQ_WORKING_MODE_NORMAL) {
             stExpInfo.hdr_mode = 0;
-            stExpInfo.arAGain[0] = curExp->LinearExp.exp_real_params.analog_gain;
-            stExpInfo.arDGain[0] = curExp->LinearExp.exp_real_params.digital_gain;
+            if(curExp->LinearExp.exp_real_params.analog_gain < 1.0) {
+                stExpInfo.arAGain[0] = 1.0;
+                LOGW_ANR("leanr mode again is wrong, use 1.0 instead\n");
+            } else {
+                stExpInfo.arAGain[0] = curExp->LinearExp.exp_real_params.analog_gain;
+            }
+            if(curExp->LinearExp.exp_real_params.digital_gain < 1.0) {
+                stExpInfo.arDGain[0] = 1.0;
+                LOGW_ANR("leanr mode dgain is wrong, use 1.0 instead\n");
+            } else {
+                stExpInfo.arDGain[0] = curExp->LinearExp.exp_real_params.digital_gain;
+            }
             stExpInfo.arTime[0] = curExp->LinearExp.exp_real_params.integration_time;
             stExpInfo.arIso[0] = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * 50;
         } else {
             for(int i = 0; i < 3; i++) {
-                stExpInfo.arAGain[i] = curExp->HdrExp[i].exp_real_params.analog_gain;
-                stExpInfo.arDGain[i] = curExp->HdrExp[i].exp_real_params.digital_gain;
+                if(curExp->HdrExp[i].exp_real_params.analog_gain < 1.0) {
+                    stExpInfo.arAGain[i] = 1.0;
+                    LOGW_ANR("hdr mode again is wrong, use 1.0 instead\n");
+                } else {
+                    stExpInfo.arAGain[i] = curExp->HdrExp[i].exp_real_params.analog_gain;
+                }
+                if(curExp->HdrExp[i].exp_real_params.digital_gain < 1.0) {
+                    stExpInfo.arDGain[i] = 1.0;
+                } else {
+                    LOGW_ANR("hdr mode dgain is wrong, use 1.0 instead\n");
+                    stExpInfo.arDGain[i] = curExp->HdrExp[i].exp_real_params.digital_gain;
+                }
                 stExpInfo.arTime[i] = curExp->HdrExp[i].exp_real_params.integration_time;
                 stExpInfo.arIso[i] = stExpInfo.arAGain[i] * stExpInfo.arDGain[i] * 50;
 

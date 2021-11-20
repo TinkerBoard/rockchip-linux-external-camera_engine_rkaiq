@@ -511,7 +511,9 @@ CamHwIsp3x::setIspConfig()
     // now use Isp21Params::merge_isp_results instead
     if (Isp3xParams::merge_isp_results(ready_results, update_params) != XCAM_RETURN_NO_ERROR)
         LOGE_CAMHW_SUBM(ISP20HW_SUBM, "ISP parameter translation error\n");
-
+    if(mIsMultiIspMode == false){
+        Isp3xParams::fixedAwbOveflowToIsp3xParams(update_params,mIsMultiIspMode);
+    }
     uint64_t module_en_update_partial = 0;
     uint64_t module_cfg_update_partial = 0;
     gen_full_isp_params(update_params, &_full_active_isp3x_params,
@@ -529,7 +531,6 @@ CamHwIsp3x::setIspConfig()
     module_en_update_partial = _full_active_isp3x_params.module_en_update;
     module_cfg_update_partial = _full_active_isp3x_params.module_cfg_update;
 #endif
-
 
 
     if (v4l2buf.ptr()) {
@@ -579,9 +580,10 @@ CamHwIsp3x::setIspConfig()
             }
         }
 #endif
+
         if (isMultiIsp) {
             mParamsSplitter->SplitIspParams(&_full_active_isp3x_params, isp_params);
-
+            Isp3xParams::fixedAwbOveflowToIsp3xParams((void*)isp_params,mIsMultiIspMode);
             memcpy(&((isp_params + 1)->others.cac_cfg), &update_params[1].others.cac_cfg,
                    sizeof(struct isp3x_cac_cfg));
         }

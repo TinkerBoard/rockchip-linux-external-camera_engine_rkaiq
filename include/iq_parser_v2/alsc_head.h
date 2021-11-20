@@ -71,9 +71,25 @@ typedef struct CalibDbV2_AlscCof_ill_s {
 typedef struct CalibDbV2_Lsc_Resolution_s {
     // M4_STRING_DESC("name", M4_SIZE(1,1), M4_RANGE(0, 32), "default", M4_DYNAMIC(0))
     char        name[LSC_NAME];
+#if defined(ISP_HW_V20)
     // M4_ARRAY_DESC("lsc_sect_size_x", "u16", M4_SIZE(1,8), M4_RANGE(0,10000), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+#elif defined(ISP_HW_V21)
+    // M4_ARRAY_DESC("lsc_sect_size_x", "u16", M4_SIZE(1,8), M4_RANGE(0,10000), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+#elif defined(ISP_HW_V30)
+    // M4_ARRAY_DESC("lsc_sect_size_x", "u16", M4_SIZE(1,16), M4_RANGE(0,10000), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+#else
+#error "WRONG ISP_HW_VERSION, ONLY SUPPORT V20 AND V21 AND V30 NOW !"
+#endif
     uint16_t    lsc_sect_size_x[LSC_SIZE_TBL_SIZE];
+#if defined(ISP_HW_V20)
     // M4_ARRAY_DESC("lsc_sect_size_y", "u16", M4_SIZE(1,8), M4_RANGE(0,10000), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+#elif defined(ISP_HW_V21)
+    // M4_ARRAY_DESC("lsc_sect_size_y", "u16", M4_SIZE(1,8), M4_RANGE(0,10000), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+#elif defined(ISP_HW_V30)
+    // M4_ARRAY_DESC("lsc_sect_size_y", "u16", M4_SIZE(1,16), M4_RANGE(0,10000), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+#else
+#error "WRONG ISP_HW_VERSION, ONLY SUPPORT V20 AND V21 AND V30 NOW !"
+#endif
     uint16_t    lsc_sect_size_y[LSC_SIZE_TBL_SIZE];
 } CalibDbV2_Lsc_Resolution_t;
 

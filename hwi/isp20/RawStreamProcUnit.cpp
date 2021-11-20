@@ -9,6 +9,7 @@ RawStreamProcUnit::RawStreamProcUnit ()
 {
     _raw_proc_thread = new RawProcThread(this);
     _PollCallback = NULL;
+    mCamPhyId = -1;
 }
 
 RawStreamProcUnit::RawStreamProcUnit (const rk_sensor_full_info_t *s_info, bool linked_to_isp)
@@ -492,7 +493,8 @@ RawStreamProcUnit::trigger_isp_readback()
             tg.frame_timestamp = buf_proxy->get_timestamp () * 1000;
             // tg.times = 1;//fixed to three times readback
             LOGD(
-                            "frame[%d]: sof_ts %" PRId64 "ms, frame_ts %" PRId64 "ms, globalTmo(%d), readback(%d)\n",
+                            "camId:%d frame[%d]: sof_ts %" PRId64 "ms, frame_ts %" PRId64 "ms, globalTmo(%d), readback(%d)\n",
+                            mCamPhyId,
                             sequence,
                             tg.sof_timestamp / 1000 / 1000,
                             tg.frame_timestamp / 1000 / 1000,

@@ -39,6 +39,9 @@ CamCalibDbV2Context_t* calibdbV2_ctx_new() {
     } else if (CHECK_ISP_HW_V21()) {
         calib_scene = new CamCalibDbV2ContextIsp21_t();
         memset(calib_scene, 0, sizeof(CamCalibDbV2ContextIsp21_t));
+    } else if (CHECK_ISP_HW_V30()) {
+        calib_scene = new CamCalibDbV2ContextIsp30_t();
+        memset(calib_scene, 0, sizeof(CamCalibDbV2ContextIsp30_t));
     } else {
         XCAM_LOG_ERROR("not supported ISP plateform");
         return NULL;
@@ -227,9 +230,9 @@ CamCalibDbCamgroup_t* RkAiqCalibDbV2::createCalibDbCamgroup(const char *jsfile) 
 
 int RkAiqCalibDbV2::CamCalibDbCamgroupFree(CamCalibDbCamgroup_t* calib_camgroup)
 {
-   if (calib_camgroup)
-       free(calib_camgroup);
-   return 0;
+    if (calib_camgroup)
+        free(calib_camgroup);
+    return 0;
 }
 
 int RkAiqCalibDbV2::calibproj2json(const char *jsfile,
@@ -539,20 +542,25 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"wb_v20", RK_AIQ_ALGO_TYPE_AWB},
         {"wb_v21", RK_AIQ_ALGO_TYPE_AWB},
         {"af_calib", RK_AIQ_ALGO_TYPE_AF},
+        {"af_v30", RK_AIQ_ALGO_TYPE_AF},
         {"ablc_calib", RK_AIQ_ALGO_TYPE_ABLC},
         {"adpcc_calib", RK_AIQ_ALGO_TYPE_ADPCC},
         {"amerge_calib", RK_AIQ_ALGO_TYPE_AMERGE},
+        {"amerge_calib_V2", RK_AIQ_ALGO_TYPE_AMERGE},
         {"atmo_calib", RK_AIQ_ALGO_TYPE_ATMO},
         {"anr_calib", RK_AIQ_ALGO_TYPE_ANR},
         {"lsc_v2", RK_AIQ_ALGO_TYPE_ALSC},
         {"agic_calib_v20", RK_AIQ_ALGO_TYPE_AGIC},
         {"agic_calib_v21", RK_AIQ_ALGO_TYPE_AGIC},
         {"adebayer_calib", RK_AIQ_ALGO_TYPE_ADEBAYER},
+        {"debayer", RK_AIQ_ALGO_TYPE_ADEBAYER},
         {"ccm_calib", RK_AIQ_ALGO_TYPE_ACCM},
         {"agamma_calib", RK_AIQ_ALGO_TYPE_AGAMMA},
+        {"agamma_calib_V30", RK_AIQ_ALGO_TYPE_AGAMMA},
         {"awdr_calib", RK_AIQ_ALGO_TYPE_AWDR},
         {"adehaze_calib_v20", RK_AIQ_ALGO_TYPE_ADHAZ},
         {"adehaze_calib_v21", RK_AIQ_ALGO_TYPE_ADHAZ},
+        {"adehaze_calib_v30", RK_AIQ_ALGO_TYPE_ADHAZ},
         {"lut3d_calib", RK_AIQ_ALGO_TYPE_A3DLUT},
         {"aldch", RK_AIQ_ALGO_TYPE_ALDCH},
         {"ar2y_calib", RK_AIQ_ALGO_TYPE_AR2Y},
@@ -564,7 +572,9 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"acgc_calib", RK_AIQ_ALGO_TYPE_ACGC},
         {"asd_calib", RK_AIQ_ALGO_TYPE_ASD},
         {"adrc_calib", RK_AIQ_ALGO_TYPE_ADRC},
+        {"adrc_calib_V2", RK_AIQ_ALGO_TYPE_ADRC},
         {"adegamma_calib", RK_AIQ_ALGO_TYPE_ADEGAMMA},
+        {"cac_calib", RK_AIQ_ALGO_TYPE_ACAC},
 
 #if ANR_NO_SEPERATE_MARCO
         {"bayernr_v1", RK_AIQ_ALGO_TYPE_ANR},
@@ -585,7 +595,13 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"ynr_v2", RK_AIQ_ALGO_TYPE_AYNR},
         {"cnr_v1", RK_AIQ_ALGO_TYPE_ACNR},
         {"sharp_v3", RK_AIQ_ALGO_TYPE_ASHARP},
-        {"cac_calib", RK_AIQ_ALGO_TYPE_ACAC},
+
+        // rk3588 nr & sharp
+        {"bayer2dnr_v2", RK_AIQ_ALGO_TYPE_ARAWNR},
+        {"bayertnr_v2", RK_AIQ_ALGO_TYPE_AMFNR},
+        {"ynr_v3", RK_AIQ_ALGO_TYPE_AYNR},
+        {"cnr_v2", RK_AIQ_ALGO_TYPE_ACNR},
+        {"sharp_v4", RK_AIQ_ALGO_TYPE_ASHARP},
     };
 
     auto it = table.find(std::string(str));
@@ -1399,12 +1415,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeDrcV2Ctx(CalibDbV2_drc_V2_t* drc)
     if (LocalData->LoLitContrast)
         calib_free(LocalData->LoLitContrast);
 
-    MotionData_t* MotionData = &LocalSetting->MotionData;
-    if (MotionData->MotionCoef)
-        calib_free(MotionData->MotionCoef);
-    if (MotionData->MotionStr)
-        calib_free(MotionData->MotionStr);
-
     return 0;
 }
 
@@ -1785,7 +1795,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeBayer2dnrV2Ctx(CalibDbV2_Bayer2dnr_V2_t* bayer
     if (TuningPara->Setting)
         calib_free(TuningPara->Setting);
 
-   
+
     return 0;
 }
 
@@ -1822,7 +1832,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeBayertnrV2Ctx(CalibDbV2_BayerTnr_V2_t* bayertn
     if (TuningPara->Setting)
         calib_free(TuningPara->Setting);
 
-   
+
     return 0;
 }
 
@@ -1918,7 +1928,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
 
     CamCalibDbV2Context_t* ctx = &ctx_temp;
 
-	if(CHECK_ISP_HW_V21() || CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V21() || CHECK_ISP_HW_V30()) {
         CalibDbV2_Ccm_Para_V2_t *ccm_calib =
             (CalibDbV2_Ccm_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ccm_calib));
         CamCalibDbFreeCcmCtx(ccm_calib);
@@ -2032,47 +2042,47 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
             (CalibDbV2_Thumbnails_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, thumbnails));
         CamCalibDbFreeThumbnailsCtx(thumbnails);
 
-		 if (CHECK_ISP_HW_V30()){
-			CalibDbV2_Bayer2dnr_V2_t *bayer2dnr_v2 =
-	            (CalibDbV2_Bayer2dnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayer2dnr_v2));
-	        CamCalibDbFreeBayer2dnrV2Ctx(bayer2dnr_v2);
+        if (CHECK_ISP_HW_V30()) {
+            CalibDbV2_Bayer2dnr_V2_t *bayer2dnr_v2 =
+                (CalibDbV2_Bayer2dnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayer2dnr_v2));
+            CamCalibDbFreeBayer2dnrV2Ctx(bayer2dnr_v2);
 
-			CalibDbV2_BayerTnr_V2_t *bayertnr_v2 =
-	            (CalibDbV2_BayerTnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayertnr_v2));
-	        CamCalibDbFreeBayertnrV2Ctx(bayertnr_v2);
-			
-	        CalibDbV2_CNRV2_t *cnr_v2 =
-	            (CalibDbV2_CNRV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cnr_v2));
-	        CamCalibDbFreeCnrV2Ctx(cnr_v2);
+            CalibDbV2_BayerTnr_V2_t *bayertnr_v2 =
+                (CalibDbV2_BayerTnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayertnr_v2));
+            CamCalibDbFreeBayertnrV2Ctx(bayertnr_v2);
 
-	        CalibDbV2_YnrV3_t *ynr_v3 =
-	            (CalibDbV2_YnrV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ynr_v3));
-	        CamCalibDbFreeYnrV3Ctx(ynr_v3);
+            CalibDbV2_CNRV2_t *cnr_v2 =
+                (CalibDbV2_CNRV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cnr_v2));
+            CamCalibDbFreeCnrV2Ctx(cnr_v2);
 
-	        CalibDbV2_SharpV4_t *sharp_v4 =
-	            (CalibDbV2_SharpV4_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, sharp_v4));
-	        CamCalibDbFreeSharpV4Ctx(sharp_v4);
+            CalibDbV2_YnrV3_t *ynr_v3 =
+                (CalibDbV2_YnrV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ynr_v3));
+            CamCalibDbFreeYnrV3Ctx(ynr_v3);
+
+            CalibDbV2_SharpV4_t *sharp_v4 =
+                (CalibDbV2_SharpV4_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, sharp_v4));
+            CamCalibDbFreeSharpV4Ctx(sharp_v4);
 
             CalibDbV2_Cac_t *cac_calib =
                 (CalibDbV2_Cac_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cac_calib));
             CamCalibDbFreeCacCtx(cac_calib);
-		 }else{
-	        CalibDbV2_BayerNrV2_t *bayernr_v2 =
-	            (CalibDbV2_BayerNrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayernr_v2));
-	        CamCalibDbFreeBayerNrV2Ctx(bayernr_v2);
+        } else {
+            CalibDbV2_BayerNrV2_t *bayernr_v2 =
+                (CalibDbV2_BayerNrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayernr_v2));
+            CamCalibDbFreeBayerNrV2Ctx(bayernr_v2);
 
-	        CalibDbV2_CNR_t *cnr_v1 =
-	            (CalibDbV2_CNR_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cnr_v1));
-	        CamCalibDbFreeCnrCtx(cnr_v1);
+            CalibDbV2_CNR_t *cnr_v1 =
+                (CalibDbV2_CNR_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cnr_v1));
+            CamCalibDbFreeCnrCtx(cnr_v1);
 
-	        CalibDbV2_YnrV2_t *ynr_v2 =
-	            (CalibDbV2_YnrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ynr_v2));
-	        CamCalibDbFreeYnrV2Ctx(ynr_v2);
+            CalibDbV2_YnrV2_t *ynr_v2 =
+                (CalibDbV2_YnrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ynr_v2));
+            CamCalibDbFreeYnrV2Ctx(ynr_v2);
 
-	        CalibDbV2_SharpV3_t *sharp_v3 =
-	            (CalibDbV2_SharpV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, sharp_v3));
-	        CamCalibDbFreeSharpV3Ctx(sharp_v3);
-		 }
+            CalibDbV2_SharpV3_t *sharp_v3 =
+                (CalibDbV2_SharpV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, sharp_v3));
+            CamCalibDbFreeSharpV3Ctx(sharp_v3);
+        }
     } else if(CHECK_ISP_HW_V20()) {
         // TODO: implement ispv20 calib free
     } else {

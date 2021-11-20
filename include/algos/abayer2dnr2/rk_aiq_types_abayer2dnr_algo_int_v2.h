@@ -78,6 +78,7 @@ typedef struct Abayer2dnr_ExpInfo_V2_s {
     float arDGain[3];
     int   arIso[3];
     int   snr_mode;
+    int gray_mode;
 } Abayer2dnr_ExpInfo_V2_t;
 
 

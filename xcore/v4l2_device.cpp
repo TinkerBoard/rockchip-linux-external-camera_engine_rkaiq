@@ -1253,7 +1253,7 @@ V4l2SubDevice::V4l2SubDevice (const char *name)
 }
 
 XCamReturn
-V4l2SubDevice::subscribe_event (int event)
+V4l2Device::subscribe_event (int event)
 {
     struct v4l2_event_subscription sub;
     int ret = 0;
@@ -1272,7 +1272,7 @@ V4l2SubDevice::subscribe_event (int event)
 }
 
 XCamReturn
-V4l2SubDevice::unsubscribe_event (int event)
+V4l2Device::unsubscribe_event (int event)
 {
     struct v4l2_event_subscription sub;
     int ret = 0;
@@ -1291,7 +1291,7 @@ V4l2SubDevice::unsubscribe_event (int event)
 }
 
 XCamReturn
-V4l2SubDevice::dequeue_event (struct v4l2_event &event)
+V4l2Device::dequeue_event (struct v4l2_event &event)
 {
     int ret = 0;
     XCAM_ASSERT (is_opened());

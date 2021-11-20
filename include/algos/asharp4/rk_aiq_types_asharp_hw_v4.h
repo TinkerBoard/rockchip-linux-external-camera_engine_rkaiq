@@ -24,6 +24,9 @@
 typedef struct RK_SHARP_Fix_V4_s
 {
     // SHARP_SHARP_EN (0x0000)
+    uint8_t sharp_clk_dis;
+    uint8_t sharp_exgain_bypass;
+    uint8_t sharp_center_mode;
     uint8_t sharp_bypass;
     uint8_t sharp_en;
 

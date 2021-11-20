@@ -63,11 +63,12 @@ protected:
 class RkEventPollThread : public RkPollThread
 {
 public:
-    explicit RkEventPollThread (const char* thName, int type, SmartPtr<V4l2SubDevice> dev, RKStream *stream);
+    explicit RkEventPollThread (const char* thName, int type, SmartPtr<V4l2Device> dev, RKStream *stream);
+    explicit RkEventPollThread (const char* thName, int type, SmartPtr<V4l2SubDevice> subdev, RKStream *stream);
     virtual ~RkEventPollThread ();
 protected:
     XCAM_DEAD_COPY (RkEventPollThread);
-    XCamReturn poll_event_loop ();
+    virtual XCamReturn poll_event_loop ();
     virtual bool loop () {
         XCamReturn ret = poll_event_loop ();
         if (ret == XCAM_RETURN_NO_ERROR || ret == XCAM_RETURN_ERROR_TIMEOUT ||
@@ -76,6 +77,24 @@ protected:
         return false;
     }
     //SmartPtr<V4l2SubDevice> _subdev;
+    struct v4l2_event _event;
+};
+
+class CamHwIsp20;
+// listen mp/sp stream on/off event
+class RkStreamEventPollThread : public RkEventPollThread
+{
+public:
+    explicit RkStreamEventPollThread(const char* thName, SmartPtr<V4l2Device> dev, CamHwIsp20* isp)
+        : RkEventPollThread(thName, ISP_POLL_ISPSTREAMSYNC, dev, NULL)
+        , _pIsp(isp) {};
+    virtual ~RkStreamEventPollThread(){};
+    XCamReturn poll_event_loop ();
+    virtual XCamReturn start();
+    virtual XCamReturn stop ();
+protected:
+    XCAM_DEAD_COPY (RkStreamEventPollThread);
+    CamHwIsp20* _pIsp;
 };
 
 class RKStream
@@ -114,7 +133,6 @@ protected:
     bool _dev_prepared;
 };
 
-class CamHwIsp20;
 class BaseSensorHw;
 class LensHw;
 class RKStatsStream : public RKStream

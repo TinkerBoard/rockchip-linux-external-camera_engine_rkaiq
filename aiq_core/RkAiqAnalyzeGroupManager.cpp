@@ -66,7 +66,8 @@ void RkAiqAnalyzerGroup::msgReduction(std::map<uint32_t, GroupMessage>& msgMap) 
                 i++;
             }
             LOGE_ANALYZER_SUBM(ANALYZER_SUBM,
-                    "group(%s): id[%d] map size is %d, erase %d, element, missing conditions: %s",
+                    "camId:%d group(%s): id[%d] map size is %d, erase %d, element, missing conditions: %s",
+                    mAiqCore->mAlogsComSharedParams.mCamPhyId,
                     AnalyzerGroupType2Str[mGroupType], mGroupMsgMap.begin()->first,
                     originalSize, numToErase,
                     missing_conds.c_str());
@@ -109,7 +110,8 @@ XCamReturn RkAiqAnalyzerGroup::msgHandle(const SmartPtr<XCamMessage>& msg) {
     msgWrapper.msg_flags |= 1 << msg->msg_id;
     msgWrapper.msgList.push_back(msg);
     LOGD_ANALYZER_SUBM(ANALYZER_SUBM,
-        "group(%s): id[%d] push msg(%s), msg delayCnt(%d), map size is %d\n",
+        "camId: %d, group(%s): id[%d] push msg(%s), msg delayCnt(%d), map size is %d\n",
+         mAiqCore->mAlogsComSharedParams.mCamPhyId,
          AnalyzerGroupType2Str[mGroupType], msg->frame_id,
          MessageType2Str[msg->msg_id], delayCnt, mGroupMsgMap.size());
 

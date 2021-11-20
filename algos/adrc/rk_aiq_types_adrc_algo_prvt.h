@@ -68,6 +68,7 @@
 
 #define SW_DRC_OFFSET_POW2_FIX (8)
 #define SW_DRC_MOTION_SCL_FIX (0)
+#define SW_DRC_BILAT_WT_OFF_FIX (255)
 #define MAX_AE_DRC_GAIN (256)
 
 
@@ -151,12 +152,12 @@ typedef struct AdrcConfigV20_s
     DrcOhters_t Others;
 } AdrcConfigV20_t;
 
-typedef struct MotionConfig_s
-{
-    int len;
-    float*            MotionCoef;
-    float*            MotionStr;
-} MotionConfig_t;
+//typedef struct MotionConfig_s
+//{
+//    int len;
+//    float*            MotionCoef;
+//    float*            MotionStr;
+//} MotionConfig_t;
 
 typedef struct AdrcConfigV21_s
 {
@@ -165,7 +166,7 @@ typedef struct AdrcConfigV21_s
     AdrcGainConfig_t DrcGain;
     HighLightConfig_t HiLit;
     LocalDataConfigV2_t Local;
-    MotionConfig_t Motion;
+    //MotionConfig_t Motion;
     CompressConfig_t Compress;
     DrcOhters_t Others;
 } AdrcConfigV21_t;
@@ -199,7 +200,6 @@ typedef struct DrcHandleDataV21_s
     float LocalWeit;
     int LocalAutoEnable;
     float LocalAutoWeit;
-    float MotionStr;
     float GlobalContrast;
     float LoLitContrast;
     CompressMode_t Mode;

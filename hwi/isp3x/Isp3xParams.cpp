@@ -19,6 +19,72 @@
 #include "cac_head.h"
 
 namespace RkCam {
+void Isp3xParams::fixedAwbOveflowToIsp3xParams(void* isp_cfg_p, bool is_dual_isp)
+{
+    //in overfloce case :
+    // 1 sw_rawawb_wp_luma_wei_en is force to be true  and the weight is 31
+    // 2 sw_rawawb_blk_with_luma_wei_en is force to be true
+
+    struct isp3x_isp_params_cfg& isp_cfg = *(struct isp3x_isp_params_cfg*)isp_cfg_p;
+    if(is_dual_isp == false) {
+        struct isp3x_rawawb_meas_cfg * awb_cfg_v30 = &isp_cfg.meas.rawawb;
+        int w, h;
+        w = awb_cfg_v30->sw_rawawb_h_size;
+        h = awb_cfg_v30->sw_rawawb_v_size;
+        if(w * h > RK_AIQ_AWB_STAT_MAX_AREA) {
+            LOGD_AWB("%s wp_luma_wei is force to be enable and the weight is %d", __FUNCTION__, (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1);
+            awb_cfg_v30->sw_rawawb_wp_luma_wei_en0 = true;
+            awb_cfg_v30->sw_rawawb_wp_luma_wei_en1 = true;
+            awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w0 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w1 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w2 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w3 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w4 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w5 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w6 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w7 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w8 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            awb_cfg_v30->sw_rawawb_blk_with_luma_wei_en = true;
+        }
+    } else {
+        struct isp3x_isp_params_cfg* left_isp_params  = &isp_cfg;
+        struct isp3x_isp_params_cfg* right_isp_params = &isp_cfg + 1;
+        struct isp3x_rawawb_meas_cfg * left_awb_cfg_v30 = &left_isp_params->meas.rawawb;
+        struct isp3x_rawawb_meas_cfg * right_awb_cfg_v30 = &right_isp_params->meas.rawawb;
+        int w, h, w2, h2;
+        w = left_awb_cfg_v30->sw_rawawb_h_size;
+        h = left_awb_cfg_v30->sw_rawawb_v_size;
+        w2 = right_awb_cfg_v30->sw_rawawb_h_size;
+        h2 = right_awb_cfg_v30->sw_rawawb_v_size;
+        if(w * h > RK_AIQ_AWB_STAT_MAX_AREA || w2 * h2 > RK_AIQ_AWB_STAT_MAX_AREA ) {
+            LOGD_AWB("wp_luma_wei is for to be enable and the weight is %d", (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1);
+            left_awb_cfg_v30->sw_rawawb_wp_luma_wei_en0 = true;
+            left_awb_cfg_v30->sw_rawawb_wp_luma_wei_en1 = true;
+            left_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w0 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            left_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w1 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            left_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w2 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            left_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w3 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            left_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w4 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            left_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w5 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            left_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w6 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            left_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w7 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            left_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w8 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            right_awb_cfg_v30->sw_rawawb_wp_luma_wei_en0 = true;
+            right_awb_cfg_v30->sw_rawawb_wp_luma_wei_en1 = true;
+            right_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w0 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            right_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w1 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            right_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w2 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            right_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w3 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            right_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w4 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            right_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w5 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            right_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w6 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            right_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w7 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            right_awb_cfg_v30->sw_rawawb_wp_luma_weicurve_w8 = (1 << RK_AIQ_AWB_WP_WEIGHT_BIS_V201) - 1;
+            left_awb_cfg_v30->sw_rawawb_blk_with_luma_wei_en = true;
+            right_awb_cfg_v30->sw_rawawb_blk_with_luma_wei_en = true;
+        }
+    }
+}
 
 void Isp3xParams::convertAiqAwbToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_awb_meas_cfg_v3x_t& awb_meas,
@@ -316,20 +382,21 @@ void Isp3xParams::convertAiqAwbToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
     awb_cfg_v30->sw_rawawb_multiwindow_en          =      awb_meas.multiwindow_en;
     awb_cfg_v30->sw_rawawb_multiwindow0_h_offs     =      awb_meas.multiwindow[0][0];
     awb_cfg_v30->sw_rawawb_multiwindow0_v_offs     =      awb_meas.multiwindow[0][1];
-    awb_cfg_v30->sw_rawawb_multiwindow0_h_size     =      awb_meas.multiwindow[0][2];
-    awb_cfg_v30->sw_rawawb_multiwindow0_v_size     =      awb_meas.multiwindow[0][3];
+    awb_cfg_v30->sw_rawawb_multiwindow0_h_size     =      awb_meas.multiwindow[0][0] + awb_meas.multiwindow[0][2];
+    awb_cfg_v30->sw_rawawb_multiwindow0_v_size     =      awb_meas.multiwindow[0][1] + awb_meas.multiwindow[0][3];
     awb_cfg_v30->sw_rawawb_multiwindow1_h_offs     =      awb_meas.multiwindow[1][0];
     awb_cfg_v30->sw_rawawb_multiwindow1_v_offs     =      awb_meas.multiwindow[1][1];
-    awb_cfg_v30->sw_rawawb_multiwindow1_h_size     =      awb_meas.multiwindow[1][2];
-    awb_cfg_v30->sw_rawawb_multiwindow1_v_size     =      awb_meas.multiwindow[1][3];
+    awb_cfg_v30->sw_rawawb_multiwindow1_h_size     =      awb_meas.multiwindow[1][0] + awb_meas.multiwindow[1][2];
+    awb_cfg_v30->sw_rawawb_multiwindow1_v_size     =      awb_meas.multiwindow[1][1] + awb_meas.multiwindow[1][3];
     awb_cfg_v30->sw_rawawb_multiwindow2_h_offs     =      awb_meas.multiwindow[2][0];
     awb_cfg_v30->sw_rawawb_multiwindow2_v_offs     =      awb_meas.multiwindow[2][1];
-    awb_cfg_v30->sw_rawawb_multiwindow2_h_size     =      awb_meas.multiwindow[2][2];
-    awb_cfg_v30->sw_rawawb_multiwindow2_v_size     =      awb_meas.multiwindow[2][3];
+    awb_cfg_v30->sw_rawawb_multiwindow2_h_size     =      awb_meas.multiwindow[2][0] + awb_meas.multiwindow[2][2];
+    awb_cfg_v30->sw_rawawb_multiwindow2_v_size     =      awb_meas.multiwindow[2][1] + awb_meas.multiwindow[2][3];
     awb_cfg_v30->sw_rawawb_multiwindow3_h_offs     =      awb_meas.multiwindow[3][0];
     awb_cfg_v30->sw_rawawb_multiwindow3_v_offs     =      awb_meas.multiwindow[3][1];
-    awb_cfg_v30->sw_rawawb_multiwindow3_h_size     =      awb_meas.multiwindow[3][2];
-    awb_cfg_v30->sw_rawawb_multiwindow3_v_size     =      awb_meas.multiwindow[3][3];
+    awb_cfg_v30->sw_rawawb_multiwindow3_h_size     =      awb_meas.multiwindow[3][0] + awb_meas.multiwindow[3][2];
+    awb_cfg_v30->sw_rawawb_multiwindow3_v_size     =      awb_meas.multiwindow[3][1] + awb_meas.multiwindow[3][3];
+
 #endif
     awb_cfg_v30->sw_rawawb_exc_wp_region0_excen0     =  awb_meas.excludeWpRange[0].excludeEnable[RK_AIQ_AWB_XY_TYPE_NORMAL_V201];
     awb_cfg_v30->sw_rawawb_exc_wp_region0_excen1     =  awb_meas.excludeWpRange[0].excludeEnable[RK_AIQ_AWB_XY_TYPE_BIG_V201];
@@ -415,7 +482,7 @@ void Isp3xParams::convertAiqRawnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_
         rk_aiq_isp_baynr_v3x_t& rawnr)
 {
 
-    LOGD_ANR("%s:%d enter!\n", __FUNCTION__, __LINE__);
+    LOGD_ANR("%s:%d enter! enable:%d \n", __FUNCTION__, __LINE__, rawnr.baynr_en);
     bool enable = rawnr.baynr_en;
     if(enable) {
         isp_cfg.module_ens |= ISP3X_MODULE_BAYNR;
@@ -427,6 +494,7 @@ void Isp3xParams::convertAiqRawnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_
     isp_cfg.module_cfg_update |= ISP3X_MODULE_BAYNR;
 
     struct isp3x_baynr_cfg *pBayernr = &isp_cfg.others.baynr_cfg;
+    pBayernr->lg2_mode = rawnr.baynr_lg2_mode;
     pBayernr->gauss_en = rawnr.baynr_gauss_en;
     pBayernr->log_bypass = rawnr.baynr_log_bypass;
 
@@ -450,13 +518,19 @@ void Isp3xParams::convertAiqRawnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_
     pBayernr->weit_d2 = rawnr.weit_d[2];
     pBayernr->weit_d1 = rawnr.weit_d[1];
     pBayernr->weit_d0 = rawnr.weit_d[0];
+
+    pBayernr->lg2_lgoff = rawnr.lg2_lgoff;
+    pBayernr->lg2_off = rawnr.lg2_off;
+
+    pBayernr->dat_max = rawnr.dat_max;
+
     LOGD_ANR("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
 
 void Isp3xParams::convertAiqTnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         rk_aiq_isp_tnr_v3x_t& tnr)
 {
-    LOGD_ANR("%s:%d enter!\n", __FUNCTION__, __LINE__);
+    LOGD_ANR("%s:%d enter! enable:%d\n", __FUNCTION__, __LINE__, tnr.bay3d_en_i);
     bool enable = tnr.bay3d_en_i;
     if(enable) {
         isp_cfg.module_ens |= ISP3X_MODULE_BAY3D;
@@ -510,7 +584,7 @@ void Isp3xParams::convertAiqTnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
 void Isp3xParams::convertAiqUvnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         rk_aiq_isp_cnr_v3x_t& uvnr)
 {
-    LOGD_ANR("%s:%d enter!\n", __FUNCTION__, __LINE__);
+    LOGD_ANR("%s:%d enter! enable:%d \n", __FUNCTION__, __LINE__, uvnr.cnr_en_i);
 
     bool enable = uvnr.cnr_en_i;
 
@@ -571,7 +645,7 @@ void Isp3xParams::convertAiqUvnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_c
 void Isp3xParams::convertAiqYnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         rk_aiq_isp_ynr_v3x_t& ynr)
 {
-    LOGD_ANR("%s:%d enter!\n", __FUNCTION__, __LINE__);
+    LOGD_ANR("%s:%d enter! enable:%d \n", __FUNCTION__, __LINE__, ynr.ynr_en);
 
     bool enable = ynr.ynr_en;
 
@@ -631,6 +705,8 @@ void Isp3xParams::convertAiqYnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
     pYnr->base_filter_weight1 = ynr.ynr_base_filter_weight[1];
     pYnr->base_filter_weight0 = ynr.ynr_base_filter_weight[0];
 
+    pYnr->frame_full_size = ynr.ynr_frame_full_size;
+    pYnr->lbf_weight_thres = ynr.ynr_lbf_weight_thres;
 
     pYnr->low_gauss1_coeff2 = ynr.ynr_low_gauss1_coeff[2];
     pYnr->low_gauss1_coeff1 = ynr.ynr_low_gauss1_coeff[1];
@@ -662,7 +738,7 @@ void Isp3xParams::convertAiqYnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
 void Isp3xParams::convertAiqSharpenToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         rk_aiq_isp_sharp_v3x_t& sharp)
 {
-    LOGD_ANR("%s:%d enter!\n", __FUNCTION__, __LINE__);
+    LOGD_ANR("%s:%d enter! enable:%d\n", __FUNCTION__, __LINE__, sharp.sharp_en);
     bool enable = sharp.sharp_en;
 
     isp_cfg.module_en_update |= ISP3X_MODULE_SHARP;
@@ -672,6 +748,8 @@ void Isp3xParams::convertAiqSharpenToIsp3xParams(struct isp3x_isp_params_cfg& is
 
     struct isp3x_sharp_cfg *pSharp = &isp_cfg.others.sharp_cfg;
 
+    pSharp->exgain_bypass = sharp.sharp_exgain_bypass;
+    pSharp->center_mode = sharp.sharp_center_mode;
     pSharp->bypass = sharp.sharp_bypass;
     if(!enable) {
         pSharp->bypass = 0x01;

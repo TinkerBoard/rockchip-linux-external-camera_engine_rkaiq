@@ -67,6 +67,9 @@ public:
     virtual XCamReturn poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_index);
     virtual XCamReturn poll_event_ready (uint32_t sequence, int type) { return XCAM_RETURN_ERROR_FAILED; }
     virtual XCamReturn poll_event_failed (int64_t timestamp, const char *msg) { return XCAM_RETURN_ERROR_FAILED; }
+    void setCamPhyId(int phyId) {
+        mCamPhyId = phyId;
+    }
 protected:
     XCAM_DEAD_COPY (RawStreamProcUnit);
 
@@ -74,6 +77,7 @@ protected:
     void match_lumadetect_map           (uint32_t sequence, sint32_t &additional_times);
     void match_globaltmostate_map(uint32_t sequence, bool &isHdrGlobalTmo);
     XCamReturn match_sof_timestamp_map(sint32_t sequence, uint64_t &timestamp);
+    int mCamPhyId;
 protected:
     SmartPtr<V4l2Device> _dev[3];
     int _dev_index[3];

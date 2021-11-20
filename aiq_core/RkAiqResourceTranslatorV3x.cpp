@@ -514,6 +514,43 @@ void MergeAwbWinStats(
         break;
     }
 }
+
+void AwbStatOverflowCheckandFixed(struct isp2x_window* win, rk_aiq_awb_blk_stat_mode_v201_t blkMeasureMode, bool blkStatisticsWithLumaWeightEn,rk_aiq_awb_xy_type_v201_t xyRangeTypeForWpHist,
+    int lightNum, struct isp3x_rawawb_meas_stat *stats)
+{
+    int w,h;
+    w = win->h_size;
+    h = win->v_size;
+    float factor1 = (float)((1<<(RK_AIQ_AWB_WP_WEIGHT_BIS_V201+1))-1)/((1<<RK_AIQ_AWB_WP_WEIGHT_BIS_V201)-1);
+    if(w*h > RK_AIQ_AWB_STAT_MAX_AREA){
+        LOGD_AWB("%s ramdata and ro_wp_num2 is fixed",__FUNCTION__);
+        for(int i = 0; i < RK_AIQ_AWB_GRID_NUM_TOTAL; i++) {
+           stats->ramdata[i].wp = (float)stats->ramdata[i].wp * factor1 +0.5 ;
+           stats->ramdata[i].r = (float)stats->ramdata[i].r * factor1 +0.5 ;
+           stats->ramdata[i].g = (float)stats->ramdata[i].g * factor1 +0.5 ;
+           stats->ramdata[i].b = (float)stats->ramdata[i].b * factor1 +0.5 ;
+        }
+        if(xyRangeTypeForWpHist == RK_AIQ_AWB_XY_TYPE_BIG_V201){
+            for(int i = 0; i < lightNum; i++) {
+                stats->ro_wp_num2[i] = stats->ro_rawawb_wp_num_big[i] >> RK_AIQ_WP_GAIN_FRAC_BIS;
+            }
+         }else{
+            for(int i = 0; i < lightNum; i++) {
+                stats->ro_wp_num2[i] = stats->ro_rawawb_wp_num_nor[i] >> RK_AIQ_WP_GAIN_FRAC_BIS;
+            }
+         }
+    }else{
+        if(RK_AIQ_AWB_BLK_STAT_MODE_REALWP_V201 == blkMeasureMode && blkStatisticsWithLumaWeightEn){
+            for(int i = 0; i < RK_AIQ_AWB_GRID_NUM_TOTAL; i++) {
+               stats->ramdata[i].wp = (float)stats->ramdata[i].wp * factor1 +0.5 ;
+               stats->ramdata[i].r = (float)stats->ramdata[i].r * factor1 +0.5 ;
+               stats->ramdata[i].g = (float)stats->ramdata[i].g * factor1 +0.5 ;
+               stats->ramdata[i].b = (float)stats->ramdata[i].b * factor1 +0.5 ;
+            }
+        }
+    }
+}
+
 void MergeAwbBlkStats(
     struct isp2x_window* ori_win,
     struct isp2x_window* left_win,
@@ -580,18 +617,44 @@ void MergeAwbHistBinStats(
     u16 *right_stats,
     WinSplitMode mode
 ) {
+    u32 tmp1, tmp2;
     switch(mode) {
     case LEFT_MODE:
-        for(int i = 0; i < RK_AIQ_AWB_WP_HIST_BIN_NUM; i++)
-            merge_stats[i] = left_stats[i];
+        for(int i = 0; i < RK_AIQ_AWB_WP_HIST_BIN_NUM; i++){
+            tmp1 = left_stats[i];
+            if(left_stats[i]& 0x8000){
+                tmp1 = left_stats[i] & 0x7FFF;
+                tmp1 *=    (1 << 3);
+            }
+            merge_stats[i] = tmp1;
+        }
         break;
     case RIGHT_MODE:
-        for(int i = 0; i < RK_AIQ_AWB_WP_HIST_BIN_NUM; i++)
-            merge_stats[i] = right_stats[i];
+        for(int i = 0; i < RK_AIQ_AWB_WP_HIST_BIN_NUM; i++){
+            tmp2 = right_stats[i];
+            if(right_stats[i]& 0x8000){
+                tmp2 = right_stats[i] & 0x7FFF;
+                tmp2 *=    (1 << 3);
+            }
+            merge_stats[i] = tmp2;
+        }
+
         break;
     case LEFT_AND_RIGHT_MODE:
-        for(int i = 0; i < RK_AIQ_AWB_WP_HIST_BIN_NUM; i++)
-            merge_stats[i] = left_stats[i] + right_stats[i];
+        for(int i = 0; i < RK_AIQ_AWB_WP_HIST_BIN_NUM; i++){
+            tmp1 = left_stats[i];
+            if(left_stats[i]& 0x8000){
+                tmp1 = left_stats[i] & 0x7FFF;
+                tmp1 *=    (1 << 3);
+            }
+            tmp2 = right_stats[i];
+            if(right_stats[i]& 0x8000){
+                tmp2 = right_stats[i] & 0x7FFF;
+                tmp2 *=    (1 << 3);
+            }
+            merge_stats[i] = tmp1 + tmp2;
+
+        }
         break;
     }
 }
@@ -601,44 +664,23 @@ void MergeAwbHistBinStats(
 void MergeAwbMultiWinStats(
     rk_aiq_isp_awb_stats_v3x_t *merge_stats,
     struct isp3x_rawawb_meas_stat *left_stats,
-    struct isp3x_rawawb_meas_stat *right_stats,
-    WinSplitMode* mode
+    struct isp3x_rawawb_meas_stat *right_stats
 ) {
     for(int i = 0; i < RK_AIQ_AWB_MULTIWINDOW_NUM_V201; i++) {
-        switch(mode[i]) {
-        case LEFT_MODE:
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].RgainValue = left_stats->ro_sum_r_nor_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].BgainValue = left_stats->ro_sum_b_nor_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].WpNo = left_stats->ro_wp_nm_nor_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].RgainValue = left_stats->ro_sum_r_big_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].BgainValue = left_stats->ro_sum_b_big_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].WpNo = left_stats->ro_wp_nm_big_multiwindow[i];
-            break;
-        case RIGHT_MODE:
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].RgainValue = right_stats->ro_sum_r_nor_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].BgainValue = right_stats->ro_sum_b_nor_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].WpNo = right_stats->ro_wp_nm_nor_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].RgainValue = right_stats->ro_sum_r_big_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].BgainValue = right_stats->ro_sum_b_big_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].WpNo = right_stats->ro_wp_nm_big_multiwindow[i];
-            break;
-        case LEFT_AND_RIGHT_MODE:
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].RgainValue =
-                left_stats->ro_sum_r_nor_multiwindow[i] + right_stats->ro_sum_r_nor_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].BgainValue =
-                left_stats->ro_sum_b_nor_multiwindow[i] + right_stats->ro_sum_b_nor_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].WpNo =
-                left_stats->ro_wp_nm_nor_multiwindow[i] + right_stats->ro_wp_nm_nor_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].RgainValue =
-                left_stats->ro_sum_r_big_multiwindow[i] + right_stats->ro_sum_r_big_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].BgainValue =
-                left_stats->ro_sum_b_big_multiwindow[i] + right_stats->ro_sum_b_big_multiwindow[i];
-            merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].WpNo =
-                left_stats->ro_wp_nm_big_multiwindow[i] + right_stats->ro_wp_nm_big_multiwindow[i];
-            break;
-        default:
-            break;
-        }
+
+        merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].RgainValue =
+            left_stats->ro_sum_r_nor_multiwindow[i] + right_stats->ro_sum_r_nor_multiwindow[i];
+        merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].BgainValue =
+            left_stats->ro_sum_b_nor_multiwindow[i] + right_stats->ro_sum_b_nor_multiwindow[i];
+        merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].WpNo =
+            left_stats->ro_wp_nm_nor_multiwindow[i] + right_stats->ro_wp_nm_nor_multiwindow[i];
+        merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].RgainValue =
+            left_stats->ro_sum_r_big_multiwindow[i] + right_stats->ro_sum_r_big_multiwindow[i];
+        merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].BgainValue =
+            left_stats->ro_sum_b_big_multiwindow[i] + right_stats->ro_sum_b_big_multiwindow[i];
+        merge_stats->multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].WpNo =
+            left_stats->ro_wp_nm_big_multiwindow[i] + right_stats->ro_wp_nm_big_multiwindow[i];
+
     }
 }
 
@@ -702,7 +744,7 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
     if(left_stats->frame_id != right_stats->frame_id || left_stats->meas_type != right_stats->meas_type)
         LOGE_ANALYZER("status params(frmid or meas_type) of left isp and right isp are different");
     else
-        LOGI_ANALYZER("stats: frame_id: %d,  meas_type; 0x%x", left_stats->frame_id, left_stats->meas_type);
+        LOGD_ANALYZER("camId: %d, stats: frame_id: %d,  meas_type; 0x%x", mCamPhyId, left_stats->frame_id, left_stats->meas_type);
 
     SmartPtr<RkAiqIrisParamsProxy> irisParams = buf->get_iris_params();
     SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
@@ -993,7 +1035,6 @@ XCamReturn RkAiqResourceTranslatorV3x::translateMultiAwbStats(const SmartPtr<Vid
     statsInt->frame_id = left_stats->frame_id;
 
     WinSplitMode AwbWinSplitMode = LEFT_AND_RIGHT_MODE;
-    WinSplitMode AwbMultiWinSplitMode[4] = {LEFT_AND_RIGHT_MODE}; //0:rawae0 1:rawae1 2:rawae2 3:rawae3
 
     struct isp2x_window ori_win;
     ori_win.h_offs = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_h_offs;
@@ -1002,34 +1043,6 @@ XCamReturn RkAiqResourceTranslatorV3x::translateMultiAwbStats(const SmartPtr<Vid
     ori_win.v_size = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_v_size;
 
     JudgeWinLocation(&ori_win, AwbWinSplitMode, left_isp_rect_, right_isp_rect_);
-
-    ori_win.h_offs = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow0_h_offs;
-    ori_win.h_size = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow0_h_size;
-    ori_win.v_offs = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow0_v_offs;
-    ori_win.v_size = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow0_v_size;
-
-    JudgeWinLocation(&ori_win, AwbMultiWinSplitMode[0], left_isp_rect_, right_isp_rect_);
-
-    ori_win.h_offs = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow1_h_offs;
-    ori_win.h_size = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow1_h_size;
-    ori_win.v_offs = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow1_v_offs;
-    ori_win.v_size = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow1_v_size;
-
-    JudgeWinLocation(&ori_win, AwbMultiWinSplitMode[1], left_isp_rect_, right_isp_rect_);
-
-    ori_win.h_offs = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow2_h_offs;
-    ori_win.h_size = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow2_h_size;
-    ori_win.v_offs = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow2_v_offs;
-    ori_win.v_size = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow2_v_size;
-
-    JudgeWinLocation(&ori_win, AwbMultiWinSplitMode[2], left_isp_rect_, right_isp_rect_);
-
-    ori_win.h_offs = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow3_h_offs;
-    ori_win.h_size = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow3_h_size;
-    ori_win.v_offs = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow3_v_offs;
-    ori_win.v_size = ispParams.isp_params_v3x[0].meas.rawawb.sw_rawawb_multiwindow3_v_size;
-
-    JudgeWinLocation(&ori_win, AwbMultiWinSplitMode[3], left_isp_rect_, right_isp_rect_);
 
     MergeAwbWinStats(statsInt->awb_stats_v3x.light, &left_stats->params.rawawb, &right_stats->params.rawawb,
                      statsInt->awb_stats_v3x.awb_cfg_effect_v201.lightNum, AwbWinSplitMode);
@@ -1045,6 +1058,19 @@ XCamReturn RkAiqResourceTranslatorV3x::translateMultiAwbStats(const SmartPtr<Vid
     right_win.h_size = ispParams.isp_params_v3x[2].meas.rawawb.sw_rawawb_h_size;
     right_win.v_offs = ispParams.isp_params_v3x[2].meas.rawawb.sw_rawawb_v_offs;
     right_win.v_size = ispParams.isp_params_v3x[2].meas.rawawb.sw_rawawb_v_size;
+
+    // to fixed the bug in ic design that some egisters maybe overflow
+    AwbStatOverflowCheckandFixed(&left_win,
+        (rk_aiq_awb_blk_stat_mode_v201_t)ispParams.isp_params_v3x[1].meas.rawawb.sw_rawawb_blk_measure_mode,
+        ispParams.isp_params_v3x[1].meas.rawawb.sw_rawawb_blk_with_luma_wei_en,
+        (rk_aiq_awb_xy_type_v201_t)ispParams.isp_params_v3x[1].meas.rawawb.sw_rawawb_wp_hist_xytype,
+        ispParams.isp_params_v3x[1].meas.rawawb.sw_rawawb_light_num,&left_stats->params.rawawb);
+    AwbStatOverflowCheckandFixed(&right_win,
+        (rk_aiq_awb_blk_stat_mode_v201_t)ispParams.isp_params_v3x[2].meas.rawawb.sw_rawawb_blk_measure_mode,
+        ispParams.isp_params_v3x[2].meas.rawawb.sw_rawawb_blk_with_luma_wei_en,
+        (rk_aiq_awb_xy_type_v201_t)ispParams.isp_params_v3x[2].meas.rawawb.sw_rawawb_wp_hist_xytype,
+        ispParams.isp_params_v3x[2].meas.rawawb.sw_rawawb_light_num,&right_stats->params.rawawb);
+
 
     MergeAwbBlkStats(&ori_win, &left_win, &right_win, statsInt->awb_stats_v3x.blockResult, &left_stats->params.rawawb, &right_stats->params.rawawb, AwbWinSplitMode);
 
@@ -1067,7 +1093,8 @@ XCamReturn RkAiqResourceTranslatorV3x::translateMultiAwbStats(const SmartPtr<Vid
     default:
         break;
     }
-    MergeAwbMultiWinStats(&statsInt->awb_stats_v3x, &left_stats->params.rawawb, &right_stats->params.rawawb, AwbMultiWinSplitMode);
+
+    MergeAwbMultiWinStats(&statsInt->awb_stats_v3x, &left_stats->params.rawawb, &right_stats->params.rawawb);
     MergeAwbExcWpStats( statsInt->awb_stats_v3x.excWpRangeResult, &left_stats->params.rawawb, &right_stats->params.rawawb, AwbWinSplitMode);
 
 #endif
@@ -1158,8 +1185,8 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
         LOGE("fail to get stats ,ignore\n");
         return XCAM_RETURN_BYPASS;
     }
-    LOGI_ANALYZER("stats: frame_id: %d,  meas_type; 0x%x",
-                  stats->frame_id, stats->meas_type);
+    LOGI_ANALYZER("camId: %d, stats: frame_id: %d,  meas_type; 0x%x",
+                  mCamPhyId, stats->frame_id, stats->meas_type);
 
     SmartPtr<RkAiqIrisParamsProxy> irisParams = buf->get_iris_params();
     SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
@@ -1438,8 +1465,8 @@ RkAiqResourceTranslatorV3x::translateAwbStats (const SmartPtr<VideoBuffer> &from
         LOGE("fail to get stats ,ignore\n");
         return XCAM_RETURN_BYPASS;
     }
-    LOGI_ANALYZER("stats: frame_id: %d,  meas_type; 0x%x",
-                  stats->frame_id, stats->meas_type);
+    LOGI_ANALYZER("awb stats: camId:%d, frame_id: %d,  meas_type; 0x%x",
+                  mCamPhyId, stats->frame_id, stats->meas_type);
 
     statsInt->awb_stats_valid = stats->meas_type >> 5 & 1;
     if (!statsInt->awb_stats_valid) {
@@ -1507,11 +1534,44 @@ RkAiqResourceTranslatorV3x::translateAwbStats (const SmartPtr<VideoBuffer> &from
         statsInt->awb_stats_v3x.multiwindowLightResult[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].WpNo =
             stats->params.rawawb.ro_wp_nm_big_multiwindow[i];
     }
+
     for(int i = 0; i < RK_AIQ_AWB_STAT_WP_RANGE_NUM_V201; i++) {
         statsInt->awb_stats_v3x.excWpRangeResult[i].RgainValue = stats->params.rawawb.ro_sum_r_exc[i];
         statsInt->awb_stats_v3x.excWpRangeResult[i].BgainValue = stats->params.rawawb.ro_sum_b_exc[i];
         statsInt->awb_stats_v3x.excWpRangeResult[i].WpNo =    stats->params.rawawb.ro_wp_nm_exc[i];
 
+    }
+
+    // to fixed the bug in ic design that some egisters maybe overflow
+    if(!mIsMultiIsp){
+        int w,h;
+        w = statsInt->awb_stats_v3x.awb_cfg_effect_v201.windowSet[2];
+        h = statsInt->awb_stats_v3x.awb_cfg_effect_v201.windowSet[3];
+        float factor1 = (float)((1<<(RK_AIQ_AWB_WP_WEIGHT_BIS_V201+1))-1)/((1<<RK_AIQ_AWB_WP_WEIGHT_BIS_V201)-1);
+        //float factor1 = (float)(1<<(RK_AIQ_AWB_WP_WEIGHT_BIS_V201+1))/((1<<RK_AIQ_AWB_WP_WEIGHT_BIS_V201)-1);
+        if(w*h > RK_AIQ_AWB_STAT_MAX_AREA){
+            LOGD_AWB("%s ramdata and ro_wp_num2 is fixed",__FUNCTION__);
+            for(int i = 0; i < RK_AIQ_AWB_GRID_NUM_TOTAL; i++) {
+               statsInt->awb_stats_v3x.blockResult[i].WpNo = (float)statsInt->awb_stats_v3x.blockResult[i].WpNo * factor1 +0.5 ;
+               statsInt->awb_stats_v3x.blockResult[i].Rvalue = (float)statsInt->awb_stats_v3x.blockResult[i].Rvalue * factor1 +0.5 ;
+               statsInt->awb_stats_v3x.blockResult[i].Gvalue = (float)statsInt->awb_stats_v3x.blockResult[i].Gvalue * factor1 +0.5 ;
+               statsInt->awb_stats_v3x.blockResult[i].Bvalue = (float)statsInt->awb_stats_v3x.blockResult[i].Bvalue * factor1 +0.5 ;
+            }
+            rk_aiq_awb_xy_type_v201_t typ = statsInt->awb_stats_v3x.awb_cfg_effect_v201.xyRangeTypeForWpHist;
+            for(int i = 0; i < statsInt->awb_stats_v3x.awb_cfg_effect_v201.lightNum; i++) {
+                statsInt->awb_stats_v3x.WpNo2[i] = statsInt->awb_stats_v3x.light[i].xYType[typ].WpNo >> RK_AIQ_WP_GAIN_FRAC_BIS;
+            }
+        }else{
+            if(statsInt->awb_stats_v3x.awb_cfg_effect_v201.blkMeasureMode == RK_AIQ_AWB_BLK_STAT_MODE_REALWP_V201
+                && statsInt->awb_stats_v3x.awb_cfg_effect_v201.blkStatisticsWithLumaWeightEn){
+                for(int i = 0; i < RK_AIQ_AWB_GRID_NUM_TOTAL; i++) {
+                   statsInt->awb_stats_v3x.blockResult[i].WpNo = (float)statsInt->awb_stats_v3x.blockResult[i].WpNo * factor1 +0.5 ;
+                   statsInt->awb_stats_v3x.blockResult[i].Rvalue = (float)statsInt->awb_stats_v3x.blockResult[i].Rvalue * factor1 +0.5 ;
+                   statsInt->awb_stats_v3x.blockResult[i].Gvalue = (float)statsInt->awb_stats_v3x.blockResult[i].Gvalue * factor1 +0.5 ;
+                   statsInt->awb_stats_v3x.blockResult[i].Bvalue = (float)statsInt->awb_stats_v3x.blockResult[i].Bvalue * factor1 +0.5 ;
+                }
+            }
+        }
     }
 #endif
     //statsInt->awb_stats_valid = ISP2X_STAT_RAWAWB(stats->meas_type)? true:false;

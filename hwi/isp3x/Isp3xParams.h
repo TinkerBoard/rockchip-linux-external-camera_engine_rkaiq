@@ -30,6 +30,7 @@ public:
     virtual ~Isp3xParams() {};
 protected:
     virtual bool convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result, void* isp_cfg_p);
+    void fixedAwbOveflowToIsp3xParams(void* isp_cfg_p,bool is_dual_isp);
 private:
     XCAM_DEAD_COPY(Isp3xParams);
     void convertAiqAwbToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,

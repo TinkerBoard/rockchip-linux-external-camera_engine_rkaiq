@@ -214,7 +214,6 @@ void DrcNewMalloc
         LOG1_ATMO( "%s: Pre DrcGain len:%d, Cur DrcGain len:%d\n", __FUNCTION__, pConfig->Drc_v21.DrcGain.len, pCalibDb->Drc_v21.DrcTuningPara.DrcGain.EnvLv_len);
         LOG1_ATMO( "%s: Pre HiLit len:%d, Cur HiLit len:%d\n", __FUNCTION__, pConfig->Drc_v21.HiLit.len, pCalibDb->Drc_v21.DrcTuningPara.HiLight.EnvLv_len);
         LOG1_ATMO( "%s: Pre Local len:%d, Cur Local len:%d\n", __FUNCTION__, pConfig->Drc_v21.Local.len, pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.LocalData.EnvLv_len);
-        LOG1_ATMO( "%s: Pre Local len:%d, Cur motion len:%d\n", __FUNCTION__, pConfig->Drc_v21.Local.len, pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.MotionData.MotionCoef_len);
 
         //drc gain
         if(pConfig->Drc_v21.DrcGain.len != pCalibDb->Drc_v21.DrcTuningPara.DrcGain.EnvLv_len) {
@@ -254,16 +253,6 @@ void DrcNewMalloc
             pConfig->Drc_v21.Local.GlobalContrast = (float*)malloc(sizeof(float) * (pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.LocalData.EnvLv_len));
             pConfig->Drc_v21.Local.LoLitContrast = (float*)malloc(sizeof(float) * (pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.LocalData.EnvLv_len));
         }
-
-        //motion
-        if(pConfig->Drc_v21.Motion.len != pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.MotionData.MotionCoef_len) {
-            free(pConfig->Drc_v21.Motion.MotionCoef);
-            free(pConfig->Drc_v21.Motion.MotionStr);
-            pConfig->Drc_v21.Motion.len = pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.MotionData.MotionCoef_len;
-            pConfig->Drc_v21.Motion.MotionCoef = (float*)malloc(sizeof(float) * (pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.MotionData.MotionCoef_len));
-            pConfig->Drc_v21.Motion.MotionStr = (float*)malloc(sizeof(float) * (pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.MotionData.MotionCoef_len));
-        }
-
     }
 
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
@@ -379,7 +368,6 @@ void ConfigV30
     pAdrcCtx->PrevData.HandleData.Drc_v21.LocalWeit = 1.00 ;
     pAdrcCtx->PrevData.HandleData.Drc_v21.LocalAutoEnable = 1 ;
     pAdrcCtx->PrevData.HandleData.Drc_v21.LocalAutoWeit = 0.037477 ;
-    pAdrcCtx->PrevData.HandleData.Drc_v21.MotionStr = 0 ;
     pAdrcCtx->PrevData.HandleData.Drc_v21.GlobalContrast = 0 ;
     pAdrcCtx->PrevData.HandleData.Drc_v21.LoLitContrast = 0;
 
@@ -544,10 +532,6 @@ void AdrcIQUpdateV30
     pAdrcCtx->CurrData.HandleData.Drc_v21.LocalAutoWeit = DrcGetCurrPara(pAdrcCtx->CurrData.EnvLv,
             pAdrcCtx->Config.Drc_v21.Local.EnvLv, pAdrcCtx->Config.Drc_v21.Local.LocalAutoWeit, pAdrcCtx->Config.Drc_v21.Local.len);
 
-    //get motion
-    pAdrcCtx->CurrData.HandleData.Drc_v21.MotionStr = DrcGetCurrPara(pAdrcCtx->CurrData.MotionCoef,
-            pAdrcCtx->Config.Drc_v21.Motion.MotionCoef, pAdrcCtx->Config.Drc_v21.Motion.MotionStr, pAdrcCtx->Config.Drc_v21.Motion.len);
-
     //compress
     pAdrcCtx->CurrData.HandleData.Drc_v21.Mode = pAdrcCtx->Config.Drc_v21.Compress.Mode;
     for(int i = 0; i < ADRC_Y_NUM; i++)
@@ -607,13 +591,10 @@ void AdrcTranferData2ApiV30
     pAdrcCtx->drcAttr.stManual.DrcGain.DrcGain = pAdrcCtx->CurrData.HandleData.Drc_v21.DrcGain;
     pAdrcCtx->drcAttr.stManual.DrcGain.Alpha = pAdrcCtx->CurrData.HandleData.Drc_v21.Alpha;
     pAdrcCtx->drcAttr.stManual.DrcGain.Clip = pAdrcCtx->CurrData.HandleData.Drc_v21.Clip;
-
     pAdrcCtx->drcAttr.stManual.HiLit.Strength = pAdrcCtx->CurrData.HandleData.Drc_v21.Strength;
-
     pAdrcCtx->drcAttr.stManual.Local.LocalWeit = pAdrcCtx->CurrData.HandleData.Drc_v21.LocalWeit;
     pAdrcCtx->drcAttr.stManual.Local.GlobalContrast = pAdrcCtx->CurrData.HandleData.Drc_v21.GlobalContrast;
     pAdrcCtx->drcAttr.stManual.Local.LoLitContrast = pAdrcCtx->CurrData.HandleData.Drc_v21.LoLitContrast;
-
 
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
@@ -737,11 +718,6 @@ void AdrcUpdateConfig
             pAdrcCtx->Config.Drc_v21.Local.GlobalContrast[i] = LIMIT_VALUE(pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.LocalData.GlobalContrast[i], ADRCNORMALIZEMAX, ADRCNORMALIZEMIN);
             pAdrcCtx->Config.Drc_v21.Local.LoLitContrast[i] = LIMIT_VALUE(pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.LocalData.LoLitContrast[i], ADRCNORMALIZEMAX, ADRCNORMALIZEMIN);
         }
-        // motion
-        for (int i = 0; i < pAdrcCtx->Config.Drc_v21.Motion.len; i++ ) {
-            pAdrcCtx->Config.Drc_v21.Motion.MotionCoef[i] = LIMIT_VALUE(pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.MotionData.MotionCoef[i], ADRCNORMALIZEMAX, ADRCNORMALIZEMIN);
-            pAdrcCtx->Config.Drc_v21.Motion.MotionStr[i] = LIMIT_VALUE(pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.MotionData.MotionStr[i], ADRCNORMALIZEMAX, ADRCNORMALIZEMIN);
-        }
         //others
         pAdrcCtx->Config.Drc_v21.Others.curPixWeit = LIMIT_VALUE(pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.curPixWeit, ADRCNORMALIZEMAX, ADRCNORMALIZEMIN);
         pAdrcCtx->Config.Drc_v21.Others.preFrameWeit = LIMIT_VALUE(pCalibDb->Drc_v21.DrcTuningPara.LocalSetting.preFrameWeit, ADRCNORMALIZEMAX, ADRCNORMALIZEMIN);
@@ -861,11 +837,7 @@ void AdrcDampingV30
                     + (1 - Drc_damp) * pPreData->HandleData.Drc_v21.GlobalContrast;
             pCurrData->HandleData.Drc_v21.LoLitContrast = Drc_damp * pCurrData->HandleData.Drc_v21.LoLitContrast
                     + (1 - Drc_damp) * pPreData->HandleData.Drc_v21.LoLitContrast;
-            pCurrData->HandleData.Drc_v21.MotionStr = Drc_damp * pCurrData->HandleData.Drc_v21.MotionStr
-                    + (1 - Drc_damp) * pPreData->HandleData.Drc_v21.MotionStr;
         }
-
-
     }
 
     LOG1_ATMO("%s:Eixt!\n", __FUNCTION__);
@@ -947,7 +919,6 @@ void AdrcGetCurrProcRes
     int delta_scalein = (256 << MFHDR_LOG_Q_BITS) / validbits;
     pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_delta_scalein = delta_scalein;
 
-
     LOGD_ATMO("%s:Current damp Enable:%d DrcGain:%f Alpha:%f Clip:%f Strength:%f LocalWeit:%f GlobalContrast:%f LoLitContrast:%f CompressMode:%d\n", __FUNCTION__, pAdrcProcRes->bTmoEn,
               pCurrData->HandleData.Drc_v20.DrcGain, pCurrData->HandleData.Drc_v20.Alpha, pCurrData->HandleData.Drc_v20.Clip, pCurrData->HandleData.Drc_v20.Strength,
               pCurrData->HandleData.Drc_v20.LocalWeit, pCurrData->HandleData.Drc_v20.GlobalContrast, pCurrData->HandleData.Drc_v20.LoLitContrast, pCurrData->HandleData.Drc_v20.Mode);
@@ -1021,7 +992,7 @@ void AdrcGetCurrProcResV30
     pAdrcProcRes->DrcProcRes.Drc_v21.weicur_pix = (int)(SHIFT8BIT(pCurrData->Others.curPixWeit) + 0.5);
     pAdrcProcRes->DrcProcRes.Drc_v21.weipre_frame = (int)(SHIFT8BIT(pCurrData->Others.preFrameWeit) + 0.5);
     pAdrcProcRes->DrcProcRes.Drc_v21.weipre_frame = LIMIT_VALUE(pAdrcProcRes->DrcProcRes.Drc_v21.weipre_frame, INT8BITMAX, 0);
-    pAdrcProcRes->DrcProcRes.Drc_v21.bilat_wt_off = LIMIT_VALUE(pCurrData->HandleData.Drc_v21.MotionStr * INT8BITMAX, INT8BITMAX, 0);
+    pAdrcProcRes->DrcProcRes.Drc_v21.bilat_wt_off = SW_DRC_BILAT_WT_OFF_FIX;//LIMIT_VALUE(pCurrData->HandleData.Drc_v21.MotionStr * INT8BITMAX, INT8BITMAX, 0);
     pAdrcProcRes->DrcProcRes.Drc_v21.force_sgm_inv0 = (int)(SHIFT13BIT(pCurrData->Others.Range_force_sgm) + 0.5);
     pAdrcProcRes->DrcProcRes.Drc_v21.edge_scl = (int)(SHIFT8BIT(pCurrData->Others.Edge_Weit) + 0.5);
     pAdrcProcRes->DrcProcRes.Drc_v21.motion_scl = SW_DRC_MOTION_SCL_FIX;
@@ -1059,7 +1030,6 @@ void AdrcGetCurrProcResV30
     int validbits = dstbits - offsetbits;
     int delta_scalein = (256 << MFHDR_LOG_Q_BITS) / validbits;
     pAdrcProcRes->DrcProcRes.Drc_v21.delta_scalein = delta_scalein;
-
 
     LOGD_ATMO("%s:Current damp Enable:%d DrcGain:%f Alpha:%f Clip:%f Strength:%f LocalWeit:%f GlobalContrast:%f LoLitContrast:%f CompressMode:%d\n", __FUNCTION__, pAdrcProcRes->bTmoEn,
               pCurrData->HandleData.Drc_v21.DrcGain, pCurrData->HandleData.Drc_v21.Alpha, pCurrData->HandleData.Drc_v21.Clip, pCurrData->HandleData.Drc_v21.Strength,
@@ -1468,16 +1438,10 @@ XCamReturn AdrcInit
         pAdrcCtx->Config.Drc_v21.Local.GlobalContrast = (float*)malloc(sizeof(float) * (calibv2_adrc_calib->DrcTuningPara.LocalSetting.LocalData.EnvLv_len));
         pAdrcCtx->Config.Drc_v21.Local.LoLitContrast = (float*)malloc(sizeof(float) * (calibv2_adrc_calib->DrcTuningPara.LocalSetting.LocalData.EnvLv_len));
 
-        //malloc HiLit
-        pAdrcCtx->Config.Drc_v21.Motion.len = calibv2_adrc_calib->DrcTuningPara.LocalSetting.MotionData.MotionCoef_len;
-        pAdrcCtx->Config.Drc_v21.Motion.MotionCoef = (float*)malloc(sizeof(float) * (calibv2_adrc_calib->DrcTuningPara.LocalSetting.MotionData.MotionCoef_len));
-        pAdrcCtx->Config.Drc_v21.Motion.MotionStr = (float*)malloc(sizeof(float) * (calibv2_adrc_calib->DrcTuningPara.LocalSetting.MotionData.MotionCoef_len));
-
         pAdrcCtx->drcAttr.Enable = false;
         pAdrcCtx->drcAttr.opMode = DRC_OPMODE_API_OFF;
         ConfigV30(pAdrcCtx); //set default para
         memcpy(&pAdrcCtx->pCalibDB.Drc_v21, calibv2_adrc_calib, sizeof(CalibDbV2_drc_V2_t));//load iq paras
-
     }
 
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
@@ -1535,8 +1499,6 @@ XCamReturn AdrcRelease
         free(pAdrcCtx->Config.Drc_v21.Local.LocalAutoEnable);
         free(pAdrcCtx->Config.Drc_v21.Local.LocalAutoWeit);
         free(pAdrcCtx->Config.Drc_v21.Local.LocalWeit);
-        free(pAdrcCtx->Config.Drc_v21.Motion.MotionCoef);
-        free(pAdrcCtx->Config.Drc_v21.Motion.MotionStr);
         free(pAdrcCtx->Config.Drc_v21.Local.GlobalContrast);
         free(pAdrcCtx->Config.Drc_v21.Local.LoLitContrast);
     }

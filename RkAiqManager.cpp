@@ -119,6 +119,7 @@ RkAiqManager::RkAiqManager(const char* sns_ent_name,
     , mCurMirror(false)
     , mCurFlip(false)
     , mCamGroupCoreManager(NULL)
+    , mIsMain(false)
 {
     ENTER_XCORE_FUNCTION();
     EXIT_XCORE_FUNCTION();
@@ -273,6 +274,8 @@ RkAiqManager::prepare(uint32_t width, uint32_t height, rk_aiq_working_mode_t mod
     mCamHw->setCalib(mCalibDbV2);
     CalibDb_Sensor_ParaV2_t* sensor_calib =
         (CalibDb_Sensor_ParaV2_t*)(CALIBDBV2_GET_MODULE_PTR(mCalibDbV2, sensor_calib));
+
+    mCamHw->setGroupMode(mCamGroupCoreManager ? true : false, mIsMain);
 
     if(mode != RK_AIQ_WORKING_MODE_NORMAL)
         ret = mCamHw->prepare(width, height, working_mode_hw,

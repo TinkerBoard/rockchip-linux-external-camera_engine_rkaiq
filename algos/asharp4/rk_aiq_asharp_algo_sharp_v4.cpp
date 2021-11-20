@@ -159,6 +159,9 @@ Asharp4_result_t sharp_fix_transfer_V4(RK_SHARP_Params_V4_Select_t *pSelect, RK_
     }
 
     // SHARP_SHARP_EN (0x0000)
+    pFix->sharp_clk_dis = 0;
+    pFix->sharp_exgain_bypass = 0;
+    pFix->sharp_center_mode = 0;
     pFix->sharp_bypass = 0;
     pFix->sharp_en = pSelect->enable;
 

@@ -95,6 +95,7 @@ public:
     virtual XCamReturn stop() { return XCAM_RETURN_NO_ERROR;}
     virtual XCamReturn on_dqueue(int dev_idx, SmartPtr<V4l2BufferProxy> buf_proxy) { return XCAM_RETURN_NO_ERROR; }
     virtual bool is_virtual_sensor() { return false; }
+    virtual XCamReturn set_sync_mode(uint32_t mode) {return XCAM_RETURN_NO_ERROR;}
 protected:
     XCAM_DEAD_COPY (BaseSensorHw);
     uint32_t get_v4l2_pixelformat(uint32_t pixelcode);
@@ -124,6 +125,7 @@ public:
     virtual XCamReturn get_mirror_flip(bool& mirror, bool& flip);
     virtual XCamReturn start(bool prepared = false);
     virtual XCamReturn stop();
+    virtual XCamReturn set_sync_mode(uint32_t mode);
 
     XCAM_DEAD_COPY (SensorHw);
 protected:

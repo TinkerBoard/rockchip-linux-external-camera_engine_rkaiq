@@ -130,6 +130,7 @@ public:
     virtual XCamReturn get_sp_resolution(int &width, int &height, int &aligned_w, int &aligned_h) = 0;
     virtual void setCamPhyId(int phyId) = 0;
     virtual int getCamPhyId() = 0;
+    virtual void setGroupMode(bool bGroup, bool bMain) = 0;
 private:
     XCAM_DEAD_COPY (ICamHw);
 };

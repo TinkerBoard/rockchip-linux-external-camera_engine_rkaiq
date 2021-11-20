@@ -187,8 +187,9 @@ public:
     CamCalibDbV2Context_t* getCurrentCalibDBV2(void);
     XCamReturn calibTuning(const CamCalibDbV2Context_t* aiqCalib,
                            ModuleNameList& change_list);
-    void setCamGroupManager(RkAiqCamGroupManager* cam_group_manager) {
+    void setCamGroupManager(RkAiqCamGroupManager* cam_group_manager, bool isMain) {
         mCamGroupCoreManager = cam_group_manager;
+        mIsMain = isMain;
     }
 protected:
     XCamReturn applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results);
@@ -226,6 +227,7 @@ private:
     int mIspHwVer;
     int mCamPhyId;
     RkAiqCamGroupManager* mCamGroupCoreManager;
+    bool mIsMain;
 };
 
 }; //namespace RkCam

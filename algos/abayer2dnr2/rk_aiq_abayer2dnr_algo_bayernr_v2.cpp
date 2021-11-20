@@ -397,6 +397,7 @@ Abayer2dnr_result_V2_t bayer2dnr_fix_transfer_V2(RK_Bayer2dnr_Params_V2_Select_t
     }
 
     //ISP_BAYNR_3A00_CTRL
+    pFix->baynr_lg2_mode = 0x00;
     pFix->baynr_gauss_en = pSelect->bayernrv2_gauss_guide;
     pFix->baynr_log_bypass = 0;
     pFix->baynr_en = pSelect->bayernrv2_2dnr_enable;
@@ -451,7 +452,7 @@ Abayer2dnr_result_V2_t bayer2dnr_fix_transfer_V2(RK_Bayer2dnr_Params_V2_Select_t
         bayernr_sw_bil_gauss_weight[i + 8] = (int)(tmp2 * (1 << FIXVSTINV));
     }
 
-    if(0) {
+    if(pExpInfo->gray_mode) {
         //gray mode
         tmp = bayernr_sw_bil_gauss_weight[12];
         pFix->weit_d[0] = CLIP(tmp, 0, 0x3ff);
@@ -471,7 +472,10 @@ Abayer2dnr_result_V2_t bayer2dnr_fix_transfer_V2(RK_Bayer2dnr_Params_V2_Select_t
 
 #endif
 
+    pFix->lg2_off = 0x100;
+    pFix->lg2_lgoff = 0x8000;
 
+    pFix->dat_max = 0xfffff;
 
     bayer2dnr_fix_printf_V2(pFix);
 

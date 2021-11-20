@@ -19,7 +19,7 @@ extern "C" {
 typedef struct CalibDbV2_Cac_SettingByIso_s {
     // M4_NUMBER_DESC("iso", "u32", M4_RANGE(0,4294967295), "0", M4_DIGIT(0),M4_HIDE(0))
     uint32_t iso;
-    // M4_NUMBER_DESC("bypass", "u32", M4_RANGE(0,4294967295), "0", M4_DIGIT(0),M4_HIDE(0))
+    // M4_NUMBER_DESC("bypass", "u8",M4_RANGE(0,1), "0", M4_DIGIT(0),M4_HIDE(0))
     uint8_t bypass;
     // M4_ARRAY_DESC("strength_table", "f32", M4_SIZE(0,22), M4_RANGE(0,1), "1.0", M4_DIGIT(1), M4_DYNAMIC(0))
     float strength_table[RKCAC_STRENGTH_TABLE_LEN];
