@@ -538,7 +538,8 @@ void Isp3xParams::convertAiqTnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
         isp_cfg.module_ens |= ISP3X_MODULE_BAYNR;
         isp_cfg.module_en_update |= ISP3X_MODULE_BAYNR;
     } else {
-        isp_cfg.module_ens &= ~(ISP3X_MODULE_BAY3D);
+        //isp_cfg.module_ens &= ~(ISP3X_MODULE_BAY3D);
+        isp_cfg.module_ens |= ISP3X_MODULE_BAY3D;
     }
 
     isp_cfg.module_cfg_update |= ISP3X_MODULE_BAY3D;
@@ -1010,12 +1011,13 @@ void Isp3xParams::convertAiqMergeToIsp3xParams(struct isp3x_isp_params_cfg& isp_
     isp_cfg.others.hdrmge_cfg.lm_dif_0p9   = amerge_data.Merge_v30.sw_hdrmge_lm_dif_0p9;
     isp_cfg.others.hdrmge_cfg.ms_diff_0p15 = amerge_data.Merge_v30.sw_hdrmge_ms_dif_0p15;
     isp_cfg.others.hdrmge_cfg.ms_dif_0p8   = amerge_data.Merge_v30.sw_hdrmge_ms_dif_0p8;
-    for(int i = 0; i < 17; i++)
+    for(int i = 0; i < ISP3X_HDRMGE_L_CURVE_NUM; i++)
     {
         isp_cfg.others.hdrmge_cfg.curve.curve_0[i] = amerge_data.Merge_v30.sw_hdrmge_l0_y[i];
         isp_cfg.others.hdrmge_cfg.curve.curve_1[i] = amerge_data.Merge_v30.sw_hdrmge_l1_y[i];
-        isp_cfg.others.hdrmge_cfg.e_y[i]           = amerge_data.Merge_v30.sw_hdrmge_e_y[i];
     }
+    for(int i = 0; i < ISP3X_HDRMGE_E_CURVE_NUM; i++)
+        isp_cfg.others.hdrmge_cfg.e_y[i]           = amerge_data.Merge_v30.sw_hdrmge_e_y[i];
 
     //isp30 add
     isp_cfg.others.hdrmge_cfg.s_base = amerge_data.Merge_v30.sw_hdrmge_s_base;
@@ -1104,6 +1106,7 @@ void Isp3xParams::convertAiqCacToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
     memcpy(cfg, &cac_cfg.cfg[0], sizeof(*cfg));
     memcpy(cfg_right, &cac_cfg.cfg[1], sizeof(*cfg));
 
+#if 0
     LOGD_ACAC("driver current bypass: %d", cfg->bypass_en);
     LOGD_ACAC("driver center en: %d", cfg->center_en);
     LOGD_ACAC("driver center x: %u", cfg->center_width);
@@ -1117,6 +1120,7 @@ void Isp3xParams::convertAiqCacToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
     for (int i = 0; i < RKCAC_STRENGTH_TABLE_LEN; i++) {
         LOGD_ACAC("driver strength %d: %u", i, cfg->strength[i]);
     }
+#endif
 }
 
 void Isp3xParams::convertAiqAdehazeToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,

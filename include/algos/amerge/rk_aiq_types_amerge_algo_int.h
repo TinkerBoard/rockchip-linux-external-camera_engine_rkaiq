@@ -14,6 +14,12 @@
 #include "RkAiqCalibDbTypes.h"
 #include "amerge_head.h"
 
+#define ISP20_HDRMGE_OE_CURVE_NUM   (17)
+#define ISP20_HDRMGE_MD_CURVE_NUM   (17)
+#define ISP3X_HDRMGE_OE_CURVE_NUM   ISP20_HDRMGE_OE_CURVE_NUM
+#define ISP3X_HDRMGE_MD_CURVE_NUM   ISP20_HDRMGE_MD_CURVE_NUM
+
+
 typedef struct mgeCtrlData_S
 {
     float stCoef;
@@ -70,7 +76,7 @@ typedef struct MergeCurrCtlData_s
     float MoveCoef;
 } MergeCurrCtlData_t;
 
-typedef struct MergeCurrRegData_s
+typedef struct MergeCurrRegDataV20_s
 {
     float OECurve_smooth;
     float OECurve_offset;
@@ -78,6 +84,27 @@ typedef struct MergeCurrRegData_s
     float MDCurveLM_offset;
     float MDCurveMS_smooth;
     float MDCurveMS_offset;
+} MergeCurrRegDataV20_t;
+
+typedef struct MergeCurrRegDataV30_s
+{
+    float OECurve_smooth;
+    float OECurve_offset;
+    float MDCurveLM_smooth;
+    float MDCurveLM_offset;
+    float MDCurveMS_smooth;
+    float MDCurveMS_offset;
+    float MDCurve_Coef;
+    float MDCurve_ms_thd0;
+    float MDCurve_lm_thd0;
+} MergeCurrRegDataV30_t;
+
+typedef struct MergeCurrRegData_s
+{
+    union {
+        MergeCurrRegDataV20_t Merge_v20;
+        MergeCurrRegDataV30_t Merge_v30;
+    };
 } MergeCurrRegData_t;
 
 typedef struct mergeAttr_s
@@ -102,9 +129,9 @@ typedef struct MgeProcRes_s
     unsigned char  sw_hdrmge_lm_dif_0p9;
     unsigned char  sw_hdrmge_ms_dif_0p15;
     unsigned char  sw_hdrmge_lm_dif_0p15;
-    unsigned short sw_hdrmge_l0_y[17];
-    unsigned short sw_hdrmge_l1_y[17];
-    unsigned short sw_hdrmge_e_y[17];
+    unsigned short sw_hdrmge_l0_y[ISP20_HDRMGE_MD_CURVE_NUM];
+    unsigned short sw_hdrmge_l1_y[ISP20_HDRMGE_MD_CURVE_NUM];
+    unsigned short sw_hdrmge_e_y[ISP20_HDRMGE_OE_CURVE_NUM];
 } MgeProcRes_t;
 
 typedef struct MgeProcResV2_s
@@ -120,9 +147,9 @@ typedef struct MgeProcResV2_s
     unsigned char  sw_hdrmge_lm_dif_0p9;
     unsigned char  sw_hdrmge_ms_dif_0p15;
     unsigned char  sw_hdrmge_lm_dif_0p15;
-    unsigned short sw_hdrmge_l0_y[17];
-    unsigned short sw_hdrmge_l1_y[17];
-    unsigned short sw_hdrmge_e_y[17];
+    unsigned short sw_hdrmge_l0_y[ISP3X_HDRMGE_MD_CURVE_NUM];
+    unsigned short sw_hdrmge_l1_y[ISP3X_HDRMGE_MD_CURVE_NUM];
+    unsigned short sw_hdrmge_e_y[ISP3X_HDRMGE_OE_CURVE_NUM];
     unsigned short sw_hdrmge_ms_thd1;
     unsigned short sw_hdrmge_ms_thd0;
     unsigned short sw_hdrmge_ms_scl;

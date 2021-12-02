@@ -1332,15 +1332,16 @@ RkAiqCore::genIspAmergeResult(RkAiqFullParams* params)
             amerge_rk->AmergeProcRes.Merge_v20.sw_hdrmge_gain1_inv;
         merge_param->result.Merge_v20.sw_hdrmge_gain2 =
             amerge_rk->AmergeProcRes.Merge_v20.sw_hdrmge_gain2;
-        for(int i = 0; i < 17; i++)
-        {
-            merge_param->result.Merge_v20.sw_hdrmge_e_y[i] =
-                amerge_rk->AmergeProcRes.Merge_v20.sw_hdrmge_e_y[i];
+        for(int i = 0; i < ISP20_HDRMGE_MD_CURVE_NUM; i++) {
             merge_param->result.Merge_v20.sw_hdrmge_l1_y[i] =
                 amerge_rk->AmergeProcRes.Merge_v20.sw_hdrmge_l1_y[i];
             merge_param->result.Merge_v20.sw_hdrmge_l0_y[i] =
                 amerge_rk->AmergeProcRes.Merge_v20.sw_hdrmge_l0_y[i];
         }
+        for(int i = 0; i < ISP20_HDRMGE_OE_CURVE_NUM; i++)
+            merge_param->result.Merge_v20.sw_hdrmge_e_y[i] =
+                amerge_rk->AmergeProcRes.Merge_v20.sw_hdrmge_e_y[i];
+
 
         merge_param->result.LongFrameMode =
             amerge_rk->AmergeProcRes.LongFrameMode;
@@ -3874,6 +3875,7 @@ RkAiqCore::events_analyze(const SmartPtr<ispHwEvt_t> &evts)
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     SmartPtr<RkAiqExpParamsProxy> preExpParams = nullptr;
     SmartPtr<RkAiqExpParamsProxy> curExpParams = nullptr;
+    SmartPtr<RkAiqExpParamsProxy> nxtExpParams = nullptr;
 
     const SmartPtr<Isp20Evt> isp20Evts =
         evts.dynamic_cast_ptr<Isp20Evt>();
@@ -3884,7 +3886,7 @@ RkAiqCore::events_analyze(const SmartPtr<ispHwEvt_t> &evts)
     uint32_t id = 0, maxId = 0;
     if (sequence > 0)
         id = mLastAnalyzedId + 1 > sequence ? mLastAnalyzedId + 1 : sequence;
-    maxId = sequence + isp20Evts->expDelay;
+    maxId = sequence + isp20Evts->expDelay - 1;
 
     LOGD_ANALYZER("camId:%d, sequence(%d), expDelay(%d), id(%d), maxId(%d)",
                   mAlogsComSharedParams.mCamPhyId,
@@ -3900,6 +3902,10 @@ RkAiqCore::events_analyze(const SmartPtr<ispHwEvt_t> &evts)
             LOGE_ANALYZER("id(%d) get exp failed!", id);
             break;
         }
+        if (isp20Evts->getExpInfoParams(nxtExpParams, id + 1) < 0) {
+            LOGE_ANALYZER("id(%d) get exp failed!", id + 1);
+            break;
+        }
 
         SmartPtr<RkAiqSofInfoWrapperProxy> sofInfo = NULL;
         if (mAiqSofInfoWrapperPool->has_free_items()) {
@@ -3912,6 +3918,7 @@ RkAiqCore::events_analyze(const SmartPtr<ispHwEvt_t> &evts)
         sofInfo->data()->sequence = id;
         sofInfo->data()->preExp = preExpParams;
         sofInfo->data()->curExp = curExpParams;
+        sofInfo->data()->nxtExp = nxtExpParams;
         sofInfo->data()->sof = isp20Evts->getSofTimeStamp();
 
 
@@ -3924,6 +3931,21 @@ RkAiqCore::events_analyze(const SmartPtr<ispHwEvt_t> &evts)
 
         mLastAnalyzedId = id;
         id++;
+
+        LOGD_ANALYZER(">>> Framenum=%d, id=%d, Cur sgain=%f,stime=%f,mgain=%f,mtime=%f,lgain=%f,ltime=%f",
+                      isp20Evts->sequence, id, curExpParams->data()->aecExpInfo.HdrExp[0].exp_real_params.analog_gain,
+                      curExpParams->data()->aecExpInfo.HdrExp[0].exp_real_params.integration_time,
+                      curExpParams->data()->aecExpInfo.HdrExp[1].exp_real_params.analog_gain,
+                      curExpParams->data()->aecExpInfo.HdrExp[1].exp_real_params.integration_time,
+                      curExpParams->data()->aecExpInfo.HdrExp[2].exp_real_params.analog_gain,
+                      curExpParams->data()->aecExpInfo.HdrExp[2].exp_real_params.integration_time);
+        LOGD_ANALYZER(">>> Framenum=%d, id=%d, nxt sgain=%f,stime=%f,mgain=%f,mtime=%f,lgain=%f,ltime=%f",
+                      isp20Evts->sequence, id, nxtExpParams->data()->aecExpInfo.HdrExp[0].exp_real_params.analog_gain,
+                      nxtExpParams->data()->aecExpInfo.HdrExp[0].exp_real_params.integration_time,
+                      nxtExpParams->data()->aecExpInfo.HdrExp[1].exp_real_params.analog_gain,
+                      nxtExpParams->data()->aecExpInfo.HdrExp[1].exp_real_params.integration_time,
+                      nxtExpParams->data()->aecExpInfo.HdrExp[2].exp_real_params.analog_gain,
+                      nxtExpParams->data()->aecExpInfo.HdrExp[2].exp_real_params.integration_time);
 
         LOGD_ANALYZER("analyze the id(%d), sequence(%d), mLastAnalyzedId(%d)",
                       id, sequence, mLastAnalyzedId);
@@ -4667,7 +4689,9 @@ RkAiqCore::grp0Analyze(grp0AnalyzerInParams_t &inParams)
     shared->afStatsBuf                  = inParams.afStatsBuf;
     shared->res_comb.ae_pre_res         = inParams.aePreRes;
     shared->res_comb.ae_proc_res        = inParams.aeProcRes;
+    shared->preExp                      = inParams.sofInfoMsg->msg->data()->preExp->data()->aecExpInfo;
     shared->curExp                      = inParams.sofInfoMsg->msg->data()->curExp->data()->aecExpInfo;
+    shared->nxtExp                      = inParams.sofInfoMsg->msg->data()->nxtExp->data()->aecExpInfo;
 
     LOGI_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
 

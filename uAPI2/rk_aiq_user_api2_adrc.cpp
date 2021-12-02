@@ -29,7 +29,7 @@ rk_aiq_user_api2_adrc_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drc_attrib_t at
 {
     if(CHECK_ISP_HW_V20())
         LOGE_ATMO("%s:ISP2.0 do not support drc api!\n", __FUNCTION__);
-    else if(CHECK_ISP_HW_V21()) {
+    else if(CHECK_ISP_HW_V21() || CHECK_ISP_HW_V30()) {
         CHECK_USER_API_ENABLE2(sys_ctx);
         CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ADRC);
         RkAiqAdrcHandleInt* algo_handle =
@@ -47,7 +47,7 @@ rk_aiq_user_api2_adrc_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drc_attrib_t* a
 {
     if(CHECK_ISP_HW_V20())
         LOGE_ATMO("%s:ISP2.0 do not support drc api!\n", __FUNCTION__);
-    else if(CHECK_ISP_HW_V21()) {
+    else if(CHECK_ISP_HW_V21() || CHECK_ISP_HW_V30()) {
         RkAiqAdrcHandleInt* algo_handle =
             algoHandle<RkAiqAdrcHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADRC);
 

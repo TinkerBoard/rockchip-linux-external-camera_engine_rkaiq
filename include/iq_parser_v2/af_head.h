@@ -149,6 +149,11 @@ typedef struct CalibDbV2_Af_Contrast_s {
     // M4_NUMBER_DESC("SearchLumaStableThers", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3),M4_HIDE(0))
     float                   SearchLumaStableThers;
 
+    // M4_NUMBER_DESC("Stage1QuickFoundThers", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3),M4_HIDE(0))
+    float                   Stage1QuickFoundThers;
+    // M4_NUMBER_DESC("Stage2QuickFoundThers", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3),M4_HIDE(0))
+    float                   Stage2QuickFoundThers;
+
     // M4_NUMBER_DESC("FlatValue", "f32", M4_RANGE(0,65535), "0", M4_DIGIT(3),M4_HIDE(0))
     float                   FlatValue;
 
@@ -176,14 +181,16 @@ typedef struct CalibDbV2_Af_Pdaf_s {
 } CalibDbV2_Af_Pdaf_t;
 
 typedef struct CalibDbV2_Af_VcmCfg_s {
-    // M4_NUMBER_DESC("start current", "s32", M4_RANGE(-1, 1000), "-1", M4_DIGIT(0))
+    // M4_NUMBER_DESC("start current", "s32", M4_RANGE(-1, 2048), "-1", M4_DIGIT(0))
     int start_current;
-    // M4_NUMBER_DESC("rated current", "s32", M4_RANGE(-1, 1000), "-1", M4_DIGIT(0))
+    // M4_NUMBER_DESC("rated current", "s32", M4_RANGE(-1, 2048), "-1", M4_DIGIT(0))
     int rated_current;
     // M4_NUMBER_DESC("step mode", "s32", M4_RANGE(-1, 1000), "-1", M4_DIGIT(0))
     int step_mode;
     // M4_NUMBER_DESC("extra delay", "s32", M4_RANGE(-10000,10000), "0", M4_DIGIT(0))
     int extra_delay;
+    // M4_NUMBER_DESC("posture diff", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3))
+    float posture_diff;
 } CalibDbV2_Af_VcmCfg_t;
 
 typedef struct CalibDbV2_Af_MeasIsoCfg_s {
@@ -342,10 +349,10 @@ typedef struct CalibDbV2_AfV30_MeasCfg_s {
     short v2_fir_coe[3];
     // M4_ARRAY_DESC("horizontal first iir1 filter", "s16", M4_SIZE(1,6), M4_RANGE(-2047,2047), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     short h1_iir1_coe[6];
-    // M4_ARRAY_DESC("horizontal second iir1 filter", "s16", M4_SIZE(1,6), M4_RANGE(-2047,2047), "0", M4_DIGIT(0), M4_DYNAMIC(0))
-    short h2_iir1_coe[6];
     // M4_ARRAY_DESC("horizontal first iir2 filter", "s16", M4_SIZE(1,6), M4_RANGE(-2047,2047), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     short h1_iir2_coe[6];
+    // M4_ARRAY_DESC("horizontal second iir1 filter", "s16", M4_SIZE(1,6), M4_RANGE(-2047,2047), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    short h2_iir1_coe[6];
     // M4_ARRAY_DESC("horizontal second iir2 filter", "s16", M4_SIZE(1,6), M4_RANGE(-2047,2047), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     short h2_iir2_coe[6];
     // M4_NUMBER_DESC("ldg enable", "u8", M4_RANGE(0, 1), "0", M4_DIGIT(0))

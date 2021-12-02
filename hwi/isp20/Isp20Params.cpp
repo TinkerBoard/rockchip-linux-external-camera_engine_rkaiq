@@ -1090,12 +1090,13 @@ void Isp20Params::convertAiqMergeToIsp20Params(T& isp_cfg,
     isp_cfg.others.hdrmge_cfg.lm_dif_0p9   = amerge_data.Merge_v20.sw_hdrmge_lm_dif_0p9;
     isp_cfg.others.hdrmge_cfg.ms_diff_0p15 = amerge_data.Merge_v20.sw_hdrmge_ms_dif_0p15;
     isp_cfg.others.hdrmge_cfg.ms_dif_0p8   = amerge_data.Merge_v20.sw_hdrmge_ms_dif_0p8;
-    for(int i = 0; i < 17; i++)
-    {
+    for(int i = 0; i < ISP2X_HDRMGE_L_CURVE_NUM; i++) {
         isp_cfg.others.hdrmge_cfg.curve.curve_0[i] = amerge_data.Merge_v20.sw_hdrmge_l0_y[i];
         isp_cfg.others.hdrmge_cfg.curve.curve_1[i] = amerge_data.Merge_v20.sw_hdrmge_l1_y[i];
-        isp_cfg.others.hdrmge_cfg.e_y[i]           = amerge_data.Merge_v20.sw_hdrmge_e_y[i];
     }
+    for(int i = 0; i < ISP2X_HDRMGE_E_CURVE_NUM; i++)
+        isp_cfg.others.hdrmge_cfg.e_y[i]           = amerge_data.Merge_v20.sw_hdrmge_e_y[i];
+
 
 #if 0
     LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: gain0_inv %d", __LINE__, isp_cfg.others.hdrmge_cfg.gain0_inv);
@@ -1795,6 +1796,7 @@ Isp20Params::convertAiqLscToIsp20Params(T& isp_cfg,
 
 #ifdef ISP_HW_V30
     struct isp3x_lsc_cfg *  cfg = &isp_cfg.others.lsc_cfg;
+    cfg->sector_16x16 = true;
 #else
     struct isp2x_lsc_cfg *  cfg = &isp_cfg.others.lsc_cfg;
 #endif

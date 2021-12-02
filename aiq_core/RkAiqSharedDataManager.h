@@ -40,6 +40,7 @@ typedef struct RkAiqSofInfoWrapper_s : public SharedItemData {
     uint32_t sequence;
     SmartPtr<RkAiqExpParamsProxy> preExp;
     SmartPtr<RkAiqExpParamsProxy> curExp;
+    SmartPtr<RkAiqExpParamsProxy> nxtExp;
     int64_t sof;
 } RkAiqSofInfoWrapper_t;
 

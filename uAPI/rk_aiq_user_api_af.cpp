@@ -131,12 +131,21 @@ rk_aiq_user_api_af_SetZoomIndex(const rk_aiq_sys_ctx_t* sys_ctx, int index)
     RKAIQ_API_SMART_LOCK(sys_ctx);
     CamCalibDbV2Context_t calibdbv2_ctx =
         RkAiqCalibDbV2::toDefaultCalibDb(sys_ctx->_calibDbProj);
-    CalibDbV2_AF_t *af =
-        (CalibDbV2_AF_t*)(CALIBDBV2_GET_MODULE_PTR((&calibdbv2_ctx), af));
-    CalibDbV2_Af_ZoomFocusTbl_t *zoomfocus_tbl = (CalibDbV2_Af_ZoomFocusTbl_t*)(&af->TuningPara.zoomfocus_tbl);
-    int focal_length_len = zoomfocus_tbl->focal_length_len;
     RkAiqAfHandleInt* algo_handle =
         algoHandle<RkAiqAfHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AF);
+    CalibDbV2_Af_ZoomFocusTbl_t *zoomfocus_tbl;
+    int focal_length_len;
+
+    if (CHECK_ISP_HW_V30()) {
+        CalibDbV2_AFV30_t *af_v30 =
+            (CalibDbV2_AFV30_t*)(CALIBDBV2_GET_MODULE_PTR((&calibdbv2_ctx), af_v30));
+        zoomfocus_tbl = (CalibDbV2_Af_ZoomFocusTbl_t*)(&af_v30->TuningPara.zoomfocus_tbl);
+    } else {
+        CalibDbV2_AF_t *af =
+            (CalibDbV2_AF_t*)CALIBDBV2_GET_MODULE_PTR((&calibdbv2_ctx), af);
+        zoomfocus_tbl = (CalibDbV2_Af_ZoomFocusTbl_t*)(&af->TuningPara.zoomfocus_tbl);
+    }
+    focal_length_len = zoomfocus_tbl->focal_length_len;
 
     if (index < 0)
         index = 0;
@@ -260,10 +269,19 @@ rk_aiq_user_api_af_GetZoomRange(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_af_zoomr
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     CamCalibDbV2Context_t calibdbv2_ctx =
         RkAiqCalibDbV2::toDefaultCalibDb(sys_ctx->_calibDbProj);
-    CalibDbV2_AF_t *af =
-        (CalibDbV2_AF_t*)(CALIBDBV2_GET_MODULE_PTR((&calibdbv2_ctx), af));
-    CalibDbV2_Af_ZoomFocusTbl_t *zoomfocus_tbl = (CalibDbV2_Af_ZoomFocusTbl_t*)(&af->TuningPara.zoomfocus_tbl);
-    int focal_length_len = zoomfocus_tbl->focal_length_len;
+    CalibDbV2_Af_ZoomFocusTbl_t *zoomfocus_tbl;
+    int focal_length_len;
+
+    if (CHECK_ISP_HW_V30()) {
+        CalibDbV2_AFV30_t *af_v30 =
+            (CalibDbV2_AFV30_t*)(CALIBDBV2_GET_MODULE_PTR((&calibdbv2_ctx), af_v30));
+        zoomfocus_tbl = (CalibDbV2_Af_ZoomFocusTbl_t*)(&af_v30->TuningPara.zoomfocus_tbl);
+    } else {
+        CalibDbV2_AF_t *af =
+            (CalibDbV2_AF_t*)CALIBDBV2_GET_MODULE_PTR((&calibdbv2_ctx), af);
+        zoomfocus_tbl = (CalibDbV2_Af_ZoomFocusTbl_t*)(&af->TuningPara.zoomfocus_tbl);
+    }
+    focal_length_len = zoomfocus_tbl->focal_length_len;
 
     if (focal_length_len > 0) {
         range->min_fl = zoomfocus_tbl->focal_length[0];

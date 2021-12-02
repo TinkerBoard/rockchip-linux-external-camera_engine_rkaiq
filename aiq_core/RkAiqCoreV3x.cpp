@@ -1129,15 +1129,15 @@ RkAiqCoreV3x::genIspAmergeResult(RkAiqFullParams* params)
             amerge_rk->AmergeProcRes.Merge_v30.sw_hdrmge_gain1_inv;
         merge_param->result.Merge_v30.sw_hdrmge_gain2 =
             amerge_rk->AmergeProcRes.Merge_v30.sw_hdrmge_gain2;
-        for(int i = 0; i < 17; i++)
-        {
-            merge_param->result.Merge_v30.sw_hdrmge_e_y[i] =
-                amerge_rk->AmergeProcRes.Merge_v30.sw_hdrmge_e_y[i];
+        for(int i = 0; i < ISP3X_HDRMGE_MD_CURVE_NUM; i++) {
             merge_param->result.Merge_v30.sw_hdrmge_l1_y[i] =
                 amerge_rk->AmergeProcRes.Merge_v30.sw_hdrmge_l1_y[i];
             merge_param->result.Merge_v30.sw_hdrmge_l0_y[i] =
                 amerge_rk->AmergeProcRes.Merge_v30.sw_hdrmge_l0_y[i];
         }
+        for(int i = 0; i < ISP3X_HDRMGE_OE_CURVE_NUM; i++)
+            merge_param->result.Merge_v30.sw_hdrmge_e_y[i] =
+                amerge_rk->AmergeProcRes.Merge_v30.sw_hdrmge_e_y[i];
 
         merge_param->result.LongFrameMode =
             amerge_rk->AmergeProcRes.LongFrameMode;
@@ -1290,23 +1290,6 @@ RkAiqCoreV3x::genIspAfResult(RkAiqFullParams* params)
         p_focus_param->vcm_end_ma = af_rk->af_proc_res_com.af_focus_param.vcm_end_ma;
         p_focus_param->vcm_config_valid = af_rk->af_proc_res_com.af_focus_param.vcm_config_valid;
 
-        {
-            SmartPtr<RkAiqHandle>* ae_handle = getCurAlgoTypeHandle(RK_AIQ_ALGO_TYPE_AE);
-            int algo_id = (*ae_handle)->getAlgoId();
-
-            if (ae_handle) {
-                if ((algo_id == 0) && (af_rk->af_proc_res_com.lockae_en)) {
-                    RkAiqAeHandleInt *ae_algo = dynamic_cast<RkAiqAeHandleInt*>(ae_handle->ptr());
-                    Uapi_ExpSwAttr_t expSwAttr;
-
-                    ae_algo->getExpSwAttr(&expSwAttr);
-                    if (expSwAttr.enable != !af_rk->af_proc_res_com.lockae) {
-                        expSwAttr.enable = !af_rk->af_proc_res_com.lockae;
-                        ae_algo->setExpSwAttr(expSwAttr);
-                    }
-                }
-            }
-        }
     }
 
     EXIT_ANALYZER_FUNCTION();

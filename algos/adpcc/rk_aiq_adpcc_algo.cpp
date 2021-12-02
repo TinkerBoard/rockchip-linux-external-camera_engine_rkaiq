@@ -2720,7 +2720,6 @@ AdpccResult_t AdpccInit(AdpccContext_t **ppAdpccCtx, CamCalibDbV2Context_t *pCal
     dpcc_fast_mode_basic_params_init(&pAdpccCtx->stAuto.stFastMode, &pAdpccCtx->stDpccCalib);
     dpcc_pdaf_params_init(&pAdpccCtx->stAuto.stPdafParams, &pAdpccCtx->stDpccCalib.DpccTuningPara.Dpcc_pdaf);
     dpcc_sensor_params_init(&pAdpccCtx->stAuto.stSensorDpcc, &pAdpccCtx->stDpccCalib);
-    memset(&pAdpccCtx->stAuto.stPdafParams, 0x00, sizeof(pAdpccCtx->stAuto.stPdafParams));
 #else
     //static init
     html_params_init(&pAdpccCtx->stParams);

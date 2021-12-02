@@ -349,7 +349,7 @@ void AgicProcessV20
 
 
     short mulBit = 0;
-    int bitValue = RKAIQ_GIC_BITS;
+    int bitValue = pAgicCtx->raw_bits;
     if(bitValue > 10)
     {
         mulBit = 1 << (bitValue - 10);
@@ -504,7 +504,7 @@ void AgicProcessV21
 
 
     short mulBit = 0;
-    int bitValue = RKAIQ_GIC_BITS;
+    int bitValue = pAgicCtx->raw_bits;
     if(bitValue > 10)
     {
         mulBit = 1 << (bitValue - 10);
@@ -544,14 +544,8 @@ void AgicProcessV21
     LOGD_AGIC("%s(%d): noise_base:%f\n", __FUNCTION__, __LINE__, pAgicCtx->ConfigData.ConfigV21.noise_base);
     LOGD_AGIC("%s(%d): globalStrength:%f\n", __FUNCTION__, __LINE__, pAgicCtx->ConfigData.ConfigV21.globalStrength);
     LOGD_AGIC("%s(%d): diff_clip:%d\n", __FUNCTION__, __LINE__, pAgicCtx->ConfigData.ConfigV21.diff_clip);
-    LOGD_AGIC("%s(%d): sigma_y[0]:%d ", __FUNCTION__, __LINE__, pAgicCtx->ConfigData.ConfigV21.sigma_y[0]);
-    for(int i = 1; i < 7; i++)
-        LOGD_AGIC("%s(%d): sigma_y[%d]:%d ", __FUNCTION__, __LINE__, i, pAgicCtx->ConfigData.ConfigV21.sigma_y[i]);
-    LOGD_AGIC("%s(%d): sigma_y[7]:%d\n", __FUNCTION__, __LINE__, pAgicCtx->ConfigData.ConfigV21.sigma_y[7]);
-    LOGD_AGIC("%s(%d): sigma_y[8]:%d ", __FUNCTION__, __LINE__, pAgicCtx->ConfigData.ConfigV21.sigma_y[8]);
-    for(int i = 9; i < 14; i++)
-        LOGD_AGIC("%s(%d): sigma_y[%d]:%d ", __FUNCTION__, __LINE__, i, pAgicCtx->ConfigData.ConfigV21.sigma_y[i]);
-    LOGD_AGIC("%s(%d): sigma_y[14]:%d\n", __FUNCTION__, __LINE__, pAgicCtx->ConfigData.ConfigV21.sigma_y[14]);
+    for(int i = 0; i < 15; i++)
+        LOGD_AGIC("%s(%d): sigma_y[%d]:%f ", __FUNCTION__, __LINE__, i, pAgicCtx->ConfigData.ConfigV21.sigma_y[i]);
 
     LOGI_AGIC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
 

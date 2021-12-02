@@ -84,12 +84,12 @@ static XCamReturn AtmoPrepare(RkAiqAlgoCom* params)
     pAtmoCtx->height = AtmoCfgParam->rawHeight;
 
     if (AtmoCfgParam->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR2)
-        pAtmoCtx->FrameNumber = 1;
+        pAtmoCtx->FrameNumber = LINEAR_NUM;
     else if (AtmoCfgParam->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR3 &&
              AtmoCfgParam->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2)
-        pAtmoCtx->FrameNumber = 2;
+        pAtmoCtx->FrameNumber = HDR_2X_NUM;
     else
-        pAtmoCtx->FrameNumber = 3;
+        pAtmoCtx->FrameNumber = HDR_3X_NUM;
 
     CalibDbV2_tmo_t* calibv2_atmo_calib =
         (CalibDbV2_tmo_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDbv2, atmo_calib));

@@ -98,7 +98,7 @@ public:
     bool set_framerate (uint32_t n, uint32_t d);
     void get_framerate (uint32_t &n, uint32_t &d);
 
-    virtual XCamReturn open ();
+    virtual XCamReturn open (bool nonblock = false);
     virtual XCamReturn close ();
 
     XCamReturn query_cap(struct v4l2_capability &cap);

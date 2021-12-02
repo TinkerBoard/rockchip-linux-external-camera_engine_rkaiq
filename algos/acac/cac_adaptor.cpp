@@ -36,7 +36,7 @@ namespace RkCam {
 #define BYTES_PER_WORD 4
 #define BITS_PER_WORD  (BITS_PER_BYTE * BYTES_PER_WORD)
 
-#define INTERP_CAC(x0, x1, ratio) static_cast<int>((ratio) * ((x1) - (x0)) + (x0))
+#define INTERP_CAC(x0, x1, ratio) ((ratio) * ((x1) - (x0)) + (x0))
 
 #define DIV_ROUND_UP(n, d) (((n) + (d)-1) / (d))
 
@@ -211,6 +211,7 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcacInt* config) {
         return XCAM_RETURN_BYPASS;
     }
 
+    config_ = config;
     if (config->is_multi_isp) {
         CalcCacLutConfig(width, height, is_big_mode, full_lut_config);
         width = width / 2 + config->multi_isp_extended_pixel;
@@ -242,18 +243,6 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcacInt* config) {
                               ch * size;
                 ifs.read(addr0, size);
             }
-#if 0
-            for (uint32_t i = 0; i < lut_config.LutVCount; i++) {
-                char* addr0 = reinterpret_cast<char*>(current_lut_[0]->Addr) + line_offset * i;
-                memset(addr0 + line_offset / 2, 0, line_offset / 2);
-            }
-            memset(reinterpret_cast<char*>(current_lut_[0]->Addr) + size, 0, size);
-#endif
-#if 0
-            //memset(reinterpret_cast<char*>(current_lut_[0]->Addr) + size, 0, size);
-            memcpy(reinterpret_cast<char*>(current_lut_[0]->Addr) + size,
-                   reinterpret_cast<char*>(current_lut_[0]->Addr), size);
-#endif
         } else {
             // Read and Split Memory
             //   a == line_size - line_offset
@@ -271,9 +260,7 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcacInt* config) {
             // - +---------------------------+
             //   |<---------line_size------->|
             //
-            //uint32_t line_offset = lut_config.LutHCount * (CacPsfKernelSize - 1);
             uint32_t line_offset = lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
-            //uint32_t line_size   = full_lut_config.LutHCount * (CacPsfKernelSize - 1);
             uint32_t line_size = full_lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
             for (int ch = 0; ch < CacChannelCount; ch++) {
                 char* addr0 = reinterpret_cast<char*>(current_lut_[0]->Addr) +
@@ -366,6 +353,8 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcacInt* input,
             INTERP_CAC(calib_->TuningPara.SettingByIso[gain_low].strength_table[i],
                        calib_->TuningPara.SettingByIso[gain_high].strength_table[i], ratio);
         output->config[0].strength[i] = ROUND_F(strength[i] * (1 << RKCAC_STRENGTH_FIX_BITS));
+        output->config[0].strength[i] =
+            output->config[0].strength[i] > 2047 ? 2047 : output->config[0].strength[i];
     }
     output->config[0].bypass_en =
         INTERP_CAC(calib_->TuningPara.SettingByIso[gain_low].bypass,
@@ -381,6 +370,12 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcacInt* input,
     if (current_lut_[1]) {
         memcpy(&output->config[1], &output->config[0], sizeof(output->config[0]));
         output->config[1].buf_fd = current_lut_[1]->Fd;
+        if (output->config[0].center_en) {
+            uint16_t w = config_->width / 4;
+            uint16_t e = config_->multi_isp_extended_pixel / 4;
+            uint16_t x = calib_->SettingPara.center_x;
+            output->config[1].center_width = x - (w / 2 - e);
+        }
     }
 
     LOGD_ACAC("global en : %d", calib_->SettingPara.enable);
@@ -393,6 +388,8 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcacInt* input,
     LOGD_ACAC("psf buf fd: %d", output->config[0].buf_fd);
     if (current_lut_[1]) {
         LOGD_ACAC("psf buf fd right: %d", output->config[1].buf_fd);
+        LOGD_ACAC("center x right: %d", output->config[1].center_width);
+        LOGD_ACAC("center y right: %d", output->config[1].center_height);
     }
     LOGD_ACAC("psf hwsize: %u", output->config[0].hsize);
     LOGD_ACAC("psf size: %u", output->config[0].vsize);

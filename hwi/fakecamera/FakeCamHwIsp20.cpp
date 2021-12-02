@@ -242,8 +242,8 @@ FakeCamHwIsp20::parse_rk_rawdata(void *rawdata, struct rk_aiq_vbuf *vbuf)
     unsigned short tag = 0;
     struct _block_header header;
     uint8_t *p = (uint8_t *)rawdata;
-    uint8_t *actual_raw[3];
-    int actual_raw_len[3];
+    uint8_t *actual_raw[3] = {NULL, NULL, NULL};
+    int actual_raw_len[3] = {0, 0, 0};
     bool is_actual_rawdata = false;
     bool bExit = false;
     while(!bExit){

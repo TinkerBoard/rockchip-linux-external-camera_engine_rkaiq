@@ -25,6 +25,7 @@
 #include "Isp20_module_dbg.h"
 #include "CamHwIsp20.h"
 #include "CaptureRawData.h"
+
 namespace RkCam {
 
 const int RkPollThread::default_poll_timeout = 300; // ms
@@ -258,7 +259,7 @@ RkEventPollThread::poll_event_loop ()
 
     ret = _dev->dequeue_event (_event);
     if (ret != XCAM_RETURN_NO_ERROR) {
-        XCAM_LOG_WARNING ("dequeue event failed on dev:%s", XCAM_STR(_subdev->get_device_name()));
+        XCAM_LOG_WARNING ("dequeue event failed on dev:%s", XCAM_STR(_dev->get_device_name()));
         return XCAM_RETURN_ERROR_IOCTL;
     }
 
@@ -276,6 +277,7 @@ RkEventPollThread::poll_event_loop ()
 XCamReturn
 RkStreamEventPollThread::poll_event_loop () {
     XCamReturn ret = RkEventPollThread::poll_event_loop();
+
     if (ret == XCAM_RETURN_NO_ERROR) {
         if (_event.type == CIFISP_V4L2_EVENT_STREAM_START) {
             XCAM_LOG_INFO ("%s: poll stream on evt success", _dev->get_device_name());
@@ -288,6 +290,12 @@ RkStreamEventPollThread::poll_event_loop () {
             return XCAM_RETURN_ERROR_UNKNOWN;
         }
     }
+
+    if (ret == XCAM_RETURN_ERROR_IOCTL) {
+        // ignored for nonblock mode
+        return XCAM_RETURN_ERROR_TIMEOUT;
+    }
+
     return ret;
 }
 
@@ -296,7 +304,7 @@ RkStreamEventPollThread::start()
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    ret = _dev->open();
+    ret = _dev->open(true);
     if (ret) {
        return ret;
     }

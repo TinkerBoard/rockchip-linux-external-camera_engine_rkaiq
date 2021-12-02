@@ -42,10 +42,6 @@ private:
                              struct isp3x_isp_params_cfg* full_params,
                              uint64_t* module_en_update_partial,
                              uint64_t* module_cfg_update_partial);
-    virtual XCamReturn overrideExpRatioToAiqResults(const sint32_t frameId,
-            int module_id,
-            cam3aResultList &results,
-            int hdr_mode);
     struct isp3x_isp_params_cfg _full_active_isp3x_params;
 };
 

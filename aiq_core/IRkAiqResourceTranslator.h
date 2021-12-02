@@ -30,7 +30,9 @@ namespace RkCam {
 
 class IRkAiqResourceTranslator {
 public:
-    IRkAiqResourceTranslator ():mCamPhyId(-1){};
+    IRkAiqResourceTranslator ()
+        : mCamPhyId(-1)
+        , mIsGroupMode(false) {};
     virtual ~IRkAiqResourceTranslator () {};
 
     virtual XCamReturn translateIspStats (const SmartPtr<VideoBuffer> &from,
@@ -48,8 +50,10 @@ public:
     virtual XCamReturn translateAdehazeStats (const SmartPtr<VideoBuffer> &from,
                                       SmartPtr<RkAiqAdehazeStatsProxy> &to) = 0;
     void setCamPhyId(int phyId) { mCamPhyId = phyId;}
+    void setGroupMode(bool bGroup) { mIsGroupMode = bGroup;}
 protected:
     int mCamPhyId;
+    bool mIsGroupMode;
 
 private:
     XCAM_DEAD_COPY (IRkAiqResourceTranslator);

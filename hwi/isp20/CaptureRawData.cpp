@@ -466,6 +466,23 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          1,
                          focusCode,
                          zoomCode);
+            else if (CHECK_ISP_HW_V30())
+                snprintf(buffer,
+                         sizeof(buffer),
+                         "frame%08d-l_s-gain[%08.5f_%08.5f]-time[%08.5f_%08.5f]-"
+                         "awbGain[%08d_%08d_%08d_%08d]-dgain[%08d]-afcode[%08d_%08d]\n",
+                         frame_id,
+                         expParams->data()->aecExpInfo.HdrExp[1].exp_real_params.analog_gain,
+                         expParams->data()->aecExpInfo.HdrExp[0].exp_real_params.analog_gain,
+                         expParams->data()->aecExpInfo.HdrExp[1].exp_real_params.integration_time,
+                         expParams->data()->aecExpInfo.HdrExp[0].exp_real_params.integration_time,
+                         ispParams.isp_params_v3x[0].others.awb_gain_cfg.gain0_red,
+                         ispParams.isp_params_v3x[0].others.awb_gain_cfg.gain0_green_r,
+                         ispParams.isp_params_v3x[0].others.awb_gain_cfg.gain0_green_b,
+                         ispParams.isp_params_v3x[0].others.awb_gain_cfg.gain0_blue,
+                         1,
+                         focusCode,
+                         zoomCode);
         } else {
             if (CHECK_ISP_HW_V20())
                 snprintf(buffer,
@@ -494,6 +511,21 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          ispParams.isp_params_v21.others.awb_gain_cfg.gain0_green_r,
                          ispParams.isp_params_v21.others.awb_gain_cfg.gain0_green_b,
                          ispParams.isp_params_v21.others.awb_gain_cfg.gain0_blue,
+                         1,
+                         focusCode,
+                         zoomCode);
+            else if (CHECK_ISP_HW_V30())
+                snprintf(buffer,
+                         sizeof(buffer),
+                         "frame%08d-gain[%08.5f]-time[%08.5f]-"
+                         "awbGain[%08d_%08d_%08d_%08d]-dgain[%08d]-afcode[%08d_%08d]\n",
+                         frame_id,
+                         expParams->data()->aecExpInfo.LinearExp.exp_real_params.analog_gain,
+                         expParams->data()->aecExpInfo.LinearExp.exp_real_params.integration_time,
+                         ispParams.isp_params_v3x[0].others.awb_gain_cfg.gain0_red,
+                         ispParams.isp_params_v3x[0].others.awb_gain_cfg.gain0_green_r,
+                         ispParams.isp_params_v3x[0].others.awb_gain_cfg.gain0_green_b,
+                         ispParams.isp_params_v3x[0].others.awb_gain_cfg.gain0_blue,
                          1,
                          focusCode,
                          zoomCode);
@@ -727,16 +759,17 @@ void CaptureRawData::save_metadata_and_register
         LOGD_CAMHW_SUBM(CAPTURERAW_SUBM, "rawFrmId: %d, sequence: %d, _capture_metadata_num: %d\n",
                         rawFrmId, frameId,
                         _capture_metadata_num);
-        if (_is_raw_dir_exist && frameId >= rawFrmId && expParams.ptr())
+        if (_is_raw_dir_exist && frameId >= rawFrmId && expParams.ptr()) {
 #ifdef WRITE_ISP_REG
             write_reg_to_file(ISP_REGS_BASE, 0x0, 0x6000, frameId);
 #endif
 #ifdef WRITE_ISPP_REG
-        write_reg_to_file(ISPP_REGS_BASE, 0x0, 0xc94, frameId);
+            write_reg_to_file(ISPP_REGS_BASE, 0x0, 0xc94, frameId);
 #endif
-        write_metadata_to_file(raw_dir_path,
-                               frameId,
-                               ispParams, expParams, afParams,working_mode);
+            write_metadata_to_file(raw_dir_path,
+                    frameId,
+                    ispParams, expParams, afParams,working_mode);
+        }
         _capture_metadata_num--;
         if (!_capture_metadata_num) {
             _is_raw_dir_exist = false;

@@ -75,16 +75,14 @@ static XCamReturn AmergePrepare(RkAiqAlgoCom* params)
     AmergeContext_t* pAmergeCtx = (AmergeContext_t*)params->ctx;
     RkAiqAlgoConfigAmergeInt* AhdrCfgParam = (RkAiqAlgoConfigAmergeInt*)params; //come from params in html
     const CamCalibDbV2Context_t* pCalibDb = AhdrCfgParam->rk_com.u.prepare.calibv2;
-    pAmergeCtx->width = AhdrCfgParam->rawWidth;
-    pAmergeCtx->height = AhdrCfgParam->rawHeight;
 
     if (AhdrCfgParam->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR2)
-        pAmergeCtx->FrameNumber = 1;
+        pAmergeCtx->FrameNumber = LINEAR_NUM;
     else if (AhdrCfgParam->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR3 &&
              AhdrCfgParam->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2)
-        pAmergeCtx->FrameNumber = 2;
+        pAmergeCtx->FrameNumber = HDR_2X_NUM;
     else
-        pAmergeCtx->FrameNumber = 3;
+        pAmergeCtx->FrameNumber = HDR_3X_NUM;
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
         LOGD_AMERGE("%s: Amerge Reload Para!\n", __FUNCTION__);
@@ -110,7 +108,7 @@ static XCamReturn AmergePrepare(RkAiqAlgoCom* params)
         }
     }
 
-    if(pAmergeCtx->FrameNumber == 2 || pAmergeCtx->FrameNumber == 3) {
+    if(pAmergeCtx->FrameNumber == HDR_2X_NUM || pAmergeCtx->FrameNumber == HDR_3X_NUM) {
         if(pAmergeCtx->mergeAttr.opMode == MERGE_OPMODE_TOOL) {
             //MergeNewMalloc(&pAmergeCtx->Config, &pAmergeCtx->mergeAttr.stTool, pAmergeCtx->HWversion);
             //AmergeUpdateConfig(pAmergeCtx, &pAmergeCtx->mergeAttr.stTool);
@@ -131,11 +129,8 @@ static XCamReturn AmergePreProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     AmergeContext_t* pAmergeCtx = (AmergeContext_t*)inparams->ctx;
-    pAmergeCtx->frameCnt = inparams->frame_id;
     RkAiqAlgoConfigAmergeInt* AhdrCfgParam = (RkAiqAlgoConfigAmergeInt*)inparams;
 
-    if(pAmergeCtx->FrameNumber == 1)
-        LOGD_AMERGE("%s(%d) FrameID:%d, HDR FrameCnt is 1, Merge function bypass\n", __FUNCTION__, __LINE__, pAmergeCtx->frameCnt);
 
     LOG1_AMERGE("%s:Exit!\n", __FUNCTION__);
     return(XCAM_RETURN_NO_ERROR);
@@ -148,11 +143,13 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
     bool bypass = false;
 
     AmergeContext_t* pAmergeCtx = (AmergeContext_t*)inparams->ctx;
+    pAmergeCtx->frameCnt = inparams->frame_id > 2 ? (inparams->frame_id - 2) : 0;
     RkAiqAlgoProcAmergeInt* pAmergeParams = (RkAiqAlgoProcAmergeInt*)inparams;
     RkAiqAlgoProcResAmergeInt* pAmergeProcRes = (RkAiqAlgoProcResAmergeInt*)outparams;
 
-    if(pAmergeCtx->FrameNumber == 2 || pAmergeCtx->FrameNumber == 3) {
+    if(pAmergeCtx->FrameNumber == HDR_2X_NUM || pAmergeCtx->FrameNumber == HDR_3X_NUM) {
         LOGD_AMERGE("%s:/#####################################Amerge Start#####################################/ \n", __func__);
+
         //get Sensor Info
         XCamVideoBuffer* xCamAeProcRes = pAmergeParams->rk_com.u.proc.res_comb->ae_proc_res;
         RkAiqAlgoProcResAeInt* pAEProcRes = NULL;
@@ -182,8 +179,60 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
             LOGE_AMERGE("%s: ae Pre result is null!!!\n", __FUNCTION__);
         }
 
+        //merge tuning para process
         if(!bypass)
-            AmergeProcessing(pAmergeCtx);
+            AmergeTuningProcessing(pAmergeCtx);
+
+        //expo para process
+        MergeExpoData_t ExpoData;
+        memset(&ExpoData, 0, sizeof(MergeExpoData_t));
+        if(pAmergeCtx->FrameNumber == HDR_2X_NUM) {
+            ExpoData.nextSExpo = pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.analog_gain *
+                                 pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.digital_gain * pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.integration_time;
+            ExpoData.nextMExpo = pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.analog_gain *
+                                 pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.digital_gain * pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.integration_time;
+            ExpoData.nextLExpo = ExpoData.nextMExpo;
+
+            ExpoData.nextSGain = pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.analog_gain * pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.digital_gain;
+            ExpoData.nextMGain = pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.analog_gain * pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.digital_gain;
+
+        }
+        else if(pAmergeCtx->FrameNumber == HDR_3X_NUM) {
+            ExpoData.nextSExpo = pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.analog_gain *
+                                 pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.digital_gain * pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.integration_time;
+            ExpoData.nextMExpo = pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.analog_gain *
+                                 pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.digital_gain * pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.integration_time;
+            ExpoData.nextLExpo = pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[2].exp_real_params.analog_gain *
+                                 pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[2].exp_real_params.digital_gain * pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[2].exp_real_params.integration_time;
+
+            ExpoData.nextSGain = pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.analog_gain * pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.digital_gain;
+            ExpoData.nextMGain = pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.analog_gain * pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.digital_gain;
+        }
+        LOGV_AMERGE("%s: nextFrame: sexp: %f-%f, mexp: %f-%f, lexp: %f-%f\n", __FUNCTION__,
+                    pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.analog_gain,
+                    pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[0].exp_real_params.integration_time,
+                    pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.analog_gain,
+                    pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[1].exp_real_params.integration_time,
+                    pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[2].exp_real_params.analog_gain,
+                    pAmergeParams->rk_com.u.proc.nxtExp->HdrExp[2].exp_real_params.integration_time);
+        if(ExpoData.nextSExpo > 0 )
+            ExpoData.nextRatioLS = ExpoData.nextLExpo / ExpoData.nextSExpo;
+        else
+            LOGE_AMERGE("%s: Short frame for merge expo sync is ERROR!!!\n", __FUNCTION__);
+        if(ExpoData.nextMExpo > 0 )
+            ExpoData.nextRatioLM = ExpoData.nextLExpo / ExpoData.nextMExpo;
+        else
+            LOGE_AMERGE("%s: Middle frame for merge expo sync is ERROR!!!\n", __FUNCTION__);
+        //clip for long frame mode
+        if (pAmergeCtx->SensorInfo.LongFrmMode) {
+            ExpoData.nextRatioLS = 1.0;
+            ExpoData.nextRatioLM = 1.0;
+        }
+
+        if(ExpoData.nextRatioLS >= 1 && ExpoData.nextRatioLM >= 1)
+            AmergeExpoProcessing(pAmergeCtx, &ExpoData);
+        else
+            LOGE_AMERGE("%s: AE ratio for merge expo sync is under one!!!\n", __FUNCTION__);
 
         pAmergeCtx->PrevData.CtrlData.ApiMode = pAmergeCtx->mergeAttr.opMode;
         pAmergeCtx->ProcRes.update = !bypass;
@@ -197,6 +246,8 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
 
         LOGD_AMERGE("%s:/#####################################Amerge Over#####################################/ \n", __func__);
     }
+    else
+        LOGD_AMERGE("%s FrameID:%d, It's in Linear Mode, Merge function bypass\n", __FUNCTION__, pAmergeCtx->frameCnt);
 
     LOG1_AMERGE("%s:Exit!\n", __FUNCTION__);
     return(XCAM_RETURN_NO_ERROR);

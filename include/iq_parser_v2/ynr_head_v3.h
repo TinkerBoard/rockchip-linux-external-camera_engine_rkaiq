@@ -81,22 +81,22 @@ typedef struct CalibDbV2_YnrV3_TuningPara_Setting_ISO_s {
     // M4_BOOL_DESC("ynr_sft5x5_bypass", "0")
     float ynr_sft5x5_bypass;
 
-    // M4_NUMBER_DESC("ynr_global_gain_alpha", "f32", M4_RANGE(0, 1024), "0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("ynr_global_gain_alpha", "f32", M4_RANGE(0, 1.0), "0", M4_DIGIT(2))
     float ynr_global_gain_alpha;
-    // M4_NUMBER_DESC("ynr_global_gain", "f32", M4_RANGE(0, 1024), "1", M4_DIGIT(2))
+    // M4_NUMBER_DESC("ynr_global_gain", "f32", M4_RANGE(0, 64), "1", M4_DIGIT(2))
     float ynr_global_gain;
 
-    // M4_NUMBER_DESC("ynr_adjust_thresh", "f32", M4_RANGE(0, 1024), "1", M4_DIGIT(2))
+    // M4_NUMBER_DESC("ynr_adjust_thresh", "f32", M4_RANGE(0, 1.0), "1", M4_DIGIT(2))
     float ynr_adjust_thresh;
-    // M4_NUMBER_DESC("ynr_adjust_scale", "f32", M4_RANGE(0, 1024), "1", M4_DIGIT(2))
+    // M4_NUMBER_DESC("ynr_adjust_scale", "f32", M4_RANGE(0, 16), "1", M4_DIGIT(2))
     float ynr_adjust_scale;
 
     // M4_ARRAY_TABLE_DESC("lumaPara", "array_table_ui", "none")
     CalibDbV2_YnrV3_TuningPara_Setting_ISO_LumaParam_t lumaPara;
 
-    // M4_NUMBER_DESC("low_bf1", "f32", M4_RANGE(0.1, 512), "0.5", M4_DIGIT(2))
+    // M4_NUMBER_DESC("low_bf1", "f32", M4_RANGE(0.1, 32), "0.5", M4_DIGIT(2))
     float low_bf1;
-    // M4_NUMBER_DESC("low_bf2", "f32", M4_RANGE(0.1, 512), "0.5", M4_DIGIT(2))
+    // M4_NUMBER_DESC("low_bf2", "f32", M4_RANGE(0.1, 32), "0.5", M4_DIGIT(2))
     float low_bf2;
 
     // M4_NUMBER_DESC("low_thred_adj", "f32", M4_RANGE(0.0, 31.0), "0.25", M4_DIGIT(2))
@@ -109,7 +109,7 @@ typedef struct CalibDbV2_YnrV3_TuningPara_Setting_ISO_s {
     float low_lbf_weight_thresh;
     // M4_NUMBER_DESC("low_center_weight", "f32", M4_RANGE(0.0, 1.0), "0.5", M4_DIGIT(2))
     float low_center_weight;
-    // M4_NUMBER_DESC("low_dist_adj", "f32", M4_RANGE(0.0, 63.0), "8.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("low_dist_adj", "f32", M4_RANGE(0.0, 127.0), "8.0", M4_DIGIT(2))
     float low_dist_adj;
     // M4_NUMBER_DESC("low_weight", "f32", M4_RANGE(0.0, 1.0), "0.5", M4_DIGIT(2))
     float low_weight;

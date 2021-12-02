@@ -198,7 +198,7 @@ int SocketServer::Send(int cilent_socket, char *buff, int size) {
 
 int SocketServer::Recvieve() {
   char buffer[MAXPACKETSIZE];
-  char* receivedpacket;
+  char* receivedpacket = NULL;
   //int size = sizeof(buffer);
   int size = 6, offset =0;
   int packetsize = 0;

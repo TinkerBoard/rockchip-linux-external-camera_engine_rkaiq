@@ -50,6 +50,7 @@ class CacAlgoAdaptor : public std::enable_shared_from_this<CacAlgoAdaptor> {
     void OnFrameEvent(const RkAiqAlgoProcAcacInt* input, RkAiqAlgoProcResAcacInt* output);
 
  private:
+    const RkAiqAlgoConfigAcacInt* config_;
     const CalibDbV2_Cac_t* calib_;
     bool enable_;
     bool started_;

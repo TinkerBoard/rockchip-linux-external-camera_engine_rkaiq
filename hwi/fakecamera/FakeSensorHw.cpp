@@ -38,6 +38,30 @@ static uint32_t rk_format_to_media_format(rk_aiq_format_t format)
     case RK_PIX_FMT_SGRBG10:
         pixelformat = MEDIA_BUS_FMT_SGRBG10_1X10;
         break;
+    case RK_PIX_FMT_SBGGR12:
+        pixelformat = MEDIA_BUS_FMT_SBGGR12_1X12;
+        break;
+    case RK_PIX_FMT_SRGGB12:
+        pixelformat = MEDIA_BUS_FMT_SRGGB12_1X12;
+        break;
+    case RK_PIX_FMT_SGBRG12:
+        pixelformat = MEDIA_BUS_FMT_SGBRG12_1X12;
+        break;
+    case RK_PIX_FMT_SGRBG12:
+        pixelformat = MEDIA_BUS_FMT_SGRBG12_1X12;
+        break;
+    case RK_PIX_FMT_SBGGR14:
+        pixelformat = MEDIA_BUS_FMT_SBGGR14_1X14;
+        break;
+    case RK_PIX_FMT_SRGGB14:
+        pixelformat = MEDIA_BUS_FMT_SRGGB14_1X14;
+        break;
+    case RK_PIX_FMT_SGBRG14:
+        pixelformat = MEDIA_BUS_FMT_SGBRG14_1X14;
+        break;
+    case RK_PIX_FMT_SGRBG14:
+        pixelformat = MEDIA_BUS_FMT_SGRBG14_1X14;
+        break;
     default:
         LOGE_CAMHW_SUBM(FAKECAM_SUBM, "%s no support format: %d\n",
                         __func__, format);

@@ -100,7 +100,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
     AccmConfig(hAccm);
     memcpy(&proResAccm->accm_proc_res_com.accm_hw_conf, &hAccm->ccmHwConf, sizeof(rk_aiq_ccm_cfg_t));
-    proResAccm->accm_proc_res_com.ccm_update = hAccm->update ||hAccm->updateAtt || hAccm->accmSwInfo.ccmConverged;
+    proResAccm->accm_proc_res_com.ccm_update = hAccm->update ||hAccm->updateAtt || (!hAccm->accmSwInfo.ccmConverged);
     LOG1_ACCM( "%s: (exit)\n", __FUNCTION__);
     return XCAM_RETURN_NO_ERROR;
 }

@@ -27,6 +27,8 @@
 #include "j2s_generated.h"
 #endif
 
+//#define J2S_USING_CACH
+
 #include <sys/stat.h>
 
 typedef struct {
@@ -392,7 +394,7 @@ void j2s_save_struct_cache(j2s_ctx* ctx, const char* cache_file, void* ptr,
 int j2s_json_file_to_struct(j2s_ctx* ctx, const char* file, const char* name,
     void* ptr)
 {
-    char* cache_file;
+    char* cache_file = NULL;
     struct stat st;
     size_t size;
     char* buf;
@@ -401,6 +403,7 @@ int j2s_json_file_to_struct(j2s_ctx* ctx, const char* file, const char* name,
     DASSERT_MSG(file && !stat(file, &st), return -1, "no such file: '%s'\n",
         file ?: "<null>");
 
+#ifdef J2S_USING_CACH
     cache_file = j2s_cache_file(file);
 
     /* Using the file stat as auth data */
@@ -408,6 +411,7 @@ int j2s_json_file_to_struct(j2s_ctx* ctx, const char* file, const char* name,
         free(cache_file);
         return 0;
     }
+#endif
 
     memset(ptr, 0, j2s_struct_size(ctx, ctx->root_index));
 
@@ -420,11 +424,13 @@ int j2s_json_file_to_struct(j2s_ctx* ctx, const char* file, const char* name,
     if (j2s_modify_struct(ctx, buf, name, ptr) < 0)
         goto out;
 
+#ifdef J2S_USING_CACH
     j2s_save_struct_cache(ctx, cache_file, ptr, &st, sizeof(st));
-
+#endif
     ret = 0;
 out:
-    free(cache_file);
+	if (cache_file)
+		free(cache_file);
     if (buf)
         free(buf);
     return ret;

@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include "rk_aiq_comm.h"
 #include "rk_aiq_mems_sensor.h"
+#include "common/rk-camera-module.h"
 #include "adebayer/rk_aiq_types_algo_adebayer.h"
 #include "ae/rk_aiq_types_ae_algo.h"
 #include "awb/rk_aiq_types_awb_algo.h"
@@ -228,7 +229,11 @@ typedef enum {
     RK_PIX_FMT_SGBRG12 = rk_fmt_fourcc('G', 'B', '1', '2'), /* 12  GBGB.. RGRG.. */
     RK_PIX_FMT_SGRBG12 = rk_fmt_fourcc('B', 'A', '1', '2'), /* 12  GRGR.. BGBG.. */
     RK_PIX_FMT_SRGGB12 = rk_fmt_fourcc('R', 'G', '1', '2'), /* 12  RGRG.. GBGB.. */
-    RK_PIX_FMT_SBGGR16 = rk_fmt_fourcc('B', 'Y', 'R', '2'), /* 16  BGBG.. GRGR.. */
+    RK_PIX_FMT_SBGGR14 = rk_fmt_fourcc('B', 'G', '1', '4'), /* 14  BGBG.. GRGR.. */
+    RK_PIX_FMT_SGBRG14 = rk_fmt_fourcc('G', 'B', '1', '4'), /* 14  GBGB.. RGRG.. */
+    RK_PIX_FMT_SGRBG14 = rk_fmt_fourcc('B', 'A', '1', '4'), /* 14  GRGR.. BGBG.. */
+    RK_PIX_FMT_SRGGB14 = rk_fmt_fourcc('R', 'G', '1', '4'), /* 14  RGRG.. GBGB.. */
+    RK_PIX_FMT_SBGGR16 = rk_fmt_fourcc('B', 'Y', 'R', '6'), /* 16  BGBG.. GRGR.. */
 
     /* compressed formats */
     RK_PIX_FMT_MJPEG = rk_fmt_fourcc('M', 'J', 'P', 'G'), /* Motion-JPEG   */
@@ -397,6 +402,10 @@ typedef struct {
     uint32_t isp_acq_height;
     rk_aiq_sensor_nr_switch_t nr_switch;
     rk_aiq_lens_descriptor lens_des;
+    struct rkmodule_awb_inf otp_awb;
+    struct rkmodule_lsc_inf *otp_lsc;
+    struct rkmodule_af_inf *otp_af;
+    struct rkmodule_pdaf_inf *otp_pdaf;
 } rk_aiq_exposure_sensor_descriptor;
 
 // exposure

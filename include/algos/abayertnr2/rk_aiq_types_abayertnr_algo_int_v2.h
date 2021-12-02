@@ -100,6 +100,17 @@ typedef struct RK_Bayertnr_Params_V2_s
     int   bayertnrv2_hi_sigma_r[RK_BAYERNR_V2_MAX_ISO_NUM][16];
     int   bayertnrv2_blc_offset;
 
+    float bayertnr_hi_wgt_comp_r[RK_BAYERNR_V2_MAX_ISO_NUM];
+    float bayertnr_lo_clipwgt_r[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   bayertnr_lo_med_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   bayertnr_lo_gsbay_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   bayertnr_lo_gslum_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   bayertnr_hi_med_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   bayertnr_hi_gslum_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   bayertnr_global_pk_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   bayertnr_global_pksq_r[RK_BAYERNR_V2_MAX_ISO_NUM];
+
+    float bayertnr_hidif_th[RK_BAYERNR_V2_MAX_ISO_NUM];
 } RK_Bayertnr_Params_V2_t;
 
 
@@ -112,17 +123,15 @@ typedef struct RK_Bayertnr_Params_V2_Select_s
     float bayertnrv2_lo_filter_strength;
     float bayertnrv2_hi_filter_strength;
     float bayertnrv2_filter_soft_threshold_ratio;
-    int bayertnrv2_tnr_sigratio;
-    int bayertnrv2_tnr_lo_clipwgt;
-    int bayertnrv2_tnr_hi_clipwgt;
-    int bayertnrv2_tnr_strength;
-    int bayertnrv2_tnr_softwgt;
+
+    float bayertnrv2_tnr_lo_clipwgt;
+    float bayertnrv2_tnr_hi_wgt_comp;
+
     int bayertnrv2_tnr_global_pk_en;        // 1 use local pk, 0 use global pk
     int bayertnrv2_tnr_global_pksq;
     int bayertnrv2_tnr_luma_point[16];
     int bayertnrv2_tnr_sigma[16];
-    int bayertnrv2_tnr_sw_pkds;
-    int bayertnrv2_tnr_sw_sigunit;
+
     int bayertnrv2_tnr_sw_thumbds;
     int bayertnrv2_tnr_sw_lo_ena;
     int bayertnrv2_tnr_sw_lo_med_en;
@@ -131,16 +140,11 @@ typedef struct RK_Bayertnr_Params_V2_Select_s
     int bayertnrv2_tnr_sw_hi_ena;
     int bayertnrv2_tnr_sw_hi_med_en;
     int bayertnrv2_tnr_sw_hi_gslum_en;
-    int bayertnrv2_tnr_sw_hi_gscur_en;
-    int bayertnrv2_tnr_sw_hi_gsiir_en;
-    int bayertnrv2_tnr_sw_lo_kcoef;
-    int bayertnrv2_tnr_sw_hi_kcoef;
-    int bayertnrv2_tnr_sw_hi_wgtback;
-    int bayertnrv2_tnr_sw_hi_filt_bef_abs;
-    int bayertnrv2_tnr_sw_hi_filt_use_bay;
+
     int bayertnrv2_tnr_sw_wgt_lum[16];
     int bayertnrv2_tnr_sw_lo_sig[16];
     int bayertnrv2_tnr_sw_hi_sig[16];
+    float bayertnrv2_hidif_th;
 } RK_Bayertnr_Params_V2_Select_t;
 
 

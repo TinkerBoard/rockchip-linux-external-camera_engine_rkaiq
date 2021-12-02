@@ -207,221 +207,6 @@ CamHwIsp3x::gen_full_isp_params(const struct isp3x_isp_params_cfg* update_params
     EXIT_CAMHW_FUNCTION();
 }
 
-/*
- * some module(HDR/TNR) parameters are related to the next frame exposure
- * and can only be easily obtained at the hwi layer,
- * so these parameters are calculated at hwi and the result is overwritten.
- */
-XCamReturn
-CamHwIsp3x::overrideExpRatioToAiqResults(const sint32_t frameId,
-        int module_id,
-        cam3aResultList &results,
-        int hdr_mode)
-{
-    XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    SmartPtr<RkAiqExpParamsProxy> curFrameExpParam;
-    SmartPtr<RkAiqExpParamsProxy> nextFrameExpParam;
-    SmartPtr<BaseSensorHw> mSensorSubdev = mSensorDev.dynamic_cast_ptr<BaseSensorHw>();
-
-    if (mSensorSubdev.ptr()) {
-        if (mSensorSubdev->getEffectiveExpParams(curFrameExpParam, frameId) < 0) {
-            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "exp-sync: module_id: 0x%x, rx id: %d\n",
-                            module_id,
-                            frameId);
-            return ret;
-        }
-
-        if (mSensorSubdev->getEffectiveExpParams(nextFrameExpParam, frameId + 1) < 0) {
-            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "exp-sync: module_id: 0x%x, rx id: %d\n",
-                            module_id,
-                            frameId + 1);
-            return ret;
-        }
-    }
-
-    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "exp-sync: module_id: 0x%x, rx id: %d\n"
-                    "curFrame(%d): lexp: %f-%f, mexp: %f-%f, sexp: %f-%f\n"
-                    "nextFrame(%d): lexp: %f-%f, mexp: %f-%f, sexp: %f-%f\n",
-                    module_id,
-                    frameId,
-                    frameId,
-                    curFrameExpParam->data()->aecExpInfo.HdrExp[2].exp_real_params.analog_gain,
-                    curFrameExpParam->data()->aecExpInfo.HdrExp[2].exp_real_params.integration_time,
-                    curFrameExpParam->data()->aecExpInfo.HdrExp[1].exp_real_params.analog_gain,
-                    curFrameExpParam->data()->aecExpInfo.HdrExp[1].exp_real_params.integration_time,
-                    curFrameExpParam->data()->aecExpInfo.HdrExp[0].exp_real_params.analog_gain,
-                    curFrameExpParam->data()->aecExpInfo.HdrExp[0].exp_real_params.integration_time,
-                    frameId + 1,
-                    nextFrameExpParam->data()->aecExpInfo.HdrExp[2].exp_real_params.analog_gain,
-                    nextFrameExpParam->data()->aecExpInfo.HdrExp[2].exp_real_params.integration_time,
-                    nextFrameExpParam->data()->aecExpInfo.HdrExp[1].exp_real_params.analog_gain,
-                    nextFrameExpParam->data()->aecExpInfo.HdrExp[1].exp_real_params.integration_time,
-                    nextFrameExpParam->data()->aecExpInfo.HdrExp[0].exp_real_params.analog_gain,
-                    nextFrameExpParam->data()->aecExpInfo.HdrExp[0].exp_real_params.integration_time);
-
-    //calc expo
-    float nextLExpo = 0;
-    float nextMExpo = 0;
-    float nextSExpo = 0;
-    float nextRatioLS = 1.0;
-    if(hdr_mode == RK_AIQ_WORKING_MODE_NORMAL) {
-        nextLExpo = nextFrameExpParam->data()->aecExpInfo.LinearExp.exp_real_params.analog_gain * \
-                    nextFrameExpParam->data()->aecExpInfo.LinearExp.exp_real_params.integration_time;
-        nextMExpo = nextLExpo;
-        nextSExpo = nextLExpo;
-    }
-    else if(hdr_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2 && hdr_mode < RK_AIQ_WORKING_MODE_ISP_HDR3) {
-        nextLExpo = nextFrameExpParam->data()->aecExpInfo.HdrExp[1].exp_real_params.analog_gain * \
-                    nextFrameExpParam->data()->aecExpInfo.HdrExp[1].exp_real_params.integration_time;
-        nextMExpo = nextLExpo;
-        nextSExpo = nextFrameExpParam->data()->aecExpInfo.HdrExp[0].exp_real_params.analog_gain * \
-                    nextFrameExpParam->data()->aecExpInfo.HdrExp[0].exp_real_params.integration_time;
-    }
-    else if(hdr_mode >= RK_AIQ_WORKING_MODE_ISP_HDR3) {
-        nextLExpo = nextFrameExpParam->data()->aecExpInfo.HdrExp[2].exp_real_params.analog_gain * \
-                    nextFrameExpParam->data()->aecExpInfo.HdrExp[2].exp_real_params.integration_time;
-        nextMExpo = nextFrameExpParam->data()->aecExpInfo.HdrExp[1].exp_real_params.analog_gain * \
-                    nextFrameExpParam->data()->aecExpInfo.HdrExp[1].exp_real_params.integration_time;
-        nextSExpo = nextFrameExpParam->data()->aecExpInfo.HdrExp[0].exp_real_params.analog_gain * \
-                    nextFrameExpParam->data()->aecExpInfo.HdrExp[0].exp_real_params.integration_time;
-    }
-    else {
-        LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get wrong hdr mode\n");
-        return ret;
-    }
-
-    nextRatioLS = nextLExpo / nextSExpo;
-    nextRatioLS = nextRatioLS >= 1 ? nextRatioLS : 1;
-
-    switch (module_id) {
-    case Rk_ISP21_DRC_ID:
-    {
-        SmartPtr<cam3aResult> drc_res = get_3a_module_result(results, RESULT_TYPE_DRC_PARAM);
-        SmartPtr<RkAiqIspDrcParamsProxyV3x> drcParamsProxy;
-        if (drc_res.ptr()) {
-            drcParamsProxy = drc_res.dynamic_cast_ptr<RkAiqIspDrcParamsProxyV3x>();
-        } else {
-            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get drc params from 3a result failed!\n");
-            return ret;
-        }
-        rk_aiq_isp_drc_v3x_t& drc = drcParamsProxy->data()->result;
-
-        if(!drc.bTmoEn)
-            break;
-
-        if (drc.LongFrameMode)
-            nextRatioLS = 1.0;
-
-        //get sw_drc_compres_scl
-        float MFHDR_LOG_Q_BITS = 11;
-        float adrc_gain = drc.DrcProcRes.Drc_v21.adrc_gain;
-        float log_ratio2 = log(nextRatioLS * adrc_gain) / log(2.0f) + 12;
-        float offsetbits_int = (float)(drc.DrcProcRes.Drc_v21.offset_pow2);
-        float offsetbits = offsetbits_int * pow(2, MFHDR_LOG_Q_BITS);
-        float hdrbits = log_ratio2 * pow(2, MFHDR_LOG_Q_BITS);
-        float hdrvalidbits = hdrbits - offsetbits;
-        float compres_scl = (12 * pow(2, MFHDR_LOG_Q_BITS * 2)) / hdrvalidbits;
-        drc.DrcProcRes.Drc_v21.compres_scl = (int)(compres_scl);
-
-        //get sw_drc_min_ogain
-        if(drc.DrcProcRes.Drc_v21.min_ogain == 1)
-            drc.DrcProcRes.Drc_v21.min_ogain = 1 << 15;
-        else {
-            float sw_drc_min_ogain = 1 / (nextRatioLS * adrc_gain);
-            drc.DrcProcRes.Drc_v21.min_ogain = (int)(sw_drc_min_ogain * pow(2, 15) + 0.5);
-        }
-
-        //get sw_drc_compres_y
-        if(drc.CompressMode == COMPRESS_AUTO) {
-            float curveparam, curveparam2, curveparam3, tmp;
-            float luma2[17] = { 0, 1024, 2048, 3072, 4096, 5120, 6144, 7168, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576 };
-            float curveTable[17];
-            float ISP_RAW_BIT = 12;
-            float dstbits = ISP_RAW_BIT * pow(2, MFHDR_LOG_Q_BITS);
-            float validbits = dstbits - offsetbits;
-            for(int i = 0; i < ISP21_DRC_Y_NUM; ++i)
-            {
-                curveparam = (float)(validbits - 0) / (hdrvalidbits - validbits + pow(2, -6));
-                curveparam2 = validbits * (1 + curveparam);
-                curveparam3 = hdrvalidbits * curveparam;
-                tmp = luma2[i] * hdrvalidbits / 24576;
-                curveTable[i] = (tmp * curveparam2 / (tmp + curveparam3));
-                drc.DrcProcRes.Drc_v21.compres_y[i] = (int)(curveTable[i]) ;
-            }
-        }
-
-        LOGD_CAMHW_SUBM(ISP20HW_SUBM, "nextRatioLS:%f sw_drc_compres_scl:%d sw_drc_min_ogain:%d\n",
-                        nextRatioLS, drc.DrcProcRes.Drc_v21.compres_scl, drc.DrcProcRes.Drc_v21.min_ogain);
-        LOGD_CAMHW_SUBM(ISP20HW_SUBM, "CompressMode:%d\n", drc.CompressMode);
-        for(int i = 0; i < ISP21_DRC_Y_NUM; ++i)
-            LOGD_CAMHW_SUBM(ISP20HW_SUBM, "sw_drc_compres_y[%d]:%d\n", i, drc.DrcProcRes.Drc_v21.compres_y[i]);
-
-        break;
-    }
-    case RK_ISP2X_HDRMGE_ID:
-    {
-
-        SmartPtr<cam3aResult> merge_res = get_3a_module_result(results, RESULT_TYPE_MERGE_PARAM);
-        SmartPtr<RkAiqIspMergeParamsProxy> mergeParamsProxy;
-
-        if (merge_res.ptr()) {
-            mergeParamsProxy = merge_res.dynamic_cast_ptr<RkAiqIspMergeParamsProxy>();
-        } else {
-            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get merge params from 3a result failed!\n");
-            return ret;
-        }
-        RkAiqAmergeProcResult_t& merge = mergeParamsProxy->data()->result;
-
-        if(merge.Merge_v30.sw_hdrmge_mode == 0)
-            break;
-
-        //get sw_hdrmge_gain0
-        merge.Merge_v30.sw_hdrmge_gain0 = (int)(64 * nextRatioLS);
-        if(nextRatioLS == 1)
-            merge.Merge_v30.sw_hdrmge_gain0_inv = (int)(4096 * (1 / nextRatioLS) - 1);
-        else
-            merge.Merge_v30.sw_hdrmge_gain0_inv = (int)(4096 * (1 / nextRatioLS));
-
-        //get sw_hdrmge_gain1
-        merge.Merge_v30.sw_hdrmge_gain1 = 0x40;
-        merge.Merge_v30.sw_hdrmge_gain1_inv = 0xfff;
-
-        //get sw_hdrmge_gain2
-        merge.Merge_v30.sw_hdrmge_gain2 = 0x40;
-
-        //isp30 add
-        float c = 0.5 * 0.0001;
-        float sw_hdrmge_ms_thd0 = 0.0;
-        float sw_hdrmge_lm_thd0 = 0.0;
-        float sw_hdrmge_ms_thd1 = 1024 * pow(100 * c * nextFrameExpParam->data()->aecExpInfo.HdrExp[0].exp_real_params.analog_gain, 0.5f);
-        float sw_hdrmge_lm_thd1 = 1024 * pow(100 * c * nextFrameExpParam->data()->aecExpInfo.HdrExp[1].exp_real_params.analog_gain, 0.5f);
-        float sw_hdrmge_ms_scl = (sw_hdrmge_ms_thd1 == sw_hdrmge_ms_thd0) ? 0 : (1 / (sw_hdrmge_ms_thd1 - sw_hdrmge_ms_thd0));
-        float sw_hdrmge_lm_scl = (sw_hdrmge_lm_thd1 == sw_hdrmge_lm_thd0) ? 0 : (1 / (sw_hdrmge_lm_thd1 - sw_hdrmge_lm_thd0));
-        merge.Merge_v30.sw_hdrmge_ms_thd0 = (int)(1024 * sw_hdrmge_ms_thd0);
-        merge.Merge_v30.sw_hdrmge_ms_thd1 = (int)(1024 * sw_hdrmge_ms_thd1);
-        merge.Merge_v30.sw_hdrmge_ms_scl = (int)(64 * sw_hdrmge_ms_scl);
-        merge.Merge_v30.sw_hdrmge_lm_thd0 = (int)(1024 * sw_hdrmge_lm_thd0);
-        merge.Merge_v30.sw_hdrmge_lm_thd1 = (int)(1024 * sw_hdrmge_lm_thd1);
-        merge.Merge_v30.sw_hdrmge_lm_scl = (int)(64 * sw_hdrmge_lm_scl);
-
-
-        LOGD_CAMHW_SUBM(ISP20HW_SUBM, "sw_hdrmge_gain0:%d sw_hdrmge_gain0_inv:%d\n",
-                        merge.Merge_v30.sw_hdrmge_gain0, merge.Merge_v30.sw_hdrmge_gain0_inv);
-        LOGD_CAMHW_SUBM(ISP20HW_SUBM, "sw_hdrmge_ms_thd0:%d sw_hdrmge_ms_thd1:%d sw_hdrmge_ms_scl:%d\n",
-                        merge.Merge_v30.sw_hdrmge_ms_thd0, merge.Merge_v30.sw_hdrmge_ms_thd1, merge.Merge_v30.sw_hdrmge_ms_scl);
-        LOGD_CAMHW_SUBM(ISP20HW_SUBM, "sw_hdrmge_lm_thd0:%d sw_hdrmge_lm_thd1:%d sw_hdrmge_lm_scl:%d\n",
-                        merge.Merge_v30.sw_hdrmge_lm_thd0, merge.Merge_v30.sw_hdrmge_lm_thd1, merge.Merge_v30.sw_hdrmge_lm_scl);
-
-        break;
-    }
-    default:
-        LOGW_CAMHW_SUBM(ISP20HW_SUBM, "unkown module id: 0x%x!\n", module_id);
-        break;
-    }
-
-    return ret;
-}
-
 XCamReturn
 CamHwIsp3x::setIspConfig()
 {
@@ -474,16 +259,6 @@ CamHwIsp3x::setIspConfig()
         _full_active_isp3x_params.module_cfg_update = 0;
     }
 
-    ret = overrideExpRatioToAiqResults(frameId, Rk_ISP21_DRC_ID, ready_results, _hdr_mode);
-    if (ret < 0) {
-        LOGE_CAMHW_SUBM(ISP20HW_SUBM, "DRC convertExpRatioToAiqResults error!\n");
-    }
-
-    ret = overrideExpRatioToAiqResults(frameId, RK_ISP2X_HDRMGE_ID, ready_results, _hdr_mode);
-    if (ret < 0) {
-        LOGE_CAMHW_SUBM(ISP20HW_SUBM, "Merge convertExpRatioToAiqResults error!\n");
-    }
-
     if (frameId >= 0) {
         SmartPtr<cam3aResult> awb_res = get_3a_module_result(ready_results, RESULT_TYPE_AWB_PARAM);
         SmartPtr<RkAiqIspAwbParamsProxyV3x> awbParams;
@@ -511,8 +286,8 @@ CamHwIsp3x::setIspConfig()
     // now use Isp21Params::merge_isp_results instead
     if (Isp3xParams::merge_isp_results(ready_results, update_params) != XCAM_RETURN_NO_ERROR)
         LOGE_CAMHW_SUBM(ISP20HW_SUBM, "ISP parameter translation error\n");
-    if(mIsMultiIspMode == false){
-        Isp3xParams::fixedAwbOveflowToIsp3xParams(update_params,mIsMultiIspMode);
+    if(mIsMultiIspMode == false) {
+        Isp3xParams::fixedAwbOveflowToIsp3xParams(update_params, mIsMultiIspMode);
     }
     uint64_t module_en_update_partial = 0;
     uint64_t module_cfg_update_partial = 0;
@@ -583,7 +358,7 @@ CamHwIsp3x::setIspConfig()
 
         if (isMultiIsp) {
             mParamsSplitter->SplitIspParams(&_full_active_isp3x_params, isp_params);
-            Isp3xParams::fixedAwbOveflowToIsp3xParams((void*)isp_params,mIsMultiIspMode);
+            Isp3xParams::fixedAwbOveflowToIsp3xParams((void*)isp_params, mIsMultiIspMode);
             memcpy(&((isp_params + 1)->others.cac_cfg), &update_params[1].others.cac_cfg,
                    sizeof(struct isp3x_cac_cfg));
         }

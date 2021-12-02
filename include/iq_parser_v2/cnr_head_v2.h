@@ -34,14 +34,14 @@ typedef struct CalibDbV2_CNRV2_TuningPara_Setting_ISO_s {
     // M4_BOOL_DESC("lf_bypass", "0")
     float lf_bypass;
 
-    // M4_NUMBER_DESC("global_gain", "f32", M4_RANGE(0, 1.0), "1.0", M4_DIGIT(2), M4_HIDE(1))
+    // M4_NUMBER_DESC("global_gain", "f32", M4_RANGE(0, 64.0), "1.0", M4_DIGIT(2), M4_HIDE(0))
     float global_gain;
-    // M4_NUMBER_DESC("global_gain_alpha", "f32", M4_RANGE(0, 1.0), "0.0", M4_DIGIT(2), M4_HIDE(1))
+    // M4_NUMBER_DESC("global_gain_alpha", "f32", M4_RANGE(0, 1.0), "0.0", M4_DIGIT(2), M4_HIDE(0))
     float global_gain_alpha;
-    // M4_NUMBER_DESC("local_gain_scale", "f32", M4_RANGE(0, 1.0), "1.0", M4_DIGIT(2), M4_HIDE(1))
+    // M4_NUMBER_DESC("local_gain_scale", "f32", M4_RANGE(0, 128.0), "1.0", M4_DIGIT(2), M4_HIDE(0))
     float local_gain_scale;
 
-    // M4_ARRAY_DESC("gain_adj_strength_ratio", "f32", M4_SIZE(1,13), M4_RANGE(0,256), "1.0", M4_DIGIT(2), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("gain_adj_strength_ratio", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "1.0", M4_DIGIT(2), M4_DYNAMIC(0))
     float gain_adj_strength_ratio[13];
 
     // M4_NUMBER_DESC("color_sat_adj", "f32", M4_RANGE(1, 255.0), "40.0", M4_DIGIT(2))

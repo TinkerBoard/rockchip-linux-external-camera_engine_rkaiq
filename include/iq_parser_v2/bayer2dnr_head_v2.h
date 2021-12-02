@@ -64,7 +64,7 @@ typedef struct CalibDbV2_Bayer2dnr_V2_TuningPara_Setting_ISO_s {
     // M4_NUMBER_DESC("filter_strength", "f32", M4_RANGE(0, 16), "0.5", M4_DIGIT(2))
     float filter_strength;
 
-    // M4_NUMBER_DESC("edgesofts", "f32", M4_RANGE(0, 1.0), "1.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("edgesofts", "f32", M4_RANGE(0, 16.0), "1.0", M4_DIGIT(2))
     float edgesofts;
 
     // M4_NUMBER_DESC("ratio", "f32", M4_RANGE(0, 1.0), "0.2", M4_DIGIT(2))

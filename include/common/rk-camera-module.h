@@ -8,7 +8,6 @@
 #define _UAPI_RKMODULE_CAMERA_H
 
 #include <linux/types.h>
-#include <linux/rk-video-format.h>
 
 #include "rk_isp20_hw.h"
 

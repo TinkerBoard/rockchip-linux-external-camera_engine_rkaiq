@@ -143,6 +143,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         LOGE_AGIC("%s: pAEPreRes is NULL, so use default instead \n", __FUNCTION__);
     }
 
+    pAgicCtx->raw_bits = pAgicProcParams->raw_bits;
     pAgicCtx->Gic_Scene_mode = 0;
     if (pAgicCtx->last_iso != iso || pAgicCtx->calib_changed) {
         AgicProcess(pAgicCtx, iso, pAgicCtx->Gic_Scene_mode);

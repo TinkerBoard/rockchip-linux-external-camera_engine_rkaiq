@@ -26,7 +26,7 @@
 #include "safe_list.h"
 #include "v4l2_device.h"
 #include "rk_aiq_pool.h"
-#include "linux/rk-camera-module.h"
+#include "common/rk-camera-module.h"
 
 #define VCMDRV_SETZOOM_MAXCNT        300U
 #define LENSHW_RECORD_SOF_NUM        256

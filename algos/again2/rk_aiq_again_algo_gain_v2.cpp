@@ -101,7 +101,7 @@ Again_result_V2_t gain_fix_transfer_v2(RK_GAIN_Params_V2_Select_t *pSelect, RK_G
     for (int i = 2; i >= 0; i--)
     {
         uint32_t a = (1 << (GAIN_HDR_MERGE_IN2_FIX_BITS_INTE + GAIN_HDR_MERGE_IN_FIX_BITS_DECI)) - 1;
-        dGain[i] = (frame_exp_ratio[i] * exp_gain[i]);
+        dGain[i] = (frame_exp_ratio[i] * exp_gain[i]) / exp_gain[2];
         pGainFix->sw_gain[i] = gain_float_lim2_int(dGain[i], GAIN_HDR_MERGE_IN_FIX_BITS_DECI, 1);       // 12:6
         if (i == 0)
             pGainFix->sw_gain[i] = MIN(pGainFix->sw_gain[i], (1 << (GAIN_HDR_MERGE_IN2_FIX_BITS_INTE + GAIN_HDR_MERGE_IN_FIX_BITS_DECI)) - 1);

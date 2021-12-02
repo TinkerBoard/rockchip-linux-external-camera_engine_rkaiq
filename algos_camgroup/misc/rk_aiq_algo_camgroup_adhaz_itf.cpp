@@ -76,12 +76,12 @@ prepare(RkAiqAlgoCom* params)
     AdehazeGrpHandle->working_mode = config->gcom.com.u.prepare.working_mode;
 
     if (AdehazeGrpHandle->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR2)
-        AdehazeGrpHandle->FrameNumber = 1;
+        AdehazeGrpHandle->FrameNumber = LINEAR_NUM;
     else if (AdehazeGrpHandle->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR3 &&
              AdehazeGrpHandle->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2)
-        AdehazeGrpHandle->FrameNumber = 2;
+        AdehazeGrpHandle->FrameNumber = HDR_2X_NUM;
     else
-        AdehazeGrpHandle->FrameNumber = 3;
+        AdehazeGrpHandle->FrameNumber = HDR_3X_NUM;
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
         LOGD_ADEHAZE("%s: Adehaze Reload Para!\n", __FUNCTION__);

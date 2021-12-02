@@ -368,7 +368,7 @@ void SplitAwbCalcBlockSize(
             right_win->h_offs = (left_win->h_size + left_win->h_offs > right_isp_rect_.x) ?
                                 left_win->h_size + left_win->h_offs - right_isp_rect_.x : 0;
             right_win->h_offs = right_win->h_offs & 0xfffe;
-            right_win->h_size =  (*block_h  * wnd_num) << ds_awb;
+            right_win->h_size = (*block_h  * wnd_num) << ds_awb;
         }
     }
 }
@@ -447,7 +447,8 @@ void SplitAwbWin(
             right_win->h_offs = (left_win->h_size + left_win->h_offs > right_isp_rect_.x) ?
                             left_win->h_size + left_win->h_offs - right_isp_rect_.x : 0;
             right_win->h_offs = right_win->h_offs & 0xfffe;
-            right_win->h_size = (win_ds_hsize - block_h * wnd_num) << ds_awb ;
+            right_win->h_size = (win_ds_hsize - block_h * wnd_num) << ds_awb;
+            right_win->h_size = right_win->h_offs + right_win->h_size > right_isp_rect_.w ? (right_isp_rect_.w - right_win->h_offs) : right_win->h_size;
         }
         else {
 

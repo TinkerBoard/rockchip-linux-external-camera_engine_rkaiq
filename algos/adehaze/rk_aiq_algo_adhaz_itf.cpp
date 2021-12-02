@@ -76,12 +76,12 @@ prepare(RkAiqAlgoCom* params)
     AdehazeHandle->is_multi_isp_mode = config->is_multi_isp_mode;
 
     if (AdehazeHandle->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR2)
-        AdehazeHandle->FrameNumber = 1;
+        AdehazeHandle->FrameNumber = LINEAR_NUM;
     else if (AdehazeHandle->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR3 &&
              AdehazeHandle->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2)
-        AdehazeHandle->FrameNumber = 2;
+        AdehazeHandle->FrameNumber = HDR_2X_NUM;
     else
-        AdehazeHandle->FrameNumber = 3;
+        AdehazeHandle->FrameNumber = HDR_3X_NUM;
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
         LOGD_ADEHAZE("%s: Adehaze Reload Para!\n", __FUNCTION__);

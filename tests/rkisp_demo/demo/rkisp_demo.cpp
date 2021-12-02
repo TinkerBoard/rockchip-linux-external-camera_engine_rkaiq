@@ -2109,12 +2109,28 @@ static void rkisp_routine(demo_context_t *ctx)
                  rk_aiq_raw_prop_t prop;
                  if (strcmp(ctx->orpRawFmt, "BG10") == 0)
                      prop.format = RK_PIX_FMT_SBGGR10;
-                 if (strcmp(ctx->orpRawFmt, "GB10") == 0)
+                 else if (strcmp(ctx->orpRawFmt, "GB10") == 0)
                      prop.format = RK_PIX_FMT_SGBRG10;
                  else if (strcmp(ctx->orpRawFmt, "RG10") == 0)
                      prop.format = RK_PIX_FMT_SRGGB10;
                  else if (strcmp(ctx->orpRawFmt, "BA10") == 0)
                      prop.format = RK_PIX_FMT_SGRBG10;
+                 else if (strcmp(ctx->orpRawFmt, "BG12") == 0)
+                     prop.format = RK_PIX_FMT_SBGGR12;
+                 else if (strcmp(ctx->orpRawFmt, "GB12") == 0)
+                     prop.format = RK_PIX_FMT_SGBRG12;
+                 else if (strcmp(ctx->orpRawFmt, "RG12") == 0)
+                     prop.format = RK_PIX_FMT_SRGGB12;
+                 else if (strcmp(ctx->orpRawFmt, "BA12") == 0)
+                     prop.format = RK_PIX_FMT_SGRBG12;
+                 else if (strcmp(ctx->orpRawFmt, "BG14") == 0)
+                     prop.format = RK_PIX_FMT_SBGGR14;
+                 else if (strcmp(ctx->orpRawFmt, "GB14") == 0)
+                     prop.format = RK_PIX_FMT_SGBRG14;
+                 else if (strcmp(ctx->orpRawFmt, "RG14") == 0)
+                     prop.format = RK_PIX_FMT_SRGGB14;
+                 else if (strcmp(ctx->orpRawFmt, "BA14") == 0)
+                     prop.format = RK_PIX_FMT_SGRBG14;
                  else
                      prop.format = RK_PIX_FMT_SBGGR10;
                  prop.frame_width = ctx->orpRawW;

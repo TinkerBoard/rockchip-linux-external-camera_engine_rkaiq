@@ -473,12 +473,12 @@ TransferGetData(amerge_attrib_t* merge, atmo_attrib_t*tmo, ahdr_attrib_t *attr)
     attr->CtlInfo.DynamicRange = tmo->CtlInfo.DynamicRange;
 
     //get reg data
-    attr->RegInfo.OECurve_smooth = merge->RegInfo.OECurve_smooth;
-    attr->RegInfo.OECurve_offset = merge->RegInfo.OECurve_offset;
-    attr->RegInfo.MDCurveLM_smooth = merge->RegInfo.MDCurveLM_smooth;
-    attr->RegInfo.MDCurveLM_offset = merge->RegInfo.MDCurveLM_offset;
-    attr->RegInfo.MDCurveMS_smooth = merge->RegInfo.MDCurveMS_smooth;
-    attr->RegInfo.MDCurveMS_offset = merge->RegInfo.MDCurveMS_offset;
+    attr->RegInfo.OECurve_smooth = merge->RegInfo.Merge_v20.OECurve_smooth;
+    attr->RegInfo.OECurve_offset = merge->RegInfo.Merge_v20.OECurve_offset;
+    attr->RegInfo.MDCurveLM_smooth = merge->RegInfo.Merge_v20.MDCurveLM_smooth;
+    attr->RegInfo.MDCurveLM_offset = merge->RegInfo.Merge_v20.MDCurveLM_offset;
+    attr->RegInfo.MDCurveMS_smooth = merge->RegInfo.Merge_v20.MDCurveMS_smooth;
+    attr->RegInfo.MDCurveMS_offset = merge->RegInfo.Merge_v20.MDCurveMS_offset;
 
     attr->RegInfo.GlobalLuma = tmo->RegInfo.GlobalLuma;
     attr->RegInfo.DetailsHighlight = tmo->RegInfo.DetailsHighlight;

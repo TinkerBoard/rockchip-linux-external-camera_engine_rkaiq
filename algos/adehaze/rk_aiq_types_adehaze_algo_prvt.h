@@ -26,19 +26,12 @@
 #include "rk_aiq_types_adehaze_stat.h"
 #include "rk_aiq_algo_types.h"
 #include "xcam_log.h"
+#include "amerge/rk_aiq_types_amerge_algo_prvt.h"
 
-
-
-
-#define LIMIT_VALUE(value,max_value,min_value)      (value > max_value? max_value : value < min_value ? min_value : value)
-#define DEHAZEBIGMODE     (2560)
-#define RK_DEHAZE_ISO_NUM 9
-#define FUNCTION_ENABLE 1
-#define FUNCTION_DISABLE 0
-#define ENVLVMAX     (1.0)
-#define ENVLVMIN     (0.0)
 #define ADHZ10BITMAX     (1023)
 #define ADHZ10BITMIN     (0)
+#define DEHAZE_API_MANUAL_DEFAULT_LEVEL     (5)
+#define DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL     (50)
 
 //define for dehaze local gain
 #define YNR_BIT_CALIB (12)
@@ -99,7 +92,7 @@ typedef struct AdehazeHandle_s {
     int height;
     int strength;
     int working_mode;
-    int FrameNumber;
+    FrameNumber_t FrameNumber;
     int FrameID;
 } AdehazeHandle_t;
 

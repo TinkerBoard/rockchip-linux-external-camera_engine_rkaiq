@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 #include "rk_aiq_types.h"
-#include "linux/rk-camera-module.h"
+#include "common/rk-camera-module.h"
 #include "MessageBus.h"
 #include "common/rkisp2-config.h"
 #include "common/rkisp21-config.h"
@@ -246,6 +246,8 @@ enum cam_thread_type_e {
 #define SENSOR_ATTACHED_FLASH_MAX_NUM 2
 #define MAX_CAM_NUM                   8
 
+#define MAX_ISP_LINKED_VICAP_CNT      4
+
 #define ISP_TX_BUF_NUM 4
 #define VIPCAP_TX_BUF_NUM 4
 
@@ -276,7 +278,7 @@ typedef struct {
     char input_params_path[DEV_PATH_LEN];
     char mipi_luma_path[DEV_PATH_LEN];
     char mipi_dphy_rx_path[DEV_PATH_LEN];
-    char linked_vicap[DEV_PATH_LEN];
+    char linked_vicap[MAX_ISP_LINKED_VICAP_CNT][DEV_PATH_LEN];
 } rk_aiq_isp_t;
 
 typedef struct {

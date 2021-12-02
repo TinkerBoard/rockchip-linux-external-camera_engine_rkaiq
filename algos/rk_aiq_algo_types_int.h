@@ -316,6 +316,7 @@ typedef struct _RkAiqAlgoComInt {
             bool is_bw_sensor;
             RKAiqAecExpInfo_t *preExp;
             RKAiqAecExpInfo_t *curExp;
+            RKAiqAecExpInfo_t *nxtExp;
             RkAiqResComb* res_comb;
         } proc;
     } u;
@@ -1084,6 +1085,7 @@ typedef struct _RkAiqAlgoProcAgicInt {
     RkAiqAlgoProcAgic agic_proc_com;
     RkAiqAlgoComInt rk_com;
     int hdr_mode;
+    uint8_t raw_bits;
 } RkAiqAlgoProcAgicInt;
 
 typedef struct _RkAiqAlgoProcResAgicInt {

@@ -843,6 +843,7 @@ static void rk_aiq_deinit_lib(void)
 #ifdef RK_SIMULATOR_HW
     /* nothing to do now */
 #else
+    RkAiqCalibDbV2::releaseCalibDbProj();
     RkAiqCalibDb::releaseCalibDb();
     CamHwIsp20::clearStaticCamHwInfo();
 #endif

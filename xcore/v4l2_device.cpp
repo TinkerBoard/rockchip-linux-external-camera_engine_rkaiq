@@ -178,7 +178,7 @@ V4l2Device::set_buffer_count (uint32_t buf_count)
 
 
 XCamReturn
-V4l2Device::open ()
+V4l2Device::open (bool nonblock)
 {
     struct v4l2_streamparm param;
 
@@ -191,7 +191,10 @@ V4l2Device::open ()
         XCAM_LOG_DEBUG ("v4l2 device open failed, there's no device name");
         return XCAM_RETURN_ERROR_PARAM;
     }
-    _fd = ::open (_name, O_RDWR | O_CLOEXEC);
+    if (nonblock)
+        _fd = ::open (_name, O_RDWR | O_CLOEXEC | O_NONBLOCK);
+    else
+        _fd = ::open (_name, O_RDWR | O_CLOEXEC);
     if (_fd == -1) {
         XCAM_LOG_ERROR ("open device(%s) failed", _name);
         return XCAM_RETURN_ERROR_IOCTL;

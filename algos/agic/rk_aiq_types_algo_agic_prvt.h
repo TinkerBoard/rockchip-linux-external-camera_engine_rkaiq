@@ -39,6 +39,7 @@ typedef struct AgicContext_s {
     int working_mode;
     int last_iso;
     bool calib_changed;
+    uint8_t raw_bits;
 } AgicContext_t;
 
 typedef struct _RkAiqAlgoContext {

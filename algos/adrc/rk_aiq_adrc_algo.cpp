@@ -21,7 +21,6 @@
 #include "xcam_log.h"
 #include "rk_aiq_types_adrc_algo_prvt.h"
 
-
 /******************************************************************************
  * AdrcStart()
  *****************************************************************************/
@@ -280,23 +279,6 @@ void CalibrateDrcGainY( DrcProcRes_t *para, float DraGain, float alpha)
     }
 
     LOG1_ATMO("%s:Eixt!\n", __FUNCTION__);
-
-}
-
-/******************************************************************************
- * AdrcApiOffConfig()
- *set default Config data
- *****************************************************************************/
-void AdrcApiOffConfig
-(
-    AdrcContext_t*           pAdrcCtx
-) {
-    LOG1_ATMO( "%s:enter!\n", __FUNCTION__);
-
-
-
-
-    LOGI_ATMO( "%s:exit!\n", __FUNCTION__);
 }
 
 /******************************************************************************
@@ -311,14 +293,6 @@ void Config
 
     // initial checks
     DCT_ASSERT(pAdrcCtx != NULL);
-
-    if(pAdrcCtx->drcAttr.opMode == DRC_OPMODE_API_OFF)
-    {
-        AdrcApiOffConfig(pAdrcCtx);
-        LOGD_ATMO("%s: Ahdr Api is OFF!!!:\n", __FUNCTION__);
-    }
-    else
-        LOGD_ATMO("%s: Ahdr Api is ON!!!:\n", __FUNCTION__);
 
     //config default PrevData data
     pAdrcCtx->PrevData.frameCnt = 0;
@@ -348,14 +322,6 @@ void ConfigV30
     // initial checks
     DCT_ASSERT(pAdrcCtx != NULL);
 
-    if(pAdrcCtx->drcAttr.opMode == DRC_OPMODE_API_OFF)
-    {
-        AdrcApiOffConfig(pAdrcCtx);
-        LOGD_ATMO("%s: Ahdr Api is OFF!!!:\n", __FUNCTION__);
-    }
-    else
-        LOGD_ATMO("%s: Ahdr Api is ON!!!:\n", __FUNCTION__);
-
     //config default PrevData data
     pAdrcCtx->PrevData.frameCnt = 0;
     pAdrcCtx->PrevData.EnvLv = 0;
@@ -374,35 +340,31 @@ void ConfigV30
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
 
-void AdrcGetAeResult
+void AdrcGetEnvLv
 (
     AdrcContext_t*           pAdrcCtx,
     AecPreResult_t  AecHdrPreResult
 ) {
     LOG1_ATMO( "%s:enter!\n", __FUNCTION__);
 
-    //get Ae Pre Result
-    pAdrcCtx->CurrAeResult.GlobalEnvLv = AecHdrPreResult.GlobalEnvLv[AecHdrPreResult.NormalIndex];
-    pAdrcCtx->CurrAeResult.M2S_Ratio = AecHdrPreResult.M2S_ExpRatio;
-    pAdrcCtx->CurrAeResult.M2S_Ratio = pAdrcCtx->CurrAeResult.M2S_Ratio < 1 ? 1 : pAdrcCtx->CurrAeResult.M2S_Ratio;
-    pAdrcCtx->CurrAeResult.L2M_Ratio = AecHdrPreResult.L2M_ExpRatio;
-    pAdrcCtx->CurrAeResult.L2M_Ratio = pAdrcCtx->CurrAeResult.L2M_Ratio < 1 ? 1 : pAdrcCtx->CurrAeResult.L2M_Ratio;
-
     //transfer CurrAeResult data into AhdrHandle
     switch (pAdrcCtx->FrameNumber)
     {
-    case 1:
-        pAdrcCtx->CurrData.Ratio = 1;
-        pAdrcCtx->CurrAeResult.ISO = AecHdrPreResult.LinearExp.exp_real_params.analog_gain * 50.0;
+    case LINEAR_NUM:
         pAdrcCtx->CurrAeResult.GlobalEnvLv = AecHdrPreResult.GlobalEnvLv[0];
         pAdrcCtx->CurrAeResult.AEMaxRatio = 1.0;
         break;
-    case 2:
-        pAdrcCtx->CurrData.Ratio = pAdrcCtx->CurrAeResult.M2S_Ratio;
-        pAdrcCtx->CurrAeResult.ISO = AecHdrPreResult.HdrExp[1].exp_real_params.analog_gain * 50.0;
+    case HDR_2X_NUM:
         pAdrcCtx->CurrAeResult.GlobalEnvLv = AecHdrPreResult.GlobalEnvLv[1];
         //todo
         pAdrcCtx->CurrAeResult.AEMaxRatio = 64.0;
+        break;
+    case HDR_3X_NUM:
+        if(CHECK_ISP_HW_V30()) {
+            pAdrcCtx->CurrAeResult.GlobalEnvLv = AecHdrPreResult.GlobalEnvLv[1];
+            //todo
+            pAdrcCtx->CurrAeResult.AEMaxRatio = 64.0;
+        }
         break;
     default:
         LOGE_ATMO("%s:  Wrong frame number in HDR mode!!!\n", __FUNCTION__);
@@ -410,12 +372,8 @@ void AdrcGetAeResult
     }
 
     //Normalize the current envLv for AEC
-    float maxEnvLuma = 65 / 10;
-    float minEnvLuma = 0;
-    pAdrcCtx->CurrData.EnvLv = (pAdrcCtx->CurrAeResult.GlobalEnvLv  - minEnvLuma) / (maxEnvLuma - minEnvLuma);
-    pAdrcCtx->CurrData.EnvLv = LIMIT_VALUE(pAdrcCtx->CurrData.EnvLv, 1, 0);
-
-    LOGD_ATMO("%s:  Current Ratio:%f\n", __FUNCTION__, pAdrcCtx->CurrData.Ratio);
+    pAdrcCtx->CurrData.EnvLv = (pAdrcCtx->CurrAeResult.GlobalEnvLv  - MIN_ENV_LV) / (MAX_ENV_LV - MIN_ENV_LV);
+    pAdrcCtx->CurrData.EnvLv = LIMIT_VALUE(pAdrcCtx->CurrData.EnvLv, ENVLVMAX, ENVLVMIN);
 
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
@@ -439,13 +397,17 @@ void AdrcGetSensorInfo
 #endif
     }
 
-    if(pAdrcCtx->FrameNumber == 1) {
+    if(pAdrcCtx->FrameNumber == LINEAR_NUM) {
         pAdrcCtx->SensorInfo.MaxExpoL = 0;
         pAdrcCtx->SensorInfo.MinExpoL = 0;
     }
-    else if(pAdrcCtx->FrameNumber == 2) {
-        pAdrcCtx->SensorInfo.MaxExpoL = pAdrcCtx->SensorInfo.HdrMaxGain[1] * pAdrcCtx->SensorInfo.HdrMaxIntegrationTime[2];
-        pAdrcCtx->SensorInfo.MinExpoL = pAdrcCtx->SensorInfo.HdrMinGain[1] * pAdrcCtx->SensorInfo.HdrMinIntegrationTime[2];
+    else if(pAdrcCtx->FrameNumber == HDR_2X_NUM) {
+        pAdrcCtx->SensorInfo.MaxExpoL = pAdrcCtx->SensorInfo.HdrMaxGain[1] * pAdrcCtx->SensorInfo.HdrMaxIntegrationTime[1];
+        pAdrcCtx->SensorInfo.MinExpoL = pAdrcCtx->SensorInfo.HdrMinGain[1] * pAdrcCtx->SensorInfo.HdrMinIntegrationTime[1];
+    }
+    else if(pAdrcCtx->FrameNumber == HDR_3X_NUM) {
+        pAdrcCtx->SensorInfo.MaxExpoL = pAdrcCtx->SensorInfo.HdrMaxGain[2] * pAdrcCtx->SensorInfo.HdrMaxIntegrationTime[2];
+        pAdrcCtx->SensorInfo.MinExpoL = pAdrcCtx->SensorInfo.HdrMinGain[2] * pAdrcCtx->SensorInfo.HdrMinIntegrationTime[2];
     }
 
     pAdrcCtx->SensorInfo.MaxExpoS = pAdrcCtx->SensorInfo.HdrMaxGain[0] * pAdrcCtx->SensorInfo.HdrMaxIntegrationTime[0];
@@ -455,10 +417,10 @@ void AdrcGetSensorInfo
 }
 
 /******************************************************************************
- * AdrcIQUpdate()
+ * AdrcIQUpdateV21()
  *
  *****************************************************************************/
-void AdrcIQUpdate
+void AdrcIQUpdateV21
 (
     AdrcContext_t*     pAdrcCtx
 )
@@ -498,7 +460,7 @@ void AdrcIQUpdate
 }
 
 /******************************************************************************
- * AdrcIQUpdate()
+ * AdrcIQUpdateV30()
  *
  *****************************************************************************/
 void AdrcIQUpdateV30
@@ -545,10 +507,10 @@ void AdrcIQUpdateV30
 }
 
 /******************************************************************************
- * AdrcTranferData2Api()
+ * AdrcTranferData2ApiV21()
  *
  *****************************************************************************/
-void AdrcTranferData2Api
+void AdrcTranferData2ApiV21
 (
     AdrcContext_t*     pAdrcCtx
 )
@@ -569,12 +531,11 @@ void AdrcTranferData2Api
     pAdrcCtx->drcAttr.stManual.Local.GlobalContrast = pAdrcCtx->CurrData.HandleData.Drc_v20.GlobalContrast;
     pAdrcCtx->drcAttr.stManual.Local.LoLitContrast = pAdrcCtx->CurrData.HandleData.Drc_v20.LoLitContrast;
 
-
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
 
 /******************************************************************************
- * AdrcTranferData2Api()
+ * AdrcTranferData2ApiV30()
  *
  *****************************************************************************/
 void AdrcTranferData2ApiV30
@@ -739,13 +700,12 @@ void AdrcUpdateConfig
         pAdrcCtx->Config.Drc_v21.Others.damp = LIMIT_VALUE(pCalibDb->Drc_v21.DrcTuningPara.damp, ADRCNORMALIZEMAX, ADRCNORMALIZEMIN);
     }
 
-
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
 /******************************************************************************
- * AdrcDamping()
+ * AdrcDampingV21()
  *****************************************************************************/
-void AdrcDamping
+void AdrcDampingV21
 (
     CurrData_t* pCurrData,
     AdrcPrevData_t* pPreData,
@@ -786,9 +746,11 @@ void AdrcDamping
             pCurrData->HandleData.Drc_v20.LoLitContrast = Drc_damp * pCurrData->HandleData.Drc_v20.LoLitContrast
                     + (1 - Drc_damp) * pPreData->HandleData.Drc_v20.LoLitContrast;
         }
-
-
     }
+
+    LOGD_ATMO("%s:%d: Current damp DrcGain:%f Alpha:%f Clip:%f Strength:%f LocalWeit:%f GlobalContrast:%f LoLitContrast:%f CompressMode:%d\n", __FUNCTION__, __LINE__,
+              pCurrData->HandleData.Drc_v20.DrcGain, pCurrData->HandleData.Drc_v20.Alpha, pCurrData->HandleData.Drc_v20.Clip, pCurrData->HandleData.Drc_v20.Strength,
+              pCurrData->HandleData.Drc_v20.LocalWeit, pCurrData->HandleData.Drc_v20.GlobalContrast, pCurrData->HandleData.Drc_v20.LoLitContrast, pCurrData->HandleData.Drc_v20.Mode);
 
     LOG1_ATMO("%s:Eixt!\n", __FUNCTION__);
 }
@@ -840,32 +802,37 @@ void AdrcDampingV30
         }
     }
 
+    LOGD_ATMO("%s: Current damp DrcGain:%f Alpha:%f Clip:%f Strength:%f CompressMode:%d\n", __FUNCTION__,
+              pCurrData->HandleData.Drc_v21.DrcGain, pCurrData->HandleData.Drc_v21.Alpha, pCurrData->HandleData.Drc_v21.Clip, pCurrData->HandleData.Drc_v21.Strength,
+              pCurrData->HandleData.Drc_v21.Mode);
+    LOGD_ATMO("%s: Current damp LocalWeit:%f LocalAutoEnable:%d LocalAutoWeit:%f GlobalContrast:%f LoLitContrast:%f\n", __FUNCTION__,
+              pCurrData->HandleData.Drc_v21.LocalWeit, pCurrData->HandleData.Drc_v21.LocalAutoEnable, pCurrData->HandleData.Drc_v21.LocalAutoWeit,
+              pCurrData->HandleData.Drc_v21.GlobalContrast, pCurrData->HandleData.Drc_v21.LoLitContrast);
+
     LOG1_ATMO("%s:Eixt!\n", __FUNCTION__);
 }
 
 /******************************************************************************
- * AdrcGetCurrProcRes()
+ * AdrcGetTuningProcResV21()
  *****************************************************************************/
-void AdrcGetCurrProcRes
+void AdrcGetTuningProcResV21
 (
     AdrcProcResData_t*           pAdrcProcRes,
     CurrData_t*          pCurrData,
     bool LongFrmMode,
     int FrameNumber,
-    int FrameCnt,
-    bool OutPutLongFrame
+    int FrameCnt
 ) {
     LOG1_ATMO( "%s:enter!\n", __FUNCTION__);
 
     //enable
-    if(FrameNumber == 2 || FrameNumber == 3) {
+    if(FrameNumber == HDR_2X_NUM || FrameNumber == HDR_3X_NUM) {
         pAdrcProcRes->bTmoEn = true;
         pAdrcProcRes->isLinearTmo = false;
     }
-    else if(FrameNumber == 1) {
+    else if(FrameNumber == LINEAR_NUM) {
         pAdrcProcRes->bTmoEn = pCurrData->Enable;
         pAdrcProcRes->isLinearTmo = pAdrcProcRes->bTmoEn;
-
     }
 
     //Long Frame mode
@@ -895,7 +862,6 @@ void AdrcGetCurrProcRes
     pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_weig_maxl = (int)(SHIFT4BIT(pCurrData->HandleData.Drc_v20.Strength) + 0.5);
     pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_adrc_gain = pCurrData->HandleData.Drc_v20.DrcGain;
     pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_weig_bilat = (int)(SHIFT4BIT(pCurrData->HandleData.Drc_v20.LocalWeit) + 0.5);
-    pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_min_ogain = OutPutLongFrame ? 1 : 0;
     for(int i = 0; i < ADRC_Y_NUM; ++i) {
         pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_scale_y[i] = (int)(pCurrData->Others.Scale_y[i]) ;
         pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_compres_y[i] = pCurrData->HandleData.Drc_v20.Manual_curve[i] ;
@@ -907,71 +873,33 @@ void AdrcGetCurrProcRes
     float iir_frame = (float)(MIN(FrameCnt + 1, pCurrData->Others.IIR_frame));
     pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_iir_weight = (int)(SHIFT6BIT((iir_frame - 1) / iir_frame) + 0.5);
 
-    pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_compres_scl =  20000.0;
-
     //sw_drc_delta_scalein FIX
-    int ISP_RAW_BIT = 12;
-    int MFHDR_LOG_Q_BITS = 11;
-    int dstbits = ISP_RAW_BIT << MFHDR_LOG_Q_BITS;
-    int offsetbits_int = SW_DRC_OFFSET_POW2_FIX;
-    int offsetbits = offsetbits_int << MFHDR_LOG_Q_BITS;
-    int validbits = dstbits - offsetbits;
-    int delta_scalein = (256 << MFHDR_LOG_Q_BITS) / validbits;
-    pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_delta_scalein = delta_scalein;
-
-    LOGD_ATMO("%s:Current damp Enable:%d DrcGain:%f Alpha:%f Clip:%f Strength:%f LocalWeit:%f GlobalContrast:%f LoLitContrast:%f CompressMode:%d\n", __FUNCTION__, pAdrcProcRes->bTmoEn,
-              pCurrData->HandleData.Drc_v20.DrcGain, pCurrData->HandleData.Drc_v20.Alpha, pCurrData->HandleData.Drc_v20.Clip, pCurrData->HandleData.Drc_v20.Strength,
-              pCurrData->HandleData.Drc_v20.LocalWeit, pCurrData->HandleData.Drc_v20.GlobalContrast, pCurrData->HandleData.Drc_v20.LoLitContrast, pCurrData->HandleData.Drc_v20.Mode);
-
-    LOGV_ATMO("%s:  sw_drc_adrc_gain:%f Alpha:%f\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_adrc_gain, pCurrData->HandleData.Drc_v20.Alpha);
-    LOGV_ATMO("%s:  sw_drc_offset_pow2:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_offset_pow2);
-    LOGV_ATMO("%s:  sw_drc_compres_scl:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_compres_scl);
-    LOGV_ATMO("%s:  sw_drc_position:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_position);
-    LOGV_ATMO("%s:  sw_drc_delta_scalein:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_delta_scalein);
-    LOGV_ATMO("%s:  sw_drc_hpdetail_ratio:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_hpdetail_ratio);
-    LOGV_ATMO("%s:  sw_drc_lpdetail_ratio:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_lpdetail_ratio);
-    LOGV_ATMO("%s:  sw_drc_weicur_pix:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_weicur_pix);
-    LOGV_ATMO("%s:  sw_drc_weipre_frame:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_weipre_frame);
-    LOGV_ATMO("%s:  sw_drc_force_sgm_inv0:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_force_sgm_inv0);
-    LOGV_ATMO("%s:  sw_drc_edge_scl:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_edge_scl);
-    LOGV_ATMO("%s:  sw_drc_space_sgm_inv1:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_space_sgm_inv1);
-    LOGV_ATMO("%s:  sw_drc_space_sgm_inv0:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_space_sgm_inv0);
-    LOGV_ATMO("%s:  sw_drc_range_sgm_inv1:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_range_sgm_inv1);
-    LOGV_ATMO("%s:  sw_drc_range_sgm_inv0:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_range_sgm_inv0);
-    LOGV_ATMO("%s:  sw_drc_weig_maxl:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_weig_maxl);
-    LOGV_ATMO("%s:  sw_drc_weig_bilat:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_weig_bilat);
-    LOGV_ATMO("%s:  sw_drc_adrc_gain:%f\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_adrc_gain);
-    LOGV_ATMO("%s:  sw_drc_iir_weight:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_iir_weight);
-    LOGV_ATMO("%s:  sw_drc_min_ogain:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_min_ogain);
-    for(int i = 0; i < 17; i++)
-        LOGV_ATMO("%s:  sw_drc_gain_y[%d]:%d\n", __FUNCTION__, i, pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_gain_y[i]);
+    pAdrcProcRes->DrcProcRes.Drc_v20.sw_drc_delta_scalein = DELTA_SCALEIN_FIX;
 
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
 
 /******************************************************************************
- * AdrcGetCurrProcRes()
+ * AdrcGetTuningProcResV30()
  *****************************************************************************/
-void AdrcGetCurrProcResV30
+void AdrcGetTuningProcResV30
 (
     AdrcProcResData_t*           pAdrcProcRes,
     CurrData_t*          pCurrData,
     bool LongFrmMode,
     int FrameNumber,
-    int FrameCnt,
-    bool OutPutLongFrame
+    int FrameCnt
 ) {
     LOG1_ATMO( "%s:enter!\n", __FUNCTION__);
 
     //enable
-    if(FrameNumber == 2 || FrameNumber == 3) {
+    if(FrameNumber == HDR_2X_NUM || FrameNumber == HDR_3X_NUM) {
         pAdrcProcRes->bTmoEn = true;
         pAdrcProcRes->isLinearTmo = false;
     }
-    else if(FrameNumber == 1) {
+    else if(FrameNumber == LINEAR_NUM) {
         pAdrcProcRes->bTmoEn = pCurrData->Enable;
         pAdrcProcRes->isLinearTmo = pAdrcProcRes->bTmoEn;
-
     }
 
     //Long Frame mode
@@ -984,7 +912,7 @@ void AdrcGetCurrProcResV30
     pAdrcProcRes->CompressMode = pCurrData->HandleData.Drc_v21.Mode;
 
     //DrcProcRes
-    pAdrcProcRes->DrcProcRes.Drc_v21.bypass_en = 0;
+    pAdrcProcRes->DrcProcRes.Drc_v21.bypass_en = FUNCTION_DISABLE;
     pAdrcProcRes->DrcProcRes.Drc_v21.offset_pow2 = SW_DRC_OFFSET_POW2_FIX;
     pAdrcProcRes->DrcProcRes.Drc_v21.position = (int)(SHIFT8BIT(pCurrData->HandleData.Drc_v21.Clip) + 0.5);
     pAdrcProcRes->DrcProcRes.Drc_v21.hpdetail_ratio = (int)(SHIFT12BIT(pCurrData->HandleData.Drc_v21.LoLitContrast) + 0.5);
@@ -1006,7 +934,6 @@ void AdrcGetCurrProcResV30
     pAdrcProcRes->DrcProcRes.Drc_v21.enable_soft_thd = pCurrData->HandleData.Drc_v21.LocalAutoEnable;
     pAdrcProcRes->DrcProcRes.Drc_v21.bilat_soft_thd = (int)(SHIFT14BIT(pCurrData->HandleData.Drc_v21.LocalAutoWeit) + 0.5);
     pAdrcProcRes->DrcProcRes.Drc_v21.bilat_soft_thd = LIMIT_VALUE(pAdrcProcRes->DrcProcRes.Drc_v21.bilat_soft_thd, INT14BITMAX, 0);
-    pAdrcProcRes->DrcProcRes.Drc_v21.min_ogain = OutPutLongFrame ? 1 : 0;
     for(int i = 0; i < ADRC_Y_NUM; ++i) {
         pAdrcProcRes->DrcProcRes.Drc_v21.scale_y[i] = (int)(pCurrData->Others.Scale_y[i]) ;
         pAdrcProcRes->DrcProcRes.Drc_v21.compres_y[i] = pCurrData->HandleData.Drc_v21.Manual_curve[i] ;
@@ -1015,112 +942,21 @@ void AdrcGetCurrProcResV30
     //get sw_drc_gain_y
     CalibrateDrcGainY(&pAdrcProcRes->DrcProcRes, pAdrcProcRes->DrcProcRes.Drc_v21.adrc_gain, pCurrData->HandleData.Drc_v21.Alpha) ;
 
-    pAdrcProcRes->DrcProcRes.Drc_v21.wr_cycle = 0;
+    pAdrcProcRes->DrcProcRes.Drc_v21.wr_cycle = FUNCTION_DISABLE;
     float iir_frame = (float)(MIN(FrameCnt + 1, pCurrData->Others.IIR_frame));
     pAdrcProcRes->DrcProcRes.Drc_v21.iir_weight = (int)(SHIFT6BIT((iir_frame - 1) / iir_frame) + 0.5);
 
-    pAdrcProcRes->DrcProcRes.Drc_v21.compres_scl =  20000.0;
-
     //sw_drc_delta_scalein FIX
-    int ISP_RAW_BIT = 12;
-    int MFHDR_LOG_Q_BITS = 11;
-    int dstbits = ISP_RAW_BIT << MFHDR_LOG_Q_BITS;
-    int offsetbits_int = SW_DRC_OFFSET_POW2_FIX;
-    int offsetbits = offsetbits_int << MFHDR_LOG_Q_BITS;
-    int validbits = dstbits - offsetbits;
-    int delta_scalein = (256 << MFHDR_LOG_Q_BITS) / validbits;
-    pAdrcProcRes->DrcProcRes.Drc_v21.delta_scalein = delta_scalein;
-
-    LOGD_ATMO("%s:Current damp Enable:%d DrcGain:%f Alpha:%f Clip:%f Strength:%f LocalWeit:%f GlobalContrast:%f LoLitContrast:%f CompressMode:%d\n", __FUNCTION__, pAdrcProcRes->bTmoEn,
-              pCurrData->HandleData.Drc_v21.DrcGain, pCurrData->HandleData.Drc_v21.Alpha, pCurrData->HandleData.Drc_v21.Clip, pCurrData->HandleData.Drc_v21.Strength,
-              pCurrData->HandleData.Drc_v21.LocalWeit, pCurrData->HandleData.Drc_v21.GlobalContrast, pCurrData->HandleData.Drc_v21.LoLitContrast, pCurrData->HandleData.Drc_v21.Mode);
-
-    LOGV_ATMO("%s:  sw_drc_adrc_gain:%f Alpha:%f\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.adrc_gain, pCurrData->HandleData.Drc_v21.Alpha);
-    LOGV_ATMO("%s:  sw_drc_offset_pow2:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.offset_pow2);
-    LOGV_ATMO("%s:  sw_drc_compres_scl:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.compres_scl);
-    LOGV_ATMO("%s:  sw_drc_position:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.position);
-    LOGV_ATMO("%s:  sw_drc_delta_scalein:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.delta_scalein);
-    LOGV_ATMO("%s:  sw_drc_hpdetail_ratio:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.hpdetail_ratio);
-    LOGV_ATMO("%s:  sw_drc_lpdetail_ratio:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.lpdetail_ratio);
-    LOGV_ATMO("%s:  sw_drc_weicur_pix:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.weicur_pix);
-    LOGV_ATMO("%s:  sw_drc_weipre_frame:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.weipre_frame);
-    LOGV_ATMO("%s:  sw_drc_force_sgm_inv0:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.force_sgm_inv0);
-    LOGV_ATMO("%s:  sw_drc_edge_scl:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.edge_scl);
-    LOGV_ATMO("%s:  sw_drc_space_sgm_inv1:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.space_sgm_inv1);
-    LOGV_ATMO("%s:  sw_drc_space_sgm_inv0:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.space_sgm_inv0);
-    LOGV_ATMO("%s:  sw_drc_range_sgm_inv1:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.range_sgm_inv1);
-    LOGV_ATMO("%s:  sw_drc_range_sgm_inv0:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.range_sgm_inv0);
-    LOGV_ATMO("%s:  sw_drc_weig_maxl:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.weig_maxl);
-    LOGV_ATMO("%s:  sw_drc_weig_bilat:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.weig_bilat);
-    LOGV_ATMO("%s:  sw_drc_adrc_gain:%f\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.adrc_gain);
-    LOGV_ATMO("%s:  sw_drc_enable_soft_thd:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.enable_soft_thd);
-    LOGV_ATMO("%s:  sw_drc_bilat_soft_thd:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.bilat_soft_thd);
-    LOGV_ATMO("%s:  sw_drc_iir_weight:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.iir_weight);
-    LOGV_ATMO("%s:  sw_drc_min_ogain:%d\n", __FUNCTION__, pAdrcProcRes->DrcProcRes.Drc_v21.min_ogain);
-    for(int i = 0; i < 17; i++)
-        LOGV_ATMO("%s:  sw_drc_gain_y[%d]:%d\n", __FUNCTION__, i, pAdrcProcRes->DrcProcRes.Drc_v21.gain_y[i]);
+    pAdrcProcRes->DrcProcRes.Drc_v21.delta_scalein = DELTA_SCALEIN_FIX;
 
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
 
 /******************************************************************************
- * AdrcGetCurrData()
- *****************************************************************************/
-void AdrcGetCurrData
-(
-    AdrcContext_t* pAdrcCtx
-) {
-
-    LOG1_ATMO( "%s:enter!\n", __FUNCTION__);
-
-    //damp
-    AdrcDamping(&pAdrcCtx->CurrData, &pAdrcCtx->PrevData, pAdrcCtx->drcAttr.opMode, pAdrcCtx->frameCnt);
-
-    //get io data
-    AdrcGetCurrProcRes(&pAdrcCtx->AdrcProcRes, &pAdrcCtx->CurrData, pAdrcCtx->SensorInfo.LongFrmMode,
-                       pAdrcCtx->FrameNumber, pAdrcCtx->frameCnt, pAdrcCtx->Config.Drc_v20.OutPutLongFrame);
-
-    // store current handle data to pre data for next loop
-    pAdrcCtx->PrevData.EnvLv = pAdrcCtx->CurrData.EnvLv;
-    pAdrcCtx->PrevData.ISO = pAdrcCtx->CurrData.ISO;
-    if(0 != memcmp(&pAdrcCtx->PrevData.HandleData, &pAdrcCtx->CurrData.HandleData, sizeof(DrcHandleData_t)))
-        memcpy(&pAdrcCtx->PrevData.HandleData, &pAdrcCtx->CurrData.HandleData, sizeof(DrcHandleData_t));
-
-    LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
-}
-
-/******************************************************************************
- * AdrcGetCurrData()
- *****************************************************************************/
-void AdrcGetCurrDataV30
-(
-    AdrcContext_t* pAdrcCtx
-) {
-
-    LOG1_ATMO( "%s:enter!\n", __FUNCTION__);
-
-    //damp
-    AdrcDampingV30(&pAdrcCtx->CurrData, &pAdrcCtx->PrevData, pAdrcCtx->drcAttr.opMode, pAdrcCtx->frameCnt);
-
-    //get io data
-    AdrcGetCurrProcResV30(&pAdrcCtx->AdrcProcRes, &pAdrcCtx->CurrData, pAdrcCtx->SensorInfo.LongFrmMode,
-                          pAdrcCtx->FrameNumber, pAdrcCtx->frameCnt, pAdrcCtx->Config.Drc_v21.OutPutLongFrame);
-
-    // store current handle data to pre data for next loop
-    pAdrcCtx->PrevData.EnvLv = pAdrcCtx->CurrData.EnvLv;
-    pAdrcCtx->PrevData.ISO = pAdrcCtx->CurrData.ISO;
-    pAdrcCtx->PrevData.MotionCoef = pAdrcCtx->CurrData.MotionCoef;
-    if(0 != memcmp(&pAdrcCtx->PrevData.HandleData, &pAdrcCtx->CurrData.HandleData, sizeof(DrcHandleData_t)))
-        memcpy(&pAdrcCtx->PrevData.HandleData, &pAdrcCtx->CurrData.HandleData, sizeof(DrcHandleData_t));
-
-    LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
-}
-
-/******************************************************************************
- * AdrcProcessing()
+ * AdrcTuningParaProcessingV21()
  *get handle para by config and current variate
  *****************************************************************************/
-void AdrcProcessingV20
+void AdrcTuningParaProcessingV21
 (
     AdrcContext_t*     pAdrcCtx
 )
@@ -1131,11 +967,15 @@ void AdrcProcessingV20
     //enable setting
     if(pAdrcCtx->drcAttr.Enable)
         pAdrcCtx->CurrData.Enable = true;
-    else
-        pAdrcCtx->CurrData.Enable = pAdrcCtx->Config.Drc_v20.Enable ;
+    else {
+        if(pAdrcCtx->FrameNumber == LINEAR_NUM)
+            pAdrcCtx->CurrData.Enable = pAdrcCtx->Config.Drc_v20.Enable ;
+        else if(pAdrcCtx->FrameNumber == HDR_2X_NUM || pAdrcCtx->FrameNumber == HDR_3X_NUM)
+            pAdrcCtx->CurrData.Enable = true;
+    }
 
     //para setting
-    AdrcIQUpdate(pAdrcCtx);
+    AdrcIQUpdateV21(pAdrcCtx);
 
     //api
     if(pAdrcCtx->drcAttr.opMode == DRC_OPMODE_API_OFF)
@@ -1182,20 +1022,29 @@ void AdrcProcessingV20
               , pAdrcCtx->CurrData.HandleData.Drc_v20.Mode);
 
     //transfer data to api
-    AdrcTranferData2Api(pAdrcCtx);
+    AdrcTranferData2ApiV21(pAdrcCtx);
 
-    //get io and store data in proc res
-    AdrcGetCurrData(pAdrcCtx);
+    //damp
+    AdrcDampingV21(&pAdrcCtx->CurrData, &pAdrcCtx->PrevData, pAdrcCtx->drcAttr.opMode, pAdrcCtx->frameCnt);
 
+    //get tuning proc res
+    AdrcGetTuningProcResV21(&pAdrcCtx->AdrcProcRes, &pAdrcCtx->CurrData, pAdrcCtx->SensorInfo.LongFrmMode,
+                            pAdrcCtx->FrameNumber, pAdrcCtx->frameCnt);
+
+    // store current handle data to pre data for next loop
+    pAdrcCtx->PrevData.EnvLv = pAdrcCtx->CurrData.EnvLv;
+    pAdrcCtx->PrevData.ISO = pAdrcCtx->CurrData.ISO;
+    if(0 != memcmp(&pAdrcCtx->PrevData.HandleData, &pAdrcCtx->CurrData.HandleData, sizeof(DrcHandleData_t)))
+        memcpy(&pAdrcCtx->PrevData.HandleData, &pAdrcCtx->CurrData.HandleData, sizeof(DrcHandleData_t));
 
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
 
 /******************************************************************************
- * AdrcProcessing()
+ * AdrcTuningParaProcessing()
  *get handle para by config and current variate
  *****************************************************************************/
-void AdrcProcessingV30
+void AdrcTuningParaProcessingV30
 (
     AdrcContext_t*     pAdrcCtx
 )
@@ -1207,8 +1056,12 @@ void AdrcProcessingV30
     //enable setting
     if(pAdrcCtx->drcAttr.Enable)
         pAdrcCtx->CurrData.Enable = true;
-    else
-        pAdrcCtx->CurrData.Enable = pAdrcCtx->Config.Drc_v21.Enable ;
+    else {
+        if(pAdrcCtx->FrameNumber == LINEAR_NUM)
+            pAdrcCtx->CurrData.Enable = pAdrcCtx->Config.Drc_v21.Enable ;
+        else if(pAdrcCtx->FrameNumber == HDR_2X_NUM || pAdrcCtx->FrameNumber == HDR_3X_NUM)
+            pAdrcCtx->CurrData.Enable = true;
+    }
 
     //para setting
     AdrcIQUpdateV30(pAdrcCtx);
@@ -1254,25 +1107,38 @@ void AdrcProcessingV30
         pAdrcCtx->CurrData.HandleData.Drc_v21.DrcGain = MAX_AE_DRC_GAIN / pAdrcCtx->CurrAeResult.AEMaxRatio;
     }
 
-    LOGD_ATMO("%s:Current Enable:%d DrcGain:%f Alpha:%f Clip:%f Strength:%f LocalWeit:%f GlobalContrast:%f LoLitContrast:%f CompressMode:%d\n", __FUNCTION__, pAdrcCtx->CurrData.Enable,
-              pAdrcCtx->CurrData.HandleData.Drc_v21.DrcGain, pAdrcCtx->CurrData.HandleData.Drc_v21.Alpha, pAdrcCtx->CurrData.HandleData.Drc_v21.Clip, pAdrcCtx->CurrData.HandleData.Drc_v21.Strength,
-              pAdrcCtx->CurrData.HandleData.Drc_v21.LocalWeit, pAdrcCtx->CurrData.HandleData.Drc_v21.GlobalContrast, pAdrcCtx->CurrData.HandleData.Drc_v21.LoLitContrast
-              , pAdrcCtx->CurrData.HandleData.Drc_v21.Mode);
+    LOGD_ATMO("%s: Current Enable:%d DrcGain:%f Alpha:%f Clip:%f Strength:%f CompressMode:%d\n", __FUNCTION__, pAdrcCtx->CurrData.Enable,
+              pAdrcCtx->CurrData.HandleData.Drc_v21.DrcGain, pAdrcCtx->CurrData.HandleData.Drc_v21.Alpha, pAdrcCtx->CurrData.HandleData.Drc_v21.Clip,
+              pAdrcCtx->CurrData.HandleData.Drc_v21.Strength, pAdrcCtx->CurrData.HandleData.Drc_v21.Mode);
+    LOGD_ATMO("%s: Current LocalWeit:%f LocalAutoEnable:%d LocalAutoWeit:%f GlobalContrast:%f LoLitContrast:%f\n", __FUNCTION__,
+              pAdrcCtx->CurrData.HandleData.Drc_v21.LocalWeit, pAdrcCtx->CurrData.HandleData.Drc_v21.LocalAutoEnable, pAdrcCtx->CurrData.HandleData.Drc_v21.LocalAutoWeit,
+              pAdrcCtx->CurrData.HandleData.Drc_v21.GlobalContrast, pAdrcCtx->CurrData.HandleData.Drc_v21.LoLitContrast);
 
     //transfer data to api
     AdrcTranferData2ApiV30(pAdrcCtx);
 
-    //get io and store data in proc res
-    AdrcGetCurrDataV30(pAdrcCtx);
+    //damp
+    AdrcDampingV30(&pAdrcCtx->CurrData, &pAdrcCtx->PrevData, pAdrcCtx->drcAttr.opMode, pAdrcCtx->frameCnt);
+
+    //get io data
+    AdrcGetTuningProcResV30(&pAdrcCtx->AdrcProcRes, &pAdrcCtx->CurrData, pAdrcCtx->SensorInfo.LongFrmMode,
+                            pAdrcCtx->FrameNumber, pAdrcCtx->frameCnt);
+
+    // store current handle data to pre data for next loop
+    pAdrcCtx->PrevData.EnvLv = pAdrcCtx->CurrData.EnvLv;
+    pAdrcCtx->PrevData.ISO = pAdrcCtx->CurrData.ISO;
+    pAdrcCtx->PrevData.MotionCoef = pAdrcCtx->CurrData.MotionCoef;
+    if(0 != memcmp(&pAdrcCtx->PrevData.HandleData, &pAdrcCtx->CurrData.HandleData, sizeof(DrcHandleData_t)))
+        memcpy(&pAdrcCtx->PrevData.HandleData, &pAdrcCtx->CurrData.HandleData, sizeof(DrcHandleData_t));
 
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
 
 /******************************************************************************
- * AdrcProcessing()
+ * AdrcTuningParaProcessing()
  *get handle para by config and current variate
  *****************************************************************************/
-void AdrcProcessing
+void AdrcTuningParaProcessing
 (
     AdrcContext_t*     pAdrcCtx
 )
@@ -1281,9 +1147,194 @@ void AdrcProcessing
     pAdrcCtx->CurrData.frameCnt = pAdrcCtx->frameCnt;
 
     if(CHECK_ISP_HW_V21())
-        AdrcProcessingV20(pAdrcCtx);
+        AdrcTuningParaProcessingV21(pAdrcCtx);
     else if(CHECK_ISP_HW_V30())
-        AdrcProcessingV30(pAdrcCtx);
+        AdrcTuningParaProcessingV30(pAdrcCtx);
+
+    LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
+}
+
+/******************************************************************************
+ * AdrcExpoParaProcessing()
+ *get handle para by config and current variate
+ *****************************************************************************/
+void AdrcExpoParaProcessing
+(
+    AdrcContext_t*     pAdrcCtx,
+    DrcExpoData_t*     pExpoData
+)
+{
+    LOG1_ATMO("%s:enter!\n", __FUNCTION__);
+
+    if(CHECK_ISP_HW_V21()) {
+        //get sw_drc_compres_scl
+        float adrc_gain = pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_adrc_gain;
+        float log_ratio2 = log(pExpoData->nextRatioLS * adrc_gain) / log(2.0f) + 12;
+        float offsetbits_int = (float)(pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_offset_pow2);
+        float offsetbits = offsetbits_int * pow(2, MFHDR_LOG_Q_BITS);
+        float hdrbits = log_ratio2 * pow(2, MFHDR_LOG_Q_BITS);
+        float hdrvalidbits = hdrbits - offsetbits;
+        float compres_scl = (12 * pow(2, MFHDR_LOG_Q_BITS * 2)) / hdrvalidbits;
+        pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_scl = (int)(compres_scl);
+
+        //get sw_drc_min_ogain
+        if(pAdrcCtx->Config.Drc_v20.OutPutLongFrame)
+            pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_min_ogain = 1 << 15;
+        else {
+            float sw_drc_min_ogain = 1 / (pExpoData->nextRatioLS * adrc_gain);
+            pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_min_ogain = (int)(sw_drc_min_ogain * pow(2, 15) + 0.5);
+        }
+
+        //get sw_drc_compres_y
+        if(pAdrcCtx->AdrcProcRes.CompressMode == COMPRESS_AUTO) {
+            float curveparam, curveparam2, curveparam3, tmp;
+            float luma2[17] = { 0, 1024, 2048, 3072, 4096, 5120, 6144, 7168, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576 };
+            float curveTable[17];
+            float dstbits = ISP_RAW_BIT * pow(2, MFHDR_LOG_Q_BITS);
+            float validbits = dstbits - offsetbits;
+            for(int i = 0; i < ISP21_DRC_Y_NUM; ++i)
+            {
+                curveparam = (float)(validbits - 0) / (hdrvalidbits - validbits + pow(2, -6));
+                curveparam2 = validbits * (1 + curveparam);
+                curveparam3 = hdrvalidbits * curveparam;
+                tmp = luma2[i] * hdrvalidbits / 24576;
+                curveTable[i] = (tmp * curveparam2 / (tmp + curveparam3));
+                pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[i] = (int)(curveTable[i]) ;
+            }
+        }
+
+        LOGV_ATMO("%s: nextRatioLS:%f sw_drc_position:%d sw_drc_compres_scl:%d sw_drc_offset_pow2:%d\n", __FUNCTION__,
+                  pExpoData->nextRatioLS, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_position, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_scl,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_offset_pow2);
+        LOGV_ATMO("%s: sw_drc_lpdetail_ratio:%d sw_drc_hpdetail_ratio:%d sw_drc_delta_scalein:%d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_lpdetail_ratio,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_hpdetail_ratio, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_delta_scalein);
+        LOGV_ATMO("%s: sw_drc_weipre_frame:%d sw_drc_weicur_pix:%d\n", __FUNCTION__,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_weipre_frame, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_weicur_pix);
+        LOGV_ATMO("%s: sw_drc_edge_scl:%d sw_drc_motion_scl:%d sw_drc_force_sgm_inv0:%d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_edge_scl,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_motion_scl, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_force_sgm_inv0);
+        LOGV_ATMO("%s: sw_drc_space_sgm_inv0:%d sw_drc_space_sgm_inv1:%d\n", __FUNCTION__,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_space_sgm_inv0, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_space_sgm_inv1);
+        LOGV_ATMO("%s: sw_drc_range_sgm_inv0:%d sw_drc_range_sgm_inv1:%d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_range_sgm_inv0,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_range_sgm_inv1);
+        LOGV_ATMO("%s: sw_drc_weig_bilat:%d sw_drc_weig_maxl:%d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_weig_bilat,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_weig_maxl);
+        LOGV_ATMO("%s: sw_drc_min_ogain:%d sw_drc_iir_weight:%d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_min_ogain,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_iir_weight);
+        LOGV_ATMO("%s: sw_drc_gain_y: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", __FUNCTION__,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[0], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[1],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[2], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[3],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[4], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[5],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[6], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[7],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[8], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[9],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[10], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[11],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[12], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[13],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[14], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[15],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_gain_y[16]);
+        LOGV_ATMO("%s: sw_drc_scale_y: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", __FUNCTION__,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[0], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[1],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[2], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[3],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[4], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[5],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[6], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[7],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[8], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[9],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[10], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[11],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[12], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[13],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[14], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[15],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_scale_y[16]);
+        LOGV_ATMO( "%s: CompressMode:%d sw_drc_compres_y: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.CompressMode,
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[0], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[1],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[2], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[3],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[4], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[5],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[6], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[7],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[8], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[9],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[10], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[11],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[12], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[13],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[14], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[15],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v20.sw_drc_compres_y[16]);
+    }
+    else if(CHECK_ISP_HW_V30()) {
+        //get sw_drc_compres_scl
+        float adrc_gain = pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.adrc_gain;
+        float log_ratio2 = log(pExpoData->nextRatioLS * adrc_gain) / log(2.0f) + 12;
+        float offsetbits_int = (float)(pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.offset_pow2);
+        float offsetbits = offsetbits_int * pow(2, MFHDR_LOG_Q_BITS);
+        float hdrbits = log_ratio2 * pow(2, MFHDR_LOG_Q_BITS);
+        float hdrvalidbits = hdrbits - offsetbits;
+        float compres_scl = (12 * pow(2, MFHDR_LOG_Q_BITS * 2)) / hdrvalidbits;
+        pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_scl = (int)(compres_scl);
+
+        //get sw_drc_min_ogain
+        if(pAdrcCtx->Config.Drc_v21.OutPutLongFrame)
+            pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.min_ogain = 1 << 15;
+        else {
+            float sw_drc_min_ogain = 1 / (pExpoData->nextRatioLS * adrc_gain);
+            pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.min_ogain = (int)(sw_drc_min_ogain * pow(2, 15) + 0.5);
+        }
+
+        //get sw_drc_compres_y
+        if(pAdrcCtx->AdrcProcRes.CompressMode == COMPRESS_AUTO) {
+            float curveparam, curveparam2, curveparam3, tmp;
+            float luma2[17] = { 0, 1024, 2048, 3072, 4096, 5120, 6144, 7168, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576 };
+            float curveTable[17];
+            float dstbits = ISP_RAW_BIT * pow(2, MFHDR_LOG_Q_BITS);
+            float validbits = dstbits - offsetbits;
+            for(int i = 0; i < ISP21_DRC_Y_NUM; ++i)
+            {
+                curveparam = (float)(validbits - 0) / (hdrvalidbits - validbits + pow(2, -6));
+                curveparam2 = validbits * (1 + curveparam);
+                curveparam3 = hdrvalidbits * curveparam;
+                tmp = luma2[i] * hdrvalidbits / 24576;
+                curveTable[i] = (tmp * curveparam2 / (tmp + curveparam3));
+                pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[i] = (int)(curveTable[i]) ;
+            }
+        }
+
+        LOGV_ATMO("%s: nextRatioLS:%f sw_drc_position:%d sw_drc_compres_scl:%d sw_drc_offset_pow2:%d\n", __FUNCTION__, pExpoData->nextRatioLS,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.position, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_scl, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.offset_pow2);
+        LOGV_ATMO("%s: sw_drc_lpdetail_ratio:%d sw_drc_hpdetail_ratio:%d sw_drc_delta_scalein:%d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.lpdetail_ratio,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.hpdetail_ratio, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.delta_scalein);
+        LOGV_ATMO("%s: sw_drc_bilat_wt_off:%d sw_drc_weipre_frame:%d sw_drc_weicur_pix:%d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.bilat_wt_off,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.weipre_frame, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.weicur_pix);
+        LOGV_ATMO("%s: sw_drc_edge_scl:%d sw_drc_motion_scl:%d sw_drc_force_sgm_inv0:%d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.edge_scl,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.motion_scl, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.force_sgm_inv0);
+        LOGV_ATMO("%s: sw_drc_space_sgm_inv0:%d sw_drc_space_sgm_inv1:%d\n", __FUNCTION__,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.space_sgm_inv0, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.space_sgm_inv1);
+        LOGV_ATMO("%s: sw_drc_range_sgm_inv0:%d sw_drc_range_sgm_inv1:%d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.range_sgm_inv0,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.range_sgm_inv1);
+        LOGV_ATMO("%s: sw_drc_weig_bilat:%d sw_drc_weig_maxl:%d sw_drc_bilat_soft_thd:%d sw_drc_enable_soft_thd:%d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.weig_bilat,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.weig_maxl, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.bilat_soft_thd, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.enable_soft_thd);
+        LOGV_ATMO("%s: sw_drc_min_ogain:%d sw_drc_iir_weight:%d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.min_ogain,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.iir_weight);
+        LOGV_ATMO("%s: sw_drc_gain_y: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", __FUNCTION__,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[0], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[1],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[2], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[3],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[4], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[5],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[6], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[7],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[8], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[9],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[10], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[11],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[12], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[13],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[14], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[15],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.gain_y[16]);
+        LOGV_ATMO("%s: sw_drc_scale_y: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", __FUNCTION__,
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[0], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[1],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[2], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[3],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[4], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[5],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[6], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[7],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[8], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[9],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[10], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[11],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[12], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[13],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[14], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[15],
+                  pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.scale_y[16]);
+        LOGV_ATMO( "%s: CompressMode:%d sw_drc_compres_y: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", __FUNCTION__, pAdrcCtx->AdrcProcRes.CompressMode,
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[0], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[1],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[2], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[3],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[4], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[5],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[6], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[7],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[8], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[9],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[10], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[11],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[12], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[13],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[14], pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[15],
+                   pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v21.compres_y[16]);
+    }
 
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
@@ -1316,11 +1367,11 @@ bool AdrcByPassProcessing
     else if(pAdrcCtx->drcAttr.opMode !=  pAdrcCtx->PrevData.ApiMode)//api change
         bypass = false;
     else { //EnvLv change
-        //get current ae data from AecPreRes
-        AdrcGetAeResult(pAdrcCtx, AecHdrPreResult);
+        //get current EnvLv from AecPreRes
+        AdrcGetEnvLv(pAdrcCtx, AecHdrPreResult);
 
         //motion coef
-        pAdrcCtx->CurrData.MotionCoef = 0;
+        pAdrcCtx->CurrData.MotionCoef = MOVE_COEF_DEFAULT;
 
         //transfer ae data to CurrHandle
         pAdrcCtx->CurrData.EnvLv = LIMIT_VALUE(pAdrcCtx->CurrData.EnvLv, ADRCNORMALIZEMAX, ADRCNORMALIZEMIN);
@@ -1346,10 +1397,10 @@ bool AdrcByPassProcessing
         }
     }
 
-    LOGD_ATMO( "%s: FrameID:%d HDRFrameNum:%d DRCApiMode:%d EnvLv:%f bypass:%d H\n", __FUNCTION__, pAdrcCtx->frameCnt, pAdrcCtx->FrameNumber, pAdrcCtx->drcAttr.opMode,
-               pAdrcCtx->CurrData.EnvLv, bypass);
+    LOGD_ATMO( "%s: FrameID:%d HDRFrameNum:%d LongFrmMode:%d DRCApiMode:%d EnvLv:%f bypass:%d\n", __FUNCTION__, pAdrcCtx->frameCnt, pAdrcCtx->FrameNumber,
+               pAdrcCtx->SensorInfo.LongFrmMode, pAdrcCtx->drcAttr.opMode, pAdrcCtx->CurrData.EnvLv, bypass);
 
-    LOG1_ATMO( "%s:CtrlEnvLv:%f PrevEnvLv:%f diff:%f ByPassThr:%f opMode:%d bypass:%d!\n", __FUNCTION__, pAdrcCtx->CurrData.EnvLv,
+    LOG1_ATMO( "%s: CtrlEnvLv:%f PrevEnvLv:%f diff:%f ByPassThr:%f opMode:%d bypass:%d!\n", __FUNCTION__, pAdrcCtx->CurrData.EnvLv,
                pAdrcCtx->PrevData.EnvLv, diff, ByPassThr, pAdrcCtx->drcAttr.opMode, bypass);
 
     LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
