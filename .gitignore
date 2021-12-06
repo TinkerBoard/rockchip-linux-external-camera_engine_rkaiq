@@ -16,3 +16,4 @@
 #
 
 include/iq_parser_v2/j2s/j2s_generated.h
+include/iq_parser_v2/j2s/j2s_generated_template_json.h
