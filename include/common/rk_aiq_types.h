@@ -553,7 +553,7 @@ typedef RkAiqAtmoProcResult_t rk_aiq_isp_tmo_t;
 
 typedef RkAiqAdrcProcResult_t rk_aiq_isp_drc_t;
 
-typedef AdehazeV20ProcResult_t rk_aiq_isp_dehaze_t;
+typedef RkAiqAdehazeProcResult_t rk_aiq_isp_dehaze_t;
 
 
 #if ANR_NO_SEPERATE_MARCO
@@ -698,12 +698,6 @@ typedef struct rk_aiq_cpsl_cap_s {
 } rk_aiq_cpsl_cap_t;
 
 // v21 types
-
-// drc , alias name of TMO
-/*typedef struct rk_aiq_isp_drc_v21_s {
-    //TODO:
-    void* place_holder;
-} rk_aiq_isp_drc_v21_t;*/
 
 typedef RkAiqAdrcProcResult_t rk_aiq_isp_drc_v21_t;
 

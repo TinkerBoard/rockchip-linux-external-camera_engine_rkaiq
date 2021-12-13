@@ -46,7 +46,9 @@ typedef struct rk_aiq_sys_ctx_s {
     SmartPtr<ICamHw> _camHw;
     SmartPtr<RkAiqCore> _analyzer;
     SmartPtr<RkLumaCore> _lumaAnalyzer;
+#ifdef RKAIQ_ENABLE_PARSER_V1
     CamCalibDbContext_t *_calibDb;
+#endif
     int _isp_hw_ver;
 
     SocketServer *  _socket;
@@ -55,7 +57,9 @@ typedef struct rk_aiq_sys_ctx_s {
 
     rk_aiq_ctx_type_e ctx_type;
     rk_aiq_sys_ctx_t* next_ctx;
+#ifdef RKAIQ_ENABLE_CAMGROUP
     RkAiqCamGroupManager* _camGroupManager;
+#endif
     int _camPhyId;
 } rk_aiq_sys_ctx_t;
 
@@ -102,6 +106,8 @@ bool is_ctx_need_bypass(const rk_aiq_sys_ctx_t* ctx)
 typedef struct rk_aiq_sys_preinit_cfg_s {
     rk_aiq_working_mode_t mode;
     std::string force_iq_file;
+    std::string main_scene;
+    std::string sub_scene;
 } rk_aiq_sys_preinit_cfg_t;
 
 static std::map<std::string, rk_aiq_sys_preinit_cfg_t> g_rk_aiq_sys_preinit_cfg_map;
@@ -122,6 +128,27 @@ rk_aiq_uapi_sysctl_preInit(const char* sns_ent_name,
     return XCAM_RETURN_NO_ERROR;
 }
 
+
+XCamReturn
+rk_aiq_uapi_sysctl_preInit_scene(const char* sns_ent_name, const char *main_scene,
+                             const char *sub_scene)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+	if (!sns_ent_name || !main_scene || !sub_scene) {
+        LOGE("Invalid input parameter");
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    std::string sns_ent_name_str(sns_ent_name);
+
+    LOGI("main_scene: %s, sub_scene: %s", main_scene, sub_scene);
+    g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].main_scene   = main_scene;
+    g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].sub_scene    = sub_scene;
+
+    return (ret);
+}
+
 static void
 rk_aiq_uapi_sysctl_deinit_locked(rk_aiq_sys_ctx_t* ctx);
 
@@ -135,6 +162,8 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
 
     ENTER_XCORE_FUNCTION();
     char config_file[256];
+    std::string main_scene;
+    std::string sub_scene;
 
     XCAM_ASSERT(sns_ent_name);
 
@@ -211,6 +240,11 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
                 user_hdr_mode = it->second.mode;
                 LOGI("selected by user sepcified hdr mode %d", user_hdr_mode);
             }
+
+            if (!it->second.main_scene.empty())
+                main_scene = it->second.main_scene;
+            if (!it->second.sub_scene.empty())
+                sub_scene = it->second.sub_scene;
         }
 
         // use auto selected iq file
@@ -221,13 +255,7 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
             char* hdr_mode = getenv("HDR_MODE");
             int start = strlen(iq_file) - strlen(".xml");
 
-            if (user_hdr_mode != -1) {
-                iq_file[start] = '\0';
-                if (user_hdr_mode == RK_AIQ_WORKING_MODE_ISP_HDR3)
-                    strcat(iq_file, "-hdr3.xml");
-                else
-                    strcat(iq_file, "_normal.xml");
-            } else if (hdr_mode) {
+            if (hdr_mode) {
                 iq_file[start] = '\0';
                 if (strstr(hdr_mode, "32"))
                     strcat(iq_file, "-hdr3.xml");
@@ -284,13 +312,21 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
     strcpy(config_file + strlen(config_file) - strlen(".xml"), ".json");
 
     CamCalibDbV2Context_t calibdbv2_ctx;
+    xcam_mem_clear (calibdbv2_ctx);
 
     ctx->_calibDbProj = RkAiqCalibDbV2::createCalibDbProj(config_file);
     if (!ctx->_calibDbProj)
         goto error;
 
-    calibdbv2_ctx =
-        RkAiqCalibDbV2::toDefaultCalibDb(ctx->_calibDbProj);
+    if (!main_scene.empty() && !sub_scene.empty())
+        calibdbv2_ctx = RkAiqSceneManager::refToScene(ctx->_calibDbProj,
+                main_scene.c_str(), sub_scene.c_str());
+
+    if (!calibdbv2_ctx.calib_scene) {
+        LOGE("Failed to find params of %s:%s scene in json, using default scene",
+             main_scene.c_str(), sub_scene.c_str());
+        calibdbv2_ctx = RkAiqCalibDbV2::toDefaultCalibDb(ctx->_calibDbProj);
+    }
     ctx->_rkAiqManager->setAiqCalibDb(&calibdbv2_ctx);
 
     ret = ctx->_rkAiqManager->init();
@@ -597,7 +633,9 @@ algoHandle(const rk_aiq_sys_ctx_t* ctx, const int algo_type)
 #include "uAPI2/rk_aiq_user_api2_a3dlut.cpp"
 #include "rk_aiq_user_api2_afec.cpp"
 #include "uAPI/rk_aiq_user_api_agic.cpp"
+#ifdef RKAIQ_ENABLE_CAMGROUP
 #include "uAPI2/rk_aiq_user_api2_camgroup.cpp"
+#endif
 #include "uAPI2/rk_aiq_user_api2_agic.cpp"
 
 
@@ -844,7 +882,9 @@ static void rk_aiq_deinit_lib(void)
     /* nothing to do now */
 #else
     RkAiqCalibDbV2::releaseCalibDbProj();
+#ifdef RKAIQ_ENABLE_PARSER_V1
     RkAiqCalibDb::releaseCalibDb();
+#endif
     CamHwIsp20::clearStaticCamHwInfo();
 #endif
     EXIT_XCORE_FUNCTION();
@@ -1115,18 +1155,8 @@ int rk_aiq_uapi_sysctl_switch_scene(const rk_aiq_sys_ctx_t* sys_ctx,
         return XCAM_RETURN_ERROR_PARAM;
     }
 
-    auto new_scene_calib = RkAiqSceneManager::refToScene(sys_ctx->_calibDbProj,
+    auto new_calib = RkAiqSceneManager::refToScene(sys_ctx->_calibDbProj,
                      main_scene, sub_scene);
-
-    if (!new_scene_calib) {
-        LOGE("%s: failed\n", __func__);
-        return XCAM_RETURN_ERROR_PARAM;
-    }
-
-    auto last_calib = sys_ctx->_rkAiqManager->getCurrentCalibDBV2();
-
-    CamCalibDbV2Context_t new_calib = *last_calib; 
-    new_calib.calib_scene = (char*)new_scene_calib;
 
     ret = sys_ctx->_rkAiqManager->updateCalibDb(&new_calib);
     if (ret) {
@@ -1136,4 +1166,3 @@ int rk_aiq_uapi_sysctl_switch_scene(const rk_aiq_sys_ctx_t* sys_ctx,
 
     return XCAM_RETURN_NO_ERROR;
 }
-

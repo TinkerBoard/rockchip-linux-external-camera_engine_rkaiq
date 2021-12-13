@@ -42,6 +42,10 @@ XCamReturn rk_aiq_uapi_ae_getIrisAttr(RkAiqAlgoContext* ctx, Uapi_IrisAttrV2_t* 
 XCamReturn rk_aiq_uapi_ae_queryExpInfo(RkAiqAlgoContext* ctx, Uapi_ExpQueryInfo_t* pExpInfo);
 XCamReturn rk_aiq_uapi_ae_setExpWinAttr(RkAiqAlgoContext* ctx, const Uapi_ExpWin_t* pExpWinAttr, bool need_sync);
 XCamReturn rk_aiq_uapi_ae_getExpWinAttr(RkAiqAlgoContext* ctx, Uapi_ExpWin_t* pExpWinAttr);
+XCamReturn rk_aiq_uapi_ae_unlock(RkAiqAlgoContext* ctx);
+XCamReturn rk_aiq_uapi_ae_lock(RkAiqAlgoContext* ctx);
+
+
 
 
 #endif /*__RK_AIQ_UAPI_AE_INT_H__*/

@@ -32,26 +32,11 @@ public:
     virtual ~RkAiqCoreV3x();
 protected:
     virtual XCamReturn prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des, int mode);
-    SmartPtr<RkAiqHandle> newAlgoHandle(RkAiqAlgoDesComm* algo, bool generic, int hw_ver);
+    SmartPtr<RkAiqHandle> newAlgoHandle(RkAiqAlgoDesComm* algo, int hw_ver);
     void copyIspStats(SmartPtr<RkAiqAecStatsProxy>& aecStat,
                       SmartPtr<RkAiqAwbStatsProxy>& awbStat,
                       SmartPtr<RkAiqAfStatsProxy>& afStat,
                       rk_aiq_isp_stats_t* to);
-    XCamReturn genIspParamsResult(RkAiqFullParams *aiqParams, enum rk_aiq_core_analyze_type_e type);
-    XCamReturn genIspArawnrResult(RkAiqFullParams* params);
-    XCamReturn genIspAynrResult(RkAiqFullParams* params);
-    XCamReturn genIspAcnrResult(RkAiqFullParams* params);
-    XCamReturn genIspAdrcResult(RkAiqFullParams* params);
-    XCamReturn genIspAgammaResult(RkAiqFullParams* params);
-    XCamReturn genIspAwbResult(RkAiqFullParams* params);
-    XCamReturn genIspAgicResult(RkAiqFullParams* params);
-    XCamReturn genIspAdhazResult(RkAiqFullParams* params);
-    XCamReturn genIspAsharpResult(RkAiqFullParams* params);
-    XCamReturn genIspAmergeResult(RkAiqFullParams* params);
-    XCamReturn genIspAgainResult(RkAiqFullParams* params);
-    XCamReturn genIspAfResult(RkAiqFullParams* params);
-    XCamReturn genIspAcacResult(RkAiqFullParams* params);
-    XCamReturn genIspAtnrResult(RkAiqFullParams* params);
     void newAiqParamsPool();
     XCamReturn getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analyze_type_e type);
 
@@ -60,10 +45,6 @@ protected:
     // V3x differential modules
     SmartPtr<RkAiqIspAwbParamsPoolV3x>         mAiqIspAwbV3xParamsPool;
     SmartPtr<RkAiqIspAfParamsPoolV3x>          mAiqIspAfV3xParamsPool;
-    SmartPtr<RkAiqIspAgammaParamsPoolV3x>      mAiqIspAgammaV3xParamsPool;
-    SmartPtr<RkAiqIspDrcParamsPoolV3x>         mAiqIspDrcV3xParamsPool;
-    SmartPtr<RkAiqIspMergeParamsPoolV3x>       mAiqIspMergeV3xParamsPool;
-    SmartPtr<RkAiqIspDehazeParamsPoolV3x>      mAiqIspDehazeV3xParamsPool;
     SmartPtr<RkAiqIspCacParamsPoolV3x>         mAiqIspCacV3xParamsPool;
     SmartPtr<RkAiqIspGainParamsPoolV3x>        mAiqIspGainV3xParamsPool;
     SmartPtr<RkAiqIspBaynrParamsPoolV3x>       mAiqIspBaynrV3xParamsPool;

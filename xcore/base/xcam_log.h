@@ -126,6 +126,20 @@ extern xcore_cam_log_module_info_t g_xcore_log_infos[XCORE_LOG_MODULE_MAX];
             xcam_print_log (module, submodules, XCORE_LOG_LEVEL_INFO, "XCAM INFO %s:%d: " format "\n", __BI_FILENAME__ , __LINE__, ## __VA_ARGS__); \
     } while(0) \
 
+#define XCAM_MODULE_LOG_DEBUG(module, submodules, format, ...)   \
+    do { \
+        if (XCORE_LOG_LEVEL_DEBUG <= g_xcore_log_infos[module].log_level && \
+                (submodules & g_xcore_log_infos[module].sub_modules)) \
+          xcam_print_log (module, submodules, XCORE_LOG_LEVEL_DEBUG, "XCAM DEBUG %s:%d: " format "\n", __BI_FILENAME__ , __LINE__, ## __VA_ARGS__); \
+    } while(0)
+
+#ifdef NDEBUG
+
+#define XCAM_MODULE_LOG_LOW1(module, submodules, format, ...)
+#define XCAM_MODULE_LOG_VERBOSE(module, submodules, format, ...)
+
+#else
+
 #define XCAM_MODULE_LOG_VERBOSE(module, submodules, format, ...)   \
     do { \
         if (XCORE_LOG_LEVEL_VERBOSE <= g_xcore_log_infos[module].log_level && \
@@ -133,19 +147,14 @@ extern xcore_cam_log_module_info_t g_xcore_log_infos[XCORE_LOG_MODULE_MAX];
             xcam_print_log (module, submodules, XCORE_LOG_LEVEL_VERBOSE, "XCAM VERBOSE %s:%d: " format "\n", __BI_FILENAME__ , __LINE__, ## __VA_ARGS__); \
     } while(0) \
 
-#define XCAM_MODULE_LOG_DEBUG(module, submodules, format, ...)   \
-    do { \
-        if (XCORE_LOG_LEVEL_DEBUG <= g_xcore_log_infos[module].log_level && \
-                (submodules & g_xcore_log_infos[module].sub_modules)) \
-          xcam_print_log (module, submodules, XCORE_LOG_LEVEL_DEBUG, "XCAM DEBUG %s:%d: " format "\n", __BI_FILENAME__ , __LINE__, ## __VA_ARGS__); \
-    } while(0) \
-
 #define XCAM_MODULE_LOG_LOW1(module, submodules, format, ...)   \
     do { \
         if (XCORE_LOG_LEVEL_LOW1 <= g_xcore_log_infos[module].log_level && \
                 (submodules & g_xcore_log_infos[module].sub_modules)) \
           xcam_print_log (module, submodules, XCORE_LOG_LEVEL_LOW1, "XCAM LOW1 %s:%d: " format "\n", __BI_FILENAME__, __LINE__, ## __VA_ARGS__); \
-    } while(0) \
+    } while(0)
+
+#endif
 
 // generic/xcore
 #define XCAM_LOG_ERROR(format, ...) XCAM_MODULE_LOG_ERROR(XCORE_LOG_MODULE_XCORE, 0xff, format, ##__VA_ARGS__)

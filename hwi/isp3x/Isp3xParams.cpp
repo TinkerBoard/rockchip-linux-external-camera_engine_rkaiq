@@ -1249,7 +1249,7 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_DRC_PARAM:
     {
-        SmartPtr<RkAiqIspDrcParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspDrcParamsProxyV3x>();
+        SmartPtr<RkAiqIspDrcParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDrcParamsProxy>();
         if (params.ptr())
             convertAiqDrcToIsp3xParams(isp_cfg, params->data()->result);
     }
@@ -1298,14 +1298,14 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_DEHAZE_PARAM:
     {
-        SmartPtr<RkAiqIspDehazeParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspDehazeParamsProxyV3x>();
+        SmartPtr<RkAiqIspDehazeParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDehazeParamsProxy>();
         if (params.ptr())
             convertAiqAdehazeToIsp3xParams(isp_cfg, params->data()->result);
     }
     break;
     case RESULT_TYPE_GIC_PARAM:
     {
-        SmartPtr<RkAiqIspGicParamsProxyV21> params = result.dynamic_cast_ptr<RkAiqIspGicParamsProxyV21>();
+        SmartPtr<RkAiqIspGicParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspGicParamsProxy>();
         if (params.ptr())
             convertAiqAgicToIsp21Params(isp_cfg, params->data()->result);
     }
@@ -1319,7 +1319,7 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_MERGE_PARAM:
     {
-        SmartPtr<RkAiqIspMergeParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspMergeParamsProxyV3x>();
+        SmartPtr<RkAiqIspMergeParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspMergeParamsProxy>();
         if (params.ptr()) {
             convertAiqMergeToIsp3xParams(isp_cfg, params->data()->result);
         }
@@ -1327,7 +1327,7 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_AGAMMA_PARAM:
     {
-        SmartPtr<RkAiqIspAgammaParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspAgammaParamsProxyV3x>();
+        SmartPtr<RkAiqIspAgammaParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspAgammaParamsProxy>();
         if (params.ptr())
             convertAiqAgammaToIsp3xParams(isp_cfg, params->data()->result);
     }

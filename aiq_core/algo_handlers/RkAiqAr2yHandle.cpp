@@ -1,7 +1,5 @@
 /*
- * RkAiqAr2yHandle.h
- *
- *  Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
+ * Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,107 +12,138 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 #include "RkAiqCore.h"
 #include "RkAiqHandle.h"
+#include "RkAiqHandleInt.h"
 
 namespace RkCam {
 
-void RkAiqAr2yHandle::init() {
+void RkAiqAr2yHandleInt::init() {
     ENTER_ANALYZER_FUNCTION();
 
-    deInit();
-    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAr2y());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAr2y());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAr2y());
-    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAr2y());
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAr2y());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAr2y());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAr2y());
+    RkAiqHandle::deInit();
+    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAr2yInt());
+    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAr2yInt());
+    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAr2yInt());
+    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAr2yInt());
+    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAr2yInt());
+    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAr2yInt());
+    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAr2yInt());
 
     EXIT_ANALYZER_FUNCTION();
 }
 
-XCamReturn RkAiqAr2yHandle::prepare() {
+XCamReturn RkAiqAr2yHandleInt::prepare() {
     ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret            = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     ret = RkAiqHandle::prepare();
     RKAIQCORE_CHECK_RET(ret, "ar2y handle prepare failed");
 
-    // TODO config ar2y common params
-    RkAiqAlgoConfigAr2y* ar2y_config = (RkAiqAlgoConfigAr2y*)mConfig;
+    RkAiqAlgoConfigAr2yInt* ar2y_config_int = (RkAiqAlgoConfigAr2yInt*)mConfig;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
 
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->prepare(mConfig);
-        RKAIQCORE_CHECK_RET(ret, "ar2y algo prepare failed");
-    }
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->prepare(mConfig);
+    RKAIQCORE_CHECK_RET(ret, "ar2y algo prepare failed");
 
     EXIT_ANALYZER_FUNCTION();
-    return ret;
+    return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn RkAiqAr2yHandle::preProcess() {
+XCamReturn RkAiqAr2yHandleInt::preProcess() {
     ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret             = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des  = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoPreAr2y* ar2y_pre = (RkAiqAlgoPreAr2y*)mPreInParam;
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    RkAiqAlgoPreAr2yInt* ar2y_pre_int        = (RkAiqAlgoPreAr2yInt*)mPreInParam;
+    RkAiqAlgoPreResAr2yInt* ar2y_pre_res_int = (RkAiqAlgoPreResAr2yInt*)mPreOutParam;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    RkAiqPreResComb* comb                       = &shared->preResComb;
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::preProcess();
-    RKAIQCORE_CHECK_RET(ret, "ar2y handle preProcess failed");
-
-    // TODO config common ar2y preprocess params
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->pre_process(mPreInParam, mPreOutParam);
-        RKAIQCORE_CHECK_RET(ret, "ar2y handle pre_process failed");
+    if (ret) {
+        comb->ar2y_pre_res = NULL;
+        RKAIQCORE_CHECK_RET(ret, "ar2y handle preProcess failed");
     }
 
+    comb->ar2y_pre_res = NULL;
+
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->pre_process(mPreInParam, mPreOutParam);
+    RKAIQCORE_CHECK_RET(ret, "ar2y algo pre_process failed");
+
+    // set result to mAiqCore
+    comb->ar2y_pre_res = (RkAiqAlgoPreResAr2y*)ar2y_pre_res_int;
+
     EXIT_ANALYZER_FUNCTION();
-    return ret;
+    return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn RkAiqAr2yHandle::processing() {
-    XCamReturn ret              = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des   = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoProcAr2y* ar2y_pre = (RkAiqAlgoProcAr2y*)mProcInParam;
+XCamReturn RkAiqAr2yHandleInt::processing() {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    RkAiqAlgoProcAr2yInt* ar2y_proc_int        = (RkAiqAlgoProcAr2yInt*)mProcInParam;
+    RkAiqAlgoProcResAr2yInt* ar2y_proc_res_int = (RkAiqAlgoProcResAr2yInt*)mProcOutParam;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    RkAiqProcResComb* comb                      = &shared->procResComb;
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::processing();
-    RKAIQCORE_CHECK_RET(ret, "ar2y handle processing failed");
-
-    // TODO config common ar2y processing params
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->processing(mProcInParam, mProcOutParam);
-        RKAIQCORE_CHECK_RET(ret, "ar2y algo processing failed");
+    if (ret) {
+        comb->ar2y_proc_res = NULL;
+        RKAIQCORE_CHECK_RET(ret, "ar2y handle processing failed");
     }
+
+    comb->ar2y_proc_res = NULL;
+
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->processing(mProcInParam, mProcOutParam);
+    RKAIQCORE_CHECK_RET(ret, "ar2y algo processing failed");
+
+    comb->ar2y_proc_res = (RkAiqAlgoProcResAr2y*)ar2y_proc_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
 
-XCamReturn RkAiqAr2yHandle::postProcess() {
+XCamReturn RkAiqAr2yHandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret              = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des   = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoPostAr2y* ar2y_pre = (RkAiqAlgoPostAr2y*)mPostInParam;
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    RkAiqAlgoPostAr2yInt* ar2y_post_int        = (RkAiqAlgoPostAr2yInt*)mPostInParam;
+    RkAiqAlgoPostResAr2yInt* ar2y_post_res_int = (RkAiqAlgoPostResAr2yInt*)mPostOutParam;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    RkAiqPostResComb* comb                      = &shared->postResComb;
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::postProcess();
-    RKAIQCORE_CHECK_RET(ret, "ar2y handle postProcess failed");
-
-    // TODO config common ar2y postProcess params
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->post_process(mPostInParam, mPostOutParam);
-        RKAIQCORE_CHECK_RET(ret, "ar2y algo postProcess failed");
+    if (ret) {
+        comb->ar2y_post_res = NULL;
+        RKAIQCORE_CHECK_RET(ret, "ar2y handle postProcess failed");
+        return ret;
     }
+
+    comb->ar2y_post_res       = NULL;
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->post_process(mPostInParam, mPostOutParam);
+    RKAIQCORE_CHECK_RET(ret, "ar2y algo post_process failed");
+    // set result to mAiqCore
+    comb->ar2y_post_res = (RkAiqAlgoPostResAr2y*)ar2y_post_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;

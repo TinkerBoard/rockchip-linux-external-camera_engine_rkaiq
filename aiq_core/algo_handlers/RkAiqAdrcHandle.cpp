@@ -1,7 +1,5 @@
 /*
- * RkAiqAdrcHandle.h
- *
- *  Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
+ * Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,110 +12,236 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-
 #include "RkAiqCore.h"
 #include "RkAiqHandle.h"
+#include "RkAiqHandleInt.h"
 
 namespace RkCam {
 
-void RkAiqAdrcHandle::init() {
+XCamReturn RkAiqAdrcHandleInt::prepare() {
     ENTER_ANALYZER_FUNCTION();
 
-    deInit();
-    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAdrc());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAdrc());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAdrc());
-    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAdrc());
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAdrc());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAdrc());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAdrc());
-
-    EXIT_ANALYZER_FUNCTION();
-}
-
-XCamReturn RkAiqAdrcHandle::prepare() {
-    ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret            = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     ret = RkAiqHandle::prepare();
     RKAIQCORE_CHECK_RET(ret, "adrc handle prepare failed");
 
-    // TODO config adrc common params
-    RkAiqAlgoConfigAdrc* adrc_config = (RkAiqAlgoConfigAdrc*)mConfig;
+    RkAiqAlgoConfigAdrcInt* adrc_config_int     = (RkAiqAlgoConfigAdrcInt*)mConfig;
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->prepare(mConfig);
-        RKAIQCORE_CHECK_RET(ret, "adrc algo prepare failed");
+    adrc_config_int->rawHeight    = sharedCom->snsDes.isp_acq_height;
+    adrc_config_int->rawWidth     = sharedCom->snsDes.isp_acq_width;
+    adrc_config_int->working_mode = sharedCom->working_mode;
+
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->prepare(mConfig);
+    RKAIQCORE_CHECK_RET(ret, "adrc algo prepare failed");
+
+    EXIT_ANALYZER_FUNCTION();
+    return XCAM_RETURN_NO_ERROR;
+}
+
+void RkAiqAdrcHandleInt::init() {
+    ENTER_ANALYZER_FUNCTION();
+
+    RkAiqHandle::deInit();
+    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAdrcInt());
+    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAdrcInt());
+    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAdrcInt());
+    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAdrcInt());
+    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAdrcInt());
+    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAdrcInt());
+    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAdrcInt());
+
+    EXIT_ANALYZER_FUNCTION();
+}
+
+XCamReturn RkAiqAdrcHandleInt::updateConfig(bool needSync) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    if (needSync) mCfgMutex.lock();
+    // if something changed
+    if (updateAtt) {
+        mCurAtt   = mNewAtt;
+        updateAtt = false;
+        rk_aiq_uapi_adrc_SetAttrib(mAlgoCtx, mCurAtt, true);
+        sendSignal();
     }
+    if (needSync) mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
 
-XCamReturn RkAiqAdrcHandle::preProcess() {
+XCamReturn RkAiqAdrcHandleInt::setAttrib(drc_attrib_t att) {
     ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret             = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des  = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoPreAdrc* adrc_pre = (RkAiqAlgoPreAdrc*)mPreInParam;
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    mCfgMutex.lock();
+    // TODO
+    // check if there is different between att & mCurAtt
+    // if something changed, set att to mNewAtt, and
+    // the new params will be effective later when updateConfig
+    // called by RkAiqCore
+
+    // if something changed
+    if (0 != memcmp(&mCurAtt, &att, sizeof(drc_attrib_t))) {
+        mNewAtt   = att;
+        updateAtt = true;
+        waitSignal();
+    }
+    mCfgMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+XCamReturn RkAiqAdrcHandleInt::getAttrib(drc_attrib_t* att) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_uapi_adrc_GetAttrib(mAlgoCtx, att);
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqAdrcHandleInt::preProcess() {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    RkAiqAlgoPreAdrcInt* adrc_pre_int        = (RkAiqAlgoPreAdrcInt*)mPreInParam;
+    RkAiqAlgoPreResAdrcInt* adrc_pre_res_int = (RkAiqAlgoPreResAdrcInt*)mPreOutParam;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    RkAiqPreResComb* comb                       = &shared->preResComb;
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::preProcess();
-    RKAIQCORE_CHECK_RET(ret, "adrc handle preProcess failed");
-
-    // TODO config common adrc preprocess params
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->pre_process(mPreInParam, mPreOutParam);
-        RKAIQCORE_CHECK_RET(ret, "adrc handle pre_process failed");
+    if (ret) {
+        comb->adrc_pre_res = NULL;
+        RKAIQCORE_CHECK_RET(ret, "adrc handle preProcess failed");
     }
 
+    comb->adrc_pre_res = NULL;
+
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->pre_process(mPreInParam, mPreOutParam);
+    RKAIQCORE_CHECK_RET(ret, "adrc algo pre_process failed");
+
+    // set result to mAiqCore
+    comb->adrc_pre_res = (RkAiqAlgoPreResAdrc*)adrc_pre_res_int;
+
     EXIT_ANALYZER_FUNCTION();
-    return ret;
+    return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn RkAiqAdrcHandle::processing() {
-    XCamReturn ret              = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des   = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoProcAdrc* adrc_pre = (RkAiqAlgoProcAdrc*)mProcInParam;
+XCamReturn RkAiqAdrcHandleInt::processing() {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    RkAiqAlgoProcAdrcInt* adrc_proc_int        = (RkAiqAlgoProcAdrcInt*)mProcInParam;
+    RkAiqAlgoProcResAdrcInt* adrc_proc_res_int = (RkAiqAlgoProcResAdrcInt*)mProcOutParam;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    RkAiqProcResComb* comb                      = &shared->procResComb;
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::processing();
-    RKAIQCORE_CHECK_RET(ret, "adrc handle processing failed");
-
-    // TODO config common adrc processing params
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->processing(mProcInParam, mProcOutParam);
-        RKAIQCORE_CHECK_RET(ret, "adrc algo processing failed");
+    if (ret) {
+        comb->adrc_proc_res = NULL;
+        RKAIQCORE_CHECK_RET(ret, "adrc handle processing failed");
     }
+
+    comb->adrc_proc_res = NULL;
+
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->processing(mProcInParam, mProcOutParam);
+    RKAIQCORE_CHECK_RET(ret, "adrc algo processing failed");
+
+    comb->adrc_proc_res = (RkAiqAlgoProcResAdrc*)adrc_proc_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
 
-XCamReturn RkAiqAdrcHandle::postProcess() {
+XCamReturn RkAiqAdrcHandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret              = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des   = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoPostAdrc* adrc_pre = (RkAiqAlgoPostAdrc*)mPostInParam;
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    RkAiqAlgoPostAdrcInt* adrc_post_int        = (RkAiqAlgoPostAdrcInt*)mPostInParam;
+    RkAiqAlgoPostResAdrcInt* adrc_post_res_int = (RkAiqAlgoPostResAdrcInt*)mPostOutParam;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    RkAiqPostResComb* comb                      = &shared->postResComb;
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::postProcess();
-    RKAIQCORE_CHECK_RET(ret, "adrc handle postProcess failed");
-
-    // TODO config common adrc postProcess params
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->post_process(mPostInParam, mPostOutParam);
-        RKAIQCORE_CHECK_RET(ret, "adrc algo postProcess failed");
+    if (ret) {
+        comb->adrc_post_res = NULL;
+        RKAIQCORE_CHECK_RET(ret, "adrc handle postProcess failed");
+        return ret;
     }
+
+    comb->adrc_post_res       = NULL;
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->post_process(mPostInParam, mPostOutParam);
+    RKAIQCORE_CHECK_RET(ret, "adrc algo post_process failed");
+    // set result to mAiqCore
+    comb->adrc_post_res = (RkAiqAlgoPostResAdrc*)adrc_post_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
+}
+
+XCamReturn RkAiqAdrcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+    RkAiqAlgoProcResAdrc* adrc_com = shared->procResComb.adrc_proc_res;
+
+    if (!adrc_com) {
+        LOGD_ANALYZER("no adrc result");
+        return XCAM_RETURN_NO_ERROR;
+    }
+
+    RkAiqAlgoProcResAdrc* adrc_rk = (RkAiqAlgoProcResAdrc*)adrc_com;
+    if (!this->getAlgoId()) {
+        RkAiqAlgoProcResAdrcInt* ahdr_rk = (RkAiqAlgoProcResAdrcInt*)adrc_com;
+
+        rk_aiq_isp_drc_params_v21_t* drc_param = params->mDrcParams->data().ptr();
+        if (sharedCom->init) {
+            drc_param->frame_id = 0;
+        } else {
+            drc_param->frame_id = shared->frameId;
+        }
+        drc_param->result.DrcProcRes = ahdr_rk->AdrcProcRes.DrcProcRes;
+
+        drc_param->result.CompressMode = ahdr_rk->AdrcProcRes.CompressMode;
+        drc_param->result.update = ahdr_rk->AdrcProcRes.update;
+        drc_param->result.LongFrameMode = ahdr_rk->AdrcProcRes.LongFrameMode;
+        drc_param->result.isHdrGlobalTmo = ahdr_rk->AdrcProcRes.isHdrGlobalTmo;
+        drc_param->result.bTmoEn = ahdr_rk->AdrcProcRes.bTmoEn;
+        drc_param->result.isLinearTmo = ahdr_rk->AdrcProcRes.isLinearTmo;
+    }
+
+    cur_params->mDrcParams = params->mDrcParams;
+
+    EXIT_ANALYZER_FUNCTION();
+
+    return ret;
+
 }
 
 };  // namespace RkCam

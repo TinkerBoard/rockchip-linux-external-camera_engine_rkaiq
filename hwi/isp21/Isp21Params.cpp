@@ -1023,7 +1023,7 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_DRC_PARAM:
     {
-        SmartPtr<RkAiqIspDrcParamsProxyV21> params = result.dynamic_cast_ptr<RkAiqIspDrcParamsProxyV21>();
+        SmartPtr<RkAiqIspDrcParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDrcParamsProxy>();
         if (params.ptr())
             convertAiqDrcToIsp21Params(isp_cfg, params->data()->result);
     }
@@ -1065,14 +1065,14 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_DEHAZE_PARAM:
     {
-        SmartPtr<RkAiqIspDehazeParamsProxyV21> params = result.dynamic_cast_ptr<RkAiqIspDehazeParamsProxyV21>();
+        SmartPtr<RkAiqIspDehazeParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDehazeParamsProxy>();
         if (params.ptr())
             convertAiqAdehazeToIsp21Params(isp_cfg, params->data()->result);
     }
     break;
     case RESULT_TYPE_GIC_PARAM:
     {
-        SmartPtr<RkAiqIspGicParamsProxyV21> params = result.dynamic_cast_ptr<RkAiqIspGicParamsProxyV21>();
+        SmartPtr<RkAiqIspGicParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspGicParamsProxy>();
         if (params.ptr())
             convertAiqAgicToIsp21Params(isp_cfg, params->data()->result);
     }

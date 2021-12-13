@@ -425,29 +425,25 @@ RkAiqCamGroupManager::RelayAiqCoreResults(RkAiqCore* src, SmartPtr<RkAiqFullPara
     SET_TO_CAMGROUP(Fec, FEC);
     // ispv21 and ispv3x common
     SET_TO_CAMGROUP(BlcV21, BLC);
-    SET_TO_CAMGROUP(GicV21, GIC);
+    SET_TO_CAMGROUP(Gic, GIC);
+    SET_TO_CAMGROUP(Dehaze, DEHAZE);
+    SET_TO_CAMGROUP(Drc, DRC);
+    SET_TO_CAMGROUP(Agamma, AGAMMA);
+    SET_TO_CAMGROUP(Merge, MERGE);
 
     if (CHECK_ISP_HW_V21()) {
         // ispv21
         SET_TO_CAMGROUP(AwbV21, AWB);
-        SET_TO_CAMGROUP(DrcV21, DRC);
-        SET_TO_CAMGROUP(DehazeV21, DEHAZE);
         SET_TO_CAMGROUP(BaynrV21, RAWNR);
         SET_TO_CAMGROUP(YnrV21, YNR);
         SET_TO_CAMGROUP(CnrV21, UVNR);
         SET_TO_CAMGROUP(SharpenV21, SHARPEN);
         SET_TO_CAMGROUP(Af, AF);
-        SET_TO_CAMGROUP(Agamma, AGAMMA);
-        SET_TO_CAMGROUP(Merge, MERGE);
         SET_TO_CAMGROUP(Gain, GAIN);
     } else {
         // ispv3x
         SET_TO_CAMGROUP(AwbV3x, AWB);
         SET_TO_CAMGROUP(AfV3x, AF);
-        SET_TO_CAMGROUP(AgammaV3x, AGAMMA);
-        SET_TO_CAMGROUP(DrcV3x, DRC);
-        SET_TO_CAMGROUP(MergeV3x, MERGE);
-        SET_TO_CAMGROUP(DehazeV3x, DEHAZE);
         SET_TO_CAMGROUP(BaynrV3x, RAWNR);
         SET_TO_CAMGROUP(YnrV3x, YNR);
         SET_TO_CAMGROUP(CnrV3x, UVNR);
@@ -857,19 +853,15 @@ RkAiqCamGroupManager::reProcess(rk_aiq_groupcam_result_t* gc_res)
                 if (!aiqParams->mAwbV21Params.ptr())
                     return XCAM_RETURN_NO_ERROR;
                 scam_3a_res->awb._awbCfgV201 = &aiqParams->mAwbV21Params->data()->result;
-                scam_3a_res->_adehazeConfig = &aiqParams->mDehazeV21Params->data()->result;
-                scam_3a_res->_agammaConfig = &aiqParams->mAgammaParams->data()->result;
-                scam_3a_res->_adrcConfig = &aiqParams->mDrcV21Params->data()->result;
-                scam_3a_res->_amergeConfig = &aiqParams->mMergeParams->data()->result;
             } else {
                 if (!aiqParams->mAwbV3xParams.ptr())
                     return XCAM_RETURN_NO_ERROR;
                 scam_3a_res->awb._awbCfgV3x = &aiqParams->mAwbV3xParams->data()->result;
-                scam_3a_res->_adehazeConfig = &aiqParams->mDehazeV3xParams->data()->result;
-                scam_3a_res->_agammaConfig = &aiqParams->mAgammaV3xParams->data()->result;
-                scam_3a_res->_adrcConfig = &aiqParams->mDrcV3xParams->data()->result;
-                scam_3a_res->_amergeConfig = &aiqParams->mMergeV3xParams->data()->result;
             }
+            scam_3a_res->_adehazeConfig = &aiqParams->mDehazeParams->data()->result;
+            scam_3a_res->_amergeConfig = &aiqParams->mMergeParams->data()->result;
+            scam_3a_res->_agammaConfig = &aiqParams->mAgammaParams->data()->result;
+            scam_3a_res->_adrcConfig = &aiqParams->mDrcParams->data()->result;
             scam_3a_res->awb._awbGainParams = &aiqParams->mAwbGainParams->data()->result;
             scam_3a_res->_lscConfig = &aiqParams->mLscParams->data()->result;
             scam_3a_res->_dpccConfig = &aiqParams->mDpccParams->data()->result;

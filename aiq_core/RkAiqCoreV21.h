@@ -31,23 +31,11 @@ public:
     RkAiqCoreV21();
     virtual ~RkAiqCoreV21();
 protected:
-    SmartPtr<RkAiqHandle> newAlgoHandle(RkAiqAlgoDesComm* algo, bool generic, int hw_ver);
+    SmartPtr<RkAiqHandle> newAlgoHandle(RkAiqAlgoDesComm* algo, int hw_ver);
     void copyIspStats(SmartPtr<RkAiqAecStatsProxy>& aecStat,
                       SmartPtr<RkAiqAwbStatsProxy>& awbStat,
                       SmartPtr<RkAiqAfStatsProxy>& afStat,
                       rk_aiq_isp_stats_t* to);
-    XCamReturn genIspParamsResult(RkAiqFullParams *aiqParams, enum rk_aiq_core_analyze_type_e type);
-    XCamReturn genIspArawnrResult(RkAiqFullParams* params);
-    XCamReturn genIspAmfnrResult(RkAiqFullParams* params);
-    XCamReturn genIspAynrResult(RkAiqFullParams* params);
-    XCamReturn genIspAcnrResult(RkAiqFullParams* params);
-    XCamReturn genIspAdrcResult(RkAiqFullParams* params);
-    XCamReturn genIspAwbResult(RkAiqFullParams* params);
-    XCamReturn genIspAblcResult(RkAiqFullParams* params);
-    XCamReturn genIspAgicResult(RkAiqFullParams* params);
-    XCamReturn genIspAccmResult(RkAiqFullParams* params);
-    XCamReturn genIspAdhazResult(RkAiqFullParams* params);
-    XCamReturn genIspAsharpResult(RkAiqFullParams* params);
     void newAiqParamsPool();
     XCamReturn getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analyze_type_e type);
 

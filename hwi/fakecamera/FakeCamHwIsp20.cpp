@@ -18,7 +18,6 @@
 #include "FakeCamHwIsp20.h"
 #include "Isp20Evts.h"
 #include "FakeSensorHw.h"
-#include "Isp20PollThread.h"
 #include "rk_isp20_hw.h"
 #include "Isp20_module_dbg.h"
 #include "mediactl/mediactl-priv.h"

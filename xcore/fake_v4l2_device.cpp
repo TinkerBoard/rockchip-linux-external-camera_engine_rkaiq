@@ -30,7 +30,7 @@ namespace XCam {
 
 
 XCamReturn
-FakeV4l2Device::open ()
+FakeV4l2Device::open (bool nonblock)
 {
     struct v4l2_streamparm param;
 

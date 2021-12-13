@@ -454,6 +454,7 @@ typedef struct AecConfig_s* AeConfig_t;     /**< handle to AEC config */
 typedef struct AeInstanceConfig_s {
     AeHandle_t              hAe;            /**< handle returned by AeInit() */
     AeConfig_t              aecCfg;
+    bool                    lockaebyaf;
 } AeInstanceConfig_t;
 
 /*****************************************************************************/

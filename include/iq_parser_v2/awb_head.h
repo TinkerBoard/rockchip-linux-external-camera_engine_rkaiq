@@ -550,7 +550,7 @@ typedef struct CalibDbV2_Awb_Luma_Weight_Lv_s {
 
 typedef struct CalibDbV2_Awb_Luma_Weight_s {
   //with differernt luma ,the different weight in WP sum
-  // M4_BOOL_DESC("lscBypassEnable", "0");
+  // M4_BOOL_DESC("enable", "0");
   bool enable;
   // M4_STRUCT_DESC("wpDiffWeiEnableTh", "normal_ui_style")
   CalibDbV2_Awb_Luma_Weight_Enable_Th_t wpDiffWeiEnableTh;

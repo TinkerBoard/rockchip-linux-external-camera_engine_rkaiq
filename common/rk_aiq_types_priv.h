@@ -98,6 +98,7 @@ typedef struct rkisp_effect_params {
 #define RKAIQ_ISPP_SHARP_ID         (1 << 2)
 #define RKAIQ_ISPP_FEC_ID           (1 << 3)
 #define RKAIQ_ISPP_ORB_ID           (1 << 4)
+#define RKAIQ_ISPP_FEC_ST_ID        (1<< 17 | RKAIQ_ISPP_FEC_ID)
 
 typedef rk_aiq_isp_params_t<rk_aiq_isp_tnr_t>       rk_aiq_isp_tnr_params_v20_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_ynr_t>       rk_aiq_isp_ynr_params_v20_t;
@@ -111,8 +112,7 @@ typedef rk_aiq_isp_params_t<rk_aiq_isp_orb_t>       rk_aiq_isp_orb_params_v20_t;
 typedef rk_aiq_isp_params_t<rk_aiq_awb_stat_cfg_v201_t>       rk_aiq_isp_awb_params_v21_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_drc_v21_t>             rk_aiq_isp_drc_params_v21_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_blc_v21_t>             rk_aiq_isp_blc_params_v21_t;
-typedef rk_aiq_isp_params_t<rk_aiq_isp_gic_v21_t>             rk_aiq_isp_gic_params_v21_t;
-typedef rk_aiq_isp_params_t<rk_aiq_isp_dehaze_v21_t>          rk_aiq_isp_dehaze_params_v21_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_dehaze_t>              rk_aiq_isp_dehaze_params_v21_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_baynr_v21_t>           rk_aiq_isp_baynr_params_v21_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_bay3d_v21_t>           rk_aiq_isp_bay3d_params_v21_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_ynr_v21_t>             rk_aiq_isp_ynr_params_v21_t;
@@ -125,7 +125,7 @@ typedef rk_aiq_isp_params_t<rk_aiq_isp_af_meas_v3x_t>         rk_aiq_isp_af_para
 typedef rk_aiq_isp_params_t<rk_aiq_isp_goc_v3x_t>             rk_aiq_isp_agamma_params_v3x_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_drc_v3x_t>             rk_aiq_isp_drc_params_v3x_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_merge_v3x_t>           rk_aiq_isp_merge_params_v3x_t;
-typedef rk_aiq_isp_params_t<rk_aiq_isp_dehaze_v3x_t>          rk_aiq_isp_dehaze_params_v3x_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_dehaze_t>              rk_aiq_isp_dehaze_params_v3x_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_baynr_v3x_t>           rk_aiq_isp_baynr_params_v3x_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_bay3d_v3x_t>           rk_aiq_isp_bay3d_params_v3x_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_ynr_v3x_t>             rk_aiq_isp_ynr_params_v3x_t;

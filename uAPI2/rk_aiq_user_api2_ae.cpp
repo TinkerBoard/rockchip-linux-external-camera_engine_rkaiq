@@ -343,6 +343,39 @@ XCamReturn rk_aiq_user_api2_ae_getExpWinAttr
     return(ret);
 
 }
+XCamReturn rk_aiq_user_api2_ae_lock
+(
+    const rk_aiq_sys_ctx_t* sys_ctx
+) {
+    RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    RkAiqAeHandleInt* algo_handle =
+        algoHandle<RkAiqAeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AE);
+
+    if (algo_handle) {
+        return algo_handle->lock();
+    }
+
+    return(ret);
+}
+
+XCamReturn rk_aiq_user_api2_ae_unlock
+(
+    const rk_aiq_sys_ctx_t* sys_ctx
+) {
+    RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    RkAiqAeHandleInt* algo_handle =
+        algoHandle<RkAiqAeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AE);
+
+    if (algo_handle) {
+        return algo_handle->unlock();
+    }
+
+    return(ret);
+}
 
 RKAIQ_END_DECLARE
 

@@ -45,6 +45,20 @@ rk_aiq_uapi_sysctl_preInit(const char* sns_ent_name,
                            rk_aiq_working_mode_t mode,
                            const char* force_iq_file);
 
+
+/**
+ * @brief set calibDB for init scene before init
+ *
+ * @param sns_ent_name sensor name
+ * @param main_scene  main scene name
+ * @param sub_scene   sub scenen name
+ *
+ * @return 0 if no error
+ */
+XCamReturn
+rk_aiq_uapi_sysctl_preInit_scene(const char* sns_ent_name, const char *main_scene,
+                             const char *sub_scene);
+
 /*!
  * \brief initialze aiq control system context
  * Should call before any other APIs
@@ -433,7 +447,6 @@ rk_aiq_uapi_sysctl_regMemsSensorIntf(const rk_aiq_sys_ctx_t* sys_ctx,
 int rk_aiq_uapi_sysctl_switch_scene(const rk_aiq_sys_ctx_t* sys_ctx,
                                     const char* main_scene,
                                     const char* sub_scene);
-
 RKAIQ_END_DECLARE
 
 #endif

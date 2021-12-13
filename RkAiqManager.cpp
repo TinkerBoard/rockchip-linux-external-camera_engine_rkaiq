@@ -16,7 +16,9 @@
  */
 
 #include "RkAiqManager.h"
+#ifdef RKAIQ_ENABLE_CAMGROUP
 #include "RkAiqCamGroupManager.h"
+#endif
 #include "isp20/Isp20_module_dbg.h"
 #include "isp20/CamHwIsp20.h"
 #include "isp21/CamHwIsp21.h"
@@ -118,7 +120,9 @@ RkAiqManager::RkAiqManager(const char* sns_ent_name,
     , _state(AIQ_STATE_INVALID)
     , mCurMirror(false)
     , mCurFlip(false)
+#ifdef RKAIQ_ENABLE_CAMGROUP
     , mCamGroupCoreManager(NULL)
+#endif
     , mIsMain(false)
 {
     ENTER_XCORE_FUNCTION();
@@ -275,7 +279,9 @@ RkAiqManager::prepare(uint32_t width, uint32_t height, rk_aiq_working_mode_t mod
     CalibDb_Sensor_ParaV2_t* sensor_calib =
         (CalibDb_Sensor_ParaV2_t*)(CALIBDBV2_GET_MODULE_PTR(mCalibDbV2, sensor_calib));
 
+#ifdef RKAIQ_ENABLE_CAMGROUP
     mCamHw->setGroupMode(mCamGroupCoreManager ? true : false, mIsMain);
+#endif
 
     if(mode != RK_AIQ_WORKING_MODE_NORMAL)
         ret = mCamHw->prepare(width, height, working_mode_hw,
@@ -303,10 +309,14 @@ RkAiqManager::prepare(uint32_t width, uint32_t height, rk_aiq_working_mode_t mod
 
     SmartPtr<RkAiqFullParamsProxy> initParams = mRkAiqAnalyzer->getAiqFullParams();
 
+#ifdef RKAIQ_ENABLE_CAMGROUP
     if (!mCamGroupCoreManager) {
+#endif
         ret = applyAnalyzerResult(initParams);
         RKAIQMNG_CHECK_RET(ret, "set initial params error %d", ret);
+#ifdef RKAIQ_ENABLE_CAMGROUP
     }
+#endif
 
     mWorkingMode = mode;
     mOldWkModeForGray = RK_AIQ_WORKING_MODE_NORMAL;
@@ -560,7 +570,9 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
     } else if (hwres->_buf_type == ISP_POLL_SOF){
         xcam_get_runtime_log_level();
 
+#ifdef RKAIQ_ENABLE_CAMGROUP
         if (!mCamGroupCoreManager) {
+#endif
             SmartPtr<CamHwIsp20> mCamHwIsp20 = mCamHw.dynamic_cast_ptr<CamHwIsp20>();
             mCamHwIsp20->notify_sof(hwres);
 
@@ -574,9 +586,11 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
                 metas.frame_id = evtdata->_frameid;
                 (*mMetasCb)(&metas);
             }
+#ifdef RKAIQ_ENABLE_CAMGROUP
         } else {
             mCamGroupCoreManager->sofSync(this, hwres);
         }
+#endif
     } else if (hwres->_buf_type == ISP_POLL_TX) {
 #if 0
        XCamVideoBuffer* camVBuf = convert_to_XCamVideoBuffer(hwres);
@@ -938,11 +952,9 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
     APPLY_ANALYZER_RESULT(Fec, FEC);
     APPLY_ANALYZER_RESULT(Orb, ORB);
     // ispv21
-    APPLY_ANALYZER_RESULT(DrcV21, DRC);
+    APPLY_ANALYZER_RESULT(Drc, DRC);
     APPLY_ANALYZER_RESULT(AwbV21, AWB);
     APPLY_ANALYZER_RESULT(BlcV21, BLC);
-    APPLY_ANALYZER_RESULT(GicV21, GIC);
-    APPLY_ANALYZER_RESULT(DehazeV21, DEHAZE);
     APPLY_ANALYZER_RESULT(YnrV21, YNR);
     APPLY_ANALYZER_RESULT(CnrV21, UVNR);
     APPLY_ANALYZER_RESULT(SharpenV21, SHARPEN);
@@ -950,10 +962,6 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
     // ispv3x
     APPLY_ANALYZER_RESULT(AwbV3x, AWB);
     APPLY_ANALYZER_RESULT(AfV3x, AF);
-    APPLY_ANALYZER_RESULT(AgammaV3x, AGAMMA);
-    APPLY_ANALYZER_RESULT(DrcV3x, DRC);
-    APPLY_ANALYZER_RESULT(MergeV3x, MERGE);
-    APPLY_ANALYZER_RESULT(DehazeV3x, DEHAZE);
     APPLY_ANALYZER_RESULT(BaynrV3x, RAWNR);
     APPLY_ANALYZER_RESULT(YnrV3x, YNR);
     APPLY_ANALYZER_RESULT(CnrV3x, UVNR);

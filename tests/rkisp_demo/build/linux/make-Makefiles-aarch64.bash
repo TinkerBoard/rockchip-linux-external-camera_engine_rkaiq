@@ -10,7 +10,7 @@ mkdir -p $OUTPUT
 pushd $OUTPUT
 
 cmake -G "Ninja" \
-    -DCMAKE_BUILD_TYPE=debug \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DARCH="aarch64" \
     -DRKPLATFORM=OFF \
     -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \

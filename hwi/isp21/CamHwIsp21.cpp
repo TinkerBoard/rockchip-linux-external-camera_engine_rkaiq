@@ -16,7 +16,6 @@
  */
 
 #include "CamHwIsp21.h"
-//#include "isp20/Isp20PollThread.h"
 #ifdef ANDROID_OS
 #include <cutils/properties.h>
 #endif
@@ -52,9 +51,6 @@ CamHwIsp21::init(const char* sns_ent_name)
 
     XCamReturn ret = CamHwIsp20::init(sns_ent_name);
 
-    //SmartPtr<Isp20PollThread> isp20Pollthread =
-    //    mPollthread.dynamic_cast_ptr<Isp20PollThread>();
-    //isp20Pollthread->set_need_luma_rd_info(false);
     return ret;
 }
 

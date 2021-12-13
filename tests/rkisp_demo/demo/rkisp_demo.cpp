@@ -421,26 +421,36 @@ void test_imgproc(const demo_context_t* demo_ctx) {
         printf("manualTrigerFocus\n");
         break;
     case 'D': {
+        rk_aiq_af_zoomrange range;
         int code;
+
+        rk_aiq_uapi_getZoomRange(ctx, &range);
+        printf("zoom.min_pos %d, zoom.max_pos %d\n", range.min_pos, range.max_pos);
+
         rk_aiq_uapi_getOpZoomPosition(ctx, &code);
         printf("getOpZoomPosition code %d\n", code);
 
         code += 20;
-        if (code > 1520)
-            code = 0;
+        if (code > range.max_pos)
+            code = range.max_pos;
         rk_aiq_uapi_setOpZoomPosition(ctx, code);
         rk_aiq_uapi_endOpZoomChange(ctx);
         printf("setOpZoomPosition %d\n", code);
     }
         break;
     case 'E': {
+        rk_aiq_af_zoomrange range;
         int code;
+
+        rk_aiq_uapi_getZoomRange(ctx, &range);
+        printf("zoom.min_pos %d, zoom.max_pos %d\n", range.min_pos, range.max_pos);
+
         rk_aiq_uapi_getOpZoomPosition(ctx, &code);
         printf("getOpZoomPosition code %d\n", code);
 
         code -= 20;
-        if (code < 0)
-            code = 1520;
+        if (code < range.min_pos)
+            code = range.min_pos;
         rk_aiq_uapi_setOpZoomPosition(ctx, code);
         rk_aiq_uapi_endOpZoomChange(ctx);
         printf("setOpZoomPosition %d\n", code);
@@ -786,7 +796,8 @@ void test_imgproc(const demo_context_t* demo_ctx) {
         rk_aiq_cpsl_cap_t cpsl_cap;
         rk_aiq_uapi2_sysctl_getCpsLtInfo(ctx, &cpsl_info);
         rk_aiq_uapi2_sysctl_queryCpsLtCap(ctx, &cpsl_cap);
-        printf("sensitivity: %f\n", cpsl_info.sensitivity);
+        printf("sensitivity: %f, cap sensitivity: %f:%f:%f\n", cpsl_info.sensitivity,
+               cpsl_cap.sensitivity.min, cpsl_cap.sensitivity.step, cpsl_cap.sensitivity.max);
         rk_aiq_cpsl_cfg_t cpsl_cfg;
         rk_aiq_uapi2_sysctl_setCpsLtCfg(ctx, &cpsl_cfg);
     }
@@ -1074,7 +1085,7 @@ static int read_frame(demo_context_t *ctx)
             else
                 display_win2(ctx->buffers[i].start, ctx->buffers[i].export_fd,  RK_FORMAT_YCbCr_420_SP, dispWidth, dispHeight, 0);
         } else {
-            drmDspFrame(ctx->width, ctx->height, dispWidth, dispHeight, ctx->buffers[i].start, DRM_FORMAT_NV12);
+            drmDspFrame(ctx->width, ctx->height, dispWidth, dispHeight, ctx->buffers[i].export_fd, DRM_FORMAT_NV12);
         }
 #else
         {
@@ -2054,6 +2065,15 @@ static void rkisp_routine(demo_context_t *ctx)
     }
 
     if (ctx->rkaiq) {
+        XCamReturn ret = XCAM_RETURN_NO_ERROR;
+        if (work_mode == RK_AIQ_WORKING_MODE_NORMAL)
+            ret = rk_aiq_uapi2_sysctl_preInit_scene(sns_entity_name, "normal", "day");
+        else
+            ret = rk_aiq_uapi2_sysctl_preInit_scene(sns_entity_name, "hdr", "day");
+        if (ret < 0)
+            ERR("%s: failed to set %s scene\n",
+                get_sensor_name(ctx),
+                work_mode == RK_AIQ_WORKING_MODE_NORMAL?"normal":"hdr");
 
         if (strlen(ctx->iqpath))
         {

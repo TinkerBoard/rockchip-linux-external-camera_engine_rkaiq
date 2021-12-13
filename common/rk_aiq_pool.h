@@ -287,14 +287,10 @@ typedef SharedItemProxy<rk_aiq_isp_orb_params_v20_t>        RkAiqIspOrbParamsPro
 //v21 pools
 typedef SharedItemPool<rk_aiq_isp_awb_params_v21_t>         RkAiqIspAwbParamsPoolV21;
 typedef SharedItemProxy<rk_aiq_isp_awb_params_v21_t>        RkAiqIspAwbParamsProxyV21;
-typedef SharedItemPool<rk_aiq_isp_drc_params_v21_t>         RkAiqIspDrcParamsPoolV21;
-typedef SharedItemProxy<rk_aiq_isp_drc_params_v21_t>        RkAiqIspDrcParamsProxyV21;
+typedef SharedItemPool<rk_aiq_isp_drc_params_v21_t>         RkAiqIspDrcParamsPool;
+typedef SharedItemProxy<rk_aiq_isp_drc_params_v21_t>        RkAiqIspDrcParamsProxy;
 typedef SharedItemPool<rk_aiq_isp_blc_params_v21_t>         RkAiqIspBlcParamsPoolV21;
 typedef SharedItemProxy<rk_aiq_isp_blc_params_v21_t>        RkAiqIspBlcParamsProxyV21;
-typedef SharedItemPool<rk_aiq_isp_gic_params_v21_t>         RkAiqIspGicParamsPoolV21;
-typedef SharedItemProxy<rk_aiq_isp_gic_params_v21_t>        RkAiqIspGicParamsProxyV21;
-typedef SharedItemPool<rk_aiq_isp_dehaze_params_v21_t>      RkAiqIspDehazeParamsPoolV21;
-typedef SharedItemProxy<rk_aiq_isp_dehaze_params_v21_t>     RkAiqIspDehazeParamsProxyV21;
 typedef SharedItemPool<rk_aiq_isp_baynr_params_v21_t>       RkAiqIspBaynrParamsPoolV21;
 typedef SharedItemProxy<rk_aiq_isp_baynr_params_v21_t>      RkAiqIspBaynrParamsProxyV21;
 typedef SharedItemPool<rk_aiq_isp_bay3d_params_v21_t>       RkAiqIspBa3dParamsPoolV21;
@@ -311,14 +307,6 @@ typedef SharedItemPool<rk_aiq_isp_awb_params_v3x_t>         RkAiqIspAwbParamsPoo
 typedef SharedItemProxy<rk_aiq_isp_awb_params_v3x_t>        RkAiqIspAwbParamsProxyV3x;
 typedef SharedItemPool<rk_aiq_isp_af_params_v3x_t>          RkAiqIspAfParamsPoolV3x;
 typedef SharedItemProxy<rk_aiq_isp_af_params_v3x_t>         RkAiqIspAfParamsProxyV3x;
-typedef SharedItemPool<rk_aiq_isp_agamma_params_v3x_t>      RkAiqIspAgammaParamsPoolV3x;
-typedef SharedItemProxy<rk_aiq_isp_agamma_params_v3x_t>     RkAiqIspAgammaParamsProxyV3x;
-typedef SharedItemPool<rk_aiq_isp_drc_params_v3x_t>         RkAiqIspDrcParamsPoolV3x;
-typedef SharedItemProxy<rk_aiq_isp_drc_params_v3x_t>        RkAiqIspDrcParamsProxyV3x;
-typedef SharedItemPool<rk_aiq_isp_merge_params_v3x_t>       RkAiqIspMergeParamsPoolV3x;
-typedef SharedItemProxy<rk_aiq_isp_merge_params_v3x_t>      RkAiqIspMergeParamsProxyV3x;
-typedef SharedItemPool<rk_aiq_isp_dehaze_params_v3x_t>      RkAiqIspDehazeParamsPoolV3x;
-typedef SharedItemProxy<rk_aiq_isp_dehaze_params_v3x_t>     RkAiqIspDehazeParamsProxyV3x;
 typedef SharedItemPool<rk_aiq_isp_baynr_params_v3x_t>       RkAiqIspBaynrParamsPoolV3x;
 typedef SharedItemProxy<rk_aiq_isp_baynr_params_v3x_t>      RkAiqIspBaynrParamsProxyV3x;
 typedef SharedItemPool<rk_aiq_isp_bay3d_params_v3x_t>       RkAiqIspBa3dParamsPoolV3x;
@@ -424,16 +412,16 @@ typedef struct : public SharedItemData {
     SmartPtr<RkAiqIspAfParamsProxy>                         af;
     SmartPtr<RkAiqIspDpccParamsProxy>                       dpcc;
     SmartPtr<RkAiqIspMergeParamsProxy>                      merge;
-    SmartPtr<RkAiqIspDrcParamsProxyV21>                     drc;
+    SmartPtr<RkAiqIspDrcParamsProxy>                        drc;
     SmartPtr<RkAiqIspCcmParamsProxy>                        ccm;
     SmartPtr<RkAiqIspLscParamsProxy>                        lsc;
     SmartPtr<RkAiqIspBlcParamsProxyV21>                     blc;
     SmartPtr<RkAiqIspRawnrParamsProxy>                      rawnr;
-    SmartPtr<RkAiqIspGicParamsProxyV21>                     gic;
+    SmartPtr<RkAiqIspGicParamsProxy>                        gic;
     SmartPtr<RkAiqIspDebayerParamsProxy>                    debayer;
     SmartPtr<RkAiqIspLdchParamsProxy>                       ldch;
     SmartPtr<RkAiqIspLut3dParamsProxy>                      lut3d;
-    SmartPtr<RkAiqIspDehazeParamsProxyV21>                  dehaze;
+    SmartPtr<RkAiqIspDehazeParamsProxy>                     dehaze;
     SmartPtr<RkAiqIspAgammaParamsProxy>                     gamma;
     SmartPtr<RkAiqIspAdegammaParamsProxy>                   degamma;
     SmartPtr<RkAiqIspWdrParamsProxy>                        wdr;
@@ -542,10 +530,8 @@ public:
           // TODO: change full params to list
           // V21 differential modules
         , mAwbV21Params(NULL)
-        , mDrcV21Params(NULL)
+        , mDrcParams(NULL)
         , mBlcV21Params(NULL)
-        , mGicV21Params(NULL)
-        , mDehazeV21Params(NULL)
         , mBaynrV21Params(NULL)
           // , mBa3dParams(NULL)
         , mYnrV21Params(NULL)
@@ -553,10 +539,6 @@ public:
         , mSharpenV21Params(NULL)
         , mAwbV3xParams(NULL)
         , mAfV3xParams(NULL)
-        , mAgammaV3xParams(NULL)
-        , mDrcV3xParams(NULL)
-        , mMergeV3xParams(NULL)
-        , mDehazeV3xParams(NULL)
         , mBaynrV3xParams(NULL)
         , mYnrV3xParams(NULL)
         , mCnrV3xParams(NULL)
@@ -614,10 +596,8 @@ public:
         // TODO: change full params to list
         // V21 differential modules
         mAwbV21Params.release();
-        mDrcV21Params.release();
+        mDrcParams.release();
         mBlcV21Params.release();
-        mGicV21Params.release();
-        mDehazeV21Params.release();
         mBaynrV21Params.release();
         // mBa3dParams.release();
         mYnrV21Params.release();
@@ -628,10 +608,6 @@ public:
         // V3x differential modules
         mAwbV3xParams.release();
         mAfV3xParams.release();
-        mAgammaV3xParams.release();
-        mDrcV3xParams.release();
-        mMergeV3xParams.release();
-        mDehazeV3xParams.release();
         mBaynrV3xParams.release();
         mYnrV3xParams.release();
         mCnrV3xParams.release();
@@ -686,10 +662,8 @@ public:
     // TODO: change full params to list
     // V21 differential modules
     SmartPtr<RkAiqIspAwbParamsProxyV21>     mAwbV21Params;
-    SmartPtr<RkAiqIspDrcParamsProxyV21>     mDrcV21Params;
+    SmartPtr<RkAiqIspDrcParamsProxy>        mDrcParams;
     SmartPtr<RkAiqIspBlcParamsProxyV21>     mBlcV21Params;
-    SmartPtr<RkAiqIspGicParamsProxyV21>     mGicV21Params;
-    SmartPtr<RkAiqIspDehazeParamsProxyV21>  mDehazeV21Params;
     SmartPtr<RkAiqIspBaynrParamsProxyV21>   mBaynrV21Params;
     //SmartPtr<RkAiqIspBa3dParamsProxyV21>    mBa3dParams;
     SmartPtr<RkAiqIspYnrParamsProxyV21>     mYnrV21Params;
@@ -698,10 +672,6 @@ public:
     // V3x differential modules
     SmartPtr<RkAiqIspAwbParamsProxyV3x>     mAwbV3xParams;
     SmartPtr<RkAiqIspAfParamsProxyV3x>      mAfV3xParams;
-    SmartPtr<RkAiqIspAgammaParamsProxyV3x>  mAgammaV3xParams;
-    SmartPtr<RkAiqIspDrcParamsProxyV3x>     mDrcV3xParams;
-    SmartPtr<RkAiqIspMergeParamsProxyV3x>   mMergeV3xParams;
-    SmartPtr<RkAiqIspDehazeParamsProxyV3x>  mDehazeV3xParams;
     SmartPtr<RkAiqIspBaynrParamsProxyV3x>   mBaynrV3xParams;
     SmartPtr<RkAiqIspYnrParamsProxyV3x>     mYnrV3xParams;
     SmartPtr<RkAiqIspCnrParamsProxyV3x>     mCnrV3xParams;

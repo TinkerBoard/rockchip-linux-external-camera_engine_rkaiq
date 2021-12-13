@@ -1583,8 +1583,8 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV2xCtx(CalibDbV2_AF_t* af)
         calib_free(zoomfocus_tbl->ZoomSearchTbl);
     if (zoomfocus_tbl->FocusSearchPlusRange)
         calib_free(zoomfocus_tbl->FocusSearchPlusRange);
-    if (zoomfocus_tbl->ZoomFocusRecDir)
-        calib_free(zoomfocus_tbl->ZoomFocusRecDir);
+    if (zoomfocus_tbl->ZoomInfoDir)
+        calib_free(zoomfocus_tbl->ZoomInfoDir);
 
     if (TuningPara->contrast_af.FullRangeTbl)
         calib_free(TuningPara->contrast_af.FullRangeTbl);
@@ -1636,8 +1636,8 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV30Ctx(CalibDbV2_AFV30_t* af)
         calib_free(zoomfocus_tbl->ZoomSearchTbl);
     if (zoomfocus_tbl->FocusSearchPlusRange)
         calib_free(zoomfocus_tbl->FocusSearchPlusRange);
-    if (zoomfocus_tbl->ZoomFocusRecDir)
-        calib_free(zoomfocus_tbl->ZoomFocusRecDir);
+    if (zoomfocus_tbl->ZoomInfoDir)
+        calib_free(zoomfocus_tbl->ZoomInfoDir);
 
     if (TuningPara->contrast_af.FullRangeTbl)
         calib_free(TuningPara->contrast_af.FullRangeTbl);

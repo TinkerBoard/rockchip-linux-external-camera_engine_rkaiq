@@ -25,6 +25,14 @@ rk_aiq_uapi2_sysctl_preInit(const char* sns_ent_name,
     return rk_aiq_uapi_sysctl_preInit(sns_ent_name, mode, force_iq_file);
 }
 
+
+XCamReturn
+rk_aiq_uapi2_sysctl_preInit_scene(const char* sns_ent_name, const char *main_scene,
+                              const char *sub_scene)
+{
+    return rk_aiq_uapi_sysctl_preInit_scene(sns_ent_name, main_scene, sub_scene);
+}
+
 rk_aiq_sys_ctx_t*
 rk_aiq_uapi2_sysctl_init(const char* sns_ent_name,
                         const char* config_file_dir,
@@ -192,4 +200,3 @@ char* rk_aiq_uapi2_sysctl_readiq(const rk_aiq_sys_ctx_t* sys_ctx, char* param)
 {
     return rk_aiq_uapi_sysctl_readiq(sys_ctx, param);
 }
-

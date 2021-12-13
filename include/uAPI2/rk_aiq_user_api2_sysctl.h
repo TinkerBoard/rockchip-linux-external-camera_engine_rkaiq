@@ -300,6 +300,10 @@ rk_aiq_uapi2_sysctl_tuning(const rk_aiq_sys_ctx_t* sys_ctx, char* param);
 
 char* rk_aiq_uapi2_sysctl_readiq(const rk_aiq_sys_ctx_t* sys_ctx, char* param);
 
+XCamReturn
+rk_aiq_uapi2_sysctl_preInit_scene(const char* sns_ent_name, const char *main_scene,
+                                  const char *sub_scene);
+
 /*problem api*/
 #if 0
 //HDR mode may not work;

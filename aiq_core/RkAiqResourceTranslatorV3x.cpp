@@ -1538,6 +1538,29 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
     return ret;
 }
 
+
+void RotationDegAwbBlkStas(rk_aiq_awb_stat_blk_res_v201_t *blockResult,int degree)
+{
+
+    rk_aiq_awb_stat_blk_res_v201_t blockResult_old[RK_AIQ_AWB_GRID_NUM_TOTAL];
+    if(degree == -90){
+        memcpy(blockResult_old,blockResult,sizeof(rk_aiq_awb_stat_blk_res_v201_t)*RK_AIQ_AWB_GRID_NUM_TOTAL);
+        for(int i=0;i<RK_AIQ_AWB_GRID_NUM_VERHOR;i++){
+            for(int j=0;j<RK_AIQ_AWB_GRID_NUM_VERHOR;j++){
+                memcpy(&blockResult[(RK_AIQ_AWB_GRID_NUM_VERHOR-j-1)*RK_AIQ_AWB_GRID_NUM_VERHOR+i],&blockResult_old[i*RK_AIQ_AWB_GRID_NUM_VERHOR+j],sizeof(rk_aiq_awb_stat_blk_res_v201_t));
+            }
+        }
+    }else if(degree == 90){
+        memcpy(blockResult_old,blockResult,sizeof(rk_aiq_awb_stat_blk_res_v201_t)*RK_AIQ_AWB_GRID_NUM_TOTAL);
+        for(int i=0;i<RK_AIQ_AWB_GRID_NUM_VERHOR;i++){
+            for(int j=0;j<RK_AIQ_AWB_GRID_NUM_VERHOR;j++){
+               memcpy(&blockResult[j*RK_AIQ_AWB_GRID_NUM_VERHOR+(RK_AIQ_AWB_GRID_NUM_VERHOR-i-1)],&blockResult_old[i*RK_AIQ_AWB_GRID_NUM_VERHOR+j],sizeof(rk_aiq_awb_stat_blk_res_v201_t));
+            }
+        }
+    }
+}
+
+
 XCamReturn
 RkAiqResourceTranslatorV3x::translateAwbStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAwbStatsProxy> &to)
 {
@@ -1665,6 +1688,14 @@ RkAiqResourceTranslatorV3x::translateAwbStats (const SmartPtr<VideoBuffer> &from
         }
     }
 #endif
+    LOGV_AWBGROUP("mIsGroupMode %d",mIsGroupMode);
+    if(mIsGroupMode){
+        if(mCamPhyId%2){
+            RotationDegAwbBlkStas(statsInt->awb_stats_v3x.blockResult,90);
+            }else{
+            RotationDegAwbBlkStas(statsInt->awb_stats_v3x.blockResult,-90);
+        }
+    }
     //statsInt->awb_stats_valid = ISP2X_STAT_RAWAWB(stats->meas_type)? true:false;
     statsInt->awb_stats_valid = stats->meas_type >> 5 & 1;
     to->set_sequence(stats->frame_id);
@@ -1675,15 +1706,22 @@ RkAiqResourceTranslatorV3x::translateAwbStats (const SmartPtr<VideoBuffer> &from
 XCamReturn
 RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAfStatsProxy> &to)
 {
+    typedef enum WinSplitMode_s {
+        LEFT_AND_RIGHT_MODE = 0,
+        LEFT_MODE,
+        RIGHT_MODE,
+        FULL_MODE,
+    } SplitMode;
+
     struct AfSplitInfo {
-        WinSplitMode wina_side_info;
+        SplitMode wina_side_info;
         int32_t wina_l_blknum;
         int32_t wina_r_blknum;
         int32_t wina_r_skip_blknum;
         float wina_l_ratio;
         float wina_r_ratio;
 
-        WinSplitMode winb_side_info;
+        SplitMode winb_side_info;
         float winb_l_ratio;
         float winb_r_ratio;
     };
@@ -1724,7 +1762,7 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
     int32_t l_win_st, l_win_ed, r_win_st, r_win_ed;
     int32_t x_st, x_ed, l_blknum, r_blknum, ov_w, blk_w, r_skip_blknum;
     struct AfSplitInfo af_split_info;
-    int32_t i, j, k, dst_idx, l_idx, r_idx, l_lht, r_lht;
+    int32_t i, j, k, dst_idx, l_idx, r_idx, l_lht, r_lht, lht0, lht1;
 
     memset(&af_split_info, 0, sizeof(af_split_info));
     ov_w = left_isp_rect_.w + left_isp_rect_.x - right_isp_rect_.x;
@@ -1767,8 +1805,8 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
                 af_split_info.wina_r_ratio = 1 - af_split_info.wina_l_ratio;
             }
         }
-        // af win >= one isp width
-        else {
+        // af win <= one isp width * 1.5
+        else if (org_af.win[0].h_size < left_isp_rect_.w * 3/2) {
             l_win_st = x_st;
             l_win_ed = l_isp_ed - 2;
             blk_w = (l_win_ed - l_win_st) / (ISP2X_RAWAF_SUMDATA_ROW + 1);
@@ -1790,6 +1828,17 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
                 af_split_info.wina_l_ratio = (float)ov_w / (float)blk_w;
                 af_split_info.wina_r_ratio = 1 - af_split_info.wina_l_ratio;
             }
+        }
+        else {
+            l_win_st = x_st;
+            l_win_ed = l_isp_ed - 2;
+            blk_w = (l_win_ed - l_win_st) / ISP2X_RAWAF_SUMDATA_ROW;
+            l_win_st = l_win_ed - blk_w * ISP2X_RAWAF_SUMDATA_ROW;
+            r_win_st = 2;
+            r_win_ed = r_win_st + blk_w * ISP2X_RAWAF_SUMDATA_ROW;
+            af_split_info.wina_side_info = FULL_MODE;
+            l_blknum = ISP2X_RAWAF_SUMDATA_ROW;
+            r_blknum = ISP2X_RAWAF_SUMDATA_ROW;
         }
     }
     // af win in right side
@@ -1881,7 +1930,54 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
             statsInt->af_stats_v3x.winb_highlit_cnt = right_stats->params.rawaf.highlit_cnt_winb;
         }
 
-        if (af_split_info.wina_side_info == LEFT_AND_RIGHT_MODE) {
+        if (af_split_info.wina_side_info == FULL_MODE) {
+            for (i = 0; i < ISP2X_RAWAF_SUMDATA_ROW; i++) {
+                for (j = 0; j < ISP2X_RAWAF_SUMDATA_COLUMN; j++) {
+                    dst_idx = i * ISP2X_RAWAF_SUMDATA_ROW + j;
+                    if (j == 0) {
+                        l_idx = i * ISP2X_RAWAF_SUMDATA_ROW + j;
+                        statsInt->af_stats_v3x.wnda_fv_v1[dst_idx] = left_stats->params.rawaf.ramdata[l_idx].v1;
+                        statsInt->af_stats_v3x.wnda_fv_v2[dst_idx] = left_stats->params.rawaf.ramdata[l_idx].v2;
+                        statsInt->af_stats_v3x.wnda_fv_h1[dst_idx] = left_stats->params.rawaf.ramdata[l_idx].h1;
+                        statsInt->af_stats_v3x.wnda_fv_h2[dst_idx] = left_stats->params.rawaf.ramdata[l_idx].h2;
+                        statsInt->af_stats_v3x.wnda_luma[dst_idx] = left_stats->params.rawae3.data[l_idx].channelg_xy;
+                        statsInt->af_stats_v3x.wina_highlit_cnt[dst_idx] =
+                            ((left_stats->params.rawae3.data[l_idx].channelr_xy & 0x3F) << 10) | left_stats->params.rawae3.data[l_idx].channelb_xy;
+                    } else if (j >= 1 && j <= 7) {
+                        l_idx = i * ISP2X_RAWAF_SUMDATA_ROW + 2 * (j - 1) + 1;
+                        statsInt->af_stats_v3x.wnda_fv_v1[dst_idx] =
+                            left_stats->params.rawaf.ramdata[l_idx].v1 + left_stats->params.rawaf.ramdata[l_idx+1].v1;
+                        statsInt->af_stats_v3x.wnda_fv_v2[dst_idx] =
+                            left_stats->params.rawaf.ramdata[l_idx].v2 + left_stats->params.rawaf.ramdata[l_idx+1].v2;
+                        statsInt->af_stats_v3x.wnda_fv_h1[dst_idx] =
+                            left_stats->params.rawaf.ramdata[l_idx].h1 + left_stats->params.rawaf.ramdata[l_idx+1].h1;
+                        statsInt->af_stats_v3x.wnda_fv_h2[dst_idx] =
+                            left_stats->params.rawaf.ramdata[l_idx].h2 + left_stats->params.rawaf.ramdata[l_idx+1].h2;
+                        statsInt->af_stats_v3x.wnda_luma[dst_idx] =
+                            left_stats->params.rawae3.data[l_idx].channelg_xy + left_stats->params.rawae3.data[l_idx+1].channelg_xy;
+                        lht0 = ((left_stats->params.rawae3.data[l_idx].channelr_xy & 0x3F) << 10) | left_stats->params.rawae3.data[l_idx].channelb_xy;
+                        lht1 = ((left_stats->params.rawae3.data[l_idx+1].channelr_xy & 0x3F) << 10) | left_stats->params.rawae3.data[l_idx+1].channelb_xy;
+                        statsInt->af_stats_v3x.wina_highlit_cnt[dst_idx] = lht0 + lht1;
+                    } else {
+                        r_idx = i * ISP2X_RAWAF_SUMDATA_ROW + 2 * (j - 8) + 1;
+                        statsInt->af_stats_v3x.wnda_fv_v1[dst_idx] =
+                            right_stats->params.rawaf.ramdata[r_idx].v1 + right_stats->params.rawaf.ramdata[r_idx+1].v1;
+                        statsInt->af_stats_v3x.wnda_fv_v2[dst_idx] =
+                            right_stats->params.rawaf.ramdata[r_idx].v2 + right_stats->params.rawaf.ramdata[r_idx+1].v2;
+                        statsInt->af_stats_v3x.wnda_fv_h1[dst_idx] =
+                            right_stats->params.rawaf.ramdata[r_idx].h1 + right_stats->params.rawaf.ramdata[r_idx+1].h1;
+                        statsInt->af_stats_v3x.wnda_fv_h2[dst_idx] =
+                            right_stats->params.rawaf.ramdata[r_idx].h2 + right_stats->params.rawaf.ramdata[r_idx+1].h2;
+                        statsInt->af_stats_v3x.wnda_luma[dst_idx] =
+                            right_stats->params.rawae3.data[r_idx].channelg_xy + right_stats->params.rawae3.data[r_idx+1].channelg_xy;
+                        lht0 = ((right_stats->params.rawae3.data[r_idx].channelr_xy & 0x3F) << 10) | right_stats->params.rawae3.data[r_idx].channelb_xy;
+                        lht1 = ((right_stats->params.rawae3.data[r_idx+1].channelr_xy & 0x3F) << 10) | right_stats->params.rawae3.data[r_idx+1].channelb_xy;
+                        statsInt->af_stats_v3x.wina_highlit_cnt[dst_idx] = lht0 + lht1;
+                    }
+                }
+            }
+        }
+        else if (af_split_info.wina_side_info == LEFT_AND_RIGHT_MODE) {
             k = 0;
             i = ISP2X_RAWAF_SUMDATA_ROW - af_split_info.wina_l_blknum;
             for (; i < ISP2X_RAWAF_SUMDATA_ROW; i++, k++) {

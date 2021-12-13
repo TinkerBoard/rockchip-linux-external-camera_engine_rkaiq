@@ -658,13 +658,13 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
 
     cif_info[index].model_idx = index;
 
-    strncpy(cif_info[index].media_dev_path, devpath, sizeof(cif_info[index].media_dev_path));
+    strncpy(cif_info[index].media_dev_path, devpath, sizeof(cif_info[index].media_dev_path) - 1);
 
     entity = media_get_entity_by_name(device, "stream_cif_mipi_id0", strlen("stream_cif_mipi_id0"));
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].mipi_id0, entity_name, sizeof(cif_info[index].mipi_id0));
+            strncpy(cif_info[index].mipi_id0, entity_name, sizeof(cif_info[index].mipi_id0) - 1);
         }
     }
 
@@ -672,7 +672,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].mipi_id1, entity_name, sizeof(cif_info[index].mipi_id1));
+            strncpy(cif_info[index].mipi_id1, entity_name, sizeof(cif_info[index].mipi_id1) - 1);
         }
     }
 
@@ -680,7 +680,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].mipi_id2, entity_name, sizeof(cif_info[index].mipi_id2));
+            strncpy(cif_info[index].mipi_id2, entity_name, sizeof(cif_info[index].mipi_id2) - 1);
         }
     }
 
@@ -688,7 +688,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].mipi_id3, entity_name, sizeof(cif_info[index].mipi_id3));
+            strncpy(cif_info[index].mipi_id3, entity_name, sizeof(cif_info[index].mipi_id3) - 1);
         }
     }
 
@@ -696,7 +696,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].mipi_scl0, entity_name, sizeof(cif_info[index].mipi_scl0));
+            strncpy(cif_info[index].mipi_scl0, entity_name, sizeof(cif_info[index].mipi_scl0) - 1);
         }
     }
 
@@ -704,7 +704,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].mipi_scl1, entity_name, sizeof(cif_info[index].mipi_scl1));
+            strncpy(cif_info[index].mipi_scl1, entity_name, sizeof(cif_info[index].mipi_scl1) - 1);
         }
     }
 
@@ -712,7 +712,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].mipi_scl2, entity_name, sizeof(cif_info[index].mipi_scl2));
+            strncpy(cif_info[index].mipi_scl2, entity_name, sizeof(cif_info[index].mipi_scl2) - 1);
         }
     }
 
@@ -720,7 +720,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].mipi_scl3, entity_name, sizeof(cif_info[index].mipi_scl3));
+            strncpy(cif_info[index].mipi_scl3, entity_name, sizeof(cif_info[index].mipi_scl3) - 1);
         }
     }
 
@@ -728,7 +728,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].dvp_id0, entity_name, sizeof(cif_info[index].dvp_id0));
+            strncpy(cif_info[index].dvp_id0, entity_name, sizeof(cif_info[index].dvp_id0) - 1);
         }
     }
 
@@ -736,7 +736,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].dvp_id1, entity_name, sizeof(cif_info[index].dvp_id1));
+            strncpy(cif_info[index].dvp_id1, entity_name, sizeof(cif_info[index].dvp_id1) - 1);
         }
     }
 
@@ -744,7 +744,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].dvp_id2, entity_name, sizeof(cif_info[index].dvp_id2));
+            strncpy(cif_info[index].dvp_id2, entity_name, sizeof(cif_info[index].dvp_id2) - 1);
         }
     }
 
@@ -752,7 +752,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].dvp_id3, entity_name, sizeof(cif_info[index].dvp_id3));
+            strncpy(cif_info[index].dvp_id3, entity_name, sizeof(cif_info[index].dvp_id3) - 1);
         }
     }
 
@@ -760,7 +760,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].mipi_luma_path, entity_name, sizeof(cif_info[index].mipi_luma_path));
+            strncpy(cif_info[index].mipi_luma_path, entity_name, sizeof(cif_info[index].mipi_luma_path) - 1);
         }
     }
 
@@ -768,7 +768,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].mipi_csi2_sd_path, entity_name, sizeof(cif_info[index].mipi_csi2_sd_path));
+            strncpy(cif_info[index].mipi_csi2_sd_path, entity_name, sizeof(cif_info[index].mipi_csi2_sd_path) - 1);
         }
     }
 
@@ -776,7 +776,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].lvds_sd_path, entity_name, sizeof(cif_info[index].lvds_sd_path));
+            strncpy(cif_info[index].lvds_sd_path, entity_name, sizeof(cif_info[index].lvds_sd_path) - 1);
         }
     }
 
@@ -784,7 +784,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].lvds_sd_path, entity_name, sizeof(cif_info[index].lvds_sd_path));
+            strncpy(cif_info[index].lvds_sd_path, entity_name, sizeof(cif_info[index].lvds_sd_path) - 1);
         }
     }
 
@@ -792,14 +792,14 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].mipi_dphy_rx_path, entity_name, sizeof(cif_info[index].mipi_dphy_rx_path));
+            strncpy(cif_info[index].mipi_dphy_rx_path, entity_name, sizeof(cif_info[index].mipi_dphy_rx_path) - 1);
         }
     } else {
         entity = media_get_entity_by_name(device, "rockchip-csi2-dphy0", strlen("rockchip-csi2-dphy0"));
         if(entity) {
             entity_name = media_entity_get_devname (entity);
             if(entity_name) {
-                strncpy(cif_info[index].mipi_dphy_rx_path, entity_name, sizeof(cif_info[index].mipi_dphy_rx_path));
+                strncpy(cif_info[index].mipi_dphy_rx_path, entity_name, sizeof(cif_info[index].mipi_dphy_rx_path) - 1);
             }
         }
     }
@@ -808,7 +808,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].stream_cif_path, entity_name, sizeof(cif_info[index].stream_cif_path));
+            strncpy(cif_info[index].stream_cif_path, entity_name, sizeof(cif_info[index].stream_cif_path) - 1);
         }
     }
 
@@ -816,7 +816,7 @@ get_cif_subdevs(struct media_device *device, const char *devpath, rk_aiq_cif_inf
     if(entity) {
         entity_name = media_entity_get_devname (entity);
         if(entity_name) {
-            strncpy(cif_info[index].dvp_sof_sd_path, entity_name, sizeof(cif_info[index].dvp_sof_sd_path));
+            strncpy(cif_info[index].dvp_sof_sd_path, entity_name, sizeof(cif_info[index].dvp_sof_sd_path) - 1);
         }
     }
 
@@ -3722,9 +3722,6 @@ CamHwIsp20::setHdrProcessCount(rk_aiq_luma_params_t luma_params)
     ENTER_CAMHW_FUNCTION();
     mRawProcUnit->set_hdr_frame_readback_infos(luma_params.frame_id, luma_params.hdrProcessCnt);
 
-    //isp20Pollthread = mPollthread.dynamic_cast_ptr<Isp20PollThread>();
-    //isp20Pollthread->set_hdr_frame_readback_infos(luma_params);
-
     EXIT_CAMHW_FUNCTION();
     return ret;
 }
@@ -4467,8 +4464,6 @@ CamHwIsp20::getModuleCtl(rk_aiq_module_id_t moduleId, bool &en)
 
 XCamReturn CamHwIsp20::notify_capture_raw()
 {
-//    SmartPtr<Isp20PollThread> isp20Pollthread = mPollthread.dynamic_cast_ptr<Isp20PollThread>();
-//    if (isp20Pollthread.ptr())
     return CaptureRawData::getInstance().notify_capture_raw();
 
     return XCAM_RETURN_ERROR_FAILED;
@@ -4476,13 +4471,10 @@ XCamReturn CamHwIsp20::notify_capture_raw()
 
 XCamReturn CamHwIsp20::capture_raw_ctl(capture_raw_t type, int count, const char* capture_dir, char* output_dir)
 {
-    //  SmartPtr<Isp20PollThread> isp20Pollthread = mPollthread.dynamic_cast_ptr<Isp20PollThread>();
-    //  if (isp20Pollthread.ptr()) {
     if (type == CAPTURE_RAW_AND_YUV_SYNC)
         return CaptureRawData::getInstance().capture_raw_ctl(type);
     else if (type == CAPTURE_RAW_SYNC)
         return CaptureRawData::getInstance().capture_raw_ctl(type, count, capture_dir, output_dir);
-    //  }
 
     return XCAM_RETURN_ERROR_FAILED;
 }

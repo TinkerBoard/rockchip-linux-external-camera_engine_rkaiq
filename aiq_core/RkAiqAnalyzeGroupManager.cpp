@@ -817,8 +817,8 @@ void RkAiqAnalyzeGroupManager::parseAlgoGroup(const struct RkAiqAlgoDesCommExt* 
         for (size_t j = 0; j < algoDes[i].grpConds.size; j++)
             deps_flag |= 1 << algoDes[i].grpConds.conds[j].cond;
         rk_aiq_core_analyze_type_e group = algoDes[i].group;
-        mGroupAlgoListMap[group].push_back(algo_type);
-        mGroupAlgoListMap[RK_AIQ_CORE_ANALYZE_ALL].push_back(algo_type);
+        mGroupAlgoListMap[group].push_back(*mAiqCore->getCurAlgoTypeHandle(algo_type));
+        mGroupAlgoListMap[RK_AIQ_CORE_ANALYZE_ALL].push_back(*mAiqCore->getCurAlgoTypeHandle(algo_type));
         if (mGroupMap.count(deps_flag)) {
             continue;
         }

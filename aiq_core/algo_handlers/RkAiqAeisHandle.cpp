@@ -1,7 +1,5 @@
 /*
- * RkAiqAeisHandle.h
- *
- *  Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
+ * Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 #include "RkAiqCore.h"
@@ -28,7 +25,7 @@ XCamReturn RkAiqAeisHandleInt::prepare() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    ret = RkAiqAeisHandle::prepare();
+    ret = RkAiqHandle::prepare();
     RKAIQCORE_CHECK_RET(ret, "aeis handle prepare failed");
 
     RkAiqAlgoConfigAeisInt* aeis_config_int     = (RkAiqAlgoConfigAeisInt*)mConfig;
@@ -47,7 +44,7 @@ XCamReturn RkAiqAeisHandleInt::prepare() {
 void RkAiqAeisHandleInt::init() {
     ENTER_ANALYZER_FUNCTION();
 
-    RkAiqAeisHandle::deInit();
+    RkAiqHandle::deInit();
     mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAeisInt());
     mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAeisInt());
     mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAeisInt());
@@ -77,13 +74,18 @@ XCamReturn RkAiqAeisHandleInt::preProcess() {
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
     RkAiqIspStats* ispStats                     = shared->ispStats;
 
-    ret = RkAiqAeisHandle::preProcess();
+    ret = RkAiqHandle::preProcess();
     if (ret) {
         comb->aeis_pre_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "aeis handle preProcess failed");
     }
 
     comb->aeis_pre_res = NULL;
+
+    if (!shared->orbStats && !sharedCom->init) {
+        LOGE_AEIS("no orb stats, ignore!");
+        return XCAM_RETURN_BYPASS;
+    }
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->pre_process(mPreInParam, mPreOutParam);
@@ -158,10 +160,15 @@ XCamReturn RkAiqAeisHandleInt::processing() {
     aeis_proc_int->common.frame_width  = sharedCom->snsDes.sensor_output_width;
     aeis_proc_int->common.frame_height = sharedCom->snsDes.sensor_output_height;
 
-    ret = RkAiqAeisHandle::processing();
+    ret = RkAiqHandle::processing();
     if (ret) {
         comb->aeis_proc_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "aeis handle processing failed");
+    }
+
+    if (!shared->orbStats && !sharedCom->init) {
+        LOGE_AEIS("no orb stats, ignore!");
+        return XCAM_RETURN_BYPASS;
     }
 
     comb->aeis_proc_res = NULL;
@@ -194,11 +201,16 @@ XCamReturn RkAiqAeisHandleInt::postProcess() {
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
     RkAiqIspStats* ispStats                     = shared->ispStats;
 
-    ret = RkAiqAeisHandle::postProcess();
+    ret = RkAiqHandle::postProcess();
     if (ret) {
         comb->aeis_post_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "aeis handle postProcess failed");
         return ret;
+    }
+
+    if (!shared->orbStats && !sharedCom->init) {
+        LOGE_AEIS("no orb stats, ignore!");
+        return XCAM_RETURN_BYPASS;
     }
 
     comb->aeis_post_res       = NULL;
@@ -267,144 +279,63 @@ XCamReturn RkAiqAeisHandleInt::getAttrib(rk_aiq_eis_attrib_t* att) {
     return ret;
 }
 
-void RkAiqAeisHandle::init() {
+XCamReturn RkAiqAeisHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params) {
     ENTER_ANALYZER_FUNCTION();
 
-    deInit();
-    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAeis());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAeis());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAeis());
-    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAeis());
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAeis());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAeis());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAeis());
-
-    EXIT_ANALYZER_FUNCTION();
-}
-
-XCamReturn RkAiqAeisHandle::prepare() {
-    ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret            = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
-
-    ret = RkAiqHandle::prepare();
-    RKAIQCORE_CHECK_RET(ret, "aorb handle prepare failed");
-
-    // TODO config aeis common params
-    RkAiqAlgoConfigAeis* aeis_config = (RkAiqAlgoConfigAeis*)mConfig;
-    aeis_config->mems_sensor_intf    = mAiqCore->getMemsSensorIntf();
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->prepare(mConfig);
-        RKAIQCORE_CHECK_RET(ret, "aorb algo prepare failed");
-    }
-
-    EXIT_ANALYZER_FUNCTION();
-    return ret;
-}
-
-XCamReturn RkAiqAeisHandle::preProcess() {
-    ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret                              = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des                   = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoPreAeis* aeis_pre                  = (RkAiqAlgoPreAeis*)mPreInParam;
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqCore::RkAiqAlgosGroupShared_t* shared  = nullptr;
-    int groupId                                 = mAiqCore->getGroupId(RK_AIQ_ALGO_TYPE_AEIS);
-    if (groupId >= 0) {
-        if (mAiqCore->getGroupSharedParams(groupId, shared) != XCAM_RETURN_NO_ERROR)
-            return XCAM_RETURN_BYPASS;
-    } else
-        return XCAM_RETURN_BYPASS;
-    RkAiqIspStats* ispStats = shared->ispStats;
+    RkAiqAlgoProcResAeis* aeis_com              = shared->procResComb.aeis_proc_res;
 
-    ret = RkAiqHandle::preProcess();
-    RKAIQCORE_CHECK_RET(ret, "aeis handle preProcess failed");
-
-    if (!shared->orbStats && !sharedCom->init) {
-        LOGE_AEIS("no orb stats, ignore!");
-        return XCAM_RETURN_BYPASS;
+    if (!aeis_com) {
+        LOGD_ANALYZER("no aeis result");
+        return XCAM_RETURN_NO_ERROR;
     }
 
-    // TODO config common aeis preprocess params
+    rk_aiq_isp_fec_params_v20_t* fec_params = params->mFecParams->data().ptr();
+    if (!this->getAlgoId()) {
+        RkAiqAlgoProcResAeisInt* aeis_rk = (RkAiqAlgoProcResAeisInt*)aeis_com;
+        if (sharedCom->init) {
+            fec_params->frame_id = 0;
+        } else {
+            fec_params->frame_id = shared->frameId;
+        }
 
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->pre_process(mPreInParam, mPreOutParam);
-        RKAIQCORE_CHECK_RET(ret, "aorb handle pre_process failed");
+        if (aeis_rk->update) {
+            fec_params->update_mask |= RKAIQ_ISPP_FEC_ST_ID;
+            fec_params->result.fec_en = aeis_rk->fec_en;
+            fec_params->result.usage  = RKAIQ_ISPP_FEC_ST_ID;
+            if (fec_params->result.fec_en) {
+#if 1
+                if (1) {
+#else
+                if (aeis_rk->fd >= 0) {
+#endif
+                    fec_params->result.config        = true;
+                    fec_params->result.frame_id      = aeis_rk->frame_id;
+                    fec_params->frame_id             = aeis_rk->frame_id;
+                    fec_params->result.mesh_density  = aeis_rk->mesh_density;
+                    fec_params->result.mesh_size     = aeis_rk->mesh_size;
+                    fec_params->result.mesh_buf_fd   = aeis_rk->fd;
+                    fec_params->result.img_buf_index = aeis_rk->img_buf_index;
+                    fec_params->result.img_buf_size  = aeis_rk->img_size;
+                } else {
+                    fec_params->result.config = false;
+                }
+            } else {
+                fec_params->update_mask &= ~RKAIQ_ISPP_FEC_ST_ID;
+            }
+        }
+        LOGD_AEIS("eis update %d, id %d, fec: en %d, config %d, fd %d, idx %d", aeis_rk->update,
+                  fec_params->result.frame_id, fec_params->result.fec_en, fec_params->result.config,
+                  fec_params->result.mesh_buf_fd, fec_params->result.img_buf_index);
     }
+
+    cur_params->mFecParams = params->mFecParams;
 
     EXIT_ANALYZER_FUNCTION();
-    return ret;
-}
 
-XCamReturn RkAiqAeisHandle::processing() {
-    XCamReturn ret                              = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des                   = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoProcAeis* aeis_pre                 = (RkAiqAlgoProcAeis*)mProcInParam;
-    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqCore::RkAiqAlgosGroupShared_t* shared  = nullptr;
-    int groupId                                 = mAiqCore->getGroupId(RK_AIQ_ALGO_TYPE_AEIS);
-    if (groupId >= 0) {
-        if (mAiqCore->getGroupSharedParams(groupId, shared) != XCAM_RETURN_NO_ERROR)
-            return XCAM_RETURN_BYPASS;
-    } else
-        return XCAM_RETURN_BYPASS;
-    RkAiqIspStats* ispStats = shared->ispStats;
-
-    ret = RkAiqHandle::processing();
-    RKAIQCORE_CHECK_RET(ret, "aorb handle processing failed");
-
-    if (!shared->orbStats && !sharedCom->init) {
-        LOGE("no orb stats, ignore!");
-        return XCAM_RETURN_BYPASS;
-    }
-
-    // TODO config common aeis processing params
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->processing(mProcInParam, mProcOutParam);
-        RKAIQCORE_CHECK_RET(ret, "aorb algo processing failed");
-    }
-
-    EXIT_ANALYZER_FUNCTION();
-    return ret;
-}
-
-XCamReturn RkAiqAeisHandle::postProcess() {
-    ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret                              = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des                   = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoPostAeis* aeis_pre                 = (RkAiqAlgoPostAeis*)mPostInParam;
-    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqCore::RkAiqAlgosGroupShared_t* shared  = nullptr;
-    int groupId                                 = mAiqCore->getGroupId(RK_AIQ_ALGO_TYPE_AEIS);
-    if (groupId >= 0) {
-        if (mAiqCore->getGroupSharedParams(groupId, shared) != XCAM_RETURN_NO_ERROR)
-            return XCAM_RETURN_BYPASS;
-    } else
-        return XCAM_RETURN_BYPASS;
-    RkAiqIspStats* ispStats = shared->ispStats;
-
-    ret = RkAiqHandle::postProcess();
-    RKAIQCORE_CHECK_RET(ret, "aorb handle postProcess failed");
-
-    if (!shared->orbStats && !sharedCom->init) {
-        LOGE("no orb stats, ignore!");
-        return XCAM_RETURN_BYPASS;
-    }
-
-    // TODO config common aeis postProcess params
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->post_process(mPostInParam, mPostOutParam);
-        RKAIQCORE_CHECK_RET(ret, "aorb algo postProcess failed");
-    }
-
-    EXIT_ANALYZER_FUNCTION();
     return ret;
 }
 

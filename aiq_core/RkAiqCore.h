@@ -285,7 +285,10 @@ struct RkAiqAlgoDesCommExt {
     RkAiqGrpConditions_t grpConds;
 };
 
+#ifdef RKAIQ_ENABLE_CAMGROUP
 class RkAiqCamGroupManager;
+#endif
+
 class RkAiqCore
     : public rk_aiq_share_ptr_ops_t
 {
@@ -294,7 +297,11 @@ class RkAiqCore
     friend class MessageThread;
     friend class RkAiqAnalyzeGroup;
     friend class RkAiqAnalyzeGroupManager;
+
+#ifdef RKAIQ_ENABLE_CAMGROUP
     friend class RkAiqCamGroupManager;
+#endif
+
 public:
     RkAiqCore();
     virtual ~RkAiqCore();
@@ -304,11 +311,13 @@ public:
         return true;
     }
 
+#ifdef RKAIQ_ENABLE_CAMGROUP
     void setCamGroupManager(RkAiqCamGroupManager* cam_group_manager) {
         mCamGroupCoreManager = cam_group_manager;
         if (mTranslator.ptr() && cam_group_manager)
             mTranslator->setGroupMode(true);
     }
+#endif
     // called only once
     XCamReturn init(const char* sns_ent_name, const CamCalibDbContext_t* aiqCalib,
                     const CamCalibDbV2Context_t* aiqCalibv2 = nullptr);
@@ -500,6 +509,8 @@ public:
     uint64_t getCustomEnAlgosMask() {
         return mCustomEnAlgosMask;
     }
+    // TODO(Cody): Just AF use it, should it be public ?
+    SmartPtr<RkAiqHandle>* getCurAlgoTypeHandle(int algo_type);
 
 protected:
     // in analyzer thread
@@ -508,50 +519,14 @@ protected:
     XCamReturn preProcess(enum rk_aiq_core_analyze_type_e type);
     XCamReturn processing(enum rk_aiq_core_analyze_type_e type);
     XCamReturn postProcess(enum rk_aiq_core_analyze_type_e type);
-    SmartPtr<RkAiqHandle>* getCurAlgoTypeHandle(int algo_type);
     std::map<int, SmartPtr<RkAiqHandle>>* getAlgoTypeHandleMap(int algo_type);
     void addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes);
-    virtual SmartPtr<RkAiqHandle> newAlgoHandle(RkAiqAlgoDesComm* algo, bool generic, int hw_ver);
+    virtual SmartPtr<RkAiqHandle> newAlgoHandle(RkAiqAlgoDesComm* algo, int hw_ver);
     virtual void copyIspStats(SmartPtr<RkAiqAecStatsProxy>& aecStat,
                               SmartPtr<RkAiqAwbStatsProxy>& awbStat,
                               SmartPtr<RkAiqAfStatsProxy>& afStat,
                               rk_aiq_isp_stats_t* to);
-
-    virtual XCamReturn genIspAeResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAwbResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAfResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAmergeResult(RkAiqFullParams* params);
-	virtual XCamReturn genIspAtmoResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAnrResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAdhazResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAsdResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAcpResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAieResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAsharpResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspA3dlutResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAblcResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAccmResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAcgcResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAdebayerResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAdpccResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAfecResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAgammaResult(RkAiqFullParams* params);
-	virtual XCamReturn genIspAdegammaResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAgicResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAldchResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAlscResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAorbResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAr2yResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAwdrResult(RkAiqFullParams* params);
     virtual XCamReturn genCpslResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspArawnrResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAmfnrResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAynrResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAcnrResult(RkAiqFullParams* params);
-    // virtual XCamReturn genIspAdrcResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAeisResult(RkAiqFullParams* params);
-    virtual XCamReturn genIspAmdResult(RkAiqFullParams* params);
-	virtual XCamReturn genIspAgainResult(RkAiqFullParams* params);
 	virtual void setResultExpectedEffId(uint32_t& eff_id, enum RkAiqAlgoType_e type);
     void cacheIspStatsToList(SmartPtr<RkAiqAecStatsProxy>& aecStat,
                              SmartPtr<RkAiqAwbStatsProxy>& awbStat,
@@ -632,10 +607,8 @@ protected:
     // TODO: change full params to list
     // V21 differential modules
     SmartPtr<RkAiqIspAwbParamsPoolV21>     mAiqIspAwbV21ParamsPool;
-    SmartPtr<RkAiqIspDrcParamsPoolV21>     mAiqIspDrcV21ParamsPool;
+    SmartPtr<RkAiqIspDrcParamsPool>        mAiqIspDrcParamsPool;
     SmartPtr<RkAiqIspBlcParamsPoolV21>     mAiqIspBlcV21ParamsPool;
-    SmartPtr<RkAiqIspGicParamsPoolV21>     mAiqIspGicV21ParamsPool;
-    SmartPtr<RkAiqIspDehazeParamsPoolV21>  mAiqIspDehazeV21ParamsPool;
     SmartPtr<RkAiqIspBaynrParamsPoolV21>   mAiqIspBaynrV21ParamsPool;
     SmartPtr<RkAiqIspBa3dParamsPoolV21>    mAiqIspBa3dV21ParamsPool;
     SmartPtr<RkAiqIspYnrParamsPoolV21>     mAiqIspYnrV21ParamsPool;
@@ -732,7 +705,9 @@ protected:
 
     SmartPtr<IRkAiqResourceTranslator> mTranslator;
     uint32_t mLastAnalyzedId;
+#ifdef RKAIQ_ENABLE_CAMGROUP
     RkAiqCamGroupManager* mCamGroupCoreManager;
+#endif
     uint64_t mAllReqAlgoResMask;
 private:
     SmartPtr<ThumbnailsService> mThumbnailsService;

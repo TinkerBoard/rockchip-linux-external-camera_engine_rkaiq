@@ -1,7 +1,5 @@
 /*
- * RkAiqA3dlutHandle.h
- *
- *  Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
+ * Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,109 +12,291 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-
 #include "RkAiqCore.h"
 #include "RkAiqHandle.h"
+#include "RkAiqHandleInt.h"
 
 namespace RkCam {
 
-void RkAiqA3dlutHandle::init() {
+void RkAiqA3dlutHandleInt::init() {
     ENTER_ANALYZER_FUNCTION();
 
-    deInit();
-    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigA3dlut());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreA3dlut());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResA3dlut());
-    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcA3dlut());
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResA3dlut());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostA3dlut());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResA3dlut());
+    RkAiqHandle::deInit();
+    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigA3dlutInt());
+    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreA3dlutInt());
+    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResA3dlutInt());
+    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcA3dlutInt());
+    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResA3dlutInt());
+    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostA3dlutInt());
+    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResA3dlutInt());
 
     EXIT_ANALYZER_FUNCTION();
 }
 
-XCamReturn RkAiqA3dlutHandle::prepare() {
+XCamReturn RkAiqA3dlutHandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret            = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    if (needSync) mCfgMutex.lock();
+    // if something changed
+    if (updateAtt) {
+        mCurAtt   = mNewAtt;
+        updateAtt = false;
+        // TODO
+        rk_aiq_uapi_a3dlut_SetAttrib(mAlgoCtx, mCurAtt, false);
+        sendSignal();
+    }
+
+    if (needSync) mCfgMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqA3dlutHandleInt::setAttrib(rk_aiq_lut3d_attrib_t att) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    mCfgMutex.lock();
+    // TODO
+    // check if there is different between att & mCurAtt
+    // if something changed, set att to mNewAtt, and
+    // the new params will be effective later when updateConfig
+    // called by RkAiqCore
+
+    // if something changed
+    if (0 != memcmp(&mCurAtt, &att, sizeof(rk_aiq_lut3d_attrib_t))) {
+        mNewAtt   = att;
+        updateAtt = true;
+        waitSignal();
+    }
+
+    mCfgMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqA3dlutHandleInt::getAttrib(rk_aiq_lut3d_attrib_t* att) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_uapi_a3dlut_GetAttrib(mAlgoCtx, att);
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqA3dlutHandleInt::query3dlutInfo(rk_aiq_lut3d_querry_info_t* lut3d_querry_info) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_uapi_a3dlut_Query3dlutInfo(mAlgoCtx, lut3d_querry_info);
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqA3dlutHandleInt::prepare() {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     ret = RkAiqHandle::prepare();
     RKAIQCORE_CHECK_RET(ret, "a3dlut handle prepare failed");
 
-    // TODO config a3dlut common params
-    RkAiqAlgoConfigA3dlut* a3dlut_config = (RkAiqAlgoConfigA3dlut*)mConfig;
+    RkAiqAlgoConfigA3dlutInt* a3dlut_config_int = (RkAiqAlgoConfigA3dlutInt*)mConfig;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
 
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->prepare(mConfig);
-        RKAIQCORE_CHECK_RET(ret, "a3dlut algo prepare failed");
-    }
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->prepare(mConfig);
+    RKAIQCORE_CHECK_RET(ret, "a3dlut algo prepare failed");
 
     EXIT_ANALYZER_FUNCTION();
-    return ret;
+    return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn RkAiqA3dlutHandle::preProcess() {
+XCamReturn RkAiqA3dlutHandleInt::preProcess() {
     ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret                 = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des      = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoPreA3dlut* a3dlut_pre = (RkAiqAlgoPreA3dlut*)mPreInParam;
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    RkAiqAlgoPreA3dlutInt* a3dlut_pre_int        = (RkAiqAlgoPreA3dlutInt*)mPreInParam;
+    RkAiqAlgoPreResA3dlutInt* a3dlut_pre_res_int = (RkAiqAlgoPreResA3dlutInt*)mPreOutParam;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    RkAiqPreResComb* comb                       = &shared->preResComb;
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::preProcess();
-    RKAIQCORE_CHECK_RET(ret, "a3dlut handle preProcess failed");
-
-    // TODO config common a3dlut preprocess params
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->pre_process(mPreInParam, mPreOutParam);
-        RKAIQCORE_CHECK_RET(ret, "a3dlut handle pre_process failed");
+    if (ret) {
+        comb->a3dlut_pre_res = NULL;
+        RKAIQCORE_CHECK_RET(ret, "a3dlut handle preProcess failed");
     }
 
+    comb->a3dlut_pre_res = NULL;
+
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->pre_process(mPreInParam, mPreOutParam);
+    RKAIQCORE_CHECK_RET(ret, "a3dlut algo pre_process failed");
+
+    // set result to mAiqCore
+    comb->a3dlut_pre_res = (RkAiqAlgoPreResA3dlut*)a3dlut_pre_res_int;
+
     EXIT_ANALYZER_FUNCTION();
-    return ret;
+    return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn RkAiqA3dlutHandle::processing() {
-    XCamReturn ret                  = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des       = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoProcA3dlut* a3dlut_pre = (RkAiqAlgoProcA3dlut*)mProcInParam;
+XCamReturn RkAiqA3dlutHandleInt::processing() {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    RkAiqAlgoProcA3dlutInt* a3dlut_proc_int        = (RkAiqAlgoProcA3dlutInt*)mProcInParam;
+    RkAiqAlgoProcResA3dlutInt* a3dlut_proc_res_int = (RkAiqAlgoProcResA3dlutInt*)mProcOutParam;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    RkAiqProcResComb* comb                      = &shared->procResComb;
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::processing();
-    RKAIQCORE_CHECK_RET(ret, "a3dlut handle processing failed");
-
-    // TODO config common a3dlut processing params
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->processing(mProcInParam, mProcOutParam);
-        RKAIQCORE_CHECK_RET(ret, "a3dlut algo processing failed");
+    if (ret) {
+        comb->a3dlut_proc_res = NULL;
+        RKAIQCORE_CHECK_RET(ret, "a3dlut handle processing failed");
     }
+
+    comb->a3dlut_proc_res           = NULL;
+    XCamVideoBuffer* xCamAwbProcRes = shared->res_comb.awb_proc_res;
+    if (xCamAwbProcRes) {
+        RkAiqAlgoProcResAwbInt* awb_res_int =
+            (RkAiqAlgoProcResAwbInt*)xCamAwbProcRes->map(xCamAwbProcRes);
+        RkAiqAlgoProcResAwb* awb_res = &awb_res_int->awb_proc_res_com;
+        if (awb_res) {
+            if (awb_res->awb_gain_algo.grgain < DIVMIN || awb_res->awb_gain_algo.gbgain < DIVMIN) {
+                LOGE("get wrong awb gain from AWB module ,use default value ");
+            } else {
+                a3dlut_proc_int->awbGain[0] =
+                    awb_res->awb_gain_algo.rgain / awb_res->awb_gain_algo.grgain;
+
+                a3dlut_proc_int->awbGain[1] =
+                    awb_res->awb_gain_algo.bgain / awb_res->awb_gain_algo.gbgain;
+            }
+            a3dlut_proc_int->awbIIRDampCoef = awb_res_int->awb_smooth_factor;
+            a3dlut_proc_int->awbConverged   = awb_res_int->awbConverged;
+        } else {
+            LOGW("fail to get awb gain form AWB module,use default value ");
+        }
+    } else {
+        LOGW("fail to get awb gain form AWB module,use default value ");
+    }
+    RKAiqAecExpInfo_t* pCurExp = &shared->curExp;
+    if (pCurExp) {
+        if ((rk_aiq_working_mode_t)sharedCom->working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
+            a3dlut_proc_int->sensorGain = pCurExp->LinearExp.exp_real_params.analog_gain *
+                                          pCurExp->LinearExp.exp_real_params.digital_gain *
+                                          pCurExp->LinearExp.exp_real_params.isp_dgain;
+        } else if ((rk_aiq_working_mode_t)sharedCom->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2 &&
+                   (rk_aiq_working_mode_t)sharedCom->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR3) {
+            LOGD("sensor gain choose from second hdr frame for a3dlut");
+            a3dlut_proc_int->sensorGain = pCurExp->HdrExp[1].exp_real_params.analog_gain *
+                                          pCurExp->HdrExp[1].exp_real_params.digital_gain *
+                                          pCurExp->HdrExp[1].exp_real_params.isp_dgain;
+        } else if ((rk_aiq_working_mode_t)sharedCom->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2 &&
+                   (rk_aiq_working_mode_t)sharedCom->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR3) {
+            LOGD("sensor gain choose from third hdr frame for a3dlut");
+            a3dlut_proc_int->sensorGain = pCurExp->HdrExp[2].exp_real_params.analog_gain *
+                                          pCurExp->HdrExp[2].exp_real_params.digital_gain *
+                                          pCurExp->HdrExp[2].exp_real_params.isp_dgain;
+        } else {
+            LOGE(
+                "working_mode (%d) is invaild ,fail to get sensor gain form AE module,use default "
+                "value ",
+                sharedCom->working_mode);
+        }
+    } else {
+        LOGE("fail to get sensor gain form AE module,use default value ");
+    }
+
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->processing(mProcInParam, mProcOutParam);
+    RKAIQCORE_CHECK_RET(ret, "a3dlut algo processing failed");
+
+    comb->a3dlut_proc_res = (RkAiqAlgoProcResA3dlut*)a3dlut_proc_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
 
-XCamReturn RkAiqA3dlutHandle::postProcess() {
+XCamReturn RkAiqA3dlutHandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
-    XCamReturn ret                  = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoDescription* des       = (RkAiqAlgoDescription*)mDes;
-    RkAiqAlgoPostA3dlut* a3dlut_pre = (RkAiqAlgoPostA3dlut*)mPostInParam;
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    RkAiqAlgoPostA3dlutInt* a3dlut_post_int        = (RkAiqAlgoPostA3dlutInt*)mPostInParam;
+    RkAiqAlgoPostResA3dlutInt* a3dlut_post_res_int = (RkAiqAlgoPostResA3dlutInt*)mPostOutParam;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    RkAiqPostResComb* comb                      = &shared->postResComb;
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::postProcess();
-    RKAIQCORE_CHECK_RET(ret, "a3dlut handle postProcess failed");
-
-    // TODO config common a3dlut postProcess params
-
-    // id != 0 means the thirdparty's algo
-    if (mDes->id != 0) {
-        ret = des->post_process(mPostInParam, mPostOutParam);
-        RKAIQCORE_CHECK_RET(ret, "a3dlut algo postProcess failed");
+    if (ret) {
+        comb->a3dlut_post_res = NULL;
+        RKAIQCORE_CHECK_RET(ret, "a3dlut handle postProcess failed");
+        return ret;
     }
 
+    comb->a3dlut_post_res     = NULL;
+    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    ret                       = des->post_process(mPostInParam, mPostOutParam);
+    RKAIQCORE_CHECK_RET(ret, "a3dlut algo post_process failed");
+    // set result to mAiqCore
+    comb->a3dlut_post_res = (RkAiqAlgoPostResA3dlut*)a3dlut_post_res_int;
+
     EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqA3dlutHandleInt::genIspResult(RkAiqFullParams* params,
+                                              RkAiqFullParams* cur_params) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret                = XCAM_RETURN_NO_ERROR;
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+    RkAiqAlgoProcResA3dlut* a3dlut_com = shared->procResComb.a3dlut_proc_res;
+    rk_aiq_isp_lut3d_params_v20_t* lut3d_param = params->mLut3dParams->data().ptr();
+
+    if (sharedCom->init) {
+        lut3d_param->frame_id = 0;
+    } else {
+        lut3d_param->frame_id = shared->frameId;
+    }
+
+    if (!a3dlut_com) {
+        LOGD_ANALYZER("no a3dlut result");
+        return XCAM_RETURN_NO_ERROR;
+    }
+
+    RkAiqAlgoProcResA3dlut* a3dlut_rk = (RkAiqAlgoProcResA3dlut*)a3dlut_com;
+    lut3d_param->result               = a3dlut_rk->lut3d_hw_conf;
+
+    if (!this->getAlgoId()) {
+        RkAiqAlgoProcResA3dlutInt* a3dlut_rk_int = (RkAiqAlgoProcResA3dlutInt*)a3dlut_com;
+    }
+
+    cur_params->mLut3dParams = params->mLut3dParams;
+
+    EXIT_ANALYZER_FUNCTION();
+
     return ret;
 }
 

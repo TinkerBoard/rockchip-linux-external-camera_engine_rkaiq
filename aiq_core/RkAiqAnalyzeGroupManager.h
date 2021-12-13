@@ -124,9 +124,10 @@ class RkAiqAnalyzeGroupManager {
     XCamReturn stop();
 
     XCamReturn handleMessage(const SmartPtr<XCamMessage> &msg);
-    std::list<int>& getGroupAlgoList(rk_aiq_core_analyze_type_e group) {
+    std::vector<SmartPtr<RkAiqHandle>>& getGroupAlgoList(rk_aiq_core_analyze_type_e group) {
         return mGroupAlgoListMap[group];
     }
+
  protected:
     XCamReturn measGroupMessageHandler(std::list<SmartPtr<XCamMessage>>& msgs, uint32_t& id);
     XCamReturn otherGroupMessageHandler(std::list<SmartPtr<XCamMessage>>& msgs, uint32_t& id);
@@ -146,7 +147,7 @@ class RkAiqAnalyzeGroupManager {
  private:
     RkAiqCore* mAiqCore;
     std::map<uint64_t, SmartPtr<RkAiqAnalyzerGroup>> mGroupMap;
-    std::map<uint64_t, std::list<int>> mGroupAlgoListMap;
+    std::map<uint64_t, std::vector<SmartPtr<RkAiqHandle>>> mGroupAlgoListMap;
 };
 
 }  // namespace RkCam

@@ -135,7 +135,9 @@ class RkAiqManager
     , public RkLumaAnalyzerCb {
     friend RkAiqRstApplyThread;
     friend RkAiqMngCmdThread;
+#ifdef RKAIQ_ENABLE_CAMGROUP
     friend class RkAiqCamGroupManager;
+#endif
 public:
     explicit RkAiqManager(const char* sns_ent_name,
                           rk_aiq_error_cb err_cb,
@@ -187,10 +189,12 @@ public:
     CamCalibDbV2Context_t* getCurrentCalibDBV2(void);
     XCamReturn calibTuning(const CamCalibDbV2Context_t* aiqCalib,
                            ModuleNameList& change_list);
+#ifdef RKAIQ_ENABLE_CAMGROUP
     void setCamGroupManager(RkAiqCamGroupManager* cam_group_manager, bool isMain) {
         mCamGroupCoreManager = cam_group_manager;
         mIsMain = isMain;
     }
+#endif
 protected:
     XCamReturn applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results);
     XCamReturn swWorkingModeDyn(rk_aiq_working_mode_t mode);
@@ -226,7 +230,9 @@ private:
     int mDelayCpslApplyFrmNum;
     int mIspHwVer;
     int mCamPhyId;
+#ifdef RKAIQ_ENABLE_CAMGROUP
     RkAiqCamGroupManager* mCamGroupCoreManager;
+#endif
     bool mIsMain;
 };
 

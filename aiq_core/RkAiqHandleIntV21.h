@@ -26,62 +26,52 @@
 #include "aynr2/rk_aiq_uapi_aynr_int_v2.h"
 #include "asharp3/rk_aiq_uapi_asharp_int_v3.h"
 
-
-
 namespace RkCam {
 
 class RkAiqAdrcV1HandleInt:
-    virtual public RkAiqAdrcHandle,
-    virtual public RkAiqHandleIntCom {
+    virtual public RkAiqHandle {
 public:
     explicit RkAiqAdrcV1HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
-        : RkAiqHandle(des, aiqCore)
-        , RkAiqAdrcHandle(des, aiqCore)
-        , RkAiqHandleIntCom(des, aiqCore) {};
+        : RkAiqHandle(des, aiqCore) {};
     virtual ~RkAiqAdrcV1HandleInt() {
-        RkAiqAdrcHandle::deInit();
+        RkAiqHandle::deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);
     virtual XCamReturn prepare();
     virtual XCamReturn preProcess();
     virtual XCamReturn processing();
     virtual XCamReturn postProcess();
+    virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     //XCamReturn setAttrib(adrcV1_attrib_t att);
     //XCamReturn getAttrib(adrcV1_attrib_t *att);
 protected:
     virtual void init();
     virtual void deInit() {
-        RkAiqAdrcHandle::deInit();
+        RkAiqHandle::deInit();
     };
 private:
     //adrcV1_attrib_t mCurAtt;
     //adrcV1_attrib_t mNewAtt;
 };
 
-
-
-
-
 // asharp v3
 class RkAiqAsharpV3HandleInt:
-    virtual public RkAiqAsharpHandle,
-    virtual public RkAiqHandleIntCom {
+    virtual public RkAiqHandle {
 public:
     explicit RkAiqAsharpV3HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
-        : RkAiqHandle(des, aiqCore)
-        , RkAiqAsharpHandle(des, aiqCore)
-        , RkAiqHandleIntCom(des, aiqCore) {
+        : RkAiqHandle(des, aiqCore) {
         memset(&mCurAtt, 0, sizeof(rk_aiq_sharp_attrib_v3_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_sharp_attrib_v3_t));
     };
     virtual ~RkAiqAsharpV3HandleInt() {
-        RkAiqAsharpHandle::deInit();
+        RkAiqHandle::deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);
     virtual XCamReturn prepare();
     virtual XCamReturn preProcess();
     virtual XCamReturn processing();
     virtual XCamReturn postProcess();
+    virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     // TODO add algo specific methords, this is a sample
     XCamReturn setAttrib(rk_aiq_sharp_attrib_v3_t *att);
     XCamReturn getAttrib(rk_aiq_sharp_attrib_v3_t *att);
@@ -93,7 +83,7 @@ public:
 protected:
     virtual void init();
     virtual void deInit() {
-        RkAiqAsharpHandle::deInit();
+        RkAiqHandle::deInit();
     };
 private:
     // TODO
@@ -105,32 +95,26 @@ private:
     float mNewStrength;
     bool updateIQpara = false;
     bool updateStrength = false;
-
 };
-
-
-
 
 // aynr v2
 class RkAiqAynrV2HandleInt:
-    virtual public RkAiqAynrHandle,
-    virtual public RkAiqHandleIntCom {
+    virtual public RkAiqHandle {
 public:
     explicit RkAiqAynrV2HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
-        : RkAiqHandle(des, aiqCore)
-        , RkAiqAynrHandle(des, aiqCore)
-        , RkAiqHandleIntCom(des, aiqCore) {
+        : RkAiqHandle(des, aiqCore) {
         memset(&mCurAtt, 0, sizeof(rk_aiq_ynr_attrib_v2_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_ynr_attrib_v2_t));
     };
     virtual ~RkAiqAynrV2HandleInt() {
-        RkAiqAynrHandle::deInit();
+        RkAiqHandle::deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);
     virtual XCamReturn prepare();
     virtual XCamReturn preProcess();
     virtual XCamReturn processing();
     virtual XCamReturn postProcess();
+    virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     // TODO add algo specific methords, this is a sample
     XCamReturn setAttrib(rk_aiq_ynr_attrib_v2_t *att);
     XCamReturn getAttrib(rk_aiq_ynr_attrib_v2_t *att);
@@ -141,7 +125,7 @@ public:
 protected:
     virtual void init();
     virtual void deInit() {
-        RkAiqAynrHandle::deInit();
+        RkAiqHandle::deInit();
     };
 private:
     // TODO
@@ -155,30 +139,24 @@ private:
     bool updateStrength = false;
 };
 
-
-
-
-
 // acnr v1
 class RkAiqAcnrV1HandleInt:
-    virtual public RkAiqAcnrHandle,
-    virtual public RkAiqHandleIntCom {
+    virtual public RkAiqHandle {
 public:
     explicit RkAiqAcnrV1HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
-        : RkAiqHandle(des, aiqCore)
-        , RkAiqAcnrHandle(des, aiqCore)
-        , RkAiqHandleIntCom(des, aiqCore) {
+        : RkAiqHandle(des, aiqCore) {
         memset(&mCurAtt, 0, sizeof(rk_aiq_cnr_attrib_v1_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_cnr_attrib_v1_t));
     };
     virtual ~RkAiqAcnrV1HandleInt() {
-        RkAiqAcnrHandle::deInit();
+        RkAiqHandle::deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);
     virtual XCamReturn prepare();
     virtual XCamReturn preProcess();
     virtual XCamReturn processing();
     virtual XCamReturn postProcess();
+    virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     // TODO add algo specific methords, this is a sample
     XCamReturn setAttrib(rk_aiq_cnr_attrib_v1_t *att);
     XCamReturn getAttrib(rk_aiq_cnr_attrib_v1_t *att);
@@ -189,7 +167,7 @@ public:
 protected:
     virtual void init();
     virtual void deInit() {
-        RkAiqAcnrHandle::deInit();
+        RkAiqHandle::deInit();
     };
 private:
     // TODO
@@ -203,31 +181,24 @@ private:
     bool updateStrength = false;
 };
 
-
-
-
-
-
 // aynr v2
 class RkAiqArawnrV2HandleInt:
-    virtual public RkAiqArawnrHandle,
-    virtual public RkAiqHandleIntCom {
+    virtual public RkAiqHandle {
 public:
     explicit RkAiqArawnrV2HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
-        : RkAiqHandle(des, aiqCore)
-        , RkAiqArawnrHandle(des, aiqCore)
-        , RkAiqHandleIntCom(des, aiqCore) {
+        : RkAiqHandle(des, aiqCore) {
         memset(&mCurAtt, 0, sizeof(rk_aiq_bayernr_attrib_v2_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_bayernr_attrib_v2_t));
     };
     virtual ~RkAiqArawnrV2HandleInt() {
-        RkAiqArawnrHandle::deInit();
+        RkAiqHandle::deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);
     virtual XCamReturn prepare();
     virtual XCamReturn preProcess();
     virtual XCamReturn processing();
     virtual XCamReturn postProcess();
+    virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     // TODO add algo specific methords, this is a sample
     XCamReturn setAttrib(rk_aiq_bayernr_attrib_v2_t *att);
     XCamReturn getAttrib(rk_aiq_bayernr_attrib_v2_t *att);
@@ -240,7 +211,7 @@ public:
 protected:
     virtual void init();
     virtual void deInit() {
-        RkAiqArawnrHandle::deInit();
+        RkAiqHandle::deInit();
     };
 private:
     // TODO
@@ -262,10 +233,7 @@ class RkAiqAwbV21HandleInt:
     public RkAiqAwbHandleInt {
 public:
     explicit RkAiqAwbV21HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
-        : RkAiqHandle(des, aiqCore)
-        , RkAiqAwbHandle(des, aiqCore)
-        , RkAiqHandleIntCom(des, aiqCore)
-        , RkAiqAwbHandleInt(des, aiqCore) {
+        : RkAiqAwbHandleInt(des, aiqCore) {
         memset(&mCurWbV21Attr, 0, sizeof(rk_aiq_uapiV2_wbV21_attrib_t));
         memset(&mNewWbV21Attr, 0, sizeof(rk_aiq_uapiV2_wbV21_attrib_t));
         updateWbV21Attr = false;
@@ -285,5 +253,5 @@ private:
     bool updateWbV21Attr;
 };
 
-}
+};
 #endif

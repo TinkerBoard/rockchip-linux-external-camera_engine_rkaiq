@@ -99,7 +99,7 @@ prepare(RkAiqAlgoCom* params)
             CalibDbV2_drc_V2_t* calibv2_adrc_calib =
                 (CalibDbV2_drc_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
 
-            memcpy(&pAdrcGrpCtx->pCalibDB.Drc_v21, calibv2_adrc_calib, sizeof(CalibDbV2_drc_t)); //reload iq paras
+            memcpy(&pAdrcGrpCtx->pCalibDB.Drc_v21, calibv2_adrc_calib, sizeof(CalibDbV2_drc_V2_t)); //reload iq paras
         }
     }
 
