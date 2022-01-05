@@ -68,6 +68,7 @@ typedef enum Aynr_OPMode_V3_e {
     AYNRV3_OP_MODE_INVALID           = 0,                   /**< initialization value */
     AYNRV3_OP_MODE_AUTO              = 1,                   /**< instance is created, but not initialized */
     AYNRV3_OP_MODE_MANUAL            = 2,                   /**< instance is confiured (ready to start) or stopped */
+    AYNRV3_OP_MODE_REG_MANUAL        = 3,
     AYNRV3_OP_MODE_MAX                                      /**< max */
 } Aynr_OPMode_V3_t;
 
@@ -93,51 +94,52 @@ typedef struct Aynr_ExpInfo_V3_s {
 typedef struct RK_YNR_Params_V3_Select_s
 {
     int enable;
-    float ciISO_V3[2];
-    float noiseSigma_V3[YNR_V3_ISO_CURVE_POINT_NUM];
-    short lumaPoints_V3[YNR_V3_ISO_CURVE_POINT_NUM];
+    float lci;
+    float hci;
+    float sigma[YNR_V3_ISO_CURVE_POINT_NUM];
+    short lumaPoint[YNR_V3_ISO_CURVE_POINT_NUM];
 
-    float loFreqLumaNrCurvePoint[6];
-    float loFreqLumaNrCurveRatio[6];
+    float lo_lumaPoint[6];
+    float lo_ratio[6];
 
-    float hiFreqLumaNrCurvePoint[6];
-    float hiFreqLumaNrCurveRatio[6];
+    float hi_lumaPoint[6];
+    float hi_ratio[6];
 
     // low frequency
-    int ynr_big_resolution_mode;
-    float ynr_rnr_strength_V3[17];
-    int ynr_bft3x3_bypass_V3;
-    int ynr_lbft5x5_bypass_V3;
-    int ynr_lgft3x3_bypass_V3;
-    int ynr_flt1x1_bypass_V3;
-    int ynr_sft5x5_bypass_V3;
-    float ynr_low_bf_V3[2];
-    float ynr_low_thred_adj_V3;
-    float ynr_low_peak_supress_V3;
-    float ynr_low_edge_adj_thresh_V3;
-    float ynr_low_bi2_weight_thresh_V3;
-    float ynr_low_center_weight_V3;
-    float ynr_low_dist_adj_V3;
-    float ynr_low_weight_V3;
-    float ynr_low_filt1_strength_V3;
-    float ynr_low_filt2_strength_V3;
-    float ynr_low_bi_weight_V3;
+    float rnr_strength[17];
+    int ynr_bft3x3_bypass;
+    int ynr_lbft5x5_bypass;
+    int ynr_lgft3x3_bypass;
+    int ynr_flt1x1_bypass;
+    int ynr_sft5x5_bypass;
+    float low_bf1;
+    float low_bf2;
+    float low_thred_adj;
+    float low_peak_supress;
+    float low_edge_adj_thresh;
+    float low_lbf_weight_thresh;
+    float low_center_weight;
+    float low_dist_adj;
+    float low_weight;
+    float low_filt1_strength;
+    float low_filt2_strength;
+    float low_bi_weight;
 
     // high frequency
-    float ynr_base_filter_weight1_V3;
-    float ynr_base_filter_weight2_V3;
-    float ynr_base_filter_weight3_V3;
-    float ynr_high_thred_adj_V3;
-    float ynr_high_weight_V3;
-    float ynr_direction_weight_V3[8];
-    float ynr_hi_min_adj_V3;
-    float ynr_hi_edge_thed_V3;
+    float base_filter_weight1;
+    float base_filter_weight2;
+    float base_filter_weight3;
+    float high_thred_adj;
+    float high_weight;
+    float high_direction_weight[8];
+    float hi_min_adj;
+    float hi_edge_thed;
 
     //local gain control
-    float ynr_global_gain_alpha_V3;
-    float ynr_global_gain_V3;
-    float ynr_gain_adjust_thresh_V3;
-    float ynr_gain_adjust_scale_V3;
+    float ynr_global_gain_alpha;
+    float ynr_global_gain;
+    float ynr_adjust_thresh;
+    float ynr_adjust_scale;
 } RK_YNR_Params_V3_Select_t;
 
 
@@ -154,15 +156,15 @@ typedef struct RK_YNR_Params_V3_s
 
 typedef struct Aynr_Manual_Attr_V3_s
 {
-    int ynrEn;
     RK_YNR_Params_V3_Select_t stSelect;
+
+    RK_YNR_Fix_V3_t stFix;
 
 } Aynr_Manual_Attr_V3_t;
 
 typedef struct Aynr_Auto_Attr_V3_s
 {
     //all ISO params and select param
-    int ynrEn;
 
     RK_YNR_Params_V3_t stParams;
     RK_YNR_Params_V3_Select_t stSelect;
@@ -170,7 +172,6 @@ typedef struct Aynr_Auto_Attr_V3_s
 } Aynr_Auto_Attr_V3_t;
 
 typedef struct Aynr_ProcResult_V3_s {
-    int ynrEn;
 
     //for sw simultaion
     RK_YNR_Params_V3_Select_t stSelect;
@@ -192,15 +193,33 @@ typedef struct Aynr_Config_V3_s {
 
 
 typedef struct rk_aiq_ynr_attrib_v3_s {
+    /*
+     * @sync (param in): flags for param update mode,
+     *     true for sync, false for async.
+     * @done (parsm out): flags for param update status,
+     *     true indicate param has been updated, false
+     *     indicate param has not been updated.
+     */
+    rk_aiq_uapi_sync_t sync;
+
     Aynr_OPMode_V3_t eMode;
     Aynr_Auto_Attr_V3_t stAuto;
     Aynr_Manual_Attr_V3_t stManual;
 } rk_aiq_ynr_attrib_v3_t;
 
 
-typedef struct rk_aiq_ynr_IQPara_V3_s {
-    struct list_head* listHead;
-} rk_aiq_ynr_IQPara_V3_t;
+typedef struct rk_aiq_ynr_strength_v3_s {
+    /*
+     * @sync (param in): flags for param update mode,
+     *     true for sync, false for async.
+     * @done (parsm out): flags for param update status,
+     *     true indicate param has been updated, false
+     *     indicate param has not been updated.
+     */
+    rk_aiq_uapi_sync_t sync;
+
+    float percent;
+} rk_aiq_ynr_strength_v3_t;
 
 
 //calibdb

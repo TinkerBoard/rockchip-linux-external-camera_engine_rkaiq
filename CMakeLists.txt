@@ -59,6 +59,7 @@ include_directories(
     iq_parser
     iq_parser_v2
     uAPI
+    uAPI/include
     uAPI2
     ipc_server
     ./
@@ -96,7 +97,7 @@ include_directories(
     include/algos/anr
     include/algos/anr/tnr_md
     include/algos/aorb
-    include/algos/ar2y
+	include/algos/acsm
     include/algos/asd
     include/algos/asharp
     include/algos/awb
@@ -129,10 +130,7 @@ set(AIQ_CORE_SRC
     ${ALGO_HANDLE_SRC}
     aiq_core/RkAiqHandle.cpp
     aiq_core/RkAiqCore.cpp
-    aiq_core/RkAiqCoreV21.cpp
-    aiq_core/RkAiqCoreV3x.cpp
     aiq_core/RkLumaCore.cpp
-    aiq_core/RkAiqSharedDataManager.cpp
     aiq_core/MessageBus.cpp
     aiq_core/RkAiqAnalyzeGroupManager.cpp
     aiq_core/RkAiqResourceTranslator.cpp
@@ -149,7 +147,6 @@ if(GENMESH_ONLINE)
     set(COMMON_SRC
         common/mediactl/mediactl.c
         common/gen_mesh/genMesh.cpp
-        common/shared_data_api_wrapper.cpp
         common/code_to_pixel_format.cpp
         common/media_buffer/media_buffer.c
         common/media_buffer/media_buffer_pool.c
@@ -176,6 +173,7 @@ else()
         hwi/isp20/RawStreamCapUnit.cpp
         hwi/isp20/RawStreamProcUnit.cpp
         hwi/isp20/SPStreamProcUnit.cpp
+        hwi/isp20/PdafStreamProcUnit.cpp
         hwi/isp20/NrStatsStream.cpp
         hwi/isp20/TnrStatsStream.cpp
         hwi/isp20/NrStreamProcUnit.cpp
@@ -205,22 +203,21 @@ if(RKAIQ_ENABLE_PARSER_V1)
         iq_parser/xmltags.cpp
         iq_parser/RkAiqCalibApi.cpp
         )
+    set(IQ_PARSER_V2_SRC
+        iq_parser_v2/awb_xml2json.cpp
+        iq_parser_v2/bayernr_xml2json_v1.cpp
+        iq_parser_v2/mfnr_xml2json_v1.cpp
+        iq_parser_v2/ynr_xml2json_v1.cpp
+        iq_parser_v2/uvnr_xml2json_v1.cpp
+        iq_parser_v2/sharp_xml2json_v1.cpp
+        iq_parser_v2/edgefilter_xml2json_v1.cpp
+        )
 endif()
 
-set(IQ_PARSER_V2_SRC
-    iq_parser_v2/awb_xml2json.cpp
-    iq_parser_v2/bayernr_xml2json_v1.cpp
-    iq_parser_v2/mfnr_xml2json_v1.cpp
-    iq_parser_v2/ynr_xml2json_v1.cpp
-    iq_parser_v2/uvnr_xml2json_v1.cpp
-    iq_parser_v2/sharp_xml2json_v1.cpp
-    iq_parser_v2/edgefilter_xml2json_v1.cpp
-    )
-
 set(UAPI_SRC
-    uAPI/rk_aiq_user_api_sysctl.cpp
+	#uAPI/rk_aiq_user_api_sysctl.cpp
     uAPI2/rk_aiq_user_api2_sysctl.cpp
-    uAPI/rk_aiq_user_api_debug.cpp
+    uAPI2/rk_aiq_user_api2_debug.cpp
     uAPI2/rk_aiq_user_api2_helper.cpp
     uAPI2/rk_aiq_user_api2_wrapper.cpp
     )
@@ -259,6 +256,10 @@ set (IPC_SERVER_SRC
     ipc_server/command_process.cpp
     )
 
+set (INI_READER_SRC
+    common/rkaiq_ini.c
+    )
+
 set (RK_AIQ_SRC
     ${ALGO_COMMON_SRC}
     ${COMMON_SRC}
@@ -270,14 +271,18 @@ set (RK_AIQ_SRC
     ${XCORE_SRC}
     ${AIQ_CORE_SRC}
     ${IPC_SERVER_SRC}
+    ${INI_READER_SRC}
     RkAiqManager.cpp
     )
 
 if (RKAIQ_ENABLE_CAMGROUP)
+    aux_source_directory(aiq_core/algo_camgroup_handlers ALGO_CAMGROUP_HANDLE_SRC)
     add_compile_options(-DRKAIQ_ENABLE_CAMGROUP)
     set (RK_AIQ_SRC
         ${RK_AIQ_SRC}
         RkAiqCamGroupManager.cpp
+	    aiq_core/RkAiqCamgroupHandle.cpp
+        ${ALGO_CAMGROUP_HANDLE_SRC}
         )
 endif()
 
@@ -335,6 +340,12 @@ if(MOTION_DETECT)
     set(MOTION_DETECT_LIBS rkaiq_tnr_md)
 endif()
 
+set(PDAF_SUPPORT true)
+if(PDAF_SUPPORT)
+    set (PDAF_LIBS rkaiq_pdaf)
+endif()
+
+# set output binary path
 if(WIN32)
     SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/exe)
     SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/all_lib/)
@@ -383,7 +394,7 @@ target_link_libraries(rkaiq
     rkaiq_atmo
     rkaiq_acp
     rkaiq_asharp
-    rkaiq_adhaz
+    rkaiq_adehaze
     rkaiq_a3dlut
     rkaiq_ablc
     rkaiq_accm
@@ -398,7 +409,7 @@ target_link_libraries(rkaiq
     rkaiq_aldch
     rkaiq_alsc
     rkaiq_aorb
-    rkaiq_ar2y
+	rkaiq_acsm
     rkaiq_awdr
     rkaiq_adrc
     rkaiq_asharp_v3
@@ -423,6 +434,7 @@ target_link_libraries(rkaiq
     ${OPENCV_3RDPARTY_LIBS}
     ${GENMESH_LIBS}
     ${MOTION_DETECT_LIBS}
+    ${PDAF_LIBS}
     pthread)
 
 if (RKAIQ_ENABLE_CAMGROUP)

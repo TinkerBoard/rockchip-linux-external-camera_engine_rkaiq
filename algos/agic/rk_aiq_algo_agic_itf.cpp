@@ -17,9 +17,9 @@
  *
  */
 
-#include "rk_aiq_algo_types_int.h"
 #include "agic/rk_aiq_algo_agic_itf.h"
 #include "agic/rk_aiq_types_algo_agic_prvt.h"
+#include "rk_aiq_algo_types.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -35,8 +35,7 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
         return XCAM_RETURN_ERROR_MEM;
     }
     LOGI_AGIC("%s: (enter)\n", __FUNCTION__ );
-    AlgoCtxInstanceCfgInt* instanc_int = (AlgoCtxInstanceCfgInt*)cfg;
-    CamCalibDbV2Context_t* calibv2 = instanc_int->calibv2;
+    CamCalibDbV2Context_t* calibv2 = cfg->calibv2;
     AgicInit(&ctx->agicCtx, calibv2);
 
     *context = ctx;
@@ -66,8 +65,8 @@ prepare(RkAiqAlgoCom* params)
 
     XCamReturn result = XCAM_RETURN_NO_ERROR;
     AgicContext_t* pAgicCtx = (AgicContext_t *)&params->ctx->agicCtx;
-    RkAiqAlgoConfigAgicInt* pCfgParam = (RkAiqAlgoConfigAgicInt*)params;
-    CamCalibDbV2Context_t* calibv2 = pCfgParam->rk_com.u.prepare.calibv2;
+    RkAiqAlgoConfigAgic* pCfgParam = (RkAiqAlgoConfigAgic*)params;
+    CamCalibDbV2Context_t* calibv2 = pCfgParam->com.u.prepare.calibv2;
 
 
 
@@ -88,7 +87,7 @@ prepare(RkAiqAlgoCom* params)
 
     }
 
-    pAgicCtx->working_mode = pCfgParam->agic_config_com.com.u.prepare.working_mode;
+    pAgicCtx->working_mode = pCfgParam->com.u.prepare.working_mode;
 
     LOGI_AGIC("%s(%d): Exit!\n", __FUNCTION__, __LINE__);
     return result;
@@ -99,11 +98,11 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
     LOGI_AGIC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
 
-    RkAiqAlgoConfigAgicInt* config = (RkAiqAlgoConfigAgicInt*)inparams;
-    RkAiqAlgoPreResAgicInt* pAgicPreResParams = (RkAiqAlgoPreResAgicInt*)outparams;
+    RkAiqAlgoConfigAgic* config = (RkAiqAlgoConfigAgic*)inparams;
+    RkAiqAlgoPreResAgic* pAgicPreResParams = (RkAiqAlgoPreResAgic*)outparams;
     AgicContext_t* pAgicCtx = (AgicContext_t *)&inparams->ctx->agicCtx;
 
-    if (config->rk_com.u.proc.gray_mode)
+    if (config->com.u.proc.gray_mode)
         pAgicCtx->Gic_Scene_mode = GIC_NIGHT;
     else if (GIC_NORMAL == pAgicCtx->working_mode)
         pAgicCtx->Gic_Scene_mode = GIC_NORMAL;
@@ -120,10 +119,10 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGI_AGIC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
     XCamReturn result = XCAM_RETURN_NO_ERROR;
     int iso = 50;
-    RkAiqAlgoProcAgicInt* pAgicProcParams = (RkAiqAlgoProcAgicInt*)inparams;
-    RkAiqAlgoProcResAgicInt* pAgicProcResParams = (RkAiqAlgoProcResAgicInt*)outparams;
+    RkAiqAlgoProcAgic* pAgicProcParams = (RkAiqAlgoProcAgic*)inparams;
+    RkAiqAlgoProcResAgic* pAgicProcResParams = (RkAiqAlgoProcResAgic*)outparams;
     AgicContext_t* pAgicCtx = (AgicContext_t *)&inparams->ctx->agicCtx;
-    RKAiqAecExpInfo_t* aeCurExp = pAgicProcParams->rk_com.u.proc.curExp;
+    RKAiqAecExpInfo_t* aeCurExp = pAgicProcParams->com.u.proc.curExp;
 
     if(aeCurExp != NULL) {
         if(pAgicProcParams->hdr_mode == RK_AIQ_WORKING_MODE_NORMAL) {

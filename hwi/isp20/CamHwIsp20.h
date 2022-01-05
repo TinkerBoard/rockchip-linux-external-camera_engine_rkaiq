@@ -29,6 +29,7 @@
 #include "RawStreamCapUnit.h"
 #include "RawStreamProcUnit.h"
 #include "SPStreamProcUnit.h"
+#include "PdafStreamProcUnit.h"
 #include "TnrStreamProcUnit.h"
 #include "NrStreamProcUnit.h"
 #include "FecParamStream.h"
@@ -109,6 +110,7 @@ public:
     XCamReturn get_sp_resolution(int &width, int &height, int &aligned_w, int &aligned_h);
     XCamReturn showOtpPdafData(struct rkmodule_pdaf_inf *otp_pdaf);
     XCamReturn showOtpAfData(struct rkmodule_af_inf *otp_af);
+    bool get_pdaf_support();
     virtual XCamReturn setIspStreamMode(rk_isp_stream_mode_t mode) {
         if (mode == RK_ISP_STREAM_MODE_ONLNIE) {
             mNoReadBack = true;
@@ -138,6 +140,7 @@ private:
     static void findAttachedSubdevs(struct media_device *device, uint32_t count, rk_sensor_full_info_t *s_info);
     XCamReturn setExpDelayInfo(int mode);
     void analyzePpInitEns(SmartPtr<cam3aResult> &result);
+    XCamReturn get_sensor_pdafinfo(rk_sensor_full_info_t *sensor_info, rk_sensor_pdaf_info_t *pdaf_info);
 protected:
     XCAM_DEAD_COPY(CamHwIsp20);
     virtual XCamReturn setIspConfig();
@@ -279,6 +282,8 @@ protected:
     SmartPtr<RawStreamCapUnit> mRawCapUnit;
     SmartPtr<RawStreamProcUnit> mRawProcUnit;
 
+    SmartPtr<PdafStreamProcUnit> mPdafStreamUnit;
+
     SmartPtr<cam3aResult> get_3a_module_result (cam3aResultList &results, int32_t type);
     XCamReturn handleIsp3aReslut(SmartPtr<cam3aResult> &result);
     XCamReturn handleIsp3aReslut(cam3aResultList& list);
@@ -298,6 +303,8 @@ protected:
         ISP_STREAM_STATUS_STREAM_OFF,
     };
     int _isp_stream_status;
+
+    rk_sensor_pdaf_info_t mPdafInfo;
 };
 
 };

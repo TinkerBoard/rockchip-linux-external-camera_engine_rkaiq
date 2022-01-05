@@ -45,6 +45,7 @@ RKStream::poll_type_to_str[ISP_POLL_POST_MAX] =
     "isp_tx_poll",
     "isp_rx_poll",
     "isp_sp_poll",
+    "isp_pdaf_poll",
     "isp_stream_sync_poll",
 };
 
@@ -201,6 +202,10 @@ RkPollThread::poll_buffer_loop ()
         SmartPtr<V4l2BufferProxy> buf_proxy = _stream->new_v4l2proxy_buffer(buf, _dev);
         if (_poll_callback && buf_proxy.ptr())
             _poll_callback->poll_buffer_ready (buf_proxy, ((RKRawStream*)_stream)->_dev_index);
+    } else if (_dev_type == ISP_POLL_PDAF_STATS) {
+        SmartPtr<V4l2BufferProxy> buf_proxy = _stream->new_v4l2proxy_buffer(buf, _dev);
+        if (_poll_callback && buf_proxy.ptr())
+            _poll_callback->poll_buffer_ready (buf_proxy, 0);
     } else {
         SmartPtr<VideoBuffer> video_buf = _stream->new_video_buffer(buf, _dev);
         if (_poll_callback && video_buf.ptr())
@@ -586,6 +591,29 @@ RKRawStream::new_v4l2proxy_buffer(SmartPtr<V4l2Buffer> buf,
 {
     ENTER_CAMHW_FUNCTION();
     SmartPtr<V4l2BufferProxy> buf_proxy = new V4l2BufferProxy(buf, dev);
+    buf_proxy->_buf_type = _dev_type;
+    EXIT_CAMHW_FUNCTION();
+
+    return buf_proxy;
+}
+
+RKPdafStream::RKPdafStream (SmartPtr<V4l2Device> dev, int type)
+    :RKStream(dev, type)
+{
+    XCAM_LOG_DEBUG ("RKRawStream constructed");
+}
+
+RKPdafStream::~RKPdafStream()
+{
+    XCAM_LOG_DEBUG ("~RKRawStream destructed");
+}
+
+SmartPtr<V4l2BufferProxy>
+RKPdafStream::new_v4l2proxy_buffer(SmartPtr<V4l2Buffer> buf,
+                                       SmartPtr<V4l2Device> dev)
+{
+    ENTER_CAMHW_FUNCTION();
+    SmartPtr<PdafBufferProxy> buf_proxy = new PdafBufferProxy(buf, dev);
     buf_proxy->_buf_type = _dev_type;
     EXIT_CAMHW_FUNCTION();
 

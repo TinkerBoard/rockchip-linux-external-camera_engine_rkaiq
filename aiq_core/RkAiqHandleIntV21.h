@@ -1,7 +1,5 @@
 /*
- * RkAiqHandleIntV1.h
- *
- *  Copyright (c) 2019 Rockchip Corporation
+ * Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 #ifndef _RK_AIQ_HANDLE_INT_V1_H_
@@ -28,33 +25,6 @@
 
 namespace RkCam {
 
-class RkAiqAdrcV1HandleInt:
-    virtual public RkAiqHandle {
-public:
-    explicit RkAiqAdrcV1HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
-        : RkAiqHandle(des, aiqCore) {};
-    virtual ~RkAiqAdrcV1HandleInt() {
-        RkAiqHandle::deInit();
-    };
-    virtual XCamReturn updateConfig(bool needSync);
-    virtual XCamReturn prepare();
-    virtual XCamReturn preProcess();
-    virtual XCamReturn processing();
-    virtual XCamReturn postProcess();
-    virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
-    //XCamReturn setAttrib(adrcV1_attrib_t att);
-    //XCamReturn getAttrib(adrcV1_attrib_t *att);
-protected:
-    virtual void init();
-    virtual void deInit() {
-        RkAiqHandle::deInit();
-    };
-private:
-    //adrcV1_attrib_t mCurAtt;
-    //adrcV1_attrib_t mNewAtt;
-};
-
-// asharp v3
 class RkAiqAsharpV3HandleInt:
     virtual public RkAiqHandle {
 public:
@@ -95,6 +65,8 @@ private:
     float mNewStrength;
     bool updateIQpara = false;
     bool updateStrength = false;
+private:
+    DECLARE_HANDLE_REGISTER_TYPE(RkAiqAsharpV3HandleInt);
 };
 
 // aynr v2
@@ -137,6 +109,8 @@ private:
     float mNewStrength;
     bool updateIQpara = false;
     bool updateStrength = false;
+private:
+    DECLARE_HANDLE_REGISTER_TYPE(RkAiqAynrV2HandleInt);
 };
 
 // acnr v1
@@ -179,6 +153,8 @@ private:
     float mNewStrength;
     bool updateIQpara = false;
     bool updateStrength = false;
+private:
+    DECLARE_HANDLE_REGISTER_TYPE(RkAiqAcnrV1HandleInt);
 };
 
 // aynr v2
@@ -226,11 +202,15 @@ private:
     bool updateIQpara = false;
     bool update2DStrength = false;
     bool update3DStrength = false;
+private:
+    DECLARE_HANDLE_REGISTER_TYPE(RkAiqArawnrV2HandleInt);
 };
 
 // awb v21
+class RkAiqCustomAwbHandle;
 class RkAiqAwbV21HandleInt:
     public RkAiqAwbHandleInt {
+    friend class RkAiqCustomAwbHandle;
 public:
     explicit RkAiqAwbV21HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqAwbHandleInt(des, aiqCore) {
@@ -239,6 +219,22 @@ public:
         updateWbV21Attr = false;
     };
     virtual ~RkAiqAwbV21HandleInt() {
+        // free wbGainAdjust.lutAll from rk_aiq_uapiV2_awb_GetAwbGainAdjust in rk_aiq_uapiv2_awb_int.cpp
+        for(int i = 0; i < mNewWbV21Attr.stAuto.wbGainAdjust.lutAll_len; i++) {
+            if(mNewWbV21Attr.stAuto.wbGainAdjust.lutAll[i].cri_lut_out){
+                free(mNewWbV21Attr.stAuto.wbGainAdjust.lutAll[i].cri_lut_out);
+                mNewWbV21Attr.stAuto.wbGainAdjust.lutAll[i].cri_lut_out = NULL;
+            }
+            if(mNewWbV21Attr.stAuto.wbGainAdjust.lutAll[i].ct_lut_out){
+                free(mNewWbV21Attr.stAuto.wbGainAdjust.lutAll[i].ct_lut_out);
+                mNewWbV21Attr.stAuto.wbGainAdjust.lutAll[i].ct_lut_out = NULL;
+            }
+        }
+        if (mNewWbV21Attr.stAuto.wbGainAdjust.lutAll) {
+            free(mNewWbV21Attr.stAuto.wbGainAdjust.lutAll);
+            mNewWbV21Attr.stAuto.wbGainAdjust.lutAll = NULL;
+        }
+
         RkAiqAwbHandleInt::deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);
@@ -250,7 +246,9 @@ private:
     // TODO
     rk_aiq_uapiV2_wbV21_attrib_t mCurWbV21Attr;
     rk_aiq_uapiV2_wbV21_attrib_t mNewWbV21Attr;
-    bool updateWbV21Attr;
+    mutable std::atomic<bool> updateWbV21Attr;
+private:
+    DECLARE_HANDLE_REGISTER_TYPE(RkAiqAwbV21HandleInt);
 };
 
 };

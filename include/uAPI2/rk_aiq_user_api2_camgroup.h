@@ -22,11 +22,12 @@
 
 #include "rk_aiq.h"
 #include "rk_aiq_algo_des.h"
-#include "rk_aiq_user_api_sysctl.h"
+#include "rk_aiq_user_api2_sysctl.h"
+#include "rk_aiq_user_api_common.h"
 
 /*****************************************
  * Useage examples
- * 
+ *
  * 1) create single cam ctxs
  * sns_ctx1 = rk_aiq_uapi2_sysctl_init (ent_name_sns1,...);
  * sns_ctx2 = rk_aiq_uapi2_sysctl_init (ent_name_sns2,...);
@@ -63,10 +64,26 @@ typedef struct rk_aiq_camgroup_instance_cfg_s {
     const char* sns_ent_nm_array[RK_AIQ_CAM_GROUP_MAX_CAMS];
     int sns_num;
     const char* config_file_dir;
+    /* followings are relative path to config_file_dir */
+    const char* single_iq_file;
+    const char* group_iq_file;
+    const char* overlap_map_file;
 } rk_aiq_camgroup_instance_cfg_t;
+
+typedef struct rk_aiq_camgroup_camInfos_s {
+    int valid_sns_num;
+    const char* sns_ent_nm[RK_AIQ_CAM_GROUP_MAX_CAMS];
+    int sns_camPhyId[RK_AIQ_CAM_GROUP_MAX_CAMS];
+} rk_aiq_camgroup_camInfos_t;
 
 rk_aiq_camgroup_ctx_t*
 rk_aiq_uapi2_camgroup_create(rk_aiq_camgroup_instance_cfg_t* cfg);
+
+struct RK_PS_SrcOverlapMap*
+rk_aiq_uapi2_camgroup_getOverlapMap(rk_aiq_camgroup_ctx_t* camgroup_ctx);
+
+XCamReturn
+rk_aiq_uapi2_camgroup_getOverlapMap_from_file(const char* map_file, struct RK_PS_SrcOverlapMap** overlapMap);
 
 rk_aiq_sys_ctx_t*
 rk_aiq_uapi2_camgroup_getAiqCtxBySnsNm(rk_aiq_camgroup_ctx_t* camgroup_ctx, const char* sns_entity_name);
@@ -88,6 +105,9 @@ rk_aiq_uapi2_camgroup_stop(rk_aiq_camgroup_ctx_t* camgroup_ctx);
 
 XCamReturn
 rk_aiq_uapi2_camgroup_destroy(rk_aiq_camgroup_ctx_t* camgroup_ctx);
+
+XCamReturn
+rk_aiq_uapi2_camgroup_getCamInfos(rk_aiq_camgroup_ctx_t* camgroup_ctx, rk_aiq_camgroup_camInfos_t* camInfos);
 
 RKAIQ_END_DECLARE
 

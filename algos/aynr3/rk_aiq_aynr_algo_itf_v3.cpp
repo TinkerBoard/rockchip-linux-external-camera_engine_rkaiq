@@ -17,9 +17,9 @@
  *
  */
 
-#include "rk_aiq_algo_types_int.h"
 #include "aynr3/rk_aiq_aynr_algo_itf_v3.h"
 #include "aynr3/rk_aiq_aynr_algo_v3.h"
+#include "rk_aiq_algo_types.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -33,13 +33,12 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
 {
 
     XCamReturn result = XCAM_RETURN_NO_ERROR;
-    AlgoCtxInstanceCfgInt *cfgInt = (AlgoCtxInstanceCfgInt*)cfg;
     LOGI_ANR("%s: (enter)\n", __FUNCTION__ );
 
 #if 1
     Aynr_Context_V3_t* pAynrCtx = NULL;
 #if (AYNR_USE_JSON_FILE_V3)
-    Aynr_result_V3_t ret = Aynr_Init_V3(&pAynrCtx, cfgInt->calibv2);
+    Aynr_result_V3_t ret = Aynr_Init_V3(&pAynrCtx, cfg->calibv2);
 #endif
     if(ret != AYNRV3_RET_SUCCESS) {
         result = XCAM_RETURN_ERROR_FAILED;
@@ -81,12 +80,12 @@ prepare(RkAiqAlgoCom* params)
     LOGI_ANR("%s: (enter)\n", __FUNCTION__ );
 
     Aynr_Context_V3_t* pAynrCtx = (Aynr_Context_V3_t *)params->ctx;
-    RkAiqAlgoConfigAynrV3Int* pCfgParam = (RkAiqAlgoConfigAynrV3Int*)params;
+    RkAiqAlgoConfigAynrV3* pCfgParam = (RkAiqAlgoConfigAynrV3*)params;
     pAynrCtx->prepare_type = params->u.prepare.conf_type;
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
 #if AYNR_USE_JSON_FILE_V3
-        void *pCalibdbV2 = (void*)(pCfgParam->rk_com.u.prepare.calibv2);
+        void *pCalibdbV2 = (void*)(pCfgParam->com.u.prepare.calibv2);
         CalibDbV2_YnrV3_t *ynr_v3 = (CalibDbV2_YnrV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibdbV2, ynr_v3));
         pAynrCtx->ynr_v3 = *ynr_v3;
 #endif
@@ -113,10 +112,10 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGI_ANR("%s: (enter)\n", __FUNCTION__ );
     Aynr_Context_V3_t* pAynrCtx = (Aynr_Context_V3_t *)inparams->ctx;
 
-    RkAiqAlgoPreAynrV3Int* pAnrPreParams = (RkAiqAlgoPreAynrV3Int*)inparams;
+    RkAiqAlgoPreAynrV3* pAnrPreParams = (RkAiqAlgoPreAynrV3*)inparams;
 
     oldGrayMode = pAynrCtx->isGrayMode;
-    if (pAnrPreParams->rk_com.u.proc.gray_mode) {
+    if (pAnrPreParams->com.u.proc.gray_mode) {
         pAynrCtx->isGrayMode = true;
     } else {
         pAynrCtx->isGrayMode = false;
@@ -144,8 +143,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGI_ANR("%s: (enter)\n", __FUNCTION__ );
 
 #if 1
-    RkAiqAlgoProcAynrV3Int* pAynrProcParams = (RkAiqAlgoProcAynrV3Int*)inparams;
-    RkAiqAlgoProcResAynrV3Int* pAynrProcResParams = (RkAiqAlgoProcResAynrV3Int*)outparams;
+    RkAiqAlgoProcAynrV3* pAynrProcParams = (RkAiqAlgoProcAynrV3*)inparams;
+    RkAiqAlgoProcResAynrV3* pAynrProcResParams = (RkAiqAlgoProcResAynrV3*)outparams;
     Aynr_Context_V3_t* pAynrCtx = (Aynr_Context_V3_t *)inparams->ctx;
     Aynr_ExpInfo_V3_t stExpInfo;
     memset(&stExpInfo, 0x00, sizeof(Aynr_ExpInfo_V3_t));
@@ -175,11 +174,11 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     stExpInfo.snr_mode = 0;
 
 #if 1// TODO Merge:
-    XCamVideoBuffer* xCamAePreRes = pAynrProcParams->rk_com.u.proc.res_comb->ae_pre_res;
-    RkAiqAlgoPreResAeInt* pAEPreRes = nullptr;
+    XCamVideoBuffer* xCamAePreRes = pAynrProcParams->com.u.proc.res_comb->ae_pre_res;
+    RkAiqAlgoPreResAe* pAEPreRes = nullptr;
     if (xCamAePreRes) {
         // xCamAePreRes->ref(xCamAePreRes);
-        pAEPreRes = (RkAiqAlgoPreResAeInt*)xCamAePreRes->map(xCamAePreRes);
+        pAEPreRes = (RkAiqAlgoPreResAe*)xCamAePreRes->map(xCamAePreRes);
         if (!pAEPreRes) {
             LOGE_ANR("ae pre result is null");
         } else {
@@ -193,7 +192,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     }
 #endif
 
-    RKAiqAecExpInfo_t *curExp = pAynrProcParams->rk_com.u.proc.curExp;
+    RKAiqAecExpInfo_t *curExp = pAynrProcParams->com.u.proc.curExp;
     if(curExp != NULL) {
         stExpInfo.snr_mode = curExp->CISFeature.SNR;
         if(pAynrProcParams->hdr_mode == RK_AIQ_WORKING_MODE_NORMAL) {

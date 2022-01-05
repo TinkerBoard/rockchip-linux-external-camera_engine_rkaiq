@@ -267,6 +267,9 @@ Aynr_result_V3_t Aynr_GetProcResult_V3(Aynr_Context_V3_t *pAynrCtx, Aynr_ProcRes
     //transfer to reg value
     ynr_fix_transfer_V3(&pAynrResult->stSelect, &pAynrResult->stFix, pAynrCtx->fYnr_SF_Strength, &pAynrCtx->stExpInfo);
 
+    if(pAynrCtx->eMode == AYNRV3_OP_MODE_REG_MANUAL) {
+        pAynrResult->stFix = pAynrCtx->stManual.stFix;
+    }
 
     LOGI_ANR("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return AYNRV3_RET_SUCCESS;

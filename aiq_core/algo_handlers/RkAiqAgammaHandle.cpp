@@ -19,17 +19,19 @@
 
 namespace RkCam {
 
+DEFINE_HANDLE_REGISTER_TYPE(RkAiqAgammaHandleInt);
+
 void RkAiqAgammaHandleInt::init() {
     ENTER_ANALYZER_FUNCTION();
 
     RkAiqHandle::deInit();
-    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAgammaInt());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAgammaInt());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAgammaInt());
-    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAgammaInt());
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAgammaInt());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAgammaInt());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAgammaInt());
+    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAgamma());
+    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAgamma());
+    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAgamma());
+    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAgamma());
+    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAgamma());
+    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAgamma());
+    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAgamma());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -42,10 +44,9 @@ XCamReturn RkAiqAgammaHandleInt::updateConfig(bool needSync) {
     // if something changed
     if (updateAtt) {
         mCurAtt   = mNewAtt;
-        updateAtt = false;
-        // TODO
         rk_aiq_uapi_agamma_SetAttrib(mAlgoCtx, mCurAtt, false);
-        waitSignal();
+        updateAtt = false;
+        waitSignal(mCurAtt.sync.sync_mode);
     }
 
     if (needSync) mCfgMutex.unlock();
@@ -69,7 +70,7 @@ XCamReturn RkAiqAgammaHandleInt::setAttrib(rk_aiq_gamma_attrib_V2_t att) {
     if (0 != memcmp(&mCurAtt, &att, sizeof(rk_aiq_gamma_attrib_V2_t))) {
         mNewAtt   = att;
         updateAtt = true;
-        sendSignal();
+        sendSignal(att.sync.sync_mode);
     }
 
     mCfgMutex.unlock();
@@ -83,7 +84,21 @@ XCamReturn RkAiqAgammaHandleInt::getAttrib(rk_aiq_gamma_attrib_V2_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    rk_aiq_uapi_agamma_GetAttrib(mAlgoCtx, att);
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_agamma_GetAttrib(mAlgoCtx, att);
+        att->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        if (updateAtt) {
+            memcpy(att, &mNewAtt, sizeof(updateAtt));
+            att->sync.done = false;
+        } else {
+            rk_aiq_uapi_agamma_GetAttrib(mAlgoCtx, att);
+            att->sync.sync_mode = mNewAtt.sync.sync_mode;
+            att->sync.done      = true;
+        }
+    }
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -97,13 +112,14 @@ XCamReturn RkAiqAgammaHandleInt::prepare() {
     ret = RkAiqHandle::prepare();
     RKAIQCORE_CHECK_RET(ret, "agamma handle prepare failed");
 
-    RkAiqAlgoConfigAgammaInt* agamma_config_int = (RkAiqAlgoConfigAgammaInt*)mConfig;
+    RkAiqAlgoConfigAgamma* agamma_config_int = (RkAiqAlgoConfigAgamma*)mConfig;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqIspStats* ispStats = shared->ispStats;
 
+#ifdef RKAIQ_ENABLE_PARSER_V1
     agamma_config_int->calib = sharedCom->calib;
+#endif
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->prepare(mConfig);
@@ -118,28 +134,20 @@ XCamReturn RkAiqAgammaHandleInt::preProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPreAgammaInt* agamma_pre_int        = (RkAiqAlgoPreAgammaInt*)mPreInParam;
-    RkAiqAlgoPreResAgammaInt* agamma_pre_res_int = (RkAiqAlgoPreResAgammaInt*)mPreOutParam;
+    RkAiqAlgoPreAgamma* agamma_pre_int        = (RkAiqAlgoPreAgamma*)mPreInParam;
+    RkAiqAlgoPreResAgamma* agamma_pre_res_int = (RkAiqAlgoPreResAgamma*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqPreResComb* comb                       = &shared->preResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::preProcess();
     if (ret) {
-        comb->agamma_pre_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "agamma handle preProcess failed");
     }
-
-    comb->agamma_pre_res = NULL;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->pre_process(mPreInParam, mPreOutParam);
     RKAIQCORE_CHECK_RET(ret, "agamma algo pre_process failed");
-
-    // set result to mAiqCore
-    comb->agamma_pre_res = (RkAiqAlgoPreResAgamma*)agamma_pre_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -150,28 +158,24 @@ XCamReturn RkAiqAgammaHandleInt::processing() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoProcAgammaInt* agamma_proc_int        = (RkAiqAlgoProcAgammaInt*)mProcInParam;
-    RkAiqAlgoProcResAgammaInt* agamma_proc_res_int = (RkAiqAlgoProcResAgammaInt*)mProcOutParam;
+    RkAiqAlgoProcAgamma* agamma_proc_int        = (RkAiqAlgoProcAgamma*)mProcInParam;
+    RkAiqAlgoProcResAgamma* agamma_proc_res_int = (RkAiqAlgoProcResAgamma*)mProcOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqProcResComb* comb                      = &shared->procResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::processing();
     if (ret) {
-        comb->agamma_proc_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "agamma handle processing failed");
     }
 
-    comb->agamma_proc_res  = NULL;
+#ifdef RKAIQ_ENABLE_PARSER_V1
     agamma_proc_int->calib = sharedCom->calib;
+#endif
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
     RKAIQCORE_CHECK_RET(ret, "agamma algo processing failed");
-
-    comb->agamma_proc_res = (RkAiqAlgoProcResAgamma*)agamma_proc_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -182,41 +186,35 @@ XCamReturn RkAiqAgammaHandleInt::postProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPostAgammaInt* agamma_post_int        = (RkAiqAlgoPostAgammaInt*)mPostInParam;
-    RkAiqAlgoPostResAgammaInt* agamma_post_res_int = (RkAiqAlgoPostResAgammaInt*)mPostOutParam;
+    RkAiqAlgoPostAgamma* agamma_post_int        = (RkAiqAlgoPostAgamma*)mPostInParam;
+    RkAiqAlgoPostResAgamma* agamma_post_res_int = (RkAiqAlgoPostResAgamma*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqPostResComb* comb                      = &shared->postResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::postProcess();
     if (ret) {
-        comb->agamma_post_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "agamma handle postProcess failed");
         return ret;
     }
 
-    comb->agamma_post_res     = NULL;
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->post_process(mPostInParam, mPostOutParam);
     RKAIQCORE_CHECK_RET(ret, "agamma algo post_process failed");
-    // set result to mAiqCore
-    comb->agamma_post_res = (RkAiqAlgoPostResAgamma*)agamma_post_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
 
 XCamReturn RkAiqAgammaHandleInt::genIspResult(RkAiqFullParams* params,
-                                              RkAiqFullParams* cur_params) {
+        RkAiqFullParams* cur_params) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret                = XCAM_RETURN_NO_ERROR;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqAlgoProcResAgamma* agamma_com = shared->procResComb.agamma_proc_res;
+    RkAiqAlgoProcResAgamma* agamma_com = (RkAiqAlgoProcResAgamma*)mProcOutParam;
     rk_aiq_isp_agamma_params_v20_t* agamma_param = params->mAgammaParams->data().ptr();
 
     if (!agamma_com) {
@@ -225,7 +223,7 @@ XCamReturn RkAiqAgammaHandleInt::genIspResult(RkAiqFullParams* params,
     }
 
     if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAgammaInt* agamma_int = (RkAiqAlgoProcResAgammaInt*)agamma_com;
+        RkAiqAlgoProcResAgamma* agamma_int = (RkAiqAlgoProcResAgamma*)agamma_com;
         if (sharedCom->init) {
             agamma_param->frame_id = 0;
         } else {

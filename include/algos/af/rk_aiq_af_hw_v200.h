@@ -1,6 +1,8 @@
 #ifndef __RK_AIQ_AF_HW_V200_H__
 #define __RK_AIQ_AF_HW_V200_H__
 
+#include "rk_aiq_types_af_algo.h"
+
 #define ISP_SHARPNESS_GRID_ITEMS 225
 
 typedef struct {

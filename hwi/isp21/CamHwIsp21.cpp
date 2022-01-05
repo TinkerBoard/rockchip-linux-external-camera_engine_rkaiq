@@ -263,6 +263,9 @@ CamHwIsp21::gen_full_isp_params(const struct isp21_isp_params_cfg* update_params
             case RK_ISP2X_SDG_ID:
                 CHECK_UPDATE_PARAMS(full_params->others.sdg_cfg, update_params->others.sdg_cfg);
                 break;
+            case Rk_ISP2x_CSM_ID:
+                CHECK_UPDATE_PARAMS(full_params->others.csm_cfg, update_params->others.csm_cfg);
+                break;
             default:
                 break;
             }

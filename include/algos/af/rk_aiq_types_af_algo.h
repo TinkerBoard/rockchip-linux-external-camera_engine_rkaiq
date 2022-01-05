@@ -15,6 +15,30 @@ RKAIQ_BEGIN_DECLARE
 #define RKAIQ_RAWAF_ROI_SUBWINS_VCNT       15
 #define RKAIQ_RAWAF_ROI_SUBWINS_HCNT       15
 #define RKAIQ_RAWAF_ROI_SUBWINS_NUM        (RKAIQ_RAWAF_ROI_SUBWINS_VCNT * RKAIQ_RAWAF_ROI_SUBWINS_HCNT)
+#define RKAIQ_PDAF_BLK_DATA_HEIGHT_MAX     64
+#define RKAIQ_PDAF_FINE_SEARCH_RANGE_MAX   10
+#define RKAIQ_PDAF_ISOPARA_NUM             16
+
+typedef enum {
+    PDAF_DATA_INVAL = 0,
+    PDAF_DATA_HSPD  = 1,
+    PDAF_DATA_MLPD  = 2,
+    PDAF_DATA_DPD   = 3,
+    PDAF_DATA_QPD   = 4
+} PdafDataType_t;
+
+typedef enum {
+    PDAF_DIR_INVAL = 0,
+    PDAF_DIR_LEFT  = 1,
+    PDAF_DIR_RIGHT = 2,
+    PDAF_DIR_TOP   = 3,
+    PDAF_DIR_DOWN  = 4
+} PdafDataDir_t;
+
+typedef enum {
+    PDAF_TRANS_LR_BYTURNS = 0,
+    PDAF_TRANS_IN_PKT = 1,
+} PdafTransType_t;
 
 typedef struct {
     unsigned long long roia_sharpness;
@@ -209,6 +233,49 @@ typedef struct {
     int vcm_start_ma;
     int vcm_end_ma;
 } rk_aiq_af_algo_focus_pos_t;
+
+typedef struct {
+    bool pdMirror;
+    unsigned int pdMean;
+    unsigned short pdWidth;
+    unsigned short pdHeight;
+    unsigned short *pdLData;
+    unsigned short *pdRData;
+} rk_aiq_pdaf_algo_stat_t;
+
+typedef struct {
+    bool pdMirrorInCalib;
+    unsigned short pdWidth;
+    unsigned short pdHeight;
+    struct rkmodule_pdaf_inf *otp_pdaf;
+} rk_aiq_pdaf_algo_meas_t;
+
+typedef struct {
+    int iso;
+    float pdNoiseFactor;
+    float pdConfdRatio1;
+    float pdConfdRatio2;
+    float pdConfdThresh;
+    float defocusPdThresh;
+    float stablePdRatio;
+    float stablePdOffset;
+    float stableCntRatio;
+    unsigned short noconfCntThresh;
+
+    unsigned int fineSearchConfidence[RKAIQ_PDAF_FINE_SEARCH_RANGE_MAX];
+    int fineSearchRange[RKAIQ_PDAF_FINE_SEARCH_RANGE_MAX];
+    int fineSearchStepPos[RKAIQ_PDAF_FINE_SEARCH_RANGE_MAX];
+    int fineSearchTblCnt;
+} rk_aiq_pdaf_algo_isopara_t;
+
+typedef struct {
+    unsigned char pdVsCdDebug;
+    unsigned short pdDataBit;
+    unsigned short pdBlkLevel;
+    unsigned short pdSearchRadius;
+    rk_aiq_pdaf_algo_isopara_t pdIsoPara[RKAIQ_PDAF_ISOPARA_NUM];
+    int pdIsoParaCnt;
+} rk_aiq_pdaf_algo_config_t;
 
 int get_lpfv(uint32_t sequence, uint8_t *image_buf, int32_t _img_width, int32_t _img_height,
     int32_t _img_width_align, int32_t _img_height_align, uint8_t *pAfTmp, uint32_t sub_shp4_4[225],

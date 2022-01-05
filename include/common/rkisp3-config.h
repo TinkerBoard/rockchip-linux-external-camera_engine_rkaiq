@@ -133,6 +133,7 @@
 #define ISP3X_SHARP_GAUS_COEF_NUM	6
 
 #define ISP3X_CAC_STRENGTH_NUM		22
+#define ISP3X_CSM_COEFF_NUM     ISP21_CSM_COEFF_NUM
 
 enum isp3x_unite_id {
 	ISP3_LEFT = 0,
@@ -1011,6 +1012,7 @@ struct isp3x_isp_other_cfg {
 	struct isp3x_sharp_cfg sharp_cfg;
 	struct isp3x_cac_cfg cac_cfg;
 	struct isp3x_gain_cfg gain_cfg;
+    struct isp21_csm_cfg csm_cfg;
 } __attribute__ ((packed));
 
 struct isp3x_isp_meas_cfg {

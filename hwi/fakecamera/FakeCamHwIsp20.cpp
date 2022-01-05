@@ -26,7 +26,7 @@
 #include <sys/stat.h>
 
 namespace RkCam {
-FakeCamHwIsp20::FakeCamHwIsp20()
+FakeCamHwIsp20::FakeCamHwIsp20() : isp_index(0)
 {
     ENTER_CAMHW_FUNCTION();
     _rx_memory_type = V4L2_MEMORY_DMABUF;
@@ -38,6 +38,7 @@ FakeCamHwIsp20::FakeCamHwIsp20()
 FakeCamHwIsp20::~FakeCamHwIsp20()
 {
     ENTER_CAMHW_FUNCTION();
+    setupOffLineLink(isp_index, false);
     EXIT_CAMHW_FUNCTION();
 }
 
@@ -78,6 +79,8 @@ FakeCamHwIsp20::prepare(uint32_t width, uint32_t height, int mode, int t_delay, 
     }
 
     rk_sensor_full_info_t *s_info = it->second.ptr();
+    isp_index = s_info->isp_info->logic_id;
+    setupOffLineLink(isp_index, true);
     init_mipi_devices(s_info);
     fakeSensorHw->set_mipi_tx_devs(_mipi_tx_devs);
 
@@ -850,6 +853,60 @@ FakeCamHwIsp20::rawdataPrepare(rk_aiq_raw_prop_t prop)
     ret = fakeSensor->prepare(prop);
     EXIT_XCORE_FUNCTION();
     return ret;
+}
+
+XCamReturn FakeCamHwIsp20::setupOffLineLink(int isp_index, bool enable)
+{
+    media_device* device  = NULL;
+    media_entity* entity  = NULL;
+    media_pad* src_pad    = NULL;
+    media_pad* sink_pad   = NULL;
+    int lvds_max_entities = 4;
+    int lvds_entity       = 0;
+
+    device = media_device_new(mIspHwInfos.isp_info[isp_index].media_dev_path);
+    if (!device) return XCAM_RETURN_ERROR_FAILED;
+
+    /* Enumerate entities, pads and links. */
+    media_device_enumerate(device);
+    entity = media_get_entity_by_name(device, "rkisp-isp-subdev", strlen("rkisp-isp-subdev"));
+    if (!entity) {
+        goto FAIL;
+    }
+
+    sink_pad = (media_pad*)media_entity_get_pad(entity, 0);
+    if (!sink_pad) {
+        LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get rkisp-isp-subdev sink pad failed!\n");
+        goto FAIL;
+    }
+
+    for (lvds_entity = 0; lvds_entity < lvds_max_entities; lvds_entity++) {
+        char entity_name[128] = {0};
+        src_pad               = NULL;
+        snprintf(entity_name, 128, "rkcif-mipi-lvds%d", lvds_entity);
+        entity = media_get_entity_by_name(device, entity_name, strlen(entity_name));
+        if (entity) {
+            src_pad = (media_pad*)media_entity_get_pad(entity, 0);
+            if (!src_pad) {
+                LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get rkcif-mipi-lvds%d source pad s failed!\n",
+                                lvds_entity);
+                goto FAIL;
+            }
+        }
+
+        if (src_pad && sink_pad) {
+            if (enable) {
+                media_setup_link(device, src_pad, sink_pad, 0);
+            } else
+                media_setup_link(device, src_pad, sink_pad, MEDIA_LNK_FL_ENABLED);
+        }
+    }
+
+    media_device_unref(device);
+    return XCAM_RETURN_NO_ERROR;
+FAIL:
+    media_device_unref(device);
+    return XCAM_RETURN_ERROR_FAILED;
 }
 
 FakeCamHwIsp21::FakeCamHwIsp21()

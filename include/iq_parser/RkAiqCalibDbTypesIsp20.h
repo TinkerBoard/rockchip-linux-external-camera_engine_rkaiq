@@ -197,6 +197,8 @@ typedef struct CalibDb_AeEnvLvCalib_s {
 
 //2). Auto exposure
 typedef struct CalibDb_AeSpeed_s {
+    bool                    SmoothEn;
+    bool                    DyDampEn;
     float                   DampOver;
     float                   DampUnder;
     float                   DampDark2Bright;
@@ -689,7 +691,7 @@ typedef struct CalibDb_Awb_Cct_Clip_Cfg_s {
     float cri_bound_up[CALD_AWB_CT_CLIP_GRID_NUM_MAX];
     float cri_bound_low[CALD_AWB_CT_CLIP_GRID_NUM_MAX];
 }  CalibDb_Awb_Cct_Clip_Cfg_t;
-typedef struct CalibDb_limit_range_s{
+typedef struct CalibDb_limit_range_s {
     int lumaNum;
     float lumaValue[CALD_AWB_LV_NUM_MAX];
     unsigned short      maxR[CALD_AWB_LV_NUM_MAX];
@@ -700,7 +702,7 @@ typedef struct CalibDb_limit_range_s{
     unsigned short      minB[CALD_AWB_LV_NUM_MAX];
     unsigned short      maxY[CALD_AWB_LV_NUM_MAX];
     unsigned short      minY[CALD_AWB_LV_NUM_MAX];
-}CalibDb_limit_range_t;
+} CalibDb_limit_range_t;
 
 typedef struct CalibDb_Awb_Calib_Para_V200_s {
     struct list_head           listHead;

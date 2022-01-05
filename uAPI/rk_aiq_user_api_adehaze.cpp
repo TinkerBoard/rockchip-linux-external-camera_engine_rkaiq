@@ -25,7 +25,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
-
+/*
 void
 DehazeTransferSetToolData(CalibDbV2_dehaze_V20_t* DehazeV2, CalibDbDehaze_t *DehazeV1)
 {
@@ -429,8 +429,6 @@ XCamReturn  rk_aiq_user_api_adehaze_getSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
 
     return ret_dehaze;
 }
+*/
 
 RKAIQ_END_DECLARE
-
-
-

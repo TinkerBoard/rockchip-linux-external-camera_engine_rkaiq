@@ -18,15 +18,18 @@
 #include <sys/ioctl.h>
 #include <dlfcn.h>
 #include <signal.h>
-#include <linux/videodev2.h>
 #include <dirent.h>
 #include "drmDsp.h"
-#include "include/uAPI2/rk_aiq_user_api2_sysctl.h"
-#include "rk_aiq_user_api_imgproc.h"
-#include "include/uAPI2/rk_aiq_user_api2_imgproc.h"
-#include "rk_aiq_user_api_debug.h"
-#include "include/uAPI2/rk_aiq_user_api2_camgroup.h"
+#include "uAPI2/rk_aiq_user_api2_sysctl.h"
+#include "rk_aiq_user_api2_debug.h"
+#include "sample_image_process.h"
+#include "rkisp_demo.h"
 #include <termios.h>
+
+
+#include "ae_algo_demo/third_party_ae_algo.h"
+#include "awb_algo_demo/third_party_awb_algo.h"
+#include "af_algo_demo/third_party_af_algo.h"
 
 #ifndef ARCH_FPGA
 #include "display.h"
@@ -52,9 +55,14 @@
 #define DEFAULT_CAPTURE_RAW_PATH "/tmp/capture_image"
 #endif
 #define CAPTURE_CNT_FILENAME ".capture_cnt"
-//#define ENABLE_UAPI_TEST
+// #define ENABLE_UAPI_TEST
 #define IQFILE_PATH_MAX_LEN 256
-//#define TEST_MEMS_SENSOR_INTF
+// #define CUSTOM_AE_DEMO_TEST
+// #define CUSTOM_GROUP_AE_DEMO_TEST
+// #define CUSTOM_AWB_DEMO_TEST
+// #define TEST_MEMS_SENSOR_INTF
+// #define CUSTOM_AF_DEMO_TEST
+// #define CUSTOM_GROUP_AWB_DEMO_TEST
 
 struct buffer {
     void *start;
@@ -69,59 +77,11 @@ enum TEST_CTL_TYPE {
     TEST_CTL_TYPE_REPEAT_START_STOP,
     TEST_CTL_TYPE_REPEAT_PREPARE_START_STOP,
 };
-typedef struct _demo_context {
-    char out_file[255];
-    char dev_name[255];
-    char dev_name2[255];
-    char sns_name[32];
-    int dev_using;
-    int width;
-    int height;
-    int format;
-    int fd;
-    enum v4l2_buf_type buf_type;
-    struct buffer *buffers;
-    unsigned int n_buffers;
-    int frame_count;
-    FILE *fp;
-    rk_aiq_sys_ctx_t* aiq_ctx;
-    rk_aiq_camgroup_ctx_t* camgroup_ctx;
-    int vop;
-    int rkaiq;
-    int writeFile;
-    int writeFileSync;
-    int pponeframe;
-    int hdrmode;
-    int limit_range;
-    int fd_pp_input;
-    int fd_isp_mp;
-    struct buffer *buffers_mp;
-    int outputCnt;
-    int skipCnt;
-
-    char yuv_dir_path[64];
-    bool _is_yuv_dir_exist;
-    int capture_yuv_num;
-    bool is_capture_yuv;
-    int ctl_type;
-    char iqpath[256];
-     char orppath[256];
-     int orpRawW;
-     int orpRawH;
-     char orpRawFmt[10];
-     bool isOrp;
-     bool orpStop;
-     bool orpStopped;
-     bool camGroup;
-} demo_context_t;
 
 static struct termios oldt;
 static int silent;
 static demo_context_t *g_main_ctx = NULL, *g_second_ctx = NULL;
 static bool _if_quit = false;
-
-#define DBG(...) do { if(!silent) printf(__VA_ARGS__); } while(0)
-#define ERR(...) do { printf(__VA_ARGS__); } while (0)
 
 
 //restore terminal settings
@@ -191,6 +151,7 @@ void test_update_iqfile(const demo_context_t* demo_ctx)
     rk_aiq_uapi2_sysctl_updateIq(demo_ctx->aiq_ctx, iqfile);
 }
 
+#if 0
 static int set_ae_onoff(const rk_aiq_sys_ctx_t* ctx, bool onoff);
 void test_imgproc(const demo_context_t* demo_ctx) {
 
@@ -373,24 +334,24 @@ void test_imgproc(const demo_context_t* demo_ctx) {
         break;
     }
     case 'u':
-        rk_aiq_uapi_setDhzMode(ctx, OP_MANUAL);
-        printf("setDhzMode\n");
+        //rk_aiq_uapi_setDhzMode(ctx, OP_MANUAL);
+        //printf("setDhzMode\n");
         break;
     case 'v':
-        rk_aiq_uapi_getDhzMode(ctx, &mode);
-        printf("getDhzMode=%d\n", mode);
+        //rk_aiq_uapi_getDhzMode(ctx, &mode);
+        // printf("getDhzMode=%d\n", mode);
         break;
     case 'w':
     {
         bool stat = false;
-        unsigned int level4 = 0;
-        rk_aiq_uapi_getMHDRStrth(ctx, &stat, &level4);
-        printf("getMHDRStrth: status:%d, level=%d\n", stat, level4);
+        //unsigned int level4 = 0;
+        //rk_aiq_uapi_getMHDRStrth(ctx, &stat, &level4);
+        //printf("getMHDRStrth: status:%d, level=%d\n", stat, level4);
     }
     break;
     case 'x':
-        rk_aiq_uapi_setMHDRStrth(ctx, true, 8);
-        printf("setMHDRStrth true\n");
+        //rk_aiq_uapi_setMHDRStrth(ctx, true, 8);
+        //printf("setMHDRStrth true\n");
         break;
     case 'y':
     {
@@ -437,7 +398,7 @@ void test_imgproc(const demo_context_t* demo_ctx) {
         rk_aiq_uapi_endOpZoomChange(ctx);
         printf("setOpZoomPosition %d\n", code);
     }
-        break;
+    break;
     case 'E': {
         rk_aiq_af_zoomrange range;
         int code;
@@ -526,10 +487,10 @@ void test_imgproc(const demo_context_t* demo_ctx) {
         attr.manual_meascfg.sp_meas.enable = true;
         attr.manual_meascfg.sp_meas.ldg_xl = 10;
         attr.manual_meascfg.sp_meas.ldg_yl = 28;
-        attr.manual_meascfg.sp_meas.ldg_kl = (255-28)*256/45;
+        attr.manual_meascfg.sp_meas.ldg_kl = (255 - 28) * 256 / 45;
         attr.manual_meascfg.sp_meas.ldg_xh = 118;
         attr.manual_meascfg.sp_meas.ldg_yh = 8;
-        attr.manual_meascfg.sp_meas.ldg_kh = (255-8)*256/15;
+        attr.manual_meascfg.sp_meas.ldg_kh = (255 - 8) * 256 / 15;
         attr.manual_meascfg.sp_meas.highlight_th = 245;
         attr.manual_meascfg.sp_meas.highlight2_th = 200;
         rk_aiq_user_api_af_SetAttrib(ctx, &attr);
@@ -877,17 +838,18 @@ void test_imgproc(const demo_context_t* demo_ctx) {
         printf("isp version: %d, sensor name: %s\n", info.isp_hw_ver, info.sensor_info.sensor_name);
     }
     case '[':
-       set_ae_onoff(ctx, true);
-       printf("set ae on\n");
-       break;
+        set_ae_onoff(ctx, true);
+        printf("set ae on\n");
+        break;
     case ']':
-       set_ae_onoff(ctx, false);
-       printf("set ae off\n");
-       break;
+        set_ae_onoff(ctx, false);
+        printf("set ae off\n");
+        break;
     default:
         break;
     }
 }
+#endif
 
 static void errno_exit(demo_context_t *ctx, const char *s)
 {
@@ -1028,7 +990,7 @@ static void process_image(const void *p, int sequence, int size, demo_context_t 
 
             if (ctx->_is_yuv_dir_exist) {
                 write_yuv_to_file(p, size, sequence, ctx);
-                rk_aiq_uapi_debug_captureRawNotify(ctx->aiq_ctx);
+                rk_aiq_uapi2_debug_captureRawNotify(ctx->aiq_ctx);
             }
 
             if (ctx->capture_yuv_num-- == 0) {
@@ -1050,6 +1012,7 @@ static int read_frame(demo_context_t *ctx)
     buf.memory = V4L2_MEMORY_MMAP;
 
     struct v4l2_plane planes[FMT_NUM_PLANES];
+    memset(planes, 0, sizeof(struct v4l2_plane)*FMT_NUM_PLANES);
     if (V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE == ctx->buf_type) {
         buf.m.planes = planes;
         buf.length = FMT_NUM_PLANES;
@@ -1597,7 +1560,7 @@ static void parse_args(int argc, char **argv, demo_context_t *ctx)
             {"limit", no_argument, 0, 'l' },
             {"ctl", required_argument, 0, 't' },
             {"iqpath", required_argument, 0, '1' },
-           {"orp", required_argument, 0, '2' },
+            {"orp", required_argument, 0, '2' },
             //{"sensor",   required_argument,       0, 'b' },
             {"camgroup",   no_argument,       0, '3' },
             {0,          0,                 0,  0  }
@@ -1661,40 +1624,40 @@ static void parse_args(int argc, char **argv, demo_context_t *ctx)
         case '1':
             strcpy(ctx->iqpath, optarg);
             break;
-       case '2':
-       {
-           // parse raw fmt
-           char* raw_dir = strstr(optarg, ",");
-           size_t raw_dir_str_len = raw_dir - optarg;
-           if (!raw_dir) {
+        case '2':
+        {
+            // parse raw fmt
+            char* raw_dir = strstr(optarg, ",");
+            size_t raw_dir_str_len = raw_dir - optarg;
+            if (!raw_dir) {
                 printf("orp dir error ! \n");
                 exit(-1);
-           }
-           strncpy(ctx->orppath, optarg, raw_dir_str_len);
+            }
+            strncpy(ctx->orppath, optarg, raw_dir_str_len);
 
-           char* raw_fmt_w_start = raw_dir + 1;
-           int raw_width = atoi(raw_fmt_w_start);
-           if (raw_width == 0) {
+            char* raw_fmt_w_start = raw_dir + 1;
+            int raw_width = atoi(raw_fmt_w_start);
+            if (raw_width == 0) {
                 printf("orp raw_width error ! \n");
                 exit(-1);
-           }
-           ctx->orpRawW = raw_width;
-           char* raw_fmt_h_start = strstr(raw_fmt_w_start, ":") + 1;
-           if (!raw_fmt_h_start) {
+            }
+            ctx->orpRawW = raw_width;
+            char* raw_fmt_h_start = strstr(raw_fmt_w_start, ":") + 1;
+            if (!raw_fmt_h_start) {
                 printf("orp raw_h error ! \n");
                 exit(-1);
-           }
-           int raw_height = atoi(raw_fmt_h_start);
-           ctx->orpRawH = raw_height;
+            }
+            int raw_height = atoi(raw_fmt_h_start);
+            ctx->orpRawH = raw_height;
 
-           char* raw_fmt_pix_start = strstr(raw_fmt_h_start, ":") + 1;
-           strcpy(ctx->orpRawFmt, raw_fmt_pix_start);
+            char* raw_fmt_pix_start = strstr(raw_fmt_h_start, ":") + 1;
+            strcpy(ctx->orpRawFmt, raw_fmt_pix_start);
 
-           printf("orp_path:%s, w:%d,h:%d, pix:%s \n",
-                  ctx->orppath, raw_width, raw_height, raw_fmt_pix_start);
-           ctx->isOrp = true;
+            printf("orp_path:%s, w:%d,h:%d, pix:%s \n",
+                   ctx->orppath, raw_width, raw_height, raw_fmt_pix_start);
+            ctx->isOrp = true;
         }
-           break;
+        break;
         case 't':
             ctx->ctl_type = atoi(optarg);
             break;
@@ -1755,11 +1718,26 @@ static void deinit(demo_context_t *ctx)
         if (ctx->dev_using == 1) {
             printf("%s:-------- stop aiq camgroup -------------\n", get_sensor_name(ctx));
             rk_aiq_uapi2_camgroup_stop(ctx->camgroup_ctx);
+#ifdef CUSTOM_GROUP_AE_DEMO_TEST
+            rk_aiq_uapi2_customAE_unRegister((const rk_aiq_sys_ctx_t*)(ctx->camgroup_ctx));
+#endif
+#ifdef CUSTOM_GROUP_AWB_DEMO_TEST
+                rk_aiq_uapi2_customAWB_unRegister((const rk_aiq_sys_ctx_t*)(ctx->camgroup_ctx));
+#endif
+
         }
     }
 
     if (ctx->aiq_ctx) {
         printf("%s:-------- deinit aiq -------------\n", get_sensor_name(ctx));
+#ifdef CUSTOM_AE_DEMO_TEST
+        //rk_aiq_AELibunRegCallBack(ctx->aiq_ctx, 0);
+        rk_aiq_uapi2_customAE_unRegister(ctx->aiq_ctx);
+#endif
+#ifdef CUSTOM_AWB_DEMO_TEST
+        //rk_aiq_AELibunRegCallBack(ctx->aiq_ctx, 0);
+        rk_aiq_uapi2_customAWB_unRegister(ctx->aiq_ctx);
+#endif
         rk_aiq_uapi2_sysctl_deinit(ctx->aiq_ctx);
         printf("%s:-------- deinit aiq end -------------\n", get_sensor_name(ctx));
     } else if (ctx->camgroup_ctx) {
@@ -1806,7 +1784,8 @@ static void* test_thread(void* args) {
     disable_terminal_return();
     printf("begin test imgproc\n");
     while(!_if_quit) {
-        test_imgproc((demo_context_t*) args);
+        // test_imgproc((demo_context_t*) args);
+        sample_main(args);
     }
     printf("end test imgproc\n");
     restore_terminal_settings();
@@ -1831,25 +1810,26 @@ static void* test_offline_thread(void* args) {
         closedir(dir);
     }
     std::sort(raw_files.begin(), raw_files.end(),
-              [](std::string str1, std::string str2) -> bool {
-                std::string::size_type sz;
-                int ind1 = std::stoi(str1, &sz); 
-                int ind2 = std::stoi(str2, &sz); 
-                return ind1 < ind2 ? true : false;
-              });
+    [](std::string str1, std::string str2) -> bool {
+        std::string::size_type sz;
+        int ind1 = std::stoi(str1, &sz);
+        int ind2 = std::stoi(str2, &sz);
+        return ind1 < ind2 ? true : false;
+    });
     while (!demo_ctx->orpStop) {
         for (auto raw_file : raw_files) {
             std::string full_name = demo_ctx->orppath + raw_file;
             printf("process raw : %s \n", full_name.c_str());
-            rk_aiq_uapi_sysctl_enqueueRkRawFile(demo_ctx->aiq_ctx, full_name.c_str());
+            rk_aiq_uapi2_sysctl_enqueueRkRawFile(demo_ctx->aiq_ctx, full_name.c_str());
             //usleep(500000);
-         }
+        }
         usleep(500000);
-     }
+    }
     demo_ctx->orpStopped = true;
     return 0;
 }
 
+#if 0
 static int set_ae_onoff(const rk_aiq_sys_ctx_t* ctx, bool onoff)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -1861,13 +1841,14 @@ static int set_ae_onoff(const rk_aiq_sys_ctx_t* ctx, bool onoff)
 
     return 0;
 }
+#endif
 
 static int query_ae_state(const rk_aiq_sys_ctx_t* ctx)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     Uapi_ExpQueryInfo_t queryInfo;
 
-    ret = rk_aiq_user_api_ae_queryExpResInfo(ctx, &queryInfo);
+    ret =  rk_aiq_user_api2_ae_queryExpResInfo(ctx, &queryInfo);
     printf("ae IsConverged: %d\n", queryInfo.IsConverged);
 
     return 0;
@@ -1879,7 +1860,7 @@ static void set_af_manual_meascfg(const rk_aiq_sys_ctx_t* ctx)
     uint16_t gamma_y[RKAIQ_RAWAF_GAMMA_NUM] =
     {0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023};
 
-    rk_aiq_user_api_af_GetAttrib(ctx, &attr);
+    rk_aiq_user_api2_af_GetAttrib(ctx, &attr);
     attr.AfMode = RKAIQ_AF_MODE_FIXED;
 
     attr.manual_meascfg.contrast_af_en = 1;
@@ -1914,13 +1895,13 @@ static void set_af_manual_meascfg(const rk_aiq_sys_ctx_t* ctx)
     attr.manual_meascfg.sp_meas.enable = true;
     attr.manual_meascfg.sp_meas.ldg_xl = 10;
     attr.manual_meascfg.sp_meas.ldg_yl = 28;
-    attr.manual_meascfg.sp_meas.ldg_kl = (255-28)*256/45;
+    attr.manual_meascfg.sp_meas.ldg_kl = (255 - 28) * 256 / 45;
     attr.manual_meascfg.sp_meas.ldg_xh = 118;
     attr.manual_meascfg.sp_meas.ldg_yh = 8;
-    attr.manual_meascfg.sp_meas.ldg_kh = (255-8)*256/15;
+    attr.manual_meascfg.sp_meas.ldg_kh = (255 - 8) * 256 / 15;
     attr.manual_meascfg.sp_meas.highlight_th = 245;
     attr.manual_meascfg.sp_meas.highlight2_th = 200;
-    rk_aiq_user_api_af_SetAttrib(ctx, &attr);
+    rk_aiq_user_api2_af_SetAttrib(ctx, &attr);
 }
 
 static void print_af_stats(rk_aiq_isp_stats_t *stats_ref)
@@ -1974,6 +1955,7 @@ static void print_af_stats(rk_aiq_isp_stats_t *stats_ref)
         printf("\n");
     }
 }
+
 static void* stats_thread(void* args) {
     demo_context_t* ctx =  (demo_context_t*)args;
     XCamReturn ret;
@@ -1983,12 +1965,12 @@ static void* stats_thread(void* args) {
     set_af_manual_meascfg(ctx->aiq_ctx);
     while(1) {
         rk_aiq_isp_stats_t *stats_ref = NULL;
-        ret = rk_aiq_uapi_sysctl_get3AStatsBlk(ctx->aiq_ctx, &stats_ref, -1);
+        ret = rk_aiq_uapi2_sysctl_get3AStatsBlk(ctx->aiq_ctx, &stats_ref, -1);
         if (ret == XCAM_RETURN_NO_ERROR && stats_ref != NULL) {
             printf("get one stats frame id %d \n", stats_ref->frame_id);
             query_ae_state(ctx->aiq_ctx);
             print_af_stats(stats_ref);
-            rk_aiq_uapi_sysctl_release3AStatsRef(ctx->aiq_ctx, stats_ref);
+            rk_aiq_uapi2_sysctl_release3AStatsRef(ctx->aiq_ctx, stats_ref);
         } else {
             if (ret == XCAM_RETURN_NO_ERROR) {
                 printf("aiq has stopped !\n");
@@ -2073,7 +2055,7 @@ static void rkisp_routine(demo_context_t *ctx)
         if (ret < 0)
             ERR("%s: failed to set %s scene\n",
                 get_sensor_name(ctx),
-                work_mode == RK_AIQ_WORKING_MODE_NORMAL?"normal":"hdr");
+                work_mode == RK_AIQ_WORKING_MODE_NORMAL ? "normal" : "hdr");
 
         if (strlen(ctx->iqpath))
         {
@@ -2093,6 +2075,7 @@ static void rkisp_routine(demo_context_t *ctx)
                     }
 
                     rk_aiq_camgroup_instance_cfg_t camgroup_cfg;
+                    memset(&camgroup_cfg, 0, sizeof(camgroup_cfg));
                     camgroup_cfg.sns_num = 1;
                     if (has_dev2)
                         camgroup_cfg.sns_num++;
@@ -2100,11 +2083,34 @@ static void rkisp_routine(demo_context_t *ctx)
                     if (has_dev2)
                         camgroup_cfg.sns_ent_nm_array[1] = sns_entity_name2;
                     camgroup_cfg.config_file_dir = ctx->iqpath;
+                    camgroup_cfg.overlap_map_file = "srcOverlapMap.bin";
                     ctx->camgroup_ctx = rk_aiq_uapi2_camgroup_create(&camgroup_cfg);
                     if (!ctx->camgroup_ctx) {
                         printf("create camgroup ctx error !\n");
                         exit(1);
                     }
+
+#ifdef CUSTOM_GROUP_AE_DEMO_TEST
+                    rk_aiq_customeAe_cbs_t cbs = {
+                        .pfn_ae_init = custom_ae_init,
+                        .pfn_ae_run = custom_ae_run,
+                        .pfn_ae_ctrl = custom_ae_ctrl,
+                        .pfn_ae_exit = custom_ae_exit,
+                    };
+                    rk_aiq_uapi2_customAE_register((const rk_aiq_sys_ctx_t*)(ctx->camgroup_ctx), &cbs);
+                    rk_aiq_uapi2_customAE_enable((const rk_aiq_sys_ctx_t*)(ctx->camgroup_ctx), true);
+#endif
+#ifdef CUSTOM_GROUP_AWB_DEMO_TEST
+                rk_aiq_customeAwb_cbs_t awb_cbs = {
+                    .pfn_awb_init = custom_awb_init,
+                    .pfn_awb_run = custom_awb_run,
+                    .pfn_awb_ctrl= custom_awb_ctrl,
+                    .pfn_awb_exit = custom_awb_exit,
+                };
+                rk_aiq_uapi2_customAWB_register((const rk_aiq_sys_ctx_t*)(ctx->camgroup_ctx), &awb_cbs);
+                rk_aiq_uapi2_customAWB_enable((const rk_aiq_sys_ctx_t*)(ctx->camgroup_ctx), true);
+#endif
+
                 }
             }
         } else {
@@ -2123,48 +2129,72 @@ static void rkisp_routine(demo_context_t *ctx)
         if (ctx->aiq_ctx) {
             printf("%s:-------- init mipi tx/rx -------------\n", get_sensor_name(ctx));
             if (ctx->writeFileSync)
-                rk_aiq_uapi_debug_captureRawYuvSync(ctx->aiq_ctx, CAPTURE_RAW_AND_YUV_SYNC);
-
+                rk_aiq_uapi2_debug_captureRawYuvSync(ctx->aiq_ctx, CAPTURE_RAW_AND_YUV_SYNC);
+#ifdef CUSTOM_AE_DEMO_TEST
+            //ae_reg.stAeExpFunc.pfn_ae_init = ae_init;
+            //ae_reg.stAeExpFunc.pfn_ae_run = ae_run;
+            //ae_reg.stAeExpFunc.pfn_ae_ctrl = ae_ctrl;
+            //ae_reg.stAeExpFunc.pfn_ae_exit = ae_exit;
+            //rk_aiq_AELibRegCallBack(ctx->aiq_ctx, &ae_reg, 0);
+            rk_aiq_customeAe_cbs_t cbs = {
+                .pfn_ae_init = custom_ae_init,
+                .pfn_ae_run = custom_ae_run,
+                .pfn_ae_ctrl = custom_ae_ctrl,
+                .pfn_ae_exit = custom_ae_exit,
+            };
+            rk_aiq_uapi2_customAE_register(ctx->aiq_ctx, &cbs);
+            rk_aiq_uapi2_customAE_enable(ctx->aiq_ctx, true);
+#endif
+#ifdef CUSTOM_AWB_DEMO_TEST
+            rk_aiq_customeAwb_cbs_t awb_cbs = {
+                .pfn_awb_init = custom_awb_init,
+                .pfn_awb_run = custom_awb_run,
+                .pfn_awb_ctrl = custom_awb_ctrl,
+                .pfn_awb_exit = custom_awb_exit,
+            };
+            rk_aiq_uapi2_customAWB_register(ctx->aiq_ctx, &awb_cbs);
+            rk_aiq_uapi2_customAWB_enable(ctx->aiq_ctx, true);
+#endif
             if (ctx->isOrp) {
-                 rk_aiq_raw_prop_t prop;
-                 if (strcmp(ctx->orpRawFmt, "BG10") == 0)
-                     prop.format = RK_PIX_FMT_SBGGR10;
-                 else if (strcmp(ctx->orpRawFmt, "GB10") == 0)
-                     prop.format = RK_PIX_FMT_SGBRG10;
-                 else if (strcmp(ctx->orpRawFmt, "RG10") == 0)
-                     prop.format = RK_PIX_FMT_SRGGB10;
-                 else if (strcmp(ctx->orpRawFmt, "BA10") == 0)
-                     prop.format = RK_PIX_FMT_SGRBG10;
-                 else if (strcmp(ctx->orpRawFmt, "BG12") == 0)
-                     prop.format = RK_PIX_FMT_SBGGR12;
-                 else if (strcmp(ctx->orpRawFmt, "GB12") == 0)
-                     prop.format = RK_PIX_FMT_SGBRG12;
-                 else if (strcmp(ctx->orpRawFmt, "RG12") == 0)
-                     prop.format = RK_PIX_FMT_SRGGB12;
-                 else if (strcmp(ctx->orpRawFmt, "BA12") == 0)
-                     prop.format = RK_PIX_FMT_SGRBG12;
-                 else if (strcmp(ctx->orpRawFmt, "BG14") == 0)
-                     prop.format = RK_PIX_FMT_SBGGR14;
-                 else if (strcmp(ctx->orpRawFmt, "GB14") == 0)
-                     prop.format = RK_PIX_FMT_SGBRG14;
-                 else if (strcmp(ctx->orpRawFmt, "RG14") == 0)
-                     prop.format = RK_PIX_FMT_SRGGB14;
-                 else if (strcmp(ctx->orpRawFmt, "BA14") == 0)
-                     prop.format = RK_PIX_FMT_SGRBG14;
-                 else
-                     prop.format = RK_PIX_FMT_SBGGR10;
-                 prop.frame_width = ctx->orpRawW;
-                 prop.frame_height = ctx->orpRawH;
-                 prop.rawbuf_type = RK_AIQ_RAW_FILE;
-                 rk_aiq_uapi_sysctl_prepareRkRaw(ctx->aiq_ctx, prop);
+                rk_aiq_raw_prop_t prop;
+                if (strcmp(ctx->orpRawFmt, "BG10") == 0)
+                    prop.format = RK_PIX_FMT_SBGGR10;
+                else if (strcmp(ctx->orpRawFmt, "GB10") == 0)
+                    prop.format = RK_PIX_FMT_SGBRG10;
+                else if (strcmp(ctx->orpRawFmt, "RG10") == 0)
+                    prop.format = RK_PIX_FMT_SRGGB10;
+                else if (strcmp(ctx->orpRawFmt, "BA10") == 0)
+                    prop.format = RK_PIX_FMT_SGRBG10;
+                else if (strcmp(ctx->orpRawFmt, "BG12") == 0)
+                    prop.format = RK_PIX_FMT_SBGGR12;
+                else if (strcmp(ctx->orpRawFmt, "GB12") == 0)
+                    prop.format = RK_PIX_FMT_SGBRG12;
+                else if (strcmp(ctx->orpRawFmt, "RG12") == 0)
+                    prop.format = RK_PIX_FMT_SRGGB12;
+                else if (strcmp(ctx->orpRawFmt, "BA12") == 0)
+                    prop.format = RK_PIX_FMT_SGRBG12;
+                else if (strcmp(ctx->orpRawFmt, "BG14") == 0)
+                    prop.format = RK_PIX_FMT_SBGGR14;
+                else if (strcmp(ctx->orpRawFmt, "GB14") == 0)
+                    prop.format = RK_PIX_FMT_SGBRG14;
+                else if (strcmp(ctx->orpRawFmt, "RG14") == 0)
+                    prop.format = RK_PIX_FMT_SRGGB14;
+                else if (strcmp(ctx->orpRawFmt, "BA14") == 0)
+                    prop.format = RK_PIX_FMT_SGRBG14;
+                else
+                    prop.format = RK_PIX_FMT_SBGGR10;
+                prop.frame_width = ctx->orpRawW;
+                prop.frame_height = ctx->orpRawH;
+                prop.rawbuf_type = RK_AIQ_RAW_FILE;
+                rk_aiq_uapi2_sysctl_prepareRkRaw(ctx->aiq_ctx, prop);
             }
             /*
              * rk_aiq_uapi_setFecEn(ctx->aiq_ctx, true);
              * rk_aiq_uapi_setFecCorrectDirection(ctx->aiq_ctx, FEC_CORRECT_DIRECTION_Y);
              */
 #ifdef TEST_MEMS_SENSOR_INTF
-            extern rk_aiq_mems_sensor_intf_t g_rkiio_aiq_api;
-            rk_aiq_uapi_sysctl_regMemsSensorIntf(ctx->aiq_ctx, &g_rkiio_aiq_api);
+            rk_aiq_mems_sensor_intf_t g_rkiio_aiq_api;
+            rk_aiq_uapi2_sysctl_regMemsSensorIntf(ctx->aiq_ctx, &g_rkiio_aiq_api);
 #endif
 
             XCamReturn ret = rk_aiq_uapi2_sysctl_prepare(ctx->aiq_ctx, ctx->width, ctx->height, work_mode);
@@ -2173,7 +2203,7 @@ static void rkisp_routine(demo_context_t *ctx)
                 ERR("%s:rk_aiq_uapi2_sysctl_prepare failed: %d\n", get_sensor_name(ctx), ret);
             else {
                 if (ctx->isOrp) {
-                    rk_aiq_uapi_sysctl_registRkRawCb(ctx->aiq_ctx, release_buffer);
+                    rk_aiq_uapi2_sysctl_registRkRawCb(ctx->aiq_ctx, release_buffer);
                 }
                 ret = rk_aiq_uapi2_sysctl_start(ctx->aiq_ctx );
 
@@ -2320,7 +2350,7 @@ int main(int argc, char **argv)
         .isOrp = false,
         .orpStop = false,
         .orpStopped = false,
-        .camGroup= false,
+        .camGroup = false,
     };
     demo_context_t second_ctx;
 
@@ -2379,6 +2409,10 @@ int main(int argc, char **argv)
     pthread_t stats_tid;
     pthread_create(&stats_tid, NULL, stats_thread, &main_ctx);
 #endif
+#ifdef CUSTOM_AF_DEMO_TEST
+    custom_af_run(main_ctx.aiq_ctx);
+#endif
+
     pthread_sigmask(SIG_UNBLOCK, &mask, NULL);
 
     mainloop(&main_ctx);

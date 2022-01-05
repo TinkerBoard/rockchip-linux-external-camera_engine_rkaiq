@@ -25,17 +25,13 @@ SharedItemPool<T>::SharedItemPool(const char* name, uint32_t max_count)
     ,_name(name ? name : "default")
     , _max_count(max_count)
 {
-    LOG1("ENTER SharedItemPool<%s>:%s", _name, __FUNCTION__);
     if (_max_count > 0)
         reserve (_max_count);
-    LOG1("EXIT SharedItemPool<%s>:%s", _name, __FUNCTION__);
 }
 
 template<typename T>
 SharedItemPool<T>::~SharedItemPool()
 {
-    LOG1("ENTER SharedItemPool<%s>:%s", _name, __FUNCTION__);
-    LOG1("EXIT SharedItemPool<%s>:%s", _name, __FUNCTION__);
 }
 
 template<typename T>
@@ -55,13 +51,6 @@ template<typename T>
 SmartPtr<SharedItemProxy<T>>
 SharedItemPool<T>::get_item()
 {
-#if 0 // dynamic_cast_ptr has performance issue
-    SmartPtr<VideoBuffer> buf = get_buffer();
-    SmartPtr<SharedItemProxy<T>> proxy =
-        buf.dynamic_cast_ptr<SharedItemProxy<T>>() ;
-    return proxy;
-#else
-    // get buf directly, save one call of dynamic_cast_ptr
     SmartPtr<SharedItemProxy<T>> ret_buf;
     SmartPtr<BufferData> data;
 
@@ -81,7 +70,6 @@ SharedItemPool<T>::get_item()
     ret_buf->set_buf_pool (SmartPtr<BufferPool>(this));
 
     return ret_buf;
-#endif
 }
 
 template<typename T>

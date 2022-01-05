@@ -24,7 +24,7 @@ namespace RkCam {
 
 template<class T>
 void Isp21Params::convertAiqAwbGainToIsp21Params(T& isp_cfg,
-        const rk_aiq_wb_gain_t& awb_gain, const rk_aiq_isp_blc_v21_t &blc,
+        const rk_aiq_wb_gain_t& awb_gain, const rk_aiq_isp_blc_v21_t *blc,
         bool awb_gain_update)
 {
 
@@ -39,12 +39,13 @@ void Isp21Params::convertAiqAwbGainToIsp21Params(T& isp_cfg,
     struct isp21_awb_gain_cfg *  cfg = &isp_cfg.others.awb_gain_cfg;
     uint16_t max_wb_gain = (1 << (ISP2X_WBGAIN_FIXSCALE_BIT + 3)) - 1;
     rk_aiq_wb_gain_t awb_gain1 = awb_gain;
-    if(blc.v0.enable) {
-        awb_gain1.bgain *= (float)((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - blc.v0.blc_b);
-        awb_gain1.gbgain *= (float)((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - blc.v0.blc_gb);
-        awb_gain1.rgain *= (float)((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - blc.v0.blc_r);
-        awb_gain1.grgain *= (float)((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - blc.v0.blc_gr);
+    if(blc != nullptr && blc->v0.enable) {
+        awb_gain1.bgain *= (float)((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - blc->v0.blc_b);
+        awb_gain1.gbgain *= (float)((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - blc->v0.blc_gb);
+        awb_gain1.rgain *= (float)((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - blc->v0.blc_r);
+        awb_gain1.grgain *= (float)((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - blc->v0.blc_gr);
     }
+
     uint16_t R = (uint16_t)(0.5 + awb_gain1.rgain * (1 << ISP2X_WBGAIN_FIXSCALE_BIT));
     uint16_t B = (uint16_t)(0.5 + awb_gain1.bgain * (1 << ISP2X_WBGAIN_FIXSCALE_BIT));
     uint16_t Gr = (uint16_t)(0.5 + awb_gain1.grgain * (1 << ISP2X_WBGAIN_FIXSCALE_BIT));
@@ -70,6 +71,7 @@ Isp21Params::convertAiqBlcToIsp21Params(T& isp_cfg,
                                         rk_aiq_isp_blc_v21_t &blc)
 {
     LOGD_CAMHW_SUBM(ISP20PARAM_SUBM, "%s:(%d) enter \n", __FUNCTION__, __LINE__);
+    int tmp = 0;
 
     if(blc.v0.enable) {
         isp_cfg.module_ens |= ISP2X_MODULE_BLS;
@@ -99,6 +101,40 @@ Isp21Params::convertAiqBlcToIsp21Params(T& isp_cfg,
 
     //TODO bls1 params
     isp_cfg.others.bls_cfg.bls1_en = 0;
+
+#if defined(ISP_HW_V30)
+    struct isp21_awb_gain_cfg *awb_cfg = &isp_cfg.others.awb_gain_cfg;
+    uint16_t base_wb_gain = 1 << ISP2X_WBGAIN_FIXSCALE_BIT;
+
+    isp_cfg.others.bls_cfg.bls1_en = blc.v0.blc1_enable;
+    tmp = blc.v0.blc1_r * awb_cfg->gain0_red  / base_wb_gain;
+    if(tmp > 0x1fff)
+        tmp = 0x1fff;
+    if(tmp < 0)
+        tmp = 0;
+    isp_cfg.others.bls_cfg.bls1_val.r = tmp;
+
+    tmp = blc.v0.blc1_gr * awb_cfg->gain0_green_r / base_wb_gain;
+    if(tmp > 0x1fff)
+        tmp = 0x1fff;
+    if(tmp < 0)
+        tmp = 0;
+    isp_cfg.others.bls_cfg.bls1_val.gr = tmp;
+
+    tmp = blc.v0.blc1_gb * awb_cfg->gain0_green_b / base_wb_gain;
+    if(tmp > 0x1fff)
+        tmp = 0x1fff;
+    if(tmp < 0)
+        tmp = 0;
+    isp_cfg.others.bls_cfg.bls1_val.gb = tmp;
+
+    tmp = blc.v0.blc1_b * awb_cfg->gain0_blue / base_wb_gain;
+    if(tmp > 0x1fff)
+        tmp = 0x1fff;
+    if(tmp < 0)
+        tmp = 0;
+    isp_cfg.others.bls_cfg.bls1_val.b = tmp;
+#endif
 
     LOGD_CAMHW_SUBM(ISP20PARAM_SUBM, "%s:(%d) exit \n", __FUNCTION__, __LINE__);
 
@@ -872,30 +908,30 @@ Isp21Params::convertAiqDrcToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
         isp_cfg.module_cfg_update &= ~(1LL << Rk_ISP21_DRC_ID);
     }
 
-    isp_cfg.others.drc_cfg.sw_drc_offset_pow2     = adrc_data.DrcProcRes.Drc_v20.sw_drc_offset_pow2;
-    isp_cfg.others.drc_cfg.sw_drc_compres_scl  = adrc_data.DrcProcRes.Drc_v20.sw_drc_compres_scl;
-    isp_cfg.others.drc_cfg.sw_drc_position  = adrc_data.DrcProcRes.Drc_v20.sw_drc_position;
-    isp_cfg.others.drc_cfg.sw_drc_delta_scalein        = adrc_data.DrcProcRes.Drc_v20.sw_drc_delta_scalein;
-    isp_cfg.others.drc_cfg.sw_drc_hpdetail_ratio      = adrc_data.DrcProcRes.Drc_v20.sw_drc_hpdetail_ratio;
-    isp_cfg.others.drc_cfg.sw_drc_lpdetail_ratio     = adrc_data.DrcProcRes.Drc_v20.sw_drc_lpdetail_ratio;
-    isp_cfg.others.drc_cfg.sw_drc_weicur_pix      = adrc_data.DrcProcRes.Drc_v20.sw_drc_weicur_pix;
-    isp_cfg.others.drc_cfg.sw_drc_weipre_frame  = adrc_data.DrcProcRes.Drc_v20.sw_drc_weipre_frame;
-    isp_cfg.others.drc_cfg.sw_drc_force_sgm_inv0   = adrc_data.DrcProcRes.Drc_v20.sw_drc_force_sgm_inv0;
-    isp_cfg.others.drc_cfg.sw_drc_motion_scl     = adrc_data.DrcProcRes.Drc_v20.sw_drc_motion_scl;
-    isp_cfg.others.drc_cfg.sw_drc_edge_scl   = adrc_data.DrcProcRes.Drc_v20.sw_drc_edge_scl;
-    isp_cfg.others.drc_cfg.sw_drc_space_sgm_inv1    = adrc_data.DrcProcRes.Drc_v20.sw_drc_space_sgm_inv1;
-    isp_cfg.others.drc_cfg.sw_drc_space_sgm_inv0     = adrc_data.DrcProcRes.Drc_v20.sw_drc_space_sgm_inv0;
-    isp_cfg.others.drc_cfg.sw_drc_range_sgm_inv1     = adrc_data.DrcProcRes.Drc_v20.sw_drc_range_sgm_inv1;
-    isp_cfg.others.drc_cfg.sw_drc_range_sgm_inv0 = adrc_data.DrcProcRes.Drc_v20.sw_drc_range_sgm_inv0;
-    isp_cfg.others.drc_cfg.sw_drc_weig_maxl    = adrc_data.DrcProcRes.Drc_v20.sw_drc_weig_maxl;
-    isp_cfg.others.drc_cfg.sw_drc_weig_bilat  = adrc_data.DrcProcRes.Drc_v20.sw_drc_weig_bilat;
-    isp_cfg.others.drc_cfg.sw_drc_iir_weight  = adrc_data.DrcProcRes.Drc_v20.sw_drc_iir_weight;
-    isp_cfg.others.drc_cfg.sw_drc_min_ogain  = adrc_data.DrcProcRes.Drc_v20.sw_drc_min_ogain;
+    isp_cfg.others.drc_cfg.sw_drc_offset_pow2     = adrc_data.DrcProcRes.Drc_v21.sw_drc_offset_pow2;
+    isp_cfg.others.drc_cfg.sw_drc_compres_scl  = adrc_data.DrcProcRes.Drc_v21.sw_drc_compres_scl;
+    isp_cfg.others.drc_cfg.sw_drc_position  = adrc_data.DrcProcRes.Drc_v21.sw_drc_position;
+    isp_cfg.others.drc_cfg.sw_drc_delta_scalein        = adrc_data.DrcProcRes.Drc_v21.sw_drc_delta_scalein;
+    isp_cfg.others.drc_cfg.sw_drc_hpdetail_ratio      = adrc_data.DrcProcRes.Drc_v21.sw_drc_hpdetail_ratio;
+    isp_cfg.others.drc_cfg.sw_drc_lpdetail_ratio     = adrc_data.DrcProcRes.Drc_v21.sw_drc_lpdetail_ratio;
+    isp_cfg.others.drc_cfg.sw_drc_weicur_pix      = adrc_data.DrcProcRes.Drc_v21.sw_drc_weicur_pix;
+    isp_cfg.others.drc_cfg.sw_drc_weipre_frame  = adrc_data.DrcProcRes.Drc_v21.sw_drc_weipre_frame;
+    isp_cfg.others.drc_cfg.sw_drc_force_sgm_inv0   = adrc_data.DrcProcRes.Drc_v21.sw_drc_force_sgm_inv0;
+    isp_cfg.others.drc_cfg.sw_drc_motion_scl     = adrc_data.DrcProcRes.Drc_v21.sw_drc_motion_scl;
+    isp_cfg.others.drc_cfg.sw_drc_edge_scl   = adrc_data.DrcProcRes.Drc_v21.sw_drc_edge_scl;
+    isp_cfg.others.drc_cfg.sw_drc_space_sgm_inv1    = adrc_data.DrcProcRes.Drc_v21.sw_drc_space_sgm_inv1;
+    isp_cfg.others.drc_cfg.sw_drc_space_sgm_inv0     = adrc_data.DrcProcRes.Drc_v21.sw_drc_space_sgm_inv0;
+    isp_cfg.others.drc_cfg.sw_drc_range_sgm_inv1     = adrc_data.DrcProcRes.Drc_v21.sw_drc_range_sgm_inv1;
+    isp_cfg.others.drc_cfg.sw_drc_range_sgm_inv0 = adrc_data.DrcProcRes.Drc_v21.sw_drc_range_sgm_inv0;
+    isp_cfg.others.drc_cfg.sw_drc_weig_maxl    = adrc_data.DrcProcRes.Drc_v21.sw_drc_weig_maxl;
+    isp_cfg.others.drc_cfg.sw_drc_weig_bilat  = adrc_data.DrcProcRes.Drc_v21.sw_drc_weig_bilat;
+    isp_cfg.others.drc_cfg.sw_drc_iir_weight  = adrc_data.DrcProcRes.Drc_v21.sw_drc_iir_weight;
+    isp_cfg.others.drc_cfg.sw_drc_min_ogain  = adrc_data.DrcProcRes.Drc_v21.sw_drc_min_ogain;
 
     for(int i = 0; i < 17; i++) {
-        isp_cfg.others.drc_cfg.sw_drc_gain_y[i]    = adrc_data.DrcProcRes.Drc_v20.sw_drc_gain_y[i];
-        isp_cfg.others.drc_cfg.sw_drc_compres_y[i]    = adrc_data.DrcProcRes.Drc_v20.sw_drc_compres_y[i];
-        isp_cfg.others.drc_cfg.sw_drc_scale_y[i]    = adrc_data.DrcProcRes.Drc_v20.sw_drc_scale_y[i];
+        isp_cfg.others.drc_cfg.sw_drc_gain_y[i]    = adrc_data.DrcProcRes.Drc_v21.sw_drc_gain_y[i];
+        isp_cfg.others.drc_cfg.sw_drc_compres_y[i]    = adrc_data.DrcProcRes.Drc_v21.sw_drc_compres_y[i];
+        isp_cfg.others.drc_cfg.sw_drc_scale_y[i]    = adrc_data.DrcProcRes.Drc_v21.sw_drc_scale_y[i];
     }
 
 #if 0
@@ -976,6 +1012,28 @@ void Isp21Params::convertAiqAgicToIsp21Params(T& isp_cfg,
     }
 }
 
+template<class T>
+void
+Isp21Params::convertAiqCsmToIsp21Params(T& isp_cfg,
+                                       const rk_aiq_acsm_params_t& csm_param)
+{
+    struct isp21_csm_cfg* csm_cfg = &isp_cfg.others.csm_cfg;
+    if (csm_param.op_mode == RK_AIQ_OP_MODE_MANUAL ||
+        csm_param.op_mode == RK_AIQ_OP_MODE_AUTO) {
+        isp_cfg.module_ens |= ISP2X_MODULE_CSM;
+        isp_cfg.module_en_update |= ISP2X_MODULE_CSM;
+        isp_cfg.module_cfg_update |= ISP2X_MODULE_CSM;
+        csm_cfg->csm_full_range = csm_param.full_range ? 1 : 0;
+        csm_cfg->csm_y_offset = csm_param.y_offset;
+        csm_cfg->csm_c_offset = csm_param.c_offset;
+        csm_cfg->csm_coeff[ISP21_CSM_COEFF_NUM];
+        memcpy(csm_cfg->csm_coeff, csm_param.coeff, sizeof(csm_cfg->csm_coeff));
+    } else {
+        isp_cfg.module_ens &= ~ISP2X_MODULE_CSM;
+        isp_cfg.module_en_update |= ISP2X_MODULE_CSM;
+    }
+}
+
 bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
         void* isp_cfg_p)
 {
@@ -994,14 +1052,18 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     case RESULT_TYPE_AWBGAIN_PARAM:
     {
         SmartPtr<RkAiqIspAwbGainParamsProxy> awb_gain = result.dynamic_cast_ptr<RkAiqIspAwbGainParamsProxy>();
-        if (awb_gain.ptr() && mBlcResult.ptr()) {
-            SmartPtr<RkAiqIspBlcParamsProxyV21> blc = mBlcResult.dynamic_cast_ptr<RkAiqIspBlcParamsProxyV21>();
-            convertAiqAwbGainToIsp21Params(isp_cfg,
-                                           awb_gain->data()->result, blc->data()->result, true);
+        if (awb_gain.ptr()) {
+            if(mBlcResult.ptr()) {
+                SmartPtr<RkAiqIspBlcParamsProxyV21> blc = mBlcResult.dynamic_cast_ptr<RkAiqIspBlcParamsProxyV21>();
+                convertAiqAwbGainToIsp21Params(isp_cfg,
+                                               awb_gain->data()->result, &blc->data()->result, true);
+            } else {
+                convertAiqAwbGainToIsp21Params(isp_cfg,
+                                               awb_gain->data()->result, nullptr, true);
+            }
 
         } else
-            LOGE("don't get %s params, convert awbgain params failed!",
-                 awb_gain.ptr() ? "blc" : "awb_gain");
+            LOGE("don't get awb_gain params, convert awbgain params failed!");
 
     }
     break;
@@ -1169,13 +1231,11 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
 #endif
     break;
     case RESULT_TYPE_CSM_PARAM:
-#if 0
     {
         SmartPtr<RkAiqIspCsmParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspCsmParamsProxy>();
         if (params.ptr())
-            convertAiqToIsp20Params(isp_cfg, params->data()->result);
+            convertAiqCsmToIsp21Params(isp_cfg, params->data()->result);
     }
-#endif
     break;
     case RESULT_TYPE_CGC_PARAM:
         break;

@@ -23,67 +23,73 @@
 #include "stdlib.h"
 #include "string.h"
 #include "uAPI2/rk_aiq_user_api2_wrapper.h"
-#include "uAPI/rk_aiq_user_api_sysctl.h"
+#include "rk_aiq_user_api_sysctl.h"
 #include "uAPI2/rk_aiq_user_api2_ae.h"
 #include "uAPI2/rk_aiq_user_api2_imgproc.h"
 
 int rk_aiq_uapi_sysctl_swWorkingModeDyn2(const rk_aiq_sys_ctx_t *ctx,
-                                         work_mode_t *mode) {
-  return rk_aiq_uapi_sysctl_swWorkingModeDyn(ctx, mode->mode);
+        work_mode_t *mode) {
+    return rk_aiq_uapi_sysctl_swWorkingModeDyn(ctx, mode->mode);
 }
 
 int rk_aiq_uapi_sysctl_getWorkingModeDyn(const rk_aiq_sys_ctx_t *ctx,
-                                         work_mode_t *mode) {
-  (void)ctx;
-  mode->mode = RK_AIQ_WORKING_MODE_NORMAL;
-  return 0;
+        work_mode_t *mode) {
+    (void)ctx;
+    mode->mode = RK_AIQ_WORKING_MODE_NORMAL;
+    return 0;
 }
 
 int rk_aiq_uapi2_setWBMode2(rk_aiq_sys_ctx_t *ctx, uapi_wb_mode_t *mode) {
-  return rk_aiq_uapi2_setWBMode(ctx, mode->mode);
+    return rk_aiq_uapi2_setWBMode(ctx, mode->mode);
 }
 
 int rk_aiq_uapi2_getWBMode2(rk_aiq_sys_ctx_t *ctx, uapi_wb_mode_t *mode) {
-  return rk_aiq_uapi2_getWBMode(ctx, &mode->mode);
+    return rk_aiq_uapi2_getWBMode(ctx, &mode->mode);
 }
 
 int rk_aiq_user_api2_amerge_SetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx, uapiMergeCurrCtlData_t* ctldata)
 {
-  amerge_attrib_t setdata;
+    amerge_attrib_t setdata;
 
-  memset(&setdata, 0, sizeof(amerge_attrib_t));
+    memset(&setdata, 0, sizeof(amerge_attrib_t));
 
-  rk_aiq_user_api2_amerge_GetAttrib(sys_ctx, &setdata);
+    rk_aiq_user_api2_amerge_GetAttrib(sys_ctx, &setdata);
 
-  memcpy(&setdata.CtlInfo, ctldata, sizeof(uapiMergeCurrCtlData_t));
+    if(CHECK_ISP_HW_V21())
+        memcpy(&setdata.attrV21.CtlInfo, ctldata, sizeof(uapiMergeCurrCtlData_t));
+    else if(CHECK_ISP_HW_V30())
+        memcpy(&setdata.attrV30.CtlInfo, ctldata, sizeof(uapiMergeCurrCtlData_t));
 
-  return rk_aiq_user_api2_amerge_SetAttrib(sys_ctx, setdata);
+    return rk_aiq_user_api2_amerge_SetAttrib(sys_ctx, setdata);
 }
 
 int rk_aiq_user_api2_amerge_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx, uapiMergeCurrCtlData_t* ctldata)
 {
-  amerge_attrib_t setdata;
+    amerge_attrib_t setdata;
 
-  memset(&setdata, 0, sizeof(amerge_attrib_t));
+    memset(&setdata, 0, sizeof(amerge_attrib_t));
 
-  rk_aiq_user_api2_amerge_GetAttrib(sys_ctx, &setdata);
+    rk_aiq_user_api2_amerge_GetAttrib(sys_ctx, &setdata);
 
-  memcpy(ctldata, &setdata.CtlInfo, sizeof(uapiMergeCurrCtlData_t));
+    if(CHECK_ISP_HW_V21())
+        memcpy(ctldata, &setdata.attrV21.CtlInfo, sizeof(uapiMergeCurrCtlData_t));
+    else if(CHECK_ISP_HW_V30())
+        memcpy(ctldata, &setdata.attrV30.CtlInfo, sizeof(uapiMergeCurrCtlData_t));
 
-  return 0;
+    return 0;
 }
 
 int rk_aiq_user_api2_set_scene(const rk_aiq_sys_ctx_t* sys_ctx, aiq_scene_t* scene)
 {
-  return rk_aiq_uapi_sysctl_switch_scene(sys_ctx, scene->main_scene, scene->sub_scene);
+    return rk_aiq_uapi_sysctl_switch_scene(sys_ctx, scene->main_scene, scene->sub_scene);
 }
 
 int rk_aiq_user_api2_get_scene(const rk_aiq_sys_ctx_t* sys_ctx, aiq_scene_t* scene)
 {
-  (void)sys_ctx;
-  scene->main_scene = strdup("normal");
-  scene->sub_scene = strdup("day");
+    (void)sys_ctx;
+    scene->main_scene = strdup("normal");
+    scene->sub_scene = strdup("day");
 
-  return 0;
+    return 0;
 }
 

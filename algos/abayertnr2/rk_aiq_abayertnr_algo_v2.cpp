@@ -252,8 +252,16 @@ Abayertnr_result_V2_t Abayertnr_GetProcResult_V2(Abayertnr_Context_V2_t *pAbayer
     //transfer to reg value
     bayertnr_fix_transfer_V2(&pAbayertnrResult->st3DSelect, &pAbayertnrResult->st3DFix, pAbayertnrCtx->fStrength, &pAbayertnrCtx->stExpInfo);
 
-    LOGD_ANR("%s:%d xml:local:%d mode:%d  reg: local gain:%d  mfnr gain:%d mode:%d\n",
-             __FUNCTION__, __LINE__);
+    if(pAbayertnrCtx->eMode == ABAYERTNRV2_OP_MODE_REG_MANUAL) {
+        pAbayertnrResult->st3DFix = pAbayertnrCtx->stManual.st3DFix;
+    }
+
+    LOGD_ANR("%s:%d abayertnr eMode:%d bypass:%d iso:%d fstrength:%f\n",
+             __FUNCTION__, __LINE__,
+             pAbayertnrCtx->eMode,
+             pAbayertnrResult->st3DFix.bay3d_bypass_en,
+             pAbayertnrCtx->stExpInfo.arIso[pAbayertnrCtx->stExpInfo.hdr_mode],
+             pAbayertnrCtx->fStrength);
 
     LOGI_ANR("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ABAYERTNRV2_RET_SUCCESS;

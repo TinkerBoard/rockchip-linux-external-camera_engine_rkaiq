@@ -71,23 +71,13 @@ Abayer2dnr_result_V2_t Abayer2dnr_Init_V2(Abayer2dnr_Context_V2_t **ppAbayernrCt
     pAbayernrCtx->isGrayMode = false;
     pAbayernrCtx->isReCalculate = 1;
 
-#if 1
     //read v1 params from xml
 #if (ABAYER2DNR_USE_JSON_FILE_V2)
     CalibDbV2_Bayer2dnr_V2_t * pcalibdbV2_bayernr_v2 =
         (CalibDbV2_Bayer2dnr_V2_t *)(CALIBDBV2_GET_MODULE_PTR((CamCalibDbV2Context_t*)pCalibDb, bayer2dnr_v2));
     pAbayernrCtx->bayernr_v2 = *pcalibdbV2_bayernr_v2;
-#else
-    pAbayernrCtx->list_bayernr_v2 =
-        (struct list_head*)(CALIBDB_GET_MODULE_PTR((CamCalibDbContext_t *)pCalibDb, list_bayernr_v2));
-    printf("%s(%d): bayernr list:%p\n", __FUNCTION__, __LINE__, pAbayernrCtx->list_bayernr_v2);
-#endif
 #endif
 
-#if RK_SIMULATOR_HW
-    //just for v2 params from html
-
-#endif
 
 #if 1
     pAbayernrCtx->stExpInfo.snr_mode = 1;
@@ -209,9 +199,7 @@ Abayer2dnr_result_V2_t Abayer2dnr_Process_V2(Abayer2dnr_Context_V2_t *pAbayernrC
 
     if(pAbayernrCtx->eMode == ABAYER2DNR_OP_MODE_AUTO) {
 
-        LOGD_ANR("%s(%d): \n", __FUNCTION__, __LINE__);
-
-#if ABAYER2DNR_USE_XML_FILE_V2
+#if ABAYER2DNR_USE_JSON_FILE_V2
         if(pExpInfo->snr_mode != pAbayernrCtx->stExpInfo.snr_mode || pAbayernrCtx->eParamMode != mode) {
             LOGD_ANR("param mode:%d snr_mode:%d\n", mode, pExpInfo->snr_mode);
             pAbayernrCtx->eParamMode = mode;
@@ -248,13 +236,17 @@ Abayer2dnr_result_V2_t Abayer2dnr_GetProcResult_V2(Abayer2dnr_Context_V2_t *pAba
 
         pAbayernrResult->st2DSelect = pAbayernrCtx->stAuto.st2DSelect;
     } else if(pAbayernrCtx->eMode == ABAYER2DNR_OP_MODE_MANUAL) {
-        //TODO
         pAbayernrResult->st2DSelect = pAbayernrCtx->stManual.st2DSelect;
         pAbayernrCtx->fRawnr_SF_Strength = 1.0;
     }
 
     //transfer to reg value
     bayer2dnr_fix_transfer_V2(&pAbayernrResult->st2DSelect, &pAbayernrResult->st2DFix, pAbayernrCtx->fRawnr_SF_Strength, &pAbayernrCtx->stExpInfo);
+
+    if(pAbayernrCtx->eMode == ABAYER2DNR_OP_MODE_REG_MANUAL) {
+        pAbayernrResult->st2DFix = pAbayernrCtx->stManual.st2Dfix;
+        pAbayernrCtx->fRawnr_SF_Strength = 1.0;
+    }
 
     LOGD_ANR("%s:%d xml:local:%d mode:%d  reg: local gain:%d  mfnr gain:%d mode:%d\n",
              __FUNCTION__, __LINE__);
@@ -300,8 +292,6 @@ Abayer2dnr_result_V2_t Abayer2dnr_ConfigSettingParam_V2(Abayer2dnr_Context_V2_t 
 
 #if (ABAYER2DNR_USE_JSON_FILE_V2)
     bayer2dnr_config_setting_param_json_V2(&pAbayernrCtx->stAuto.st2DParams, &pAbayernrCtx->bayernr_v2, param_mode_name, snr_name);
-#else
-    bayer2dnr_config_setting_param_V2(&pAbayernrCtx->stAuto.st2DParams, pAbayernrCtx->list_bayernr_v2, param_mode_name, snr_name);
 #endif
     LOGI_ANR("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ABAYER2DNR_RET_SUCCESS;

@@ -23,7 +23,7 @@
 #include "j2s.h"
 #include "stdlib.h"
 #include "string.h"
-#include "uAPI/rk_aiq_user_api_sysctl.h"
+#include "rk_aiq_user_api_sysctl.h"
 #include "uAPI2/rk_aiq_user_api2_ae.h"
 #include "uAPI2/rk_aiq_user_api2_imgproc.h"
 #include "uAPI2/rk_aiq_user_api2_wrapper.h"

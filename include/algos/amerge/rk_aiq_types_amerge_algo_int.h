@@ -13,108 +13,81 @@
 
 #include "RkAiqCalibDbTypes.h"
 #include "amerge_head.h"
+#include "amerge_uapi_head.h"
+
 
 #define ISP20_HDRMGE_OE_CURVE_NUM   (17)
 #define ISP20_HDRMGE_MD_CURVE_NUM   (17)
 #define ISP3X_HDRMGE_OE_CURVE_NUM   ISP20_HDRMGE_OE_CURVE_NUM
 #define ISP3X_HDRMGE_MD_CURVE_NUM   ISP20_HDRMGE_MD_CURVE_NUM
 
-
-typedef struct mgeCtrlData_S
-{
-    float stCoef;
-    float stCoefMax;
-    float stCoefMin;
-    float stSmthMax;
-    float stSmthMin;
-    float stOfstMax;
-    float stOfstMin;
-} mgeCtrlData_t;
-
-typedef struct amgeAttr_s
-{
-    mgeCtrlData_t stMDCurveLM;
-    mgeCtrlData_t stMDCurveMS;
-    mgeCtrlData_t stOECurve;
-} amgeAttr_t;
-
-typedef struct mmgeAttr_s
-{
-    float OECurve_smooth;
-    float OECurve_offset;
-    float MDCurveLM_smooth;
-    float MDCurveLM_offset;
-    float MDCurveMS_smooth;
-    float MDCurveMS_offset;
-    float dampOE;
-    float dampMDLM;
-    float dampMDMS;
-} mmgeAttr_t;
-
-typedef struct amergeAttr_s
-{
-    bool      bUpdateMge;
-    amgeAttr_t stMgeAuto;
-} amergeAttr_t;
-
-typedef struct mmergeAttr_s
-{
-    bool      bUpdateMge;
-    mmgeAttr_t stMgeManual;
-} mmergeAttr_t;
-
-typedef enum merge_OpMode_s {
+typedef enum merge_OpModeV21_e {
     MERGE_OPMODE_API_OFF = 0, // run IQ ahdr
-    MERGE_OPMODE_AUTO = 1, //run api auto ahdr
-    MERGE_OPMODE_MANU = 2, //run api manual ahdr
-    MERGE_OPMODE_TOOL = 3, // for tool
-} merge_OpMode_t;
+    MERGE_OPMODE_MANU = 1, //run api manual ahdr
+} merge_OpModeV21_t;
 
-typedef struct MergeCurrCtlData_s
-{
-    float Envlv;
-    float MoveCoef;
-} MergeCurrCtlData_t;
+typedef uapiMergeCurrCtlData_t MergeCurrCtlData_t;
 
-typedef struct MergeCurrRegDataV20_s
-{
-    float OECurve_smooth;
-    float OECurve_offset;
-    float MDCurveLM_smooth;
-    float MDCurveLM_offset;
-    float MDCurveMS_smooth;
-    float MDCurveMS_offset;
-} MergeCurrRegDataV20_t;
+typedef struct mMergeOECurveV21_s {
+    float Smooth;
+    float Offset;
+} mMergeOECurveV21_t;
 
-typedef struct MergeCurrRegDataV30_s
-{
-    float OECurve_smooth;
-    float OECurve_offset;
-    float MDCurveLM_smooth;
-    float MDCurveLM_offset;
-    float MDCurveMS_smooth;
-    float MDCurveMS_offset;
-    float MDCurve_Coef;
-    float MDCurve_ms_thd0;
-    float MDCurve_lm_thd0;
-} MergeCurrRegDataV30_t;
+typedef struct mMergeMDCurveV21_s {
+    float LM_smooth;
+    float LM_offset;
+    float MS_smooth;
+    float MS_offset;
+} mMergeMDCurveV21_t;
 
-typedef struct MergeCurrRegData_s
+typedef struct mmergeAttrV21_s
 {
-    union {
-        MergeCurrRegDataV20_t Merge_v20;
-        MergeCurrRegDataV30_t Merge_v30;
-    };
-} MergeCurrRegData_t;
+    mMergeOECurveV21_t OECurve;
+    mMergeMDCurveV21_t MDCurve;
+} mmergeAttrV21_t;
 
-typedef struct mergeAttr_s
+typedef struct mergeAttrV21_s
 {
-    merge_OpMode_t    opMode;
-    amergeAttr_t    stAuto;
-    mmergeAttr_t stManual;
+    merge_OpModeV21_t    opMode;
+    mmergeAttrV21_t      stManual;
+    MergeCurrCtlData_t   CtlInfo;
+} mergeAttrV21_t;
+
+typedef struct mLongFrameModeData_s {
+    mMergeOECurveV21_t OECurve;
+    mMergeMDCurveV21_t MDCurve;
+} mLongFrameModeData_t;
+
+typedef struct mMergeMDCurveV30Short_s {
+    float Coef;
+    float ms_thd0;
+    float lm_thd0;
+} mMergeMDCurveV30Short_t;
+
+typedef struct mShortFrameModeData_s {
+    mMergeOECurveV21_t OECurve;
+    mMergeMDCurveV30Short_t MDCurve;
+} mShortFrameModeData_t;
+
+typedef struct mMergeAttrV30_s
+{
+    MergeBaseFrame_t BaseFrm;
+    mLongFrameModeData_t LongFrmModeData;
+    mShortFrameModeData_t ShortFrmModeData;
+} mMergeAttrV30_t;
+
+typedef struct mergeAttrV30_s
+{
+    merge_OpModeV21_t    opMode;
+    mMergeAttrV30_t stManual;
     MergeCurrCtlData_t CtlInfo;
-    MergeCurrRegData_t RegInfo;
-    CalibDbV2_merge_t stTool;
+} mergeAttrV30_t;
+
+typedef struct mergeAttr_s {
+    rk_aiq_uapi_sync_t sync;
+
+    mergeAttrV21_t    attrV21;
+    mergeAttrV30_t    attrV30;
 } mergeAttr_t;
 
 typedef struct MgeProcRes_s
@@ -167,6 +140,5 @@ typedef struct RkAiqAmergeProcResult_s
     bool update;;
     bool LongFrameMode;
 } RkAiqAmergeProcResult_t;
-
 
 #endif

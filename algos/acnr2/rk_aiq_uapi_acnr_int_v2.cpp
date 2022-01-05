@@ -14,8 +14,13 @@ rk_aiq_uapi_acnrV2_SetAttrib(RkAiqAlgoContext *ctx,
     Acnr_Context_V2_t* pCtx = (Acnr_Context_V2_t*)ctx;
 
     pCtx->eMode = attr->eMode;
-    pCtx->stAuto = attr->stAuto;
-    pCtx->stManual = attr->stManual;
+    if(pCtx->eMode == ACNRV2_OP_MODE_AUTO) {
+        pCtx->stAuto = attr->stAuto;
+    } else if(pCtx->eMode == ACNRV2_OP_MODE_MANUAL) {
+        pCtx->stManual.stSelect = attr->stManual.stSelect;
+    } else if(pCtx->eMode == ACNRV2_OP_MODE_REG_MANUAL) {
+        pCtx->stManual.stFix = attr->stManual.stFix;
+    }
     pCtx->isReCalculate |= 1;
 
     return XCAM_RETURN_NO_ERROR;
@@ -49,7 +54,9 @@ rk_aiq_uapi_acnrV2_SetChromaSFStrength(const RkAiqAlgoContext *ctx,
     if(fPercent <= 0.5) {
         fStrength =  fPercent / 0.5;
     } else {
-        fStrength = (fPercent - 0.5) * (fMax - 1) * 2 + 1;
+        if(fPercent >= 0.999999)
+            fPercent = 0.999999;
+        fStrength = 0.5 / (1.0 - fPercent);
     }
 
     pCtx->fCnr_SF_Strength = fStrength;
@@ -74,7 +81,12 @@ rk_aiq_uapi_acnrV2_GetChromaSFStrength(const RkAiqAlgoContext *ctx,
     if(fStrength <= 1) {
         *pPercent = fStrength * 0.5;
     } else {
-        *pPercent = (fStrength - 1) / ((fMax - 1) * 2) + 0.5;
+        float tmp = 1.0;
+        tmp = 1 - 0.5 / fStrength;
+        if(abs(tmp - 0.999999) < 0.000001) {
+            tmp = 1.0;
+        }
+        *pPercent = tmp;
     }
 
 

@@ -19,17 +19,19 @@
 
 namespace RkCam {
 
+DEFINE_HANDLE_REGISTER_TYPE(RkAiqAcnrV1HandleInt);
+
 void RkAiqAcnrV1HandleInt::init() {
     ENTER_ANALYZER_FUNCTION();
 
     RkAiqHandle::deInit();
-    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAcnrV1Int());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAcnrV1Int());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAcnrV1Int());
-    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAcnrV1Int());
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAcnrV1Int());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAcnrV1Int());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAcnrV1Int());
+    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAcnrV1());
+    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAcnrV1());
+    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAcnrV1());
+    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAcnrV1());
+    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAcnrV1());
+    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAcnrV1());
+    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAcnrV1());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -175,7 +177,7 @@ XCamReturn RkAiqAcnrV1HandleInt::prepare() {
     ret = RkAiqHandle::prepare();
     RKAIQCORE_CHECK_RET(ret, "acnr handle prepare failed");
 
-    RkAiqAlgoConfigAcnrV1Int* acnr_config_int = (RkAiqAlgoConfigAcnrV1Int*)mConfig;
+    RkAiqAlgoConfigAcnrV1* acnr_config_int = (RkAiqAlgoConfigAcnrV1*)mConfig;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->prepare(mConfig);
@@ -190,27 +192,20 @@ XCamReturn RkAiqAcnrV1HandleInt::preProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPreAcnrV1Int* acnr_pre_int        = (RkAiqAlgoPreAcnrV1Int*)mPreInParam;
-    RkAiqAlgoPreResAcnrV1Int* acnr_pre_res_int = (RkAiqAlgoPreResAcnrV1Int*)mPreOutParam;
+    RkAiqAlgoPreAcnrV1* acnr_pre_int        = (RkAiqAlgoPreAcnrV1*)mPreInParam;
+    RkAiqAlgoPreResAcnrV1* acnr_pre_res_int = (RkAiqAlgoPreResAcnrV1*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqPreResComb* comb                       = &shared->preResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::preProcess();
     if (ret) {
-        comb->acnr_pre_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "acnr handle preProcess failed");
     }
-
-    comb->acnr_pre_res = NULL;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->pre_process(mPreInParam, mPreOutParam);
     RKAIQCORE_CHECK_RET(ret, "acnr algo pre_process failed");
-    // set result to mAiqCore
-    comb->acnr_pre_res = (RkAiqAlgoPreResAcnr*)acnr_pre_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -221,23 +216,16 @@ XCamReturn RkAiqAcnrV1HandleInt::processing() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoProcAcnrV1Int* acnr_proc_int        = (RkAiqAlgoProcAcnrV1Int*)mProcInParam;
-    RkAiqAlgoProcResAcnrV1Int* acnr_proc_res_int = (RkAiqAlgoProcResAcnrV1Int*)mProcOutParam;
+    RkAiqAlgoProcAcnrV1* acnr_proc_int        = (RkAiqAlgoProcAcnrV1*)mProcInParam;
+    RkAiqAlgoProcResAcnrV1* acnr_proc_res_int = (RkAiqAlgoProcResAcnrV1*)mProcOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqProcResComb* comb                      = &shared->procResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
-    static int acnr_proc_framecnt               = 0;
-    acnr_proc_framecnt++;
 
     ret = RkAiqHandle::processing();
     if (ret) {
-        comb->acnr_proc_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "acnr handle processing failed");
     }
-
-    comb->acnr_proc_res = NULL;
 
     // TODO: fill procParam
     acnr_proc_int->iso      = sharedCom->iso;
@@ -246,8 +234,6 @@ XCamReturn RkAiqAcnrV1HandleInt::processing() {
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
     RKAIQCORE_CHECK_RET(ret, "aynr algo processing failed");
-
-    comb->acnr_proc_res = (RkAiqAlgoProcResAcnr*)acnr_proc_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -258,27 +244,21 @@ XCamReturn RkAiqAcnrV1HandleInt::postProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPostAcnrV1Int* acnr_post_int        = (RkAiqAlgoPostAcnrV1Int*)mPostInParam;
-    RkAiqAlgoPostResAcnrV1Int* acnr_post_res_int = (RkAiqAlgoPostResAcnrV1Int*)mPostOutParam;
+    RkAiqAlgoPostAcnrV1* acnr_post_int        = (RkAiqAlgoPostAcnrV1*)mPostInParam;
+    RkAiqAlgoPostResAcnrV1* acnr_post_res_int = (RkAiqAlgoPostResAcnrV1*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqPostResComb* comb                      = &shared->postResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::postProcess();
     if (ret) {
-        comb->aynr_post_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "acnr handle postProcess failed");
         return ret;
     }
 
-    comb->acnr_post_res       = NULL;
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->post_process(mPostInParam, mPostOutParam);
     RKAIQCORE_CHECK_RET(ret, "acnr algo post_process failed");
-    // set result to mAiqCore
-    comb->acnr_post_res = (RkAiqAlgoPostResAcnr*)acnr_post_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -292,16 +272,14 @@ XCamReturn RkAiqAcnrV1HandleInt::genIspResult(RkAiqFullParams* params,
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqAlgoProcResAcnr* acnr_com = shared->procResComb.acnr_proc_res;
+    RkAiqAlgoProcResAcnrV1* acnr_rk = (RkAiqAlgoProcResAcnrV1*)mProcOutParam;
 
-    if (!acnr_com) {
+    if (!acnr_rk) {
         LOGD_ANALYZER("no aynr result");
         return XCAM_RETURN_NO_ERROR;
     }
 
     if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAcnrV1Int* acnr_rk = (RkAiqAlgoProcResAcnrV1Int*)acnr_com;
-
         LOGD_ANR("oyyf: %s:%d output isp param start\n", __FUNCTION__, __LINE__);
         rk_aiq_isp_cnr_params_v21_t* cnr_param = params->mCnrV21Params->data().ptr();
         if (sharedCom->init) {

@@ -348,10 +348,16 @@
  * - initial version for isp3x(rk3588)
  * - support 8k
  * - support camgroup
+ * v3.0x8.1
+ * - support custom AE/AWB
+ * - expose UAPI2, hide old UAPI
+ * - complete rk3588 module API
+ * - add API sample code
+ * - Along with ISP drv v1.0x8.0
  */
 
-#define RK_AIQ_VERSION_REAL_V "v3.0x00.1"
-#define RK_AIQ_RELEASE_DATE "2021-11-04"
+#define RK_AIQ_VERSION_REAL_V "v3.0x8.1"
+#define RK_AIQ_RELEASE_DATE "2022-01-06"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

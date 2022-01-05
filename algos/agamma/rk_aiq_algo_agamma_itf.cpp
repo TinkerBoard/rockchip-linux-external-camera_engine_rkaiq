@@ -17,9 +17,9 @@
  *
  */
 
-#include "rk_aiq_algo_types_int.h"
 #include "agamma/rk_aiq_algo_agamma_itf.h"
 #include "agamma/rk_aiq_agamma_algo.h"
+#include "rk_aiq_algo_types.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -35,9 +35,8 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
     LOG1_AGAMMA("ENTER: %s \n", __func__);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     AgammaHandle_t* pAgammaHandle = NULL;
-    AlgoCtxInstanceCfgInt* instanc_int = (AlgoCtxInstanceCfgInt*)cfg;
 
-    ret = AgammaInit(&pAgammaHandle, (CamCalibDbV2Context_t*)(instanc_int->calibv2));
+    ret = AgammaInit(&pAgammaHandle, (CamCalibDbV2Context_t*)(cfg->calibv2));
 
     *context = (RkAiqAlgoContext *)(pAgammaHandle);
 
@@ -64,24 +63,24 @@ prepare(RkAiqAlgoCom* params)
     LOG1_AGAMMA("ENTER: %s \n", __func__);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     AgammaHandle_t * pAgammaHandle = (AgammaHandle_t *)params->ctx;
-    RkAiqAlgoConfigAgammaInt* pCfgParam = (RkAiqAlgoConfigAgammaInt*)params;
+    RkAiqAlgoConfigAgamma* pCfgParam = (RkAiqAlgoConfigAgamma*)params;
     rk_aiq_gamma_cfg_t *agamma_config = &pAgammaHandle->agamma_config;
-    pAgammaHandle->working_mode = pCfgParam->agamma_config_com.com.u.prepare.working_mode;
-    pAgammaHandle->prepare_type = pCfgParam->agamma_config_com.com.u.prepare.conf_type;
+    pAgammaHandle->working_mode = pCfgParam->com.u.prepare.working_mode;
+    pAgammaHandle->prepare_type = pCfgParam->com.u.prepare.conf_type;
 
     if(!!(pAgammaHandle->prepare_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
 
         if(CHECK_ISP_HW_V21()) {
             CalibDbV2_gamma_t* calibv2_agamma_calib =
-                (CalibDbV2_gamma_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->rk_com.u.prepare.calibv2), agamma_calib));
+                (CalibDbV2_gamma_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->com.u.prepare.calibv2), agamma_calib));
             memcpy(&pAgammaHandle->CalibDb.Gamma_v20, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_t));//reload iq
         }
         else if(CHECK_ISP_HW_V30()) {
             CalibDbV2_gamma_V30_t* calibv2_agamma_calib =
-                (CalibDbV2_gamma_V30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->rk_com.u.prepare.calibv2), agamma_calib));
+                (CalibDbV2_gamma_V30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->com.u.prepare.calibv2), agamma_calib));
             memcpy(&pAgammaHandle->CalibDb.Gamma_v30, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_V30_t));//reload iq
         }
-        LOGD_AGAMMA("%s: Agamma Reload Para!!!\n", __FUNCTION__);
+        LOGI_AGAMMA("%s: Agamma Reload Para!!!\n", __FUNCTION__);
     }
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);
@@ -92,7 +91,7 @@ static XCamReturn
 pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
     LOG1_AGAMMA("ENTER: %s \n", __func__);
-    RkAiqAlgoPreAgammaInt* pAgammaPreParams = (RkAiqAlgoPreAgammaInt*)inparams;
+    RkAiqAlgoPreAgamma* pAgammaPreParams = (RkAiqAlgoPreAgamma*)inparams;
     AgammaHandle_t* pAgammaHandle = (AgammaHandle_t *)inparams->ctx;
     rk_aiq_gamma_cfg_t *agamma_config = &pAgammaHandle->agamma_config;
 
@@ -107,7 +106,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOG1_AGAMMA("ENTER: %s \n", __func__);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     AgammaHandle_t* pAgammaHandle = (AgammaHandle_t *)inparams->ctx;
-    RkAiqAlgoProcResAgammaInt* pAgammaProcRes = (RkAiqAlgoProcResAgammaInt*)outparams;
+    RkAiqAlgoProcResAgamma* pAgammaProcRes = (RkAiqAlgoProcResAgamma*)outparams;
     AgammaProcRes_t* pProcRes = (AgammaProcRes_t*)&pAgammaProcRes->GammaProcRes;
 
     AgammaProcessing(pAgammaHandle);

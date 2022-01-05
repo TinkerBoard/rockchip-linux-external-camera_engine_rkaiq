@@ -84,6 +84,11 @@ typedef enum RK_AIQ_AWB_BLK_STAT_REALWP_ILL_S {
     RK_AIQ_AWB_BLK_STAT_REALWP_MAX
 } rk_aiq_awb_blk_stat_realwp_ill_e;
 
+typedef enum rk_aiq_awb_stat_cfg_mode_s {
+    RK_AIQ_AWB_STAT_WP_MODE = 0,
+    RK_AIQ_AWB_STAT_GW_MODE = 1,
+} rk_aiq_awb_stat_cfg_mode_e;
+
 typedef struct rk_aiq_awb_stat_cfg_v201_s {
     bool awbEnable;
     bool lscBypEnable;
@@ -132,9 +137,11 @@ typedef struct rk_aiq_awb_stat_cfg_v201_s {
     rk_aiq_awb_xy_type_v201_t xyRangeTypeForBlkStatistics; //used when blkMeasureMode>BLK_MEASURE_MODE_ALL
     rk_aiq_awb_blk_stat_realwp_ill_e illIdxForBlkStatistics; //blkMeasureMode used when blkMeasureMode>BLK_MEASURE_MODE_ALL
     bool blkStatisticsWithLumaWeightEn;
-    int  groupIllIndxCurrent;//for time share
-    int  IllIndxSetCurrent[RK_AIQ_AWB_MAX_WHITEREGIONS_NUM];//for time share
-    char timeSign[64];
+    int  groupIllIndxCurrent;//not register, for time share
+    int  IllIndxSetCurrent[RK_AIQ_AWB_MAX_WHITEREGIONS_NUM];//not register,for time share
+    char timeSign[64];//not register,for time share
+    rk_aiq_awb_stat_cfg_mode_e statCfgMode; //not register,for blc1 used case
+
 } rk_aiq_awb_stat_cfg_v201_t;
 
 //typedef struct stat3a_lightType_s
@@ -176,5 +183,32 @@ typedef struct rk_aiq_awb_stat_res_v201_s {
 
     rk_aiq_awb_stat_cfg_v201_t  awb_cfg_effect_v201;
 } rk_aiq_awb_stat_res_v201_t;
+
+
+typedef struct rk_aiq_awb_stat_res2_v201_s {
+    //method1
+    rk_aiq_awb_stat_wp_res_light_v201_t light[RK_AIQ_AWB_MAX_WHITEREGIONS_NUM];
+    //method2
+    rk_aiq_awb_stat_blk_res_v201_t   blockResult[RK_AIQ_AWB_GRID_NUM_TOTAL];
+    //wpno histogram
+    unsigned int WpNoHist[RK_AIQ_AWB_WP_HIST_BIN_NUM];
+} rk_aiq_awb_stat_res2_v201_t;
+
+
+typedef struct rk_aiq_awb_stat_res2_v30_s {
+    //method1
+    rk_aiq_awb_stat_wp_res_light_v201_t light[RK_AIQ_AWB_MAX_WHITEREGIONS_NUM];
+    int WpNo2[RK_AIQ_AWB_MAX_WHITEREGIONS_NUM];
+    //method2
+    rk_aiq_awb_stat_blk_res_v201_t   blockResult[RK_AIQ_AWB_GRID_NUM_TOTAL];
+    //window in pixel domain
+    rk_aiq_awb_stat_wp_res_light_v201_t multiwindowLightResult[4];
+    //window in xy or uv domain
+    rk_aiq_awb_stat_wp_res_v201_t excWpRangeResult[RK_AIQ_AWB_STAT_WP_RANGE_NUM_V201];
+    //wpno histogram
+    unsigned int WpNoHist[RK_AIQ_AWB_WP_HIST_BIN_NUM];
+} rk_aiq_awb_stat_res2_v30_t;
+
+
 
 #endif

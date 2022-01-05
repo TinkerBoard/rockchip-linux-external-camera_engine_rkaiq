@@ -17,7 +17,6 @@
  *
  */
 
-#include "rk_aiq_algo_types_int.h"
 #include "rk_aiq_algo_camgroup_types.h"
 #include "algos/agamma/rk_aiq_algo_agamma_itf.h"
 #include "algos/agamma/rk_aiq_agamma_algo.h"
@@ -77,7 +76,7 @@ prepare(RkAiqAlgoCom* params)
                 (CalibDbV2_gamma_V30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2), agamma_calib));
             memcpy(&pAgammaGrpCtx->CalibDb.Gamma_v30, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_V30_t));//reload iq
         }
-        LOGD_AGAMMA("%s: Agamma Reload Para!!!\n", __FUNCTION__);
+        LOGI_AGAMMA("%s: Agamma Reload Para!!!\n", __FUNCTION__);
     }
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);

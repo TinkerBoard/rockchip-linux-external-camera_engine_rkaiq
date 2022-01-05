@@ -76,10 +76,7 @@ typedef struct Abayer2dnr_Context_V2_s {
     Abayer2dnr_Auto_Attr_V2_t stAuto;
     Abayer2dnr_Manual_Attr_V2_t stManual;
 
-    struct list_head* list_bayernr_v2;
-
     float fRawnr_SF_Strength;
-    float fRawnr_TF_Strength;
 
     bool isIQParaUpdate;
     bool isGrayMode;

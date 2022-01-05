@@ -21,6 +21,8 @@
 #include "rk_aiq_types_adrc_stat_v200.h"
 #include "RkAiqCalibDbV2Helper.h"
 #include "amerge/rk_aiq_types_amerge_algo_prvt.h"
+#include "rk_aiq_types_adrc_algo_int.h"
+
 
 
 #define DRCGAINMAX     (8)
@@ -132,7 +134,7 @@ typedef struct CompressConfig_s
     uint16_t       Manual_curve[ADRC_Y_NUM];
 } CompressConfig_t;
 
-typedef struct AdrcConfigV20_s
+typedef struct AdrcConfigV21_s
 {
     bool Enable;
     bool OutPutLongFrame;
@@ -141,35 +143,27 @@ typedef struct AdrcConfigV20_s
     LocalDataConfig_t Local;
     CompressConfig_t Compress;
     DrcOhters_t Others;
-} AdrcConfigV20_t;
+} AdrcConfigV21_t;
 
-//typedef struct MotionConfig_s
-//{
-//    int len;
-//    float*            MotionCoef;
-//    float*            MotionStr;
-//} MotionConfig_t;
-
-typedef struct AdrcConfigV21_s
+typedef struct AdrcConfigV30_s
 {
     bool Enable;
     bool OutPutLongFrame;
     AdrcGainConfig_t DrcGain;
     HighLightConfig_t HiLit;
     LocalDataConfigV2_t Local;
-    //MotionConfig_t Motion;
     CompressConfig_t Compress;
     DrcOhters_t Others;
-} AdrcConfigV21_t;
+} AdrcConfigV30_t;
 
 typedef struct AdrcConfig_s {
     union {
-        AdrcConfigV20_t Drc_v20;
         AdrcConfigV21_t Drc_v21;
+        AdrcConfigV30_t Drc_v30;
     };
 } AdrcConfig_t;
 
-typedef struct DrcHandleDataV20_s
+typedef struct DrcHandleDataV21_s
 {
     float DrcGain;
     float Alpha;
@@ -180,9 +174,9 @@ typedef struct DrcHandleDataV20_s
     float LoLitContrast;
     CompressMode_t Mode;
     uint16_t       Manual_curve[ADRC_Y_NUM];
-} DrcHandleDataV20_t;
+} DrcHandleDataV21_t;
 
-typedef struct DrcHandleDataV21_s
+typedef struct DrcHandleDataV30_s
 {
     float DrcGain;
     float Alpha;
@@ -195,12 +189,12 @@ typedef struct DrcHandleDataV21_s
     float LoLitContrast;
     CompressMode_t Mode;
     uint16_t       Manual_curve[ADRC_Y_NUM];
-} DrcHandleDataV21_t;
+} DrcHandleDataV30_t;
 
 typedef struct DrcHandleData_s {
     union {
-        DrcHandleDataV20_t Drc_v20;
         DrcHandleDataV21_t Drc_v21;
+        DrcHandleDataV30_t Drc_v30;
     };
 } DrcHandleData_t;
 
@@ -215,7 +209,6 @@ typedef struct AdrcPrevData_s
 } AdrcPrevData_t;
 
 typedef struct CurrAeResult_s {
-    //TODO
     float MeanLuma[3];
     float GlobalEnvLv;
     float L2M_Ratio;
@@ -272,8 +265,8 @@ typedef struct AdrcSensorInfo_s
 
 typedef struct DrcCalibDB_s {
     union {
-        CalibDbV2_drc_t Drc_v20;
-        CalibDbV2_drc_V2_t Drc_v21;
+        CalibDbV2_drc_t Drc_v21;
+        CalibDbV2_drc_V2_t Drc_v30;
     };
 } DrcCalibDB_t;
 

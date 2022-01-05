@@ -87,7 +87,9 @@ public:
     virtual ~ICamHw() {};
     virtual XCamReturn init(const char* sns_ent_name) = 0;
     virtual XCamReturn deInit() = 0;
+#ifdef RKAIQ_ENABLE_PARSER_V1
     virtual void setCalib(const CamCalibDbContext_t* calib) = 0;
+#endif
     virtual void setCalib(const CamCalibDbV2Context_t* calibv2) = 0;
     virtual XCamReturn prepare(uint32_t width, uint32_t height, int mode, int t_delay, int g_delay) = 0;
     virtual XCamReturn start() = 0;
@@ -131,6 +133,7 @@ public:
     virtual void setCamPhyId(int phyId) = 0;
     virtual int getCamPhyId() = 0;
     virtual void setGroupMode(bool bGroup, bool bMain) = 0;
+    virtual bool get_pdaf_support() = 0;
 private:
     XCAM_DEAD_COPY (ICamHw);
 };

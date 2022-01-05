@@ -30,7 +30,7 @@
 
 #define ADHZ10BITMAX     (1023)
 #define ADHZ10BITMIN     (0)
-#define DEHAZE_API_MANUAL_DEFAULT_LEVEL     (5)
+#define DEHAZE_API_MANUAL_DEFAULT_LEVEL     (50)
 #define DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL     (50)
 
 //define for dehaze local gain

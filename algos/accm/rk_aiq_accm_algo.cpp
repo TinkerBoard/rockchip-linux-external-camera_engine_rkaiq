@@ -922,10 +922,10 @@ XCamReturn AccmManualConfig
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    memcpy(hAccm->ccmHwConf.matrix, hAccm->mCurAtt.stManual.matrix, sizeof(hAccm->mCurAtt.stManual.matrix));
-    memcpy(hAccm->ccmHwConf.offs, hAccm->mCurAtt.stManual.offs, sizeof(hAccm->mCurAtt.stManual.offs));
-    memcpy(hAccm->ccmHwConf.alp_y, hAccm->mCurAtt.stManual.alp_y, sizeof(hAccm->mCurAtt.stManual.alp_y));
-    hAccm->ccmHwConf.bound_bit = hAccm->mCurAtt.stManual.bound_bit;
+    memcpy(hAccm->ccmHwConf.matrix, hAccm->mCurAtt.stManual.ccMatrix, sizeof(hAccm->mCurAtt.stManual.ccMatrix));
+    memcpy(hAccm->ccmHwConf.offs, hAccm->mCurAtt.stManual.ccOffsets, sizeof(hAccm->mCurAtt.stManual.ccOffsets));
+    memcpy(hAccm->ccmHwConf.alp_y, hAccm->mCurAtt.stManual.y_alpha_curve, sizeof(hAccm->mCurAtt.stManual.y_alpha_curve));
+    hAccm->ccmHwConf.bound_bit = hAccm->mCurAtt.stManual.low_bound_pos_bit;
     LOG1_ACCM("%s: (exit)\n", __FUNCTION__);
     return ret;
 
@@ -1011,13 +1011,14 @@ XCamReturn AccmConfig
         else {
             LOGE_ACCM("%s: hAccm->mCurAtt.mode(%d) is invalid \n", __FUNCTION__, hAccm->mCurAtt.mode);
         }
-        memcpy(hAccm->mCurAtt.stManual.matrix, hAccm->ccmHwConf.matrix, sizeof(hAccm->ccmHwConf.matrix));
-        memcpy(hAccm->mCurAtt.stManual.offs, hAccm->ccmHwConf.offs, sizeof(hAccm->ccmHwConf.offs));
-        memcpy(hAccm->mCurAtt.stManual.alp_y, hAccm->ccmHwConf.alp_y, sizeof(hAccm->ccmHwConf.alp_y));
+        memcpy(hAccm->mCurAtt.stManual.ccMatrix, hAccm->ccmHwConf.matrix, sizeof(hAccm->ccmHwConf.matrix));
+        memcpy(hAccm->mCurAtt.stManual.ccOffsets, hAccm->ccmHwConf.offs, sizeof(hAccm->ccmHwConf.offs));
+        memcpy(hAccm->mCurAtt.stManual.y_alpha_curve, hAccm->ccmHwConf.alp_y, sizeof(hAccm->ccmHwConf.alp_y));
 
     } else {
         hAccm->ccmHwConf.ccmEnable = false;
     }
+    hAccm->updateAtt = false;
 
     LOGV_ACCM( " set to ic ccmEnable :%d  bound_bit:%f\n", hAccm->ccmHwConf.ccmEnable, hAccm->ccmHwConf.bound_bit);
 
@@ -1143,10 +1144,10 @@ static XCamReturn UpdateCcmCalibV2Para(accm_handle_t hAccm)
     memcpy( hAccm->ccmHwConf.alp_y, calib_ccm->lumaCCM.y_alpha_curve, sizeof(hAccm->ccmHwConf.alp_y));
 
     // config manual ccm
-    memcpy(hAccm->mCurAtt.stManual.matrix, calib_ccm->manualPara.ccMatrix, sizeof(calib_ccm->manualPara.ccMatrix));
-    memcpy(hAccm->mCurAtt.stManual.offs, calib_ccm->manualPara.ccOffsets, sizeof(calib_ccm->manualPara.ccOffsets));
-    memcpy(hAccm->mCurAtt.stManual.alp_y,  hAccm->ccmHwConf.alp_y, sizeof( hAccm->ccmHwConf.alp_y));
-    hAccm->mCurAtt.stManual.bound_bit = hAccm->ccmHwConf.bound_bit;
+    memcpy(hAccm->mCurAtt.stManual.ccMatrix, calib_ccm->manualPara.ccMatrix, sizeof(calib_ccm->manualPara.ccMatrix));
+    memcpy(hAccm->mCurAtt.stManual.ccOffsets, calib_ccm->manualPara.ccOffsets, sizeof(calib_ccm->manualPara.ccOffsets));
+    memcpy(hAccm->mCurAtt.stManual.y_alpha_curve,  hAccm->ccmHwConf.alp_y, sizeof( hAccm->ccmHwConf.alp_y));
+    hAccm->mCurAtt.stManual.low_bound_pos_bit = hAccm->ccmHwConf.bound_bit;
     hAccm->accmSwInfo.ccmConverged = false;
     hAccm->calib_update = true;
 

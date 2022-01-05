@@ -3,6 +3,7 @@
 
 #include "base/xcam_common.h"
 #include "rk_aiq_algo_des.h"
+#include "rk_aiq_types.h"
 #include "af/rk_aiq_types_af_algo_int.h"
 
 // need_sync means the implementation should consider

@@ -94,6 +94,7 @@ typedef enum AcnrV2_OPMode_e {
     ACNRV2_OP_MODE_INVALID           = 0,                   /**< initialization value */
     ACNRV2_OP_MODE_AUTO              = 1,                   /**< instance is created, but not initialized */
     ACNRV2_OP_MODE_MANUAL            = 2,                   /**< instance is confiured (ready to start) or stopped */
+    ACNRV2_OP_MODE_REG_MANUAL        = 3,
     ACNRV2_OP_MODE_MAX                                      /**< max */
 } AcnrV2_OPMode_t;
 
@@ -120,48 +121,48 @@ typedef struct RK_CNR_Params_V2_s
 {
     int enable;
     float iso[RK_CNR_V2_MAX_ISO_NUM];
-    int rkcnr_hq_bila_bypass[RK_CNR_V2_MAX_ISO_NUM];
-    int rkcnr_lq_bila_bypass[RK_CNR_V2_MAX_ISO_NUM];
+    int hf_bypass[RK_CNR_V2_MAX_ISO_NUM];
+    int lf_bypass[RK_CNR_V2_MAX_ISO_NUM];
 
     // gain
-    float rkcnr_global_gain[RK_CNR_V2_MAX_ISO_NUM];
-    float rkcnr_global_gain_alpha[RK_CNR_V2_MAX_ISO_NUM];
-    float rkcnr_gain_iso[RK_CNR_V2_MAX_ISO_NUM];
+    float global_gain[RK_CNR_V2_MAX_ISO_NUM];
+    float global_gain_alpha[RK_CNR_V2_MAX_ISO_NUM];
+    float local_gain_scale[RK_CNR_V2_MAX_ISO_NUM];
 
     // strength adj by gain
-    int sgmRatio_gain[RK_CNR_V2_MAX_ISO_NUM][RKCNR_V2_SGM_ADJ_TABLE_LEN];
+    int gain_adj_strength_ratio[RK_CNR_V2_MAX_ISO_NUM][RKCNR_V2_SGM_ADJ_TABLE_LEN];
 
     //
-    float ratio[RK_CNR_V2_MAX_ISO_NUM];
-    float offset[RK_CNR_V2_MAX_ISO_NUM];
+    float color_sat_adj[RK_CNR_V2_MAX_ISO_NUM];
+    float color_sat_adj_alpha[RK_CNR_V2_MAX_ISO_NUM];
 
     // step1
     // median filter
-    float medRatio1[RK_CNR_V2_MAX_ISO_NUM];
+    float hf_spikes_reducion_strength[RK_CNR_V2_MAX_ISO_NUM];
 
     // bilateral filter
-    float sigmaR1[RK_CNR_V2_MAX_ISO_NUM];
-    float uvgain1[RK_CNR_V2_MAX_ISO_NUM];
-    float bfRatio1[RK_CNR_V2_MAX_ISO_NUM];
-    int  hbf_wgt_clip[RK_CNR_V2_MAX_ISO_NUM];
+    float hf_denoise_strength[RK_CNR_V2_MAX_ISO_NUM];
+    float hf_color_sat[RK_CNR_V2_MAX_ISO_NUM];
+    float hf_denoise_alpha[RK_CNR_V2_MAX_ISO_NUM];
+    int  hf_bf_wgt_clip[RK_CNR_V2_MAX_ISO_NUM];
 
 
     // step2
     // median filter
-    float medRatio2[RK_CNR_V2_MAX_ISO_NUM];
+    float thumb_spikes_reducion_strength[RK_CNR_V2_MAX_ISO_NUM];
 
     // bilateral filter
-    float sigmaR2[RK_CNR_V2_MAX_ISO_NUM];
-    float uvgain2[RK_CNR_V2_MAX_ISO_NUM];
+    float thumb_denoise_strength[RK_CNR_V2_MAX_ISO_NUM];
+    float thumb_color_sat[RK_CNR_V2_MAX_ISO_NUM];
 
     // step3
     // bilateral filter
-    float sigmaR3[RK_CNR_V2_MAX_ISO_NUM];
-    float uvgain3[RK_CNR_V2_MAX_ISO_NUM];
-    float bfRatio3[RK_CNR_V2_MAX_ISO_NUM];
+    float lf_denoise_strength[RK_CNR_V2_MAX_ISO_NUM];
+    float lf_color_sat[RK_CNR_V2_MAX_ISO_NUM];
+    float lf_denoise_alpha[RK_CNR_V2_MAX_ISO_NUM];
 
     // bilateral filter kernels
-    float kernel_5x5_table[5];
+    float kernel_5x5[5];
 } RK_CNR_Params_V2_t;
 
 typedef struct RK_CNR_Params_V2_Select_s
@@ -169,65 +170,65 @@ typedef struct RK_CNR_Params_V2_Select_s
     int enable;
 
     // bypass
-    int rkcnr_hq_bila_bypass;
-    int rkcnr_lq_bila_bypass;
+    int hf_bypass;
+    int lf_bypass;
 
     // gain
 
     // gain
-    float rkcnr_global_gain;
-    float rkcnr_global_gain_alpha;
-    float rkcnr_gain_iso;
+    float global_gain;
+    float global_gain_alpha;
+    float local_gain_scale;
 
     // strength adj by gain
-    int sgmRatio_gain[RKCNR_V2_SGM_ADJ_TABLE_LEN];
+    int gain_adj_strength_ratio[RKCNR_V2_SGM_ADJ_TABLE_LEN];
 
     //
-    float ratio;
-    float offset;
+    float color_sat_adj;
+    float color_sat_adj_alpha;
 
     // step1
     // median filter
-    float medRatio1;
+    float hf_spikes_reducion_strength;
 
     // bilateral filter
-    float sigmaR1;
-    float uvgain1;
-    float bfRatio1;
-    int hbf_wgt_clip;
+    float hf_denoise_strength;
+    float hf_color_sat;
+    float hf_denoise_alpha;
+    int hf_bf_wgt_clip;
 
     // step2
 
     // median filter
-    float medRatio2;
+    float thumb_spikes_reducion_strength;
 
     // bilateral filter
-    float sigmaR2;
-    float uvgain2;
+    float thumb_denoise_strength;
+    float thumb_color_sat;
 
     // step3
     // bilateral filter
-    float sigmaR3;
-    float uvgain3;
-    float bfRatio3;
+    float lf_denoise_strength;
+    float lf_color_sat;
+    float lf_denoise_alpha;
 
     // bilateral filter kernels
-    float kernel_5x5_table[5];
+    float kernel_5x5[5];
 
 } RK_CNR_Params_V2_Select_t;
 
 
 typedef struct Acnr_Manual_Attr_V2_s
 {
-    int cnrEn;
     RK_CNR_Params_V2_Select_t stSelect;
+
+    RK_CNR_Fix_V2_t stFix;
 
 } Acnr_Manual_Attr_V2_t;
 
 typedef struct Acnr_Auto_Attr_V2_s
 {
     //all ISO params and select param
-    int cnrEn;
 
     RK_CNR_Params_V2_t stParams;
     RK_CNR_Params_V2_Select_t stSelect;
@@ -235,7 +236,6 @@ typedef struct Acnr_Auto_Attr_V2_s
 } Acnr_Auto_Attr_V2_t;
 
 typedef struct Acnr_ProcResult_V2_s {
-    int cnrEn;
 
     //for sw simultaion
     RK_CNR_Params_V2_Select_t stSelect;
@@ -257,15 +257,17 @@ typedef struct Acnr_Config_V2_s {
 
 
 typedef struct rk_aiq_cnr_attrib_v2_s {
+    rk_aiq_uapi_sync_t sync;
     AcnrV2_OPMode_t eMode;
     Acnr_Auto_Attr_V2_t stAuto;
     Acnr_Manual_Attr_V2_t stManual;
 } rk_aiq_cnr_attrib_v2_t;
 
 
-typedef struct rk_aiq_cnr_IQPara_V2_s {
-    struct list_head* listHead;
-} rk_aiq_cnr_IQPara_V2_t;
+typedef struct rk_aiq_cnr_strength_v2_s {
+    rk_aiq_uapi_sync_t sync;
+    float percent;
+} rk_aiq_cnr_strength_v2_t;
 
 
 //calibdb

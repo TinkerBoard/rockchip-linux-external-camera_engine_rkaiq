@@ -259,7 +259,6 @@ AcnrV2_result_t Acnr_GetProcResult_V2(Acnr_Context_V2_t *pAcnrCtx, Acnr_ProcResu
     if(pAcnrCtx->eMode == ACNRV2_OP_MODE_AUTO) {
         pAcnrResult->stSelect = pAcnrCtx->stAuto.stSelect;
     } else if(pAcnrCtx->eMode == ACNRV2_OP_MODE_MANUAL) {
-        //TODO
         pAcnrResult->stSelect = pAcnrCtx->stManual.stSelect;
         pAcnrCtx->fCnr_SF_Strength = 1.0;
     }
@@ -267,8 +266,10 @@ AcnrV2_result_t Acnr_GetProcResult_V2(Acnr_Context_V2_t *pAcnrCtx, Acnr_ProcResu
     //transfer to reg value
     cnr_fix_transfer_V2(&pAcnrResult->stSelect, &pAcnrResult->stFix,  &pAcnrCtx->stExpInfo, pAcnrCtx->fCnr_SF_Strength);
 
-    LOGD_ANR("%s:%d xml:local:%d mode:%d  reg: local gain:%d  mfnr gain:%d mode:%d\n",
-             __FUNCTION__, __LINE__);
+    if(pAcnrCtx->eMode == ACNRV2_OP_MODE_REG_MANUAL) {
+        pAcnrResult->stFix = pAcnrCtx->stManual.stFix;
+        pAcnrCtx->fCnr_SF_Strength = 1.0;
+    }
 
     LOGI_ANR("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ACNRV2_RET_SUCCESS;

@@ -51,6 +51,11 @@ typedef struct rk_aiq_ver_info_s{
 typedef XCamReturn (*rk_aiq_error_cb)(rk_aiq_err_msg_t* err_msg);
 typedef XCamReturn (*rk_aiq_metas_cb)(rk_aiq_metas_t* metas);
 
+typedef enum rk_aiq_cam_type_e {
+    RK_AIQ_CAM_TYPE_SINGLE,
+    RK_AIQ_CAM_TYPE_GROUP,
+} rk_aiq_cam_type_t;
+
 XCAM_END_DECLARE
 
 #endif

@@ -339,6 +339,7 @@ XCamReturn Alut3dConfig
         hAlut3d->lut3d_hw_conf.enable = false;
         hAlut3d->lut3d_hw_conf.bypass_en = true;
     }
+    hAlut3d->updateAtt = false;
 
     LOGD_A3DLUT("%s: enable:(%d),bypass_en(%d) \n", __FUNCTION__,
                 hAlut3d->lut3d_hw_conf.enable,

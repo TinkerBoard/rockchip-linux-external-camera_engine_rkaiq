@@ -106,48 +106,48 @@ AcnrV2_result_t cnr_select_params_by_ISO_V2(RK_CNR_Params_V2_t *pParams, RK_CNR_
 
     pSelect->enable = pParams->enable;
     // bypass
-    pSelect->rkcnr_hq_bila_bypass = pParams->rkcnr_hq_bila_bypass[isoIndex];
-    pSelect->rkcnr_lq_bila_bypass = pParams->rkcnr_lq_bila_bypass[isoIndex];
+    pSelect->hf_bypass = pParams->hf_bypass[isoIndex];
+    pSelect->lf_bypass = pParams->lf_bypass[isoIndex];
 
     // gain
-    pSelect->rkcnr_global_gain = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->rkcnr_global_gain[isoIndexLow], pParams->rkcnr_global_gain[isoIndexHigh], iso, pSelect->rkcnr_global_gain);
-    pSelect->rkcnr_global_gain_alpha = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->rkcnr_global_gain_alpha[isoIndexLow], pParams->rkcnr_global_gain_alpha[isoIndexHigh], iso, pSelect->rkcnr_global_gain_alpha);
-    pSelect->rkcnr_gain_iso = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->rkcnr_gain_iso[isoIndexLow], pParams->rkcnr_gain_iso[isoIndexHigh], iso, pSelect->rkcnr_gain_iso);
+    pSelect->global_gain = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->global_gain[isoIndexLow], pParams->global_gain[isoIndexHigh], iso, pSelect->global_gain);
+    pSelect->global_gain_alpha = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->global_gain_alpha[isoIndexLow], pParams->global_gain_alpha[isoIndexHigh], iso, pSelect->global_gain_alpha);
+    pSelect->local_gain_scale = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->local_gain_scale[isoIndexLow], pParams->local_gain_scale[isoIndexHigh], iso, pSelect->local_gain_scale);
 
     for (int i = 0; i < 13; i++)
     {
-        pSelect->sgmRatio_gain[i] = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->sgmRatio_gain[isoIndexLow][i], pParams->sgmRatio_gain[isoIndexHigh][i], iso, pSelect->sgmRatio_gain[i]);
+        pSelect->gain_adj_strength_ratio[i] = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->gain_adj_strength_ratio[isoIndexLow][i], pParams->gain_adj_strength_ratio[isoIndexHigh][i], iso, pSelect->gain_adj_strength_ratio[i]);
     }
     //
-    pSelect->ratio = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->ratio[isoIndexLow], pParams->ratio[isoIndexHigh], iso, pSelect->ratio);
-    pSelect->offset = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->offset[isoIndexLow], pParams->offset[isoIndexHigh], iso, pSelect->offset);
+    pSelect->color_sat_adj = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->color_sat_adj[isoIndexLow], pParams->color_sat_adj[isoIndexHigh], iso, pSelect->color_sat_adj);
+    pSelect->color_sat_adj_alpha = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->color_sat_adj_alpha[isoIndexLow], pParams->color_sat_adj_alpha[isoIndexHigh], iso, pSelect->color_sat_adj_alpha);
 
     // step1
     // median filter
-    pSelect->medRatio1 = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->medRatio1[isoIndexLow], pParams->medRatio1[isoIndexHigh], iso, pSelect->medRatio1);
+    pSelect->hf_spikes_reducion_strength = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->hf_spikes_reducion_strength[isoIndexLow], pParams->hf_spikes_reducion_strength[isoIndexHigh], iso, pSelect->hf_spikes_reducion_strength);
 
     // bilateral filter
-    pSelect->sigmaR1 = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->sigmaR1[isoIndexLow], pParams->sigmaR1[isoIndexHigh], iso, pSelect->sigmaR1);
-    pSelect->uvgain1 = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->uvgain1[isoIndexLow], pParams->uvgain1[isoIndexHigh], iso, pSelect->uvgain1);
-    pSelect->bfRatio1 = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->bfRatio1[isoIndexLow], pParams->bfRatio1[isoIndexHigh], iso, pSelect->bfRatio1);
-    pSelect->hbf_wgt_clip = pParams->hbf_wgt_clip[isoIndex];
+    pSelect->hf_denoise_strength = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->hf_denoise_strength[isoIndexLow], pParams->hf_denoise_strength[isoIndexHigh], iso, pSelect->hf_denoise_strength);
+    pSelect->hf_color_sat = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->hf_color_sat[isoIndexLow], pParams->hf_color_sat[isoIndexHigh], iso, pSelect->hf_color_sat);
+    pSelect->hf_denoise_alpha = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->hf_denoise_alpha[isoIndexLow], pParams->hf_denoise_alpha[isoIndexHigh], iso, pSelect->hf_denoise_alpha);
+    pSelect->hf_bf_wgt_clip = pParams->hf_bf_wgt_clip[isoIndex];
 
     // step2
     // median filter
-    pSelect->medRatio2 = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->medRatio2[isoIndexLow], pParams->medRatio2[isoIndexHigh], iso, pSelect->medRatio2);
+    pSelect->thumb_spikes_reducion_strength = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->thumb_spikes_reducion_strength[isoIndexLow], pParams->thumb_spikes_reducion_strength[isoIndexHigh], iso, pSelect->thumb_spikes_reducion_strength);
 
     // bilateral filter
-    pSelect->sigmaR2 = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->sigmaR2[isoIndexLow], pParams->sigmaR2[isoIndexHigh], iso, pSelect->sigmaR2);
-    pSelect->uvgain2 = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->uvgain2[isoIndexLow], pParams->uvgain2[isoIndexHigh], iso, pSelect->uvgain2);
+    pSelect->thumb_denoise_strength = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->thumb_denoise_strength[isoIndexLow], pParams->thumb_denoise_strength[isoIndexHigh], iso, pSelect->thumb_denoise_strength);
+    pSelect->thumb_color_sat = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->thumb_color_sat[isoIndexLow], pParams->thumb_color_sat[isoIndexHigh], iso, pSelect->thumb_color_sat);
 
     // step3
     // bilateral filter
-    pSelect->sigmaR3 = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->sigmaR3[isoIndexLow], pParams->sigmaR3[isoIndexHigh], iso, pSelect->sigmaR3);
-    pSelect->uvgain3 = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->uvgain3[isoIndexLow], pParams->uvgain3[isoIndexHigh], iso, pSelect->uvgain3);
-    pSelect->bfRatio3 = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->bfRatio3[isoIndexLow], pParams->bfRatio3[isoIndexHigh], iso, pSelect->bfRatio3);
+    pSelect->lf_denoise_strength = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->lf_denoise_strength[isoIndexLow], pParams->lf_denoise_strength[isoIndexHigh], iso, pSelect->lf_denoise_strength);
+    pSelect->lf_color_sat = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->lf_color_sat[isoIndexLow], pParams->lf_color_sat[isoIndexHigh], iso, pSelect->lf_color_sat);
+    pSelect->lf_denoise_alpha = interp_cnr_v2(isoGainLow, isoGainHigh, pParams->lf_denoise_alpha[isoIndexLow], pParams->lf_denoise_alpha[isoIndexHigh], iso, pSelect->lf_denoise_alpha);
 
     // bilateral filter kernels
-    memcpy(pSelect->kernel_5x5_table, pParams->kernel_5x5_table, sizeof(float) * 5);
+    memcpy(pSelect->kernel_5x5, pParams->kernel_5x5, sizeof(float) * 5);
 
     return ACNRV2_RET_SUCCESS;
 
@@ -188,84 +188,84 @@ AcnrV2_result_t cnr_fix_transfer_V2(RK_CNR_Params_V2_Select_t *pSelect, RK_CNR_F
     //ISP_CNR_2800_CTRL
     pFix->cnr_thumb_mix_cur_en = 0;
     pFix->cnr_exgain_bypass = 0;
-    pFix->cnr_hq_bila_bypass = pSelect->rkcnr_hq_bila_bypass;
-    pFix->cnr_lq_bila_bypass = pSelect->rkcnr_lq_bila_bypass;
+    pFix->cnr_hq_bila_bypass = pSelect->hf_bypass;
+    pFix->cnr_lq_bila_bypass = pSelect->lf_bypass;
     pFix->cnr_en_i = pSelect->enable;
 
     // ISP_CNR_2800_EXGAIN
-    tmp = pSelect->rkcnr_global_gain * (1 << RKCNR_V2_G_GAIN_FIX_BITS);
+    tmp = pSelect->global_gain * (1 << RKCNR_V2_G_GAIN_FIX_BITS);
     pFix->cnr_global_gain = CLIP(tmp, 0, 1023);
-    tmp = pSelect->rkcnr_global_gain_alpha * (1 << RKCNR_V2_G_GAIN_ALPHA_FIX_BITS);
+    tmp = pSelect->global_gain_alpha * (1 << RKCNR_V2_G_GAIN_ALPHA_FIX_BITS);
     if (pFix->cnr_exgain_bypass == 1)
     {
-        tmp = pSelect->rkcnr_global_gain_alpha  = 1.0 * (1 << RKCNR_V2_G_GAIN_ALPHA_FIX_BITS);
+        tmp = pSelect->global_gain_alpha  = 1.0 * (1 << RKCNR_V2_G_GAIN_ALPHA_FIX_BITS);
     }
     pFix->cnr_global_gain_alpha = CLIP(tmp, 0, 8);
 
 
     // ISP_CNR_2800_GAIN_PARA
-    tmp = pSelect->rkcnr_gain_iso * (1 << RKCNR_V2_GAIN_ISO_FIX_BITS);
+    tmp = pSelect->local_gain_scale * (1 << RKCNR_V2_GAIN_ISO_FIX_BITS);
     pFix->cnr_gain_iso = CLIP(tmp, 0, 128);
-    tmp = (int)(pSelect->offset * (1 << RK_CNR_V2_offset));
+    tmp = (int)(pSelect->color_sat_adj_alpha * (1 << RK_CNR_V2_offset));
     pFix->cnr_gain_offset = CLIP(tmp, 0, 16);
-    tmp = (int)(pSelect->ratio * (1 << RK_CNR_V2_ratio));
+    tmp = (int)(pSelect->color_sat_adj * (1 << RK_CNR_V2_ratio));
     pFix->cnr_gain_1sigma = CLIP(tmp, 0, 255);
 
     // ISP_CNR_2800_GAIN_UV_PARA
-    tmp = (int)(pSelect->uvgain1 / fStrength * (1 << RK_CNR_V2_uvgain));
+    tmp = (int)(pSelect->hf_color_sat / fStrength * (1 << RK_CNR_V2_uvgain));
     pFix->cnr_gain_uvgain0 = CLIP(tmp, 0, (1 << 7) - 1);
-    tmp = (int)(pSelect->uvgain3 / fStrength * (1 << RK_CNR_V2_uvgain));
+    tmp = (int)(pSelect->lf_color_sat / fStrength * (1 << RK_CNR_V2_uvgain));
     pFix->cnr_gain_uvgain1 = CLIP(tmp, 0, (1 << 7) - 1);
 
     // ISP_CNR_2800_LMED3
-    tmp = (int)(pSelect->medRatio2 * (1 << RK_CNR_V2_medRatio));
+    tmp = (int)(pSelect->thumb_spikes_reducion_strength * (1 << RK_CNR_V2_medRatio));
     pFix->cnr_lmed3_alpha = CLIP(tmp, 0, 16);
 
     // ISP_CNR_2800_LBF5_GAIN
-    int rkcnr_sigmaR2   = (int)(log2e / pSelect->sigmaR2 / fStrength);
-    int rkcnr_uvgain2   = (int)(pSelect->uvgain2 / fStrength * (1 << RK_CNR_V2_uvgain));
+    int rkcnr_thumb_denoise_strength   = (int)(log2e / pSelect->thumb_denoise_strength / fStrength);
+    int rkcnr_thumb_color_sat   = (int)(pSelect->thumb_color_sat / fStrength * (1 << RK_CNR_V2_uvgain));
     int tmpBit = 10 + RK_CNR_V2_log2e + RK_CNR_V2_uvgain - 6;
     int sgmRatio = 1 << RK_CNR_V2_sgmRatio;
     int ky = sgmRatio * (1 << RK_CNR_V2_uvgain) >> RK_CNR_V2_sgmRatio;
-    int kuv = sgmRatio * rkcnr_uvgain2 >> RK_CNR_V2_sgmRatio;
+    int kuv = sgmRatio * rkcnr_thumb_color_sat >> RK_CNR_V2_sgmRatio;
     ky = MIN2(ky, (1 << (4 + RK_CNR_V2_uvgain)) - 1);
     kuv = MIN2(kuv, (1 << (4 + RK_CNR_V2_uvgain)) - 1);
-    tmp = ((rkcnr_sigmaR2 * ky + (1 << (tmpBit - 1))) >> tmpBit);
+    tmp = ((rkcnr_thumb_denoise_strength * ky + (1 << (tmpBit - 1))) >> tmpBit);
     pFix->cnr_lbf5_gain_y = CLIP(tmp, 0, 15);
-    tmp = ((rkcnr_sigmaR2 * kuv + (1 << (tmpBit - 1))) >> tmpBit);
+    tmp = ((rkcnr_thumb_denoise_strength * kuv + (1 << (tmpBit - 1))) >> tmpBit);
     pFix->cnr_lbf5_gain_c = CLIP(tmp, 0, 63);
 
     // ISP_CNR_2800_LBF5_WEITD0_3
     // bilateral filter kernels
     for (int i = 0; i < 5; i++) {
-        tmp = (int)(pSelect->kernel_5x5_table[i] * (1 << RK_CNR_V2_kernels));
+        tmp = (int)(pSelect->kernel_5x5[i] * (1 << RK_CNR_V2_kernels));
         pFix->cnr_lbf5_weit_d[i] = CLIP(tmp, 0, 128);
     }
 
     // ISP_CNR_2800_HMED3
-    tmp = (int)(pSelect->medRatio1 * (1 << RK_CNR_V2_medRatio));
+    tmp = (int)(pSelect->hf_spikes_reducion_strength * (1 << RK_CNR_V2_medRatio));
     pFix->cnr_hmed3_alpha = CLIP(tmp, 0, 16);
 
     // ISP_CNR_2800_HBF5
-    tmp = (int)(log2e / pSelect->sigmaR1 / fStrength);
+    tmp = (int)(log2e / pSelect->hf_denoise_strength / fStrength);
     pFix->cnr_hbf5_sigma    = CLIP(tmp, 0, (1 << 13) - 1);
-    tmp = (int)(pSelect->bfRatio1 * (1 << RK_CNR_V2_bfRatio));
-    pFix->cnr_hbf5_weit_src = CLIP(tmp, 0, 128);
-    tmp = pSelect->hbf_wgt_clip;
+    tmp = pSelect->hf_bf_wgt_clip;
     pFix->cnr_hbf5_min_wgt = CLIP(tmp, 0, (1 << 8) - 1);
+    tmp = (int)(pSelect->hf_denoise_alpha / fStrength  * (1 << RK_CNR_V2_bfRatio));
+    pFix->cnr_hbf5_weit_src = CLIP(tmp, 0, 128);
 
     // ISP_CNR_2800_LBF3
     // step3
     // bilateral filter
-    tmp = (int)(log2e / pSelect->sigmaR3 / fStrength);
+    tmp = (int)(log2e / pSelect->lf_denoise_strength / fStrength);
     pFix->cnr_lbf3_sigma = CLIP(tmp, 0, (1 << 13) - 1);
-    tmp = (int)(pSelect->bfRatio3 * (1 << RK_CNR_V2_bfRatio));
+    tmp = (int)(pSelect->lf_denoise_alpha / fStrength * (1 << RK_CNR_V2_bfRatio));
     pFix->cnr_lbf5_weit_src = CLIP(tmp, 0, 128);
 
 
     //sigma
     for(int i = 0; i < 13; i++) {
-        tmp = pSelect->sgmRatio_gain[i];
+        tmp = pSelect->gain_adj_strength_ratio[i];
         pFix->cnr_sigma_y[i] = CLIP(tmp, 0, (1 << 8) - 1);
     }
 
@@ -303,13 +303,13 @@ AcnrV2_result_t cnr_fix_printf_V2(RK_CNR_Fix_V2_t  * pFix)
              pFix->cnr_global_gain);
 
     // ISP_CNR_2800_GAIN_PARA  (0x0008)
-    LOGD_ANR("(0x0008) gain_iso:0x%x gain_offset:0x%x gain_1sigma:0x%x \n",
+    LOGD_ANR("(0x0008) gain_iso:0x%x cnr_gain_offset:0x%x gain_1sigma:0x%x \n",
              pFix->cnr_gain_iso,
              pFix->cnr_gain_offset,
              pFix->cnr_gain_1sigma);
 
     // ISP_CNR_2800_GAIN_UV_PARA (0x000c)
-    LOGD_ANR("(0x000c) gain_uvgain1:0x%x gain_uvgain0:0x%x \n",
+    LOGD_ANR("(0x000c) cnr_gain_uvgain1:0x%x gain_uvgain0:0x%x \n",
              pFix->cnr_gain_uvgain1,
              pFix->cnr_gain_uvgain0);
 
@@ -404,31 +404,31 @@ AcnrV2_result_t cnr_init_params_json_V2(RK_CNR_Params_V2_t *pParams, CalibDbV2_C
         pTuningISO = &pCalibdbV2->TuningPara.Setting[tuning_idx].Tuning_ISO[i];
 
         pParams->iso[i] = pTuningISO->iso;
-        pParams->rkcnr_hq_bila_bypass[i] = pTuningISO->hf_bypass;
-        pParams->rkcnr_lq_bila_bypass[i] = pTuningISO->lf_bypass;
-        pParams->rkcnr_global_gain[i] = pTuningISO->global_gain;
-        pParams->rkcnr_global_gain_alpha[i] = pTuningISO->global_gain_alpha;
-        pParams->rkcnr_gain_iso[i] = pTuningISO->local_gain_scale;
-        pParams->ratio[i] = pTuningISO->color_sat_adj;
+        pParams->hf_bypass[i] = pTuningISO->hf_bypass;
+        pParams->lf_bypass[i] = pTuningISO->lf_bypass;
+        pParams->global_gain[i] = pTuningISO->global_gain;
+        pParams->global_gain_alpha[i] = pTuningISO->global_gain_alpha;
+        pParams->local_gain_scale[i] = pTuningISO->local_gain_scale;
+        pParams->color_sat_adj[i] = pTuningISO->color_sat_adj;
         for(int j = 0; j < RKCNR_V2_SGM_ADJ_TABLE_LEN; j++) {
-            pParams->sgmRatio_gain[i][j] = pTuningISO->gain_adj_strength_ratio[j];
+            pParams->gain_adj_strength_ratio[i][j] = pTuningISO->gain_adj_strength_ratio[j];
         }
-        pParams->offset[i] = pTuningISO->color_sat_adj_alpha;
-        pParams->medRatio1[i] = pTuningISO->hf_spikes_reducion_strength;
-        pParams->sigmaR1[i] = pTuningISO->hf_denoise_strength;
-        pParams->uvgain1[i] = pTuningISO->hf_color_sat;
-        pParams->bfRatio1[i] = pTuningISO->hf_denoise_alpha;
-        pParams->hbf_wgt_clip[i] = pTuningISO->hf_bf_wgt_clip;
-        pParams->medRatio2[i] = pTuningISO->thumb_spikes_reducion_strength;
-        pParams->sigmaR2[i] = pTuningISO->thumb_denoise_strength;
-        pParams->uvgain2[i] = pTuningISO->thumb_color_sat;
-        pParams->sigmaR3[i] = pTuningISO->lf_denoise_strength;
-        pParams->uvgain3[i] = pTuningISO->lf_color_sat;
-        pParams->bfRatio3[i] = pTuningISO->lf_denoise_alpha;
+        pParams->color_sat_adj_alpha[i] = pTuningISO->color_sat_adj_alpha;
+        pParams->hf_spikes_reducion_strength[i] = pTuningISO->hf_spikes_reducion_strength;
+        pParams->hf_denoise_strength[i] = pTuningISO->hf_denoise_strength;
+        pParams->hf_color_sat[i] = pTuningISO->hf_color_sat;
+        pParams->hf_denoise_alpha[i] = pTuningISO->hf_denoise_alpha;
+        pParams->hf_bf_wgt_clip[i] = pTuningISO->hf_bf_wgt_clip;
+        pParams->thumb_spikes_reducion_strength[i] = pTuningISO->thumb_spikes_reducion_strength;
+        pParams->thumb_denoise_strength[i] = pTuningISO->thumb_denoise_strength;
+        pParams->thumb_color_sat[i] = pTuningISO->thumb_color_sat;
+        pParams->lf_denoise_strength[i] = pTuningISO->lf_denoise_strength;
+        pParams->lf_color_sat[i] = pTuningISO->lf_color_sat;
+        pParams->lf_denoise_alpha[i] = pTuningISO->lf_denoise_alpha;
     }
 
 
-    memcpy(pParams->kernel_5x5_table, pCalibdbV2->TuningPara.Kernel_Coeff.kernel_5x5, sizeof(float) * 5);
+    memcpy(pParams->kernel_5x5, pCalibdbV2->TuningPara.Kernel_Coeff.kernel_5x5, sizeof(float) * 5);
 
     return ACNRV2_RET_SUCCESS;
 

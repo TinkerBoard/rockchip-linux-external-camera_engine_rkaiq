@@ -24,7 +24,7 @@
 
 #include "RkAiqCalibDbTypesV2.h"
 #include "rk_aiq_algo_des.h"
-#include "rk_aiq_algo_types_int.h"
+#include "rk_aiq_algo_types.h"
 #include "rk_aiq_types_priv.h"
 #include "xcam_common.h"
 
@@ -42,15 +42,15 @@ class CacAlgoAdaptor : public std::enable_shared_from_this<CacAlgoAdaptor> {
     CacAlgoAdaptor(const CacAlgoAdaptor&) = delete;
     const CacAlgoAdaptor& operator=(const CacAlgoAdaptor&) = delete;
 
-    XCamReturn Config(const AlgoCtxInstanceCfgInt* config, const CalibDbV2_Cac_t* calib);
-    XCamReturn Prepare(const RkAiqAlgoConfigAcacInt* config);
+    XCamReturn Config(const AlgoCtxInstanceCfg* config, const CalibDbV2_Cac_t* calib);
+    XCamReturn Prepare(const RkAiqAlgoConfigAcac* config);
     const bool IsEnabled() const { return enable_; }
     const bool IsStarted() const { return started_; }
 
-    void OnFrameEvent(const RkAiqAlgoProcAcacInt* input, RkAiqAlgoProcResAcacInt* output);
+    void OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcResAcac* output);
 
  private:
-    const RkAiqAlgoConfigAcacInt* config_;
+    const RkAiqAlgoConfigAcac* config_;
     const CalibDbV2_Cac_t* calib_;
     bool enable_;
     bool started_;

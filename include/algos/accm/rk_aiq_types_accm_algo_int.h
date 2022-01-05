@@ -39,12 +39,14 @@ typedef struct accm_sw_info_s {
 } accm_sw_info_t;
 
 typedef struct rk_aiq_ccm_mccm_attrib_s {
-    // M4_ARRAY_DESC("matrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.0000,1.0000]", M4_DIGIT(4), M4_DYNAMIC(0))
-    float  matrix[9];
-    // M4_ARRAY_DESC("offs", "f32", M4_SIZE(1,3), M4_RANGE(-4095,4095), "0", M4_DIGIT(1), M4_DYNAMIC(0))
-    float  offs[3];
-    float  alp_y[CCM_CURVE_DOT_NUM];
-    float bound_bit;
+    // M4_ARRAY_DESC("ccMatrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.0000,1.0000]", M4_DIGIT(4), M4_DYNAMIC(0))
+    float  ccMatrix[9];
+    // M4_ARRAY_DESC("ccOffsets", "f32", M4_SIZE(1,3), M4_RANGE(-4095,4095), "0", M4_DIGIT(1), M4_DYNAMIC(0))
+    float  ccOffsets[3];
+    // M4_ARRAY_DESC("y_alpha_curve", "f32", M4_SIZE(1,17), M4_RANGE(-4095,4095), "1024", M4_DIGIT(0), M4_DYNAMIC(0))
+    float  y_alpha_curve[CCM_CURVE_DOT_NUM];
+    // M4_NUMBER_DESC("bound pos bit", "f32", M4_RANGE(0, 10), "8", M4_DIGIT(0))
+    float low_bound_pos_bit;
 } rk_aiq_ccm_mccm_attrib_t;
 
 typedef struct rk_aiq_ccm_color_inhibition_s {
@@ -71,6 +73,8 @@ typedef enum rk_aiq_ccm_op_mode_s {
 } rk_aiq_ccm_op_mode_t;
 
 typedef struct rk_aiq_ccm_attrib_s {
+    rk_aiq_uapi_sync_t sync;
+
     bool byPass;
     // M4_ENUM_DESC("mode", "rk_aiq_ccm_op_mode_t", "RK_AIQ_CCM_MODE_AUTO");
     rk_aiq_ccm_op_mode_t mode;
@@ -83,12 +87,14 @@ typedef struct rk_aiq_ccm_attrib_s {
 
 typedef struct rk_aiq_ccm_querry_info_s {
     bool ccm_en;
-    // M4_ARRAY_DESC("matrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.0000,1.0000]", M4_DIGIT(4), M4_DYNAMIC(0))
-    float  matrix[9];
-    // M4_ARRAY_DESC("offs", "f32", M4_SIZE(1,3), M4_RANGE(-4095,4095), "0", M4_DIGIT(1), M4_DYNAMIC(0))
-    float  offs[3];
-    float  alp_y[CCM_CURVE_DOT_NUM];
-    float bound_bit;
+    // M4_ARRAY_DESC("ccMatrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.0000,1.0000]", M4_DIGIT(4), M4_DYNAMIC(0))
+    float  ccMatrix[9];
+    // M4_ARRAY_DESC("ccOffsets", "f32", M4_SIZE(1,3), M4_RANGE(-4095,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    float  ccOffsets[3];
+    // M4_ARRAY_DESC("y alpha curve", "f32", M4_SIZE(1,17), M4_RANGE(0,1024), "[0,64,128,192,256,320,384,448,512,576,640,704,768,832,896,960,1024]", M4_DIGIT(0), M4_DYNAMIC(0))
+    float  y_alpha_curve[CCM_CURVE_DOT_NUM];
+    // M4_NUMBER_DESC("bound pos bit", "f32", M4_RANGE(0, 10), "8", M4_DIGIT(0))
+    float low_bound_pos_bit;
     float color_inhibition_level;
     float color_saturation_level;
     // M4_NUMBER_DESC("CCM Saturation", "f32", M4_RANGE(0,200), "0", M4_DIGIT(2))
@@ -97,8 +103,6 @@ typedef struct rk_aiq_ccm_querry_info_s {
     char  ccmname1[25];
     // M4_STRING_DESC("usedCcm2", M4_SIZE(1,1), M4_RANGE(0, 25), "A_100",M4_DYNAMIC(0))
     char  ccmname2[25];
-    // M4_STRING_DESC("illumination", M4_SIZE(1,1), M4_RANGE(0, 20), "A",M4_DYNAMIC(0))
-    char  illumination[20];
 } rk_aiq_ccm_querry_info_t;
 
 RKAIQ_END_DECLARE

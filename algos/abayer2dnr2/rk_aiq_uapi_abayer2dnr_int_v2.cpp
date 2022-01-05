@@ -20,8 +20,13 @@ rk_aiq_uapi_abayer2dnrV2_SetAttrib(RkAiqAlgoContext *ctx,
     Abayer2dnr_Context_V2_t* pCtx = (Abayer2dnr_Context_V2_t*)ctx;
 
     pCtx->eMode = attr->eMode;
-    pCtx->stAuto = attr->stAuto;
-    pCtx->stManual = attr->stManual;
+    if(pCtx->eMode == ABAYER2DNR_OP_MODE_AUTO) {
+        pCtx->stAuto = attr->stAuto;
+    } else if(pCtx->eMode == ABAYER2DNR_OP_MODE_MANUAL) {
+        pCtx->stManual.st2DSelect = attr->stManual.st2DSelect;
+    } else if(pCtx->eMode == ABAYER2DNR_OP_MODE_REG_MANUAL) {
+        pCtx->stManual.st2Dfix = attr->stManual.st2Dfix;
+    }
     pCtx->isReCalculate |= 1;
 
     return XCAM_RETURN_NO_ERROR;
@@ -55,7 +60,9 @@ rk_aiq_uapi_abayer2dnrV2_SetStrength(const RkAiqAlgoContext *ctx,
     if(fPercent <= 0.5) {
         fStrength =  fPercent / 0.5;
     } else {
-        fStrength = (fPercent - 0.5) * (fMax - 1) * 2 + 1;
+        if(fPercent >= 0.999999)
+            fPercent = 0.999999;
+        fStrength = 0.5 / (1.0 - fPercent);
     }
 
     pCtx->fRawnr_SF_Strength = fStrength;
@@ -82,7 +89,12 @@ rk_aiq_uapi_abayer2dnrV2_GetStrength(const RkAiqAlgoContext *ctx,
     if(fStrength <= 1) {
         *pPercent = fStrength * 0.5;
     } else {
-        *pPercent = (fStrength - 1) / ((fMax - 1) * 2) + 0.5;
+        float tmp = 1.0;
+        tmp = 1 - 0.5 / fStrength;
+        if(abs(tmp - 0.999999) < 0.000001) {
+            tmp = 1.0;
+        }
+        *pPercent = tmp;
     }
 
     return XCAM_RETURN_NO_ERROR;

@@ -19,17 +19,19 @@
 
 namespace RkCam {
 
+DEFINE_HANDLE_REGISTER_TYPE(RkAiqAtmoHandleInt);
+
 void RkAiqAtmoHandleInt::init() {
     ENTER_ANALYZER_FUNCTION();
 
     RkAiqHandle::deInit();
-    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAtmoInt());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAtmoInt());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAtmoInt());
-    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAtmoInt());
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAtmoInt());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAtmoInt());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAtmoInt());
+    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAtmo());
+    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAtmo());
+    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAtmo());
+    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAtmo());
+    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAtmo());
+    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAtmo());
+    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAtmo());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -92,11 +94,9 @@ XCamReturn RkAiqAtmoHandleInt::prepare() {
     ret = RkAiqHandle::prepare();
     RKAIQCORE_CHECK_RET(ret, "atmo handle prepare failed");
 
-    RkAiqAlgoConfigAtmoInt* atmo_config_int = (RkAiqAlgoConfigAtmoInt*)mConfig;
+    RkAiqAlgoConfigAtmo* atmo_config_int = (RkAiqAlgoConfigAtmo*)mConfig;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqIspStats* ispStats                     = shared->ispStats;
-    RkAiqPreResComb* comb                       = &shared->preResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     // TODO
@@ -117,36 +117,35 @@ XCamReturn RkAiqAtmoHandleInt::preProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPreAtmoInt* atmo_pre_int        = (RkAiqAlgoPreAtmoInt*)mPreInParam;
-    RkAiqAlgoPreResAtmoInt* atmo_pre_res_int = (RkAiqAlgoPreResAtmoInt*)mPreOutParam;
+    RkAiqAlgoPreAtmo* atmo_pre_int        = (RkAiqAlgoPreAtmo*)mPreInParam;
+    RkAiqAlgoPreResAtmo* atmo_pre_res_int = (RkAiqAlgoPreResAtmo*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqIspStats* ispStats                     = shared->ispStats;
-    RkAiqPreResComb* comb                       = &shared->preResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     ret = RkAiqHandle::preProcess();
     if (ret) {
-        comb->atmo_pre_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "atmo handle preProcess failed");
     }
 
-    if (!shared->ispStats->atmo_stats_valid && !sharedCom->init) {
+    RkAiqIspStats* xIspStats = nullptr;
+    if (shared->ispStats) {
+        xIspStats = (RkAiqIspStats*)shared->ispStats->map(shared->ispStats);
+        if (!xIspStats) LOGE_AEC("isp stats is null");
+    } else {
+        LOGW_ADEHAZE("the xcamvideobuffer of isp stats is null");
+    }
+
+    if (!xIspStats || !xIspStats->atmo_stats_valid || !sharedCom->init) {
         LOGD("no atmo stats, ignore!");
         // TODO: keep last result ?
-        //         comb->atmo_proc_res = NULL;
         //
         return XCAM_RETURN_BYPASS;
     }
 
-    comb->atmo_pre_res = NULL;
-
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->pre_process(mPreInParam, mPreOutParam);
     RKAIQCORE_CHECK_RET(ret, "ahdr algo pre_process failed");
-
-    // set result to mAiqCore
-    comb->atmo_pre_res = (RkAiqAlgoPreResAtmo*)atmo_pre_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -157,63 +156,64 @@ XCamReturn RkAiqAtmoHandleInt::processing() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoProcAtmoInt* atmo_proc_int        = (RkAiqAlgoProcAtmoInt*)mProcInParam;
-    RkAiqAlgoProcResAtmoInt* atmo_proc_res_int = (RkAiqAlgoProcResAtmoInt*)mProcOutParam;
+    RkAiqAlgoProcAtmo* atmo_proc_int        = (RkAiqAlgoProcAtmo*)mProcInParam;
+    RkAiqAlgoProcResAtmo* atmo_proc_res_int = (RkAiqAlgoProcResAtmo*)mProcOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqIspStats* ispStats                     = shared->ispStats;
-    RkAiqProcResComb* comb                      = &shared->procResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     ret = RkAiqHandle::processing();
     if (ret) {
-        comb->atmo_proc_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "atmo handle processing failed");
     }
 
-    if (!shared->ispStats->atmo_stats_valid && !sharedCom->init) {
+    RkAiqIspStats* xIspStats = nullptr;
+    if (shared->ispStats) {
+        xIspStats = (RkAiqIspStats*)shared->ispStats->map(shared->ispStats);
+        if (!xIspStats) LOGE_ATMO("isp stats is null");
+    } else {
+        LOGW_ATMO("the xcamvideobuffer of isp stats is null");
+    }
+
+    if (!xIspStats || !xIspStats->atmo_stats_valid || !sharedCom->init) {
         LOGD("no atmo stats, ignore!");
         // TODO: keep last result ?
-        //         comb->atmo_proc_res = NULL;
         //
         return XCAM_RETURN_BYPASS;
     } else {
-        memcpy(&atmo_proc_int->ispAtmoStats.tmo_stats, &ispStats->atmo_stats.tmo_stats,
-               sizeof(hdrtmo_stats_t));
+        memcpy(&atmo_proc_int->ispAtmoStats.tmo_stats,
+               &xIspStats->AtmoStatsProxy->data()->atmo_stats.tmo_stats, sizeof(hdrtmo_stats_t));
         memcpy(atmo_proc_int->ispAtmoStats.other_stats.tmo_luma,
-               ispStats->aec_stats.ae_data.extra.rawae_big.channelg_xy,
+               xIspStats->AecStatsProxy->data()->aec_stats.ae_data.extra.rawae_big.channelg_xy,
                sizeof(atmo_proc_int->ispAtmoStats.other_stats.tmo_luma));
 
         if (sharedCom->working_mode == RK_AIQ_ISP_HDR_MODE_3_FRAME_HDR ||
             sharedCom->working_mode == RK_AIQ_ISP_HDR_MODE_3_LINE_HDR) {
             memcpy(atmo_proc_int->ispAtmoStats.other_stats.short_luma,
-                   ispStats->aec_stats.ae_data.chn[0].rawae_big.channelg_xy,
+                   xIspStats->AecStatsProxy->data()->aec_stats.ae_data.chn[0].rawae_big.channelg_xy,
                    sizeof(atmo_proc_int->ispAtmoStats.other_stats.short_luma));
-            memcpy(atmo_proc_int->ispAtmoStats.other_stats.middle_luma,
-                   ispStats->aec_stats.ae_data.chn[1].rawae_lite.channelg_xy,
-                   sizeof(atmo_proc_int->ispAtmoStats.other_stats.middle_luma));
+            memcpy(
+                atmo_proc_int->ispAtmoStats.other_stats.middle_luma,
+                xIspStats->AecStatsProxy->data()->aec_stats.ae_data.chn[1].rawae_lite.channelg_xy,
+                sizeof(atmo_proc_int->ispAtmoStats.other_stats.middle_luma));
             memcpy(atmo_proc_int->ispAtmoStats.other_stats.long_luma,
-                   ispStats->aec_stats.ae_data.chn[2].rawae_big.channelg_xy,
+                   xIspStats->AecStatsProxy->data()->aec_stats.ae_data.chn[2].rawae_big.channelg_xy,
                    sizeof(atmo_proc_int->ispAtmoStats.other_stats.long_luma));
         } else if (sharedCom->working_mode == RK_AIQ_ISP_HDR_MODE_2_FRAME_HDR ||
                    sharedCom->working_mode == RK_AIQ_ISP_HDR_MODE_2_LINE_HDR) {
             memcpy(atmo_proc_int->ispAtmoStats.other_stats.short_luma,
-                   ispStats->aec_stats.ae_data.chn[0].rawae_big.channelg_xy,
+                   xIspStats->AecStatsProxy->data()->aec_stats.ae_data.chn[0].rawae_big.channelg_xy,
                    sizeof(atmo_proc_int->ispAtmoStats.other_stats.short_luma));
             memcpy(atmo_proc_int->ispAtmoStats.other_stats.long_luma,
-                   ispStats->aec_stats.ae_data.chn[1].rawae_big.channelg_xy,
+                   xIspStats->AecStatsProxy->data()->aec_stats.ae_data.chn[1].rawae_big.channelg_xy,
                    sizeof(atmo_proc_int->ispAtmoStats.other_stats.long_luma));
         } else
             LOGD("Wrong working mode!!!");
     }
 
-    comb->atmo_proc_res = NULL;
-
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
     RKAIQCORE_CHECK_RET(ret, "atmo algo processing failed");
-
-    comb->atmo_proc_res = (RkAiqAlgoProcResAtmo*)atmo_proc_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -224,35 +224,36 @@ XCamReturn RkAiqAtmoHandleInt::postProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPostAtmoInt* atmo_post_int        = (RkAiqAlgoPostAtmoInt*)mPostInParam;
-    RkAiqAlgoPostResAtmoInt* atmo_post_res_int = (RkAiqAlgoPostResAtmoInt*)mPostOutParam;
+    RkAiqAlgoPostAtmo* atmo_post_int        = (RkAiqAlgoPostAtmo*)mPostInParam;
+    RkAiqAlgoPostResAtmo* atmo_post_res_int = (RkAiqAlgoPostResAtmo*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqIspStats* ispStats                     = shared->ispStats;
-    RkAiqPostResComb* comb                      = &shared->postResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     ret = RkAiqHandle::postProcess();
     if (ret) {
-        comb->atmo_post_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "ahdr handle postProcess failed");
         return ret;
     }
 
-    if (!shared->ispStats->atmo_stats_valid && !sharedCom->init) {
+    RkAiqIspStats* xIspStats = nullptr;
+    if (shared->ispStats) {
+        xIspStats = (RkAiqIspStats*)shared->ispStats->map(shared->ispStats);
+        if (!xIspStats) LOGE_ATMO("isp stats is null");
+    } else {
+        LOGW_ATMO("the xcamvideobuffer of isp stats is null");
+    }
+
+    if (!xIspStats || !xIspStats->atmo_stats_valid || !sharedCom->init) {
         LOGD("no atmo stats, ignore!");
         // TODO: keep last result ?
-        //         comb->ahdr_proc_res = NULL;
         //
         return XCAM_RETURN_BYPASS;
     }
 
-    comb->atmo_post_res       = NULL;
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->post_process(mPostInParam, mPostOutParam);
     RKAIQCORE_CHECK_RET(ret, "atmo algo post_process failed");
-    // set result to mAiqCore
-    comb->atmo_post_res = (RkAiqAlgoPostResAtmo*)atmo_post_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -265,7 +266,7 @@ XCamReturn RkAiqAtmoHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqAlgoProcResAtmo* atmo_com              = shared->procResComb.atmo_proc_res;
+    RkAiqAlgoProcResAtmo* atmo_com              = (RkAiqAlgoProcResAtmo*)mProcOutParam;
 
     rk_aiq_isp_tmo_params_v20_t* tmo_param = params->mTmoParams->data().ptr();
 
@@ -275,7 +276,7 @@ XCamReturn RkAiqAtmoHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     }
 
     if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAtmoInt* atmo_rk = (RkAiqAlgoProcResAtmoInt*)atmo_com;
+        RkAiqAlgoProcResAtmo* atmo_rk = (RkAiqAlgoProcResAtmo*)atmo_com;
 
         if (sharedCom->init) {
             tmo_param->frame_id = 0;

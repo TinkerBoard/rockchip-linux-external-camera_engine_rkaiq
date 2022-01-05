@@ -94,13 +94,9 @@ cc_library_shared {
     srcs: [
         // AIQ_CORE_SRC
         "aiq_core/RkAiqHandle.cpp",
+        "aiq_core/RkAiqCamgroupHandle.cpp",
         "aiq_core/algo_handlers/*.cpp",
-        "aiq_core/RkAiqHandleInt.cpp",
-        "aiq_core/RkAiqHandleIntV21.cpp",
-        "aiq_core/RkAiqHandleIntV3x.cpp",
         "aiq_core/RkAiqCore.cpp",
-        "aiq_core/RkAiqCoreV21.cpp",
-        "aiq_core/RkAiqCoreV3x.cpp",
         "aiq_core/RkLumaCore.cpp",
 
         "aiq_core/RkAiqSharedDataManager.cpp",
@@ -137,6 +133,7 @@ cc_library_shared {
         "hwi/isp20/RawStreamCapUnit.cpp",
         "hwi/isp20/RawStreamProcUnit.cpp",
         "hwi/isp20/SPStreamProcUnit.cpp",
+        "hwi/isp20/PdafStreamProcUnit.cpp",
         "hwi/isp20/NrStatsStream.cpp",
         "hwi/isp20/TnrStatsStream.cpp",
         "hwi/isp20/NrStreamProcUnit.cpp",
@@ -169,7 +166,7 @@ cc_library_shared {
         "iq_parser_v2/edgefilter_xml2json_v1.cpp",
 
         // UAPI_SRC
-        "uAPI/rk_aiq_user_api_sysctl.cpp",
+        //"uAPI/rk_aiq_user_api_sysctl.cpp",
         "uAPI2/rk_aiq_user_api2_sysctl.cpp",
         "uAPI/rk_aiq_user_api_debug.cpp",
         "uAPI2/rk_aiq_user_api2_helper.cpp",
@@ -227,7 +224,7 @@ cc_library_shared {
         "librkaiq_aldch",
         "librkaiq_alsc",
         "librkaiq_aorb",
-        "librkaiq_ar2y",
+        "librkaiq_acsm",
         "librkaiq_awdr",
         "librkaiq_adrc",
         "librkaiq_asharp_v3",

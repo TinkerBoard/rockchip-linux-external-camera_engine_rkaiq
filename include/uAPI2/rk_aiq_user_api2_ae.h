@@ -45,10 +45,6 @@ XCamReturn rk_aiq_user_api2_ae_queryExpResInfo(const rk_aiq_sys_ctx_t* ctx, Uapi
 XCamReturn rk_aiq_user_api2_ae_setExpWinAttr(const rk_aiq_sys_ctx_t* ctx, const Uapi_ExpWin_t ExpWinAttr);
 XCamReturn rk_aiq_user_api2_ae_getExpWinAttr(const rk_aiq_sys_ctx_t* ctx, Uapi_ExpWin_t* pExpWinAttr);
 
-XCamReturn rk_aiq_user_api2_ae_lock(const rk_aiq_sys_ctx_t* ctx);
-XCamReturn rk_aiq_user_api2_ae_unlock(const rk_aiq_sys_ctx_t* ctx);
-
-
 RKAIQ_END_DECLARE
 
 #endif /*__RK_AIQ_USER_API_AE_H__*/

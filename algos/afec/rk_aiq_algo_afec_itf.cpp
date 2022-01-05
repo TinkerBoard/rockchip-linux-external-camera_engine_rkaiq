@@ -17,9 +17,10 @@
  *
  */
 
-#include "rk_aiq_algo_types_int.h"
 #include "afec/rk_aiq_algo_afec_itf.h"
 #include "afec/rk_aiq_types_afec_algo_prvt.h"
+#include "rk_aiq_algo_types.h"
+#include "RkAiqCalibDbV2Helper.h"
 #include "xcam_log.h"
 
 #define EPSINON 0.0000001
@@ -93,14 +94,13 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
     memset((void *)(ctx->hFEC), 0, sizeof(FECContext_t));
     *context = ctx;
 
-    const AlgoCtxInstanceCfgInt* cfg_int = (const AlgoCtxInstanceCfgInt*)cfg;
     FECHandle_t fecCtx = ctx->hFEC;
 
     CalibDbV2_FEC_t* calib_fec_db =
-            (CalibDbV2_FEC_t*)(CALIBDBV2_GET_MODULE_PTR(cfg_int->calibv2, afec));
+            (CalibDbV2_FEC_t*)(CALIBDBV2_GET_MODULE_PTR(cfg->calibv2, afec));
     CalibDbV2_Fec_Param_t* calib_fec = &calib_fec_db->param;
     CalibDbV2_Eis_t* calib_eis =
-                (CalibDbV2_Eis_t*)(CALIBDBV2_GET_MODULE_PTR(cfg_int->calibv2, eis_calib));
+                (CalibDbV2_Eis_t*)(CALIBDBV2_GET_MODULE_PTR(cfg->calibv2, eis_calib));
 
     memset(&fecCtx->user_config, 0, sizeof(fecCtx->user_config));
     fecCtx->fec_en = fecCtx->user_config.en = calib_eis->enable ? 0 : calib_fec->fec_en;
@@ -308,7 +308,7 @@ prepare(RkAiqAlgoCom* params)
 {
     FECHandle_t hFEC = (FECHandle_t)params->ctx->hFEC;
     FECContext_t* fecCtx = (FECContext_t*)hFEC;
-    RkAiqAlgoConfigAfecInt* rkaiqAfecConfig = (RkAiqAlgoConfigAfecInt*)params;
+    RkAiqAlgoConfigAfec* rkaiqAfecConfig = (RkAiqAlgoConfigAfec*)params;
 
     if (!fecCtx->fec_en)
         return XCAM_RETURN_NO_ERROR;
@@ -483,8 +483,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
     FECHandle_t hFEC = (FECHandle_t)inparams->ctx->hFEC;
     FECContext_t* fecCtx = (FECContext_t*)hFEC;
-    RkAiqAlgoProcAfecInt* fecProcParams = (RkAiqAlgoProcAfecInt*)inparams;
-    RkAiqAlgoProcResAfecInt* fecPreOut = (RkAiqAlgoProcResAfecInt*)outparams;
+    RkAiqAlgoProcAfec* fecProcParams = (RkAiqAlgoProcAfec*)inparams;
+    RkAiqAlgoProcResAfec* fecPreOut = (RkAiqAlgoProcResAfec*)outparams;
 
     if (!fecCtx->fec_en)
         return XCAM_RETURN_NO_ERROR;

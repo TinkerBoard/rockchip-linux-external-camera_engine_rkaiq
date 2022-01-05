@@ -51,7 +51,7 @@ static char log_file_name[XCAM_MAX_STR_SIZE] = {0};
  * meaning:  [AGAMMA]    [ACCM]   [ADEBAYER]  [AGIC]   [ALSC]   [ANR]     [ATMO]      [ADPCC]
  *
  * bit:      31          30       29          28       27       26        25          24
- * meaning:  [ASHARP]    [AIE]    [ACP]       [AR2Y]   [ALDCH]  [A3DLUT]  [ADEHAZE]   [AWDR]
+ * meaning:  [ASHARP]    [AIE]    [ACP]       [ACSM]   [ALDCH]  [A3DLUT]  [ADEHAZE]   [AWDR]
  *
  * bit:      39          38       37          36       35       34        33          32
  * meaning:  [ADEGAMMA]  [CAMHW]  [ANALYZER]  [XCORE]  [ASD]    [AFEC]    [ACGC]      [AORB]
@@ -116,7 +116,7 @@ xcore_cam_log_module_info_t g_xcore_log_infos[XCORE_LOG_MODULE_MAX] = {
     {"ADEHAZE", XCORE_LOG_LEVEL_ERR, 0xff},   // XCORE_LOG_MODULE_ADEHAZE
     {"A3DLUT", XCORE_LOG_LEVEL_ERR, 0xff},    // XCORE_LOG_MODULE_A3DLUT
     {"ALDCH", XCORE_LOG_LEVEL_ERR, 0xff},     // XCORE_LOG_MODULE_ALDCH
-    {"AR2Y", XCORE_LOG_LEVEL_ERR, 0xff},      // XCORE_LOG_MODULE_AR2Y
+    {"ACSM", XCORE_LOG_LEVEL_ERR, 0xff},      // XCORE_LOG_MODULE_ACSM
     {"ACP", XCORE_LOG_LEVEL_ERR, 0xff},       // XCORE_LOG_MODULE_ACP
     {"AIE", XCORE_LOG_LEVEL_ERR, 0xff},       // XCORE_LOG_MODULE_AIE
     {"ASHARP", XCORE_LOG_LEVEL_ERR, 0xff},    // XCORE_LOG_MODULE_ASHARP

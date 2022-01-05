@@ -17,19 +17,25 @@
 #include "RkAiqHandle.h"
 #include "RkAiqHandleInt.h"
 
+extern XCamReturn
+rk_aiq_uapi_ablc_GetProc(const RkAiqAlgoContext *ctx,
+                         AblcProc_t *ProcRes);
+
 namespace RkCam {
+
+DEFINE_HANDLE_REGISTER_TYPE(RkAiqAblcHandleInt);
 
 void RkAiqAblcHandleInt::init() {
     ENTER_ANALYZER_FUNCTION();
 
     RkAiqHandle::deInit();
-    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAblcInt());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAblcInt());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAblcInt());
-    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAblcInt());
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAblcInt());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAblcInt());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAblcInt());
+    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAblc());
+    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAblc());
+    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAblc());
+    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAblc());
+    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAblc());
+    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAblc());
+    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAblc());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -42,10 +48,9 @@ XCamReturn RkAiqAblcHandleInt::updateConfig(bool needSync) {
     // if something changed
     if (updateAtt) {
         mCurAtt   = mNewAtt;
-        updateAtt = false;
-        // TODO
         rk_aiq_uapi_ablc_SetAttrib(mAlgoCtx, &mCurAtt, false);
-        sendSignal();
+        sendSignal(mCurAtt.sync.sync_mode);
+        updateAtt = false;
     }
 
     if (needSync) mCfgMutex.unlock();
@@ -56,7 +61,6 @@ XCamReturn RkAiqAblcHandleInt::updateConfig(bool needSync) {
 
 XCamReturn RkAiqAblcHandleInt::setAttrib(rk_aiq_blc_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
-
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
     // TODO
@@ -69,7 +73,7 @@ XCamReturn RkAiqAblcHandleInt::setAttrib(rk_aiq_blc_attrib_t* att) {
     if (0 != memcmp(&mCurAtt, att, sizeof(rk_aiq_blc_attrib_t))) {
         mNewAtt   = *att;
         updateAtt = true;
-        waitSignal();
+        waitSignal(att->sync.sync_mode);
     }
 
     mCfgMutex.unlock();
@@ -83,11 +87,35 @@ XCamReturn RkAiqAblcHandleInt::getAttrib(rk_aiq_blc_attrib_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    rk_aiq_uapi_ablc_GetAttrib(mAlgoCtx, att);
+    if(att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_ablc_GetAttrib(mAlgoCtx, att);
+        att->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        if(updateAtt) {
+            memcpy(att, &mNewAtt, sizeof(mNewAtt));
+            att->sync.done = false;
+        } else {
+            rk_aiq_uapi_ablc_GetAttrib(mAlgoCtx, att);
+            att->sync.done = true;
+        }
+    }
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
+XCamReturn RkAiqAblcHandleInt::getProcRes(AblcProc_t *ProcRes) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_uapi_ablc_GetProc(mAlgoCtx, ProcRes);
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
 
 XCamReturn RkAiqAblcHandleInt::prepare() {
     ENTER_ANALYZER_FUNCTION();
@@ -97,7 +125,7 @@ XCamReturn RkAiqAblcHandleInt::prepare() {
     ret = RkAiqHandle::prepare();
     RKAIQCORE_CHECK_RET(ret, "ablc handle prepare failed");
 
-    RkAiqAlgoConfigAblcInt* ablc_config_int = (RkAiqAlgoConfigAblcInt*)mConfig;
+    RkAiqAlgoConfigAblc* ablc_config_int = (RkAiqAlgoConfigAblc*)mConfig;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
 
@@ -114,28 +142,20 @@ XCamReturn RkAiqAblcHandleInt::preProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPreAblcInt* ablc_pre_int        = (RkAiqAlgoPreAblcInt*)mPreInParam;
-    RkAiqAlgoPreResAblcInt* ablc_pre_res_int = (RkAiqAlgoPreResAblcInt*)mPreOutParam;
+    RkAiqAlgoPreAblc* ablc_pre_int        = (RkAiqAlgoPreAblc*)mPreInParam;
+    RkAiqAlgoPreResAblc* ablc_pre_res_int = (RkAiqAlgoPreResAblc*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqPreResComb* comb                       = &shared->preResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::preProcess();
     if (ret) {
-        comb->ablc_pre_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "ablc handle preProcess failed");
     }
-
-    comb->ablc_pre_res = NULL;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->pre_process(mPreInParam, mPreOutParam);
     RKAIQCORE_CHECK_RET(ret, "ablc algo pre_process failed");
-
-    // set result to mAiqCore
-    comb->ablc_pre_res = (RkAiqAlgoPreResAblc*)ablc_pre_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -146,29 +166,23 @@ XCamReturn RkAiqAblcHandleInt::processing() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoProcAblcInt* ablc_proc_int        = (RkAiqAlgoProcAblcInt*)mProcInParam;
-    RkAiqAlgoProcResAblcInt* ablc_proc_res_int = (RkAiqAlgoProcResAblcInt*)mProcOutParam;
+    RkAiqAlgoProcAblc* ablc_proc_int        = (RkAiqAlgoProcAblc*)mProcInParam;
+    RkAiqAlgoProcResAblc* ablc_proc_res_int = (RkAiqAlgoProcResAblc*)mProcOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqProcResComb* comb                      = &shared->procResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::processing();
     if (ret) {
-        comb->ablc_proc_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "ablc handle processing failed");
     }
 
-    comb->ablc_proc_res     = NULL;
     ablc_proc_int->iso      = sharedCom->iso;
     ablc_proc_int->hdr_mode = sharedCom->working_mode;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
     RKAIQCORE_CHECK_RET(ret, "ablc algo processing failed");
-
-    comb->ablc_proc_res = (RkAiqAlgoProcResAblc*)ablc_proc_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -179,27 +193,21 @@ XCamReturn RkAiqAblcHandleInt::postProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPostAblcInt* ablc_post_int        = (RkAiqAlgoPostAblcInt*)mPostInParam;
-    RkAiqAlgoPostResAblcInt* ablc_post_res_int = (RkAiqAlgoPostResAblcInt*)mPostOutParam;
+    RkAiqAlgoPostAblc* ablc_post_int        = (RkAiqAlgoPostAblc*)mPostInParam;
+    RkAiqAlgoPostResAblc* ablc_post_res_int = (RkAiqAlgoPostResAblc*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqPostResComb* comb                      = &shared->postResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::postProcess();
     if (ret) {
-        comb->ablc_post_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "ablc handle postProcess failed");
         return ret;
     }
 
-    comb->ablc_post_res       = NULL;
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->post_process(mPostInParam, mPostOutParam);
     RKAIQCORE_CHECK_RET(ret, "ablc algo post_process failed");
-    // set result to mAiqCore
-    comb->ablc_post_res = (RkAiqAlgoPostResAblc*)ablc_post_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -212,7 +220,7 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqAlgoProcResAblc* ablc_com              = shared->procResComb.ablc_proc_res;
+    RkAiqAlgoProcResAblc* ablc_com              = (RkAiqAlgoProcResAblc*)mProcOutParam;
 #if defined(ISP_HW_V21) || defined(ISP_HW_V30)
     rk_aiq_isp_blc_params_v21_t* blc_param = params->mBlcV21Params->data().ptr();
 #else
@@ -225,7 +233,7 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     }
 
     if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAblcInt* ablc_rk = (RkAiqAlgoProcResAblcInt*)ablc_com;
+        RkAiqAlgoProcResAblc* ablc_rk = (RkAiqAlgoProcResAblc*)ablc_com;
 
         if (sharedCom->init) {
             blc_param->frame_id = 0;

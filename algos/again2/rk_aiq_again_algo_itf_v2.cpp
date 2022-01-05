@@ -17,9 +17,9 @@
  *
  */
 
-#include "rk_aiq_algo_types_int.h"
 #include "again2/rk_aiq_again_algo_itf_v2.h"
 #include "again2/rk_aiq_again_algo_v2.h"
+#include "rk_aiq_algo_types.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -33,14 +33,13 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
 {
 
     XCamReturn result = XCAM_RETURN_NO_ERROR;
-    AlgoCtxInstanceCfgInt *cfgInt = (AlgoCtxInstanceCfgInt*)cfg;
     LOGI_ANR("%s: (enter)\n", __FUNCTION__ );
 
 #if 1
     Again_Context_V2_t* pAgainCtx = NULL;
 
 #if(AGAIN_USE_JSON_FILE_V2)
-    Again_result_V2_t ret = Again_Init_V2(&pAgainCtx, cfgInt->calibv2);
+    Again_result_V2_t ret = Again_Init_V2(&pAgainCtx, cfg->calibv2);
 #endif
 
     if(ret != AGAINV2_RET_SUCCESS) {
@@ -83,13 +82,13 @@ prepare(RkAiqAlgoCom* params)
     LOGI_ANR("%s: (enter)\n", __FUNCTION__ );
 
     Again_Context_V2_t* pAgainCtx = (Again_Context_V2_t *)params->ctx;
-    RkAiqAlgoConfigAgainV2Int* pCfgParam = (RkAiqAlgoConfigAgainV2Int*)params;
+    RkAiqAlgoConfigAgainV2* pCfgParam = (RkAiqAlgoConfigAgainV2*)params;
     pAgainCtx->prepare_type = params->u.prepare.conf_type;
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
 #if AGAIN_USE_JSON_FILE_V2
 #if 0
-        void *pCalibDbV2 = (void*)(pCfgParam->rk_com.u.prepare.calibv2);
+        void *pCalibDbV2 = (void*)(pCfgParam->com.u.prepare.calibv2);
         CalibDbV2_MFNR_t* pCalibv2_mfnr_v1 =
             (CalibDbV2_MFNR_t*)(CALIBDBV2_GET_MODULE_PTR(pCalibDbV2, mfnr_v1));
         pAgainCtx->mfnr_mode_3to1 = pCalibv2_mfnr_v1->TuningPara.mode_3to1;
@@ -116,9 +115,9 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGI_ANR("%s: (enter)\n", __FUNCTION__ );
     Again_Context_V2_t* pAgainCtx = (Again_Context_V2_t *)inparams->ctx;
 
-    RkAiqAlgoPreAgainV2Int* pAnrPreParams = (RkAiqAlgoPreAgainV2Int*)inparams;
+    RkAiqAlgoPreAgainV2* pAnrPreParams = (RkAiqAlgoPreAgainV2*)inparams;
 
-    if (pAnrPreParams->rk_com.u.proc.gray_mode) {
+    if (pAnrPreParams->com.u.proc.gray_mode) {
         pAgainCtx->isGrayMode = true;
     } else {
         pAgainCtx->isGrayMode = false;
@@ -143,8 +142,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
 #if 1
     int deltaIso = 0;
-    RkAiqAlgoProcAgainV2Int* pAgainProcParams = (RkAiqAlgoProcAgainV2Int*)inparams;
-    RkAiqAlgoProcResAgainV2Int* pAgainProcResParams = (RkAiqAlgoProcResAgainV2Int*)outparams;
+    RkAiqAlgoProcAgainV2* pAgainProcParams = (RkAiqAlgoProcAgainV2*)inparams;
+    RkAiqAlgoProcResAgainV2* pAgainProcResParams = (RkAiqAlgoProcResAgainV2*)outparams;
     Again_Context_V2_t* pAgainCtx = (Again_Context_V2_t *)inparams->ctx;
     Again_ExpInfo_V2_t stExpInfo;
     memset(&stExpInfo, 0x00, sizeof(Again_ExpInfo_V2_t));
@@ -175,8 +174,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
 #if 1// TODO Merge
 
-    RKAiqAecExpInfo_t *preExp = pAgainProcParams->rk_com.u.proc.preExp;
-    RKAiqAecExpInfo_t *curExp = pAgainProcParams->rk_com.u.proc.curExp;
+    RKAiqAecExpInfo_t *preExp = pAgainProcParams->com.u.proc.preExp;
+    RKAiqAecExpInfo_t *curExp = pAgainProcParams->com.u.proc.curExp;
 
     if(preExp != NULL && curExp != NULL) {
         stExpInfo.cur_snr_mode = curExp->CISFeature.SNR;

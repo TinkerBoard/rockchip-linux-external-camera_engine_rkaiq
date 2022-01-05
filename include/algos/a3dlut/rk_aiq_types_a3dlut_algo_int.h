@@ -50,6 +50,8 @@ typedef enum rk_aiq_lut3d_op_mode_s {
 
 
 typedef struct rk_aiq_lut3d_attrib_s {
+    rk_aiq_uapi_sync_t sync;
+
     bool byPass;
     // M4_ENUM_DESC("mode", "rk_aiq_lut3d_op_mode_t", "RK_AIQ_LUT3D_MODE_AUTO");
     rk_aiq_lut3d_op_mode_t mode;

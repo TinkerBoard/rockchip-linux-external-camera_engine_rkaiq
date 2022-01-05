@@ -271,6 +271,11 @@ Asharp4_result_t Asharp_GetProcResult_V4(Asharp_Context_V4_t *pAsharpCtx, Asharp
     //transfer to reg value
     sharp_fix_transfer_V4(&pAsharpResult->stSelect, &pAsharpResult->stFix, pAsharpCtx->fSharp_Strength);
 
+    if(pAsharpCtx->eMode == ASHARP4_OP_MODE_REG_MANUAL) {
+        pAsharpResult->stFix = pAsharpCtx->stManual.stFix;
+        pAsharpCtx->fSharp_Strength = 1.0;
+    }
+
     LOGD_ASHARP("%s:%d xml:local:%d mode:%d  reg: local gain:%d  mfnr gain:%d mode:%d\n",
                 __FUNCTION__, __LINE__);
 

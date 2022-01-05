@@ -19,6 +19,7 @@
 
 #include "RkAiqCamGroupManager.h"
 #include "RkAiqManager.h"
+#include "RkAiqCamGroupHandleInt.h"
 #include "aiq_core/RkAiqCore.h"
 #include "algos_camgroup/ae/rk_aiq_algo_camgroup_ae_itf.h"
 #include "algos_camgroup/awb/rk_aiq_algo_camgroup_awb_itf.h"
@@ -29,16 +30,13 @@
 #include "algos_camgroup/abayernr/rk_aiq_algo_camgroup_abayernr_itf.h"
 #include "algos_camgroup/again/rk_aiq_algo_camgroup_again_itf.h"
 #include "algos_camgroup/asharp/rk_aiq_algo_camgroup_asharp_itf.h"
-
-
-
-
 #include "smart_buffer_priv.h"
 
 namespace RkCam {
 
 const static struct RkAiqAlgoDesCommExt g_camgroup_algos[] = {
     { &g_RkIspAlgoDescCamgroupAe.common, RK_AIQ_CORE_ANALYZE_AE, 0, 1, 0},
+    { &g_RkIspAlgoDescCamgroupAblc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0},
     { &g_RkIspAlgoDescCamgroupAwb.common, RK_AIQ_CORE_ANALYZE_AWB, 1, 1, 0},
     { &g_RkIspAlgoDescCamgroupAlsc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0},
     { &g_RkIspAlgoDescCamgroupAccm.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0},
@@ -60,7 +58,6 @@ const static struct RkAiqAlgoDesCommExt g_camgroup_algos[] = {
 #if defined(ISP_HW_V30)
     { &g_RkIspAlgoDescCamgroupAgain.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0},
 #endif
-    { &g_RkIspAlgoDescCamgroupAblc.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0},
     { NULL, RK_AIQ_CORE_ANALYZE_ALL, 0, 0 },
 };
 
@@ -100,7 +97,6 @@ RkAiqCamGroupManager::RkAiqCamGroupManager()
 
     mGroupAlgosDesArray = g_camgroup_algos;
     mState = CAMGROUP_MANAGER_INVALID;
-    memset(mGroupAlgoCtxArray, 0, sizeof(mGroupAlgoCtxArray));
     mRequiredCamsResMask = 0;
     mRequiredAlgoResMask = 0;
     mInit = false;
@@ -307,7 +303,6 @@ RkAiqCamGroupManager::processAiqCoreMsgs(RkAiqCore* src, SmartPtr<XCamMessage> &
     rk_aiq_singlecam_result_t* singleCamRes = &singleCamStatus->_singleCamResults;
 
     SmartPtr<RkAiqCoreVdBufMsg> vdBufMsg;
-    SmartPtr<RkAiqCoreExpMsg> sofInfoMsg;
 
     switch (msg->msg_id) {
     case XCAM_MESSAGE_AWB_STATS_OK :
@@ -334,11 +329,13 @@ RkAiqCamGroupManager::processAiqCoreMsgs(RkAiqCore* src, SmartPtr<XCamMessage> &
         vdBufMsg = msg.dynamic_cast_ptr<RkAiqCoreVdBufMsg>();
         if (vdBufMsg.ptr())
             singleCamRes->_3aResults.aec._aeProcRes = convert_to_XCamVideoBuffer(vdBufMsg->msg);
+        break;
     case XCAM_MESSAGE_SOF_INFO_OK :
-        sofInfoMsg = msg.dynamic_cast_ptr<RkAiqCoreExpMsg>();
-        if (sofInfoMsg.ptr()) {
+        vdBufMsg= msg.dynamic_cast_ptr<RkAiqCoreVdBufMsg>();
+        if (vdBufMsg.ptr()) {
+            auto sofInfoMsg = vdBufMsg->msg.dynamic_cast_ptr<RkAiqSofInfoWrapperProxy>();
             singleCamRes->_3aResults.aec._effAecExpInfo =
-                sofInfoMsg->msg->data()->curExp->data()->aecExpInfo;
+                sofInfoMsg->data()->curExp->data()->aecExpInfo;
             singleCamRes->_3aResults.aec._bEffAecExpValid = true;
         }
         break;
@@ -495,6 +492,43 @@ RkAiqCamGroupManager::sofSync(RkAiqManager* aiqManager, SmartPtr<VideoBuffer>& s
     return XCAM_RETURN_NO_ERROR;
 }
 
+SmartPtr<RkAiqCamgroupHandle>
+RkAiqCamGroupManager::newAlgoHandle(RkAiqAlgoDesComm* algo, int hw_ver)
+{
+    #define NEW_ALGO_HANDLE(lc, BC) \
+    if (algo->type == RK_AIQ_ALGO_TYPE_##BC) { \
+        if (hw_ver == 0) \
+            return new RkAiqCamGroup##lc##HandleInt(algo, this); \
+    }\
+
+    NEW_ALGO_HANDLE(Accm, ACCM);
+    NEW_ALGO_HANDLE(A3dlut, A3DLUT);
+    /* TODO: new the handle of other algo modules */
+
+    return new RkAiqCamgroupHandle(algo, this);
+}
+
+SmartPtr<RkAiqCamgroupHandle>
+RkAiqCamGroupManager::getDefAlgoTypeHandle(int algo_type)
+{
+    // get defalut algo handle(id == 0)
+    if (mDefAlgoHandleMap.find(algo_type) != mDefAlgoHandleMap.end())
+        return mDefAlgoHandleMap.at(algo_type);
+
+    LOGE("can't find algo handle %d", algo_type);
+    return NULL;
+}
+
+std::map<int, SmartPtr<RkAiqCamgroupHandle>>*
+RkAiqCamGroupManager::getAlgoTypeHandleMap(int algo_type)
+{
+    if (mAlgoHandleMaps.find(algo_type) != mAlgoHandleMaps.end())
+        return &mAlgoHandleMaps.at(algo_type);
+
+    LOGE("can't find algo map %d", algo_type);
+    return NULL;
+}
+
 void
 RkAiqCamGroupManager::addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes)
 {
@@ -510,6 +544,9 @@ RkAiqCamGroupManager::addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes)
     mGroupAlgoCtxCfg.s_calibv2 = sharedCom->calibv2;
     mGroupAlgoCtxCfg.pCamgroupCalib = mCamgroupCalib;
     mGroupAlgoCtxCfg.cfg_com.isp_hw_version = aiqCore->mIspHwVer;
+    mGroupAlgoCtxCfg.cfg_com.calibv2 =
+        const_cast<CamCalibDbV2Context_t*>(sharedCom->calibv2);
+    mGroupAlgoCtxCfg.cfg_com.isGroupMode = true;
 
     mGroupAlgoCtxCfg.camIdArrayLen = mBindAiqsMap.size();
 
@@ -521,12 +558,14 @@ RkAiqCamGroupManager::addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes)
         RkAiqAlgoDesComm* algo_des = algoDes[i].des;
         mGroupAlgoCtxCfg.cfg_com.module_hw_version = algoDes[i].module_hw_ver;
 
-        XCamReturn ret = algo_des->create_context(&mGroupAlgoCtxArray[algo_des->type],
-                         (const _AlgoCtxInstanceCfg*)(&mGroupAlgoCtxCfg));
-        if (ret) {
-            LOGE_CAMGROUP("camgroup: add algo: %d failed", algo_des->type);
-            continue;
-        }
+        SmartPtr<RkAiqCamgroupHandle> grpHandle = newAlgoHandle(algo_des, 0);
+        mDefAlgoHandleList.push_back(grpHandle);
+        mDefAlgoHandleMap[algo_des->type] = grpHandle;
+
+        std::map<int, SmartPtr<RkAiqCamgroupHandle>> hdlMaps;
+        hdlMaps[0] = grpHandle;
+        mAlgoHandleMaps[algo_des->type] = hdlMaps;
+
         LOGD_CAMGROUP("camgroup: add algo: %d", algo_des->type);
     }
 }
@@ -570,14 +609,9 @@ RkAiqCamGroupManager::deInit()
         return XCAM_RETURN_ERROR_FAILED;
     }
 
-    for (int i = 0; mGroupAlgosDesArray[i].des != NULL; i++) {
-        RkAiqAlgoDesComm* algo_des = mGroupAlgosDesArray[i].des;
-
-        if (mGroupAlgoCtxArray[algo_des->type]) {
-            algo_des->destroy_context(mGroupAlgoCtxArray[algo_des->type]);
-            LOGD_CAMGROUP("camgroup: add algo: %d", algo_des->type);
-        }
-    }
+    mDefAlgoHandleList.clear();
+    mDefAlgoHandleMap.clear();
+    mAlgoHandleMaps.clear();
 
     mState = CAMGROUP_MANAGER_INVALID;
     EXIT_CAMGROUP_FUNCTION();
@@ -644,23 +678,14 @@ RkAiqCamGroupManager::prepare()
     RkAiqCore* aiqCore = aiqManager->mRkAiqAnalyzer.ptr();
 
     // reprocess initial params
-    RkAiqAlgoCamGroupPrepare prepareCfg;
-
-    RkAiqAlgoComCamGroup* gcom = &prepareCfg.gcom;
-    RkAiqAlgoCom *com = &gcom->com;
-    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &aiqCore->mAlogsComSharedParams;
 
     // TODO: should deal with the case of eanbled algos changed dynamically
     mRequiredAlgoResMask = aiqCore->mAllReqAlgoResMask;
-
-    int i = 0;
-    prepareCfg.camIdArrayLen = mBindAiqsMap.size();
 
     rk_aiq_groupcam_result_t* camGroupRes = getGroupCamResult(0);
 
     LOGD_CAMGROUP("camgroup: prepare: relay init params ...");
     for (auto it : mBindAiqsMap) {
-        prepareCfg.camIdArray[i++] = it.first;
         RkAiqManager* sAiqManager = it.second;
         RkAiqCore* sAiqCore = sAiqManager->mRkAiqAnalyzer.ptr();
         // initial params has no stats
@@ -668,33 +693,22 @@ RkAiqCamGroupManager::prepare()
         RelayAiqCoreResults(sAiqCore, sAiqCore->mAiqCurParams);
     }
 
-    prepareCfg.aec.LinePeriodsPerField =
-        (float)sharedCom->snsDes.frame_length_lines;
-    prepareCfg.aec.PixelClockFreqMHZ =
-        (float)sharedCom->snsDes.pixel_clock_freq_mhz;
-    prepareCfg.aec.PixelPeriodsPerLine =
-        (float)sharedCom->snsDes.line_length_pck;
-    prepareCfg.s_calibv2 = mGroupAlgoCtxCfg.s_calibv2;
-
-    prepareCfg.pCamgroupCalib = mCamgroupCalib;
-    prepareCfg.aec.nr_switch = sharedCom->snsDes.nr_switch;
-
     LOGD_CAMGROUP("camgroup: prepare: prepare algos ...");
-    for (i = 0; mGroupAlgosDesArray[i].des != NULL; i++) {
-        RkAiqAlgoDesComm* algo_des = mGroupAlgosDesArray[i].des;
-        if (mGroupAlgoCtxArray[algo_des->type]) {
-            com->ctx                     = mGroupAlgoCtxArray[algo_des->type];
-            com->frame_id                = 0;
-            com->u.prepare.working_mode  = sharedCom->working_mode;
-            com->u.prepare.sns_op_width  = sharedCom->snsDes.isp_acq_width;
-            com->u.prepare.sns_op_height = sharedCom->snsDes.isp_acq_height;
-            com->u.prepare.conf_type     = sharedCom->conf_type;
-            ret = ((RkAiqAlgoDescription*)algo_des)->prepare(com);
-            if (ret) {
-                goto failed;
+
+    for (auto algoHdl : mDefAlgoHandleList) {
+        RkAiqCamgroupHandle* curHdl = algoHdl.ptr();
+        while (curHdl) {
+            if (curHdl->getEnable()) {
+                /* update user initial params */
+                ret = curHdl->updateConfig(true);
+                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d update initial user params failed", curHdl->getAlgoType());
+                ret = curHdl->prepare(aiqCore);
+                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d prepare failed", curHdl->getAlgoType());
             }
+            curHdl = curHdl->getNextHdl();
         }
     }
+
 
     LOGD_CAMGROUP("camgroup: reprocess init params ...");
 
@@ -800,29 +814,12 @@ RkAiqCamGroupManager::reProcess(rk_aiq_groupcam_result_t* gc_res)
     RkAiqCore* aiqCore = aiqManager->mRkAiqAnalyzer.ptr();
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &aiqCore->mAlogsComSharedParams;
 
-    RkAiqAlgoCamGroupProcOut procOut;
-    RkAiqAlgoCamGroupProcIn procIn;
-
-    memset(&procIn, 0, sizeof(procIn));
-    memset(&procOut, 0, sizeof(procOut));
-
-    RkAiqAlgoComCamGroup* gcom = &procIn.gcom;
-    RkAiqAlgoCom *com = &gcom->com;
-
-    procIn.arraySize = mBindAiqsMap.size();
-    procOut.arraySize = mBindAiqsMap.size();
-
     LOGD_CAMGROUP("camgroup: set reprocess params ... ");
 
-    rk_aiq_singlecam_3a_result_t* camgroupParmasArray[procIn.arraySize];
+    int arraySize = mBindAiqsMap.size();
+    rk_aiq_singlecam_3a_result_t* camgroupParmasArray[arraySize];
 
     memset(camgroupParmasArray, 0, sizeof(camgroupParmasArray));
-
-    procIn.camgroupParmasArray = camgroupParmasArray;
-    procOut.camgroupParmasArray = camgroupParmasArray;
-    procIn._gray_mode = sharedCom->gray_mode;
-    procIn.working_mode = sharedCom->working_mode;
-    procIn._is_bw_sensor = sharedCom->is_bw_sensor;
 
     int i = 0, vaild_cam_ind = 0;
     rk_aiq_singlecam_3a_result_t* scam_3a_res = NULL;
@@ -926,28 +923,28 @@ RkAiqCamGroupManager::reProcess(rk_aiq_groupcam_result_t* gc_res)
         }
     }
 
-    if (vaild_cam_ind != procIn.arraySize) {
+    if (vaild_cam_ind != arraySize) {
         LOGW_CAMGROUP("wrong num of valid cam res:%d,exp:%d",
-                      vaild_cam_ind, procIn.arraySize);
+                      vaild_cam_ind, arraySize);
     }
 
     uint32_t frameId = camgroupParmasArray[0]->_frameId;
     LOGD_CAMGROUP("camgroup: frameId:%d reprocessing ... ", frameId);
-    for (i = 0; mGroupAlgosDesArray[i].des != NULL; i++) {
-        RkAiqAlgoDesComm* algo_des = mGroupAlgosDesArray[i].des;
-        if (mGroupAlgoCtxArray[algo_des->type]) {
-            com->ctx         = mGroupAlgoCtxArray[algo_des->type];
-            com->frame_id    = frameId;
-            // TODO: remove init info ? algo can maintain the state itself
-            com->u.proc.init = mInit;
-            ret = ((RkAiqAlgoDescription*)algo_des)->processing((const RkAiqAlgoCom*)&procIn,
-                    (RkAiqAlgoResCom*)&procOut);
-            if (ret) {
-                LOGW_CAMGROUP("group algo %d proc error !", i);
-                continue;
+
+    for (auto algoHdl : mDefAlgoHandleList) {
+        RkAiqCamgroupHandle* curHdl = algoHdl.ptr();
+        while (curHdl) {
+            if (curHdl->getEnable()) {
+                /* update user initial params */
+                ret = curHdl->updateConfig(true);
+                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d update initial user params failed", curHdl->getAlgoType());
+                ret = curHdl->processing(camgroupParmasArray);
+                LOGW_CAMGROUP("algoHdl %d processing failed", curHdl->getAlgoType());
             }
+            curHdl = curHdl->getNextHdl();
         }
     }
+
 
     EXIT_CAMGROUP_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -988,6 +985,226 @@ RkAiqCamGroupManager::relayToHwi(rk_aiq_groupcam_result_t* gc_res)
             }
         }
     }
+}
+
+XCamReturn
+RkAiqCamGroupManager::addAlgo(RkAiqAlgoDesComm& algo)
+{
+    ENTER_ANALYZER_FUNCTION();
+
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>* algo_map = getAlgoTypeHandleMap(algo.type);
+
+    if (!algo_map) {
+        LOGE_ANALYZER("do not support this algo type %d !", algo.type);
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+    // TODO, check if exist befor insert ?
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>::reverse_iterator rit = algo_map->rbegin();
+
+    algo.id = rit->first + 1;
+
+    // add to map
+    SmartPtr<RkAiqCamgroupHandle> new_hdl;
+    if (algo.type == RK_AIQ_ALGO_TYPE_AE ||
+        algo.type == RK_AIQ_ALGO_TYPE_AWB) {
+        new_hdl = new RkAiqCamgroupHandle(&algo, this);
+    } else {
+        LOGE_ANALYZER("not supported custom algo type: %d ", algo.type);
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+    new_hdl->setEnable(false);
+    rit->second->setNextHdl(new_hdl.ptr());
+    new_hdl->setParentHdl((*algo_map)[0].ptr());
+
+    (*algo_map)[algo.id] = new_hdl;
+
+    EXIT_ANALYZER_FUNCTION();
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
+RkAiqCamGroupManager::rmAlgo(int algoType, int id)
+{
+    ENTER_ANALYZER_FUNCTION();
+
+    // can't remove default algos
+    if (id == 0)
+        return XCAM_RETURN_NO_ERROR;
+
+    SmartPtr<RkAiqCamgroupHandle> def_algo_hdl = getDefAlgoTypeHandle(algoType);
+    if (!def_algo_hdl.ptr()) {
+        LOGE_ANALYZER("can't find current type %d algo", algoType);
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>* algo_map = getAlgoTypeHandleMap(algoType);
+    NULL_RETURN_RET(algo_map, XCAM_RETURN_ERROR_FAILED);
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>::iterator it = algo_map->find(id);
+
+    if (it == algo_map->end()) {
+        LOGE_ANALYZER("can't find type id <%d, %d> algo", algoType, id);
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+
+    if (mState == CAMGROUP_MANAGER_STARTED) {
+        LOGE_ANALYZER("can't remove algo in running state");
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+
+    RkAiqCamgroupHandle* rmHdl = it->second.ptr();
+    RkAiqCamgroupHandle* curHdl = def_algo_hdl.ptr();
+    while (curHdl) {
+        RkAiqCamgroupHandle* nextHdl = curHdl->getNextHdl();
+        if (nextHdl == rmHdl) {
+            curHdl->setNextHdl(nextHdl->getNextHdl());
+            break;
+        }
+        curHdl = nextHdl;
+    }
+
+    algo_map->erase(it);
+
+    EXIT_ANALYZER_FUNCTION();
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
+RkAiqCamGroupManager::enableAlgo(int algoType, int id, bool enable)
+{
+    ENTER_ANALYZER_FUNCTION();
+
+    if (mState == CAMGROUP_MANAGER_STARTED) {
+        LOGE_ANALYZER("can't enable algo in running state");
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+
+    // get default algotype handle, id should be 0
+    SmartPtr<RkAiqCamgroupHandle> def_algo_hdl = getDefAlgoTypeHandle(algoType);
+    if (!def_algo_hdl.ptr()) {
+        LOGE_ANALYZER("can't find current type %d algo", algoType);
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>* algo_map = getAlgoTypeHandleMap(algoType);
+    NULL_RETURN_RET(algo_map, XCAM_RETURN_ERROR_FAILED);
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>::iterator it = algo_map->find(id);
+
+    if (it == algo_map->end()) {
+        LOGE_ANALYZER("can't find type id <%d, %d> algo", algoType, id);
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+
+    LOGI_ANALYZER("set algo type_id <%d,%d> to %d", algoType, id, enable);
+
+    it->second->setEnable(enable);
+    /* WARNING:
+     * Be careful when use SmartPtr<RkAiqxxxHandle> = SmartPtr<RkAiqHandle>
+     * if RkAiqxxxHandle is derived from multiple RkAiqHandle,
+     * the ptr of RkAiqxxxHandle and RkAiqHandle IS NOT the same
+     * (RkAiqHandle ptr = RkAiqxxxHandle ptr + offset), but seams like
+     * SmartPtr do not deal with this correctly.
+     */
+
+    if (enable) {
+        if (mState >= CAMGROUP_MANAGER_PREPARED) {
+            RkAiqManager* aiqManager = (mBindAiqsMap.begin())->second;
+            RkAiqCore* aiqCore = aiqManager->mRkAiqAnalyzer.ptr();
+            RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &aiqCore->mAlogsComSharedParams;
+            it->second->prepare(aiqCore);
+        }
+    }
+
+    int enable_cnt = 0;
+    RkAiqCamgroupHandle* curHdl = def_algo_hdl.ptr();
+
+    while (curHdl) {
+        if (curHdl->getEnable()) {
+            enable_cnt++;
+        }
+        curHdl = curHdl->getNextHdl();
+    }
+
+    LOGI_ANALYZER("algo type %d enabled count :%d", algoType, enable_cnt);
+
+    EXIT_ANALYZER_FUNCTION();
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+bool
+RkAiqCamGroupManager::getAxlibStatus(int algoType, int id)
+{
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>* algo_map = getAlgoTypeHandleMap(algoType);
+    NULL_RETURN_RET(algo_map, false);
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>::iterator it = algo_map->find(id);
+
+    if (it == algo_map->end()) {
+        LOGE_ANALYZER("can't find type id <%d, %d> algo", algoType, id);
+        return false;
+    }
+
+    LOGD_ANALYZER("algo type id <%d,%d> status %s", algoType, id,
+                  it->second->getEnable() ? "enable" : "disable");
+
+    return it->second->getEnable();
+}
+
+RkAiqAlgoContext*
+RkAiqCamGroupManager::getEnabledAxlibCtx(const int algo_type)
+{
+    if (algo_type <= RK_AIQ_ALGO_TYPE_NONE ||
+            algo_type >= RK_AIQ_ALGO_TYPE_MAX)
+        return NULL;
+
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>* algo_map = getAlgoTypeHandleMap(algo_type);
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>::reverse_iterator rit = algo_map->rbegin();
+    if (rit !=  algo_map->rend() && rit->second->getEnable())
+        return rit->second->getAlgoCtx();
+    else
+        return NULL;
+}
+
+RkAiqAlgoContext*
+RkAiqCamGroupManager::getAxlibCtx(const int algo_type, const int lib_id)
+{
+    if (algo_type <= RK_AIQ_ALGO_TYPE_NONE ||
+            algo_type >= RK_AIQ_ALGO_TYPE_MAX)
+        return NULL;
+
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>* algo_map = getAlgoTypeHandleMap(algo_type);
+
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>::iterator it = algo_map->find(lib_id);
+
+    if (it != algo_map->end()) {
+        return it->second->getAlgoCtx();
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+
+    return NULL;
+}
+
+RkAiqCamgroupHandle*
+RkAiqCamGroupManager::getAiqCamgroupHandle(const int algo_type, const int lib_id)
+{
+    if (algo_type <= RK_AIQ_ALGO_TYPE_NONE ||
+        algo_type >= RK_AIQ_ALGO_TYPE_MAX)
+        return NULL;
+
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>* algo_map = getAlgoTypeHandleMap(algo_type);
+
+    if (!algo_map)
+        return NULL;
+
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>::iterator it = algo_map->find(0);
+
+    if (it != algo_map->end()) {
+        return it->second.ptr();
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+
+    return NULL;
 }
 
 }; //namespace

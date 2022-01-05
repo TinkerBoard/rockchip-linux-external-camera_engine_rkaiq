@@ -15,7 +15,7 @@
  *
  */
 
-#include "include/uAPI/rk_aiq_user_api_acnr_v1.h"
+#include "rk_aiq_user_api_acnr_v1.h"
 #include "RkAiqHandleIntV21.h"
 
 RKAIQ_BEGIN_DECLARE

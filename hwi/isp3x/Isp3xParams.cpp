@@ -838,35 +838,35 @@ void Isp3xParams::convertAiqDrcToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
         isp_cfg.module_cfg_update &= ~(1LL << Rk_ISP21_DRC_ID);
     }
 
-    isp_cfg.others.drc_cfg.bypass_en = adrc_data.DrcProcRes.Drc_v21.bypass_en;
-    isp_cfg.others.drc_cfg.offset_pow2     = adrc_data.DrcProcRes.Drc_v21.offset_pow2;
-    isp_cfg.others.drc_cfg.compres_scl  = adrc_data.DrcProcRes.Drc_v21.compres_scl;
-    isp_cfg.others.drc_cfg.position  = adrc_data.DrcProcRes.Drc_v21.position;
-    isp_cfg.others.drc_cfg.delta_scalein        = adrc_data.DrcProcRes.Drc_v21.delta_scalein;
-    isp_cfg.others.drc_cfg.hpdetail_ratio      = adrc_data.DrcProcRes.Drc_v21.hpdetail_ratio;
-    isp_cfg.others.drc_cfg.lpdetail_ratio     = adrc_data.DrcProcRes.Drc_v21.lpdetail_ratio;
-    isp_cfg.others.drc_cfg.weicur_pix      = adrc_data.DrcProcRes.Drc_v21.weicur_pix;
-    isp_cfg.others.drc_cfg.weipre_frame  = adrc_data.DrcProcRes.Drc_v21.weipre_frame;
-    isp_cfg.others.drc_cfg.bilat_wt_off = adrc_data.DrcProcRes.Drc_v21.bilat_wt_off;
-    isp_cfg.others.drc_cfg.force_sgm_inv0   = adrc_data.DrcProcRes.Drc_v21.force_sgm_inv0;
-    isp_cfg.others.drc_cfg.motion_scl     = adrc_data.DrcProcRes.Drc_v21.motion_scl;
-    isp_cfg.others.drc_cfg.edge_scl   = adrc_data.DrcProcRes.Drc_v21.edge_scl;
-    isp_cfg.others.drc_cfg.space_sgm_inv1    = adrc_data.DrcProcRes.Drc_v21.space_sgm_inv1;
-    isp_cfg.others.drc_cfg.space_sgm_inv0     = adrc_data.DrcProcRes.Drc_v21.space_sgm_inv0;
-    isp_cfg.others.drc_cfg.range_sgm_inv1     = adrc_data.DrcProcRes.Drc_v21.range_sgm_inv1;
-    isp_cfg.others.drc_cfg.range_sgm_inv0 = adrc_data.DrcProcRes.Drc_v21.range_sgm_inv0;
-    isp_cfg.others.drc_cfg.weig_maxl    = adrc_data.DrcProcRes.Drc_v21.weig_maxl;
-    isp_cfg.others.drc_cfg.weig_bilat  = adrc_data.DrcProcRes.Drc_v21.weig_bilat;
-    isp_cfg.others.drc_cfg.enable_soft_thd = adrc_data.DrcProcRes.Drc_v21.enable_soft_thd;
-    isp_cfg.others.drc_cfg.bilat_soft_thd = adrc_data.DrcProcRes.Drc_v21.bilat_soft_thd;
-    isp_cfg.others.drc_cfg.iir_weight  = adrc_data.DrcProcRes.Drc_v21.iir_weight;
-    isp_cfg.others.drc_cfg.min_ogain  = adrc_data.DrcProcRes.Drc_v21.min_ogain;
-    isp_cfg.others.drc_cfg.wr_cycle = adrc_data.DrcProcRes.Drc_v21.wr_cycle;
+    isp_cfg.others.drc_cfg.bypass_en = adrc_data.DrcProcRes.Drc_v30.bypass_en;
+    isp_cfg.others.drc_cfg.offset_pow2     = adrc_data.DrcProcRes.Drc_v30.offset_pow2;
+    isp_cfg.others.drc_cfg.compres_scl  = adrc_data.DrcProcRes.Drc_v30.compres_scl;
+    isp_cfg.others.drc_cfg.position  = adrc_data.DrcProcRes.Drc_v30.position;
+    isp_cfg.others.drc_cfg.delta_scalein        = adrc_data.DrcProcRes.Drc_v30.delta_scalein;
+    isp_cfg.others.drc_cfg.hpdetail_ratio      = adrc_data.DrcProcRes.Drc_v30.hpdetail_ratio;
+    isp_cfg.others.drc_cfg.lpdetail_ratio     = adrc_data.DrcProcRes.Drc_v30.lpdetail_ratio;
+    isp_cfg.others.drc_cfg.weicur_pix      = adrc_data.DrcProcRes.Drc_v30.weicur_pix;
+    isp_cfg.others.drc_cfg.weipre_frame  = adrc_data.DrcProcRes.Drc_v30.weipre_frame;
+    isp_cfg.others.drc_cfg.bilat_wt_off = adrc_data.DrcProcRes.Drc_v30.bilat_wt_off;
+    isp_cfg.others.drc_cfg.force_sgm_inv0   = adrc_data.DrcProcRes.Drc_v30.force_sgm_inv0;
+    isp_cfg.others.drc_cfg.motion_scl     = adrc_data.DrcProcRes.Drc_v30.motion_scl;
+    isp_cfg.others.drc_cfg.edge_scl   = adrc_data.DrcProcRes.Drc_v30.edge_scl;
+    isp_cfg.others.drc_cfg.space_sgm_inv1    = adrc_data.DrcProcRes.Drc_v30.space_sgm_inv1;
+    isp_cfg.others.drc_cfg.space_sgm_inv0     = adrc_data.DrcProcRes.Drc_v30.space_sgm_inv0;
+    isp_cfg.others.drc_cfg.range_sgm_inv1     = adrc_data.DrcProcRes.Drc_v30.range_sgm_inv1;
+    isp_cfg.others.drc_cfg.range_sgm_inv0 = adrc_data.DrcProcRes.Drc_v30.range_sgm_inv0;
+    isp_cfg.others.drc_cfg.weig_maxl    = adrc_data.DrcProcRes.Drc_v30.weig_maxl;
+    isp_cfg.others.drc_cfg.weig_bilat  = adrc_data.DrcProcRes.Drc_v30.weig_bilat;
+    isp_cfg.others.drc_cfg.enable_soft_thd = adrc_data.DrcProcRes.Drc_v30.enable_soft_thd;
+    isp_cfg.others.drc_cfg.bilat_soft_thd = adrc_data.DrcProcRes.Drc_v30.bilat_soft_thd;
+    isp_cfg.others.drc_cfg.iir_weight  = adrc_data.DrcProcRes.Drc_v30.iir_weight;
+    isp_cfg.others.drc_cfg.min_ogain  = adrc_data.DrcProcRes.Drc_v30.min_ogain;
+    isp_cfg.others.drc_cfg.wr_cycle = adrc_data.DrcProcRes.Drc_v30.wr_cycle;
 
     for(int i = 0; i < 17; i++) {
-        isp_cfg.others.drc_cfg.gain_y[i]    = adrc_data.DrcProcRes.Drc_v21.gain_y[i];
-        isp_cfg.others.drc_cfg.compres_y[i]    = adrc_data.DrcProcRes.Drc_v21.compres_y[i];
-        isp_cfg.others.drc_cfg.scale_y[i]    = adrc_data.DrcProcRes.Drc_v21.scale_y[i];
+        isp_cfg.others.drc_cfg.gain_y[i]    = adrc_data.DrcProcRes.Drc_v30.gain_y[i];
+        isp_cfg.others.drc_cfg.compres_y[i]    = adrc_data.DrcProcRes.Drc_v30.compres_y[i];
+        isp_cfg.others.drc_cfg.scale_y[i]    = adrc_data.DrcProcRes.Drc_v30.scale_y[i];
     }
 
 #if 0
@@ -1229,15 +1229,18 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     case RESULT_TYPE_AWBGAIN_PARAM:
     {
         SmartPtr<RkAiqIspAwbGainParamsProxy> awb_gain = result.dynamic_cast_ptr<RkAiqIspAwbGainParamsProxy>();
-        if (awb_gain.ptr() && mBlcResult.ptr()) {
-            SmartPtr<RkAiqIspBlcParamsProxyV21> blc = mBlcResult.dynamic_cast_ptr<RkAiqIspBlcParamsProxyV21>();
-            convertAiqAwbGainToIsp21Params(isp_cfg,
-                                           awb_gain->data()->result, blc->data()->result, true);
+        if (awb_gain.ptr()) {
+            if(mBlcResult.ptr()) {
+                SmartPtr<RkAiqIspBlcParamsProxyV21> blc = mBlcResult.dynamic_cast_ptr<RkAiqIspBlcParamsProxyV21>();
+                convertAiqAwbGainToIsp21Params(isp_cfg,
+                                               awb_gain->data()->result, &blc->data()->result, true);
+            } else {
+                convertAiqAwbGainToIsp21Params(isp_cfg,
+                                               awb_gain->data()->result, nullptr, true);
+            }
 
         } else
-            LOGE("don't get %s params, convert awbgain params failed!",
-                 awb_gain.ptr() ? "blc" : "awb_gain");
-
+            LOGE("don't get awb_gain params, convert awbgain params failed!");
     }
     break;
     case RESULT_TYPE_AWB_PARAM:
@@ -1430,13 +1433,11 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
 #endif
     break;
     case RESULT_TYPE_CSM_PARAM:
-#if 0
     {
         SmartPtr<RkAiqIspCsmParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspCsmParamsProxy>();
         if (params.ptr())
-            convertAiqToIsp20Params(isp_cfg, params->data()->result);
+            convertAiqCsmToIsp21Params(isp_cfg, params->data()->result);
     }
-#endif
     break;
     case RESULT_TYPE_CGC_PARAM:
         break;

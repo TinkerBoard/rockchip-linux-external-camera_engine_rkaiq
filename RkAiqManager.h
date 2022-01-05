@@ -20,8 +20,6 @@
 
 #include "ICamHw.h"
 #include "RkAiqCore.h"
-#include "RkAiqCoreV21.h"
-#include "RkAiqCoreV3x.h"
 #include "RkAiqCalibDb.h"
 #include "RkAiqCalibDbV2.h"
 #include "RkLumaCore.h"
@@ -147,7 +145,9 @@ public:
     void setCamPhyId(int phyId) {mCamPhyId = phyId;}
     int getCamPhyId() { return mCamPhyId;}
     void setAnalyzer(SmartPtr<RkAiqCore> analyzer);
+#ifdef RKAIQ_ENABLE_PARSER_V1
     void setAiqCalibDb(const CamCalibDbContext_t* calibDb);
+#endif
     void setAiqCalibDb(const CamCalibDbV2Context_t* calibDb);
     void setLumaAnalyzer(SmartPtr<RkLumaCore> analyzer);
     XCamReturn init();
@@ -216,7 +216,9 @@ private:
     rk_aiq_error_cb mErrCb;
     rk_aiq_metas_cb mMetasCb;
     const char* mSnsEntName;
+#ifdef RKAIQ_ENABLE_PARSER_V1
     const CamCalibDbContext_t* mCalibDb;
+#endif
     CamCalibDbV2Context_t* mCalibDbV2;
     rk_aiq_working_mode_t mWorkingMode;
     rk_aiq_working_mode_t mOldWkModeForGray;
@@ -228,7 +230,6 @@ private:
     bool mCurFlip;
     SmartPtr<RkAiqCpslParamsProxy> mDleayCpslParams;
     int mDelayCpslApplyFrmNum;
-    int mIspHwVer;
     int mCamPhyId;
 #ifdef RKAIQ_ENABLE_CAMGROUP
     RkAiqCamGroupManager* mCamGroupCoreManager;

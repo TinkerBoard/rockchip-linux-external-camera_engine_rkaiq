@@ -1,7 +1,5 @@
 /*
- * rkisp_aiq_core.h
- *
- *  Copyright (c) 2019 Rockchip Corporation
+ * Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 #include "RkAiqCore.h"
 
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
 
 #include "RkAiqHandleInt.h"
 #include "v4l2_buffer_proxy.h"
@@ -45,7 +43,7 @@
 #include "awdr/rk_aiq_algo_awdr_itf.h"
 #include "a3dlut/rk_aiq_algo_a3dlut_itf.h"
 #include "aldch/rk_aiq_algo_aldch_itf.h"
-#include "ar2y/rk_aiq_algo_ar2y_itf.h"
+#include "acsm/rk_aiq_algo_acsm_itf.h"
 #include "aie/rk_aiq_algo_aie_itf.h"
 #include "aorb/rk_aiq_algo_aorb_itf.h"
 #include "afec/rk_aiq_algo_afec_itf.h"
@@ -57,7 +55,17 @@
 #include "auvnr/rk_aiq_auvnr_algo_itf_v1.h"
 #include "amfnr/rk_aiq_amfnr_algo_itf_v1.h"
 #include "again/rk_aiq_again_algo_itf.h"
-
+#include "asharp3/rk_aiq_asharp_algo_itf_v3.h"
+#include "aynr2/rk_aiq_aynr_algo_itf_v2.h"
+#include "acnr/rk_aiq_acnr_algo_itf_v1.h"
+#include "arawnr2/rk_aiq_abayernr_algo_itf_v2.h"
+#include "asharp4/rk_aiq_asharp_algo_itf_v4.h"
+#include "aynr3/rk_aiq_aynr_algo_itf_v3.h"
+#include "acnr2/rk_aiq_acnr_algo_itf_v2.h"
+#include "abayer2dnr2/rk_aiq_abayer2dnr_algo_itf_v2.h"
+#include "abayertnr2/rk_aiq_abayertnr_algo_itf_v2.h"
+#include "again2/rk_aiq_again_algo_itf_v2.h"
+#include "acac/rk_aiq_algo_acac_itf.h"
 
 #ifdef RK_SIMULATOR_HW
 #include "simulator/isp20_hw_simulator.h"
@@ -66,18 +74,73 @@
 #include "isp20/Isp20StatsBuffer.h"
 #include "common/rkisp2-config.h"
 #include "isp20/rkispp-config.h"
+#include "common/rkisp21-config.h"
 #endif
 #include <fcntl.h>
 #include <unistd.h>
 #include "SPStreamProcUnit.h"
+#include "PdafStreamProcUnit.h"
 // #include "MessageBus.h"
-#include "shared_data_api_wrapper.h"
+#include "RkAiqResourceTranslatorV21.h"
+#include "RkAiqResourceTranslatorV3x.h"
 #include "RkAiqAnalyzeGroupManager.h"
 #ifdef RKAIQ_ENABLE_CAMGROUP
 #include "RkAiqCamGroupManager.h"
 #endif
+#include "RkAiqCustomAeHandle.h"
+#include "RkAiqCustomAwbHandle.h"
 
 namespace RkCam {
+
+std::string AlgoTypeToString(RkAiqAlgoType_t type) {
+    static std::unordered_map<RkAiqAlgoType_t, std::string> str_map = {
+        // clang-format off
+        { RK_AIQ_ALGO_TYPE_AE,          "Ae"        },
+        { RK_AIQ_ALGO_TYPE_AWB,         "Awb"       },
+        { RK_AIQ_ALGO_TYPE_AF,          "Af"        },
+        { RK_AIQ_ALGO_TYPE_ABLC,        "Ablc"      },
+        { RK_AIQ_ALGO_TYPE_ADPCC,       "Adpcc"     },
+        { RK_AIQ_ALGO_TYPE_AMERGE,      "Amerge"    },
+        { RK_AIQ_ALGO_TYPE_ATMO,        "Atmo"      },
+        { RK_AIQ_ALGO_TYPE_ANR,         "Anr"       },
+        { RK_AIQ_ALGO_TYPE_ALSC,        "Alsc"      },
+        { RK_AIQ_ALGO_TYPE_AGIC,        "Agic"      },
+        { RK_AIQ_ALGO_TYPE_ADEBAYER,    "Adebayer"  },
+        { RK_AIQ_ALGO_TYPE_ACCM,        "Accm"      },
+        { RK_AIQ_ALGO_TYPE_AGAMMA,      "Agamma"    },
+        { RK_AIQ_ALGO_TYPE_AWDR,        "Awdr"      },
+        { RK_AIQ_ALGO_TYPE_ADHAZ,       "Adhaz"     },
+        { RK_AIQ_ALGO_TYPE_A3DLUT,      "A3dlut"    },
+        { RK_AIQ_ALGO_TYPE_ALDCH,       "Aldch"     },
+        { RK_AIQ_ALGO_TYPE_ACSM,        "Acsm"      },
+        { RK_AIQ_ALGO_TYPE_ACP,         "Acp"       },
+        { RK_AIQ_ALGO_TYPE_AIE,         "Aie"       },
+        { RK_AIQ_ALGO_TYPE_ASHARP,      "Asharp"    },
+        { RK_AIQ_ALGO_TYPE_AORB,        "Aorb"      },
+        { RK_AIQ_ALGO_TYPE_ACGC,        "Acgc"      },
+        { RK_AIQ_ALGO_TYPE_ASD,         "Asd"       },
+        { RK_AIQ_ALGO_TYPE_ADRC,        "Adrc"      },
+        { RK_AIQ_ALGO_TYPE_ADEGAMMA,    "Adegamma"  },
+#if defined(ISP_HW_V30)
+        { RK_AIQ_ALGO_TYPE_ARAWNR,      "Abayer2dnr"},
+        { RK_AIQ_ALGO_TYPE_AMFNR,       "Abayertnr" },
+#else
+        { RK_AIQ_ALGO_TYPE_ARAWNR,      "Arawnr"    },
+        { RK_AIQ_ALGO_TYPE_AMFNR,       "Amfnr"     },
+#endif
+        { RK_AIQ_ALGO_TYPE_AYNR,        "Aynr"      },
+        { RK_AIQ_ALGO_TYPE_ACNR,        "Acnr"      },
+        { RK_AIQ_ALGO_TYPE_AEIS,        "Aeis"      },
+        { RK_AIQ_ALGO_TYPE_AFEC,        "Afec"      },
+        { RK_AIQ_ALGO_TYPE_AMD,         "Amd"       },
+        { RK_AIQ_ALGO_TYPE_AGAIN,       "Again"     },
+        { RK_AIQ_ALGO_TYPE_ACAC,        "Acac"      },
+        // clang-format oon
+    };
+
+    return str_map[type];
+}
+
 #define EPSINON 0.0000001
 
 /*
@@ -156,54 +219,181 @@ static RkAiqGrpConditions_t orbGrpConds    = { grp_conds_array_info(orbGrpCond) 
 
 
 const static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
-    { &g_RkIspAlgoDescAe.common, RK_AIQ_CORE_ANALYZE_AE, 0, 0, aeGrpConds },
-    { &g_RkIspAlgoDescAwb.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, awbGrpConds },
-    { &g_RkIspAlgoDescAf.common, RK_AIQ_CORE_ANALYZE_MEAS, 0, 0, measGrpConds },
-    { &g_RkIspAlgoDescAblc.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAdegamma.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAdpcc.common, RK_AIQ_CORE_ANALYZE_MEAS, 0, 0, measGrpConds },
-    { &g_RkIspAlgoDescAmerge.common, RK_AIQ_CORE_ANALYZE_MEAS, 0, 0, measGrpConds },
-    { &g_RkIspAlgoDescAtmo.common, RK_AIQ_CORE_ANALYZE_MEAS, 0, 0, measGrpConds },
+    // clang-format off
+    { &g_RkIspAlgoDescAe.common,        RK_AIQ_CORE_ANALYZE_AE,    0, 0, 0, aeGrpConds    },
+    { &g_RkIspAlgoDescAwb.common,       RK_AIQ_CORE_ANALYZE_AWB,   0, 0, 0, awbGrpConds   },
+    { &g_RkIspAlgoDescAf.common,        RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
+    { &g_RkIspAlgoDescAblc.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAdegamma.common,  RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAdpcc.common,     RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
+    { &g_RkIspAlgoDescAmerge.common,    RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
+    { &g_RkIspAlgoDescAtmo.common,      RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
 #if ANR_NO_SEPERATE_MARCO
-    { &g_RkIspAlgoDescAnr.common, RK_AIQ_CORE_ANALYZE_MEAS, 0, 0, measGrpConds },
+    { &g_RkIspAlgoDescAnr.common,       RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
 #else
 #if 0
-    { &g_RkIspAlgoDescArawnr.common, RK_AIQ_CORE_ANALYZE_MEAS, 0, 0, measGrpConds },
-    { &g_RkIspAlgoDescAynr.common, RK_AIQ_CORE_ANALYZE_AYNR, 0, 0, aynrGrpConds },
-    { &g_RkIspAlgoDescAcnr.common, RK_AIQ_CORE_ANALYZE_MEAS, 0, 0, measGrpConds },
-    { &g_RkIspAlgoDescAmfnr.common, RK_AIQ_CORE_ANALYZE_AMFNR, 0, 0, amfnrGrpConds },
-    { &g_RkIspAlgoDescAgain.common, RK_AIQ_CORE_ANALYZE_AMFNR, 0, 0, amfnrGrpConds },
+    { &g_RkIspAlgoDescArawnr.common,    RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
+    { &g_RkIspAlgoDescAynr.common,      RK_AIQ_CORE_ANALYZE_AYNR,  0, 0, 0, aynrGrpConds  },
+    { &g_RkIspAlgoDescAcnr.common,      RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
+    { &g_RkIspAlgoDescAmfnr.common,     RK_AIQ_CORE_ANALYZE_AMFNR, 0, 0, 0, amfnrGrpConds },
+    { &g_RkIspAlgoDescAgain.common,     RK_AIQ_CORE_ANALYZE_AMFNR, 0, 0, 0, amfnrGrpConds },
 #else
-    { &g_RkIspAlgoDescArawnr.common, RK_AIQ_CORE_ANALYZE_MEAS, 0, 0, measGrpConds},
-    { &g_RkIspAlgoDescAynr.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds},
-    { &g_RkIspAlgoDescAcnr.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds},
-    { &g_RkIspAlgoDescAmfnr.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds},
-    { &g_RkIspAlgoDescAgain.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds},
+    { &g_RkIspAlgoDescArawnr.common,    RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
+    { &g_RkIspAlgoDescAynr.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAcnr.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAmfnr.common,     RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAgain.common,     RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
 #endif
 #endif
-    { &g_RkIspAlgoDescAlsc.common, RK_AIQ_CORE_ANALYZE_LSC, 0, 0, lscGrpConds },
-    { &g_RkIspAlgoDescAgic.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAdebayer.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAccm.common, RK_AIQ_CORE_ANALYZE_MEAS, 0, 0, measGrpConds },
-    { &g_RkIspAlgoDescAgamma.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAwdr.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAdhaz.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescA3dlut.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAldch.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAr2y.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAcp.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAie.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAsharp.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAorb.common, RK_AIQ_CORE_ANALYZE_ORB, 0, 0, orbGrpConds },
-    { &g_RkIspAlgoDescAcgc.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAsd.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    //{ &g_RkIspAlgoDescAfec.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, otherGrpConds },
-    { &g_RkIspAlgoDescAeis.common, RK_AIQ_CORE_ANALYZE_EIS, 0, 0, eisGrpConds },
+    { &g_RkIspAlgoDescAlsc.common,      RK_AIQ_CORE_ANALYZE_LSC,   0, 0, 0, lscGrpConds   },
+    { &g_RkIspAlgoDescAgic.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAdebayer.common,  RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAccm.common,      RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
+    { &g_RkIspAlgoDescAgamma.common,    RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAwdr.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAdhaz.common,     RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescA3dlut.common,    RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAldch.common,     RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAcsm.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAcp.common,       RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAie.common,       RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAsharp.common,    RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAorb.common,      RK_AIQ_CORE_ANALYZE_ORB,   0, 0, 0, orbGrpConds   },
+    { &g_RkIspAlgoDescAcgc.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAsd.common,       RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    //{ &g_RkIspAlgoDescAfec.common,    RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+    { &g_RkIspAlgoDescAeis.common,      RK_AIQ_CORE_ANALYZE_EIS,   0, 0, 0, eisGrpConds   },
 #if 0
-    { &g_RkIspAlgoDescAmd.common, RK_AIQ_CORE_ANALYZE_AMD, 0, 0, amdGrpConds },
+    { &g_RkIspAlgoDescAmd.common,       RK_AIQ_CORE_ANALYZE_AMD,   0, 0, 0, amdGrpConds   },
 #endif
-    { NULL, RK_AIQ_CORE_ANALYZE_ALL, 0, 0 },
+    { NULL,                             RK_AIQ_CORE_ANALYZE_ALL,   0, 0, 0, {0}           },
+    // clang-format on
 };
+
+static RkAiqGrpCondition_t aeGrpCondV21[]       = {
+    [0] = { XCAM_MESSAGE_AEC_STATS_OK,      ISP_PARAMS_EFFECT_DELAY_CNT },
+};
+static RkAiqGrpConditions_t aeGrpCondsV21       = { grp_conds_array_info(aeGrpCondV21) };
+
+static RkAiqGrpCondition_t afGrpCondV21[]     = {
+    [0] = { XCAM_MESSAGE_SOF_INFO_OK,       0 },
+    [1] = { XCAM_MESSAGE_AE_PRE_RES_OK,     0 },
+    [2] = { XCAM_MESSAGE_AE_PROC_RES_OK,    0 },
+    [3] = { XCAM_MESSAGE_AF_STATS_OK,       ISP_PARAMS_EFFECT_DELAY_CNT },
+    [4] = { XCAM_MESSAGE_AEC_STATS_OK,      ISP_PARAMS_EFFECT_DELAY_CNT },
+    [5] = { XCAM_MESSAGE_PDAF_STATS_OK,     ISP_PARAMS_EFFECT_DELAY_CNT },
+};
+static RkAiqGrpConditions_t  afGrpCondsV21    = { grp_conds_array_info(afGrpCondV21) };
+
+static RkAiqGrpCondition_t otherGrpCondV21[]    = {
+    [0] = { XCAM_MESSAGE_SOF_INFO_OK,       0 },
+};
+static RkAiqGrpConditions_t  otherGrpCondsV21   = { grp_conds_array_info(otherGrpCondV21) };
+
+static RkAiqGrpCondition_t grp0Cond[]           = {
+    [0] = { XCAM_MESSAGE_SOF_INFO_OK,       0 },
+    [1] = { XCAM_MESSAGE_AE_PRE_RES_OK,     0 },
+    [2] = { XCAM_MESSAGE_AE_PROC_RES_OK,    0 },
+    [3] = { XCAM_MESSAGE_AEC_STATS_OK,      ISP_PARAMS_EFFECT_DELAY_CNT },
+    [4] = { XCAM_MESSAGE_AWB_STATS_OK,      ISP_PARAMS_EFFECT_DELAY_CNT },
+};
+static RkAiqGrpConditions_t  grp0Conds          = { grp_conds_array_info(grp0Cond) };
+
+static RkAiqGrpCondition_t grp1Cond[]           = {
+    [0] = { XCAM_MESSAGE_SOF_INFO_OK,       0 },
+    [1] = { XCAM_MESSAGE_AWB_PROC_RES_OK,   0 },
+};
+static RkAiqGrpConditions_t  grp1Conds          = { grp_conds_array_info(grp1Cond) };
+
+static struct RkAiqAlgoDesCommExt g_default_3a_des_v21[] = {
+    // clang-format off
+    { &g_RkIspAlgoDescAe.common,        RK_AIQ_CORE_ANALYZE_AE,     0, 1, 0,  aeGrpCondsV21    },
+    { &g_RkIspAlgoDescAwb.common,       RK_AIQ_CORE_ANALYZE_AWB,    1, 1, 21, awbGrpConds      },
+    { &g_RkIspAlgoDescAdebayer.common,  RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,  grp0Conds        },
+    { &g_RkIspAlgoDescAgamma.common,    RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,  grp0Conds        },
+    { &g_RkIspAlgoDescAdegamma.common,  RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,  grp0Conds        },
+    { &g_RkIspAlgoDescAmerge.common,    RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,  grp0Conds        },
+    { &g_RkIspAlgoDescAdhaz.common,     RK_AIQ_CORE_ANALYZE_GRP0,   0, 1, 0,  grp0Conds        },
+    { &g_RkIspAlgoDescArawnrV2.common,  RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,  grp0Conds        },
+    { &g_RkIspAlgoDescAynrV2.common,    RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,  grp0Conds        },
+    { &g_RkIspAlgoDescAcnrV1.common,    RK_AIQ_CORE_ANALYZE_GRP0,   1, 1, 1,  grp0Conds        },
+    { &g_RkIspAlgoDescAsharpV3.common,  RK_AIQ_CORE_ANALYZE_GRP0,   3, 3, 3,  grp0Conds        },
+    { &g_RkIspAlgoDescAdrc.common,      RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,  grp0Conds        },
+    { &g_RkIspAlgoDescA3dlut.common,    RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,  grp1Conds        },
+    { &g_RkIspAlgoDescAlsc.common,      RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,  grp1Conds        },
+    { &g_RkIspAlgoDescAccm.common,      RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,  grp1Conds        },
+    { &g_RkIspAlgoDescAcp.common,       RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,  otherGrpCondsV21 },
+    { &g_RkIspAlgoDescAie.common,       RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,  otherGrpCondsV21 },
+    { &g_RkIspAlgoDescAdpcc.common,     RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,  otherGrpCondsV21 },
+    { &g_RkIspAlgoDescAldch.common,     RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,  otherGrpCondsV21 },
+    { &g_RkIspAlgoDescAcgc.common,      RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,  otherGrpCondsV21 },
+    { &g_RkIspAlgoDescAcsm.common,      RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,  otherGrpCondsV21 },
+    { &g_RkIspAlgoDescAf.common,        RK_AIQ_CORE_ANALYZE_AF,     0, 0, 0,  afGrpCondsV21    },
+    { &g_RkIspAlgoDescAblc.common,      RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,  otherGrpCondsV21 },
+    { &g_RkIspAlgoDescAgic.common,      RK_AIQ_CORE_ANALYZE_OTHER,  0, 1, 0,  otherGrpCondsV21 },
+    { &g_RkIspAlgoDescAwdr.common,      RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,  otherGrpCondsV21 },
+    { &g_RkIspAlgoDescAsd.common,       RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,  otherGrpCondsV21 },
+
+    { NULL,                             RK_AIQ_CORE_ANALYZE_ALL,    0, 0, 0,  {0}              },
+    // clang-format on
+};
+
+static RkAiqGrpCondition_t aeGrpCondV3x[]       = {
+    [0] = { XCAM_MESSAGE_AEC_STATS_OK,      ISP_PARAMS_EFFECT_DELAY_CNT },
+};
+static RkAiqGrpConditions_t aeGrpCondsV3x       = { grp_conds_array_info(aeGrpCondV3x) };
+
+static RkAiqGrpCondition_t afGrpCondV3x[]     = {
+    [0] = { XCAM_MESSAGE_SOF_INFO_OK,       0 },
+    [1] = { XCAM_MESSAGE_AE_PRE_RES_OK,     0 },
+    [2] = { XCAM_MESSAGE_AE_PROC_RES_OK,    0 },
+    [3] = { XCAM_MESSAGE_AF_STATS_OK,       ISP_PARAMS_EFFECT_DELAY_CNT },
+    [4] = { XCAM_MESSAGE_AEC_STATS_OK,      ISP_PARAMS_EFFECT_DELAY_CNT },
+    [5] = { XCAM_MESSAGE_PDAF_STATS_OK,     ISP_PARAMS_EFFECT_DELAY_CNT },
+};
+static RkAiqGrpConditions_t  afGrpCondsV3x    = { grp_conds_array_info(afGrpCondV3x) };
+
+static RkAiqGrpCondition_t otherGrpCondV3x[]    = {
+    [0] = { XCAM_MESSAGE_SOF_INFO_OK,       0 },
+};
+static RkAiqGrpConditions_t  otherGrpCondsV3x   = { grp_conds_array_info(otherGrpCondV3x) };
+
+static struct RkAiqAlgoDesCommExt g_default_3a_des_v3x[] = {
+    // clang-format off
+    { &g_RkIspAlgoDescAe.common,            RK_AIQ_CORE_ANALYZE_AE,     0, 2, 0,    aeGrpCondsV3x      },
+    { &g_RkIspAlgoDescAwb.common,           RK_AIQ_CORE_ANALYZE_AWB,    1, 1, 21,   awbGrpConds        },
+    { &g_RkIspAlgoDescAdebayer.common,      RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
+    { &g_RkIspAlgoDescAgamma.common,        RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
+    { &g_RkIspAlgoDescAdegamma.common,      RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
+    { &g_RkIspAlgoDescAmerge.common,        RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
+    { &g_RkIspAlgoDescAcac.common,          RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
+    { &g_RkIspAlgoDescAdhaz.common,         RK_AIQ_CORE_ANALYZE_GRP0,   0, 1, 0,    grp0Conds          },
+    { &g_RkIspAlgoDescAbayer2dnrV2.common,  RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,    grp0Conds          },
+    { &g_RkIspAlgoDescAbayertnrV2.common,   RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,    grp0Conds          },
+    { &g_RkIspAlgoDescAynrV3.common,        RK_AIQ_CORE_ANALYZE_GRP0,   3, 3, 3,    grp0Conds          },
+    { &g_RkIspAlgoDescAcnrV2.common,        RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,    grp0Conds          },
+    { &g_RkIspAlgoDescAsharpV4.common,      RK_AIQ_CORE_ANALYZE_GRP0,   4, 4, 4,    grp0Conds          },
+    { &g_RkIspAlgoDescAdrc.common,          RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
+    { &g_RkIspAlgoDescA3dlut.common,        RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp1Conds          },
+    { &g_RkIspAlgoDescAlsc.common,          RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp1Conds          },
+    { &g_RkIspAlgoDescAccm.common,          RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp1Conds          },
+    { &g_RkIspAlgoDescAcp.common,           RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+    { &g_RkIspAlgoDescAie.common,           RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+    { &g_RkIspAlgoDescAdpcc.common,         RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+    { &g_RkIspAlgoDescAldch.common,         RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+    { &g_RkIspAlgoDescAcgc.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+    { &g_RkIspAlgoDescAcsm.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+    { &g_RkIspAlgoDescAf.common,            RK_AIQ_CORE_ANALYZE_AF,     0, 1, 0,    afGrpCondsV3x      },
+    { &g_RkIspAlgoDescAblc.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+    { &g_RkIspAlgoDescAgic.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 1, 0,    otherGrpCondsV3x   },
+    { &g_RkIspAlgoDescAwdr.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+    { &g_RkIspAlgoDescAsd.common,           RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+    { &g_RkIspAlgoDescAgainV2.common,       RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,    grp0Conds          },
+    { NULL,                                 RK_AIQ_CORE_ANALYZE_ALL,    0, 0, 0,    {0}                },
+    // clang-format on
+};
+
+
 
 bool
 RkAiqCoreThread::loop()
@@ -257,24 +447,25 @@ RkAiqCoreEvtsThread::loop()
 // modules(e.g. CamHwIsp20), so here should consider the cached number
 uint16_t RkAiqCore::DEFAULT_POOL_SIZE = 15;
 
-RkAiqCore::RkAiqCore()
+RkAiqCore::RkAiqCore(int isp_hw_ver)
     : mRkAiqCoreTh(new RkAiqCoreThread(this))
     , mRkAiqCorePpTh(new RkAiqCoreThread(this))
     , mRkAiqCoreEvtsTh(new RkAiqCoreEvtsThread(this))
     , mState(RK_AIQ_CORE_STATE_INVALID)
-    , mRkAiqCoreMsgTh(new MessageThread(this))
     , mCb(NULL)
+    , mIsSingleThread(false)
     , mAiqParamsPool(new RkAiqFullParamsPool("RkAiqFullParams", 32))
     , mAiqCpslParamsPool(new RkAiqCpslParamsPool("RkAiqCpslParamsPool", 4))
     , mAiqStatsPool(new RkAiqStatsPool("RkAiqStatsPool", 4))
     , mAiqIspStatsIntPool(new RkAiqIspStatsIntPool("RkAiqIspStatsIntPool", 10))
     , mAiqSofInfoWrapperPool(new RkAiqSofInfoWrapperPool("RkAiqSofPoolWrapper", 16))
-    , mAiqAecStatsPool(new RkAiqAecStatsPool("RkAiqAecStatsPool", 16))
-    , mAiqAwbStatsPool(new RkAiqAwbStatsPool("RkAiqAwbStatsPool", 16))
-    , mAiqAtmoStatsPool(new RkAiqAtmoStatsPool("RkAiqAtmoStatsPool", 10))
-    , mAiqAdehazeStatsPool(new RkAiqAdehazeStatsPool("RkAiqAdehazeStatsPool", 10))
-    , mAiqAfStatsPool(new RkAiqAfStatsPool("RkAiqAfStatsPool", 10))
-    , mAiqOrbStatsIntPool(new RkAiqOrbStatsPool("RkAiqOrbStatsPool", 10))
+    , mAiqAecStatsPool(nullptr)
+    , mAiqAwbStatsPool(nullptr)
+    , mAiqAtmoStatsPool(nullptr)
+    , mAiqAdehazeStatsPool(nullptr)
+    , mAiqAfStatsPool(nullptr)
+    , mAiqOrbStatsIntPool(nullptr)
+    , mAiqPdafStatsPool(nullptr)
     , mCustomEnAlgosMask(0xffffffff)
 {
     ENTER_ANALYZER_FUNCTION();
@@ -289,10 +480,8 @@ RkAiqCore::RkAiqCore()
 
     SmartPtr<RkAiqFullParams> fullParam = new RkAiqFullParams();
     mAiqCurParams = new RkAiqFullParamsProxy(fullParam );
-    mHasPp = true;
     mIspOnline = false;
-    mAlgosDesArray = g_default_3a_des;
-    mIspHwVer  = 0;
+    mIspHwVer  = isp_hw_ver;
     mSafeEnableAlgo = true;
     mLastAnalyzedId = 0;
 #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -300,7 +489,19 @@ RkAiqCore::RkAiqCore()
 #endif
     mAllReqAlgoResMask = 0;
 
-    mTranslator = new RkAiqResourceTranslator();
+    if (mIspHwVer == 0) {
+        mHasPp = true;
+        mAlgosDesArray = g_default_3a_des;
+        mTranslator = new RkAiqResourceTranslator();
+    } else if (mIspHwVer == 1){
+        mHasPp = false;
+        mAlgosDesArray = g_default_3a_des_v21;
+        mTranslator = new RkAiqResourceTranslatorV21();
+    } else if (mIspHwVer == 3){
+        mHasPp = false;
+        mAlgosDesArray = g_default_3a_des_v3x;
+        mTranslator = new RkAiqResourceTranslatorV3x();
+    }
     EXIT_ANALYZER_FUNCTION();
 }
 
@@ -319,7 +520,7 @@ void RkAiqCore::initCpsl()
     queryCpsLtCap(mCpslCap);
 
     rk_aiq_cpsl_cfg_t* cfg = &mAlogsComSharedParams.cpslCfg;
-    const CamCalibDbContext_t* aiqCalib = mAlogsComSharedParams.calibv2;
+    const CamCalibDbV2Context_t* aiqCalib = mAlogsComSharedParams.calibv2;
     CalibDbV2_Cpsl_t* calibv2_cpsl_db =
         (CalibDbV2_Cpsl_t*)(CALIBDBV2_GET_MODULE_PTR((void*)aiqCalib, cpsl));
     CalibDbV2_Cpsl_Param_t* calibv2_cpsl_calib = &calibv2_cpsl_db->param;
@@ -372,7 +573,9 @@ RkAiqCore::init(const char* sns_ent_name, const CamCalibDbContext_t* aiqCalib,
         return XCAM_RETURN_ERROR_ANALYZER;
     }
 
+#ifdef RKAIQ_ENABLE_PARSER_V1
     mAlogsComSharedParams.calib = aiqCalib;
+#endif
     mAlogsComSharedParams.calibv2 = aiqCalibv2;
 
     const CalibDb_AlgoSwitch_t *algoSwitch = &aiqCalibv2->sys_cfg->algoSwitch;
@@ -386,6 +589,7 @@ RkAiqCore::init(const char* sns_ent_name, const CamCalibDbContext_t* aiqCalib,
     initCpsl();
     newAiqParamsPool();
     newAiqGroupAnayzer();
+    newPdafStatsPool();
 
     mState = RK_AIQ_CORE_STATE_INITED;
     return XCAM_RETURN_NO_ERROR;
@@ -410,6 +614,7 @@ RkAiqCore::deInit()
         return XCAM_RETURN_ERROR_ANALYZER;
     }
 
+    delPdafStatsPool();
     mState = RK_AIQ_CORE_STATE_INVALID;
 
     EXIT_ANALYZER_FUNCTION();
@@ -436,9 +641,16 @@ RkAiqCore::start()
     }
     mRkAiqCoreEvtsTh->triger_start();
     mRkAiqCoreEvtsTh->start();
-    mRkAiqCoreMsgTh->triger_start();
-    mRkAiqCoreMsgTh->start();
+
+    uint64_t deps = mRkAiqCoreGroupManager->getGrpDeps(RK_AIQ_CORE_ANALYZE_AF);
+    if (get_pdaf_support()) {
+        deps |= 1LL << XCAM_MESSAGE_PDAF_STATS_OK;
+    } else {
+        deps &= ~(1LL << XCAM_MESSAGE_PDAF_STATS_OK);
+    }
+    mRkAiqCoreGroupManager->setGrpDeps(RK_AIQ_CORE_ANALYZE_AF, deps);
     mRkAiqCoreGroupManager->start();
+
     if (mThumbnailsService.ptr()) {
         mThumbnailsService->Start();
     }
@@ -470,9 +682,6 @@ RkAiqCore::stop()
     mRkAiqCoreEvtsTh->triger_stop();
     mRkAiqCoreEvtsTh->stop();
 
-
-    mRkAiqCoreMsgTh->triger_stop();
-    mRkAiqCoreMsgTh->stop();
     mRkAiqCoreGroupManager->stop();
     if (mThumbnailsService.ptr()) {
         mThumbnailsService->Stop();
@@ -485,6 +694,7 @@ RkAiqCore::stop()
     firstStatsReceived = false;
     mLastAnalyzedId = 0;
     mIspStatsCond.broadcast ();
+    mSafeEnableAlgo = true;
     EXIT_ANALYZER_FUNCTION();
 
     return XCAM_RETURN_NO_ERROR;
@@ -545,6 +755,33 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
         }
     }
 
+    if (mHwInfo.is_multi_isp_mode) {
+        XCAM_ASSERT((sensor_des->isp_acq_width % 32 == 0));// &&
+        //(sensor_des->isp_acq_height % 16 == 0));
+        uint32_t extended_pixel = mHwInfo.multi_isp_extended_pixel;
+        RkAiqResourceTranslatorV3x* translator = static_cast<RkAiqResourceTranslatorV3x*>(mTranslator.ptr());
+        translator->SetMultiIspMode(true)
+        .SetPicInfo({0, 0, sensor_des->isp_acq_width, sensor_des->isp_acq_height})
+        .SetLeftIspRect(
+        {0, 0, sensor_des->isp_acq_width / 2 + extended_pixel, sensor_des->isp_acq_height})
+        .SetRightIspRect({sensor_des->isp_acq_width / 2 - extended_pixel, 0,
+                          sensor_des->isp_acq_width / 2 + extended_pixel,
+                          sensor_des->isp_acq_height});
+        RkAiqResourceTranslatorV3x::Rectangle f = translator->GetPicInfo();
+        RkAiqResourceTranslatorV3x::Rectangle l = translator->GetLeftIspRect();
+        RkAiqResourceTranslatorV3x::Rectangle r = translator->GetLeftIspRect();
+        LOGD_ANALYZER(
+            "Set Multi-ISP mode Translator info :"
+            " F: { %u, %u, %u, %u }"
+            " L: { %u, %u, %u, %u }"
+            " R: { %u, %u, %u, %u }",
+            f.x, f.y, f.w, f.h, l.x, l.y, l.w, l.h, r.x, r.y, r.w, r.h);
+        mAlogsComSharedParams.is_multi_isp_mode = mHwInfo.is_multi_isp_mode;
+        mAlogsComSharedParams.multi_isp_extended_pixels = extended_pixel;
+    } else {
+        static_cast<RkAiqResourceTranslatorV3x*>(mTranslator.ptr())->SetMultiIspMode(false);
+    }
+
     if ((mAlogsComSharedParams.snsDes.sensor_pixelformat == V4L2_PIX_FMT_GREY) ||
             (mAlogsComSharedParams.snsDes.sensor_pixelformat == V4L2_PIX_FMT_Y10) ||
             (mAlogsComSharedParams.snsDes.sensor_pixelformat == V4L2_PIX_FMT_Y12)) {
@@ -559,49 +796,25 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
         }
     }
 
-    for (auto algoHdl : mCurIspAlgoHandleList) {
-        if (algoHdl.ptr() && algoHdl->getEnable()) {
-            /* update user initial params */ \
-            ret = algoHdl->updateConfig(true);
-            RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d update initial user params failed", algoHdl->getAlgoType());
-            algoHdl->setReConfig(mState == RK_AIQ_CORE_STATE_STOPED);
-            ret = algoHdl->prepare();
-            RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d prepare failed", algoHdl->getAlgoType());
+    for (auto& algoHdl : mCurIspAlgoHandleList) {
+        RkAiqHandle* curHdl = algoHdl.ptr();
+        while (curHdl) {
+            if (curHdl->getEnable()) {
+                /* update user initial params */
+                ret = curHdl->updateConfig(true);
+                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d update initial user params failed", curHdl->getAlgoType());
+                algoHdl->setReConfig(mState == RK_AIQ_CORE_STATE_STOPED);
+                ret = curHdl->prepare();
+                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d prepare failed", curHdl->getAlgoType());
+            }
+            curHdl = curHdl->getNextHdl();
         }
     }
 
-    for (auto algoHdl : mCurIsppAlgoHandleList) {
-        if (algoHdl.ptr() && algoHdl->getEnable()) {
-            /* update user initial params */ \
-            ret = algoHdl->updateConfig(true);
-            RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d update initial user params failed", algoHdl->getAlgoType());
-            algoHdl->setReConfig(mState == RK_AIQ_CORE_STATE_STOPED);
-            ret = algoHdl->prepare();
-            RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d prepare failed", algoHdl->getAlgoType());
-        }
-    }
 
     mAlogsComSharedParams.init = true;
     analyzeInternal(RK_AIQ_CORE_ANALYZE_ALL);
     mAlogsComSharedParams.init = false;
-
-#if 0
-    if (mAiqCurParams->data()->mIspMeasParams.ptr()) {
-        mAiqCurParams->data()->mIspMeasParams->data()->frame_id = 0;
-    }
-
-    if (mAiqCurParams->data()->mIspOtherParams.ptr()) {
-        mAiqCurParams->data()->mIspOtherParams->data()->frame_id = 0;
-    }
-
-    if (mAiqCurParams->data()->mIsppMeasParams.ptr()) {
-        mAiqCurParams->data()->mIsppMeasParams->data()->frame_id = 0;
-    }
-
-    if (mAiqCurParams->data()->mIsppOtherParams.ptr()) {
-        mAiqCurParams->data()->mIsppOtherParams->data()->frame_id = 0;
-    }
-#endif
 
     mState = RK_AIQ_CORE_STATE_PREPARED;
 
@@ -616,6 +829,7 @@ RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e type)
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
     if (mAlogsComSharedParams.init) {
         // run algos without stats to generate
         // initial params
@@ -626,20 +840,7 @@ RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e type)
         while (mapIter != mAlogsGroupSharedParamsMap.end()) {
             RkAiqAlgosGroupShared_t* &shared = mapIter->second;
             shared->reset();
-            if (!shared->ispStats) {
-                SmartPtr<RkAiqIspStatsIntProxy> ispStats = NULL;
-                if (mAiqIspStatsIntPool->has_free_items()) {
-                    ispStats = mAiqIspStatsIntPool->get_item();
-                }
-                shared->ispStats = ispStats->data().ptr();
-            }
             shared->frameId = 0;
-            shared->ispStats->aec_stats_valid = false;
-            shared->ispStats->awb_stats_valid = false;
-            shared->ispStats->awb_cfg_effect_valid = false;
-            shared->ispStats->af_stats_valid = false;
-            shared->ispStats->atmo_stats_valid = false;
-            shared->aecStatsBuf = nullptr;
 
             shared->curExp.LinearExp.exp_real_params.analog_gain = \
                     calibv2_ae_calib->LinearAeCtrl.InitExp.InitGainValue;
@@ -669,45 +870,17 @@ RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e type)
     aiqParams->reset();
 
     ret = getAiqParamsBuffer(aiqParams, type);
-    if (ret != XCAM_RETURN_NO_ERROR)
-        return NULL;
+    RKAIQCORE_CHECK_RET_NULL(ret, "get params failed");
 
-#if 0
-    // for test
-    int fd = open("/tmp/cpsl", O_RDWR);
-    if (fd != -1) {
-        char c;
-        read(fd, &c, 1);
-        int enable = atoi(&c);
-
-        rk_aiq_cpsl_cfg_t cfg;
-
-        cfg.mode = (RKAiqOPMode_t)enable;
-        cfg.lght_src = RK_AIQ_CPSLS_LED;
-        if (cfg.mode == RK_AIQ_OP_MODE_AUTO) {
-            cfg.u.a.sensitivity = 100;
-            cfg.u.a.sw_interval = 60;
-            cfg.gray_on = false;
-            LOGI_ANALYZER("mode sensitivity %f, interval time %d s\n",
-                          cfg.u.a.sensitivity, cfg.u.a.sw_interval);
-        } else {
-            cfg.gray_on = true;
-            cfg.u.m.on = true;
-            cfg.u.m.strength_ir = 100;
-            cfg.u.m.strength_led = 100;
-            LOGI_ANALYZER("on %d, strength_led %f, strength_ir %f\n",
-                          cfg.u.m.on, cfg.u.m.strength_led, cfg.u.m.strength_ir);
-        }
-        close(fd);
-        setCpsLtCfg(cfg);
-    }
-#endif
     ret = preProcess(type);
     RKAIQCORE_CHECK_RET_NULL(ret, "preprocess failed");
+#if 0
+    // moved to RkAiqAsdHandleInt::genIspResult,
+    // may have module params sync issue
     if (type == RK_AIQ_CORE_ANALYZE_OTHER) {
         genCpslResult(aiqParams);
     }
-
+#endif
     ret = processing(type);
     RKAIQCORE_CHECK_RET_NULL(ret, "processing failed");
 
@@ -724,19 +897,38 @@ RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e type)
 XCamReturn
 RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analyze_type_e type)
 {
-#define NEW_PARAMS_BUFFER(lc, BC) \
-    if (mAiqIsp##lc##ParamsPool->has_free_items()) { \
-        aiqParams->m##lc##Params = mAiqIsp##lc##ParamsPool->get_item(); \
-        aiqParams->m##lc##Params->data()->frame_id = -1; \
-    } else { \
-        LOGE_ANALYZER("no free %s buffer!", #BC); \
-        return XCAM_RETURN_ERROR_MEM; \
-    } \
+#define NEW_PARAMS_BUFFER(lc, BC)                                                         \
+    if (mAiqIsp##lc##ParamsPool->has_free_items()) {                                      \
+        aiqParams->m##lc##Params                   = mAiqIsp##lc##ParamsPool->get_item(); \
+        aiqParams->m##lc##Params->data()->frame_id = -1;                                  \
+    } else {                                                                              \
+        LOGE_ANALYZER("no free %s buffer!", #BC);                                         \
+        return XCAM_RETURN_ERROR_MEM;                                                     \
+    }
+
+#define NEW_PARAMS_BUFFER_WITH_V(lc, BC, v)                                         \
+    if (mAiqIsp##lc##V##v##ParamsPool->has_free_items()) {                          \
+        aiqParams->m##lc##V##v##Params = mAiqIsp##lc##V##v##ParamsPool->get_item(); \
+    } else {                                                                        \
+        LOGE_ANALYZER("no free %s buffer!", #BC);                                   \
+        return XCAM_RETURN_ERROR_MEM;                                               \
+    }
 
     std::vector<SmartPtr<RkAiqHandle>>& algo_list =
         mRkAiqCoreGroupManager->getGroupAlgoList(type);
 
     for (auto& algoHdl : algo_list) {
+        bool get_buffer = false;
+        RkAiqHandle* curHdl = algoHdl.ptr();
+        while (curHdl) {
+            if (curHdl->getEnable()) {
+                get_buffer = true;
+                break;
+            }
+            curHdl = curHdl->getNextHdl();
+        }
+        if (!get_buffer)
+            continue;
         switch (algoHdl->getAlgoType()) {
         case RK_AIQ_ALGO_TYPE_AE:
             if (mAiqExpParamsPool->has_free_items()) {
@@ -757,7 +949,13 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
             NEW_PARAMS_BUFFER(Hist, hist);
             break;
         case RK_AIQ_ALGO_TYPE_AWB:
+#if defined(ISP_HW_V30)
+            NEW_PARAMS_BUFFER_WITH_V(Awb, awb, 3x);
+#elif defined(ISP_HW_V21)
+            NEW_PARAMS_BUFFER_WITH_V(Awb, awb, 21);
+#else
             NEW_PARAMS_BUFFER(Awb, awb);
+#endif
             NEW_PARAMS_BUFFER(AwbGain, awb_gain);
             break;
         case RK_AIQ_ALGO_TYPE_AF:
@@ -767,10 +965,18 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
                 LOGE_ANALYZER("no free focus params buffer!");
                 return XCAM_RETURN_ERROR_MEM;
             }
+#if defined(ISP_HW_V30)
+            NEW_PARAMS_BUFFER_WITH_V(Af, af, 3x);
+#else
             NEW_PARAMS_BUFFER(Af, af);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_ABLC:
+#if defined(ISP_HW_V30) || defined(ISP_HW_V21)
+            NEW_PARAMS_BUFFER_WITH_V(Blc, blc, 21);
+#else
             NEW_PARAMS_BUFFER(Blc, blc);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_ADPCC:
             NEW_PARAMS_BUFFER(Dpcc, dpcc);
@@ -814,7 +1020,8 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
         case RK_AIQ_ALGO_TYPE_ALDCH:
             NEW_PARAMS_BUFFER(Ldch, ldch);
             break;
-        case RK_AIQ_ALGO_TYPE_AR2Y:
+        case RK_AIQ_ALGO_TYPE_ACSM:
+            NEW_PARAMS_BUFFER(Csm, csm);
             break;
         case RK_AIQ_ALGO_TYPE_ACP:
             NEW_PARAMS_BUFFER(Cp, cp);
@@ -828,25 +1035,54 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
         case RK_AIQ_ALGO_TYPE_ASD:
             break;
         case RK_AIQ_ALGO_TYPE_ADRC:
+            NEW_PARAMS_BUFFER(Drc, drc);
             break;
         case RK_AIQ_ALGO_TYPE_ADEGAMMA:
             NEW_PARAMS_BUFFER(Adegamma, adegamma);
             break;
         case RK_AIQ_ALGO_TYPE_ARAWNR:
+#if defined(ISP_HW_V30)
+            NEW_PARAMS_BUFFER_WITH_V(Baynr, baynr, 3x);
+#elif defined(ISP_HW_V21)
+            NEW_PARAMS_BUFFER_WITH_V(Baynr, baynr, 21);
+#else
             NEW_PARAMS_BUFFER(Rawnr, rawnr);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_AMFNR:
+#if defined(ISP_HW_V30)
+            NEW_PARAMS_BUFFER_WITH_V(Tnr, tnr, 3x);
+#else
             NEW_PARAMS_BUFFER(Tnr, tnr);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_AYNR:
+#if defined(ISP_HW_V30)
+            NEW_PARAMS_BUFFER_WITH_V(Ynr, ynr, 3x);
+#elif defined(ISP_HW_V21)
+            NEW_PARAMS_BUFFER_WITH_V(Ynr, ynr, 21);
+#else
             NEW_PARAMS_BUFFER(Ynr, ynr);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_ACNR:
+#if defined(ISP_HW_V30)
+            NEW_PARAMS_BUFFER_WITH_V(Cnr, cnr, 3x);
+#elif defined(ISP_HW_V21)
+            NEW_PARAMS_BUFFER_WITH_V(Cnr, cnr, 21);
+#else
             NEW_PARAMS_BUFFER(Uvnr, uvnr);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_ASHARP:
+#if defined(ISP_HW_V30)
+            NEW_PARAMS_BUFFER_WITH_V(Sharpen, sharpen, 3x);
+#elif defined(ISP_HW_V21)
+            NEW_PARAMS_BUFFER_WITH_V(Sharpen, sharpen, 21);
+#else
             NEW_PARAMS_BUFFER(Sharpen, sharpen);
             NEW_PARAMS_BUFFER(Edgeflt, edgeflt);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_AORB:
             NEW_PARAMS_BUFFER(Orb, orb);
@@ -865,6 +1101,14 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
             break;
         case RK_AIQ_ALGO_TYPE_AMD:
             NEW_PARAMS_BUFFER(Md, md);
+            break;
+        case RK_AIQ_ALGO_TYPE_AGAIN:
+#if defined(ISP_HW_V30)
+            NEW_PARAMS_BUFFER_WITH_V(Gain, Gain, 3x);
+#endif
+            break;
+        case RK_AIQ_ALGO_TYPE_ACAC:
+            NEW_PARAMS_BUFFER_WITH_V(Cac, cac, 3x);
             break;
         default:
             break;
@@ -901,10 +1145,16 @@ XCamReturn
 RkAiqCore::genIspParamsResult(RkAiqFullParams *aiqParams, enum rk_aiq_core_analyze_type_e type)
 {
     SmartPtr<RkAiqFullParams> curParams = mAiqCurParams->data();
-    for (auto algoHdl : mCurIspAlgoHandleList) {
-        if (algoHdl.ptr() && algoHdl->getEnable() &&
-            (mAlgoTypeToGrpMaskMap[algoHdl->getAlgoType()] & grpId2GrpMask(type))) {
-            algoHdl->genIspResult(aiqParams, curParams.ptr());
+
+    for (auto& algoHdl : mCurIspAlgoHandleList) {
+        RkAiqHandle* curHdl = algoHdl.ptr();
+        if (curHdl && (mAlgoTypeToGrpMaskMap[curHdl->getAlgoType()] & grpId2GrpMask(type))) {
+            // only last one result of same type algo will take effect
+            while (curHdl) {
+                if (curHdl->getEnable())
+                    curHdl->genIspResult(aiqParams, curParams.ptr());
+                curHdl = curHdl->getNextHdl();
+            }
         }
     }
 
@@ -937,9 +1187,10 @@ RkAiqCore::pushEvts(SmartPtr<ispHwEvt_t> &evts)
     return XCAM_RETURN_NO_ERROR;
 }
 
-const RkAiqHandle*
+RkAiqHandle*
 RkAiqCore::getAiqAlgoHandle(const int algo_type)
 {
+    // get defalut algo handle(id == 0)
     SmartPtr<RkAiqHandle>* handlePtr = getCurAlgoTypeHandle(algo_type);
     if (handlePtr == nullptr) {
         return NULL;
@@ -951,6 +1202,7 @@ RkAiqCore::getAiqAlgoHandle(const int algo_type)
 SmartPtr<RkAiqHandle>*
 RkAiqCore::getCurAlgoTypeHandle(int algo_type)
 {
+    // get defalut algo handle(id == 0)
     if (mCurAlgoHandleMaps.find(algo_type) != mCurAlgoHandleMaps.end())
         return &mCurAlgoHandleMaps.at(algo_type);
 
@@ -968,16 +1220,19 @@ std::map<int, SmartPtr<RkAiqHandle>>*
     return NULL;
 }
 
+// add rk default handlers(id == 0), can't be removed
 void
 RkAiqCore::addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes)
 {
     map<int, SmartPtr<RkAiqHandle>> algoMap;
     for (int i = 0; i < RK_AIQ_ALGO_TYPE_MAX; i++) {
+#ifdef RKAIQ_ENABLE_PARSER_V1
         mAlogsComSharedParams.ctxCfigs[i].calib =
             const_cast<CamCalibDbContext_t*>(mAlogsComSharedParams.calib);
+#endif
         mAlogsComSharedParams.ctxCfigs[i].calibv2 =
             const_cast<CamCalibDbV2Context_t*>(mAlogsComSharedParams.calibv2);
-        mAlogsComSharedParams.ctxCfigs[i].cfg_com.isp_hw_version = mIspHwVer;
+        mAlogsComSharedParams.ctxCfigs[i].isp_hw_version = mIspHwVer;
     }
 
     for (size_t i = 0; algoDes[i].des != NULL; i++) {
@@ -986,11 +1241,13 @@ RkAiqCore::addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes)
         if (!(1 << algo_type & mCustomEnAlgosMask))
             continue;
         int32_t grpMask = 1ULL << algoDes[i].group;
+#ifdef RKAIQ_ENABLE_PARSER_V1
         mAlogsComSharedParams.ctxCfigs[algo_type].calib =
             const_cast<CamCalibDbContext_t*>(mAlogsComSharedParams.calib);
+#endif
         mAlogsComSharedParams.ctxCfigs[algo_type].calibv2 =
             const_cast<CamCalibDbV2Context_t*>(mAlogsComSharedParams.calibv2);
-        mAlogsComSharedParams.ctxCfigs[algo_type].cfg_com.module_hw_version = algoDes[i].module_hw_ver;
+        mAlogsComSharedParams.ctxCfigs[algo_type].module_hw_version = algoDes[i].module_hw_ver;
         mAlgoTypeToGrpMaskMap[algo_type] = grpMask;
         bool isExist = false;
         for(auto it = mAlogsGroupList.begin(); it != mAlogsGroupList.end(); it++) {
@@ -1007,7 +1264,7 @@ RkAiqCore::addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes)
             mAlogsGroupSharedParamsMap[grpMask]->ispStats = NULL;
 
         }
-        algoMap[0] = newAlgoHandle(algoDes[i].des, algoDes[i].algo_ver);
+        algoMap[0] = newAlgoHandle(algoDes[i].des, algoDes[i].algo_ver, algoDes[i].handle_ver);
         if (!algoMap[0].ptr()) {
             LOGE_ANALYZER("new algo_type %d handle failed", algo_type);
             continue;
@@ -1023,53 +1280,18 @@ RkAiqCore::addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes)
 }
 
 SmartPtr<RkAiqHandle>
-RkAiqCore::newAlgoHandle(RkAiqAlgoDesComm* algo, int version)
+RkAiqCore::newAlgoHandle(RkAiqAlgoDesComm* algo, int hw_ver, int handle_ver)
 {
-#define NEW_ALGO_HANDLE(lc, BC) \
-    if (algo->type == RK_AIQ_ALGO_TYPE_##BC) { \
-        if (version == 0) \
-            return new RkAiq##lc##HandleInt(algo, this); \
-    }\
-
-    NEW_ALGO_HANDLE(Ae, AE);
-    NEW_ALGO_HANDLE(Awb, AWB);
-    NEW_ALGO_HANDLE(Af, AF);
-    NEW_ALGO_HANDLE(Amerge, AMERGE);
-    NEW_ALGO_HANDLE(Atmo, ATMO);
-    NEW_ALGO_HANDLE(Anr, ANR);
-    NEW_ALGO_HANDLE(Adhaz, ADHAZ);
-    NEW_ALGO_HANDLE(Asd, ASD);
-    NEW_ALGO_HANDLE(Acp, ACP);
-    NEW_ALGO_HANDLE(Asharp, ASHARP);
-    NEW_ALGO_HANDLE(A3dlut, A3DLUT);
-    NEW_ALGO_HANDLE(Ablc, ABLC);
-    NEW_ALGO_HANDLE(Accm, ACCM);
-    NEW_ALGO_HANDLE(Acgc, ACGC);
-    NEW_ALGO_HANDLE(Adebayer, ADEBAYER);
-    NEW_ALGO_HANDLE(Adpcc, ADPCC);
-    NEW_ALGO_HANDLE(Afec, AFEC);
-    NEW_ALGO_HANDLE(Agamma, AGAMMA);
-    NEW_ALGO_HANDLE(Agic, AGIC);
-    NEW_ALGO_HANDLE(Aie, AIE);
-    NEW_ALGO_HANDLE(Aldch, ALDCH);
-    NEW_ALGO_HANDLE(Alsc, ALSC);
-    NEW_ALGO_HANDLE(Aorb, AORB);
-    NEW_ALGO_HANDLE(Ar2y, AR2Y);
-    NEW_ALGO_HANDLE(Awdr, AWDR);
-    NEW_ALGO_HANDLE(Arawnr, ARAWNR);
-    NEW_ALGO_HANDLE(Amfnr, AMFNR);
-    NEW_ALGO_HANDLE(Aynr, AYNR);
-    NEW_ALGO_HANDLE(Acnr, ACNR);
-    NEW_ALGO_HANDLE(Adrc, ADRC);
-    NEW_ALGO_HANDLE(Adegamma, ADEGAMMA);
-    NEW_ALGO_HANDLE(Aeis, AEIS);
-    NEW_ALGO_HANDLE(Amd, AMD);
-    NEW_ALGO_HANDLE(Again, AGAIN);
-    NEW_ALGO_HANDLE(Acac, ACAC);
-
-    return NULL;
+    std::string className = "RkAiq";
+    className.append(AlgoTypeToString(algo->type));
+    if (handle_ver)
+        className.append("V" + std::to_string(handle_ver));
+    className.append("HandleInt");
+    LOGD_ANALYZER("Creating algorithm: %s, version: %d", className.c_str(), hw_ver);
+    return SmartPtr<RkAiqHandle>(RkAiqHandleFactory::createInstance(className, algo, this));
 }
 
+// register custom algos
 XCamReturn
 RkAiqCore::addAlgo(RkAiqAlgoDesComm& algo)
 {
@@ -1096,9 +1318,21 @@ RkAiqCore::addAlgo(RkAiqAlgoDesComm& algo)
         i++;
     }
 
-    // add to map
-    SmartPtr<RkAiqHandle> new_hdl = newAlgoHandle(&algo, def_des->algo_ver);
+    SmartPtr<RkAiqHandle> new_hdl;
+    if (algo.type == RK_AIQ_ALGO_TYPE_AE)
+        new_hdl = new RkAiqCustomAeHandle(&algo, this);
+    else if (algo.type == RK_AIQ_ALGO_TYPE_AWB)
+        new_hdl = new RkAiqCustomAwbHandle(&algo, this);
+    else {
+        LOGE_ANALYZER("not supported custom algo type: %d ", algo.type);
+        return XCAM_RETURN_ERROR_FAILED;
+    }
     new_hdl->setEnable(false);
+    new_hdl->setGroupId((*algo_map)[0]->getGroupId());
+    new_hdl->setGroupShared((*algo_map)[0]->getGroupShared());
+    rit->second->setNextHdl(new_hdl.ptr());
+    new_hdl->setParentHdl((*algo_map)[0].ptr());
+
     (*algo_map)[algo.id] = new_hdl;
 
     EXIT_ANALYZER_FUNCTION();
@@ -1175,6 +1409,9 @@ RkAiqCore::setReqAlgoResMask(int algoType, bool req)
     case RK_AIQ_ALGO_TYPE_ACP:
         tmp |= (uint64_t)1 << RESULT_TYPE_CP_PARAM;
         break;
+    case RK_AIQ_ALGO_TYPE_ACSM:
+        tmp |= (uint64_t)1 << RESULT_TYPE_CSM_PARAM;
+        break;
     case RK_AIQ_ALGO_TYPE_AIE:
         tmp |= (uint64_t)1 << RESULT_TYPE_IE_PARAM;
         break;
@@ -1218,7 +1455,7 @@ XCamReturn
 RkAiqCore::enableAlgo(int algoType, int id, bool enable)
 {
     ENTER_ANALYZER_FUNCTION();
-    // get current algotype handle, get id
+    // get default algotype handle, id should be 0
     SmartPtr<RkAiqHandle>* cur_algo_hdl = getCurAlgoTypeHandle(algoType);
     if (!cur_algo_hdl) {
         LOGE_ANALYZER("can't find current type %d algo", algoType);
@@ -1234,6 +1471,12 @@ RkAiqCore::enableAlgo(int algoType, int id, bool enable)
         return XCAM_RETURN_ERROR_FAILED;
     }
 
+    SmartLock locker (mApiMutex);
+    while (mSafeEnableAlgo != true)
+        mApiMutexCond.wait(mApiMutex);
+
+    LOGI_ANALYZER("set algo type_id <%d,%d> to %d", algoType, id, enable);
+
     it->second->setEnable(enable);
     /* WARNING:
      * Be careful when use SmartPtr<RkAiqxxxHandle> = SmartPtr<RkAiqHandle>
@@ -1242,30 +1485,32 @@ RkAiqCore::enableAlgo(int algoType, int id, bool enable)
      * (RkAiqHandle ptr = RkAiqxxxHandle ptr + offset), but seams like
      * SmartPtr do not deal with this correctly.
      */
+
     if (enable) {
-        SmartLock locker (mApiMutex);
-        while (mSafeEnableAlgo != true)
-            mApiMutexCond.wait(mApiMutex);
-        if ((*cur_algo_hdl).ptr() &&
-                (*cur_algo_hdl).ptr() != it->second.ptr()) {
-            (*cur_algo_hdl)->setEnable(false);
-            switch_algo = true;
-        }
-        *cur_algo_hdl = it->second;
-        for (auto& algo : mCurIspAlgoHandleList) {
-            if (algo->getAlgoType() == algoType)
-                algo = it->second;
-        }
-        for (auto& algo : mCurIsppAlgoHandleList) {
-            if (algo->getAlgoType() == algoType)
-                algo = it->second;
-        }
-        if (switch_algo && (mState >= RK_AIQ_CORE_STATE_PREPARED))
-            (*cur_algo_hdl)->prepare();
-        setReqAlgoResMask(algoType, true);
-    } else {
-        setReqAlgoResMask(algoType, false);
+        if (mState >= RK_AIQ_CORE_STATE_PREPARED)
+            it->second->prepare();
     }
+
+    int enable_cnt = 0;
+    RkAiqHandle* curHdl = (*cur_algo_hdl).ptr();
+
+    while (curHdl) {
+        if (curHdl->getEnable()) {
+            enable_cnt++;
+        }
+        curHdl = curHdl->getNextHdl();
+    }
+
+    setReqAlgoResMask(algoType, enable_cnt > 0 ? true : false);
+
+    curHdl = (*cur_algo_hdl).ptr();
+
+    while (curHdl) {
+        curHdl->setMulRun(enable_cnt > 1 ? true : false);
+        curHdl = curHdl->getNextHdl();
+    }
+
+    LOGI_ANALYZER("algo type %d enabled count :%d", algoType, enable_cnt);
 
     EXIT_ANALYZER_FUNCTION();
 
@@ -1295,17 +1540,19 @@ RkAiqCore::rmAlgo(int algoType, int id)
         return XCAM_RETURN_ERROR_FAILED;
     }
 
-    // if it's the current algo handle, clear it
-    if ((*cur_algo_hdl).ptr() == it->second.ptr()) {
-        (*cur_algo_hdl).release();
-        for (auto& algo : mCurIspAlgoHandleList) {
-            if (algo->getAlgoType() == algoType)
-                algo.release();
+    SmartLock locker (mApiMutex);
+    while (mState == RK_AIQ_CORE_STATE_RUNNING && mSafeEnableAlgo != true)
+        mApiMutexCond.wait(mApiMutex);
+
+    RkAiqHandle* rmHdl = it->second.ptr();
+    RkAiqHandle* curHdl = (*cur_algo_hdl).ptr();
+    while (curHdl) {
+        RkAiqHandle* nextHdl = curHdl->getNextHdl();
+        if (nextHdl == rmHdl) {
+            curHdl->setNextHdl(nextHdl->getNextHdl());
+            break;
         }
-        for (auto& algo : mCurIsppAlgoHandleList) {
-            if (algo->getAlgoType() == algoType)
-                algo.release();
-        }
+        curHdl = nextHdl;
     }
 
     algo_map->erase(it);
@@ -1333,23 +1580,42 @@ RkAiqCore::getAxlibStatus(int algoType, int id)
     return it->second->getEnable();
 }
 
-const RkAiqAlgoContext*
+// get the last enabled ctx of same type
+RkAiqAlgoContext*
 RkAiqCore::getEnabledAxlibCtx(const int algo_type)
 {
     if (algo_type <= RK_AIQ_ALGO_TYPE_NONE ||
             algo_type >= RK_AIQ_ALGO_TYPE_MAX)
         return NULL;
 
-    SmartPtr<RkAiqHandle>* algo_handle = getCurAlgoTypeHandle(algo_type);
-
-    if (algo_handle == nullptr) {
-        return NULL;
-    }
-
-    if ((*algo_handle).ptr())
-        return (*algo_handle)->getAlgoCtx();
+    std::map<int, SmartPtr<RkAiqHandle>>* algo_map = getAlgoTypeHandleMap(algo_type);
+    std::map<int, SmartPtr<RkAiqHandle>>::reverse_iterator rit = algo_map->rbegin();
+    if (rit !=  algo_map->rend() && rit->second->getEnable())
+        return rit->second->getAlgoCtx();
     else
         return NULL;
+}
+
+
+RkAiqAlgoContext*
+RkAiqCore::getAxlibCtx(const int algo_type, const int lib_id)
+{
+    if (algo_type <= RK_AIQ_ALGO_TYPE_NONE ||
+            algo_type >= RK_AIQ_ALGO_TYPE_MAX)
+        return NULL;
+
+    std::map<int, SmartPtr<RkAiqHandle>>* algo_map = getAlgoTypeHandleMap(algo_type);
+
+    std::map<int, SmartPtr<RkAiqHandle>>::iterator it = algo_map->find(lib_id);
+
+    if (it != algo_map->end()) {
+        return it->second->getAlgoCtx();
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+
+    return NULL;
+
 }
 
 void
@@ -1360,13 +1626,47 @@ RkAiqCore::copyIspStats(SmartPtr<RkAiqAecStatsProxy>& aecStat,
 {
     if (aecStat.ptr()) {
         to->aec_stats = aecStat->data()->aec_stats;
-        to->frame_id = aecStat->data()->frame_id;
+        to->frame_id  = aecStat->data()->frame_id;
     }
-    to->awb_hw_ver = 0;
-    if (awbStat.ptr())
-        to->awb_stats_v200 = awbStat->data()->awb_stats;
-    if (afStat.ptr())
-        to->af_stats = afStat->data()->af_stats;
+    if (mIspHwVer == 3) {
+        to->awb_hw_ver = 3;
+        if (awbStat.ptr()) {
+            memcpy(to->awb_stats_v3x.light, awbStat->data()->awb_stats_v3x.light,
+                   sizeof(to->awb_stats_v3x.light));
+            memcpy(to->awb_stats_v3x.WpNo2, awbStat->data()->awb_stats_v3x.WpNo2,
+                   sizeof(to->awb_stats_v3x.WpNo2));
+            memcpy(to->awb_stats_v3x.blockResult, awbStat->data()->awb_stats_v3x.blockResult,
+                   sizeof(to->awb_stats_v3x.blockResult));
+            memcpy(to->awb_stats_v3x.multiwindowLightResult,
+                   awbStat->data()->awb_stats_v3x.multiwindowLightResult,
+                   sizeof(to->awb_stats_v3x.multiwindowLightResult));
+            memcpy(to->awb_stats_v3x.excWpRangeResult,
+                   awbStat->data()->awb_stats_v3x.excWpRangeResult,
+                   sizeof(to->awb_stats_v3x.excWpRangeResult));
+            memcpy(to->awb_stats_v3x.WpNoHist, awbStat->data()->awb_stats_v3x.WpNoHist,
+                   sizeof(to->awb_stats_v3x.WpNoHist));
+        }
+    } else if (mIspHwVer == 1) {
+        to->awb_hw_ver = 1;
+        if (awbStat.ptr()) {
+            memcpy(to->awb_stats_v21.light, awbStat->data()->awb_stats_v201.light,
+                   sizeof(to->awb_stats_v21.light));
+            memcpy(to->awb_stats_v21.blockResult, awbStat->data()->awb_stats_v201.blockResult,
+                   sizeof(to->awb_stats_v21.blockResult));
+            memcpy(to->awb_stats_v21.WpNoHist, awbStat->data()->awb_stats_v201.WpNoHist,
+                   sizeof(to->awb_stats_v21.WpNoHist));
+        }
+    } else {
+        to->awb_hw_ver = 0;
+        if (awbStat.ptr()) to->awb_stats_v200 = awbStat->data()->awb_stats;
+    }
+    if (mIspHwVer == 3) {
+        to->af_hw_ver = RKAIQ_AF_HW_V30;
+        if (afStat.ptr()) to->af_stats_v3x = afStat->data()->af_stats_v3x;
+    } else {
+        to->af_hw_ver = RKAIQ_AF_HW_V20;
+        if (afStat.ptr()) to->af_stats = afStat->data()->af_stats;
+    }
 }
 
 void
@@ -1475,13 +1775,15 @@ RkAiqCore::analyze(const SmartPtr<VideoBuffer> &buffer)
         SmartPtr<RkAiqAecStatsProxy> aecStat = NULL;
         SmartPtr<RkAiqAwbStatsProxy> awbStat = NULL;
         SmartPtr<RkAiqAfStatsProxy> afStat = NULL;
-        handleIspStats(buffer);
+        SmartPtr<RkAiqAtmoStatsProxy> tmoStat = NULL;
+        SmartPtr<RkAiqAdehazeStatsProxy> dehazeStat = NULL;
         handleAecStats(buffer, aecStat);
         handleAwbStats(buffer, awbStat);
         handleAfStats(buffer, afStat);
+        handleAtmoStats(buffer, tmoStat);
+        handleAdehazeStats(buffer, dehazeStat);
+        handleIspStats(buffer, aecStat, awbStat, afStat, tmoStat, dehazeStat);
         cacheIspStatsToList(aecStat, awbStat, afStat);
-        handleAtmoStats(buffer);
-        handleAdehazeStats(buffer);
     }
     break;
     case ISPP_POLL_TNR_STATS:
@@ -1529,6 +1831,11 @@ RkAiqCore::analyze(const SmartPtr<VideoBuffer> &buffer)
         SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_ISP_POLL_TX_OK,
                 buffer->get_sequence(), buffer);
         post_message(msg);
+        break;
+    }
+    case ISP_POLL_PDAF_STATS:
+    {
+        handlePdafStats(buffer);
         break;
     }
 defalut:
@@ -1595,8 +1902,7 @@ RkAiqCore::events_analyze(const SmartPtr<ispHwEvt_t> &evts)
         sofInfo->setId(id);
         sofInfo->setType(RK_AIQ_SHARED_TYPE_SOF_INFO);
 
-        SmartPtr<XCamMessage> msg = new RkAiqCoreExpMsg(XCAM_MESSAGE_SOF_INFO_OK,
-                id, sofInfo);
+        SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_SOF_INFO_OK, id, sofInfo);
         post_message(msg);
 
         mLastAnalyzedId = id;
@@ -1635,11 +1941,15 @@ RkAiqCore::preProcess(enum rk_aiq_core_analyze_type_e type)
         mRkAiqCoreGroupManager->getGroupAlgoList(type);
 
     for (auto& algoHdl : algo_list) {
-        if (algoHdl.ptr() && algoHdl->getEnable()) {
-            ret = algoHdl->updateConfig(true);
-            RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d updateConfig failed", algoHdl->getAlgoType());
-            ret = algoHdl->preProcess();
-            RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d processing failed", algoHdl->getAlgoType());
+        RkAiqHandle* curHdl = algoHdl.ptr();
+        while (curHdl) {
+            if (curHdl->getEnable()) {
+                ret = curHdl->updateConfig(true);
+                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d updateConfig failed", curHdl->getAlgoType());
+                ret = curHdl->preProcess();
+                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d processing failed", curHdl->getAlgoType());
+            }
+            curHdl = curHdl->getNextHdl();
         }
     }
 
@@ -1659,9 +1969,13 @@ RkAiqCore::processing(enum rk_aiq_core_analyze_type_e type)
         mRkAiqCoreGroupManager->getGroupAlgoList(type);
 
     for (auto& algoHdl : algo_list) {
-        if (algoHdl.ptr() && algoHdl->getEnable()) {
-            ret = algoHdl->processing();
-            RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d processing failed", algoHdl->getAlgoType());
+        RkAiqHandle* curHdl = algoHdl.ptr();
+        while (curHdl) {
+            if (curHdl->getEnable()) {
+                ret = curHdl->processing();
+                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d processing failed", curHdl->getAlgoType());
+            }
+            curHdl = curHdl->getNextHdl();
         }
     }
 
@@ -1698,6 +2012,8 @@ RkAiqCore::setHwInfos(struct RkAiqHwInfo &hw_info)
 {
     ENTER_ANALYZER_FUNCTION();
     mHwInfo = hw_info;
+    if (mTranslator.ptr())
+        mTranslator->setModuleRot(mHwInfo.module_rotation);
     EXIT_ANALYZER_FUNCTION();
 
     return XCAM_RETURN_NO_ERROR;
@@ -1831,7 +2147,7 @@ RkAiqCore::queryCpsLtCap(rk_aiq_cpsl_cap_t &cap)
 }
 
 XCamReturn
-RkAiqCore::genCpslResult(RkAiqFullParams* params)
+RkAiqCore::genCpslResult(RkAiqFullParams* params, RkAiqAlgoPreResAsd* asd_pre_rk)
 {
     rk_aiq_cpsl_cfg_t* cpsl_cfg = &mAlogsComSharedParams.cpslCfg;
 
@@ -1869,7 +2185,6 @@ RkAiqCore::genCpslResult(RkAiqFullParams* params)
                 return XCAM_RETURN_BYPASS;
         } else
             return XCAM_RETURN_BYPASS;
-        RkAiqAlgoPreResAsdInt* asd_pre_rk = (RkAiqAlgoPreResAsdInt*)shared->preResComb.asd_pre_res;
         if (asd_pre_rk) {
             asd_preprocess_result_t* asd_result = &asd_pre_rk->asd_result;
             if (mCurCpslOn != asd_result->cpsl_on) {
@@ -1994,6 +2309,7 @@ RkAiqCore::setSensorFlip(bool mirror, bool flip)
     mAlogsComSharedParams.sns_flip = flip;
 }
 
+#ifdef RKAIQ_ENABLE_PARSER_V1
 XCamReturn
 RkAiqCore::setCalib(const CamCalibDbContext_t* aiqCalib)
 {
@@ -2012,6 +2328,7 @@ RkAiqCore::setCalib(const CamCalibDbContext_t* aiqCalib)
 
     return XCAM_RETURN_NO_ERROR;
 }
+#endif
 
 XCamReturn
 RkAiqCore::setCalib(const CamCalibDbV2Context_t* aiqCalib)
@@ -2098,7 +2415,6 @@ const rk_aiq_mems_sensor_intf_t* RkAiqCore::getMemsSensorIntf() {
 
 void RkAiqCore::post_message (SmartPtr<XCamMessage> &msg)
 {
-    //mRkAiqCoreMsgTh->push_msg(msg);
     mRkAiqCoreGroupManager->handleMessage(msg);
 #ifdef RKAIQ_ENABLE_CAMGROUP
     if (mCamGroupCoreManager)
@@ -2113,23 +2429,12 @@ RkAiqCore::handle_message (const SmartPtr<XCamMessage> &msg)
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn
-RkAiqCore::otherGroupAnalye(uint32_t id, const SmartPtr<RkAiqCoreExpMsg> &msg)
-{
+XCamReturn RkAiqCore::groupAnalyze(uint64_t grpId, const RkAiqAlgosGroupShared_t* shared) {
     ENTER_ANALYZER_FUNCTION();
 
     SmartPtr<RkAiqFullParamsProxy> fullParam;
-    uint32_t sequence = msg->msg->data()->sequence;
 
-    uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_OTHER);
-    RkAiqAlgosGroupShared_t *shared = mAlogsGroupSharedParamsMap[grpMask];
-    shared->frameId = msg->msg->data()->sequence;
-    shared->preExp = msg->msg->data()->preExp->data()->aecExpInfo;
-    shared->curExp = msg->msg->data()->curExp->data()->aecExpInfo;
-
-    LOGI_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_OTHER);
+    fullParam = analyzeInternal(static_cast<rk_aiq_core_analyze_type_e>(grpId));
     if (fullParam.ptr()) {
 #ifdef RKAIQ_ENABLE_CAMGROUP
         if (mCamGroupCoreManager)
@@ -2146,160 +2451,6 @@ RkAiqCore::otherGroupAnalye(uint32_t id, const SmartPtr<RkAiqCoreExpMsg> &msg)
 }
 
 XCamReturn
-RkAiqCore::aeGroupAnalyze(uint32_t id, XCamVideoBuffer* aecStatsBuf)
-{
-    uint32_t frameId = id;
-
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_AE);
-    RkAiqAlgosGroupShared_t *shared = mAlogsGroupSharedParamsMap[grpMask];
-    shared->frameId = frameId;
-    shared->aecStatsBuf = aecStatsBuf;
-
-    LOGI_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_AE);
-    if (fullParam.ptr()) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        if (mCamGroupCoreManager)
-            mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-        else if (mCb)
-#else
-        if (mCb)
-#endif
-            mCb->rkAiqCalcDone(fullParam);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-XCamReturn
-RkAiqCore::awbGroupAnalyze(int32_t id,
-                           XCamVideoBuffer* aePreRes,
-                           XCamVideoBuffer* awbStatsBuf)
-{
-    uint32_t frameId = id;
-
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_AWB);
-    RkAiqAlgosGroupShared_t *shared = mAlogsGroupSharedParamsMap[grpMask];
-    shared->frameId                 = frameId;
-    shared->awbStatsBuf             = awbStatsBuf;
-    shared->res_comb.ae_pre_res     = aePreRes;
-
-    LOGI_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_AWB);
-    if (fullParam.ptr()) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        if (mCamGroupCoreManager)
-            mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-        else if (mCb)
-#else
-        if (mCb)
-#endif
-            mCb->rkAiqCalcDone(fullParam);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-XCamReturn
-RkAiqCore::measGroupAnalyze(uint32_t id, const SmartPtr<RkAiqCoreIspStatsMsg> &msg, XCamVideoBuffer* aePreRes)
-{
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_MEAS);
-    RkAiqAlgosGroupShared_t *shared = mAlogsGroupSharedParamsMap[grpMask];
-    shared->frameId                 = id;
-    shared->ispStats                = msg->msg->data().ptr();
-    shared->res_comb.ae_pre_res     = aePreRes;
-
-    LOGI_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_MEAS);
-    if (fullParam.ptr()) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        if (mCamGroupCoreManager)
-            mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-        else if (mCb)
-#else
-        if (mCb)
-#endif
-            mCb->rkAiqCalcDone(fullParam);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-XCamReturn
-RkAiqCore::amdGroupAnalyze(uint32_t id, const SmartPtr<RkAiqCoreExpMsg> &expMsg,
-                           XCamVideoBuffer* sp, XCamVideoBuffer* ispGain)
-{
-    uint32_t frameId = sp->frame_id;
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_AMD);
-    RkAiqAlgosGroupShared_t *shared = mAlogsGroupSharedParamsMap[grpMask];
-    shared->frameId = frameId;
-    shared->sp = sp;
-    shared->ispGain = ispGain;
-    shared->curExp = expMsg->msg->data()->curExp->data()->aecExpInfo;
-
-    LOGD_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_AMD);
-    if (fullParam.ptr()) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        if (mCamGroupCoreManager)
-            mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-        else if (mCb)
-#else
-        if (mCb)
-#endif
-            mCb->rkAiqCalcDone(fullParam);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-XCamReturn
-RkAiqCore::lscGroupAnalyze(uint32_t id, const SmartPtr<RkAiqCoreExpMsg> &expMsg,
-                           XCamVideoBuffer* awbProcRes, XCamVideoBuffer* tx)
-{
-    uint32_t frameId = expMsg->frame_id;
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_LSC);
-    RkAiqAlgosGroupShared_t *shared     = mAlogsGroupSharedParamsMap[grpMask];
-    shared->frameId                     = frameId;
-    shared->tx                          = tx;
-    shared->res_comb.awb_proc_res       = awbProcRes;
-    shared->curExp                      = expMsg->msg->data()->curExp->data()->aecExpInfo;
-
-    LOGD_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_LSC);
-    if (fullParam.ptr()) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        if (mCamGroupCoreManager)
-            mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-        else if (mCb)
-#else
-        if (mCb)
-#endif
-            mCb->rkAiqCalcDone(fullParam);
-    }
-
-    tx->unref(tx);
-    awbProcRes->unref(awbProcRes);
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-XCamReturn
 RkAiqCore::thumbnailsGroupAnalyze(rkaiq_image_source_t &thumbnailsSrc)
 {
     uint32_t frameId = thumbnailsSrc.frame_id;
@@ -2312,252 +2463,60 @@ RkAiqCore::thumbnailsGroupAnalyze(rkaiq_image_source_t &thumbnailsSrc)
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn
-RkAiqCore::mfnrGroupAnalyze(uint32_t id, const SmartPtr<RkAiqCoreExpMsg> &expMsg,
-                            XCamVideoBuffer* ispGain, XCamVideoBuffer* kgGain,
-                            rk_aiq_amd_params_t &amdParams)
-{
-    uint32_t frameId = expMsg->frame_id;
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_AMFNR);
-    RkAiqAlgosGroupShared_t *shared = mAlogsGroupSharedParamsMap[grpMask];
-    shared->frameId = frameId;
-    shared->ispGain = ispGain;
-    shared->kgGain = kgGain;
-    // shared->amdResParams = amdParams;
-    shared->curExp = expMsg->msg->data()->curExp->data()->aecExpInfo;
-
-    LOGD_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_AMFNR);
-    if (fullParam.ptr()) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        if (mCamGroupCoreManager)
-            mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-        else if (mCb)
-#else
-        if (mCb)
-#endif
-            mCb->rkAiqCalcDone(fullParam);
-    }
-    return XCAM_RETURN_NO_ERROR;
-}
-
-XCamReturn
-RkAiqCore::ynrGroupAnalyze(uint32_t id, const SmartPtr<RkAiqCoreExpMsg> &expMsg,
-                           XCamVideoBuffer* ispGain, XCamVideoBuffer* wrGain,
-                           rk_aiq_amd_params_t &amdParams)
-{
-    uint32_t frameId = expMsg->frame_id;
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_AYNR);
-    RkAiqAlgosGroupShared_t *shared = mAlogsGroupSharedParamsMap[grpMask];
-    shared->frameId = frameId;
-    shared->ispGain = ispGain;
-    shared->wrGain = wrGain;
-    // shared->amdResParams = amdParams;
-    shared->curExp = expMsg->msg->data()->curExp->data()->aecExpInfo;
-
-    LOGD_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_AYNR);
-    if (fullParam.ptr()) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        if (mCamGroupCoreManager)
-            mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-        else if (mCb)
-#else
-        if (mCb)
-#endif
-            mCb->rkAiqCalcDone(fullParam);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-XCamReturn
-RkAiqCore::grp0Analyze(grp0AnalyzerInParams_t &inParams)
-{
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_GRP0);
-    RkAiqAlgosGroupShared_t *shared     = mAlogsGroupSharedParamsMap[grpMask];
-    shared->frameId                     = inParams.id;
-    shared->aecStatsBuf                 = inParams.aecStatsBuf;
-    shared->awbStatsBuf                 = inParams.awbStatsBuf;
-    shared->afStatsBuf                  = inParams.afStatsBuf;
-    shared->res_comb.ae_pre_res         = inParams.aePreRes;
-    shared->res_comb.ae_proc_res        = inParams.aeProcRes;
-    shared->preExp                      = inParams.sofInfoMsg->msg->data()->preExp->data()->aecExpInfo;
-    shared->curExp                      = inParams.sofInfoMsg->msg->data()->curExp->data()->aecExpInfo;
-    shared->nxtExp                      = inParams.sofInfoMsg->msg->data()->nxtExp->data()->aecExpInfo;
-
-    LOGI_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_GRP0);
-    if (fullParam.ptr()) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        if (mCamGroupCoreManager)
-            mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-        else if (mCb)
-#else
-        if (mCb)
-#endif
-            mCb->rkAiqCalcDone(fullParam);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-XCamReturn
-RkAiqCore::grp1Analyze(grp1AnalyzerInParams_t &inParams)
-{
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_GRP1);
-    RkAiqAlgosGroupShared_t *shared = mAlogsGroupSharedParamsMap[grpMask];
-    shared->frameId                 = inParams.id;
-    shared->aecStatsBuf             = inParams.aecStatsBuf;
-    shared->awbStatsBuf             = inParams.awbStatsBuf;
-    shared->afStatsBuf              = inParams.afStatsBuf;
-    shared->res_comb.ae_pre_res     = inParams.aePreRes;
-    shared->res_comb.awb_proc_res   = inParams.awbProcRes;
-    shared->curExp                  = inParams.sofInfoMsg->msg->data()->curExp->data()->aecExpInfo;
-
-    LOGI_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_GRP1);
-    if (fullParam.ptr()) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        if (mCamGroupCoreManager)
-            mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-        else if (mCb)
-#else
-        if (mCb)
-#endif
-            mCb->rkAiqCalcDone(fullParam);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-XCamReturn
-RkAiqCore::afAnalyze(afAnalyzerInParams_t &inParams)
-{
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_AF);
-    RkAiqAlgosGroupShared_t *shared = mAlogsGroupSharedParamsMap[grpMask];
-    shared->frameId                 = inParams.id;
-    shared->aecStatsBuf             = inParams.aecStatsBuf;
-    shared->afStatsBuf              = inParams.afStatsBuf;
-    shared->res_comb.ae_pre_res     = inParams.aePreRes;
-    shared->res_comb.ae_proc_res    = inParams.aeProcRes;
-    shared->curExp                  = inParams.expInfo->msg->data()->curExp->data()->aecExpInfo;
-
-    LOGI_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_AF);
-    if (fullParam.ptr()) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        if (mCamGroupCoreManager)
-            mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-        else if (mCb)
-#else
-        if (mCb)
-#endif
-            mCb->rkAiqCalcDone(fullParam);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-
-XCamReturn RkAiqCore::eisGroupAnalyze(uint32_t id, const SmartPtr<RkAiqCoreExpMsg>& expMsg,
-                                      XCamVideoBuffer* orbStats, XCamVideoBuffer* nrImg) {
-    uint32_t frameId = orbStats->frame_id;
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    RkAiqAlgosGroupShared_t* shared = mAlogsGroupSharedParamsMap[RK_AIQ_CORE_ANALYZE_EIS];
-    shared->frameId                 = frameId;
-    shared->orbStats                = orbStats;
-    shared->nrImg                   = nrImg;
-    shared->sof                     = expMsg->msg->data()->sof;
-    shared->curExp                  = expMsg->msg->data()->curExp->data()->aecExpInfo;
-
-    LOGD_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_EIS);
-    if (fullParam.ptr()) {
-        if (fullParam->data()->mFecParams.ptr()) {
-            rk_aiq_isp_fec_params_v20_t* fec_params = fullParam->data()->mFecParams->data().ptr();
-            if (fec_params->update_mask != 0) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-                if (mCamGroupCoreManager)
-                    mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-                else if (mCb)
-#else
-                if (mCb)
-#endif
-                    mCb->rkAiqCalcDone(fullParam);
-            }
-        }
-    }
-
-    if (orbStats != nullptr)
-        orbStats->unref(orbStats);
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-XCamReturn
-RkAiqCore::orbGroupAnalyze(uint32_t id, XCamVideoBuffer* orbStats)
-{
-    uint32_t frameId = orbStats->frame_id;
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
-
-    RkAiqAlgosGroupShared_t *shared = mAlogsGroupSharedParamsMap[RK_AIQ_CORE_ANALYZE_ORB];
-    shared->frameId = frameId;
-    shared->orbStats = orbStats;
-
-    LOGD_ANALYZER("%s, start analyzing id(%d)", __FUNCTION__, shared->frameId);
-
-    fullParam = analyzeInternal(RK_AIQ_CORE_ANALYZE_ORB);
-#ifdef RKAIQ_ENABLE_CAMGROUP
-    if (mCamGroupCoreManager)
-        mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
-    else if (mCb)
-#else
-    if (mCb)
-#endif
-        mCb->rkAiqCalcDone(fullParam);
-
-    if (orbStats != nullptr)
-        orbStats->unref(orbStats);
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
 void RkAiqCore::newAiqParamsPool()
 {
-    for (auto algoHdl : mCurIspAlgoHandleList) {
-        if (algoHdl.ptr() && algoHdl->getEnable()) {
+    for (auto& algoHdl : mCurIspAlgoHandleList) {
+        bool alloc_pool = false;
+        RkAiqHandle* curHdl = algoHdl.ptr();
+        while (curHdl) {
+            if (curHdl->getEnable()) {
+                alloc_pool = true;
+                break;
+            }
+            curHdl = curHdl->getNextHdl();
+        }
+        if (alloc_pool) {
             switch (algoHdl->getAlgoType()) {
             case RK_AIQ_ALGO_TYPE_AE:
-                mAiqExpParamsPool           = new RkAiqExpParamsPool("RkAiqExpParams", MAX_AEC_EFFECT_FNUM * 4);
-                mAiqIrisParamsPool          = new RkAiqIrisParamsPool("RkAiqIrisParams", 4);
-                mAiqIspAecParamsPool        = new RkAiqIspAecParamsPool("RkAiqIspAecParams", RkAiqCore::DEFAULT_POOL_SIZE);
-                mAiqIspHistParamsPool       = new RkAiqIspHistParamsPool("RkAiqIspHistParams", RkAiqCore::DEFAULT_POOL_SIZE);
+                if (!mAiqAecStatsPool.ptr())
+                    mAiqAecStatsPool = new RkAiqAecStatsPool("RkAiqAecStatsPool", 16);
+                mAiqExpParamsPool =
+                    new RkAiqExpParamsPool("RkAiqExpParams", MAX_AEC_EFFECT_FNUM * 4);
+                mAiqIrisParamsPool = new RkAiqIrisParamsPool("RkAiqIrisParams", MAX_AEC_EFFECT_FNUM * 4);
+                mAiqIspAecParamsPool =
+                    new RkAiqIspAecParamsPool("RkAiqIspAecParams", RkAiqCore::DEFAULT_POOL_SIZE);
+                mAiqIspHistParamsPool =
+                    new RkAiqIspHistParamsPool("RkAiqIspHistParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_AWB:
-                mAiqIspAwbParamsPool        = new RkAiqIspAwbParamsPool("RkAiqIspAwbParams", RkAiqCore::DEFAULT_POOL_SIZE);
-                mAiqIspAwbGainParamsPool    = new RkAiqIspAwbGainParamsPool("RkAiqIspAwbGainParams", RkAiqCore::DEFAULT_POOL_SIZE);
+                if (!mAiqAwbStatsPool.ptr())
+                    mAiqAwbStatsPool = new RkAiqAwbStatsPool("RkAiqAwbStatsPool", 16);
+#if defined(ISP_HW_V30)
+                mAiqIspAwbV3xParamsPool = new RkAiqIspAwbParamsPoolV3x(
+                    "RkAiqIspAwbV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V21)
+                mAiqIspAwbV21ParamsPool = new RkAiqIspAwbParamsPoolV21(
+                    "RkAiqIspAwbV21Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
+                mAiqIspAwbParamsPool =
+                    new RkAiqIspAwbParamsPool("RkAiqIspAwbParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
+                mAiqIspAwbGainParamsPool = new RkAiqIspAwbGainParamsPool(
+                    "RkAiqIspAwbGainParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_AF:
-                mAiqFocusParamsPool         = new RkAiqFocusParamsPool("RkAiqFocusParams", 4);
-                mAiqIspAfParamsPool         = new RkAiqIspAfParamsPool("RkAiqIspAfParams", RkAiqCore::DEFAULT_POOL_SIZE);
+                if (!mAiqAfStatsPool.ptr())
+                    mAiqAfStatsPool = new RkAiqAfStatsPool("RkAiqAfStatsPool", 10);
+                if (!mAiqPdafStatsPool.ptr())
+                    mAiqPdafStatsPool = new RkAiqPdafStatsPool("RkAiqPdafStatsPool", 10);
+                mAiqFocusParamsPool = new RkAiqFocusParamsPool("RkAiqFocusParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#if defined(ISP_HW_V30)
+                mAiqIspAfV3xParamsPool =
+                    new RkAiqIspAfParamsPoolV3x("RkAiqIspAfParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
+                mAiqIspAfParamsPool =
+                    new RkAiqIspAfParamsPool("RkAiqIspAfParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_ADPCC:
                 mAiqIspDpccParamsPool       = new RkAiqIspDpccParamsPool("RkAiqIspDpccParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2566,7 +2525,10 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspMergeParamsPool      = new RkAiqIspMergeParamsPool("RkAiqIspMergeParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_ATMO:
-                mAiqIspTmoParamsPool        = new RkAiqIspTmoParamsPool("RkAiqIspTmoParams", RkAiqCore::DEFAULT_POOL_SIZE);
+                if (!mAiqAtmoStatsPool.ptr())
+                    mAiqAtmoStatsPool = new RkAiqAtmoStatsPool("RkAiqAtmoStatsPool", 10);
+                mAiqIspTmoParamsPool =
+                    new RkAiqIspTmoParamsPool("RkAiqIspTmoParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_ACCM:
                 mAiqIspCcmParamsPool        = new RkAiqIspCcmParamsPool("RkAiqIspCcmParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2575,10 +2537,20 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspLscParamsPool        = new RkAiqIspLscParamsPool("RkAiqIspLscParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_ABLC:
+#if defined(ISP_HW_V21) || defined(ISP_HW_V30)
+                mAiqIspBlcV21ParamsPool     = new RkAiqIspBlcParamsPoolV21("RkAiqIspBlcParamsV21", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspBlcParamsPool        = new RkAiqIspBlcParamsPool("RkAiqIspBlcParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_ARAWNR:
+#if defined(ISP_HW_V30)
+                mAiqIspBaynrV3xParamsPool      = new RkAiqIspBaynrParamsPoolV3x("RkAiqIspRawnrParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V21) 
+                mAiqIspBaynrV21ParamsPool      = new RkAiqIspBaynrParamsPoolV21("RkAiqIspRawnrParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspRawnrParamsPool      = new RkAiqIspRawnrParamsPool("RkAiqIspRawnrParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_AGIC:
                 mAiqIspGicParamsPool        = new RkAiqIspGicParamsPool("RkAiqIspGicParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2593,7 +2565,10 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspLut3dParamsPool      = new RkAiqIspLut3dParamsPool("RkAiqIspLut3dParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_ADHAZ:
-                mAiqIspDehazeParamsPool     = new RkAiqIspDehazeParamsPool("RkAiqIspDehazeParams", RkAiqCore::DEFAULT_POOL_SIZE);
+                if (!mAiqAdehazeStatsPool.ptr())
+                    mAiqAdehazeStatsPool = new RkAiqAdehazeStatsPool("RkAiqAdehazeStatsPool", 10);
+                mAiqIspDehazeParamsPool = new RkAiqIspDehazeParamsPool(
+                    "RkAiqIspDehazeParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_AGAMMA:
                 mAiqIspAgammaParamsPool     = new RkAiqIspAgammaParamsPool("RkAiqIspAgammaParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2604,14 +2579,18 @@ void RkAiqCore::newAiqParamsPool()
             case RK_AIQ_ALGO_TYPE_AWDR:
                 mAiqIspWdrParamsPool        = new RkAiqIspWdrParamsPool("RkAiqIspWdrParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
-            case RK_AIQ_ALGO_TYPE_AR2Y:
+            case RK_AIQ_ALGO_TYPE_ACSM:
                 mAiqIspCsmParamsPool        = new RkAiqIspCsmParamsPool("RkAiqIspCsmParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_ACGC:
                 mAiqIspCgcParamsPool        = new RkAiqIspCgcParamsPool("RkAiqIspCgcParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_AGAIN:
+#if defined(ISP_HW_V30)
+                mAiqIspGainV3xParamsPool     = new RkAiqIspGainParamsPoolV3x("RkAiqIspGainV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspGainParamsPool       = new RkAiqIspGainParamsPool("RkAiqIspGainParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_ACP:
                 mAiqIspCpParamsPool         = new RkAiqIspCpParamsPool("RkAiqIspCpParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2623,28 +2602,116 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspMdParamsPool         = new RkAiqIspMdParamsPool("RkAiqIspMdParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_AMFNR:
+#if defined(ISP_HW_V30)
+                mAiqIspTnrV3xParamsPool     = new RkAiqIspTnrParamsPoolV3x("RkAiqIspTnrV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspTnrParamsPool        = new RkAiqIspTnrParamsPool("RkAiqIspTnrParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_AYNR:
+#if defined(ISP_HW_V30)
+                mAiqIspYnrV3xParamsPool     = new RkAiqIspYnrParamsPoolV3x("RkAiqIspYnrV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V21)
+                mAiqIspYnrV21ParamsPool     = new RkAiqIspYnrParamsPoolV21("RkAiqIspYnrV21Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspYnrParamsPool        = new RkAiqIspYnrParamsPool("RkAiqIspYnrParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_ACNR:
+#if defined(ISP_HW_V30)
+                mAiqIspCnrV3xParamsPool     = new RkAiqIspCnrParamsPoolV3x("RkAiqIspCnrV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V21)
+                mAiqIspCnrV21ParamsPool     = new RkAiqIspCnrParamsPoolV21("RkAiqIspCnrV21Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspUvnrParamsPool       = new RkAiqIspUvnrParamsPool("RkAiqIspUvnrParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_ASHARP:
+#if defined(ISP_HW_V30)
+                mAiqIspSharpenV3xParamsPool   = new RkAiqIspSharpenParamsPoolV3x("RkAiqIspSharpenV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V21)
+                mAiqIspSharpenV21ParamsPool   = new RkAiqIspSharpenParamsPoolV21("RkAiqIspSharpenV21Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspSharpenParamsPool    = new RkAiqIspSharpenParamsPool("RkAiqIspSharpenParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIspEdgefltParamsPool    = new RkAiqIspEdgefltParamsPool("RkAiqIspEdgefltParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_AORB:
-                mAiqIspOrbParamsPool        = new RkAiqIspOrbParamsPool("RkAiqIspOrbParams", RkAiqCore::DEFAULT_POOL_SIZE);
+                if (!mAiqOrbStatsIntPool.ptr())
+                    mAiqOrbStatsIntPool =
+                        new RkAiqOrbStatsPool("RkAiqOrbStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
+                mAiqIspOrbParamsPool =
+                    new RkAiqIspOrbParamsPool("RkAiqIspOrbParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_AFEC:
             case RK_AIQ_ALGO_TYPE_AEIS:
                 mAiqIspFecParamsPool        = new RkAiqIspFecParamsPool("RkAiqIspFecParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
+            case RK_AIQ_ALGO_TYPE_ACAC:
+                mAiqIspCacV3xParamsPool     = new RkAiqIspCacParamsPoolV3x("RkAiqIspCacV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
+                break;
+            case RK_AIQ_ALGO_TYPE_ADRC:
+                mAiqIspDrcParamsPool        = new RkAiqIspDrcParamsPool("RkAiqIspDrcParamsPool", RkAiqCore::DEFAULT_POOL_SIZE);
             default:
                 break;
             }
+        }
+    }
+}
+
+void RkAiqCore::newPdafStatsPool() {
+    const CamCalibDbContext_t* aiqCalib     = mAlogsComSharedParams.calibv2;
+    uint32_t max_cnt                        = mAiqPdafStatsPool->get_free_buffer_size();
+    SmartPtr<RkAiqPdafStatsProxy> pdafStats = NULL;
+    CalibDbV2_Af_Pdaf_t* pdaf;
+    int pd_size;
+
+    if (CHECK_ISP_HW_V30()) {
+        CalibDbV2_AFV30_t* af_v30 =
+            (CalibDbV2_AFV30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)aiqCalib, af_v30));
+        pdaf = &af_v30->TuningPara.pdaf;
+    } else {
+        CalibDbV2_AF_t* af = (CalibDbV2_AF_t*)CALIBDBV2_GET_MODULE_PTR((void*)aiqCalib, af);
+        pdaf               = &af->TuningPara.pdaf;
+    }
+
+    pd_size = pdaf->pdWidth * pdaf->pdHeight * sizeof(short);
+    if (pd_size > 0) {
+        for (uint32_t i = 0; i < max_cnt; i++) {
+            pdafStats = mAiqPdafStatsPool->get_item();
+
+            rk_aiq_isp_pdaf_stats_t* pdaf_stats = &pdafStats->data().ptr()->pdaf_stats;
+            pdaf_stats->pdWidth                 = pdaf->pdWidth;
+            pdaf_stats->pdHeight                = pdaf->pdHeight;
+            pdaf_stats->pdLData                 = (unsigned short*)malloc(pd_size);
+            pdaf_stats->pdRData                 = (unsigned short*)malloc(pd_size);
+        }
+    } else {
+        for (uint32_t i = 0; i < max_cnt; i++) {
+            pdafStats = mAiqPdafStatsPool->get_item();
+
+            rk_aiq_isp_pdaf_stats_t* pdaf_stats = &pdafStats->data().ptr()->pdaf_stats;
+            pdaf_stats->pdLData                 = NULL;
+            pdaf_stats->pdRData                 = NULL;
+        }
+    }
+}
+
+void RkAiqCore::delPdafStatsPool() {
+    SmartPtr<RkAiqPdafStatsProxy> pdafStats = NULL;
+    uint32_t max_cnt                        = mAiqPdafStatsPool->get_free_buffer_size();
+
+    for (uint32_t i = 0; i < max_cnt; i++) {
+        pdafStats = mAiqPdafStatsPool->get_item();
+
+        rk_aiq_isp_pdaf_stats_t* pdaf_stats = &pdafStats->data().ptr()->pdaf_stats;
+        if (pdaf_stats->pdLData) {
+            free(pdaf_stats->pdLData);
+            pdaf_stats->pdLData = NULL;
+        }
+        if (pdaf_stats->pdRData) {
+            free(pdaf_stats->pdRData);
+            pdaf_stats->pdRData = NULL;
         }
     }
 }
@@ -2700,9 +2767,12 @@ RkAiqCore::getGroupSharedParams(int32_t groupId, RkAiqAlgosGroupShared_t* &share
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn
-RkAiqCore::handleIspStats(const SmartPtr<VideoBuffer> &buffer)
-{
+XCamReturn RkAiqCore::handleIspStats(const SmartPtr<VideoBuffer>& buffer,
+                                     const SmartPtr<RkAiqAecStatsProxy>& aecStat,
+                                     const SmartPtr<RkAiqAwbStatsProxy>& awbStat,
+                                     const SmartPtr<RkAiqAfStatsProxy>& afStat,
+                                     const SmartPtr<RkAiqAtmoStatsProxy>& tmoStat,
+                                     const SmartPtr<RkAiqAdehazeStatsProxy>& dehazeStat) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     SmartPtr<RkAiqIspStatsIntProxy> ispStatsInt = NULL;
 
@@ -2713,14 +2783,15 @@ RkAiqCore::handleIspStats(const SmartPtr<VideoBuffer> &buffer)
         return XCAM_RETURN_BYPASS;
     }
 
-    ret = mTranslator->translateIspStats(buffer, ispStatsInt);
+    ret = mTranslator->translateIspStats(buffer, ispStatsInt, aecStat, awbStat, afStat, tmoStat,
+                                         dehazeStat);
     if (ret) {
         LOGE_ANALYZER("translate isp stats failed!");
         return XCAM_RETURN_BYPASS;
     }
 
     uint32_t id = buffer->get_sequence();
-    SmartPtr<XCamMessage> msg = new RkAiqCoreIspStatsMsg(XCAM_MESSAGE_ISP_STATS_OK,
+    SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_ISP_STATS_OK,
             id, ispStatsInt);
     post_message(msg);
 
@@ -2733,10 +2804,10 @@ RkAiqCore::handleAecStats(const SmartPtr<VideoBuffer> &buffer, SmartPtr<RkAiqAec
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     SmartPtr<RkAiqAecStatsProxy> aecStats = NULL;
 
-    if (mAiqAecStatsPool->has_free_items()) {
+    if (mAiqAecStatsPool.ptr() && mAiqAecStatsPool->has_free_items()) {
         aecStats = mAiqAecStatsPool->get_item();
     } else {
-        LOGE_ANALYZER("no free aecStats buffer!");
+        LOGW_AEC("no free aecStats buffer!");
         return XCAM_RETURN_BYPASS;
     }
     ret = mTranslator->translateAecStats(buffer, aecStats);
@@ -2761,10 +2832,10 @@ RkAiqCore::handleAwbStats(const SmartPtr<VideoBuffer> &buffer, SmartPtr<RkAiqAwb
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     SmartPtr<RkAiqAwbStatsProxy> awbStats = NULL;
 
-    if (mAiqAwbStatsPool->has_free_items()) {
+    if (mAiqAwbStatsPool.ptr() && mAiqAwbStatsPool->has_free_items()) {
         awbStats = mAiqAwbStatsPool->get_item();
     } else {
-        LOGE_ANALYZER("no free awbStats buffer!");
+        LOGW_AWB("no free awbStats buffer!");
         return XCAM_RETURN_BYPASS;
     }
     ret = mTranslator->translateAwbStats(buffer, awbStats);
@@ -2789,10 +2860,10 @@ RkAiqCore::handleAfStats(const SmartPtr<VideoBuffer> &buffer, SmartPtr<RkAiqAfSt
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     SmartPtr<RkAiqAfStatsProxy> afStats = NULL;
 
-    if (mAiqAfStatsPool->has_free_items()) {
+    if (mAiqAfStatsPool.ptr() && mAiqAfStatsPool->has_free_items()) {
         afStats = mAiqAfStatsPool->get_item();
     } else {
-        LOGE_ANALYZER("no free afStats buffer!");
+        LOGW_AF("no free afStats buffer!");
         return XCAM_RETURN_BYPASS;
     }
     ret = mTranslator->translateAfStats(buffer, afStats);
@@ -2811,19 +2882,41 @@ RkAiqCore::handleAfStats(const SmartPtr<VideoBuffer> &buffer, SmartPtr<RkAiqAfSt
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn
-RkAiqCore::handleAtmoStats(const SmartPtr<VideoBuffer> &buffer)
-{
-    XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    SmartPtr<RkAiqAtmoStatsProxy> atmoStats = NULL;
+XCamReturn RkAiqCore::handlePdafStats(const SmartPtr<VideoBuffer>& buffer) {
+    XCamReturn ret                          = XCAM_RETURN_NO_ERROR;
+    SmartPtr<RkAiqPdafStatsProxy> pdafStats = NULL;
+    bool sns_mirror                         = mAlogsComSharedParams.sns_mirror;
 
-    if (mAiqAtmoStatsPool->has_free_items()) {
-        atmoStats = mAiqAtmoStatsPool->get_item();
+    if (mAiqPdafStatsPool->has_free_items()) {
+        pdafStats = mAiqPdafStatsPool->get_item();
     } else {
-        LOGE_ANALYZER("no free atmoStats buffer!");
+        LOGE_ANALYZER("no free afStats buffer!");
         return XCAM_RETURN_BYPASS;
     }
-    ret = mTranslator->translateAtmoStats(buffer, atmoStats);
+    ret = mTranslator->translatePdafStats(buffer, pdafStats, sns_mirror);
+    if (ret < 0) {
+        LOGE_ANALYZER("translate af stats failed!");
+        return XCAM_RETURN_BYPASS;
+    }
+
+    uint32_t id               = buffer->get_sequence();
+    SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_PDAF_STATS_OK, id, pdafStats);
+    post_message(msg);
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn RkAiqCore::handleAtmoStats(const SmartPtr<VideoBuffer>& buffer,
+                                      SmartPtr<RkAiqAtmoStatsProxy>& tmoStat) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if (mAiqAtmoStatsPool.ptr() && mAiqAtmoStatsPool->has_free_items()) {
+        tmoStat = mAiqAtmoStatsPool->get_item();
+    } else {
+        LOGW_ATMO("no free atmoStats buffer!");
+        return XCAM_RETURN_BYPASS;
+    }
+    ret = mTranslator->translateAtmoStats(buffer, tmoStat);
     if (ret < 0) {
         LOGE_ANALYZER("translate tmo stats failed!");
         return XCAM_RETURN_BYPASS;
@@ -2831,25 +2924,23 @@ RkAiqCore::handleAtmoStats(const SmartPtr<VideoBuffer> &buffer)
 
     uint32_t id = buffer->get_sequence();
     SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_ATMO_STATS_OK,
-            id, atmoStats);
+            id, tmoStat);
     post_message(msg);
 
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn
-RkAiqCore::handleAdehazeStats(const SmartPtr<VideoBuffer> &buffer)
-{
+XCamReturn RkAiqCore::handleAdehazeStats(const SmartPtr<VideoBuffer>& buffer,
+                                         SmartPtr<RkAiqAdehazeStatsProxy>& dehazeStat) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    SmartPtr<RkAiqAdehazeStatsProxy> adehazeStats = NULL;
 
-    if (mAiqAdehazeStatsPool->has_free_items()) {
-        adehazeStats = mAiqAdehazeStatsPool->get_item();
+    if (mAiqAdehazeStatsPool.ptr() && mAiqAdehazeStatsPool->has_free_items()) {
+        dehazeStat = mAiqAdehazeStatsPool->get_item();
     } else {
-        LOGE_ANALYZER("no free adehazeStats buffer!");
+        LOGW_ADEHAZE("no free adehazeStats buffer!");
         return XCAM_RETURN_BYPASS;
     }
-    ret = mTranslator->translateAdehazeStats(buffer, adehazeStats);
+    ret = mTranslator->translateAdehazeStats(buffer, dehazeStat);
     if (ret < 0) {
         LOGE_ANALYZER("translate dehaze stats failed!");
         return XCAM_RETURN_BYPASS;
@@ -2857,7 +2948,7 @@ RkAiqCore::handleAdehazeStats(const SmartPtr<VideoBuffer> &buffer)
 
     uint32_t id = buffer->get_sequence();
     SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_ADEHAZE_STATS_OK,
-            id, adehazeStats);
+            id, dehazeStat);
     post_message(msg);
 
     return XCAM_RETURN_NO_ERROR;
@@ -2868,10 +2959,10 @@ RkAiqCore::handleOrbStats(const SmartPtr<VideoBuffer> &buffer)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     SmartPtr<RkAiqOrbStatsProxy> orbStats = NULL;
-    if (mAiqOrbStatsIntPool->has_free_items()) {
+    if (mAiqOrbStatsIntPool.ptr() && mAiqOrbStatsIntPool->has_free_items()) {
         orbStats = mAiqOrbStatsIntPool->get_item();
     } else {
-        LOGE_ANALYZER("no free orbStats!");
+        LOGW_AORB("no free orbStats!");
         return XCAM_RETURN_BYPASS;
     }
 
@@ -2901,9 +2992,21 @@ XCamReturn RkAiqCore::set_sp_resolution(int &width, int &height, int &aligned_w,
 }
 
 XCamReturn
+RkAiqCore::set_pdaf_support(bool support)
+{
+    mPdafSupport = support;
+    return XCAM_RETURN_NO_ERROR;
+}
+
+bool RkAiqCore::get_pdaf_support()
+{
+    return mPdafSupport;
+}
+
+XCamReturn
 RkAiqCore::newAiqGroupAnayzer()
 {
-    mRkAiqCoreGroupManager = new RkAiqAnalyzeGroupManager(this);
+    mRkAiqCoreGroupManager = new RkAiqAnalyzeGroupManager(this, mIsSingleThread);
     mRkAiqCoreGroupManager->parseAlgoGroup(mAlgosDesArray);
     return XCAM_RETURN_NO_ERROR;
 }

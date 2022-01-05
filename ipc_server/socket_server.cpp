@@ -20,14 +20,23 @@
 #endif
 
 #define RKAIQ_SOCKET_DATA_OFFSET  24
+#define RKAIQ_SOCKET_OLD_HEADER_LEN  2
 #define RKAIQ_SOCKET_DATA_HEADER_LEN  4
+static const uint8_t RKAIQ_SOCKET_OLD_HEADER[2] = {'R', 'K'};
 static const uint8_t RKAIQ_SOCKET_DATA_HEADER[4] = {'R', 0xAA, 0xFF, 'K'};
+std::mutex SocketServer::send_mutex;
 
 typedef enum __aiq_ipc_cmd_id {
   AIQ_IPC_CMD_UNKNOWN = -1,
   AIQ_IPC_CMD_WRITE = 0,
   AIQ_IPC_CMD_READ = 1,
 } aiq_ipc_cmd_id;
+
+typedef struct aiq_tunning_ctx_s {
+  int socketfd;
+  rk_aiq_sys_ctx_t* aiq_ctx;
+  RkAiqSocketData_t aiq_data;
+} aiq_tunning_ctx;
 
 SocketServer::~SocketServer() {
 }
@@ -158,6 +167,7 @@ int ProcessText(int client_socket, rk_aiq_sys_ctx_t* ctx, char * data, int size)
     receivedData.data = NULL;
 
     if (ret != -1) {
+        const std::lock_guard<std::mutex> lock(SocketServer::send_mutex);
         unsigned int packetSize = sizeof(RkAiqSocketData) + dataReply.dataSize - sizeof(char*);
         memcpy(dataReply.packetSize, &packetSize, 4);
         char* dataToSend = (char*)malloc(packetSize);
@@ -287,6 +297,8 @@ int rkaiq_ipc_send(int sockfd, int id, int ack, int seqn,
   uint32_t out_len = sizeof(RkAiqSocketData_t) - sizeof(char*) + data_len;
   char* out_data = (char*)malloc(out_len);
   RkAiqSocketData_t *out_res = (RkAiqSocketData_t*)out_data;
+  const std::lock_guard<std::mutex> lock(SocketServer::send_mutex);
+  int ret = 0;
 
   out_res->magic[0] = 'R';
   out_res->magic[1] = 0xAA;
@@ -301,9 +313,51 @@ int rkaiq_ipc_send(int sockfd, int id, int ack, int seqn,
 
   memcpy(&out_res->data, data, data_len);
 
-  send(sockfd, out_data, out_len, 0);
+  ret = send(sockfd, out_data, out_len, 0);
+
+  free(out_data);
 
   return 0;
+}
+
+// return 0 if a sigle packet or payload size
+int rkaiq_packet_parse_old(RkAiqSocketData* aiq_data, uint8_t* buffer, int len)
+{
+  uint8_t* start_pos = NULL;
+  uint32_t packet_size = 0;
+  uint32_t valid_size = 0;
+  RkAiqSocketData* aiq_pkt = NULL;
+
+  if (buffer[0] =='R' && buffer [1] =='K') {
+    start_pos = buffer;
+  }
+
+  if (start_pos) {
+    if ((len - (start_pos - buffer)) < (int)sizeof(RkAiqSocketData)) {
+      LOGE("Not a complete packet [%d], discard!\n", len);
+      return -1;
+    }
+
+    aiq_pkt = (RkAiqSocketData*)start_pos;
+    memcpy(aiq_data, aiq_pkt, sizeof(RkAiqSocketData));
+
+    packet_size = (start_pos[2] & 0xff) | ((start_pos[3] & 0xff) << 8) |
+                 ((start_pos[4] & 0xff) << 16) | ((start_pos[5] & 0xff) << 24);
+
+    // refer to the real offset of data
+    aiq_data->data = (char*)(&start_pos);
+    aiq_data->dataSize = packet_size;
+    valid_size = (buffer+len) - start_pos;
+
+    // sigle packet : HEAD:24byte + PAYLOAD + CRC:1byte
+    if (valid_size == packet_size) {
+      return 0;
+    }
+    return packet_size;
+  } else {
+    // may be fragment packet, head already parsed just return full size
+    return -1;
+  }
 }
 
 // return 0 if a sigle packet or payload size
@@ -351,15 +405,76 @@ int rkaiq_is_uapi(const char* cmd_str)
   }
 }
 
+void rkaiq_params_tuning(aiq_tunning_ctx* tunning_ctx)
+{
+  int sockfd = -1;
+  rk_aiq_sys_ctx_t* aiq_ctx = NULL;
+  RkAiqSocketData_t* aiq_data = NULL;
+
+  if (!tunning_ctx) {
+    return;
+  }
+
+  sockfd = tunning_ctx->socketfd;
+  aiq_ctx = tunning_ctx->aiq_ctx;
+  aiq_data = &tunning_ctx->aiq_data;
+
+#if 1
+  printf("[TCP]%d,%d,%d--->PC CMD STRING:\n%s\n", sockfd, aiq_data->cmd_id,
+         aiq_data->payload_size, aiq_data->data);
+#endif
+
+  switch (aiq_data->cmd_id) {
+    case AIQ_IPC_CMD_WRITE:
+      {
+        if (rkaiq_is_uapi((char*)aiq_data->data)) {
+          char* ret_str_js = NULL;
+          rkaiq_uapi_unified_ctl(aiq_ctx, (char*)aiq_data->data, &ret_str_js, 0);
+        } else {
+          rk_aiq_uapi_sysctl_tuning(aiq_ctx, (char*)aiq_data->data);
+        }
+      } break;
+    case AIQ_IPC_CMD_READ:
+      {
+        char* out_data = NULL;
+        if (rkaiq_is_uapi((char*)aiq_data->data)) {
+          rkaiq_uapi_unified_ctl(aiq_ctx, (char*)aiq_data->data, &out_data, 1);
+        } else {
+          out_data = rk_aiq_uapi_sysctl_readiq(aiq_ctx, (char*)aiq_data->data);
+        }
+
+        if (!out_data) {
+          LOGE("[Tuning]: aiq return NULL!\n");
+          break;
+        }
+#if 1
+        printf("---> read:\n%s\n", out_data);
+#endif
+        rkaiq_ipc_send(sockfd, AIQ_IPC_CMD_READ, 0, 0, out_data, strlen(out_data));
+      } break;
+    default:
+      break;
+  }
+
+  if (aiq_data->data) {
+    free(aiq_data->data);
+  }
+
+  free(tunning_ctx);
+}
+
 int SocketServer::Recvieve(int sync) {
   uint8_t buffer[MAXPACKETSIZE];
   std::vector<uint8_t> rawCMDStream;
   struct timeval interval = {3, 0};
+  int found_old_cmd = 0;
+  int found_new_cmd = 0;
 
   setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&interval,
              sizeof(struct timeval));
   while (!quit_) {
     RkAiqSocketData_t aiq_data;
+    RkAiqSocketData aiq_data_old;
     int recv_len = -1;
     int payload_len = 0;
 
@@ -377,12 +492,43 @@ int SocketServer::Recvieve(int sync) {
       continue;
     }
 
+    if (found_new_cmd) {
+      goto parsenewcmd;
+    }
+
+    // only checking old cmd in head of buffer
+    if (!rawCMDStream.size() && !found_old_cmd) {
+      payload_len = rkaiq_packet_parse_old(&aiq_data_old, buffer, recv_len);
+      // single packet
+      if (payload_len == 0) {
+        ProcessText(client_socket, aiq_ctx, (char*)buffer, aiq_data_old.dataSize);
+        rawCMDStream.clear();
+        found_old_cmd = 0;
+        if (callback_) {
+          callback_(client_socket, (char*)buffer, aiq_data_old.dataSize);
+        }
+        continue;
+      } else if (payload_len > 0) {
+        rawCMDStream.insert(rawCMDStream.end(), buffer, buffer + recv_len);
+        printf("\nINPUT:\n%s\n", buffer);
+        found_old_cmd = 1;
+        found_new_cmd = 0;
+      }
+    }
+
+    if (found_old_cmd) {
+      continue;
+    }
+
+parsenewcmd:
     payload_len = rkaiq_packet_parse(&aiq_data, buffer, recv_len);
     if (payload_len == 0) {
       goto response;
     } else if (payload_len > 0) {
       // Found new magic flag, reset.
       rawCMDStream.clear();
+      found_new_cmd = 1;
+      found_old_cmd = 0;
     }
 
     rawCMDStream.insert(rawCMDStream.end(), buffer, buffer + recv_len);
@@ -395,53 +541,27 @@ int SocketServer::Recvieve(int sync) {
     }
 
 response:
-#if 1
-    printf("[TCP]%d,%d,%d--->PC CMD STRING:\n%s\n", client_socket,
-           aiq_data.cmd_id, aiq_data.payload_size, aiq_data.data);
-#endif
+    aiq_tunning_ctx* tunning_ctx =  (aiq_tunning_ctx*) calloc(1, sizeof(aiq_tunning_ctx));
+    memcpy(&tunning_ctx->aiq_data, &aiq_data, sizeof(RkAiqSocketData_t));
+    tunning_ctx->aiq_data.data = (uint8_t*)strdup((char*)aiq_data.data);
+    tunning_ctx->aiq_ctx = aiq_ctx;
+    tunning_ctx->socketfd = client_socket;
 
-    switch(aiq_data.cmd_id) {
-      case AIQ_IPC_CMD_WRITE:
-        {
-          if (rkaiq_is_uapi((char*)aiq_data.data)) {
-            char* ret_str_js = NULL;
-            rkaiq_uapi_unified_ctl(aiq_ctx, (char*)aiq_data.data,
-                                   &ret_str_js, 0);
-
-          } else {
-            rk_aiq_uapi_sysctl_tuning(aiq_ctx, (char*)aiq_data.data);
-          }
-        }
-        break;
-      case AIQ_IPC_CMD_READ:
-        {
-          char* out_data = NULL;
-          if (rkaiq_is_uapi((char*)aiq_data.data)) {
-            rkaiq_uapi_unified_ctl(aiq_ctx, (char*)aiq_data.data,
-                                   &out_data, 1);
-          } else {
-            out_data = rk_aiq_uapi_sysctl_readiq(aiq_ctx, (char*)aiq_data.data);
-          }
-
-          if (!out_data) {
-            LOGE("[Tuning]: aiq return NULL!\n");
-            break;
-          }
-#if 1
-          printf("---> read:\n%s\n", out_data);
-#endif
-          rkaiq_ipc_send(client_socket, AIQ_IPC_CMD_READ, 0, 0, out_data, strlen(out_data));
-        }
-        break;
-      default:
-        break;
+    if (this->tunning_thread && this->tunning_thread->joinable()) {
+      this->tunning_thread->join();
     }
+
+    this->tunning_thread = std::make_shared<std::thread>(
+        std::thread(rkaiq_params_tuning, tunning_ctx));
+    this->tunning_thread->detach();
 
     if (sync) {
 
     }
 
     rawCMDStream.clear();
+    found_new_cmd = 0;
+    found_old_cmd = 0;
   }
 
   return 0;
@@ -590,11 +710,14 @@ void SocketServer::Deinit(){
     // struct timeval interval = {0, 0};
     // setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&interval,sizeof(struct timeval));
     if (this->accept_threads_) this->accept_threads_->join();
+    if (this->tunning_thread && this->tunning_thread->joinable())
+      this->tunning_thread->join();
     // shutdown(client_socket, SHUT_RDWR);
     // close(client_socket);
     unlink(UNIX_DOMAIN);
     close(sockfd);
     this->accept_threads_ = nullptr;
+    this->tunning_thread = nullptr;
     if (_stop_fds[0] != -1) close(_stop_fds[0]);
     if (_stop_fds[1] != -1) close(_stop_fds[1]);
     LOGD("socekt stop in aiq");

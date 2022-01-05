@@ -42,9 +42,11 @@ public:
     // from ICamHw
     virtual XCamReturn init(const char* sns_ent_name);
     virtual XCamReturn deInit();
+#ifdef RKAIQ_ENABLE_PARSER_V1
     virtual void setCalib(const CamCalibDbContext_t* calib) {
         mCalibDb = calib;
     }
+#endif
     virtual void setCalib(const CamCalibDbV2Context_t* calibv2) {
         mCalibDbV2 = calibv2;
     }

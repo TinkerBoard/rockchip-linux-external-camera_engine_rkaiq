@@ -24,6 +24,7 @@
 
 #include "rk_aiq_types_priv.h"
 #include "xcam_log.h"
+#include <fcntl.h> 
 
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
@@ -180,7 +181,7 @@ CacAlgoAdaptor::~CacAlgoAdaptor() {
     if (lut_manger_ != nullptr) delete lut_manger_;
 }
 
-XCamReturn CacAlgoAdaptor::Config(const AlgoCtxInstanceCfgInt* config,
+XCamReturn CacAlgoAdaptor::Config(const AlgoCtxInstanceCfg* config,
                                   const CalibDbV2_Cac_t* calib) {
     LOGD_ACAC("%s : Enter", __func__);
     enable_ = calib ? calib->SettingPara.enable : false;
@@ -198,7 +199,7 @@ XCamReturn CacAlgoAdaptor::Config(const AlgoCtxInstanceCfgInt* config,
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcacInt* config) {
+XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcac* config) {
     LutBufferConfig lut_config;
     LutBufferConfig full_lut_config;
     uint32_t width   = config->width;
@@ -281,8 +282,8 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcacInt* config) {
     return XCAM_RETURN_NO_ERROR;
 }
 
-void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcacInt* input,
-                                  RkAiqAlgoProcResAcacInt* output) {
+void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input,
+                                  RkAiqAlgoProcResAcac* output) {
     int i;
     int iso_low  = 50;
     int iso_high = 50;

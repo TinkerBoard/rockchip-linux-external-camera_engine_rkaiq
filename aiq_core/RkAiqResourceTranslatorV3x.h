@@ -21,8 +21,6 @@
 #define _RK_AIQ_RESOURCE_TRANSLATOR_V3X_H_
 
 #include "RkAiqResourceTranslatorV21.h"
-#include "rk_aiq_types.h"
-
 
 #define ISP3X_DHAZ_HIST_IIR_MAX     (1023)
 
@@ -55,8 +53,6 @@ public:
     const RkAiqResourceTranslatorV3x::Rectangle& GetLeftIspRect() const;
     const RkAiqResourceTranslatorV3x::Rectangle& GetRightIspRect() const;
 
-    virtual XCamReturn translateIspStats (const SmartPtr<VideoBuffer> &from,
-                                          SmartPtr<RkAiqIspStatsIntProxy> &to);
     virtual XCamReturn translateAecStats (const SmartPtr<VideoBuffer> &from,
                                           SmartPtr<RkAiqAecStatsProxy> &to);
     virtual XCamReturn translateAwbStats (const SmartPtr<VideoBuffer> &from,

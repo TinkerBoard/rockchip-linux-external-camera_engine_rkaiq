@@ -184,6 +184,17 @@ protected:
     XCAM_DEAD_COPY (RKRawStream);
 };
 
+class RKPdafStream : public RKStream
+{
+public:
+    RKPdafStream               (SmartPtr<V4l2Device> dev, int type);
+    virtual ~RKPdafStream      ();
+    virtual SmartPtr<V4l2BufferProxy>
+    new_v4l2proxy_buffer(SmartPtr<V4l2Buffer> buf, SmartPtr<V4l2Device> dev);
+
+protected:
+    XCAM_DEAD_COPY (RKPdafStream);
+};
 
 class SubVideoBuffer : public VideoBuffer
 {

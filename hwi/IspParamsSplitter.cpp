@@ -1108,7 +1108,7 @@ XCamReturn IspParamsSplitter::SplitAfParams<struct isp3x_isp_params_cfg>(
                 r_win_ed = r_win_st + ISP2X_RAWAF_SUMDATA_ROW * blk_w;
             }
         }
-        // af win >= one isp width * 1.5
+        // af win < one isp width * 1.5
         else if (org_af.win[0].h_size < left_isp_rect_.w * 3/2) {
             l_win_st = x_st;
             l_win_ed = l_isp_ed - 2;

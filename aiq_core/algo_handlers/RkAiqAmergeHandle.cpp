@@ -19,17 +19,19 @@
 
 namespace RkCam {
 
+DEFINE_HANDLE_REGISTER_TYPE(RkAiqAmergeHandleInt);
+
 void RkAiqAmergeHandleInt::init() {
     ENTER_ANALYZER_FUNCTION();
 
     RkAiqHandle::deInit();
-    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAmergeInt());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAmergeInt());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAmergeInt());
-    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAmergeInt());
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAmergeInt());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAmergeInt());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAmergeInt());
+    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAmerge());
+    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAmerge());
+    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAmerge());
+    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAmerge());
+    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAmerge());
+    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAmerge());
+    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAmerge());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -41,9 +43,9 @@ XCamReturn RkAiqAmergeHandleInt::updateConfig(bool needSync) {
     // if something changed
     if (updateAtt) {
         mCurAtt   = mNewAtt;
-        updateAtt = false;
         rk_aiq_uapi_amerge_SetAttrib(mAlgoCtx, mCurAtt, true);
-        sendSignal();
+        updateAtt = false;
+        sendSignal(mCurAtt.sync.sync_mode);
     }
     if (needSync) mCfgMutex.unlock();
 
@@ -66,7 +68,7 @@ XCamReturn RkAiqAmergeHandleInt::setAttrib(amerge_attrib_t att) {
     if (0 != memcmp(&mCurAtt, &att, sizeof(amerge_attrib_t))) {
         mNewAtt   = att;
         updateAtt = true;
-        waitSignal();
+        waitSignal(att.sync.sync_mode);
     }
     mCfgMutex.unlock();
 
@@ -78,7 +80,21 @@ XCamReturn RkAiqAmergeHandleInt::getAttrib(amerge_attrib_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    rk_aiq_uapi_amerge_GetAttrib(mAlgoCtx, att);
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_amerge_GetAttrib(mAlgoCtx, att);
+        att->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        if (updateAtt) {
+            memcpy(att, &mNewAtt, sizeof(updateAtt));
+            att->sync.done = false;
+        } else {
+            rk_aiq_uapi_amerge_GetAttrib(mAlgoCtx, att);
+            att->sync.sync_mode = mNewAtt.sync.sync_mode;
+            att->sync.done      = true;
+        }
+    }
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -92,7 +108,7 @@ XCamReturn RkAiqAmergeHandleInt::prepare() {
     ret = RkAiqHandle::prepare();
     RKAIQCORE_CHECK_RET(ret, "amerge handle prepare failed");
 
-    RkAiqAlgoConfigAmergeInt* amerge_config_int = (RkAiqAlgoConfigAmergeInt*)mConfig;
+    RkAiqAlgoConfigAmerge* amerge_config_int = (RkAiqAlgoConfigAmerge*)mConfig;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     // TODO
@@ -113,28 +129,20 @@ XCamReturn RkAiqAmergeHandleInt::preProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPreAmergeInt* amerge_pre_int        = (RkAiqAlgoPreAmergeInt*)mPreInParam;
-    RkAiqAlgoPreResAmergeInt* amerge_pre_res_int = (RkAiqAlgoPreResAmergeInt*)mPreOutParam;
+    RkAiqAlgoPreAmerge* amerge_pre_int        = (RkAiqAlgoPreAmerge*)mPreInParam;
+    RkAiqAlgoPreResAmerge* amerge_pre_res_int = (RkAiqAlgoPreResAmerge*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqIspStats* ispStats                     = shared->ispStats;
-    RkAiqPreResComb* comb                       = &shared->preResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     ret = RkAiqHandle::preProcess();
     if (ret) {
-        comb->amerge_pre_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "amerge handle preProcess failed");
     }
-
-    comb->amerge_pre_res = NULL;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->pre_process(mPreInParam, mPreOutParam);
     RKAIQCORE_CHECK_RET(ret, "amerge algo pre_process failed");
-
-    // set result to mAiqCore
-    comb->amerge_pre_res = (RkAiqAlgoPreResAmerge*)amerge_pre_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -145,27 +153,20 @@ XCamReturn RkAiqAmergeHandleInt::processing() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoProcAmergeInt* amerge_proc_int        = (RkAiqAlgoProcAmergeInt*)mProcInParam;
-    RkAiqAlgoProcResAmergeInt* amerge_proc_res_int = (RkAiqAlgoProcResAmergeInt*)mProcOutParam;
+    RkAiqAlgoProcAmerge* amerge_proc_int        = (RkAiqAlgoProcAmerge*)mProcInParam;
+    RkAiqAlgoProcResAmerge* amerge_proc_res_int = (RkAiqAlgoProcResAmerge*)mProcOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqIspStats* ispStats                     = shared->ispStats;
-    RkAiqProcResComb* comb                      = &shared->procResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     ret = RkAiqHandle::processing();
     if (ret) {
-        comb->amerge_proc_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "amerge handle processing failed");
     }
-
-    comb->amerge_proc_res = NULL;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
     RKAIQCORE_CHECK_RET(ret, "amerge algo processing failed");
-
-    comb->amerge_proc_res = (RkAiqAlgoProcResAmerge*)amerge_proc_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -176,41 +177,35 @@ XCamReturn RkAiqAmergeHandleInt::postProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPostAmergeInt* amerge_post_int        = (RkAiqAlgoPostAmergeInt*)mPostInParam;
-    RkAiqAlgoPostResAmergeInt* amerge_post_res_int = (RkAiqAlgoPostResAmergeInt*)mPostOutParam;
+    RkAiqAlgoPostAmerge* amerge_post_int        = (RkAiqAlgoPostAmerge*)mPostInParam;
+    RkAiqAlgoPostResAmerge* amerge_post_res_int = (RkAiqAlgoPostResAmerge*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqIspStats* ispStats                     = shared->ispStats;
-    RkAiqPostResComb* comb                      = &shared->postResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     ret = RkAiqHandle::postProcess();
     if (ret) {
-        comb->amerge_post_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "amerge handle postProcess failed");
         return ret;
     }
 
-    comb->amerge_post_res     = NULL;
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->post_process(mPostInParam, mPostOutParam);
     RKAIQCORE_CHECK_RET(ret, "amerge algo post_process failed");
-    // set result to mAiqCore
-    comb->amerge_post_res = (RkAiqAlgoPostResAmerge*)amerge_post_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
 
 XCamReturn RkAiqAmergeHandleInt::genIspResult(RkAiqFullParams* params,
-                                              RkAiqFullParams* cur_params) {
+        RkAiqFullParams* cur_params) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqAlgoProcResAmerge* amerge_com          = shared->procResComb.amerge_proc_res;
+    RkAiqAlgoProcResAmerge* amerge_com          = (RkAiqAlgoProcResAmerge*)mProcOutParam;
 
     rk_aiq_isp_merge_params_v20_t* merge_param = params->mMergeParams->data().ptr();
 
@@ -220,7 +215,7 @@ XCamReturn RkAiqAmergeHandleInt::genIspResult(RkAiqFullParams* params,
     }
 
     if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAmergeInt* amerge_rk = (RkAiqAlgoProcResAmergeInt*)amerge_com;
+        RkAiqAlgoProcResAmerge* amerge_rk = (RkAiqAlgoProcResAmerge*)amerge_com;
 
         if (sharedCom->init) {
             merge_param->frame_id = 0;

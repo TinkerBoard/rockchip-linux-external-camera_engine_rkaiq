@@ -17,9 +17,10 @@
  *
  */
 
-#include "rk_aiq_algo_types_int.h"
 #include "aldch/rk_aiq_algo_aldch_itf.h"
 #include "aldch/rk_aiq_types_aldch_algo_prvt.h"
+#include "rk_aiq_algo_types.h"
+#include "RkAiqCalibDbV2Helper.h"
 #include "xcam_log.h"
 
 #define LDCH_CUSTOM_MESH "ldch_custom_mesh.bin"
@@ -164,10 +165,10 @@ updateCalibConfig(RkAiqAlgoCom* params)
 {
     LDCHHandle_t hLDCH = (LDCHHandle_t)params->ctx->hLDCH;
     LDCHContext_t* ldchCtx = (LDCHContext_t*)hLDCH;
-    RkAiqAlgoConfigAldchInt* rkaiqAldchConfig = (RkAiqAlgoConfigAldchInt*)params;
+    RkAiqAlgoConfigAldch* rkaiqAldchConfig = (RkAiqAlgoConfigAldch*)params;
 
     CalibDbV2_LDCH_t* calib_ldch_db =
-        (CalibDbV2_LDCH_t*)(CALIBDBV2_GET_MODULE_PTR(rkaiqAldchConfig->rk_com.u.prepare.calibv2, aldch));
+        (CalibDbV2_LDCH_t*)(CALIBDBV2_GET_MODULE_PTR(rkaiqAldchConfig->com.u.prepare.calibv2, aldch));
     CalibDbV2_Ldch_Param_t* calib_ldch = &calib_ldch_db->param;
 
     ldchCtx->ldch_en = calib_ldch->ldch_en;
@@ -238,10 +239,9 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
     /* ctx->hLDCH->aldchReadMeshThread->start(); */
 #endif
 
-    const AlgoCtxInstanceCfgInt* cfg_int = (const AlgoCtxInstanceCfgInt*)cfg;
     LDCHHandle_t ldchCtx = ctx->hLDCH;
     CalibDbV2_LDCH_t* calib_ldch_db =
-            (CalibDbV2_LDCH_t*)(CALIBDBV2_GET_MODULE_PTR(cfg_int->calibv2, aldch));
+            (CalibDbV2_LDCH_t*)(CALIBDBV2_GET_MODULE_PTR(cfg->calibv2, aldch));
     CalibDbV2_Ldch_Param_t* calib_ldch = &calib_ldch_db->param;
 
     ldchCtx->ldch_en = calib_ldch->ldch_en;
@@ -303,7 +303,7 @@ prepare(RkAiqAlgoCom* params)
 {
     LDCHHandle_t hLDCH = (LDCHHandle_t)params->ctx->hLDCH;
     LDCHContext_t* ldchCtx = (LDCHContext_t*)hLDCH;
-    RkAiqAlgoConfigAldchInt* rkaiqAldchConfig = (RkAiqAlgoConfigAldchInt*)params;
+    RkAiqAlgoConfigAldch* rkaiqAldchConfig = (RkAiqAlgoConfigAldch*)params;
 
     ldchCtx->src_width = params->u.prepare.sns_op_width;
     ldchCtx->src_height = params->u.prepare.sns_op_height;
@@ -376,7 +376,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
     LDCHHandle_t hLDCH = (LDCHHandle_t)inparams->ctx->hLDCH;
     LDCHContext_t* ldchCtx = (LDCHContext_t*)hLDCH;
-    RkAiqAlgoProcResAldchInt* ldchPreOut = (RkAiqAlgoProcResAldchInt*)outparams;
+    RkAiqAlgoProcResAldch* ldchPreOut = (RkAiqAlgoProcResAldch*)outparams;
 
     if (inparams->u.proc.init) {
         ldchPreOut->ldch_result.update = 1;

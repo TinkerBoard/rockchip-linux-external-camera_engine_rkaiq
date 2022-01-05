@@ -17,9 +17,9 @@
  *
  */
 
-#include "rk_aiq_algo_types_int.h"
 #include "adebayer/rk_aiq_algo_adebayer_itf.h"
 #include "adebayer/rk_aiq_types_algo_adebayer_prvt.h"
+#include "rk_aiq_algo_types.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -31,7 +31,6 @@ create_context
 )
 {
     XCamReturn result = XCAM_RETURN_NO_ERROR;
-    AlgoCtxInstanceCfgInt* instanc_int = (AlgoCtxInstanceCfgInt*)cfg;
 
     RkAiqAlgoContext *ctx = new RkAiqAlgoContext();
     if (ctx == NULL) {
@@ -39,7 +38,7 @@ create_context
         return XCAM_RETURN_ERROR_MEM;
     }
     LOGI_ADEBAYER("%s: (enter)\n", __FUNCTION__ );
-    AdebayerInit(&ctx->adebayerCtx, instanc_int->calib, instanc_int->calibv2);
+    AdebayerInit(&ctx->adebayerCtx, cfg->calib, cfg->calibv2);
     *context = ctx;
     LOGI_ADEBAYER("%s: (exit)\n", __FUNCTION__ );
     return result;
@@ -71,10 +70,10 @@ prepare
 
     LOGI_ADEBAYER("%s: (enter)\n", __FUNCTION__ );
     AdebayerContext_t* pAdebayerCtx = (AdebayerContext_t *)&params->ctx->adebayerCtx;
-    RkAiqAlgoConfigAdebayerInt* pCfgParam = (RkAiqAlgoConfigAdebayerInt*)params;
+    RkAiqAlgoConfigAdebayer* pCfgParam = (RkAiqAlgoConfigAdebayer*)params;
 
 	if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )){
-		AdebayerInit(pAdebayerCtx, pCfgParam->rk_com.u.prepare.calib, pCfgParam->rk_com.u.prepare.calibv2);
+		AdebayerInit(pAdebayerCtx, pCfgParam->com.u.prepare.calib, pCfgParam->com.u.prepare.calibv2);
     }
 
     AdebayerStart(pAdebayerCtx);
@@ -105,17 +104,17 @@ processing
     XCamReturn result = XCAM_RETURN_NO_ERROR;
     int iso = 50;
 
-    RkAiqAlgoProcAdebayerInt* pAdebayerProcParams = (RkAiqAlgoProcAdebayerInt*)inparams;
-    RkAiqAlgoProcResAdebayerInt* pAdebayerProcResParams = (RkAiqAlgoProcResAdebayerInt*)outparams;
+    RkAiqAlgoProcAdebayer* pAdebayerProcParams = (RkAiqAlgoProcAdebayer*)inparams;
+    RkAiqAlgoProcResAdebayer* pAdebayerProcResParams = (RkAiqAlgoProcResAdebayer*)outparams;
     AdebayerContext_t* pAdebayerCtx = (AdebayerContext_t *)&inparams->ctx->adebayerCtx;
 
     LOGI_ADEBAYER("%s: (enter)\n", __FUNCTION__ );
 
-    if (pAdebayerProcParams->rk_com.u.proc.is_bw_sensor) {
+    if (pAdebayerProcParams->com.u.proc.is_bw_sensor) {
         pAdebayerCtx->config.enable = 0;
         pAdebayerCtx->config.updatecfg = true;
     } else {
-        RKAiqAecExpInfo_t *curExp = pAdebayerProcParams->rk_com.u.proc.curExp;
+        RKAiqAecExpInfo_t *curExp = pAdebayerProcParams->com.u.proc.curExp;
         if(curExp != NULL) {
             if(pAdebayerProcParams->hdr_mode == RK_AIQ_WORKING_MODE_NORMAL) {
                 iso = curExp->LinearExp.exp_real_params.analog_gain * 50;

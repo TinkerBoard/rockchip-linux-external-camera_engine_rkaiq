@@ -17,9 +17,9 @@
  *
  */
 
-#include "rk_aiq_algo_types_int.h"
 #include "abayer2dnr2/rk_aiq_abayer2dnr_algo_itf_v2.h"
 #include "abayer2dnr2/rk_aiq_abayer2dnr_algo_v2.h"
+#include "rk_aiq_algo_types.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -33,15 +33,14 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
 {
 
     XCamReturn result = XCAM_RETURN_NO_ERROR;
-    AlgoCtxInstanceCfgInt *cfgInt = (AlgoCtxInstanceCfgInt*)cfg;
     LOGI_ANR("%s: (enter)\n", __FUNCTION__ );
 
 #if 1
     Abayer2dnr_Context_V2_t* pAbayernrCtx = NULL;
 #if (ABAYER2DNR_USE_JSON_FILE_V2)
-    Abayer2dnr_result_V2_t ret = Abayer2dnr_Init_V2(&pAbayernrCtx, cfgInt->calibv2);
+    Abayer2dnr_result_V2_t ret = Abayer2dnr_Init_V2(&pAbayernrCtx, cfg->calibv2);
 #else
-    Abayer2dnr_result_V2_t ret = Abayer2dnr_Init_V2(&pAbayernrCtx, cfgInt->calib);
+    Abayer2dnr_result_V2_t ret = Abayer2dnr_Init_V2(&pAbayernrCtx, cfg->calib);
 #endif
     if(ret != ABAYER2DNR_RET_SUCCESS) {
         result = XCAM_RETURN_ERROR_FAILED;
@@ -83,16 +82,16 @@ prepare(RkAiqAlgoCom* params)
     LOGI_ANR("%s: (enter)\n", __FUNCTION__ );
 
     Abayer2dnr_Context_V2_t* pAbayernrCtx = (Abayer2dnr_Context_V2_t *)params->ctx;
-    RkAiqAlgoConfigAbayer2dnrV2Int* pCfgParam = (RkAiqAlgoConfigAbayer2dnrV2Int*)params;
+    RkAiqAlgoConfigAbayer2dnrV2* pCfgParam = (RkAiqAlgoConfigAbayer2dnrV2*)params;
     pAbayernrCtx->prepare_type = params->u.prepare.conf_type;
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
 #if ABAYER2DNR_USE_JSON_FILE_V2
-        void *pCalibDbV2 = (void*)(pCfgParam->rk_com.u.prepare.calibv2);
+        void *pCalibDbV2 = (void*)(pCfgParam->com.u.prepare.calibv2);
         CalibDbV2_Bayer2dnr_V2_t *bayernr_v2 = (CalibDbV2_Bayer2dnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDbV2, bayer2dnr_v2));
         pAbayernrCtx->bayernr_v2 = *bayernr_v2;
 #else
-        void *pCalibDb = (void*)(pCfgParam->rk_com.u.prepare.calib);
+        void *pCalibDb = (void*)(pCfgParam->com.u.prepare.calib);
         pAbayernrCtx->list_bayernr_v2 =
             (struct list_head*)(CALIBDB_GET_MODULE_PTR((void*)pCalibDb, list_bayernr_v2));
 #endif
@@ -119,10 +118,10 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGI_ANR("%s: (enter)\n", __FUNCTION__ );
     Abayer2dnr_Context_V2_t* pAbayernrCtx = (Abayer2dnr_Context_V2_t *)inparams->ctx;
 
-    RkAiqAlgoPreAbayer2dnrV2Int* pAbayernrPreParams = (RkAiqAlgoPreAbayer2dnrV2Int*)inparams;
+    RkAiqAlgoPreAbayer2dnrV2* pAbayernrPreParams = (RkAiqAlgoPreAbayer2dnrV2*)inparams;
 
     oldGrayMode = pAbayernrCtx->isGrayMode;
-    if (pAbayernrPreParams->rk_com.u.proc.gray_mode) {
+    if (pAbayernrPreParams->com.u.proc.gray_mode) {
         pAbayernrCtx->isGrayMode = true;
     } else {
         pAbayernrCtx->isGrayMode = false;
@@ -151,8 +150,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGI_ANR("%s: (enter)\n", __FUNCTION__ );
 
 #if 1
-    RkAiqAlgoProcAbayer2dnrV2Int* pAbayernrProcParams = (RkAiqAlgoProcAbayer2dnrV2Int*)inparams;
-    RkAiqAlgoProcResAbayer2dnrV2Int* pAbayernrProcResParams = (RkAiqAlgoProcResAbayer2dnrV2Int*)outparams;
+    RkAiqAlgoProcAbayer2dnrV2* pAbayernrProcParams = (RkAiqAlgoProcAbayer2dnrV2*)inparams;
+    RkAiqAlgoProcResAbayer2dnrV2* pAbayernrProcResParams = (RkAiqAlgoProcResAbayer2dnrV2*)outparams;
     Abayer2dnr_Context_V2_t* pAbayernrCtx = (Abayer2dnr_Context_V2_t *)inparams->ctx;
     Abayer2dnr_ExpInfo_V2_t stExpInfo;
     memset(&stExpInfo, 0x00, sizeof(Abayer2dnr_ExpInfo_V2_t));
@@ -183,11 +182,11 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     stExpInfo.gray_mode = pAbayernrCtx->isGrayMode;
 
 #if 1// TODO Merge:
-    XCamVideoBuffer* xCamAePreRes = pAbayernrProcParams->rk_com.u.proc.res_comb->ae_pre_res;
-    RkAiqAlgoPreResAeInt* pAEPreRes = nullptr;
+    XCamVideoBuffer* xCamAePreRes = pAbayernrProcParams->com.u.proc.res_comb->ae_pre_res;
+    RkAiqAlgoPreResAe* pAEPreRes = nullptr;
     if (xCamAePreRes) {
         // xCamAePreRes->ref(xCamAePreRes);
-        pAEPreRes = (RkAiqAlgoPreResAeInt*)xCamAePreRes->map(xCamAePreRes);
+        pAEPreRes = (RkAiqAlgoPreResAe*)xCamAePreRes->map(xCamAePreRes);
         if (!pAEPreRes) {
             LOGE_ANR("ae pre result is null");
         } else {
@@ -196,7 +195,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     }
 #endif
 
-    RKAiqAecExpInfo_t *curExp = pAbayernrProcParams->rk_com.u.proc.curExp;
+    RKAiqAecExpInfo_t *curExp = pAbayernrProcParams->com.u.proc.curExp;
     if(curExp != NULL) {
         stExpInfo.snr_mode = curExp->CISFeature.SNR;
         if(pAbayernrProcParams->hdr_mode == RK_AIQ_WORKING_MODE_NORMAL) {

@@ -41,6 +41,7 @@ protected:
     virtual XCamReturn init_mipi_devices(rk_sensor_full_info_t *s_info);
     void parse_rk_rawdata(void *rawdata, struct rk_aiq_vbuf *vbuf);
     void parse_rk_rawfile(FILE *fp, struct rk_aiq_vbuf *vbuf);
+    XCamReturn setupOffLineLink(int isp_index, bool enable);
     struct _st_addrinfo _st_addr[3];
     struct _raw_format _rawfmt;
     struct _frame_info _finfo;
@@ -49,6 +50,7 @@ protected:
     rk_aiq_rawbuf_type_t _rawbuf_type;
     SmartPtr<V4l2Device> _mipi_tx_devs[3];
     SmartPtr<V4l2Device> _mipi_rx_devs[3];
+    int isp_index;
 };
 
 class FakeCamHwIsp21 : virtual public CamHwIsp21, virtual public FakeCamHwIsp20 {

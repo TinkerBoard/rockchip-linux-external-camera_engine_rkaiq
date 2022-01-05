@@ -12,8 +12,15 @@ rk_aiq_uapi_asharpV4_SetAttrib(RkAiqAlgoContext *ctx,
     Asharp_Context_V4_t* pAsharpCtx = (Asharp_Context_V4_t*)ctx;
 
     pAsharpCtx->eMode = attr->eMode;
-    pAsharpCtx->stAuto = attr->stAuto;
-    pAsharpCtx->stManual = attr->stManual;
+
+    if(pAsharpCtx->eMode == ASHARP4_OP_MODE_AUTO) {
+        pAsharpCtx->stAuto = attr->stAuto;
+    } else if(pAsharpCtx->eMode == ASHARP4_OP_MODE_MANUAL) {
+        pAsharpCtx->stManual.stSelect = attr->stManual.stSelect;
+    } else if(pAsharpCtx->eMode == ASHARP4_OP_MODE_REG_MANUAL) {
+        pAsharpCtx->stManual.stFix = attr->stManual.stFix;
+    }
+
     pAsharpCtx->isReCalculate |= 1;
 
     return XCAM_RETURN_NO_ERROR;
@@ -46,13 +53,17 @@ rk_aiq_uapi_asharpV4_SetStrength(const RkAiqAlgoContext *ctx,
     if(fPercent <= 0.5) {
         fStrength =  fPercent / 0.5;
     } else {
-        fStrength = (fPercent - 0.5) * (fMax - 1) * 2 + 1;
+        if(fPercent >= 0.999999)
+            fPercent = 0.999999;
+        fStrength = 0.5 / (1.0 - fPercent);
     }
 
     pAsharpCtx->fSharp_Strength = fStrength;
     pAsharpCtx->isReCalculate |= 1;
 
-    printf("percent:%f fStrength:%f \n", fStrength, fPercent);
+    LOGD_ASHARP("%s:%d percent:%f fStrength:%f \n",
+                __FUNCTION__, __LINE__,
+                fStrength, fPercent);
 
     return XCAM_RETURN_NO_ERROR;
 }
@@ -71,10 +82,17 @@ rk_aiq_uapi_asharpV4_GetStrength(const RkAiqAlgoContext *ctx,
     if(fStrength <= 1) {
         *pPercent = fStrength * 0.5;
     } else {
-        *pPercent = (fStrength - 1) / ((fMax - 1) * 2) + 0.5;
+        float tmp = 1.0;
+        tmp = 1 - 0.5 / fStrength;
+        if(abs(tmp - 0.999999) < 0.000001) {
+            tmp = 1.0;
+        }
+        *pPercent = tmp;
     }
 
-    printf("fStrength:%f percent:%f\n", fStrength, *pPercent);
+    LOGD_ASHARP("%s:%d fStrength:%f percent:%f\n",
+                __FUNCTION__, __LINE__,
+                fStrength, *pPercent);
 
     return XCAM_RETURN_NO_ERROR;
 }

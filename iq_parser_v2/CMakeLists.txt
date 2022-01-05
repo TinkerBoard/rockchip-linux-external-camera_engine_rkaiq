@@ -17,7 +17,7 @@ add_custom_command(
     -I${CMAKE_SOURCE_DIR}/
     -I${CMAKE_SOURCE_DIR}/include
     -I${CMAKE_SOURCE_DIR}/include/common
-    -I${CMAKE_SOURCE_DIR}/include/uAPI
+    -I${CMAKE_SOURCE_DIR}/include/uAPI2
     -I${CMAKE_SOURCE_DIR}/include/algos
     -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2
     -I${CMAKE_SOURCE_DIR}/include/iq_parser
@@ -43,7 +43,7 @@ add_custom_command(
     COMMAND gcc -DJ2S_ENABLE_DESC ${CMAKE_SOURCE_DIR}/tools/iq_check/src/parser.c -o parser ${ISP_HW_VERSION}
     -I${CMAKE_SOURCE_DIR}/include/common
     -I${CMAKE_SOURCE_DIR}/
-    -I${CMAKE_SOURCE_DIR}/include/uAPI
+    -I${CMAKE_SOURCE_DIR}/include/uAPI2
     -I${CMAKE_SOURCE_DIR}/include/algos
     -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2
     -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s
@@ -64,7 +64,7 @@ add_custom_target(
     ${CMAKE_SOURCE_DIR}/tools/iq_check/src/dump.c
     -I${CMAKE_SOURCE_DIR}/include/common
     -I${CMAKE_SOURCE_DIR}/
-    -I${CMAKE_SOURCE_DIR}/include/uAPI
+    -I${CMAKE_SOURCE_DIR}/include/uAPI2
     -I${CMAKE_SOURCE_DIR}/include/algos
     -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2
     -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s

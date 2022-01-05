@@ -25,35 +25,6 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
-XCamReturn
-rk_aiq_user_api2_awbV20_SetAllAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wbV20_attrib_t attr)
-{
-    CHECK_USER_API_ENABLE2(sys_ctx);
-    CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
-    RKAIQ_API_SMART_LOCK(sys_ctx);
-    RkAiqAwbV21HandleInt* algo_handle =
-        algoHandle<RkAiqAwbV21HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
-
-    if (algo_handle) {
-        return algo_handle->setWbV20Attrib(attr);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-XCamReturn
-rk_aiq_user_api2_awbV20_GetAllAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wbV20_attrib_t *attr)
-{
-    RKAIQ_API_SMART_LOCK(sys_ctx);
-    RkAiqAwbV21HandleInt* algo_handle =
-        algoHandle<RkAiqAwbV21HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
-
-    if (algo_handle) {
-        return algo_handle->getWbV20Attrib(attr);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
 
 XCamReturn
 rk_aiq_user_api2_awbV21_SetAllAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wbV21_attrib_t attr)
@@ -85,6 +56,35 @@ rk_aiq_user_api2_awbV21_GetAllAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uap
     return XCAM_RETURN_NO_ERROR;
 }
 
+XCamReturn
+rk_aiq_user_api2_awbV30_SetAllAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wbV30_attrib_t attr)
+{
+    CHECK_USER_API_ENABLE2(sys_ctx);
+    CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
+    RKAIQ_API_SMART_LOCK(sys_ctx);
+    RkAiqAwbV21HandleInt* algo_handle =
+        algoHandle<RkAiqAwbV21HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
+
+    if (algo_handle) {
+        return algo_handle->setWbV21Attrib((rk_aiq_uapiV2_wbV21_attrib_t&)attr);
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
+rk_aiq_user_api2_awbV30_GetAllAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wbV30_attrib_t *attr)
+{
+    RKAIQ_API_SMART_LOCK(sys_ctx);
+    RkAiqAwbV21HandleInt* algo_handle =
+        algoHandle<RkAiqAwbV21HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
+
+    if (algo_handle) {
+        return algo_handle->getWbV21Attrib((rk_aiq_uapiV2_wbV21_attrib_t*)attr);
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
 
 XCamReturn
 rk_aiq_user_api2_awb_GetCCT(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_wb_cct_t *cct)
@@ -143,7 +143,7 @@ rk_aiq_user_api2_awb_Unlock(const rk_aiq_sys_ctx_t* sys_ctx)
 }
 
 XCamReturn
-rk_aiq_user_api2_awb_SetWpModeAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_wb_op_mode_t attr)
+rk_aiq_user_api2_awb_SetWpModeAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wb_opMode_t attr)
 {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
@@ -159,7 +159,7 @@ rk_aiq_user_api2_awb_SetWpModeAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_wb_
 }
 
 XCamReturn
-rk_aiq_user_api2_awb_GetWpModeAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_wb_op_mode_t *attr)
+rk_aiq_user_api2_awb_GetWpModeAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wb_opMode_t *attr)
 {
     RKAIQ_API_SMART_LOCK(sys_ctx);
     RkAiqAwbV21HandleInt* algo_handle =
@@ -203,36 +203,6 @@ rk_aiq_user_api2_awb_GetMwbAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_wb_mwb
 }
 
 
-XCamReturn
-rk_aiq_user_api2_awbV20_SetAwbAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wbV20_awb_attrib_t attr)
-{
-    RKAIQ_API_SMART_LOCK(sys_ctx);
-    RkAiqAwbV21HandleInt* algo_handle =
-        algoHandle<RkAiqAwbV21HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
-
-    if (algo_handle) {
-        return algo_handle->setAwbV20Attrib(attr);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
-
-
-XCamReturn
-rk_aiq_user_api2_awbV20_GetAwbAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wbV20_awb_attrib_t *attr)
-{
-    CHECK_USER_API_ENABLE2(sys_ctx);
-    CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
-    RKAIQ_API_SMART_LOCK(sys_ctx);
-    RkAiqAwbV21HandleInt* algo_handle =
-        algoHandle<RkAiqAwbV21HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
-
-    if (algo_handle) {
-        return algo_handle->getAwbV20Attrib(attr);
-    }
-
-    return XCAM_RETURN_NO_ERROR;
-}
 
 XCamReturn
 rk_aiq_user_api2_awb_SetWbGainAdjustAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wb_awb_wbGainAdjust_t attr)
@@ -265,7 +235,7 @@ rk_aiq_user_api2_awb_GetWbGainAdjustAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_a
 }
 
 XCamReturn
-rk_aiq_user_api2_awb_SetWbGainOffsetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, CalibDbV2_Awb_gain_offset_cfg_t attr)
+rk_aiq_user_api2_awb_SetWbGainOffsetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wb_awb_wbGainOffset_t attr)
 {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
@@ -281,7 +251,7 @@ rk_aiq_user_api2_awb_SetWbGainOffsetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, Cali
 }
 
 XCamReturn
-rk_aiq_user_api2_awb_GetWbGainOffsetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, CalibDbV2_Awb_gain_offset_cfg_t *attr)
+rk_aiq_user_api2_awb_GetWbGainOffsetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wb_awb_wbGainOffset_t *attr)
 {
     RKAIQ_API_SMART_LOCK(sys_ctx);
     RkAiqAwbV21HandleInt* algo_handle =
@@ -295,7 +265,7 @@ rk_aiq_user_api2_awb_GetWbGainOffsetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, Cali
 }
 
 XCamReturn
-rk_aiq_user_api2_awb_SetMultiWindowAttrib(const rk_aiq_sys_ctx_t* sys_ctx, CalibDbV2_Awb_Mul_Win_t attr)
+rk_aiq_user_api2_awb_SetMultiWindowAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wb_awb_mulWindow_t attr)
 {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
@@ -311,7 +281,7 @@ rk_aiq_user_api2_awb_SetMultiWindowAttrib(const rk_aiq_sys_ctx_t* sys_ctx, Calib
 }
 
 XCamReturn
-rk_aiq_user_api2_awb_GetMultiWindowAttrib(const rk_aiq_sys_ctx_t* sys_ctx, CalibDbV2_Awb_Mul_Win_t *attr)
+rk_aiq_user_api2_awb_GetMultiWindowAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_wb_awb_mulWindow_t *attr)
 {
     RKAIQ_API_SMART_LOCK(sys_ctx);
     RkAiqAwbV21HandleInt* algo_handle =

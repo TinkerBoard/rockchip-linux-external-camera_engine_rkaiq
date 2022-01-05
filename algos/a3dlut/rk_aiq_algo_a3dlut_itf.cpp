@@ -17,9 +17,9 @@
  *
  */
 
-#include "rk_aiq_algo_types_int.h"
 #include "a3dlut/rk_aiq_algo_a3dlut_itf.h"
 #include "a3dlut/rk_aiq_a3dlut_algo.h"
+#include "rk_aiq_algo_types.h"
 #include "xcam_log.h"
 
 RKAIQ_BEGIN_DECLARE
@@ -34,9 +34,8 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
         LOGE_A3DLUT( "%s: create 3dlut context fail!\n", __FUNCTION__);
         return XCAM_RETURN_ERROR_MEM;
     }
-    AlgoCtxInstanceCfgInt *cfgInt = (AlgoCtxInstanceCfgInt*)cfg;
 
-    Alut3dInit(&ctx->a3dlut_para, cfgInt->calibv2);
+    Alut3dInit(&ctx->a3dlut_para, cfg->calibv2);
 
     *context = ctx;
 
@@ -60,13 +59,11 @@ prepare(RkAiqAlgoCom* params)
 {
     LOG1_A3DLUT( "%s: (enter)\n", __FUNCTION__);
     alut3d_handle_t hAlut3d = (alut3d_handle_t)(params->ctx->a3dlut_para);
-    RkAiqAlgoConfigA3dlutInt *para = (RkAiqAlgoConfigA3dlutInt*)params;
+    RkAiqAlgoConfigA3dlut *para = (RkAiqAlgoConfigA3dlut*)params;
     hAlut3d->prepare_type = params->u.prepare.conf_type;
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )){
-        RkAiqAlgoConfigA3dlutInt* confPara = (RkAiqAlgoConfigA3dlutInt*)params;
-
         hAlut3d->calibV2_lut3d =
-                (CalibDbV2_Lut3D_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(confPara->rk_com.u.prepare.calibv2), lut3d_calib));
+                (CalibDbV2_Lut3D_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(para->com.u.prepare.calibv2), lut3d_calib));
     }
            Alut3dPrepare((alut3d_handle_t)(params->ctx->a3dlut_para));
 
@@ -90,8 +87,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
     LOG1_A3DLUT( "%s: (enter)\n", __FUNCTION__);
 
-    RkAiqAlgoProcA3dlutInt *procAlut3d = (RkAiqAlgoProcA3dlutInt*)inparams;
-    RkAiqAlgoProcResA3dlutInt *proResAlut3d = (RkAiqAlgoProcResA3dlutInt*)outparams;
+    RkAiqAlgoProcA3dlut *procAlut3d = (RkAiqAlgoProcA3dlut*)inparams;
+    RkAiqAlgoProcResA3dlut *proResAlut3d = (RkAiqAlgoProcResA3dlut*)outparams;
     alut3d_handle_t hAlut3d = (alut3d_handle_t)(inparams->ctx->a3dlut_para);
 
     hAlut3d->swinfo.sensorGain = procAlut3d->sensorGain;
@@ -100,8 +97,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     hAlut3d->swinfo.awbIIRDampCoef = procAlut3d->awbIIRDampCoef;
 
     Alut3dConfig(hAlut3d);
-    memcpy(&proResAlut3d->a3dlut_proc_res_com.lut3d_hw_conf, &hAlut3d->lut3d_hw_conf, sizeof(rk_aiq_lut3d_cfg_t));
-    proResAlut3d->a3dlut_proc_res_com.lut3d_update = hAlut3d->update ||hAlut3d->updateAtt || (!hAlut3d->swinfo.lut3dConverged);
+    memcpy(&proResAlut3d->lut3d_hw_conf, &hAlut3d->lut3d_hw_conf, sizeof(rk_aiq_lut3d_cfg_t));
+    proResAlut3d->lut3d_update = hAlut3d->update ||hAlut3d->updateAtt || (!hAlut3d->swinfo.lut3dConverged);
 
     LOG1_A3DLUT( "%s: (exit)\n", __FUNCTION__);
     return XCAM_RETURN_NO_ERROR;

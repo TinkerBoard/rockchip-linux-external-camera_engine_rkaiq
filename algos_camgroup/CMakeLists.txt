@@ -43,7 +43,9 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/algos_camgroup/ae/rk_aiq_algo_camgroup_ae_itf.cpp
 	set_target_properties(rkaiq_camgroup_ae PROPERTIES CXX_VISIBILITY_PRESET default)
 else()
 	message(STATUS "Can NOT found ${CMAKE_SOURCE_DIR}/algos_camgroup/ae/rk_aiq_algo_camgroup_ae_itf.cpp. Using lib")
-	add_library(rkaiq_camgroup_ae STATIC IMPORTED)
+    string(TOLOWER ${CMAKE_SYSTEM_NAME} OS)
+    set(PREFIX "${CMAKE_CURRENT_LIST_DIR}/ae/${OS}/${ARCH}/lib")
+    add_library(rkaiq_camgroup_ae STATIC IMPORTED GLOBAL)
 	set_target_properties(rkaiq_camgroup_ae PROPERTIES IMPORTED_LOCATION
         "${PREFIX}rkaiq_camgroup_ae.${SUFFIX}")
 	set_target_properties(rkaiq_camgroup_ae PROPERTIES IMPORTED_IMPLIB
@@ -67,7 +69,9 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/algos_camgroup/awb/rk_aiq_algo_camgroup_awb_itf.c
 	set_target_properties(rkaiq_camgroup_awb PROPERTIES CXX_VISIBILITY_PRESET default)
 else()
 	message(STATUS "Can NOT found ${CMAKE_SOURCE_DIR}/algos_camgroup/awb/rk_aiq_algo_camgroup_awb_itf.cpp. Using lib")
-	add_library(rkaiq_camgroup_awb STATIC IMPORTED)
+    string(TOLOWER ${CMAKE_SYSTEM_NAME} OS)
+    set(PREFIX "${CMAKE_CURRENT_LIST_DIR}/awb/${OS}/${ARCH}/lib")
+    add_library(rkaiq_camgroup_awb STATIC IMPORTED GLOBAL)
 	set_target_properties(rkaiq_camgroup_awb PROPERTIES IMPORTED_LOCATION
         "${PREFIX}rkaiq_camgroup_awb.${SUFFIX}")
 	set_target_properties(rkaiq_camgroup_awb PROPERTIES IMPORTED_IMPLIB
@@ -92,6 +96,7 @@ set (MISC_SRC
 	abayernr/rk_aiq_algo_camgroup_abayernr_itf.cpp
 	atnr/rk_aiq_algo_camgroup_atnr_itf.cpp
 	again/rk_aiq_algo_camgroup_again_itf.cpp
+
 )
 add_library(rkaiq_camgroup_misc STATIC ${MISC_SRC})
 set_target_properties(rkaiq_camgroup_misc PROPERTIES FOLDER "algos_camgroup/misc")

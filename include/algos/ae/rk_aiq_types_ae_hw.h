@@ -284,6 +284,38 @@ typedef struct RkAiqExpSensorParam_s {
     unsigned int isp_digital_gain;
 } RkAiqExpSensorParam_t;
 
+typedef struct RKAiqExpI2cData_s {
+    // M4_BOOL_DESC("update", "0",M4_HIDE(1))
+    bool    update;
+
+    // M4_NUMBER_DESC("delay_frm_num", "u8", M4_RANGE(0,255), "0", M4_DIGIT(0),M4_HIDE(1))
+    unsigned char   delay_frm_num;
+    // M4_NUMBER_DESC("dev_addr", "u8", M4_RANGE(0,255), "0", M4_DIGIT(0),M4_HIDE(1))
+    unsigned char   dev_addr;
+    // M4_NUMBER_DESC("reg_addr", "u32", M4_RANGE(0,65535), "0", M4_DIGIT(0),M4_HIDE(1))
+    unsigned int    reg_addr;
+    // M4_NUMBER_DESC("addr_byte_num", "u32", M4_RANGE(0,65535), "0", M4_DIGIT(0),M4_HIDE(1))
+    unsigned int    addr_byte_num;
+    // M4_NUMBER_DESC("data", "u32", M4_RANGE(0,65535), "0", M4_DIGIT(0),M4_HIDE(1))
+    unsigned int    data;
+    // M4_NUMBER_DESC("data_byte_num", "u32", M4_RANGE(0,65535), "0", M4_DIGIT(0),M4_HIDE(1))
+    unsigned int    data_byte_num;
+} RKAiqExpI2cData_t;
+
+typedef struct RKAiqExpI2cDataComb_s {
+    // M4_BOOL_DESC("valid", "0",M4_HIDE(1))
+    bool    valid;
+
+    // M4_STRUCT_DESC("integration_time", "normal_ui_style",M4_HIDE(1))
+    RKAiqExpI2cData_t integration_time;
+    // M4_STRUCT_DESC("analog_gain", "normal_ui_style",M4_HIDE(1))
+    RKAiqExpI2cData_t analog_gain;
+    // M4_STRUCT_DESC("digital_gain", "normal_ui_style",M4_HIDE(1))
+    RKAiqExpI2cData_t digital_gain;
+    // M4_STRUCT_DESC("frame_length_lines", "normal_ui_style",M4_HIDE(1))
+    RKAiqExpI2cData_t frame_length_lines;
+} RKAiqExpI2cDataComb_t;
+
 typedef struct {
 
     // M4_STRUCT_DESC("RealPara", "normal_ui_style")
@@ -291,6 +323,9 @@ typedef struct {
 
     // M4_STRUCT_DESC("RegPara", "normal_ui_style",M4_HIDE(1))
     RkAiqExpSensorParam_t exp_sensor_params;//reg value
+
+    // M4_STRUCT_DESC("I2cPara", "normal_ui_style",M4_HIDE(1))
+    RKAiqExpI2cDataComb_t exp_i2c_params;
 } RkAiqExpParamComb_t;
 
 typedef struct {
@@ -330,8 +365,8 @@ typedef struct RKAiqAecExpInfo_s {
     // M4_NUMBER_DESC("LineLengthPixels(hts)", "u16", M4_RANGE(0,65535), "0", M4_DIGIT(0))
     uint16_t line_length_pixels;
 
-    // M4_NUMBER_DESC("FrameLengthLines(vts)", "u16", M4_RANGE(0,65535), "0", M4_DIGIT(0))
-    uint16_t frame_length_lines;
+    // M4_NUMBER_DESC("FrameLengthLines(vts)", "u32", M4_RANGE(0,4294967296), "0", M4_DIGIT(0))
+    uint32_t frame_length_lines;
 
     // M4_NUMBER_DESC("PixelClockFreqMhz", "f32", M4_RANGE(0,65535), "0", M4_DIGIT(2))
     float pixel_clock_freq_mhz;

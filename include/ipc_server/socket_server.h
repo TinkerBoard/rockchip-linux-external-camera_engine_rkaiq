@@ -80,6 +80,7 @@ public:
         clientAddress({0}),
         aiq_ctx(nullptr),
         accept_threads_(nullptr),
+        tunning_thread(nullptr),
         callback_(nullptr),
         _stop_fds{-1, -1} {};
     virtual ~SocketServer();
@@ -100,6 +101,8 @@ public:
 
     void tool_mode_set(bool status) { tool_mode_on = status; }
 
+    static std::mutex send_mutex;
+
 private:
     void Accepted();
     int Recvieve();
@@ -118,6 +121,7 @@ private:
     struct sockaddr_un clientAddress;
     rk_aiq_sys_ctx_t* aiq_ctx;
     std::unique_ptr<std::thread> accept_threads_;
+    std::shared_ptr<std::thread> tunning_thread;
     RecvCallBack callback_;
     int _stop_fds[2];
 };
@@ -280,10 +284,12 @@ enum {
 
 enum {
     ENUM_ID_SYSCTL_START = 0X1500,
+    ENUM_ID_SYSCTL_GETVERSIONINFO,
     ENUM_ID_SYSCTL_SETCPSLTCFG,
     ENUM_ID_SYSCTL_GETCPSLTINFO,
     ENUM_ID_SYSCTL_QUERYCPSLTCAP,
     ENUM_ID_SYSCTL_SETWORKINGMODE,
+    ENUM_ID_SYSCTL_ENQUEUERKRAWFILE,
     ENUM_ID_SYSCTL_END,
 };
 

@@ -44,6 +44,8 @@ typedef enum _RKAIQ_AF_HWVER
 } RKAIQ_AF_HWVER;
 
 typedef struct rk_aiq_af_attrib_s {
+    rk_aiq_uapi_sync_t sync;
+
     RKAIQ_AF_MODE AfMode;
     RKAIQ_AF_HWVER AfHwVer;
 

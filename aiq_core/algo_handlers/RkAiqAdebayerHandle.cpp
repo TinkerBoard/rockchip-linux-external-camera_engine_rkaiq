@@ -20,17 +20,19 @@
 
 namespace RkCam {
 
+DEFINE_HANDLE_REGISTER_TYPE(RkAiqAdebayerHandleInt);
+
 void RkAiqAdebayerHandleInt::init() {
     ENTER_ANALYZER_FUNCTION();
 
     RkAiqHandle::deInit();
-    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAdebayerInt());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAdebayerInt());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAdebayerInt());
-    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAdebayerInt());
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAdebayerInt());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAdebayerInt());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAdebayerInt());
+    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAdebayer());
+    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAdebayer());
+    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAdebayer());
+    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAdebayer());
+    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAdebayer());
+    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAdebayer());
+    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAdebayer());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -94,7 +96,7 @@ XCamReturn RkAiqAdebayerHandleInt::prepare() {
     ret = RkAiqHandle::prepare();
     RKAIQCORE_CHECK_RET(ret, "adebayer handle prepare failed");
 
-    RkAiqAlgoConfigAdebayerInt* adebayer_config_int = (RkAiqAlgoConfigAdebayerInt*)mConfig;
+    RkAiqAlgoConfigAdebayer* adebayer_config_int = (RkAiqAlgoConfigAdebayer*)mConfig;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
 
@@ -111,28 +113,20 @@ XCamReturn RkAiqAdebayerHandleInt::preProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPreAdebayerInt* adebayer_pre_int        = (RkAiqAlgoPreAdebayerInt*)mPreInParam;
-    RkAiqAlgoPreResAdebayerInt* adebayer_pre_res_int = (RkAiqAlgoPreResAdebayerInt*)mPreOutParam;
+    RkAiqAlgoPreAdebayer* adebayer_pre_int        = (RkAiqAlgoPreAdebayer*)mPreInParam;
+    RkAiqAlgoPreResAdebayer* adebayer_pre_res_int = (RkAiqAlgoPreResAdebayer*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqPreResComb* comb                       = &shared->preResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::preProcess();
     if (ret) {
-        comb->adebayer_pre_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "adebayer handle preProcess failed");
     }
-
-    comb->adebayer_pre_res = NULL;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->pre_process(mPreInParam, mPreOutParam);
     RKAIQCORE_CHECK_RET(ret, "adebayer algo pre_process failed");
-
-    // set result to mAiqCore
-    comb->adebayer_pre_res = (RkAiqAlgoPreResAdebayer*)adebayer_pre_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -143,30 +137,24 @@ XCamReturn RkAiqAdebayerHandleInt::processing() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoProcAdebayerInt* adebayer_proc_int = (RkAiqAlgoProcAdebayerInt*)mProcInParam;
-    RkAiqAlgoProcResAdebayerInt* adebayer_proc_res_int =
-        (RkAiqAlgoProcResAdebayerInt*)mProcOutParam;
+    RkAiqAlgoProcAdebayer* adebayer_proc_int = (RkAiqAlgoProcAdebayer*)mProcInParam;
+    RkAiqAlgoProcResAdebayer* adebayer_proc_res_int =
+        (RkAiqAlgoProcResAdebayer*)mProcOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqProcResComb* comb                      = &shared->procResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::processing();
     if (ret) {
-        comb->adebayer_proc_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "adebayer handle processing failed");
     }
 
-    comb->adebayer_proc_res = NULL;
     // TODO: fill procParam
     adebayer_proc_int->hdr_mode = sharedCom->working_mode;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
     RKAIQCORE_CHECK_RET(ret, "adebayer algo processing failed");
-
-    comb->adebayer_proc_res = (RkAiqAlgoProcResAdebayer*)adebayer_proc_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -177,28 +165,22 @@ XCamReturn RkAiqAdebayerHandleInt::postProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPostAdebayerInt* adebayer_post_int = (RkAiqAlgoPostAdebayerInt*)mPostInParam;
-    RkAiqAlgoPostResAdebayerInt* adebayer_post_res_int =
-        (RkAiqAlgoPostResAdebayerInt*)mPostOutParam;
+    RkAiqAlgoPostAdebayer* adebayer_post_int = (RkAiqAlgoPostAdebayer*)mPostInParam;
+    RkAiqAlgoPostResAdebayer* adebayer_post_res_int =
+        (RkAiqAlgoPostResAdebayer*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqPostResComb* comb                      = &shared->postResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::postProcess();
     if (ret) {
-        comb->adebayer_post_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "adebayer handle postProcess failed");
         return ret;
     }
 
-    comb->adebayer_post_res   = NULL;
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->post_process(mPostInParam, mPostOutParam);
     RKAIQCORE_CHECK_RET(ret, "adebayer algo post_process failed");
-    // set result to mAiqCore
-    comb->adebayer_post_res = (RkAiqAlgoPostResAdebayer*)adebayer_post_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -212,7 +194,7 @@ XCamReturn RkAiqAdebayerHandleInt::genIspResult(RkAiqFullParams* params,
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqAlgoProcResAdebayer* adebayer_com = shared->procResComb.adebayer_proc_res;
+    RkAiqAlgoProcResAdebayer* adebayer_com = (RkAiqAlgoProcResAdebayer*)mProcOutParam;
     rk_aiq_isp_debayer_params_v20_t* debayer_param = params->mDebayerParams->data().ptr();
 
     if (!adebayer_com) {
@@ -221,7 +203,7 @@ XCamReturn RkAiqAdebayerHandleInt::genIspResult(RkAiqFullParams* params,
     }
 
     if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAdebayerInt* adebayer_rk = (RkAiqAlgoProcResAdebayerInt*)adebayer_com;
+        RkAiqAlgoProcResAdebayer* adebayer_rk = (RkAiqAlgoProcResAdebayer*)adebayer_com;
         if (sharedCom->init) {
             debayer_param->frame_id = 0;
         } else {

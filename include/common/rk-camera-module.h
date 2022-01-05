@@ -117,7 +117,7 @@
 	_IOR('V', BASE_VIDIOC_PRIVATE + 19, __u32)
 
 #define RKMODULE_GET_CHANNEL_INFO	\
-	_IOR('V', BASE_VIDIOC_PRIVATE + 20, struct rkmodule_channel_info)
+	_IOWR('V', BASE_VIDIOC_PRIVATE + 20, struct rkmodule_channel_info)
 
 #define RKMODULE_GET_SYNC_MODE       \
 	_IOR('V', BASE_VIDIOC_PRIVATE + 21, __u32)
@@ -522,6 +522,8 @@ struct rkmodule_channel_info {
 	__u32 width;
 	__u32 height;
 	__u32 bus_fmt;
+	__u32 data_type;
+	__u32 data_bit;
 } __attribute__ ((packed));
 
 /*
@@ -556,4 +558,5 @@ enum rkmodule_sync_mode {
 	INTERNAL_MASTER_MODE,
 	SLAVE_MODE,
 };
+
 #endif /* _UAPI_RKMODULE_CAMERA_H */

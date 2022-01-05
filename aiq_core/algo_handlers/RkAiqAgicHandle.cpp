@@ -19,17 +19,19 @@
 
 namespace RkCam {
 
+DEFINE_HANDLE_REGISTER_TYPE(RkAiqAgicHandleInt);
+
 void RkAiqAgicHandleInt::init() {
     ENTER_ANALYZER_FUNCTION();
 
     RkAiqHandle::deInit();
-    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAgicInt());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAgicInt());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAgicInt());
-    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAgicInt());
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAgicInt());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAgicInt());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAgicInt());
+    mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAgic());
+    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAgic());
+    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAgic());
+    mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAgic());
+    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAgic());
+    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAgic());
+    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAgic());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -93,7 +95,7 @@ XCamReturn RkAiqAgicHandleInt::prepare() {
     ret = RkAiqHandle::prepare();
     RKAIQCORE_CHECK_RET(ret, "agic handle prepare failed");
 
-    RkAiqAlgoConfigAgicInt* agic_config_int = (RkAiqAlgoConfigAgicInt*)mConfig;
+    RkAiqAlgoConfigAgic* agic_config_int = (RkAiqAlgoConfigAgic*)mConfig;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
 
@@ -110,28 +112,20 @@ XCamReturn RkAiqAgicHandleInt::preProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPreAgicInt* agic_pre_int        = (RkAiqAlgoPreAgicInt*)mPreInParam;
-    RkAiqAlgoPreResAgicInt* agic_pre_res_int = (RkAiqAlgoPreResAgicInt*)mPreOutParam;
+    RkAiqAlgoPreAgic* agic_pre_int        = (RkAiqAlgoPreAgic*)mPreInParam;
+    RkAiqAlgoPreResAgic* agic_pre_res_int = (RkAiqAlgoPreResAgic*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqPreResComb* comb                       = &shared->preResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::preProcess();
     if (ret) {
-        comb->agic_pre_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "agic handle preProcess failed");
     }
-
-    comb->agic_pre_res = NULL;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->pre_process(mPreInParam, mPreOutParam);
     RKAIQCORE_CHECK_RET(ret, "agic algo pre_process failed");
-
-    // set result to mAiqCore
-    comb->agic_pre_res = (RkAiqAlgoPreResAgic*)agic_pre_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -142,21 +136,17 @@ XCamReturn RkAiqAgicHandleInt::processing() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoProcAgicInt* agic_proc_int        = (RkAiqAlgoProcAgicInt*)mProcInParam;
-    RkAiqAlgoProcResAgicInt* agic_proc_res_int = (RkAiqAlgoProcResAgicInt*)mProcOutParam;
+    RkAiqAlgoProcAgic* agic_proc_int        = (RkAiqAlgoProcAgic*)mProcInParam;
+    RkAiqAlgoProcResAgic* agic_proc_res_int = (RkAiqAlgoProcResAgic*)mProcOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqProcResComb* comb                      = &shared->procResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::processing();
     if (ret) {
-        comb->agic_proc_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "agic handle processing failed");
     }
 
-    comb->agic_proc_res     = NULL;
     agic_proc_int->hdr_mode = sharedCom->working_mode;
     switch (sharedCom->snsDes.sensor_pixelformat) {
         case V4L2_PIX_FMT_SBGGR14:
@@ -185,8 +175,6 @@ XCamReturn RkAiqAgicHandleInt::processing() {
     ret                       = des->processing(mProcInParam, mProcOutParam);
     RKAIQCORE_CHECK_RET(ret, "agic algo processing failed");
 
-    comb->agic_proc_res = (RkAiqAlgoProcResAgic*)agic_proc_res_int;
-
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
@@ -196,27 +184,21 @@ XCamReturn RkAiqAgicHandleInt::postProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqAlgoPostAgicInt* agic_post_int        = (RkAiqAlgoPostAgicInt*)mPostInParam;
-    RkAiqAlgoPostResAgicInt* agic_post_res_int = (RkAiqAlgoPostResAgicInt*)mPostOutParam;
+    RkAiqAlgoPostAgic* agic_post_int        = (RkAiqAlgoPostAgic*)mPostInParam;
+    RkAiqAlgoPostResAgic* agic_post_res_int = (RkAiqAlgoPostResAgic*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqPostResComb* comb                      = &shared->postResComb;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqIspStats* ispStats                     = shared->ispStats;
 
     ret = RkAiqHandle::postProcess();
     if (ret) {
-        comb->agic_post_res = NULL;
         RKAIQCORE_CHECK_RET(ret, "agic handle postProcess failed");
         return ret;
     }
 
-    comb->agic_post_res       = NULL;
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->post_process(mPostInParam, mPostOutParam);
     RKAIQCORE_CHECK_RET(ret, "agic algo post_process failed");
-    // set result to mAiqCore
-    comb->agic_post_res = (RkAiqAlgoPostResAgic*)agic_post_res_int;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -229,7 +211,7 @@ XCamReturn RkAiqAgicHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqAlgoProcResAgic* agic_com              = shared->procResComb.agic_proc_res;
+    RkAiqAlgoProcResAgic* agic_com              = (RkAiqAlgoProcResAgic*)mProcOutParam;
     rk_aiq_isp_gic_params_v20_t* gic_param = params->mGicParams->data().ptr();
 
     if (!agic_com) {
@@ -238,7 +220,7 @@ XCamReturn RkAiqAgicHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     }
 
     if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAgicInt* agic_rk = (RkAiqAlgoProcResAgicInt*)agic_com;
+        RkAiqAlgoProcResAgic* agic_rk = (RkAiqAlgoProcResAgic*)agic_com;
         if (sharedCom->init) {
             gic_param->frame_id = 0;
         } else {

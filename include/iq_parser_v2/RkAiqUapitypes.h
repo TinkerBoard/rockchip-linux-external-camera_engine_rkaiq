@@ -56,7 +56,7 @@ typedef struct __atmo_uapi {
 
 typedef struct __adrc_uapi {
     // M4_STRUCT_DESC("drc", "normal_ui_style")
-    drcAttr_t drc;
+    DrcInfo_t drc;
 } adrc_uapi_t;
 
 typedef struct __aiq_scene {

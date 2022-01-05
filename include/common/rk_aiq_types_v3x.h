@@ -118,6 +118,7 @@ typedef RK_GAIN_Fix_V2_t rk_aiq_isp_gain_v3x_t;
 
 typedef rk_aiq_awb_stat_cfg_v201_t rk_aiq_isp_awb_meas_cfg_v3x_t;
 typedef rk_aiq_awb_stat_res_v201_t rk_aiq_isp_awb_stats_v3x_t;
+typedef rk_aiq_awb_stat_res2_v30_t rk_aiq_isp_awb_stats2_v3x_t;
 
 typedef rk_aiq_af_algo_stat_v30_t rk_aiq_isp_af_stats_v3x_t;
 typedef rk_aiq_af_algo_meas_v30_t rk_aiq_isp_af_meas_v3x_t;

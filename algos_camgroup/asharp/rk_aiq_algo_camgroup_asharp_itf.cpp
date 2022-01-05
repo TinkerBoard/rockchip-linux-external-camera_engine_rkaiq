@@ -20,7 +20,6 @@
 #include "rk_aiq_algo_camgroup_asharp_itf.h"
 #include "rk_aiq_algo_camgroup_types.h"
 #include "rk_aiq_types_camgroup_asharp_prvt.h"
-#include "rk_aiq_algo_types_int.h"
 #include "asharp3/rk_aiq_asharp_algo_itf_v3.h"
 #include "asharp3/rk_aiq_asharp_algo_v3.h"
 #include "asharp4/rk_aiq_asharp_algo_itf_v4.h"

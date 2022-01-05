@@ -19,7 +19,6 @@
 
 #include "rk_aiq_algo_camgroup_types.h"
 #include "misc/rk_aiq_algo_camgroup_misc_itf.h"
-#include "rk_aiq_algo_types_int.h"
 #include "ablc/rk_aiq_algo_ablc_itf.h"
 #include "ablc/rk_aiq_ablc_algo.h"
 #include "ablc/rk_aiq_types_ablc_algo_prvt.h"

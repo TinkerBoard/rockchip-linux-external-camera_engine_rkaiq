@@ -59,6 +59,7 @@ typedef enum Abayertnr_OPMode_V2_e {
     ABAYERTNRV2_OP_MODE_INVALID           = 0,                   /**< initialization value */
     ABAYERTNRV2_OP_MODE_AUTO              = 1,                   /**< instance is created, but not initialized */
     ABAYERTNRV2_OP_MODE_MANUAL            = 2,                   /**< instance is confiured (ready to start) or stopped */
+    ABAYERTNRV2_OP_MODE_REG_MANUAL        = 3,
     ABAYERTNRV2_OP_MODE_MAX                                      /**< max */
 } Abayertnr_OPMode_V2_t;
 
@@ -83,68 +84,69 @@ typedef struct Abayertnr_ExpInfo_V2_s {
 
 typedef struct RK_Bayertnr_Params_V2_s
 {
-    int bayertnrv2_tnr_enable;
+    int enable;
 
     float iso[RK_BAYERNR_V2_MAX_ISO_NUM];
 
-    float bayertnrv2_lo_filter_strength_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    float bayertnrv2_hi_filter_strength_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    float bayertnrv2_filter_soft_threshold_ratio_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    int   bayertnrv2_thumbds_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    int   bayertnrv2_lo_ena_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    int   bayertnrv2_hi_ena_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    int   bayertnrv2_lumapoint_r[16];
-    int   bayertnrv2_sigma_r[RK_BAYERNR_V2_MAX_ISO_NUM][16];
-    int   bayertnrv2_lumapoint2_r[16];
-    int   bayertnrv2_lo_sigma_r[RK_BAYERNR_V2_MAX_ISO_NUM][16];
-    int   bayertnrv2_hi_sigma_r[RK_BAYERNR_V2_MAX_ISO_NUM][16];
-    int   bayertnrv2_blc_offset;
+    //calib
+    int   lumapoint[16];
+    int   sigma[RK_BAYERNR_V2_MAX_ISO_NUM][16];
+    int   lumapoint2[16];
+    int   lo_sigma[RK_BAYERNR_V2_MAX_ISO_NUM][16];
+    int   hi_sigma[RK_BAYERNR_V2_MAX_ISO_NUM][16];
 
-    float bayertnr_hi_wgt_comp_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    float bayertnr_lo_clipwgt_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    int   bayertnr_lo_med_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    int   bayertnr_lo_gsbay_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    int   bayertnr_lo_gslum_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    int   bayertnr_hi_med_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    int   bayertnr_hi_gslum_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    int   bayertnr_global_pk_en_r[RK_BAYERNR_V2_MAX_ISO_NUM];
-    int   bayertnr_global_pksq_r[RK_BAYERNR_V2_MAX_ISO_NUM];
+    //tuning
+    int   thumbds[RK_BAYERNR_V2_MAX_ISO_NUM];
 
-    float bayertnr_hidif_th[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   lo_enable[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   hi_enable[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   lo_med_en[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   lo_gsbay_en[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   lo_gslum_en[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   hi_med_en[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   hi_gslum_en[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   global_pk_en[RK_BAYERNR_V2_MAX_ISO_NUM];
+    int   global_pksq[RK_BAYERNR_V2_MAX_ISO_NUM];
+
+    float lo_filter_strength[RK_BAYERNR_V2_MAX_ISO_NUM];
+    float hi_filter_strength[RK_BAYERNR_V2_MAX_ISO_NUM];
+    float soft_threshold_ratio[RK_BAYERNR_V2_MAX_ISO_NUM];
+    float hi_wgt_comp[RK_BAYERNR_V2_MAX_ISO_NUM];
+    float clipwgt[RK_BAYERNR_V2_MAX_ISO_NUM];
+    float hidif_th[RK_BAYERNR_V2_MAX_ISO_NUM];
 } RK_Bayertnr_Params_V2_t;
 
 
 typedef struct RK_Bayertnr_Params_V2_Select_s
 {
-    int bayertnrv2_tnr_enable;
-    int bayertnrv2_logt_en;
-    int bayertnrv2_logit_en;
+    int enable;
 
-    float bayertnrv2_lo_filter_strength;
-    float bayertnrv2_hi_filter_strength;
-    float bayertnrv2_filter_soft_threshold_ratio;
+    //calib
+    int lumapoint[16];
+    int sigma[16];
+    int lumapoint2[16];
+    int lo_sigma[16];
+    int hi_sigma[16];
 
-    float bayertnrv2_tnr_lo_clipwgt;
-    float bayertnrv2_tnr_hi_wgt_comp;
+    //tuning
+    int thumbds;
+    int lo_enable;
+    int hi_enable;
+    int lo_med_en;
+    int lo_gsbay_en;
+    int lo_gslum_en;
+    int hi_med_en;
+    int hi_gslum_en;
+    int global_pk_en;
+    int global_pksq;
 
-    int bayertnrv2_tnr_global_pk_en;        // 1 use local pk, 0 use global pk
-    int bayertnrv2_tnr_global_pksq;
-    int bayertnrv2_tnr_luma_point[16];
-    int bayertnrv2_tnr_sigma[16];
+    float lo_filter_strength;
+    float hi_filter_strength;
+    float soft_threshold_ratio;
 
-    int bayertnrv2_tnr_sw_thumbds;
-    int bayertnrv2_tnr_sw_lo_ena;
-    int bayertnrv2_tnr_sw_lo_med_en;
-    int bayertnrv2_tnr_sw_lo_gsbay_en;
-    int bayertnrv2_tnr_sw_lo_gslum_en;
-    int bayertnrv2_tnr_sw_hi_ena;
-    int bayertnrv2_tnr_sw_hi_med_en;
-    int bayertnrv2_tnr_sw_hi_gslum_en;
-
-    int bayertnrv2_tnr_sw_wgt_lum[16];
-    int bayertnrv2_tnr_sw_lo_sig[16];
-    int bayertnrv2_tnr_sw_hi_sig[16];
-    float bayertnrv2_hidif_th;
+    float clipwgt;
+    float hi_wgt_comp;
+    float hidif_th;
 } RK_Bayertnr_Params_V2_Select_t;
 
 
@@ -153,6 +155,7 @@ typedef struct Abayertnr_Manual_Attr_V2_s
     int bayernr3DEn;
     RK_Bayertnr_Params_V2_Select_t st3DSelect;
 
+    RK_Bayertnr_Fix_V2_t st3DFix;
 } Abayertnr_Manual_Attr_V2_t;
 
 typedef struct Abayertnr_Auto_Attr_V2_s
@@ -166,7 +169,6 @@ typedef struct Abayertnr_Auto_Attr_V2_s
 } Abayertnr_Auto_Attr_V2_t;
 
 typedef struct Abayertnr_ProcResult_V2_s {
-    int bayernr2DEn;
     int bayernr3DEn;
 
     //for sw simultaion
@@ -187,20 +189,16 @@ typedef struct Abayertnr_Config_V2_s {
 
 
 typedef struct rk_aiq_bayertnr_attrib_v2_s {
+    rk_aiq_uapi_sync_t sync;
     Abayertnr_OPMode_V2_t eMode;
     Abayertnr_Auto_Attr_V2_t stAuto;
     Abayertnr_Manual_Attr_V2_t stManual;
 } rk_aiq_bayertnr_attrib_v2_t;
 
-
-typedef struct rk_aiq_bayertnr_IQPara_V2_s {
-    struct list_head listHead_mode;
-} rk_aiq_bayertnr_IQPara_V2_t;
-
-
-typedef struct rk_aiq_bayertnr_JsonPara_V2_s {
-    CalibDbV2_BayerTnr_V2_t bayernr_v2;
-} rk_aiq_bayertnr_JsonPara_V2_t;
+typedef struct rk_aiq_bayertnr_strength_v2_s {
+    rk_aiq_uapi_sync_t sync;
+    float percent;
+} rk_aiq_bayertnr_strength_v2_t;
 
 
 //RKAIQ_END_DECLARE

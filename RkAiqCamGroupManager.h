@@ -25,6 +25,7 @@
 #include "xcore/safe_list.h"
 #include "common/rk_aiq_pool.h"
 #include "aiq_core/MessageBus.h"
+#include "aiq_core/RkAiqCamgroupHandle.h"
 
 using namespace XCam;
 namespace RkCam {
@@ -143,9 +144,11 @@ private:
     SafeList<rk_aiq_groupcam_result_wrapper_t>  mMsgQueue;
 };
 
+class RkAiqCamgroupHandle;
 class RkAiqCamGroupManager
 {
     friend class RkAiqCamGroupReprocTh;
+    friend class RkAiqCamgroupHandle;
     /* normal processing */
     // add cam's AIQ ctx to cam group
     // receive group cam's awb,ae stats
@@ -178,6 +181,16 @@ public:
     // if called, prepare should be re-called
     XCamReturn bind(RkAiqManager* ctx);
     XCamReturn unbind(int camId);
+    bool isRunningState() {
+        return mState == CAMGROUP_MANAGER_STARTED;
+    }
+    XCamReturn addAlgo(RkAiqAlgoDesComm& algo);
+    XCamReturn enableAlgo(int algoType, int id, bool enable);
+    XCamReturn rmAlgo(int algoType, int id);
+    bool getAxlibStatus(int algoType, int id);
+    RkAiqAlgoContext* getEnabledAxlibCtx(const int algo_type);
+    RkAiqAlgoContext* getAxlibCtx(const int algo_type, const int lib_id);
+    RkAiqCamgroupHandle* getAiqCamgroupHandle(const int algo_type, const int lib_id);
 protected:
     const struct RkAiqAlgoDesCommExt* mGroupAlgosDesArray;
     /* key: camId*/
@@ -194,7 +207,18 @@ protected:
     uint64_t mRequiredAlgoResMask;
     uint8_t mRequiredCamsResMask;
     AlgoCtxInstanceCfgCamGroup mGroupAlgoCtxCfg;
-    RkAiqAlgoContext* mGroupAlgoCtxArray[RK_AIQ_ALGO_TYPE_MAX];
+    // mDefAlgoHandleList and mDefAlgoHandleMap only contain default handlers(id == 0),
+    // default handlers will be treated as root handler, and custom handlers as children.
+    // Custom handlers located in mAlgoHandleMaps and nexthdl of default handlers.
+    // ordered algo list
+    std::list<SmartPtr<RkAiqCamgroupHandle>> mDefAlgoHandleList;
+    // key: algo type
+    // for fast access
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>> mDefAlgoHandleMap;
+
+    // key1: algo type
+    // key2: algo id
+    std::map<int, std::map<int, SmartPtr<RkAiqCamgroupHandle>>> mAlgoHandleMaps;
     // status transition
     /*   Typical transitions:
      *        CURRENT_STATE              NEXT_STATE                  OPERATION
@@ -231,6 +255,9 @@ protected:
     void clearGroupCamResult(uint32_t frameId);
     void clearGroupCamSofsync(uint32_t frameId);
     void addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes);
+    virtual SmartPtr<RkAiqCamgroupHandle> newAlgoHandle(RkAiqAlgoDesComm* algo, int hw_ver);
+    SmartPtr<RkAiqCamgroupHandle> getDefAlgoTypeHandle(int algo_type);
+    std::map<int, SmartPtr<RkAiqCamgroupHandle>>* getAlgoTypeHandleMap(int algo_type);
 };
 
 }; //namespace

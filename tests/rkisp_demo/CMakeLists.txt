@@ -34,18 +34,14 @@ if(ADD_RK_AIQ)
     set(RK_AIQ_LIB_DIR ${RK_AIQ_SOURCE_DIR}/build/linux/output/${ARCH}/all_lib/${CMAKE_BUILD_TYPE})
     message("rkaiq lib path" ${RK_AIQ_LIB_DIR})
     set(RK_AIQ_INCLUDE_DIR
-        ${RK_AIQ_SOURCE_DIR}
+		#${RK_AIQ_SOURCE_DIR}
         ${RK_AIQ_SOURCE_DIR}/include/
-        ${RK_AIQ_SOURCE_DIR}/include/uAPI
+        ${RK_AIQ_SOURCE_DIR}/include/uAPI2
         ${RK_AIQ_SOURCE_DIR}/include/xcore/
         ${RK_AIQ_SOURCE_DIR}/include/algos/
         ${RK_AIQ_SOURCE_DIR}/include/common/
         ${RK_AIQ_SOURCE_DIR}/include/iq_parser/
         ${RK_AIQ_SOURCE_DIR}/include/iq_parser_v2/
-        ${RK_AIQ_SOURCE_DIR}/hwi
-        ${RK_AIQ_SOURCE_DIR}/hwi/isp20
-        ${RK_AIQ_SOURCE_DIR}/hwi/isp21
-        ${RK_AIQ_SOURCE_DIR}/hwi/isp3x
         #${FPGA_RGA_INCLUDE_PATH}/include/
         )
     set(RK_AIQ_LIB rkaiq)
@@ -77,11 +73,14 @@ include_directories(
     demo/drmDsp
     demo/iio/include
     ${RK_AIQ_INCLUDE_DIR}
+    demo/sample/
+	${SDK_MEDIA_DIR}/include
     )
 
 if (NOT ARCH STREQUAL "fpga")
     aux_source_directory(demo DIR_SRCS)
     aux_source_directory(demo/drmDsp DRMDSP_DIR_SRCS)
+    aux_source_directory(demo/sample SAMPLE_DIR_SRCS)
 else ()
     set (DIR_SRCS
         demo/rkisp_demo.cpp
@@ -95,7 +94,16 @@ endif()
 if (ENABLE_IIO_API)
     AUX_SOURCE_DIRECTORY(demo/iio/demo IIO_DIR_SRCS)
 endif()
-list(APPEND DIR_SRCS ${DRMDSP_DIR_SRCS} ${IIO_DIR_SRCS})
+list(APPEND DIR_SRCS ${DRMDSP_DIR_SRCS} ${IIO_DIR_SRCS} ${SAMPLE_DIR_SRCS})
+
+AUX_SOURCE_DIRECTORY(demo/ae_algo_demo AEDEMO_DIR_SRCS)
+list(APPEND DIR_SRCS ${AEDEMO_DIR_SRCS})
+
+AUX_SOURCE_DIRECTORY(demo/awb_algo_demo AWBDEMO_DIR_SRCS)
+list(APPEND DIR_SRCS ${AWBDEMO_DIR_SRCS})
+
+AUX_SOURCE_DIRECTORY(demo/af_algo_demo AFDEMO_DIR_SRCS)
+list(APPEND DIR_SRCS ${AFDEMO_DIR_SRCS})
 
 if(WIN32)
     SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/exe)

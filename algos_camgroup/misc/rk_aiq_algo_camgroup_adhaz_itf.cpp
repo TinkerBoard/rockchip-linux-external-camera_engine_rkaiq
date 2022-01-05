@@ -18,7 +18,6 @@
  */
 /* for rockchip v2.0.0*/
 
-#include "rk_aiq_algo_types_int.h"
 #include "rk_aiq_algo_camgroup_types.h"
 #include "algos/adehaze/rk_aiq_algo_adhaz_itf.h"
 #include "RkAiqCalibDbTypes.h"
@@ -33,17 +32,17 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
 {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    AdehazeHandle_t *AdehazeGrpHandle = NULL;
+    AdehazeHandle_t *pAdehazeGrpHandle = NULL;
     AlgoCtxInstanceCfgCamGroup* instanc_int = (AlgoCtxInstanceCfgCamGroup*)cfg;
 
-    ret = AdehazeInit(&AdehazeGrpHandle, (CamCalibDbV2Context_t*)(instanc_int->s_calibv2));
+    ret = AdehazeInit(&pAdehazeGrpHandle, (CamCalibDbV2Context_t*)(instanc_int->s_calibv2));
 
     if (ret != XCAM_RETURN_NO_ERROR) {
         LOGE_ADEHAZE("%s Adehaze Init failed: %d", __FUNCTION__, ret);
         return(XCAM_RETURN_ERROR_FAILED);
     }
 
-    *context = (RkAiqAlgoContext *)(AdehazeGrpHandle);
+    *context = (RkAiqAlgoContext *)(pAdehazeGrpHandle);
 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;
@@ -54,9 +53,9 @@ destroy_context(RkAiqAlgoContext *context)
 {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    AdehazeHandle_t *AdehazeGrpHandle = (AdehazeHandle_t *)context;
+    AdehazeHandle_t *pAdehazeGrpHandle = (AdehazeHandle_t *)context;
 
-    ret = AdehazeRelease(AdehazeGrpHandle);
+    ret = AdehazeRelease(pAdehazeGrpHandle);
 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;
@@ -70,39 +69,39 @@ prepare(RkAiqAlgoCom* params)
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     RkAiqAlgoCamGroupPrepare* config = (RkAiqAlgoCamGroupPrepare*)params;
-    AdehazeHandle_t * AdehazeGrpHandle = (AdehazeHandle_t *)params->ctx;
+    AdehazeHandle_t * pAdehazeGrpHandle = (AdehazeHandle_t *)params->ctx;
     const CamCalibDbV2Context_t* pCalibDb = config->s_calibv2;
 
-    AdehazeGrpHandle->working_mode = config->gcom.com.u.prepare.working_mode;
+    pAdehazeGrpHandle->working_mode = config->gcom.com.u.prepare.working_mode;
 
-    if (AdehazeGrpHandle->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR2)
-        AdehazeGrpHandle->FrameNumber = LINEAR_NUM;
-    else if (AdehazeGrpHandle->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR3 &&
-             AdehazeGrpHandle->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2)
-        AdehazeGrpHandle->FrameNumber = HDR_2X_NUM;
+    if (pAdehazeGrpHandle->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR2)
+        pAdehazeGrpHandle->FrameNumber = LINEAR_NUM;
+    else if (pAdehazeGrpHandle->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR3 &&
+             pAdehazeGrpHandle->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2)
+        pAdehazeGrpHandle->FrameNumber = HDR_2X_NUM;
     else
-        AdehazeGrpHandle->FrameNumber = HDR_3X_NUM;
+        pAdehazeGrpHandle->FrameNumber = HDR_3X_NUM;
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
         LOGD_ADEHAZE("%s: Adehaze Reload Para!\n", __FUNCTION__);
 
-        if(AdehazeGrpHandle->HWversion == ADEHAZE_ISP21) {
+        if(pAdehazeGrpHandle->HWversion == ADEHAZE_ISP21) {
             CalibDbV2_dehaze_V20_t* calibv2_adehaze_calib_V20 =
                 (CalibDbV2_dehaze_V20_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib_v20));
             if (calibv2_adehaze_calib_V20)
-                memcpy(&AdehazeGrpHandle->Calib.Dehaze_v20, calibv2_adehaze_calib_V20, sizeof(CalibDbV2_dehaze_V20_t));
+                memcpy(&pAdehazeGrpHandle->Calib.Dehaze_v20, calibv2_adehaze_calib_V20, sizeof(CalibDbV2_dehaze_V20_t));
         }
-        else if(AdehazeGrpHandle->HWversion == ADEHAZE_ISP21) {
+        else if(pAdehazeGrpHandle->HWversion == ADEHAZE_ISP21) {
             CalibDbV2_dehaze_V21_t* calibv2_adehaze_calib_V21 =
                 (CalibDbV2_dehaze_V21_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib_v21));
             if (calibv2_adehaze_calib_V21)
-                memcpy(&AdehazeGrpHandle->Calib.Dehaze_v21, calibv2_adehaze_calib_V21, sizeof(CalibDbV2_dehaze_V21_t));
+                memcpy(&pAdehazeGrpHandle->Calib.Dehaze_v21, calibv2_adehaze_calib_V21, sizeof(CalibDbV2_dehaze_V21_t));
         }
-        else if(AdehazeGrpHandle->HWversion == ADEHAZE_ISP30) {
+        else if(pAdehazeGrpHandle->HWversion == ADEHAZE_ISP30) {
             CalibDbV2_dehaze_V30_t* calibv2_adehaze_calib_V30 =
                 (CalibDbV2_dehaze_V30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib_v30));
             if (calibv2_adehaze_calib_V30)
-                memcpy(&AdehazeGrpHandle->Calib.Dehaze_v30, calibv2_adehaze_calib_V30, sizeof(CalibDbV2_dehaze_V30_t));
+                memcpy(&pAdehazeGrpHandle->Calib.Dehaze_v30, calibv2_adehaze_calib_V30, sizeof(CalibDbV2_dehaze_V30_t));
         }
     }
 
@@ -116,43 +115,43 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    AdehazeHandle_t * AdehazeGrpHandle = (AdehazeHandle_t *)inparams->ctx;
+    AdehazeHandle_t * pAdehazeGrpHandle = (AdehazeHandle_t *)inparams->ctx;
     RkAiqAlgoCamGroupProcIn* pGrpProcPara = (RkAiqAlgoCamGroupProcIn*)inparams;
     RkAiqAlgoCamGroupProcOut* pGrpProcResPara = (RkAiqAlgoCamGroupProcOut*)outparams;
 
     LOGD_ADEHAZE("/*************************Adehaze Group Start******************/ \n");
 
-    AdehazeGetCurrDataGroup(AdehazeGrpHandle, &pGrpProcPara->camgroupParmasArray[0]->aec._effAecExpInfo,
+    AdehazeGetCurrDataGroup(pAdehazeGrpHandle, &pGrpProcPara->camgroupParmasArray[0]->aec._effAecExpInfo,
                             pGrpProcPara->camgroupParmasArray[0]->aec._aePreRes);
 
     //process
-    if(!(AdehazeByPassProcessing(AdehazeGrpHandle)))
-        ret = AdehazeProcess(AdehazeGrpHandle, AdehazeGrpHandle->HWversion);
+    if(!(AdehazeByPassProcessing(pAdehazeGrpHandle)))
+        ret = AdehazeProcess(pAdehazeGrpHandle, pAdehazeGrpHandle->HWversion);
 
     //store data
-    if(AdehazeGrpHandle->HWversion == ADEHAZE_ISP20)
-        AdehazeGrpHandle->PreData.V20.ApiMode = AdehazeGrpHandle->AdehazeAtrr.AdehazeAtrrV20.mode;
-    else if(AdehazeGrpHandle->HWversion == ADEHAZE_ISP21)
-        AdehazeGrpHandle->PreData.V21.ApiMode = AdehazeGrpHandle->AdehazeAtrr.AdehazeAtrrV21.mode;
-    else if(AdehazeGrpHandle->HWversion == ADEHAZE_ISP30)
-        AdehazeGrpHandle->PreData.V30.ApiMode = AdehazeGrpHandle->AdehazeAtrr.AdehazeAtrrV30.mode;
+    if(pAdehazeGrpHandle->HWversion == ADEHAZE_ISP20)
+        pAdehazeGrpHandle->PreData.V20.ApiMode = pAdehazeGrpHandle->AdehazeAtrr.mode;
+    else if(pAdehazeGrpHandle->HWversion == ADEHAZE_ISP21)
+        pAdehazeGrpHandle->PreData.V21.ApiMode = pAdehazeGrpHandle->AdehazeAtrr.mode;
+    else if(pAdehazeGrpHandle->HWversion == ADEHAZE_ISP30)
+        pAdehazeGrpHandle->PreData.V30.ApiMode = pAdehazeGrpHandle->AdehazeAtrr.mode;
 
     //proc res
-    if(AdehazeGrpHandle->HWversion == ADEHAZE_ISP20) {
-        AdehazeGrpHandle->ProcRes.ProcResV20.enable = true;
-        AdehazeGrpHandle->ProcRes.ProcResV20.update = !(AdehazeGrpHandle->byPassProc) ;
+    if(pAdehazeGrpHandle->HWversion == ADEHAZE_ISP20) {
+        pAdehazeGrpHandle->ProcRes.ProcResV20.enable = true;
+        pAdehazeGrpHandle->ProcRes.ProcResV20.update = !(pAdehazeGrpHandle->byPassProc) ;
     }
-    else if(AdehazeGrpHandle->HWversion == ADEHAZE_ISP21) {
-        AdehazeGrpHandle->ProcRes.ProcResV21.enable = true;
-        AdehazeGrpHandle->ProcRes.ProcResV21.update = !(AdehazeGrpHandle->byPassProc);
+    else if(pAdehazeGrpHandle->HWversion == ADEHAZE_ISP21) {
+        pAdehazeGrpHandle->ProcRes.ProcResV21.enable = pAdehazeGrpHandle->ProcRes.ProcResV21.enable;
+        pAdehazeGrpHandle->ProcRes.ProcResV21.update = !(pAdehazeGrpHandle->byPassProc);
     }
-    else if(AdehazeGrpHandle->HWversion == ADEHAZE_ISP30) {
-        AdehazeGrpHandle->ProcRes.ProcResV30.enable = true;
-        AdehazeGrpHandle->ProcRes.ProcResV30.update = !(AdehazeGrpHandle->byPassProc);
+    else if(pAdehazeGrpHandle->HWversion == ADEHAZE_ISP30) {
+        pAdehazeGrpHandle->ProcRes.ProcResV30.enable = pAdehazeGrpHandle->ProcRes.ProcResV30.enable;
+        pAdehazeGrpHandle->ProcRes.ProcResV30.update = !(pAdehazeGrpHandle->byPassProc);
     }
 
     for (int i = 0; i < pGrpProcResPara->arraySize; i++)
-        memcpy(pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig, &AdehazeGrpHandle->ProcRes, sizeof(RkAiqAdehazeProcResult_t));
+        memcpy(pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig, &pAdehazeGrpHandle->ProcRes, sizeof(RkAiqAdehazeProcResult_t));
 
     LOGD_ADEHAZE("/*************************Adehaze Group Over******************/ \n");
 

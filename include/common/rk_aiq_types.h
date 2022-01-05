@@ -64,10 +64,7 @@
 #include "aynr/rk_aiq_types_aynr_algo_v1.h"
 #include "auvnr/rk_aiq_types_auvnr_algo_v1.h"
 #include "again/rk_aiq_types_again_algo.h"
-
-
-
-
+#include "acsm/rk_aiq_types_acsm_algo.h"
 
 #ifdef RK_SIMULATOR_HW
 #include "simulator/isp20_hw_simulator.h"
@@ -457,6 +454,9 @@ typedef rk_aiq_af_algo_stat_v20_t rk_aiq_isp_af_stats_t;
 typedef rk_aiq_af_algo_meas_v20_t rk_aiq_isp_af_meas_t;
 typedef rk_aiq_af_algo_focus_pos_t rk_aiq_af_focus_pos_meas_t;
 
+typedef rk_aiq_pdaf_algo_stat_t rk_aiq_isp_pdaf_stats_t;
+typedef rk_aiq_pdaf_algo_meas_t rk_aiq_isp_pdaf_meas_t;
+
 typedef rk_aiq_ae_meas_params_t rk_aiq_isp_aec_meas_t;
 typedef rk_aiq_hist_meas_params_t rk_aiq_isp_hist_meas_t;
 
@@ -489,9 +489,7 @@ typedef struct {
     int UNKNOWN;
 } rk_aiq_isp_wdr_t;
 
-typedef struct {
-    int UNKNOWN;
-} rk_aiq_isp_csm_t;
+typedef rk_aiq_acsm_params_t rk_aiq_isp_csm_t;
 
 typedef struct {
     int UNKNOWN;
@@ -538,8 +536,8 @@ typedef struct {
     int awb_hw_ver;
     union {
         rk_aiq_awb_stat_res_v200_t awb_stats_v200;
-        rk_aiq_awb_stat_res_v201_t awb_stats_v21;
-        rk_aiq_isp_awb_stats_v3x_t awb_stats_v3x;
+        rk_aiq_awb_stat_res2_v201_t awb_stats_v21;
+        rk_aiq_isp_awb_stats2_v3x_t awb_stats_v3x;
     };
     int af_hw_ver;
     union {

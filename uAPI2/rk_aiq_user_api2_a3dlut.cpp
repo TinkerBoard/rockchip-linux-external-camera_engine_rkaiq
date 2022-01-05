@@ -17,6 +17,7 @@
 
 #include "include/uAPI2/rk_aiq_user_api2_a3dlut.h"
 #include "RkAiqHandleInt.h"
+#include "RkAiqCamGroupHandleInt.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -31,11 +32,33 @@ XCamReturn  rk_aiq_user_api2_a3dlut_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, r
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_A3DLUT);
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
-    RkAiqA3dlutHandleInt* algo_handle =
-        algoHandle<RkAiqA3dlutHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_A3DLUT);
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        RkAiqCamGroupA3dlutHandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupA3dlutHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_A3DLUT);
 
-    if (algo_handle) {
-        return algo_handle->setAttrib(attr);
+        if (algo_handle) {
+            return algo_handle->setAttrib(attr);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx)
+                   continue;
+
+                RkAiqA3dlutHandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqA3dlutHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_A3DLUT);
+                if (singleCam_algo_handle)
+                    ret = singleCam_algo_handle->setAttrib(attr);
+            }
+        }
+#endif
+    } else {
+        RkAiqA3dlutHandleInt* algo_handle =
+            algoHandle<RkAiqA3dlutHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_A3DLUT);
+
+        if (algo_handle) {
+            return algo_handle->setAttrib(attr);
+        }
     }
 
     return (ret);
@@ -46,11 +69,33 @@ XCamReturn  rk_aiq_user_api2_a3dlut_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, r
     RKAIQ_API_SMART_LOCK(sys_ctx);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    RkAiqA3dlutHandleInt* algo_handle =
-        algoHandle<RkAiqA3dlutHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_A3DLUT);
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        RkAiqCamGroupA3dlutHandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupA3dlutHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_A3DLUT);
 
-    if (algo_handle) {
-        return algo_handle->getAttrib(attr);
+        if (algo_handle) {
+            return algo_handle->getAttrib(attr);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx)
+                    continue;
+
+                RkAiqA3dlutHandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqA3dlutHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_A3DLUT);
+                if (singleCam_algo_handle)
+                    ret = singleCam_algo_handle->getAttrib(attr);
+            }
+        }
+#endif
+    } else {
+        RkAiqA3dlutHandleInt* algo_handle =
+            algoHandle<RkAiqA3dlutHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_A3DLUT);
+
+        if (algo_handle) {
+            return algo_handle->getAttrib(attr);
+        }
     }
 
     return (ret);
@@ -61,11 +106,34 @@ XCamReturn
 rk_aiq_user_api2_a3dlut_Query3dlutInfo(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_lut3d_querry_info_t *lut3d_querry_info )
 {
     RKAIQ_API_SMART_LOCK(sys_ctx);
-    RkAiqA3dlutHandleInt* algo_handle =
-        algoHandle<RkAiqA3dlutHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_A3DLUT);
 
-    if (algo_handle) {
-        return algo_handle->query3dlutInfo(lut3d_querry_info);
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        RkAiqCamGroupA3dlutHandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupA3dlutHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_A3DLUT);
+
+        if (algo_handle) {
+            return algo_handle->query3dlutInfo(lut3d_querry_info);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx)
+                    continue;
+
+                RkAiqA3dlutHandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqA3dlutHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_A3DLUT);
+                if (singleCam_algo_handle)
+                    return singleCam_algo_handle->query3dlutInfo(lut3d_querry_info);
+            }
+        }
+#endif
+    } else {
+        RkAiqA3dlutHandleInt* algo_handle =
+            algoHandle<RkAiqA3dlutHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_A3DLUT);
+
+        if (algo_handle) {
+            return algo_handle->query3dlutInfo(lut3d_querry_info);
+        }
     }
 
     return XCAM_RETURN_NO_ERROR;

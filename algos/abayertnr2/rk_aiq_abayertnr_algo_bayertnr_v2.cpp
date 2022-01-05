@@ -84,95 +84,95 @@ Abayertnr_result_V2_t bayertnr_select_params_by_ISO_V2(RK_Bayertnr_Params_V2_t *
              __FUNCTION__, __LINE__,
              isoGain, isoGainHig, isoGainLow);
 
-    pSelect->bayertnrv2_tnr_enable = pParams->bayertnrv2_tnr_enable;
+    pSelect->enable = pParams->enable;
 
-    pSelect->bayertnrv2_lo_filter_strength =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_lo_filter_strength_r[isoLevelLow]
-        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_lo_filter_strength_r[isoLevelHig];
+    pSelect->lo_filter_strength =
+        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->lo_filter_strength[isoLevelLow]
+        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->lo_filter_strength[isoLevelHig];
 
-    pSelect->bayertnrv2_hi_filter_strength =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_hi_filter_strength_r[isoLevelLow]
-        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_hi_filter_strength_r[isoLevelHig];
+    pSelect->hi_filter_strength =
+        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->hi_filter_strength[isoLevelLow]
+        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->hi_filter_strength[isoLevelHig];
 
-    pSelect->bayertnrv2_filter_soft_threshold_ratio =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_filter_soft_threshold_ratio_r[isoLevelLow]
-        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_filter_soft_threshold_ratio_r[isoLevelHig];
+    pSelect->soft_threshold_ratio =
+        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->soft_threshold_ratio[isoLevelLow]
+        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->soft_threshold_ratio[isoLevelHig];
 
-
-    tmpf =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_thumbds_r[isoLevelLow]
-        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_thumbds_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_sw_thumbds = ((int)tmpf) & (~0x7);
 
     tmpf =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_lo_ena_r[isoLevelLow]
-        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_lo_ena_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_sw_lo_ena = (tmpf) > 0.5;
+        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->thumbds[isoLevelLow]
+        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->thumbds[isoLevelHig];
+    pSelect->thumbds = ((int)tmpf) & (~0x7);
 
     tmpf =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_hi_ena_r[isoLevelLow]
-        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_hi_ena_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_sw_hi_ena = (tmpf) > 0.5;
+        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->lo_enable[isoLevelLow]
+        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->lo_enable[isoLevelHig];
+    pSelect->lo_enable = (tmpf) > 0.5;
+
+    tmpf =
+        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->hi_enable[isoLevelLow]
+        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->hi_enable[isoLevelHig];
+    pSelect->hi_enable = (tmpf) > 0.5;
 
 
     for (i = 0; i < 16; i++)
     {
-        pSelect->bayertnrv2_tnr_luma_point[i] = pParams->bayertnrv2_lumapoint_r[i];
-        pSelect->bayertnrv2_tnr_sigma[i] =
-            float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_sigma_r[isoLevelLow][i]
-            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_sigma_r[isoLevelHig][i];
+        pSelect->lumapoint[i] = pParams->lumapoint[i];
+        pSelect->sigma[i] =
+            float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->sigma[isoLevelLow][i]
+            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->sigma[isoLevelHig][i];
     }
 
     for (i = 0; i < 16; i++)
     {
-        pSelect->bayertnrv2_tnr_sw_wgt_lum[i] = pParams->bayertnrv2_lumapoint2_r[i];
-        pSelect->bayertnrv2_tnr_sw_lo_sig[i] =
-            float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_lo_sigma_r[isoLevelLow][i]
-            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_lo_sigma_r[isoLevelHig][i];
-        pSelect->bayertnrv2_tnr_sw_hi_sig[i] =
-            float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_hi_sigma_r[isoLevelLow][i]
-            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_hi_sigma_r[isoLevelHig][i];
+        pSelect->lumapoint2[i] = pParams->lumapoint2[i];
+        pSelect->lo_sigma[i] =
+            float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->lo_sigma[isoLevelLow][i]
+            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->lo_sigma[isoLevelHig][i];
+        pSelect->hi_sigma[i] =
+            float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->hi_sigma[isoLevelLow][i]
+            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->hi_sigma[isoLevelHig][i];
     }
 
 
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_lo_ena_r[isoLevelLow]
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_lo_ena_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_sw_lo_ena = (tmpf) > 0.5;
+    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->lo_enable[isoLevelLow]
+           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->lo_enable[isoLevelHig];
+    pSelect->lo_enable = (tmpf) > 0.5;
 
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_hi_ena_r[isoLevelLow]
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnrv2_hi_ena_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_sw_hi_ena = (tmpf) > 0.5;
+    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->hi_enable[isoLevelLow]
+           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->hi_enable[isoLevelHig];
+    pSelect->hi_enable = (tmpf) > 0.5;
 
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnr_lo_med_en_r[isoLevelLow]
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnr_lo_med_en_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_sw_lo_med_en = (tmpf) > 0.5;
+    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->lo_med_en[isoLevelLow]
+           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->lo_med_en[isoLevelHig];
+    pSelect->lo_med_en = (tmpf) > 0.5;
 
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnr_lo_gsbay_en_r[isoLevelLow]
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnr_lo_gsbay_en_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_sw_lo_gsbay_en = (tmpf) > 0.5;
+    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->lo_gsbay_en[isoLevelLow]
+           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->lo_gsbay_en[isoLevelHig];
+    pSelect->lo_gsbay_en = (tmpf) > 0.5;
 
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnr_lo_gslum_en_r[isoLevelLow]
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnr_lo_gslum_en_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_sw_lo_gslum_en = (tmpf) > 0.5;
+    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->lo_gslum_en[isoLevelLow]
+           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->lo_gslum_en[isoLevelHig];
+    pSelect->lo_gslum_en = (tmpf) > 0.5;
 
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnr_hi_med_en_r[isoLevelLow]
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnr_hi_med_en_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_sw_hi_med_en = (tmpf) > 0.5;
+    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->hi_med_en[isoLevelLow]
+           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->hi_med_en[isoLevelHig];
+    pSelect->hi_med_en = (tmpf) > 0.5;
 
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnr_hi_gslum_en_r[isoLevelLow]
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnr_hi_gslum_en_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_sw_hi_gslum_en = (tmpf) > 0.5;
+    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->hi_gslum_en[isoLevelLow]
+           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->hi_gslum_en[isoLevelHig];
+    pSelect->hi_gslum_en = (tmpf) > 0.5;
 
-    pSelect->bayertnrv2_tnr_hi_wgt_comp = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pParams->bayertnr_hi_wgt_comp_r[isoLevelLow] : pParams->bayertnr_hi_wgt_comp_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_lo_clipwgt = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pParams->bayertnr_lo_clipwgt_r[isoLevelLow] : pParams->bayertnr_lo_clipwgt_r[isoLevelHig];
+    pSelect->hi_wgt_comp = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pParams->hi_wgt_comp[isoLevelLow] : pParams->hi_wgt_comp[isoLevelHig];
+    pSelect->clipwgt = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pParams->clipwgt[isoLevelLow] : pParams->clipwgt[isoLevelHig];
 
-    pSelect->bayertnrv2_tnr_global_pk_en = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pParams->bayertnr_global_pk_en_r[isoLevelLow] : pParams->bayertnr_global_pk_en_r[isoLevelHig];
-    pSelect->bayertnrv2_tnr_global_pksq = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pParams->bayertnr_global_pksq_r[isoLevelLow] : pParams->bayertnr_global_pksq_r[isoLevelHig];
+    pSelect->global_pk_en = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pParams->global_pk_en[isoLevelLow] : pParams->global_pk_en[isoLevelHig];
+    pSelect->global_pksq = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pParams->global_pksq[isoLevelLow] : pParams->global_pksq[isoLevelHig];
 
 
-    pSelect->bayertnrv2_hidif_th  =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayertnr_hidif_th[isoLevelLow]
-        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayertnr_hidif_th[isoLevelHig];
+    pSelect->hidif_th  =
+        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->hidif_th[isoLevelLow]
+        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->hidif_th[isoLevelHig];
 
 
     return res;
@@ -244,34 +244,34 @@ Abayertnr_result_V2_t bayertnr_fix_transfer_V2(RK_Bayertnr_Params_V2_Select_t* p
     pFix->bay3d_soft_mode = 0;
     pFix->bay3d_bwsaving_en = 0;
     pFix->bay3d_loswitch_protect = 0;
-    pFix->bay3d_glbpk_en = pSelect->bayertnrv2_tnr_global_pk_en;
-    pFix->bay3d_logaus3_bypass_en = !pSelect->bayertnrv2_tnr_sw_lo_gslum_en;
-    pFix->bay3d_logaus5_bypass_en = !pSelect->bayertnrv2_tnr_sw_lo_gsbay_en;
-    pFix->bay3d_lomed_bypass_en = !pSelect->bayertnrv2_tnr_sw_lo_med_en;
-    pFix->bay3d_hichnsplit_en = pSelect->bayertnrv2_tnr_sw_lo_ena == 0;
-    pFix->bay3d_hiabs_pssel = pSelect->bayertnrv2_tnr_sw_lo_ena == 0;
-    pFix->bay3d_higaus_bypass_en = !pSelect->bayertnrv2_tnr_sw_hi_gslum_en;
-    pFix->bay3d_himed_bypass_en = !pSelect->bayertnrv2_tnr_sw_hi_med_en;
-    pFix->bay3d_lobypass_en = !pSelect->bayertnrv2_tnr_sw_lo_ena;
-    pFix->bay3d_hibypass_en = !pSelect->bayertnrv2_tnr_sw_hi_ena;
-    pFix->bay3d_bypass_en = !pSelect->bayertnrv2_tnr_enable;;
-    pFix->bay3d_en_i = pSelect->bayertnrv2_tnr_enable;
+    pFix->bay3d_glbpk_en = pSelect->global_pk_en;
+    pFix->bay3d_logaus3_bypass_en = !pSelect->lo_gslum_en;
+    pFix->bay3d_logaus5_bypass_en = !pSelect->lo_gsbay_en;
+    pFix->bay3d_lomed_bypass_en = !pSelect->lo_med_en;
+    pFix->bay3d_hichnsplit_en = pSelect->lo_enable == 0;
+    pFix->bay3d_hiabs_pssel = pSelect->lo_enable == 0;
+    pFix->bay3d_higaus_bypass_en = !pSelect->hi_gslum_en;
+    pFix->bay3d_himed_bypass_en = !pSelect->hi_med_en;
+    pFix->bay3d_lobypass_en = !pSelect->lo_enable;
+    pFix->bay3d_hibypass_en = !pSelect->hi_enable;
+    pFix->bay3d_bypass_en = !pSelect->enable;;
+    pFix->bay3d_en_i = pSelect->enable;
 
     // BAY3D_BAY3D_KALRATIO 0x2c04
 
-    tmp = (int)(pSelect->bayertnrv2_filter_soft_threshold_ratio * (1 << 10) );
+    tmp = (int)(pSelect->soft_threshold_ratio * (1 << 10) );
     pFix->bay3d_softwgt = CLIP(tmp, 0, 0x3ff);
-    tmp = (int)pSelect->bayertnrv2_hidif_th;
+    tmp = (int)pSelect->hidif_th;
     pFix->bay3d_hidif_th = CLIP(tmp, 0, 0xffff);
 
     // BAY3D_BAY3D_GLBPK2 0x2c08
-    tmp = pSelect->bayertnrv2_tnr_global_pksq;
+    tmp = pSelect->global_pksq;
     pFix->bay3d_glbpk2 = CLIP(tmp, 0, 0xfffffff);
 
     // BAY3D_BAY3D_WGTLMT 0x2c10
-    tmp = (int)(((float)1 - pSelect->bayertnrv2_tnr_lo_clipwgt) * (1 << FIXTNRWGT));
+    tmp = (int)(((float)1 - pSelect->clipwgt) * (1 << FIXTNRWGT));
     pFix->bay3d_wgtlmt = CLIP(tmp, 0, 0x3ff);
-    tmp = pSelect->bayertnrv2_tnr_sw_hi_ena ? (int)(pSelect->bayertnrv2_tnr_hi_wgt_comp * (1 << 10)) : 0;
+    tmp = pSelect->hi_enable ? (int)(pSelect->hi_wgt_comp * (1 << 10)) : 0;
     pFix->bay3d_wgtratio = CLIP(tmp, 0, 0x3ff);
 
 
@@ -279,23 +279,23 @@ Abayertnr_result_V2_t bayertnr_fix_transfer_V2(RK_Bayertnr_Params_V2_Select_t* p
         // BAY3D_BAY3D_SIG_X0  0x2c14 - 0x2c30
         //no need transfer to log domain
         //tmp = bayertnr_get_trans_V2(pSelect->bayertnrv2_tnr_luma_point[i]);
-        tmp = pSelect->bayertnrv2_tnr_luma_point[i];
+        tmp = pSelect->lumapoint[i];
         pFix->bay3d_sig0_x[i] = CLIP(tmp, 0, 0xffff);
 
         // BAY3D_BAY3D_SIG0_Y0 0x2c34 - 0x2c50
-        tmp = pSelect->bayertnrv2_tnr_sigma[i];
+        tmp = pSelect->sigma[i];
         pFix->bay3d_sig0_y[i] = CLIP(tmp, 0, 0x3fff);
 
         // BAY3D_BAY3D_SIG_X0  0x2c54 - 0x2c70
-        tmp = pSelect->bayertnrv2_tnr_sw_wgt_lum[i];
+        tmp = pSelect->lumapoint2[i];
         pFix->bay3d_sig1_x[i] = CLIP(tmp, 0, 0xffff);
 
         // BAY3D_BAY3D_SIG1_Y0 0x2c74 - 0x2c90
-        tmp = pSelect->bayertnrv2_tnr_sw_hi_sig[i] * pSelect->bayertnrv2_hi_filter_strength;
+        tmp = pSelect->hi_sigma[i] * pSelect->hi_filter_strength * fStrength;
         pFix->bay3d_sig1_y[i] = CLIP(tmp, 0, (1 << 14) - 1);
 
         // BAY3D_BAY3D_SIG2_Y0 0x2c94 - 0x2cb0
-        tmp = pSelect->bayertnrv2_tnr_sw_lo_sig[i] * pSelect->bayertnrv2_lo_filter_strength;
+        tmp = pSelect->lo_sigma[i] * pSelect->lo_filter_strength * fStrength;
         pFix->bay3d_sig2_y[i] = CLIP(tmp, 0, (1 << 10) - 1);
     }
 
@@ -454,39 +454,40 @@ Abayertnr_result_V2_t bayertnr_init_params_json_V2(RK_Bayertnr_Params_V2_t *pPar
         return ABAYERTNRV2_RET_NULL_POINTER;
     }
 
+    pParams->enable = pCalibdb->TuningPara.enable;
     for(int i = 0; i < pCalibdb->CalibPara.Setting[calib_idx].Calib_ISO_len && i < RK_BAYERNR_V2_MAX_ISO_NUM; i++) {
         pCalibIso = &pCalibdb->CalibPara.Setting[calib_idx].Calib_ISO[i];
         pParams->iso[i] = pCalibIso->iso;
         for(int k = 0; k < 16; k++) {
-            pParams->bayertnrv2_lumapoint_r[k] = pCalibIso->lumapoint[k];
-            pParams->bayertnrv2_sigma_r[i][k] = pCalibIso->sigma[k];
-            pParams->bayertnrv2_lumapoint2_r[k] = pCalibIso->lumapoint2[k];
-            pParams->bayertnrv2_lo_sigma_r[i][k] = pCalibIso->lo_sigma[k];
-            pParams->bayertnrv2_hi_sigma_r[i][k] = pCalibIso->hi_sigma[k];
+            pParams->lumapoint[k] = pCalibIso->lumapoint[k];
+            pParams->sigma[i][k] = pCalibIso->sigma[k];
+            pParams->lumapoint2[k] = pCalibIso->lumapoint2[k];
+            pParams->lo_sigma[i][k] = pCalibIso->lo_sigma[k];
+            pParams->hi_sigma[i][k] = pCalibIso->hi_sigma[k];
         }
     }
 
     for(int i = 0; i < pCalibdb->TuningPara.Setting[tuning_idx].Tuning_ISO_len && i < RK_BAYERNR_V2_MAX_ISO_NUM; i++) {
         pTuningIso = &pCalibdb->TuningPara.Setting[tuning_idx].Tuning_ISO[i];
         pParams->iso[i] = pTuningIso->iso;
-        pParams->bayertnrv2_thumbds_r[i] = pTuningIso->thumbds;
-        pParams->bayertnrv2_lo_ena_r[i] = pTuningIso->lo_enable;
-        pParams->bayertnrv2_hi_ena_r[i] = pTuningIso->hi_enable;
-        pParams->bayertnrv2_lo_filter_strength_r[i] = pTuningIso->lo_filter_strength;
-        pParams->bayertnrv2_hi_filter_strength_r[i] = pTuningIso->hi_filter_strength;
-        pParams->bayertnrv2_filter_soft_threshold_ratio_r[i] = pTuningIso->soft_threshold_ratio;
+        pParams->thumbds[i] = pTuningIso->thumbds;
+        pParams->lo_enable[i] = pTuningIso->lo_enable;
+        pParams->hi_enable[i] = pTuningIso->hi_enable;
+        pParams->lo_filter_strength[i] = pTuningIso->lo_filter_strength;
+        pParams->hi_filter_strength[i] = pTuningIso->hi_filter_strength;
+        pParams->soft_threshold_ratio[i] = pTuningIso->soft_threshold_ratio;
 
-        pParams->bayertnr_hi_wgt_comp_r[i] = pTuningIso->hi_wgt_comp;
-        pParams->bayertnr_lo_clipwgt_r[i] = pTuningIso->clipwgt;
-        pParams->bayertnr_lo_med_en_r[i] = pTuningIso->lo_med_en;
-        pParams->bayertnr_lo_gsbay_en_r[i] = pTuningIso->lo_gsbay_en;
-        pParams->bayertnr_lo_gslum_en_r[i] = pTuningIso->lo_gslum_en;
-        pParams->bayertnr_hi_med_en_r[i] = pTuningIso->hi_med_en;
-        pParams->bayertnr_hi_gslum_en_r[i] = pTuningIso->hi_gslum_en;
-        pParams->bayertnr_global_pk_en_r[i] = pTuningIso->global_pk_en;
-        pParams->bayertnr_global_pksq_r[i] = pTuningIso->global_pksq;
+        pParams->hi_wgt_comp[i] = pTuningIso->hi_wgt_comp;
+        pParams->clipwgt[i] = pTuningIso->clipwgt;
+        pParams->lo_med_en[i] = pTuningIso->lo_med_en;
+        pParams->lo_gsbay_en[i] = pTuningIso->lo_gsbay_en;
+        pParams->lo_gslum_en[i] = pTuningIso->lo_gslum_en;
+        pParams->hi_med_en[i] = pTuningIso->hi_med_en;
+        pParams->hi_gslum_en[i] = pTuningIso->hi_gslum_en;
+        pParams->global_pk_en[i] = pTuningIso->global_pk_en;
+        pParams->global_pksq[i] = pTuningIso->global_pksq;
 
-        pParams->bayertnr_hidif_th[i] = pTuningIso->hidif_th;
+        pParams->hidif_th[i] = pTuningIso->hidif_th;
 
     }
 
@@ -515,7 +516,7 @@ Abayertnr_result_V2_t bayertnr_config_setting_param_json_V2(RK_Bayertnr_Params_V
     }
 
     res = bayertnr_init_params_json_V2(pParams, pCalibdbV2, calib_idx, tuning_idx);
-    pParams->bayertnrv2_tnr_enable = pCalibdbV2->TuningPara.enable;
+
     return res;
 
 }

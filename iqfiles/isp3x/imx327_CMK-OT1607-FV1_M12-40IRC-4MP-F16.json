@@ -154,6 +154,8 @@
 									}
 								},
 								"AecSpeed":	{
+									"SmoothEn":	1,
+									"DyDampEn":	1,
 									"DampOver":	0.15,
 									"DampUnder":	0.45,
 									"DampDark2Bright":	0.15,
@@ -960,6 +962,21 @@
 									"Gb_Channel":	[238.875, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247],
 									"Gb_Channel_len":	13,
 									"B_Channel":	[238.875, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247, 247],
+									"B_Channel_len":	13
+								}
+							},
+							"Blc1TuningPara":	{
+								"enable":	0,
+								"BLC_Data":	{
+									"ISO":	[50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 51200, 102400, 204800],
+									"ISO_len":	13,
+									"R_Channel":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"R_Channel_len":	13,
+									"Gr_Channel":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"Gr_Channel_len":	13,
+									"Gb_Channel":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"Gb_Channel_len":	13,
+									"B_Channel":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 									"B_Channel_len":	13
 								}
 							}
@@ -2375,7 +2392,40 @@
 									"distanceDot":	[0.2, 0.24, 0.34, 0.4, 0.66, 1, 3]
 								},
 								"pdaf":	{
-									"enable":	0
+									"enable":	0,
+									"pdVsCdDebug":	0,
+									"pdDataBit":	10,
+									"pdBlkLevel":	64,
+									"pdSearchRadius":	3,
+									"pdMirrorInCalib":	1,
+									"pdWidth":	508,
+									"pdHeight":	760,
+									"pdIsoPara": 
+									[
+										{
+											"iso": 50,
+											"pdNoiseFactor":	0.15,
+											"pdConfdRatio1":	1,
+											"pdConfdRatio2":	1,
+											"pdConfdThresh":	0.4,
+											"defocusPdThresh":	18,
+											"stablePdRatio":	0.125,
+											"stablePdOffset":	8,
+											"stableCntRatio":	1.5,
+											"noconfCntThresh":	4,
+											"fineSearchTbl":	[{
+												"confidence":	512,
+												"range":	4,
+												"stepPos":	1
+											}, {
+												"confidence":	256,
+												"range":	8,
+												"stepPos":	2
+											}],
+											"fineSearchTbl_len":	2
+										}
+									],
+									"pdIsoPara_len":	1
 								},
 								"vcmcfg":	{
 									"start_current":	-1,

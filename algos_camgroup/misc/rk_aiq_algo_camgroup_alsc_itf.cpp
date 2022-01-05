@@ -18,7 +18,6 @@
  */
 
 #include "rk_aiq_algo_camgroup_types.h"
-#include "rk_aiq_algo_types_int.h"
 #include "misc/rk_aiq_algo_camgroup_misc_itf.h"
 #include "alsc/rk_aiq_algo_alsc_itf.h"
 #include "alsc/rk_aiq_alsc_algo.h"
@@ -96,8 +95,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     rk_aiq_singlecam_3a_result_t* scam_3a_res = procParaGroup->camgroupParmasArray[0];
     XCamVideoBuffer* awb_proc_res = scam_3a_res->awb._awbProcRes;
     if (awb_proc_res) {
-        RkAiqAlgoProcResAwbInt* awb_res_int = (RkAiqAlgoProcResAwbInt*)awb_proc_res->map(awb_proc_res);
-        RkAiqAlgoProcResAwb* awb_res = &awb_res_int->awb_proc_res_com;
+        RkAiqAlgoProcResAwb* awb_res = (RkAiqAlgoProcResAwb*)awb_proc_res->map(awb_proc_res);
         if(awb_res) {
             if(awb_res->awb_gain_algo.grgain < DIVMIN ||
                     awb_res->awb_gain_algo.gbgain < DIVMIN ) {
@@ -109,9 +107,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                 hAlsc->alscSwInfo.awbGain[1] =
                     awb_res->awb_gain_algo.bgain / awb_res->awb_gain_algo.gbgain;
             }
-            hAlsc->alscSwInfo.awbIIRDampCoef = awb_res_int->awb_smooth_factor;
-            hAlsc->alscSwInfo.varianceLuma = awb_res_int->varianceLuma;
-            hAlsc->alscSwInfo.awbConverged = awb_res_int->awbConverged;
+            hAlsc->alscSwInfo.awbIIRDampCoef = awb_res->awb_smooth_factor;
+            hAlsc->alscSwInfo.varianceLuma = awb_res->varianceLuma;
+            hAlsc->alscSwInfo.awbConverged = awb_res->awbConverged;
         } else {
             LOGW("fail to get awb gain form AWB module,use default value ");
         }

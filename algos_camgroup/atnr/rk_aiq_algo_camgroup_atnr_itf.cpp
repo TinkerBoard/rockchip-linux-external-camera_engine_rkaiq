@@ -20,7 +20,6 @@
 #include "rk_aiq_algo_camgroup_atnr_itf.h"
 #include "rk_aiq_algo_camgroup_types.h"
 #include "rk_aiq_types_camgroup_atnr_prvt.h"
-#include "rk_aiq_algo_types_int.h"
 #include "abayertnr2/rk_aiq_abayertnr_algo_itf_v2.h"
 #include "abayertnr2/rk_aiq_abayertnr_algo_v2.h"
 #include "arawnr2/rk_aiq_abayernr_algo_itf_v2.h"

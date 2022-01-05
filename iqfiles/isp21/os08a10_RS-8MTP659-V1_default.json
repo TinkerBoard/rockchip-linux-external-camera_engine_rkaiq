@@ -154,6 +154,8 @@
 									}
 								},
 								"AecSpeed":	{
+									"SmoothEn":	1,
+									"DyDampEn":	1,
 									"DampOver":	0.35,
 									"DampUnder":	0.45,
 									"DampDark2Bright":	0.15,

@@ -22,6 +22,8 @@
 
 #include "cac_adaptor.h"
 #include "rk_aiq_types_acac_algo_prvt.h"
+#include "rk_aiq_algo_types.h"
+#include "RkAiqCalibDbV2Helper.h"
 
 using namespace RkCam;
 using namespace XCam;
@@ -42,11 +44,10 @@ static XCamReturn create_context(RkAiqAlgoContext** context, const AlgoCtxInstan
         return XCAM_RETURN_ERROR_MEM;
     }
 
-    const AlgoCtxInstanceCfgInt* cfg_int = (const AlgoCtxInstanceCfgInt*)cfg;
     CalibDbV2_Cac_t* calib_cac =
-        (CalibDbV2_Cac_t*)(CALIBDBV2_GET_MODULE_PTR(cfg_int->calibv2, cac_calib));
+        (CalibDbV2_Cac_t*)(CALIBDBV2_GET_MODULE_PTR(cfg->calibv2, cac_calib));
     XCAM_ASSERT(calib_cac != nullptr);
-    adaptor->Config(cfg_int, calib_cac);
+    adaptor->Config(cfg, calib_cac);
 
     ctx->handle = static_cast<void*>(adaptor);
     *context    = ctx;
@@ -68,7 +69,7 @@ static XCamReturn destroy_context(RkAiqAlgoContext* context) {
 
 static XCamReturn prepare(RkAiqAlgoCom* params) {
     CacAlgoAdaptor* adaptor        = static_cast<CacAlgoAdaptor*>(params->ctx->handle);
-    RkAiqAlgoConfigAcacInt* config = (RkAiqAlgoConfigAcacInt*)params;
+    RkAiqAlgoConfigAcac* config = (RkAiqAlgoConfigAcac*)params;
 
     return adaptor->Prepare(config);
 }
@@ -78,8 +79,8 @@ static XCamReturn pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* out
 }
 
 static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
-    RkAiqAlgoProcAcacInt* input     = (RkAiqAlgoProcAcacInt*)(inparams);
-    RkAiqAlgoProcResAcacInt* output = (RkAiqAlgoProcResAcacInt*)outparams;
+    RkAiqAlgoProcAcac* input     = (RkAiqAlgoProcAcac*)(inparams);
+    RkAiqAlgoProcResAcac* output = (RkAiqAlgoProcResAcac*)outparams;
     CacAlgoAdaptor* adaptor         = static_cast<CacAlgoAdaptor*>(inparams->ctx->handle);
 
     adaptor->OnFrameEvent(input, output);

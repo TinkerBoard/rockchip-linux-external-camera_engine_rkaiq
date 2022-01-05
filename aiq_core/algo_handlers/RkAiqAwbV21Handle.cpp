@@ -20,6 +20,8 @@
 
 namespace RkCam {
 
+DEFINE_HANDLE_REGISTER_TYPE(RkAiqAwbV21HandleInt);
+
 XCamReturn RkAiqAwbV21HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
@@ -28,51 +30,51 @@ XCamReturn RkAiqAwbV21HandleInt::updateConfig(bool needSync) {
     // if something changed
     if (updateAtt) {
         mCurAtt   = mNewAtt;
-        updateAtt = false;
         rk_aiq_uapi_awb_SetAttrib(mAlgoCtx, mCurAtt, false);
+        updateAtt = false;
         sendSignal();
     }
     if (updateWbV21Attr) {
         mCurWbV21Attr   = mNewWbV21Attr;
-        updateWbV21Attr = false;
         rk_aiq_uapiV2_awbV21_SetAttrib(mAlgoCtx, mCurWbV21Attr, false);
-        sendSignal();
+        updateWbV21Attr = false;
+        sendSignal(mCurWbV21Attr.sync.sync_mode);
     }
     if (updateWbOpModeAttr) {
         mCurWbOpModeAttr   = mNewWbOpModeAttr;
+        rk_aiq_uapiV2_awb_SetMwbMode(mAlgoCtx, mCurWbOpModeAttr.mode, false);
         updateWbOpModeAttr = false;
-        rk_aiq_uapiV2_awb_SetMwbMode(mAlgoCtx, mCurWbOpModeAttr, false);
-        sendSignal();
+        sendSignal(mCurWbOpModeAttr.sync.sync_mode);
     }
     if (updateWbMwbAttr) {
         mCurWbMwbAttr   = mNewWbMwbAttr;
-        updateWbMwbAttr = false;
         rk_aiq_uapiV2_awb_SetMwbAttrib(mAlgoCtx, mCurWbMwbAttr, false);
-        sendSignal();
+        updateWbMwbAttr = false;
+        sendSignal(mCurWbMwbAttr.sync.sync_mode);
     }
     if (updateWbAwbAttr) {
         mCurWbAwbAttr   = mNewWbAwbAttr;
-        updateWbAwbAttr = false;
         rk_aiq_uapiV2_awbV20_SetAwbAttrib(mAlgoCtx, mCurWbAwbAttr, false);
+        updateWbAwbAttr = false;
         sendSignal();
     }
     if (updateWbAwbWbGainAdjustAttr) {
         mCurWbAwbWbGainAdjustAttr   = mNewWbAwbWbGainAdjustAttr;
-        updateWbAwbWbGainAdjustAttr = false;
         rk_aiq_uapiV2_awb_SetAwbGainAdjust(mAlgoCtx, mCurWbAwbWbGainAdjustAttr, false);
-        sendSignal();
+        updateWbAwbWbGainAdjustAttr = false;
+        sendSignal(mCurWbAwbWbGainAdjustAttr.sync.sync_mode);
     }
     if (updateWbAwbWbGainOffsetAttr) {
         mCurWbAwbWbGainOffsetAttr   = mNewWbAwbWbGainOffsetAttr;
+        rk_aiq_uapiV2_awb_SetAwbGainOffset(mAlgoCtx, mCurWbAwbWbGainOffsetAttr.gainOffset, false);
         updateWbAwbWbGainOffsetAttr = false;
-        rk_aiq_uapiV2_awb_SetAwbGainOffset(mAlgoCtx, mCurWbAwbWbGainOffsetAttr, false);
-        sendSignal();
+        sendSignal(mCurWbAwbWbGainOffsetAttr.sync.sync_mode);
     }
     if (updateWbAwbMultiWindowAttr) {
         mCurWbAwbMultiWindowAttr   = mNewWbAwbMultiWindowAttr;
+        rk_aiq_uapiV2_awb_SetAwbMultiwindow(mAlgoCtx, mCurWbAwbMultiWindowAttr.multiWindw, false);
         updateWbAwbMultiWindowAttr = false;
-        rk_aiq_uapiV2_awb_SetAwbMultiwindow(mAlgoCtx, mCurWbAwbMultiWindowAttr, false);
-        sendSignal();
+        sendSignal(mCurWbAwbMultiWindowAttr.sync.sync_mode);
     }
     if (needSync) mCfgMutex.unlock();
 
@@ -93,9 +95,9 @@ XCamReturn RkAiqAwbV21HandleInt::setWbV21Attrib(rk_aiq_uapiV2_wbV21_attrib_t att
 
     // if something changed
     if (0 != memcmp(&mCurWbV21Attr, &att, sizeof(rk_aiq_uapiV2_wbV21_attrib_t))) {
-        mNewWbV21Attr   = att;
+        mNewWbV21Attr = att;
         updateWbV21Attr = true;
-        waitSignal();
+        waitSignal(att.sync.sync_mode);
     }
 
     mCfgMutex.unlock();
@@ -109,7 +111,21 @@ XCamReturn RkAiqAwbV21HandleInt::getWbV21Attrib(rk_aiq_uapiV2_wbV21_attrib_t* at
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    rk_aiq_uapiV2_awbV21_GetAttrib(mAlgoCtx, att);
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapiV2_awbV21_GetAttrib(mAlgoCtx, att);
+        att->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        if (updateWbV21Attr) {
+            memcpy(att, &mNewWbV21Attr, sizeof(mNewWbV21Attr));
+            att->sync.done = false;
+        } else {
+            rk_aiq_uapiV2_awbV21_GetAttrib(mAlgoCtx, att);
+            att->sync.sync_mode = mNewWbV21Attr.sync.sync_mode;
+            att->sync.done = true;
+        }
+    }
 
     EXIT_ANALYZER_FUNCTION();
     return ret;

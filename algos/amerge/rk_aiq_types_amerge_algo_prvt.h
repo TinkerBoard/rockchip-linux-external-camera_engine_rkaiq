@@ -149,7 +149,7 @@ typedef struct MergePrevCtrlData_s
     int MergeMode;
     float EnvLv;
     float MoveCoef;
-    merge_OpMode_t ApiMode;
+    merge_OpModeV21_t ApiMode;
 } MergePrevCtrlData_t;
 
 typedef struct AmergePrevData_s
@@ -288,7 +288,6 @@ typedef struct AmergeContext_s
     MergeCurrAeResult_t AeResult;
     MergeCurrData_t CurrData;
     SensorInfo_t SensorInfo;
-    AmergeVersion_t HWversion;
     bool SceneChange;
     int frameCnt;
     FrameNumber_t FrameNumber;

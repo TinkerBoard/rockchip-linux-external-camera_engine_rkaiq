@@ -4,189 +4,6 @@
 
 RKAIQ_BEGIN_DECLARE
 
-Abayer2dnr_result_V2_t bayer2dnr_get_mode_by_name_V2(struct list_head *pCalibdbList, char *name, CalibDb_Bayernr_V2_t** ppProfile)
-{
-    int i = 0;
-    Abayer2dnr_result_V2_t res = ABAYER2DNR_RET_SUCCESS;
-
-    if(pCalibdbList == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-    if(name == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-    if(ppProfile == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-#if 1
-    *ppProfile = NULL;
-    struct list_head* p;
-    p = pCalibdbList->next;
-    while (p != pCalibdbList)
-    {
-        CalibDb_Bayernr_V2_t* pProfile = container_of(p, CalibDb_Bayernr_V2_t, listItem);
-        LOGE_ANR("%s:%d %s  %p \n",
-                 __FUNCTION__, __LINE__, pProfile->modeName, p);
-        if (!strncmp(pProfile->modeName, name, sizeof(pProfile->modeName))) {
-            *ppProfile = pProfile;
-            return res;
-        }
-        p = p->next;
-    }
-
-    CalibDb_Bayernr_V2_t* pProfile = container_of(pCalibdbList->next, CalibDb_Bayernr_V2_t, listItem);
-    *ppProfile = pProfile;
-#else
-
-
-#endif
-
-    return res;
-
-}
-
-Abayer2dnr_result_V2_t bayer2dnr_get_setting_by_name_V2(struct list_head *pSettingList, char *name, Calibdb_Bayernr_2Dparams_V2_t** ppSetting)
-{
-    int i = 0;
-    Abayer2dnr_result_V2_t res = ABAYER2DNR_RET_SUCCESS;
-
-    if(pSettingList == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-    if(name == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-    if(ppSetting == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-    *ppSetting = NULL;
-
-    struct list_head* p;
-    p = pSettingList->next;
-    while (p != pSettingList)
-    {
-        Calibdb_Bayernr_2Dparams_V2_t* pSetting = container_of(p, Calibdb_Bayernr_2Dparams_V2_t, listItem);
-        LOGD_ANR("%s:%d:  %s  %p ",
-                 __FUNCTION__, __LINE__, pSetting->snr_mode, p);
-        if (!strncmp(pSetting->snr_mode, name, sizeof(pSetting->snr_mode))) {
-            *ppSetting = pSetting;
-            return res;
-        }
-        p = p->next;
-    }
-
-    Calibdb_Bayernr_2Dparams_V2_t* pSetting = container_of(pSettingList->next, Calibdb_Bayernr_2Dparams_V2_t, listItem);
-    *ppSetting = pSetting;
-    return res;
-
-}
-
-
-
-Abayer2dnr_result_V2_t bayer2dnr_config_setting_param_V2(RK_Bayer2dnr_Params_V2_t *pParams, struct list_head *pCalibdbList, char* param_mode, char * snr_name)
-{
-    Abayer2dnr_result_V2_t res = ABAYER2DNR_RET_SUCCESS;
-    CalibDb_Bayernr_V2_t *pProfile;
-    Calibdb_Bayernr_2Dparams_V2_t* p2DParams;
-
-    LOGI_ANR("%s(%d): enter\n", __FUNCTION__, __LINE__);
-    if(pParams == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-    if(pCalibdbList == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-    if(param_mode == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-    if(snr_name == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-    res = bayer2dnr_get_mode_by_name_V2(pCalibdbList, param_mode, &pProfile);
-    if(res != ABAYER2DNR_RET_SUCCESS) {
-        LOGW_ANR("%s(%d): error!!!  can't find mode name in iq files, use 0 instead\n", __FUNCTION__, __LINE__);
-    }
-
-    res = bayer2dnr_get_setting_by_name_V2(&pProfile->st2DParams.listHead, snr_name, &p2DParams);
-    if(res != ABAYER2DNR_RET_SUCCESS) {
-        LOGW_ANR("%s(%d): error!!!  can't find setting in iq files, use 0 instead\n", __FUNCTION__, __LINE__);
-    }
-
-    res = bayer2dnr_init_params_V2(pParams, p2DParams);
-    pParams->bayernrv2_2dnr_enable = pProfile->st2DParams.bayernrv2_2dnr_enable;
-
-    LOGI_ANR("%s(%d): exit\n", __FUNCTION__, __LINE__);
-    return res;
-
-}
-
-
-Abayer2dnr_result_V2_t bayer2dnr_init_params_V2(RK_Bayer2dnr_Params_V2_t *pParams, Calibdb_Bayernr_2Dparams_V2_t* pCalibdbParams)
-{
-    Abayer2dnr_result_V2_t res = ABAYER2DNR_RET_SUCCESS;
-    int i = 0;
-    int j = 0;
-
-    LOGI_ANR("%s:(%d) oyyf bayerner xml config start\n", __FUNCTION__, __LINE__);
-    if(pParams == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-    if(pCalibdbParams == NULL) {
-        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ABAYER2DNR_RET_NULL_POINTER;
-    }
-
-    for(int i = 0; i < RK_BAYER2DNR_V2_MAX_ISO_NUM; i++) {
-        pParams->iso[i] = pCalibdbParams->iso[i];
-        pParams->bayernrv2_filter_strength_r[i] = pCalibdbParams->bayernrv2_filter_strength_r[i];
-        pParams->bayernrv2_filter_edgesofts_r[i] = pCalibdbParams->bayernrv2_filter_edgesofts_r[i];
-        pParams->bayernrv2_filter_out_wgt_r[i] = pCalibdbParams->bayernrv2_filter_out_wgt_r[i];
-        pParams->bayernrv2_filter_soft_threshold_ratio_r[i] = pCalibdbParams->bayernrv2_filter_soft_threshold_ratio_r[i];
-        pParams->bayernrv2_gauss_guide_r[i] = pCalibdbParams->bayernrv2_gauss_guide_r[i];
-
-        for(int k = 0; k < 8; k++) {
-            pParams->bayernrv2_edge_filter_wgt_r[i][k] = pCalibdbParams->bayernrv2_edge_filter_wgt_r[i][k];
-        }
-        for(int k = 0; k < 16; k++) {
-            pParams->bayernrv2_filter_sigma_r[i][k] = pCalibdbParams->bayernrv2_filter_sigma_r[i][k];
-        }
-    }
-
-    for(int i = 0; i < 8; i++) {
-        pParams->bayernrv2_edge_filter_lumapoint_r[i] = pCalibdbParams->bayernrv2_edge_filter_lumapoint_r[i];
-    }
-
-    for(int i = 0; i < 16; i++) {
-        pParams->bayernrv2_filter_lumapoint_r[i] = pCalibdbParams->bayernrv2_filter_lumapoint_r[i];
-    }
-
-    LOGI_ANR("%s:(%d) oyyf bayerner xml config end!   \n", __FUNCTION__, __LINE__);
-
-    return res;
-}
-
 
 Abayer2dnr_result_V2_t bayer2dnr_select_params_by_ISO_V2(RK_Bayer2dnr_Params_V2_t *pParams, RK_Bayer2dnr_Params_V2_Select_t *pSelect, Abayer2dnr_ExpInfo_V2_t *pExpInfo)
 {
@@ -250,39 +67,32 @@ Abayer2dnr_result_V2_t bayer2dnr_select_params_by_ISO_V2(RK_Bayer2dnr_Params_V2_
              __FUNCTION__, __LINE__,
              isoGain, isoGainHig, isoGainLow);
 
-    pSelect->bayernrv2_2dnr_enable = pParams->bayernrv2_2dnr_enable;
+    pSelect->enable = pParams->enable;
 
-    for (i = 0; i < 8; i++)
-    {
-        pSelect->bayernrv2_edge_filter_lumapoint[i] = pParams->bayernrv2_edge_filter_lumapoint_r[i];
-        pSelect->bayernrv2_edge_filter_wgt[i] = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_edge_filter_wgt_r[isoLevelLow][i]
-                                                + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_edge_filter_wgt_r[isoLevelHig][i];
-    }
+    pSelect->filter_strength = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->filter_strength[isoLevelLow]
+                               + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->filter_strength[isoLevelHig];
 
-    pSelect->bayernrv2_filter_strength = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_filter_strength_r[isoLevelLow]
-                                         + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_filter_strength_r[isoLevelHig];
-
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_gauss_guide_r[isoLevelLow]
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_gauss_guide_r[isoLevelHig];
-    pSelect->bayernrv2_gauss_guide = tmpf != 0;
+    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->gauss_guide[isoLevelLow]
+           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->gauss_guide[isoLevelHig];
+    pSelect->gauss_guide = tmpf != 0;
 
     for (i = 0; i < 16; i++)
     {
-        pSelect->bayernrv2_filter_lumapoint[i] = pParams->bayernrv2_filter_lumapoint_r[i];
-        pSelect->bayernrv2_filter_sigma[i] = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_filter_sigma_r[isoLevelLow][i]
-                                             + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_filter_sigma_r[isoLevelHig][i];
+        pSelect->lumapoint[i] = pParams->lumapoint[i];
+        pSelect->sigma[i] = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->sigma[isoLevelLow][i]
+                            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->sigma[isoLevelHig][i];
     }
 
-    pSelect->bayernrv2_filter_edgesofts = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_filter_edgesofts_r[isoLevelLow]
-                                          + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_filter_edgesofts_r[isoLevelHig];
-    pSelect->bayernrv2_filter_soft_threshold_ratio = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_filter_soft_threshold_ratio_r[isoLevelLow]
-            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_filter_soft_threshold_ratio_r[isoLevelHig];
-    pSelect->bayernrv2_filter_out_wgt = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_filter_out_wgt_r[isoLevelLow]
-                                        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->bayernrv2_filter_out_wgt_r[isoLevelHig];
-
-
-    pSelect->bayernrv2_edge_filter_en = 0;
-
+    pSelect->edgesofts = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->edgesofts[isoLevelLow]
+                         + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->edgesofts[isoLevelHig];
+    pSelect->ratio = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->ratio[isoLevelLow]
+                     + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->ratio[isoLevelHig];
+    pSelect->weight = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->weight[isoLevelLow]
+                      + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->weight[isoLevelHig];
+    pSelect->pix_diff = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->pix_diff[isoLevelLow]
+                        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->pix_diff[isoLevelHig];
+    pSelect->diff_thld = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->diff_thld[isoLevelLow]
+                         + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->diff_thld[isoLevelHig];
     return res;
 }
 
@@ -398,9 +208,9 @@ Abayer2dnr_result_V2_t bayer2dnr_fix_transfer_V2(RK_Bayer2dnr_Params_V2_Select_t
 
     //ISP_BAYNR_3A00_CTRL
     pFix->baynr_lg2_mode = 0x00;
-    pFix->baynr_gauss_en = pSelect->bayernrv2_gauss_guide;
+    pFix->baynr_gauss_en = pSelect->gauss_guide;
     pFix->baynr_log_bypass = 0;
-    pFix->baynr_en = pSelect->bayernrv2_2dnr_enable;
+    pFix->baynr_en = pSelect->enable;
 
     //pFix->bayernr_gray_mode = 0;
 
@@ -412,27 +222,27 @@ Abayer2dnr_result_V2_t bayer2dnr_fix_transfer_V2(RK_Bayer2dnr_Params_V2_Select_t
     }
 
     // ISP_BAYNR_3A00_PIXDIFF
-    tmp = FIXDIFMAX - 1;
+    tmp = pSelect->pix_diff;
     pFix->baynr_pix_diff = CLIP(tmp, 0, 0x3fff);
 
     // ISP_BAYNR_3A00_THLD
-    tmp = LUTPRECISION_FIX;
+    tmp = pSelect->diff_thld;
     pFix->baynr_diff_thld = CLIP(tmp, 0, 0x3ff);
-    tmp = (int)(pSelect->bayernrv2_filter_soft_threshold_ratio / pSelect->bayernrv2_filter_strength / fStrength * (1 << 10));
+    tmp = (int)(pSelect->ratio / pSelect->filter_strength / fStrength * (1 << 10));
     pFix->baynr_softthld = CLIP(tmp, 0, 0x3ff);
 
     // ISP_BAYNR_3A00_W1_STRENG
-    tmp = (int)(pSelect->bayernrv2_filter_strength * fStrength * (1 << FIXBILSTRG));
+    tmp = (int)(pSelect->filter_strength * fStrength * (1 << FIXBILSTRG));
     pFix->bltflt_streng = CLIP(tmp, 0, 0xfff);
-    tmp = (int)(pSelect->bayernrv2_filter_out_wgt * fStrength * (1 << 10));
+    tmp = (int)(pSelect->weight * fStrength * (1 << 10));
     pFix->baynr_reg_w1 = CLIP(tmp, 0, 0x3ff);
 
     // ISP_BAYNR_3A00_SIGMAX0-15   ISP_BAYNR_3A00_SIGMAY0-15
     for(i = 0; i < 16; i++) {
         //pFix->sigma_x[i] = bayernr_get_trans_V2(pSelect->bayernrv2_filter_lumapoint[i]);
-        tmp = pSelect->bayernrv2_filter_lumapoint[i];
+        tmp = pSelect->lumapoint[i];
         pFix->sigma_x[i] = CLIP(tmp, 0, 0xffff);
-        tmp = pSelect->bayernrv2_filter_sigma[i];
+        tmp = pSelect->sigma[i];
         pFix->sigma_y[i] = CLIP(tmp, 0, 0xffff);
     }
 
@@ -442,7 +252,9 @@ Abayer2dnr_result_V2_t bayer2dnr_fix_transfer_V2(RK_Bayer2dnr_Params_V2_Select_t
     pFix->weit_d[1] = 0x249;
     pFix->weit_d[2] = 0x31d;
 #else
-    edgesofts = pSelect->bayernrv2_filter_edgesofts;
+    edgesofts = pSelect->edgesofts * fStrength;
+    if(edgesofts > 16.0);
+    edgesofts = 16.0;
     for(i = 0; i < 8; i++)
     {
         tmp1 = (float)(ypos[i] * ypos[i] + xpos[i] * xpos[i]);
@@ -600,24 +412,28 @@ Abayer2dnr_result_V2_t bayer2dnr_init_params_json_V2(RK_Bayer2dnr_Params_V2_t *p
         LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
         return ABAYER2DNR_RET_NULL_POINTER;
     }
+    pParams->enable = pCalibdb->TuningPara.enable;
 
     for(int i = 0; i < pCalibdb->CalibPara.Setting[calib_idx].Calib_ISO_len && i < RK_BAYER2DNR_V2_MAX_ISO_NUM; i++) {
         pCalibIso = &pCalibdb->CalibPara.Setting[calib_idx].Calib_ISO[i];
         pParams->iso[i] = pCalibIso->iso;
         for(int k = 0; k < 16; k++) {
-            pParams->bayernrv2_filter_lumapoint_r[k] = pCalibIso->lumapoint[k];
-            pParams->bayernrv2_filter_sigma_r[i][k] = pCalibIso->sigma[k];
+            pParams->lumapoint[k] = pCalibIso->lumapoint[k];
+            pParams->sigma[i][k] = pCalibIso->sigma[k];
         }
     }
 
     for(int i = 0; i < pCalibdb->TuningPara.Setting[tuning_idx].Tuning_ISO_len && i < RK_BAYER2DNR_V2_MAX_ISO_NUM; i++) {
         pTuningISO = &pCalibdb->TuningPara.Setting[tuning_idx].Tuning_ISO[i];
         pParams->iso[i] = pTuningISO->iso;
-        pParams->bayernrv2_filter_strength_r[i] = pTuningISO->filter_strength;
-        pParams->bayernrv2_filter_edgesofts_r[i] = pTuningISO->edgesofts;
-        pParams->bayernrv2_filter_out_wgt_r[i] = pTuningISO->weight;
-        pParams->bayernrv2_filter_soft_threshold_ratio_r[i] = pTuningISO->ratio;
-        pParams->bayernrv2_gauss_guide_r[i] = pTuningISO->gauss_guide;
+        pParams->filter_strength[i] = pTuningISO->filter_strength;
+        pParams->edgesofts[i] = pTuningISO->edgesofts;
+        pParams->weight[i] = pTuningISO->weight;
+        pParams->ratio[i] = pTuningISO->ratio;
+        pParams->gauss_guide[i] = pTuningISO->gauss_guide;
+
+        pParams->pix_diff[i] = FIXDIFMAX - 1;
+        pParams->diff_thld[i] = LUTPRECISION_FIX;
     }
 
     LOGI_ANR("%s:(%d) oyyf bayerner xml config end!   \n", __FUNCTION__, __LINE__);
@@ -644,7 +460,6 @@ Abayer2dnr_result_V2_t bayer2dnr_config_setting_param_json_V2(RK_Bayer2dnr_Param
     }
 
     res = bayer2dnr_init_params_json_V2(pParams, pCalibdbV2, calib_idx, tuning_idx);
-    pParams->bayernrv2_2dnr_enable = pCalibdbV2->TuningPara.enable;
 
     return res;
 
