@@ -371,6 +371,10 @@ if (RKAIQ_ENABLE_CAMGROUP)
     add_subdirectory(algos_camgroup)
 endif()
 
+add_subdirectory(rkaiq_3A_server)
+
+add_subdirectory(tests/rkisp_demo)
+
 cmake_policy(SET CMP0015 NEW)
 
 link_directories("${LIBRARY_OUTPUT_PATH}" "${OPENCV_LIBS_DIR}" "${GENMESH_LIBS_DIR}")
