@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
+ * Copyright (c) 2019-2022 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "RkAiqAgammaHandle.h"
+
 #include "RkAiqCore.h"
-#include "RkAiqHandle.h"
-#include "RkAiqHandleInt.h"
 
 namespace RkCam {
 
@@ -46,7 +46,7 @@ XCamReturn RkAiqAgammaHandleInt::updateConfig(bool needSync) {
         mCurAtt   = mNewAtt;
         rk_aiq_uapi_agamma_SetAttrib(mAlgoCtx, mCurAtt, false);
         updateAtt = false;
-        waitSignal(mCurAtt.sync.sync_mode);
+        sendSignal(mCurAtt.sync.sync_mode);
     }
 
     if (needSync) mCfgMutex.unlock();
@@ -70,7 +70,7 @@ XCamReturn RkAiqAgammaHandleInt::setAttrib(rk_aiq_gamma_attrib_V2_t att) {
     if (0 != memcmp(&mCurAtt, &att, sizeof(rk_aiq_gamma_attrib_V2_t))) {
         mNewAtt   = att;
         updateAtt = true;
-        sendSignal(att.sync.sync_mode);
+        waitSignal(att.sync.sync_mode);
     }
 
     mCfgMutex.unlock();

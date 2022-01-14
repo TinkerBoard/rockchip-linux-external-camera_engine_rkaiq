@@ -672,7 +672,6 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
     APPLY_ANALYZER_RESULT(Merge, MERGE);
     APPLY_ANALYZER_RESULT(Tmo, TMO);
     APPLY_ANALYZER_RESULT(Ccm, CCM);
-    APPLY_ANALYZER_RESULT(Lsc, LSC);
     APPLY_ANALYZER_RESULT(Blc, BLC);
     APPLY_ANALYZER_RESULT(Rawnr, RAWNR);
     APPLY_ANALYZER_RESULT(Gic, GIC);
@@ -702,7 +701,6 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
     // ispv21
     APPLY_ANALYZER_RESULT(Drc, DRC);
     APPLY_ANALYZER_RESULT(AwbV21, AWB);
-    APPLY_ANALYZER_RESULT(BlcV21, BLC);
     APPLY_ANALYZER_RESULT(YnrV21, YNR);
     APPLY_ANALYZER_RESULT(CnrV21, UVNR);
     APPLY_ANALYZER_RESULT(SharpenV21, SHARPEN);
@@ -710,6 +708,8 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
     APPLY_ANALYZER_RESULT(Csm, CSM);
     // ispv3x
     APPLY_ANALYZER_RESULT(AwbV3x, AWB);
+    APPLY_ANALYZER_RESULT(BlcV21, BLC);
+    APPLY_ANALYZER_RESULT(Lsc, LSC);
     APPLY_ANALYZER_RESULT(AfV3x, AF);
     APPLY_ANALYZER_RESULT(BaynrV3x, RAWNR);
     APPLY_ANALYZER_RESULT(YnrV3x, YNR);

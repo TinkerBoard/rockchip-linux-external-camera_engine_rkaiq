@@ -25,7 +25,7 @@
 #include "common/rkisp2-config.h"
 #include "common/rkisp21-config.h"
 #include "common/rkisp3-config.h"
-#include "shared_item_pool.h"
+#include "buffer_pool.h"
 
 #define RKAIQ_ISP_LDCH_ID           (1 << 0)
 
@@ -409,7 +409,7 @@ public:
         aec_stats_valid = false;
         frame_id = -1;
     };
-    ~RkAiqAecStats() {};
+    virtual ~RkAiqAecStats() {};
     rk_aiq_isp_aec_stats_t aec_stats;
     bool aec_stats_valid;
     bool af_prior;
@@ -429,7 +429,7 @@ public:
         awb_cfg_effect_valid = false;
         frame_id = -1;
     };
-    ~RkAiqAwbStats() {};
+    virtual ~RkAiqAwbStats() {};
     union {
         rk_aiq_awb_stat_res_v200_t awb_stats;
         rk_aiq_awb_stat_res_v201_t awb_stats_v201;
@@ -450,7 +450,7 @@ public:
         atmo_stats_valid = false;
         frame_id = -1;
     };
-    ~RkAiqAtmoStats() {};
+    virtual ~RkAiqAtmoStats() {};
     rkisp_atmo_stats_t atmo_stats;
     bool atmo_stats_valid;
     uint32_t frame_id;
@@ -465,7 +465,7 @@ public:
         adehaze_stats_valid = false;
         frame_id = -1;
     };
-    ~RkAiqAdehazeStats() {};
+    virtual ~RkAiqAdehazeStats() {};
     rkisp_adehaze_stats_t adehaze_stats;
     bool adehaze_stats_valid;
     uint32_t frame_id;
@@ -481,7 +481,7 @@ public:
         af_stats_valid = false;
         frame_id = -1;
     };
-    ~RkAiqAfStats() {};
+    virtual ~RkAiqAfStats() {};
     union {
         rk_aiq_isp_af_stats_t af_stats;
         rk_aiq_isp_af_stats_v3x_t af_stats_v3x;
@@ -501,7 +501,7 @@ public:
         orb_stats.frame_id = -1;
         orb_stats.img_buf_index = -1;
     };
-    ~RkAiqOrbStats() {};
+    virtual ~RkAiqOrbStats() {};
     rk_aiq_isp_orb_stats_t orb_stats;
     bool orb_stats_valid;
     uint32_t frame_id;
@@ -516,7 +516,7 @@ public:
         pdaf_stats_valid = false;
         frame_id = -1;
     };
-    ~RkAiqPdafStats() {};
+    virtual ~RkAiqPdafStats() {};
     rk_aiq_isp_pdaf_stats_t pdaf_stats;
     bool pdaf_stats_valid;
     uint32_t frame_id;

@@ -2154,6 +2154,7 @@ CamHwIsp20::get_sensor_pdafinfo(rk_sensor_full_info_t *sensor_info,
                                 rk_sensor_pdaf_info_t *pdaf_info) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     struct rkmodule_channel_info channel;
+    memset(&channel, 0, sizeof(struct rkmodule_channel_info));
 
     V4l2SubDevice vdev(sensor_info->device_name.c_str());
     ret = vdev.open();

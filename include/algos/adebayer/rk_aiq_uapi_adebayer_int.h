@@ -4,7 +4,11 @@
 #include "base/xcam_common.h"
 #include "rk_aiq_algo_des.h"
 
+typedef struct rk_aiq_uapi_sync_s rk_aiq_uapi_sync_t;
+
 typedef struct adebayer_attrib_s {
+    rk_aiq_uapi_sync_t sync;
+
     unsigned char enable;
     unsigned char enhance_strength[9];
     unsigned char low_freq_thresh;

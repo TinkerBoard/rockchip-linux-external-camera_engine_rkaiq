@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 Rockchip Corporation
+ * Copyright (c) 2019-2022 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,9 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-
 #include "Isp21Params.h"
 
 namespace RkCam {
@@ -985,31 +983,6 @@ void Isp21Params::convertAiqAgicToIsp21Params(T& isp_cfg,
     isp_cfg.others.gic_cfg.noise_base     = agic.ProcResV21.noise_base;
     isp_cfg.others.gic_cfg.diff_clip      = agic.ProcResV21.diff_clip;
     for (int i = 0; i < 15; i++) isp_cfg.others.gic_cfg.sigma_y[i] = agic.ProcResV21.sigma_y[i];
-
-    LOGD_AGIC("regmingradthrdark2 %d", isp_cfg.others.gic_cfg.regmingradthrdark2);
-    LOGD_AGIC("regmingradthrdark1 %d", isp_cfg.others.gic_cfg.regmingradthrdark1);
-    LOGD_AGIC("regminbusythre %d", isp_cfg.others.gic_cfg.regminbusythre);
-
-    LOGD_AGIC("regdarkthre %d", isp_cfg.others.gic_cfg.regdarkthre);
-    LOGD_AGIC("regmaxcorvboth %d", isp_cfg.others.gic_cfg.regmaxcorvboth);
-    LOGD_AGIC("regdarktthrehi %d", isp_cfg.others.gic_cfg.regdarktthrehi);
-    LOGD_AGIC("regkgrad2dark %d", isp_cfg.others.gic_cfg.regkgrad2dark);
-    LOGD_AGIC("regkgrad1dark %d", isp_cfg.others.gic_cfg.regkgrad1dark);
-    LOGD_AGIC("regstrengthglobal_fix %d", isp_cfg.others.gic_cfg.regstrengthglobal_fix);
-    LOGD_AGIC("regdarkthrestep %d", isp_cfg.others.gic_cfg.regdarkthrestep);
-    LOGD_AGIC("regkgrad2 %d", isp_cfg.others.gic_cfg.regkgrad2);
-    LOGD_AGIC("regkgrad1 %d", isp_cfg.others.gic_cfg.regkgrad1);
-    LOGD_AGIC("reggbthre %d", isp_cfg.others.gic_cfg.reggbthre);
-    LOGD_AGIC("regmaxcorv %d", isp_cfg.others.gic_cfg.regmaxcorv);
-    LOGD_AGIC("regmingradthr2 %d", isp_cfg.others.gic_cfg.regmingradthr2);
-    LOGD_AGIC("regmingradthr1 %d", isp_cfg.others.gic_cfg.regmingradthr1);
-    LOGD_AGIC("gr_ratio %d", isp_cfg.others.gic_cfg.gr_ratio);
-    LOGD_AGIC("noise_scale %d", isp_cfg.others.gic_cfg.noise_scale);
-    LOGD_AGIC("noise_base %d", isp_cfg.others.gic_cfg.noise_base);
-    LOGD_AGIC("diff_clip %d", isp_cfg.others.gic_cfg.diff_clip);
-    for (int i = 0; i < 15; i++) {
-        LOGD_AGIC("sigma %d", isp_cfg.others.gic_cfg.sigma_y[i]);
-    }
 }
 
 template<class T>

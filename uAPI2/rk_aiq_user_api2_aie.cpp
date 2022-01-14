@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 Rockchip Corporation
+ * Copyright (c) 2019-2022 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,11 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
+#include "rk_aiq_user_api2_aie.h"
 
-#include "algos/aie/rk_aiq_uapi_aie_int.h"
-#include "RkAiqHandleInt.h"
+#include "algo_handlers/RkAiqAieHandle.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -26,6 +25,7 @@ RKAIQ_BEGIN_DECLARE
 
 XCamReturn  rk_aiq_user_api2_aie_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, aie_attrib_t attr)
 {
+
     return rk_aiq_user_api_aie_SetAttrib(sys_ctx, attr);
 }
 

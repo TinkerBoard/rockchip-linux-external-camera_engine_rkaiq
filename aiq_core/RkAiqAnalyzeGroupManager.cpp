@@ -362,6 +362,10 @@ XCamReturn RkAiqAnalyzeGroupManager::groupMessageHandler(std::vector<SmartPtr<XC
         shared->afStatsBuf->unref(shared->afStatsBuf);
         shared->afStatsBuf = nullptr;
     }
+    if (shared->ispStats) {
+        shared->ispStats->unref(shared->ispStats);
+        shared->ispStats = nullptr;
+    }
     if (shared->tx) {
         shared->tx->unref(shared->tx);
         shared->tx = nullptr;

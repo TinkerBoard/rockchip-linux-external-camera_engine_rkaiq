@@ -500,7 +500,7 @@ static int sample_awb_setMwb1(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync
     rk_aiq_user_api2_awb_GetMwbAttrib(ctx, &attr);
     //modify
     attr.sync.sync_mode = sync;
-    attr.mode = RK_AIQ_MWB_MODE_WBGAIN;
+    attr.mode = RK_AIQ_MWB_MODE_SCENE;
 
     //set
     rk_aiq_user_api2_awb_SetMwbAttrib(ctx, attr);
@@ -517,6 +517,7 @@ static int sample_awb_setMwb2(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync
     rk_aiq_user_api2_awb_GetMwbAttrib(ctx, &attr);
     //modify
     attr.sync.sync_mode = sync;
+    attr.mode = RK_AIQ_MWB_MODE_WBGAIN;
     if (attr.para.gain.rgain == 1.0) {
         attr.para.gain.rgain = 0.5f;
         attr.para.gain.grgain = 0.5f;
@@ -679,7 +680,12 @@ XCamReturn sample_awb_module(const void *arg)
     rk_aiq_wb_cct_t ct;
     opMode_t mode;
     const demo_context_t *demo_ctx = (demo_context_t *)arg;
-    const rk_aiq_sys_ctx_t* ctx = (const rk_aiq_sys_ctx_t*)(demo_ctx->aiq_ctx);
+    const rk_aiq_sys_ctx_t* ctx;
+    if (demo_ctx->camGroup){
+        ctx = (rk_aiq_sys_ctx_t*)(demo_ctx->camgroup_ctx);
+    } else {
+        ctx = (rk_aiq_sys_ctx_t*)(demo_ctx->aiq_ctx);
+    }
     if (ctx == nullptr) {
         ERR ("%s, ctx is nullptr\n", __FUNCTION__);
         return XCAM_RETURN_ERROR_PARAM;
@@ -830,11 +836,11 @@ XCamReturn sample_awb_module(const void *arg)
             case 'S':
                 sample_awb_setWbGainOffset(ctx, RK_AIQ_UAPI_MODE_DEFAULT);
                 sample_awb_getWbGainOffset(ctx);
-                usleep(40 * 1000);
-                sample_awb_getWbGainOffset(ctx);
                 break;
             case 'T':
                 sample_awb_setWbGainOffset(ctx, RK_AIQ_UAPI_MODE_ASYNC);
+                sample_awb_getWbGainOffset(ctx);
+                usleep(40 * 1000);
                 sample_awb_getWbGainOffset(ctx);
                 break;
             // NOT Support MultiWindow

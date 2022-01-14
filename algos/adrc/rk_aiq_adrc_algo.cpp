@@ -56,7 +56,7 @@ float DrcGetCurrPara
     float*         inMatrixY,
     int Max_Knots
 ) {
-    LOG1_AMERGE( "%s:enter!\n", __FUNCTION__);
+    LOG1_ATMO( "%s:enter!\n", __FUNCTION__);
     float x1 = 0.0f;
     float x2 = 0.0f;
     float value1 = 0.0f;
@@ -84,7 +84,7 @@ float DrcGetCurrPara
         }
 
     return outPara;
-    LOG1_AMERGE( "%s:exit!\n", __FUNCTION__);
+    LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
 
 /******************************************************************************
@@ -97,7 +97,7 @@ int DrcGetCurrParaInt
     int*         inMatrixY,
     int Max_Knots
 ) {
-    LOG1_AMERGE( "%s:enter!\n", __FUNCTION__);
+    LOG1_ATMO( "%s:enter!\n", __FUNCTION__);
     float x1 = 0.0f;
     float x2 = 0.0f;
     float value1 = 0.0f;
@@ -125,7 +125,7 @@ int DrcGetCurrParaInt
         }
 
     return outPara;
-    LOG1_AMERGE( "%s:exit!\n", __FUNCTION__);
+    LOG1_ATMO( "%s:exit!\n", __FUNCTION__);
 }
 
 /******************************************************************************

@@ -1,7 +1,5 @@
 /*
- * RkAiqCamGroupManager.cpp
- *
- *  Copyright (c) 2021 Rockchip Corporation
+ * Copyright (c) 2021-2022 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-
 #include "RkAiqCamGroupManager.h"
+
 #include "RkAiqManager.h"
 #include "RkAiqCamGroupHandleInt.h"
 #include "aiq_core/RkAiqCore.h"
@@ -47,7 +44,7 @@ const static struct RkAiqAlgoDesCommExt g_camgroup_algos[] = {
     /* gamma group algo is not mandatory now */
     //{ &g_RkIspAlgoDescamgroupAgamma.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 0, 0 },
     { & g_RkIspAlgoDescCamgroupAdrc.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 1, 0},
-    //{ & g_RkIspAlgoDescCamgroupAmerge.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 0, 0},
+    //{ &g_RkIspAlgoDescCamgroupAmerge.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 0, 0},
     { &g_RkIspAlgoDescCamgroupAynr.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0},
     { &g_RkIspAlgoDescCamgroupAcnr.common, RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0},
 #if defined(ISP_HW_V30)
@@ -331,7 +328,7 @@ RkAiqCamGroupManager::processAiqCoreMsgs(RkAiqCore* src, SmartPtr<XCamMessage> &
             singleCamRes->_3aResults.aec._aeProcRes = convert_to_XCamVideoBuffer(vdBufMsg->msg);
         break;
     case XCAM_MESSAGE_SOF_INFO_OK :
-        vdBufMsg= msg.dynamic_cast_ptr<RkAiqCoreVdBufMsg>();
+        vdBufMsg = msg.dynamic_cast_ptr<RkAiqCoreVdBufMsg>();
         if (vdBufMsg.ptr()) {
             auto sofInfoMsg = vdBufMsg->msg.dynamic_cast_ptr<RkAiqSofInfoWrapperProxy>();
             singleCamRes->_3aResults.aec._effAecExpInfo =
@@ -495,14 +492,29 @@ RkAiqCamGroupManager::sofSync(RkAiqManager* aiqManager, SmartPtr<VideoBuffer>& s
 SmartPtr<RkAiqCamgroupHandle>
 RkAiqCamGroupManager::newAlgoHandle(RkAiqAlgoDesComm* algo, int hw_ver)
 {
-    #define NEW_ALGO_HANDLE(lc, BC) \
+#define NEW_ALGO_HANDLE(lc, BC) \
     if (algo->type == RK_AIQ_ALGO_TYPE_##BC) { \
         if (hw_ver == 0) \
             return new RkAiqCamGroup##lc##HandleInt(algo, this); \
     }\
 
+    NEW_ALGO_HANDLE(Ae, AE);
+    NEW_ALGO_HANDLE(Awb, AWB);
     NEW_ALGO_HANDLE(Accm, ACCM);
     NEW_ALGO_HANDLE(A3dlut, A3DLUT);
+    NEW_ALGO_HANDLE(Agamma, AGAMMA);
+    NEW_ALGO_HANDLE(Amerge, AMERGE);
+    NEW_ALGO_HANDLE(Adrc, ADRC);
+    NEW_ALGO_HANDLE(Adhaz, ADHAZ);
+    NEW_ALGO_HANDLE(Agic, AGIC);
+    NEW_ALGO_HANDLE(AynrV3, AYNR);
+    NEW_ALGO_HANDLE(AcnrV2, ACNR);
+    NEW_ALGO_HANDLE(Abayer2dnrV2, ARAWNR);
+    NEW_ALGO_HANDLE(Ablc, ABLC);
+    NEW_ALGO_HANDLE(AsharpV4, ASHARP);
+    NEW_ALGO_HANDLE(AbayertnrV2, AMFNR);
+    NEW_ALGO_HANDLE(Alsc, ALSC);
+    NEW_ALGO_HANDLE(Adpcc, ADPCC);
     /* TODO: new the handle of other algo modules */
 
     return new RkAiqCamgroupHandle(algo, this);
@@ -520,7 +532,7 @@ RkAiqCamGroupManager::getDefAlgoTypeHandle(int algo_type)
 }
 
 std::map<int, SmartPtr<RkAiqCamgroupHandle>>*
-RkAiqCamGroupManager::getAlgoTypeHandleMap(int algo_type)
+        RkAiqCamGroupManager::getAlgoTypeHandleMap(int algo_type)
 {
     if (mAlgoHandleMaps.find(algo_type) != mAlgoHandleMaps.end())
         return &mAlgoHandleMaps.at(algo_type);
@@ -1006,7 +1018,7 @@ RkAiqCamGroupManager::addAlgo(RkAiqAlgoDesComm& algo)
     // add to map
     SmartPtr<RkAiqCamgroupHandle> new_hdl;
     if (algo.type == RK_AIQ_ALGO_TYPE_AE ||
-        algo.type == RK_AIQ_ALGO_TYPE_AWB) {
+            algo.type == RK_AIQ_ALGO_TYPE_AWB) {
         new_hdl = new RkAiqCamgroupHandle(&algo, this);
     } else {
         LOGE_ANALYZER("not supported custom algo type: %d ", algo.type);
@@ -1188,7 +1200,7 @@ RkAiqCamgroupHandle*
 RkAiqCamGroupManager::getAiqCamgroupHandle(const int algo_type, const int lib_id)
 {
     if (algo_type <= RK_AIQ_ALGO_TYPE_NONE ||
-        algo_type >= RK_AIQ_ALGO_TYPE_MAX)
+            algo_type >= RK_AIQ_ALGO_TYPE_MAX)
         return NULL;
 
     std::map<int, SmartPtr<RkAiqCamgroupHandle>>* algo_map = getAlgoTypeHandleMap(algo_type);

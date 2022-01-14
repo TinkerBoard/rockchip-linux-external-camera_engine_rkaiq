@@ -93,7 +93,7 @@
 namespace RkCam {
 
 std::string AlgoTypeToString(RkAiqAlgoType_t type) {
-    static std::unordered_map<RkAiqAlgoType_t, std::string> str_map = {
+    static std::unordered_map<uint32_t, std::string> str_map = {
         // clang-format off
         { RK_AIQ_ALGO_TYPE_AE,          "Ae"        },
         { RK_AIQ_ALGO_TYPE_AWB,         "Awb"       },
@@ -138,7 +138,7 @@ std::string AlgoTypeToString(RkAiqAlgoType_t type) {
         // clang-format oon
     };
 
-    return str_map[type];
+    return str_map[uint32_t(type)];
 }
 
 #define EPSINON 0.0000001
@@ -159,8 +159,9 @@ static RkAiqGrpCondition_t aeGrpCond[]     = {
 static RkAiqGrpConditions_t aeGrpConds     = { grp_conds_array_info(aeGrpCond) };
 
 static RkAiqGrpCondition_t awbGrpCond[]    = {
-    [0] = {XCAM_MESSAGE_AE_PRE_RES_OK,      0},
-    [1] = {XCAM_MESSAGE_AWB_STATS_OK,       ISP_PARAMS_EFFECT_DELAY_CNT },
+    [0] = { XCAM_MESSAGE_SOF_INFO_OK,       0 },
+    [1] = {XCAM_MESSAGE_AE_PRE_RES_OK,      0},
+    [2] = {XCAM_MESSAGE_AWB_STATS_OK,       ISP_PARAMS_EFFECT_DELAY_CNT },
 };
 static RkAiqGrpConditions_t awbGrpConds    = {grp_conds_array_info(awbGrpCond) };
 
@@ -361,6 +362,7 @@ static RkAiqGrpConditions_t  otherGrpCondsV3x   = { grp_conds_array_info(otherGr
 static struct RkAiqAlgoDesCommExt g_default_3a_des_v3x[] = {
     // clang-format off
     { &g_RkIspAlgoDescAe.common,            RK_AIQ_CORE_ANALYZE_AE,     0, 2, 0,    aeGrpCondsV3x      },
+    { &g_RkIspAlgoDescAblc.common,          RK_AIQ_CORE_ANALYZE_AWB,    0, 0, 0,    awbGrpConds        },
     { &g_RkIspAlgoDescAwb.common,           RK_AIQ_CORE_ANALYZE_AWB,    1, 1, 21,   awbGrpConds        },
     { &g_RkIspAlgoDescAdebayer.common,      RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
     { &g_RkIspAlgoDescAgamma.common,        RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
@@ -384,7 +386,6 @@ static struct RkAiqAlgoDesCommExt g_default_3a_des_v3x[] = {
     { &g_RkIspAlgoDescAcgc.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
     { &g_RkIspAlgoDescAcsm.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
     { &g_RkIspAlgoDescAf.common,            RK_AIQ_CORE_ANALYZE_AF,     0, 1, 0,    afGrpCondsV3x      },
-    { &g_RkIspAlgoDescAblc.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
     { &g_RkIspAlgoDescAgic.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 1, 0,    otherGrpCondsV3x   },
     { &g_RkIspAlgoDescAwdr.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
     { &g_RkIspAlgoDescAsd.common,           RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
@@ -456,9 +457,9 @@ RkAiqCore::RkAiqCore(int isp_hw_ver)
     , mIsSingleThread(false)
     , mAiqParamsPool(new RkAiqFullParamsPool("RkAiqFullParams", 32))
     , mAiqCpslParamsPool(new RkAiqCpslParamsPool("RkAiqCpslParamsPool", 4))
-    , mAiqStatsPool(new RkAiqStatsPool("RkAiqStatsPool", 4))
-    , mAiqIspStatsIntPool(new RkAiqIspStatsIntPool("RkAiqIspStatsIntPool", 10))
-    , mAiqSofInfoWrapperPool(new RkAiqSofInfoWrapperPool("RkAiqSofPoolWrapper", 16))
+    , mAiqStatsPool(new RkAiqStatsPool("RkAiqStatsPool", RkAiqCore::DEFAULT_POOL_SIZE))
+    , mAiqIspStatsIntPool(new RkAiqIspStatsIntPool("RkAiqIspStatsIntPool", RkAiqCore::DEFAULT_POOL_SIZE))
+    , mAiqSofInfoWrapperPool(new RkAiqSofInfoWrapperPool("RkAiqSofPoolWrapper", RkAiqCore::DEFAULT_POOL_SIZE))
     , mAiqAecStatsPool(nullptr)
     , mAiqAwbStatsPool(nullptr)
     , mAiqAtmoStatsPool(nullptr)
@@ -867,7 +868,6 @@ RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e type)
     }
 
     RkAiqFullParams* aiqParams = aiqParamProxy->data().ptr();
-    aiqParams->reset();
 
     ret = getAiqParamsBuffer(aiqParams, type);
     RKAIQCORE_CHECK_RET_NULL(ret, "get params failed");
@@ -1146,15 +1146,15 @@ RkAiqCore::genIspParamsResult(RkAiqFullParams *aiqParams, enum rk_aiq_core_analy
 {
     SmartPtr<RkAiqFullParams> curParams = mAiqCurParams->data();
 
-    for (auto& algoHdl : mCurIspAlgoHandleList) {
+    std::vector<SmartPtr<RkAiqHandle>>& algo_list =
+        mRkAiqCoreGroupManager->getGroupAlgoList(type);
+
+    for (auto& algoHdl : algo_list) {
         RkAiqHandle* curHdl = algoHdl.ptr();
-        if (curHdl && (mAlgoTypeToGrpMaskMap[curHdl->getAlgoType()] & grpId2GrpMask(type))) {
-            // only last one result of same type algo will take effect
-            while (curHdl) {
-                if (curHdl->getEnable())
-                    curHdl->genIspResult(aiqParams, curParams.ptr());
-                curHdl = curHdl->getNextHdl();
-            }
+        // only last one result of same type algo will take effect
+        while (curHdl) {
+            if (curHdl->getEnable()) curHdl->genIspResult(aiqParams, curParams.ptr());
+            curHdl = curHdl->getNextHdl();
         }
     }
 
@@ -2479,10 +2479,10 @@ void RkAiqCore::newAiqParamsPool()
             switch (algoHdl->getAlgoType()) {
             case RK_AIQ_ALGO_TYPE_AE:
                 if (!mAiqAecStatsPool.ptr())
-                    mAiqAecStatsPool = new RkAiqAecStatsPool("RkAiqAecStatsPool", 16);
+                    mAiqAecStatsPool = new RkAiqAecStatsPool("RkAiqAecStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqExpParamsPool =
                     new RkAiqExpParamsPool("RkAiqExpParams", MAX_AEC_EFFECT_FNUM * 4);
-                mAiqIrisParamsPool = new RkAiqIrisParamsPool("RkAiqIrisParams", MAX_AEC_EFFECT_FNUM * 4);
+                mAiqIrisParamsPool = new RkAiqIrisParamsPool("RkAiqIrisParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIspAecParamsPool =
                     new RkAiqIspAecParamsPool("RkAiqIspAecParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIspHistParamsPool =
@@ -2490,7 +2490,7 @@ void RkAiqCore::newAiqParamsPool()
                 break;
             case RK_AIQ_ALGO_TYPE_AWB:
                 if (!mAiqAwbStatsPool.ptr())
-                    mAiqAwbStatsPool = new RkAiqAwbStatsPool("RkAiqAwbStatsPool", 16);
+                    mAiqAwbStatsPool = new RkAiqAwbStatsPool("RkAiqAwbStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
 #if defined(ISP_HW_V30)
                 mAiqIspAwbV3xParamsPool = new RkAiqIspAwbParamsPoolV3x(
                     "RkAiqIspAwbV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2506,9 +2506,9 @@ void RkAiqCore::newAiqParamsPool()
                 break;
             case RK_AIQ_ALGO_TYPE_AF:
                 if (!mAiqAfStatsPool.ptr())
-                    mAiqAfStatsPool = new RkAiqAfStatsPool("RkAiqAfStatsPool", 10);
+                    mAiqAfStatsPool = new RkAiqAfStatsPool("RkAiqAfStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
                 if (!mAiqPdafStatsPool.ptr())
-                    mAiqPdafStatsPool = new RkAiqPdafStatsPool("RkAiqPdafStatsPool", 10);
+                    mAiqPdafStatsPool = new RkAiqPdafStatsPool("RkAiqPdafStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqFocusParamsPool = new RkAiqFocusParamsPool("RkAiqFocusParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #if defined(ISP_HW_V30)
                 mAiqIspAfV3xParamsPool =
@@ -2566,7 +2566,7 @@ void RkAiqCore::newAiqParamsPool()
                 break;
             case RK_AIQ_ALGO_TYPE_ADHAZ:
                 if (!mAiqAdehazeStatsPool.ptr())
-                    mAiqAdehazeStatsPool = new RkAiqAdehazeStatsPool("RkAiqAdehazeStatsPool", 10);
+                    mAiqAdehazeStatsPool = new RkAiqAdehazeStatsPool("RkAiqAdehazeStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIspDehazeParamsPool = new RkAiqIspDehazeParamsPool(
                     "RkAiqIspDehazeParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;

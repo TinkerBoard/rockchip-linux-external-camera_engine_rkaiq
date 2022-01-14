@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
+ * Copyright (c) 2019-2022 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "RkAiqAwbHandle.h"
+
+#include "RkAiqAblcHandle.h"
 #include "RkAiqCore.h"
-#include "RkAiqHandle.h"
-#include "RkAiqHandleInt.h"
+#include "awb/rk_aiq_uapiv2_awb_int.h"
 
 namespace RkCam {
 

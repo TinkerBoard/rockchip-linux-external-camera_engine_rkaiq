@@ -356,7 +356,7 @@ typedef struct rk_aiq_dpcc_attrib_V20_s {
     AdpccOPMode_t eMode;
     Adpcc_Auto_Attr_t stAuto;
     Adpcc_Manual_Attr_t stManual;
-    //CalibDbV2_Dpcc_t stTool;
+    rk_aiq_uapi_sync_t sync;
 } rk_aiq_dpcc_attrib_V20_t;
 
 typedef struct AdpccExpInfo_s {

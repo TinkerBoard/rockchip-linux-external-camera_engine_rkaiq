@@ -211,13 +211,13 @@ char* rk_aiq_uapi2_sysctl_readiq(const rk_aiq_sys_ctx_t* sys_ctx, char* param)
 XCamReturn
 rk_aiq_uapi2_sysctl_prepareRkRaw(const rk_aiq_sys_ctx_t* ctx, rk_aiq_raw_prop_t prop)
 {
-    return rk_aiq_uapi2_sysctl_prepareRkRaw(ctx, prop);
+    return rk_aiq_uapi_sysctl_prepareRkRaw(ctx, prop);
 }
 
 XCamReturn
 rk_aiq_uapi2_sysctl_enqueueRkRawBuf(const rk_aiq_sys_ctx_t* ctx, void *rawdata, bool sync)
 {
-    return rk_aiq_uapi2_sysctl_enqueueRkRawBuf(ctx, rawdata, sync);
+    return rk_aiq_uapi_sysctl_enqueueRkRawBuf(ctx, rawdata, sync);
 }
 
 XCamReturn
@@ -229,7 +229,7 @@ rk_aiq_uapi2_sysctl_enqueueRkRawFile(const rk_aiq_sys_ctx_t* ctx, const char *pa
 XCamReturn
 rk_aiq_uapi2_sysctl_registRkRawCb(const rk_aiq_sys_ctx_t* ctx, void (*callback)(void*))
 {
-    return rk_aiq_uapi2_sysctl_registRkRawCb(ctx, callback);
+    return rk_aiq_uapi_sysctl_registRkRawCb(ctx, callback);
 }
 
 XCamReturn
@@ -272,5 +272,5 @@ void
 rk_aiq_uapi2_sysctl_release3AStatsRef(const rk_aiq_sys_ctx_t* ctx,
                                      rk_aiq_isp_stats_t *stats)
 {
-    return rk_aiq_uapi2_sysctl_release3AStatsRef(ctx, stats);
+    return rk_aiq_uapi_sysctl_release3AStatsRef(ctx, stats);
 }

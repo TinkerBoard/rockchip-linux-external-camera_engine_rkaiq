@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 Rockchip Corporation
+ * Copyright (c) 2019-2022 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
+#include "uAPI2/rk_aiq_user_api2_af.h"
 
+#include "algo_handlers/RkAiqAfHandle.h"
 #include "base/xcam_common.h"
-#include "include/uAPI2/rk_aiq_user_api2_af.h"
-#include "RkAiqHandleInt.h"
 
 RKAIQ_BEGIN_DECLARE
 

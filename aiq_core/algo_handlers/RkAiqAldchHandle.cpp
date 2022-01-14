@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Rockchip Eletronics Co., Ltd.
+ * Copyright (c) 2019-2022 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "RkAiqAldchHandle.h"
+
 #include "RkAiqCore.h"
-#include "RkAiqHandle.h"
-#include "RkAiqHandleInt.h"
 
 namespace RkCam {
 
@@ -139,10 +139,10 @@ XCamReturn RkAiqAldchHandleInt::updateConfig(bool needSync) {
     // if something changed
     if (updateAtt) {
         mCurAtt   = mNewAtt;
-        updateAtt = false;
         // TODO
         rk_aiq_uapi_aldch_SetAttrib(mAlgoCtx, mCurAtt, false);
-        sendSignal();
+        updateAtt = false;
+        sendSignal(mCurAtt.sync.sync_mode);
     }
 
     if (needSync) mCfgMutex.unlock();
@@ -166,7 +166,7 @@ XCamReturn RkAiqAldchHandleInt::setAttrib(rk_aiq_ldch_attrib_t att) {
     if (0 != memcmp(&mCurAtt, &att, sizeof(rk_aiq_ldch_attrib_t))) {
         mNewAtt   = att;
         updateAtt = true;
-        waitSignal();
+        waitSignal(att.sync.sync_mode);
     }
 
     mCfgMutex.unlock();
@@ -177,10 +177,23 @@ XCamReturn RkAiqAldchHandleInt::setAttrib(rk_aiq_ldch_attrib_t att) {
 
 XCamReturn RkAiqAldchHandleInt::getAttrib(rk_aiq_ldch_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
-
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    rk_aiq_uapi_aldch_GetAttrib(mAlgoCtx, att);
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_aldch_GetAttrib(mAlgoCtx, att);
+        att->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        if (updateAtt) {
+            memcpy(att, &mNewAtt, sizeof(mNewAtt));
+            att->sync.done = false;
+        } else {
+            rk_aiq_uapi_aldch_GetAttrib(mAlgoCtx, att);
+            att->sync.sync_mode = mNewAtt.sync.sync_mode;
+            att->sync.done      = true;
+        }
+    }
 
     EXIT_ANALYZER_FUNCTION();
     return ret;

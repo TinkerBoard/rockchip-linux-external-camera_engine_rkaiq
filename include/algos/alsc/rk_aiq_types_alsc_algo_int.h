@@ -59,7 +59,7 @@ typedef struct rk_aiq_lsc_attrib_s {
     bool byPass;
     rk_aiq_lsc_op_mode_t mode;
     rk_aiq_lsc_mlsc_attrib_t stManual;
-
+    rk_aiq_uapi_sync_t sync;
 } rk_aiq_lsc_attrib_t;
 
 /** @brief struct for setting-api, should careful consider when want to modify it*/

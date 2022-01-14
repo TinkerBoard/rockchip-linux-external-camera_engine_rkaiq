@@ -320,10 +320,6 @@ void sample_set_af_manual_meascfg(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_
         attr.manual_meascfg_v30.shift_y_b = 1;
 
         // Vertical filter
-        // face [0.025, 0.06], max=0.5
-        int ver_flt_face[6] =
-            { 503, 8, 9, -1997, 0, 1997 };
-
         // lowlit [0.025, 0.075], max=0.5
         int ver_flt_lowlit[6] =
             { 503, 8, 9, -1997, 0, 1997 };
@@ -331,18 +327,6 @@ void sample_set_af_manual_meascfg(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_
         // normal [0.042, 0.14], max=0.5
         int ver_flt_normal[6] =
             { 483, 28, 28, -1186, 0, 1186 };
-
-        // high [0.055, 0.125], max=0.5
-        int ver_flt_high[6] =
-            { 483, 27, 28, -1212, 0, 1212 };
-
-        // dotlight [0.1 0.175], max=0.5
-        int ver_flt_dotlight[6] =
-            { 445, 63, 64, -531, 0, 531 };
-
-        // full [0.025, 0.175], max=0.5
-        int ver_flt_full[6] =
-            { 476, 33, 34, -985, 0, 985 };
 
         attr.manual_meascfg_v30.gaus_en = 1;
         attr.manual_meascfg_v30.v1_fir_sel = 1; // 0:old 1:new
@@ -362,48 +346,19 @@ void sample_set_af_manual_meascfg(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_
         }
 
         // Horizontal filter
-        // low [0.0125, 0.03], max=0.5
-        int hor_flt_low[2][6] =
-        {
-            { 248, 960, -462, 201, 0, -201 },
-            { 46, 994, -486, 83, 0, -83 },
-        };
-        // face [0.025, 0.06], max=0.5
-        int hor_flt_face[2][6] =
-        {
-            { 512, 877, -417, 184, 0, -184 },
-            { 181, 957, -460, 42, 0, -42 },
-        };
         // lowlit [0.025, 0.075], max=0.5
         int hor_flt_lowlit[2][6] =
         {
-            { 512, 811, -375, 266, 0, -266 },
-            { 250, 945, -448, 41, 0, -41 },
+            { 203, 811, -375, 673, 0, -673 },
+            { 31,  945, -448, 323, 0, -323 },
         };
         // normal [0.042, 0.14], max=0.5
         int hor_flt_normal[2][6] =
         {
             { 512, 557, -276, 460, 0, -460 },
-            { 512, 870, -399, 37, 0, -37 },
+            { 100, 870, -399, 191, 0, -191 },
         };
-        // high [0.055, 0.125], max=0.5
-        int hor_flt_high[2][6] =
-        {
-            { 512, 648, -344, 327, 0, -327 },
-            { 512, 854, -409, 29, 0, -29 },
-        };
-        // dotlight [0.1 0.175], max=0.5
-        int hor_flt_dotlight[2][6] =
-        {
-            { 512, 447, -349, 319, 0, -319 },
-            { 512, 698, -386, 34, 0, -34 },
-        };
-        // full [0.025, 0.175], max=0.5
-        int hor_flt_full[2][6] =
-        {
-            { 512, 362, -171, 512, 0, -512 },
-            { 512, 915, -417, 67, 0, -67 },
-        };
+
         attr.manual_meascfg_v30.hiir_en = 1;
         attr.manual_meascfg_v30.h1_fv_outmode = 0; // 0 square, 1 absolute
         attr.manual_meascfg_v30.h2_fv_outmode = 0; // 0 square, 1 absolute

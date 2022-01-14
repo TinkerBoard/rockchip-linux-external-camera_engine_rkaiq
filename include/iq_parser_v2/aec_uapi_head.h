@@ -111,6 +111,7 @@ typedef struct Aec_uapi_advanced_attr_uapi_s {
 } Aec_uapi_advanced_attr_uapi_t;
 
 typedef struct __uapi_expsw_attr_uapi_s {
+    rk_aiq_uapi_sync_t                 sync;
     uint8_t Enable;
     CalibDb_CamRawStatsModeV2_t RawStatsMode;
     CalibDb_CamHistStatsModeV2_t HistStatsMode;

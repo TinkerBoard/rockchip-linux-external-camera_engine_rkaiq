@@ -245,6 +245,7 @@ CamHwIsp3x::setIspConfig()
     LOGD_ANALYZER("----------%s, start config id(%d)'s isp params", __FUNCTION__, frameId);
 
     struct isp3x_isp_params_cfg update_params[2];
+    memset(update_params, 0, sizeof(struct isp3x_isp_params_cfg)*2);
 
     update_params[0].module_en_update = 0;
     update_params[0].module_ens = 0;
