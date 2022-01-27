@@ -49,6 +49,8 @@ enum RK_ISP_HW_MODULE_e {
     RK_ISP_AGIC,
     RK_ISP_ALDCH,
     RK_ISP_ADEBAYER,
+    RK_ISP_ACP,
+    RK_ISP_AIE,
     RK_ISP_MAX,
 };
 

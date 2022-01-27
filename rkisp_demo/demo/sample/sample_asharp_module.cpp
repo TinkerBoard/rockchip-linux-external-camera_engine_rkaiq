@@ -170,6 +170,12 @@ XCamReturn sample_asharp_module (const void *arg)
                     sharpV4_attr.stAuto.stParams.GaussianFilter_coeff[i][4] = 0.0261;
                     sharpV4_attr.stAuto.stParams.GaussianFilter_coeff[i][5] = 0.0121;
 
+                    sharpV4_attr.stAuto.stParams.kernel_sigma_enable = 0;
+                    sharpV4_attr.stAuto.stParams.prefilter_sigma[i] = 1.0;
+                    sharpV4_attr.stAuto.stParams.hfBilateralFilter_sigma[i] = 1.0;
+                    sharpV4_attr.stAuto.stParams.GaussianFilter_sigma[i] = 1.0;
+                    sharpV4_attr.stAuto.stParams.GaussianFilter_radius[i] = 2.0;
+
                 }
 
                 ret = rk_aiq_user_api2_asharpV4_SetAttrib(ctx, &sharpV4_attr);
@@ -251,6 +257,12 @@ XCamReturn sample_asharp_module (const void *arg)
                 sharpV4_attr.stManual.stSelect.GaussianFilter_coeff[3] = 0.0337;
                 sharpV4_attr.stManual.stSelect.GaussianFilter_coeff[4] = 0.0261;
                 sharpV4_attr.stManual.stSelect.GaussianFilter_coeff[5] = 0.0121;
+
+                sharpV4_attr.stManual.stSelect.kernel_sigma_enable = 0;
+                sharpV4_attr.stManual.stSelect.prefilter_sigma = 1.0;
+                sharpV4_attr.stManual.stSelect.hfBilateralFilter_sigma = 1.0;
+                sharpV4_attr.stManual.stSelect.GaussianFilter_sigma = 1.0;
+                sharpV4_attr.stManual.stSelect.GaussianFilter_radius = 2.0;
 
                 ret = rk_aiq_user_api2_asharpV4_SetAttrib(ctx, &sharpV4_attr);
                 printf("set sharp v4 attri manual ret:%d \n\n", ret);
@@ -510,6 +522,12 @@ XCamReturn sample_asharp_module (const void *arg)
                     sharpV4_attr.stAuto.stParams.GaussianFilter_coeff[i][4] = 0.0261;
                     sharpV4_attr.stAuto.stParams.GaussianFilter_coeff[i][5] = 0.0121;
 
+                    sharpV4_attr.stAuto.stParams.kernel_sigma_enable = 0;
+                    sharpV4_attr.stAuto.stParams.prefilter_sigma[i] = 1.0;
+                    sharpV4_attr.stAuto.stParams.hfBilateralFilter_sigma[i] = 1.0;
+                    sharpV4_attr.stAuto.stParams.GaussianFilter_sigma[i] = 1.0;
+                    sharpV4_attr.stAuto.stParams.GaussianFilter_radius[i] = 2.0;
+
                 }
 
                 ret = rk_aiq_user_api2_asharpV4_SetAttrib(ctx, &sharpV4_attr);
@@ -591,6 +609,12 @@ XCamReturn sample_asharp_module (const void *arg)
                 sharpV4_attr.stManual.stSelect.GaussianFilter_coeff[3] = 0.0337;
                 sharpV4_attr.stManual.stSelect.GaussianFilter_coeff[4] = 0.0261;
                 sharpV4_attr.stManual.stSelect.GaussianFilter_coeff[5] = 0.0121;
+
+                sharpV4_attr.stManual.stSelect.kernel_sigma_enable = 0;
+                sharpV4_attr.stManual.stSelect.prefilter_sigma = 1.0;
+                sharpV4_attr.stManual.stSelect.hfBilateralFilter_sigma = 1.0;
+                sharpV4_attr.stManual.stSelect.GaussianFilter_sigma = 1.0;
+                sharpV4_attr.stManual.stSelect.GaussianFilter_radius = 2.0;
 
                 ret = rk_aiq_user_api2_asharpV4_SetAttrib(ctx, &sharpV4_attr);
                 printf("set sharp v4 attri manual ret:%d \n\n", ret);
