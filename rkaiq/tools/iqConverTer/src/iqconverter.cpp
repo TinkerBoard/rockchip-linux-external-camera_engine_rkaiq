@@ -7,8 +7,12 @@
 int g_rkaiq_isp_hw_ver = 20;
 #elif defined(ISP_HW_V21)
 int g_rkaiq_isp_hw_ver = 21;
+#elif defined(ISP_HW_V30)
+int g_rkaiq_isp_hw_ver = 30;
+#elif defined(ISP_HW_V32)
+int g_rkaiq_isp_hw_ver = 32;
 #else
-#error "WRONG ISP_HW_VERSION, ONLY SUPPORT V20 AND V21 NOW !"
+#error "WRONG ISP_HW_VERSION, ONLY SUPPORT V20/V21/V30/V32 NOW !"
 #endif
 
 namespace RkCam {

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Run this from within a bash shell
 # x86_64 is for simulation do not enable RK platform
-export AIQ_BUILD_HOST_DIR=/work/linux/rk3588/sdk/buildroot/output/rockchip_rk3588/host
+export AIQ_BUILD_HOST_DIR=/home/camera/camera/rk356x_linux/buildroot/output/rockchip_rk3566/host
 #export AIQ_BUILD_HOST_DIR=/home/camera/camera_data/project_codes/rk3588_ipc_sdk/buildroot/output/rockchip_rk3588_ipc/host
 TOOLCHAIN_FILE=$(pwd)/../../cmake/toolchains/aarch64_linux_buildroot.cmake
 SOURCE_PATH=$(pwd)/../../
@@ -11,7 +11,7 @@ mkdir -p $OUTPUT
 pushd $OUTPUT
 
 cmake -G "Ninja" \
-    -DCMAKE_BUILD_TYPE=MinSizeRel \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DRKAIQ_TARGET_SOC=${RKAIQ_TARGET_SOC} \
     -DARCH="aarch64" \
     -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \

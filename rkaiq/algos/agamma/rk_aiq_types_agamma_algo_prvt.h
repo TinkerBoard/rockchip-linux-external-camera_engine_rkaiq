@@ -30,9 +30,6 @@
 #define ISP3X_SEGNUM_LOG_45     (0)
 #define ISP3X_SEGNUM_EQU_45     (1)
 
-
-
-
 typedef struct rk_aiq_gamma_cfg_s {
     bool gamma_en;
     int gamma_out_segnum;//0:log 45 segment ; 1:equal segment ;2:log 49 segment ;
@@ -40,16 +37,14 @@ typedef struct rk_aiq_gamma_cfg_s {
     int gamma_table[49];
 }  rk_aiq_gamma_cfg_t;
 
-typedef struct GammaCalibDb_s {
-    union {
-        CalibDbV2_gamma_t Gamma_v20;
-        CalibDbV2_gamma_V30_t Gamma_v30;
-    };
-} GammaCalibDb_t;
-
 typedef struct AgammaHandle_s {
     rk_aiq_gamma_cfg_t  agamma_config;
-    GammaCalibDb_t CalibDb;
+#if RKAIQ_HAVE_GAMMA_V1
+    CalibDbV2_gamma_t CalibDb;
+#endif
+#if RKAIQ_HAVE_GAMMA_V2
+    CalibDbV2_gamma_V30_t CalibDb;
+#endif
     rk_aiq_gamma_attr_t agammaAttr;
     AgammaProcRes_t ProcRes;
     int working_mode;

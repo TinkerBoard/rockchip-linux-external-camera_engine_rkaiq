@@ -133,6 +133,42 @@ static calibdb_ctx_member_offset_info_t info_CamCalibDbV2ContextIsp30_t[] = {
 };
 #endif
 
+#define CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(nm) \
+    CALIB_MODULE_RELATIVE_OFFSET(CamCalibDbV2ContextIsp32_t, nm)
+
+#ifdef ISP_HW_V32
+static calibdb_ctx_member_offset_info_t info_CamCalibDbV2ContextIsp32_t[] = {
+    { "ae_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(ae_calib)},
+    { "wb_v21", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(wb_v21)},
+    { "ablc_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(ablc_calib)},
+    { "adegamma_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(adegamma_calib)},
+    { "agic_calib_v21", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(agic_calib_v21)},
+    { "debayer", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(debayer)},
+    { "colorAsGrey", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(colorAsGrey)},
+    { "ccm_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(ccm_calib)},
+    { "lut3d_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(lut3d_calib)},
+    { "aldch", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(aldch)},
+    { "adpcc_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(adpcc_calib)},
+    { "ie", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(ie)},
+    { "cpsl", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(cpsl)},
+    { "cproc", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(cproc)},
+    { "amerge_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(amerge_calib_V2)},
+    { "adrc_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(adrc_calib_V2)},
+    { "agamma_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(agamma_calib_V30)},
+    { "adehaze_calib_v30", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(adehaze_calib_v30)},
+    { "lsc_v2", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(lsc_v2)},
+    { "ynr_v3", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(ynr_v3)},
+    { "cnr_v2", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(cnr_v2)},
+    { "sharp_v4", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(sharp_v4)},
+    { "bayer2dnr_v2", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(bayer2dnr_v2)},
+    { "bayertnr_v2", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(bayertnr_v2)},
+    { "cac_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(cac_calib)},
+    { "af_v30", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(af_v30)},
+    { NULL, 0},
+};
+#endif
+
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 static calibdb_ctx_infos_t info_CamCalibDbV2Context_array[] = {
@@ -144,6 +180,9 @@ static calibdb_ctx_infos_t info_CamCalibDbV2Context_array[] = {
 #endif
 #ifdef ISP_HW_V30
     {30, info_CamCalibDbV2ContextIsp30_t},
+#endif
+#ifdef ISP_HW_V32
+    {32, info_CamCalibDbV2ContextIsp32_t},
 #endif
 };
 #pragma GCC diagnostic pop
@@ -160,6 +199,9 @@ static inline size_t calibdbV2_scene_ctx_size(CamCalibDbContext_t* ctx) {
 #ifdef ISP_HW_V30
     return sizeof(CamCalibDbV2ContextIsp30_t);
 #endif
+#ifdef ISP_HW_V32
+    return sizeof(CamCalibDbV2ContextIsp32_t);
+#endif
     return 0;
 }
 
@@ -174,8 +216,11 @@ static inline const char* calibdbv2_get_scene_ctx_struct_name(const void* scene_
 #ifdef ISP_HW_V21
     return "CamCalibDbV2ContextIsp21_t";
 #endif
-#ifdef ISP_HW_V21
+#ifdef ISP_HW_V30
     return "CamCalibDbV2ContextIsp30_t";
+#endif
+#ifdef ISP_HW_V32
+    return "CamCalibDbV2ContextIsp32_t";
 #endif
     return NULL;
 }
@@ -192,6 +237,9 @@ calibdbv2_get_scene_ptr(CamCalibSubSceneList_t* scene) {
 #elif defined(ISP_HW_V30)
     if (CHECK_ISP_HW_V30())
         return (&scene->scene_isp30);
+#elif defined(ISP_HW_V32)
+    if (CHECK_ISP_HW_V32())
+        return (&scene->scene_isp32);
 #else
     return NULL;
 #endif
@@ -227,6 +275,9 @@ static inline int calibdbV2_to_tuningdb(CamCalibDbV2Tuning_t *dst,
 #elif defined(ISP_HW_V30)
     memcpy(&dst->calib_scene, src->calib_scene,
            sizeof(CamCalibDbV2ContextIsp30_t));
+#elif defined(ISP_HW_V32)
+    memcpy(&dst->calib_scene, src->calib_scene,
+           sizeof(CamCalibDbV2ContextIsp32_t));
 #else
 #error "WRONG ISP_HW_VERSION, ONLY SUPPORT V20 AND V21 AND V30 NOW !"
 #endif
@@ -248,6 +299,9 @@ static inline int calibdbV2_from_tuningdb(CamCalibDbV2Context_t *dst,
 #elif defined(ISP_HW_V30)
     memcpy(dst->calib_scene, &src->calib_scene,
            sizeof(CamCalibDbV2ContextIsp30_t));
+#elif defined(ISP_HW_V32)
+    memcpy(dst->calib_scene, &src->calib_scene,
+           sizeof(CamCalibDbV2ContextIsp32_t));
 #else
 #error "WRONG ISP_HW_VERSION, ONLY SUPPORT V20 AND V21 AND V30 NOW !"
 #endif

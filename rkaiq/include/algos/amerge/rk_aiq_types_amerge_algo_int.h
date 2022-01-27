@@ -40,14 +40,12 @@ typedef struct mMergeMDCurveV21_s {
     float MS_offset;
 } mMergeMDCurveV21_t;
 
-typedef struct mmergeAttrV21_s
-{
+typedef struct mmergeAttrV21_s {
     mMergeOECurveV21_t OECurve;
     mMergeMDCurveV21_t MDCurve;
 } mmergeAttrV21_t;
 
-typedef struct mergeAttrV21_s
-{
+typedef struct mergeAttrV21_s {
     merge_OpModeV21_t    opMode;
     mmergeAttrV21_t      stManual;
     MergeCurrCtlData_t   CtlInfo;
@@ -69,15 +67,13 @@ typedef struct mShortFrameModeData_s {
     mMergeMDCurveV30Short_t MDCurve;
 } mShortFrameModeData_t;
 
-typedef struct mMergeAttrV30_s
-{
+typedef struct mMergeAttrV30_s {
     MergeBaseFrame_t BaseFrm;
     mLongFrameModeData_t LongFrmModeData;
     mShortFrameModeData_t ShortFrmModeData;
 } mMergeAttrV30_t;
 
-typedef struct mergeAttrV30_s
-{
+typedef struct mergeAttrV30_s {
     merge_OpModeV21_t    opMode;
     mMergeAttrV30_t stManual;
     MergeCurrCtlData_t CtlInfo;
@@ -90,8 +86,7 @@ typedef struct mergeAttr_s {
     mergeAttrV30_t    attrV30;
 } mergeAttr_t;
 
-typedef struct MgeProcRes_s
-{
+typedef struct MgeProcRes_s {
     unsigned char  sw_hdrmge_mode;
     unsigned short sw_hdrmge_gain0_inv;
     unsigned short sw_hdrmge_gain0;
@@ -107,8 +102,7 @@ typedef struct MgeProcRes_s
     unsigned short sw_hdrmge_e_y[ISP20_HDRMGE_OE_CURVE_NUM];
 } MgeProcRes_t;
 
-typedef struct MgeProcResV2_s
-{
+typedef struct MgeProcResV2_s {
     unsigned char  sw_hdrmge_s_base;
     unsigned char  sw_hdrmge_mode;
     unsigned short sw_hdrmge_gain0_inv;
@@ -131,12 +125,13 @@ typedef struct MgeProcResV2_s
     unsigned short sw_hdrmge_lm_scl;
 } MgeProcResV2_t;
 
-typedef struct RkAiqAmergeProcResult_s
-{
-    union {
-        MgeProcRes_t Merge_v20;
-        MgeProcResV2_t Merge_v30;
-    };
+typedef struct RkAiqAmergeProcResult_s {
+#if RKAIQ_HAVE_MERGE_V1
+    MgeProcRes_t Merge_v20;
+#endif
+#if RKAIQ_HAVE_MERGE_V2
+    MgeProcResV2_t Merge_v30;
+#endif
     bool update;;
     bool LongFrameMode;
 } RkAiqAmergeProcResult_t;

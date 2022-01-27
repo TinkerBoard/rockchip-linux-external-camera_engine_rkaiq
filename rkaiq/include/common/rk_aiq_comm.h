@@ -522,6 +522,9 @@ extern int g_rkaiq_isp_hw_ver;
 #define CHECK_ISP_HW_V30() \
     (g_rkaiq_isp_hw_ver == 30 ? true : false)
 
+#define CHECK_ISP_HW_V32() \
+    (g_rkaiq_isp_hw_ver == 32 ? true : false)
+
 #define CHECK_ISP_HW_V3X() \
     (g_rkaiq_isp_hw_ver == 30 ? true : \
      g_rkaiq_isp_hw_ver == 31 ? true : false)

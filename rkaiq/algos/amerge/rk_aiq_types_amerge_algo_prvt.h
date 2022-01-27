@@ -138,10 +138,12 @@ typedef struct MergeHandleDataV30_s
 } MergeHandleDataV30_t;
 
 typedef struct MergeHandleData_s {
-    union {
-        MergeHandleDataV20_t Merge_v20;
-        MergeHandleDataV30_t Merge_v30;
-    };
+#if RKAIQ_HAVE_MERGE_V1
+    MergeHandleDataV20_t Merge_v20;
+#endif
+#if RKAIQ_HAVE_MERGE_V2
+    MergeHandleDataV30_t Merge_v30;
+#endif
 } MergeHandleData_t;
 
 typedef struct MergePrevCtrlData_s
@@ -187,10 +189,12 @@ typedef struct MergeCurrData_s
 
 typedef struct AmergeProcResData_s
 {
-    union {
-        MgeProcRes_t Merge_v20;
-        MgeProcResV2_t Merge_v30;
-    };
+#if RKAIQ_HAVE_MERGE_V1
+    MgeProcRes_t Merge_v20;
+#endif
+#if RKAIQ_HAVE_MERGE_V2
+    MgeProcResV2_t Merge_v30;
+#endif
     bool update;
     bool LongFrameMode;
 } AmergeProcResData_t;
@@ -246,13 +250,6 @@ typedef struct AmergeConfigV30_s {
     float ShortFrmMDCurve_damp;
 } AmergeConfigV30_t;
 
-typedef struct AmergeConfig_s {
-    union {
-        AmergeConfigV20_t Merge_v20;
-        AmergeConfigV30_t Merge_v30;
-    };
-} AmergeConfig_t;
-
 typedef struct SensorInfo_s
 {
     bool  LongFrmMode;
@@ -269,20 +266,17 @@ typedef struct SensorInfo_s
     float MinExpoS;
 } SensorInfo_t;
 
-typedef struct AmergeCalib_s {
-    union {
-        CalibDbV2_merge_t Merge_v20;
-        CalibDbV2_merge_V2_t Merge_v30;
-    };
-} AmergeCalib_t;
-
-typedef struct AmergeContext_s
-{
-    //api
+typedef struct AmergeContext_s {
     mergeAttr_t mergeAttr;
-    AmergeCalib_t pCalibDB;
+#if RKAIQ_HAVE_MERGE_V1
+    CalibDbV2_merge_t CalibDBV1;
+    AmergeConfigV20_t ConfigV1;
+#endif
+#if RKAIQ_HAVE_MERGE_V2
+    CalibDbV2_merge_V2_t CalibDBV2;
+    AmergeConfigV30_t ConfigV2;
+#endif
     AmergeState_t state;
-    AmergeConfig_t Config;
     AmergePrevData_t PrevData ;
     AmergeProcResData_t ProcRes;
     MergeCurrAeResult_t AeResult;

@@ -20,10 +20,14 @@
 #include "rk_aiq_algo_camgroup_types.h"
 #include "algos/adrc/rk_aiq_algo_adrc_itf.h"
 #include "xcam_log.h"
-#include "algos/adrc/rk_aiq_adrc_algo.h"
+#if RKAIQ_HAVE_DRC_V1
+#include "adrc/rk_aiq_adrc_algo_v1.h"
+#endif
+#if RKAIQ_HAVE_DRC_V2
+#include "adrc/rk_aiq_adrc_algo_v2.h"
+#endif
 
 RKAIQ_BEGIN_DECLARE
-
 
 static XCamReturn
 create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
@@ -88,18 +92,18 @@ prepare(RkAiqAlgoCom* params)
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
         LOGI_ATMO("%s: Adrc Reload Para!\n", __FUNCTION__);
 
-        if(CHECK_ISP_HW_V21()) {
-            CalibDbV2_drc_t* calibv2_adrc_calib =
-                (CalibDbV2_drc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
+#if RKAIQ_HAVE_DRC_V1
+        CalibDbV2_drc_t* calibv2_adrc_calib =
+            (CalibDbV2_drc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
 
-            memcpy(&pAdrcGrpCtx->pCalibDB.Drc_v21, calibv2_adrc_calib, sizeof(CalibDbV2_drc_t)); //reload iq paras
-        }
-        else if(CHECK_ISP_HW_V30()) {
-            CalibDbV2_drc_V2_t* calibv2_adrc_calib =
-                (CalibDbV2_drc_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
+        memcpy(&pAdrcGrpCtx->CalibDBV1, calibv2_adrc_calib, sizeof(CalibDbV2_drc_t)); //reload iq paras
+#endif
+#if RKAIQ_HAVE_DRC_V2
+        CalibDbV2_drc_V2_t* calibv2_adrc_calib =
+            (CalibDbV2_drc_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
 
-            memcpy(&pAdrcGrpCtx->pCalibDB.Drc_v30, calibv2_adrc_calib, sizeof(CalibDbV2_drc_V2_t)); //reload iq paras
-        }
+        memcpy(&pAdrcGrpCtx->CalibDBV2, calibv2_adrc_calib, sizeof(CalibDbV2_drc_V2_t)); //reload iq paras
+#endif
     }
 
     if(/* !params->u.prepare.reconfig*/true) {
@@ -112,8 +116,7 @@ prepare(RkAiqAlgoCom* params)
     }
 
     //update
-    DrcPrepareJsonMalloc(&pAdrcGrpCtx->Config, &pAdrcGrpCtx->pCalibDB);
-    AdrcPrePareJsonUpdateConfig(pAdrcGrpCtx, &pAdrcGrpCtx->pCalibDB);
+    DrcPrepareJsonMalloc(pAdrcGrpCtx);
 
     LOG1_ATMO("%s:Exit!\n", __FUNCTION__);
     return result;
@@ -132,17 +135,17 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     RkAiqAlgoCamGroupProcOut* pAdrcGrpProcRes = (RkAiqAlgoCamGroupProcOut*)outparams;
 
     //update config
-    if(pAdrcGrpCtx->drcAttr.opMode > DRC_OPMODE_API_OFF) {
-        DrcProcApiMalloc(&pAdrcGrpCtx->Config, &pAdrcGrpCtx->drcAttr, &pAdrcGrpCtx->pCalibDB);
-        AdrcProcUpdateConfig(pAdrcGrpCtx, &pAdrcGrpCtx->pCalibDB, &pAdrcGrpCtx->drcAttr);
-    }
+    if(pAdrcGrpCtx->drcAttr.opMode > DRC_OPMODE_API_OFF)
+        DrcProcApiMallocAndUpdateConfig(pAdrcGrpCtx);
     DrcEnableSetting(pAdrcGrpCtx);
 
     bool Enable = false;
-    if(CHECK_ISP_HW_V21())
-        Enable = pAdrcGrpCtx->Config.Drc_v21.Enable;
-    else if(CHECK_ISP_HW_V30())
-        Enable = pAdrcGrpCtx->Config.Drc_v30.Enable;
+#if RKAIQ_HAVE_DRC_V1
+    Enable = pAdrcGrpCtx->ConfigV1.Enable;
+#endif
+#if RKAIQ_HAVE_DRC_V2
+    Enable = pAdrcGrpCtx->ConfigV2.Enable;
+#endif
 
     if(Enable) {
         LOGD_ATMO("%s://////////////////////////////////////ADRC Group Start////////////////////////////////////// \n", __func__);

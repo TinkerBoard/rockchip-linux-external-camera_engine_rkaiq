@@ -19,7 +19,13 @@
 
 #include "rk_aiq_algo_camgroup_types.h"
 #include "algos/agamma/rk_aiq_algo_agamma_itf.h"
-#include "algos/agamma/rk_aiq_agamma_algo.h"
+#if RKAIQ_HAVE_GAMMA_V1
+#include "agamma/rk_aiq_agamma_algo_v1.h"
+#endif
+#if RKAIQ_HAVE_GAMMA_V2
+#include "agamma/rk_aiq_agamma_algo_v2.h"
+#endif
+
 
 RKAIQ_BEGIN_DECLARE
 
@@ -65,17 +71,16 @@ prepare(RkAiqAlgoCom* params)
     pAgammaGrpCtx->prepare_type = pCfgParam->gcom.com.u.prepare.conf_type;
 
     if(!!(pAgammaGrpCtx->prepare_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
-
-        if(CHECK_ISP_HW_V21()) {
-            CalibDbV2_gamma_t* calibv2_agamma_calib =
-                (CalibDbV2_gamma_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2), agamma_calib));
-            memcpy(&pAgammaGrpCtx->CalibDb.Gamma_v20, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_t));//reload iq
-        }
-        else if(CHECK_ISP_HW_V30()) {
-            CalibDbV2_gamma_V30_t* calibv2_agamma_calib =
-                (CalibDbV2_gamma_V30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2), agamma_calib));
-            memcpy(&pAgammaGrpCtx->CalibDb.Gamma_v30, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_V30_t));//reload iq
-        }
+#if RKAIQ_HAVE_GAMMA_V1
+        CalibDbV2_gamma_t* calibv2_agamma_calib =
+            (CalibDbV2_gamma_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2), agamma_calib));
+        memcpy(&pAgammaGrpCtx->CalibDb, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_t));//reload iq
+#endif
+#if RKAIQ_HAVE_GAMMA_V2
+        CalibDbV2_gamma_V30_t* calibv2_agamma_calib =
+            (CalibDbV2_gamma_V30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2), agamma_calib));
+        memcpy(&pAgammaGrpCtx->CalibDb, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_V30_t));//reload iq
+#endif
         LOGI_AGAMMA("%s: Agamma Reload Para!!!\n", __FUNCTION__);
     }
 

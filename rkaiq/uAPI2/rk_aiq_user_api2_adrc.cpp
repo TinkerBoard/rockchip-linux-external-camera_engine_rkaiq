@@ -24,44 +24,41 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_DRC_V1 || RKAIQ_HAVE_DRC_V2
 XCamReturn
 rk_aiq_user_api2_adrc_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drc_attrib_t attr)
 {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ADRC);
 
-    if(CHECK_ISP_HW_V20())
-        LOGE_ATMO("%s:ISP2.0 do not support drc api!\n", __FUNCTION__);
-    else if(CHECK_ISP_HW_V21() || CHECK_ISP_HW_V30()) {
-        if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
 #ifdef RKAIQ_ENABLE_CAMGROUP
-            RkAiqCamGroupAdrcHandleInt* algo_handle =
-                camgroupAlgoHandle<RkAiqCamGroupAdrcHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADRC);
+        RkAiqCamGroupAdrcHandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupAdrcHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADRC);
 
-            if (algo_handle) {
-                return algo_handle->setAttrib(attr);
-            } else {
-                const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
-                for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
-                    if (!camCtx)
-                        continue;
-
-                    RkAiqAdrcHandleInt* singleCam_algo_handle =
-                        algoHandle<RkAiqAdrcHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_ADRC);
-                    if (singleCam_algo_handle)
-                        return singleCam_algo_handle->setAttrib(attr);
-                }
-            }
-#else
-            return XCAM_RETURN_ERROR_FAILED;
-#endif
+        if (algo_handle) {
+            return algo_handle->setAttrib(attr);
         } else {
-            RkAiqAdrcHandleInt* algo_handle =
-                algoHandle<RkAiqAdrcHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADRC);
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx)
+                    continue;
 
-            if (algo_handle) {
-                return algo_handle->setAttrib(attr);
+                RkAiqAdrcHandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAdrcHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_ADRC);
+                if (singleCam_algo_handle)
+                    return singleCam_algo_handle->setAttrib(attr);
             }
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif
+    } else {
+        RkAiqAdrcHandleInt* algo_handle =
+            algoHandle<RkAiqAdrcHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADRC);
+
+        if (algo_handle) {
+            return algo_handle->setAttrib(attr);
         }
     }
 
@@ -73,42 +70,49 @@ rk_aiq_user_api2_adrc_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drc_attrib_t* a
 {
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
-    if(CHECK_ISP_HW_V20())
-        LOGE_ATMO("%s:ISP2.0 do not support drc api!\n", __FUNCTION__);
-    else if(CHECK_ISP_HW_V21() || CHECK_ISP_HW_V30()) {
-        if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
 #ifdef RKAIQ_ENABLE_CAMGROUP
-            RkAiqCamGroupAdrcHandleInt* algo_handle =
-                camgroupAlgoHandle<RkAiqCamGroupAdrcHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADRC);
+        RkAiqCamGroupAdrcHandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupAdrcHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADRC);
 
-            if (algo_handle) {
-                return algo_handle->getAttrib(attr);
-            } else {
-                const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
-                for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
-                    if (!camCtx)
-                        continue;
-
-                    RkAiqAdrcHandleInt* singleCam_algo_handle =
-                        algoHandle<RkAiqAdrcHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_ADRC);
-                    if (singleCam_algo_handle)
-                        return singleCam_algo_handle->getAttrib(attr);
-                }
-            }
-#else
-            return XCAM_RETURN_ERROR_FAILED;
-#endif
+        if (algo_handle) {
+            return algo_handle->getAttrib(attr);
         } else {
-            RkAiqAdrcHandleInt* algo_handle =
-                algoHandle<RkAiqAdrcHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADRC);
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx)
+                    continue;
 
-            if (algo_handle) {
-                return algo_handle->getAttrib(attr);
+                RkAiqAdrcHandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAdrcHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_ADRC);
+                if (singleCam_algo_handle)
+                    return singleCam_algo_handle->getAttrib(attr);
             }
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif
+    } else {
+        RkAiqAdrcHandleInt* algo_handle =
+            algoHandle<RkAiqAdrcHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADRC);
+
+        if (algo_handle) {
+            return algo_handle->getAttrib(attr);
         }
     }
 
     return XCAM_RETURN_NO_ERROR;
 }
+#else
+XCamReturn
+rk_aiq_user_api2_adrc_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drc_attrib_t attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn
+rk_aiq_user_api2_adrc_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drc_attrib_t* attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+#endif
 
 RKAIQ_END_DECLARE

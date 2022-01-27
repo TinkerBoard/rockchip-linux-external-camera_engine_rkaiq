@@ -112,7 +112,9 @@ private:
 #if RKAIQ_HAVE_AWB_V20
     static int CamCalibDbFreeAwbV20Ctx(CalibDbV2_Wb_Para_V20_t* awb);
 #endif
+#if RKAIQ_HAVE_GAMMA_V1
     static int CamCalibDbFreeGammaCtx(CalibDbV2_gamma_t* gamma);
+#endif
     static int CamCalibDbFreeBlcCtx(CalibDbV2_Ablc_t* blc);
     static int CamCalibDbFreeDegammaCtx(CalibDbV2_Adegmma_t* degamma);
 #if RKAIQ_HAVE_GIC_V1
@@ -120,7 +122,9 @@ private:
 #endif
     static int CamCalibDbFreeDehazeV20Ctx(CalibDbV2_dehaze_V20_t* dehaze);
     static int CamCalibDbFreeDpccCtx(CalibDbV2_Dpcc_t* dpcc);
+#if RKAIQ_HAVE_MERGE_V1
     static int CamCalibDbFreeMergeCtx(CalibDbV2_merge_t* merge);
+#endif
     static int CamCalibDbFreeTmoCtx(CalibDbV2_tmo_t* tmo);
     static int CamCalibDbFreeCpslCtx(CalibDbV2_Cpsl_t* cpsl);
 #if RKAIQ_HAVE_ORB_V1
@@ -172,7 +176,9 @@ private:
     static int CamCalibDbFreeGicV21Ctx(CalibDbV2_Gic_V21_t* gic);
 #endif
     static int CamCalibDbFreeDehazeV21Ctx(CalibDbV2_dehaze_V21_t* dehaze);
+#if RKAIQ_HAVE_DRC_V1
     static int CamCalibDbFreeDrcCtx(CalibDbV2_drc_t* drc);
+#endif
 #if RKAIQ_HAVE_BAYERNR_V2
     static int CamCalibDbFreeBayerNrV2Ctx(CalibDbV2_BayerNrV2_t* bayernr_v1);
 #endif
@@ -190,31 +196,37 @@ private:
     static int CamCalibDbFreeSysStaticCtx(CalibDb_SysStaticCfg_ParaV2_t* sys_static);
 
     //isp30
+#if RKAIQ_HAVE_GAMMA_V2
     static int CamCalibDbFreeGammaV2Ctx(CalibDbV2_gamma_V30_t* gamma);
+#endif
     static int CamCalibDbFreeDehazeV30Ctx(CalibDbV2_dehaze_V30_t* dehaze);
+#if RKAIQ_HAVE_DRC_V2
     static int CamCalibDbFreeDrcV2Ctx(CalibDbV2_drc_V2_t* drc);
+#endif
+#if RKAIQ_HAVE_MERGE_V2
     static int CamCalibDbFreeMergeV2Ctx(CalibDbV2_merge_V2_t* merge);
+#endif
 #if RKAIQ_HAVE_CAC_V10
     static int CamCalibDbFreeCacCtx(CalibDbV2_Cac_t* cac_calib);
 #endif
 #if RKAIQ_HAVE_BAYER2DNR_V2
-	static int CamCalibDbFreeBayer2dnrV2Ctx(CalibDbV2_Bayer2dnr_V2_t* bayer2dnr_v2);
+    static int CamCalibDbFreeBayer2dnrV2Ctx(CalibDbV2_Bayer2dnr_V2_t* bayer2dnr_v2);
 #endif
 #if RKAIQ_HAVE_BAYERTNR_V2
-	static int CamCalibDbFreeBayertnrV2Ctx(CalibDbV2_BayerTnr_V2_t* bayertnr_v2);
+    static int CamCalibDbFreeBayertnrV2Ctx(CalibDbV2_BayerTnr_V2_t* bayertnr_v2);
 #endif
 #if RKAIQ_HAVE_CNR_V2
-	static int CamCalibDbFreeCnrV2Ctx(CalibDbV2_CNRV2_t* cnr_v2);
+    static int CamCalibDbFreeCnrV2Ctx(CalibDbV2_CNRV2_t* cnr_v2);
 #endif
 #if RKAIQ_HAVE_YNR_V3
-	static int CamCalibDbFreeYnrV3Ctx(CalibDbV2_YnrV3_t* ynr_v3);
+    static int CamCalibDbFreeYnrV3Ctx(CalibDbV2_YnrV3_t* ynr_v3);
 #endif
 #if RKAIQ_HAVE_SHARP_V4
-	static int CamCalibDbFreeSharpV4Ctx(CalibDbV2_SharpV4_t* sharp_v4);
+    static int CamCalibDbFreeSharpV4Ctx(CalibDbV2_SharpV4_t* sharp_v4);
 #endif
 
 #if RKAIQ_HAVE_AF_V30
-        static int CamCalibDbFreeAfV30Ctx(CalibDbV2_AFV30_t* af);
+    static int CamCalibDbFreeAfV30Ctx(CalibDbV2_AFV30_t* af);
 #endif
 };
 

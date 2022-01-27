@@ -15,8 +15,11 @@
  *
  */
 
-#include <cstring>
 #include "Isp20Params.h"
+
+#include <cstring>
+#include <type_traits>
+
 #include "common/rkisp21-config.h"
 
 namespace RkCam {
@@ -396,14 +399,39 @@ IspParamsAssembler::stop() {
     reset_locked();
 }
 
-template<class T>
-void
-Isp20Params::convertAiqAeToIsp20Params
-(
-    T& isp_cfg,
-    const rk_aiq_isp_aec_meas_t& aec_meas
-)
-{
+template <typename T>
+struct ConvertAeHelper {
+    template <typename U = T, typename std::enable_if<
+                                  (std::is_same<U, struct isp2x_isp_params_cfg>::value ||
+                                   std::is_same<U, struct isp21_isp_params_cfg>::value),
+                                  bool>::type = true>
+    void copyYuvAeCfg(U& cfg, const rk_aiq_isp_aec_meas_t& aec_meas) {
+        memcpy(&cfg.meas.yuvae, &aec_meas.yuvae, sizeof(aec_meas.yuvae));
+    };
+
+    template <typename U = T, typename std::enable_if<
+                                  !(std::is_same<U, struct isp2x_isp_params_cfg>::value ||
+                                    std::is_same<U, struct isp21_isp_params_cfg>::value),
+                                  bool>::type = false>
+    void copyYuvAeCfg(U& cfg, const rk_aiq_isp_aec_meas_t& aec_meas){};
+
+    template <typename U                          = T,
+              typename std::enable_if<(std::is_same<U, struct isp2x_isp_params_cfg>::value ||
+                                       std::is_same<U, struct isp21_isp_params_cfg>::value),
+                                      bool>::type = true>
+    void copyAeHistCfg(U& cfg, const rk_aiq_isp_hist_meas_t& hist_meas) {
+        memcpy(&cfg.meas.sihst, &hist_meas.sihist, sizeof(hist_meas.sihist));
+    };
+
+    template <typename U                          = T,
+              typename std::enable_if<!(std::is_same<U, struct isp2x_isp_params_cfg>::value ||
+                                        std::is_same<U, struct isp21_isp_params_cfg>::value),
+                                      bool>::type = false>
+    void copyAeHistCfg(U& cfg, const rk_aiq_isp_hist_meas_t& hist_meas){};
+};
+
+template <class T>
+void Isp20Params::convertAiqAeToIsp20Params(T& isp_cfg, const rk_aiq_isp_aec_meas_t& aec_meas) {
     /* ae update */
     if(/*aec_meas.ae_meas_en*/1) {
         if(_working_mode == RK_AIQ_WORKING_MODE_NORMAL) { // normal
@@ -470,7 +498,8 @@ Isp20Params::convertAiqAeToIsp20Params
     memcpy(&isp_cfg.meas.rawae2, &aec_meas.rawae2, sizeof(aec_meas.rawae2));
     memcpy(&isp_cfg.meas.rawae0, &aec_meas.rawae0, sizeof(aec_meas.rawae0));
 #if defined(ISP_HW_V20) || defined(ISP_HW_V21)
-    memcpy(&isp_cfg.meas.yuvae, &aec_meas.yuvae, sizeof(aec_meas.yuvae));
+    ConvertAeHelper<T> helper;
+    helper.copyYuvAeCfg(isp_cfg, aec_meas);
 #endif
     /*
      *     LOGD_CAMHW_SUBM(ISP20PARAM_SUBM,"xuhf-debug: hist_meas-isp_cfg size: [%dx%d]-[%dx%d]-[%dx%d]-[%dx%d]\n",
@@ -580,7 +609,8 @@ Isp20Params::convertAiqHistToIsp20Params
     memcpy(&isp_cfg.meas.rawhist2, &hist_meas.rawhist2, sizeof(hist_meas.rawhist2));
     memcpy(&isp_cfg.meas.rawhist0, &hist_meas.rawhist0, sizeof(hist_meas.rawhist0));
 #if defined(ISP_HW_V20) || defined(ISP_HW_V21)
-    memcpy(&isp_cfg.meas.sihst, &hist_meas.sihist, sizeof(hist_meas.sihist));
+    ConvertAeHelper<T> helper;
+    helper.copyAeHistCfg(isp_cfg, hist_meas);
 #endif
     /*
      *     LOGD_CAMHW_SUBM(ISP20PARAM_SUBM,"xuhf-debug: hist_meas-isp_cfg size: [%dx%d]-[%dx%d]-[%dx%d]-[%dx%d]\n",
@@ -1063,6 +1093,7 @@ Isp20Params::convertAiqAwbToIsp20Params(T& isp_cfg,
     awb_cfg_v200->sw_rawawb_store_wp_flag_ls_idx2   =     awb_meas.storeWpFlagIllu[2];
 }
 
+#if RKAIQ_HAVE_MERGE_V1
 template<class T>
 void Isp20Params::convertAiqMergeToIsp20Params(T& isp_cfg,
         const rk_aiq_isp_merge_t& amerge_data)
@@ -1117,6 +1148,7 @@ void Isp20Params::convertAiqMergeToIsp20Params(T& isp_cfg,
 
 #endif
 }
+#endif
 
 template<class T>
 void Isp20Params::convertAiqTmoToIsp20Params(T& isp_cfg,
@@ -1377,6 +1409,7 @@ void Isp20Params::convertAiqAdegammaToIsp20Params(T& isp_cfg,
 
 }
 
+#if RKAIQ_HAVE_DEHAZE_V1
 template<class T>
 void Isp20Params::convertAiqAdehazeToIsp20Params(T& isp_cfg,
         const rk_aiq_isp_dehaze_t& dhaze                     )
@@ -1519,7 +1552,7 @@ void Isp20Params::convertAiqAdehazeToIsp20Params(T& isp_cfg,
     }
 #endif
 }
-
+#endif
 
 template<class T>
 void
@@ -1810,32 +1843,32 @@ Isp20Params::convertAiqLscToIsp20Params(T& isp_cfg,
     memcpy(cfg->gb_data_tbl, lsc.gb_data_tbl, sizeof(lsc.gb_data_tbl));
     memcpy(cfg->b_data_tbl, lsc.b_data_tbl, sizeof(lsc.b_data_tbl));
 #ifdef ISP_HW_V30
-    #define MAX_LSC_VALUE 8191
+#define MAX_LSC_VALUE 8191
     struct isp21_bls_cfg &bls_cfg = isp_cfg.others.bls_cfg;
-    if(bls_cfg.bls1_en && bls_cfg.bls1_val.b >0 && bls_cfg.bls1_val.r>0
-        && bls_cfg.bls1_val.gb >0 && bls_cfg.bls1_val.gr>0 ){
-        if(lsc.lsc_en){
-            for(int i=0;i<ISP3X_LSC_DATA_TBL_SIZE;i++){
-                cfg->b_data_tbl[i] = cfg->b_data_tbl[i]*((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.b);
-                cfg->b_data_tbl[i] = MIN(cfg->b_data_tbl[i],MAX_LSC_VALUE);
-                cfg->gb_data_tbl[i] = cfg->gb_data_tbl[i]*((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.gb);
-                cfg->gb_data_tbl[i] = MIN(cfg->gb_data_tbl[i],MAX_LSC_VALUE);
-                cfg->r_data_tbl[i] = cfg->r_data_tbl[i]*((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.r);
-                cfg->r_data_tbl[i] = MIN(cfg->r_data_tbl[i],MAX_LSC_VALUE);
-                cfg->gr_data_tbl[i] = cfg->gr_data_tbl[i]*((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.gr);
-                cfg->gr_data_tbl[i] = MIN(cfg->gr_data_tbl[i],MAX_LSC_VALUE);
+    if(bls_cfg.bls1_en && bls_cfg.bls1_val.b > 0 && bls_cfg.bls1_val.r > 0
+            && bls_cfg.bls1_val.gb > 0 && bls_cfg.bls1_val.gr > 0 ) {
+        if(lsc.lsc_en) {
+            for(int i = 0; i < ISP3X_LSC_DATA_TBL_SIZE; i++) {
+                cfg->b_data_tbl[i] = cfg->b_data_tbl[i] * ((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.b);
+                cfg->b_data_tbl[i] = MIN(cfg->b_data_tbl[i], MAX_LSC_VALUE);
+                cfg->gb_data_tbl[i] = cfg->gb_data_tbl[i] * ((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.gb);
+                cfg->gb_data_tbl[i] = MIN(cfg->gb_data_tbl[i], MAX_LSC_VALUE);
+                cfg->r_data_tbl[i] = cfg->r_data_tbl[i] * ((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.r);
+                cfg->r_data_tbl[i] = MIN(cfg->r_data_tbl[i], MAX_LSC_VALUE);
+                cfg->gr_data_tbl[i] = cfg->gr_data_tbl[i] * ((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.gr);
+                cfg->gr_data_tbl[i] = MIN(cfg->gr_data_tbl[i], MAX_LSC_VALUE);
             }
-        }else{
+        } else {
             isp_cfg.module_ens |= ISP2X_MODULE_LSC; //force open lsc
-            for(int i=0;i<ISP3X_LSC_DATA_TBL_SIZE;i++){
-                cfg->b_data_tbl[i] = 1024*((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.b);
-                cfg->b_data_tbl[i] = MIN(cfg->b_data_tbl[i],MAX_LSC_VALUE);
-                cfg->gb_data_tbl[i] = 1024*((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.gb);
-                cfg->gb_data_tbl[i] = MIN(cfg->gb_data_tbl[i],MAX_LSC_VALUE);
-                cfg->r_data_tbl[i] = 1024*((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.r);
-                cfg->r_data_tbl[i] = MIN(cfg->r_data_tbl[i],MAX_LSC_VALUE);
-                cfg->gr_data_tbl[i] = 1024*((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.gr);
-                cfg->gr_data_tbl[i] = MIN(cfg->gr_data_tbl[i],MAX_LSC_VALUE);
+            for(int i = 0; i < ISP3X_LSC_DATA_TBL_SIZE; i++) {
+                cfg->b_data_tbl[i] = 1024 * ((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.b);
+                cfg->b_data_tbl[i] = MIN(cfg->b_data_tbl[i], MAX_LSC_VALUE);
+                cfg->gb_data_tbl[i] = 1024 * ((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.gb);
+                cfg->gb_data_tbl[i] = MIN(cfg->gb_data_tbl[i], MAX_LSC_VALUE);
+                cfg->r_data_tbl[i] = 1024 * ((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.r);
+                cfg->r_data_tbl[i] = MIN(cfg->r_data_tbl[i], MAX_LSC_VALUE);
+                cfg->gr_data_tbl[i] = 1024 * ((1 << ISP2X_BLC_BIT_MAX) - 1) / ((1 << ISP2X_BLC_BIT_MAX) - 1 - bls_cfg.bls1_val.gr);
+                cfg->gr_data_tbl[i] = MIN(cfg->gr_data_tbl[i], MAX_LSC_VALUE);
             }
         }
     }
@@ -3876,10 +3909,12 @@ bool Isp20Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_MERGE_PARAM:
     {
+#if RKAIQ_HAVE_MERGE_V1
         SmartPtr<RkAiqIspMergeParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspMergeParamsProxy>();
         if (params.ptr()) {
             convertAiqMergeToIsp20Params(isp_cfg, params->data()->result);
         }
+#endif
     }
     break;
     case RESULT_TYPE_TMO_PARAM:
@@ -3949,9 +3984,11 @@ bool Isp20Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_DEHAZE_PARAM:
     {
+#if RKAIQ_HAVE_DEHAZE_V1
         SmartPtr<RkAiqIspDehazeParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDehazeParamsProxy>();
         if (params.ptr())
             convertAiqAdehazeToIsp20Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_AGAMMA_PARAM:
@@ -4152,3 +4189,4 @@ Isp20Params::get_3a_result (cam3aResultList &results, int32_t type)
 //TODO: to solve template ld compile issue, add isp21 source file here now.
 #include "isp21/Isp21Params.cpp"
 #include "isp3x/Isp3xParams.cpp"
+#include "isp32/Isp32Params.cpp"

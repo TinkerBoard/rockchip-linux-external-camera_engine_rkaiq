@@ -545,6 +545,23 @@ protected:
     SmartPtr<RkAiqIspSharpenParamsPoolV3x>     mAiqIspSharpenV3xParamsPool;
     SmartPtr<RkAiqIspTnrParamsPoolV3x>         mAiqIspTnrV3xParamsPool;
 
+    // V32
+    SmartPtr<RkAiqIspBlcParamsPoolV32>      mAiqIspBlcV32ParamsPool;
+    SmartPtr<RkAiqIspMergeParamsPoolV32>    mAiqIspMergeV32ParamsPool;
+    SmartPtr<RkAiqIspDrcParamsPoolV32>      mAiqIspDrcV32ParamsPool;
+    SmartPtr<RkAiqIspBay3dParamsPoolV32>    mAiqIspBay3dV32ParamsPool;
+    SmartPtr<RkAiqIspBaynrParamsPoolV32>    mAiqIspBaynrV32ParamsPool;
+    SmartPtr<RkAiqIspCacParamsPoolV32>      mAiqIspCacV32ParamsPool;
+    SmartPtr<RkAiqIspDebayerParamsPoolV32>  mAiqIspDebayerV32ParamsPool;
+    SmartPtr<RkAiqIspCcmParamsPoolV32>      mAiqIspCcmV32ParamsPool;
+    SmartPtr<RkAiqIspDehazeParamsPoolV32>   mAiqIspDehazeV32ParamsPool;
+    SmartPtr<RkAiqIspLdchParamsPoolV32>     mAiqIspLdchV32ParamsPool;
+    SmartPtr<RkAiqIspYnrParamsPoolV32>      mAiqIspYnrV32ParamsPool;
+    SmartPtr<RkAiqIspCnrParamsPoolV32>      mAiqIspCnrV32ParamsPool;
+    SmartPtr<RkAiqIspSharpParamsPoolV32>    mAiqIspSharpV32ParamsPool;
+    SmartPtr<RkAiqIspAwbParamsPoolV32>      mAiqIspAwbV32ParamsPool;
+    SmartPtr<RkAiqIspAfParamsPoolV32>       mAiqIspAfV32ParamsPool;
+
 #endif
     static uint16_t DEFAULT_POOL_SIZE;
     XCam::Cond mIspStatsCond;

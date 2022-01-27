@@ -136,21 +136,14 @@ set(ALGO_HANDLE_SRC
     aiq_core/algo_handlers/RkAiqAcpHandle.cpp
     aiq_core/algo_handlers/RkAiqAcsmHandle.cpp
     aiq_core/algo_handlers/RkAiqAdebayerHandle.cpp
-    aiq_core/algo_handlers/RkAiqAdegammaHandle.cpp
-    aiq_core/algo_handlers/RkAiqAdhazHandle.cpp
     aiq_core/algo_handlers/RkAiqAdpccHandle.cpp
-    aiq_core/algo_handlers/RkAiqAdrcHandle.cpp
     aiq_core/algo_handlers/RkAiqAeHandle.cpp
     aiq_core/algo_handlers/RkAiqAfecHandle.cpp
-    aiq_core/algo_handlers/RkAiqAgammaHandle.cpp
     aiq_core/algo_handlers/RkAiqAieHandle.cpp
     aiq_core/algo_handlers/RkAiqAldchHandle.cpp
     aiq_core/algo_handlers/RkAiqAlscHandle.cpp
-    aiq_core/algo_handlers/RkAiqAmergeHandle.cpp
     aiq_core/algo_handlers/RkAiqAsdHandle.cpp
-    aiq_core/algo_handlers/RkAiqAtmoHandle.cpp
     aiq_core/algo_handlers/RkAiqAwbHandle.cpp
-    aiq_core/algo_handlers/RkAiqAwdrHandle.cpp
     aiq_core/algo_handlers/RkAiqCustomAeHandle.cpp
     )
 
@@ -303,6 +296,64 @@ if (RKAIQ_HAVE_CCM_V1)
     list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAccmHandle.cpp)
 endif()
 
+if (RKAIQ_HAVE_GAMMA_V1 OR RKAIQ_HAVE_GAMMA_V2)
+    if (RKAIQ_HAVE_GAMMA_V1)
+        add_compile_options(-DRKAIQ_HAVE_GAMMA_V1=1)
+    endif()
+    if (RKAIQ_HAVE_GAMMA_V2)
+        add_compile_options(-DRKAIQ_HAVE_GAMMA_V2=1)
+    endif()
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAgammaHandle.cpp)
+endif()
+
+if (RKAIQ_HAVE_MERGE_V1 OR RKAIQ_HAVE_MERGE_V2)
+    if (RKAIQ_HAVE_MERGE_V1)
+        add_compile_options(-DRKAIQ_HAVE_MERGE_V1=1)
+    endif()
+    if (RKAIQ_HAVE_MERGE_V2)
+        add_compile_options(-DRKAIQ_HAVE_MERGE_V2=1)
+    endif()
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAmergeHandle.cpp)
+endif()
+
+if (RKAIQ_HAVE_DRC_V1 OR RKAIQ_HAVE_DRC_V2)
+    if (RKAIQ_HAVE_DRC_V1)
+        add_compile_options(-DRKAIQ_HAVE_DRC_V1=1)
+    endif()
+    if (RKAIQ_HAVE_DRC_V2)
+        add_compile_options(-DRKAIQ_HAVE_DRC_V2=1)
+    endif()
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAdrcHandle.cpp)
+endif()
+
+if (RKAIQ_HAVE_DEHAZE_V1 OR RKAIQ_HAVE_DEHAZE_V2 OR RKAIQ_HAVE_DEHAZE_V3)
+    if (RKAIQ_HAVE_DEHAZE_V1)
+        add_compile_options(-DRKAIQ_HAVE_DEHAZE_V1=1)
+    endif()
+    if (RKAIQ_HAVE_DEHAZE_V2)
+        add_compile_options(-DRKAIQ_HAVE_DEHAZE_V2=1)
+    endif()
+    if (RKAIQ_HAVE_DEHAZE_V3)
+        add_compile_options(-DRKAIQ_HAVE_DEHAZE_V3=1)
+    endif()
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAdhazHandle.cpp)
+endif()
+
+if (RKAIQ_HAVE_DEGAMMA_V1)
+    add_compile_options(-DRKAIQ_HAVE_DEGAMMA_V1=1)
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAdegammaHandle.cpp)
+endif()
+
+if (RKAIQ_HAVE_TMO_V1)
+    add_compile_options(-DRKAIQ_HAVE_TMO_V1=1)
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAtmoHandle.cpp)
+endif()
+
+if (RKAIQ_HAVE_WDR_V1)
+    add_compile_options(-DRKAIQ_HAVE_WDR_V1=1)
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAwdrHandle.cpp)
+endif()
+
 set(AIQ_CORE_SRC
     ${ALGO_HANDLE_SRC}
     aiq_core/RkAiqHandle.cpp
@@ -313,6 +364,7 @@ set(AIQ_CORE_SRC
     aiq_core/RkAiqResourceTranslator.cpp
     aiq_core/RkAiqResourceTranslatorV21.cpp
     aiq_core/RkAiqResourceTranslatorV3x.cpp
+    aiq_core/RkAiqResourceTranslatorV32.cpp
     aiq_core/thumbnails.cpp
     )
 
@@ -359,6 +411,7 @@ else()
         hwi/isp20/CaptureRawData.cpp
         hwi/isp21/CamHwIsp21.cpp
         hwi/isp3x/CamHwIsp3x.cpp
+        hwi/isp32/CamHwIsp32.cpp
         hwi/fakecamera/FakeCamHwIsp20.cpp
         hwi/fakecamera/FakeSensorHw.cpp
         hwi/SensorHw.cpp
@@ -533,22 +586,15 @@ target_link_libraries(rkaiq
     rkaiq_ae
     rkaiq_awb
     rkaiq_asd
-    rkaiq_amerge
-    rkaiq_atmo
     rkaiq_acp
-    rkaiq_adehaze
     rkaiq_acgc
     rkaiq_adebayer
     rkaiq_adpcc
     rkaiq_afec
-    rkaiq_agamma
-    rkaiq_adegamma
     rkaiq_aie
     rkaiq_aldch
     rkaiq_alsc
 	rkaiq_acsm
-    rkaiq_awdr
-    rkaiq_adrc
     ${OPENCV_LIBS}
     ${OPENCV_3RDPARTY_LIBS}
     ${GENMESH_LIBS}
@@ -736,6 +782,55 @@ if (RKAIQ_HAVE_CCM_V1)
 target_link_libraries(rkaiq
     PRIVATE
     rkaiq_accm
+    )
+endif()
+
+if (RKAIQ_HAVE_GAMMA_V1 OR RKAIQ_HAVE_GAMMA_V2)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_agamma
+    )
+endif()
+
+if (RKAIQ_HAVE_MERGE_V1 OR RKAIQ_HAVE_MERGE_V2)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_amerge
+    )
+endif()
+
+if (RKAIQ_HAVE_DRC_V1 OR RKAIQ_HAVE_DRC_V2)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_adrc
+    )
+endif()
+
+if (RKAIQ_HAVE_DEHAZE_V1 OR RKAIQ_HAVE_DEHAZE_V2 OR RKAIQ_HAVE_DEHAZE_V3)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_adehaze
+    )
+endif()
+
+if (RKAIQ_HAVE_DEGAMMA_V1)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_adegamma
+    )
+endif()
+
+if (RKAIQ_HAVE_TMO_V1)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_atmo
+    )
+endif()
+
+if (RKAIQ_HAVE_WDR_V1)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_awdr
     )
 endif()
 

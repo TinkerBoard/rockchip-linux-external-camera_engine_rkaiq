@@ -110,4 +110,8 @@ inline std::string AlgoTypeToString(RkAiqAlgoType_t type) {
 #include "RkAiqCoreConfigV30.h"
 #endif
 
+#ifdef ISP_HW_V32
+#include "RkAiqCoreConfigV32.h"
+#endif
+
 #endif  // RK_AIQ_CORE_CONFIG_H

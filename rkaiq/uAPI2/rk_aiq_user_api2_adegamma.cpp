@@ -24,6 +24,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_DEGAMMA_V1
 XCamReturn
 rk_aiq_user_api2_adegamma_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_degamma_attrib_t attr)
 {
@@ -53,5 +54,17 @@ rk_aiq_user_api2_adegamma_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_dega
 
     return XCAM_RETURN_NO_ERROR;
 }
+#else
+XCamReturn
+rk_aiq_user_api2_adegamma_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_degamma_attrib_t attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn
+rk_aiq_user_api2_adegamma_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_degamma_attrib_t *attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+#endif
+
 
 RKAIQ_END_DECLARE

@@ -2182,7 +2182,7 @@ CamHwIsp20::get_sensor_pdafinfo(rk_sensor_full_info_t *sensor_info,
                 else
                     pdaf_info->pdaf_pixelformat = V4L2_PIX_FMT_SRGGB16;
                 LOGI_CAMHW_SUBM(ISP20HW_SUBM, "channel.bus_fmt 0x%x, pdaf_width %d, pdaf_height %d",
-                    channel.bus_fmt, pdaf_info->pdaf_width, pdaf_info->pdaf_height);
+                                channel.bus_fmt, pdaf_info->pdaf_width, pdaf_info->pdaf_height);
                 break;
             }
         }
@@ -2192,34 +2192,34 @@ CamHwIsp20::get_sensor_pdafinfo(rk_sensor_full_info_t *sensor_info,
         if (sensor_info->linked_to_isp) {
             switch (pdaf_info->pdaf_vc) {
             case 0:
-            strcpy(pdaf_info->pdaf_vdev, sensor_info->isp_info->rawwr0_path);
-            break;
+                strcpy(pdaf_info->pdaf_vdev, sensor_info->isp_info->rawwr0_path);
+                break;
             case 1:
-            strcpy(pdaf_info->pdaf_vdev, sensor_info->isp_info->rawwr1_path);
-            break;
+                strcpy(pdaf_info->pdaf_vdev, sensor_info->isp_info->rawwr1_path);
+                break;
             case 2:
-            strcpy(pdaf_info->pdaf_vdev, sensor_info->isp_info->rawwr2_path);
-            break;
+                strcpy(pdaf_info->pdaf_vdev, sensor_info->isp_info->rawwr2_path);
+                break;
             case 3:
             default:
-            strcpy(pdaf_info->pdaf_vdev, sensor_info->isp_info->rawwr3_path);
-            break;
+                strcpy(pdaf_info->pdaf_vdev, sensor_info->isp_info->rawwr3_path);
+                break;
             }
         } else {
             switch (pdaf_info->pdaf_vc) {
             case 0:
-            strcpy(pdaf_info->pdaf_vdev, sensor_info->cif_info->mipi_id0);
-            break;
+                strcpy(pdaf_info->pdaf_vdev, sensor_info->cif_info->mipi_id0);
+                break;
             case 1:
-            strcpy(pdaf_info->pdaf_vdev, sensor_info->cif_info->mipi_id1);
-            break;
+                strcpy(pdaf_info->pdaf_vdev, sensor_info->cif_info->mipi_id1);
+                break;
             case 2:
-            strcpy(pdaf_info->pdaf_vdev, sensor_info->cif_info->mipi_id2);
-            break;
+                strcpy(pdaf_info->pdaf_vdev, sensor_info->cif_info->mipi_id2);
+                break;
             case 3:
             default:
-            strcpy(pdaf_info->pdaf_vdev, sensor_info->cif_info->mipi_id3);
-            break;
+                strcpy(pdaf_info->pdaf_vdev, sensor_info->cif_info->mipi_id3);
+                break;
             }
         }
     }
@@ -3092,6 +3092,7 @@ CamHwIsp20::overrideExpRatioToAiqResults(const sint32_t frameId,
     }
     case RK_ISP2X_HDRMGE_ID:
     {
+#if RKAIQ_HAVE_MERGE_V1
         if(FrameCnt == 1)
             break;
 
@@ -3127,6 +3128,7 @@ CamHwIsp20::overrideExpRatioToAiqResults(const sint32_t frameId,
                         merge_proc_res.Merge_v20.sw_hdrmge_gain0_inv,
                         merge_proc_res.Merge_v20.sw_hdrmge_gain1,
                         merge_proc_res.Merge_v20.sw_hdrmge_gain1_inv);
+#endif
         break;
     }
     case RK_ISP2X_PP_TNR_ID:

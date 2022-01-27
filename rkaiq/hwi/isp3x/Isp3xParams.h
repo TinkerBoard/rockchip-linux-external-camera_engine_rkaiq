@@ -30,7 +30,7 @@ public:
     virtual ~Isp3xParams() {};
 protected:
     virtual bool convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result, void* isp_cfg_p);
-    void fixedAwbOveflowToIsp3xParams(void* isp_cfg_p,bool is_dual_isp);
+    void fixedAwbOveflowToIsp3xParams(void* isp_cfg_p, bool is_dual_isp);
 private:
     XCAM_DEAD_COPY(Isp3xParams);
     void convertAiqAwbToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
@@ -46,19 +46,25 @@ private:
                                     rk_aiq_isp_ynr_v3x_t& ynr);
     void convertAiqSharpenToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                         rk_aiq_isp_sharp_v3x_t& sharp);
+#if RKAIQ_HAVE_DRC_V2
     void convertAiqDrcToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_drc_v3x_t& adrc_data);
+#endif
     void convertAiqAfToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                    const rk_aiq_isp_af_meas_v3x_t& af_data, bool af_cfg_udpate);
+#if RKAIQ_HAVE_MERGE_V2
     void convertAiqMergeToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                       const rk_aiq_isp_merge_v3x_t& amerge_data);
+#endif
     void convertAiqAgammaToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                        const rk_aiq_isp_goc_v3x_t& gamma_out_cfg);
     void convertAiqCacToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                     struct isp3x_isp_params_cfg& isp_cfg_right,
                                     const rk_aiq_isp_cac_v3x_t& cac_cfg);
+#if RKAIQ_HAVE_DEHAZE_V3
     void convertAiqAdehazeToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                         const rk_aiq_isp_dehaze_v3x_t& dhaze);
+#endif
     void convertAiqGainToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                      rk_aiq_isp_gain_v3x_t& gain);
 };

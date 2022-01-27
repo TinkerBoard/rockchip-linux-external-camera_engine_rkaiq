@@ -19,8 +19,7 @@
 #define AIQ_ISP3X_DRC_Y_NUM 17
 
 
-typedef struct DrcProcResV21_s
-{
+typedef struct DrcProcResV21_s {
     int sw_drc_offset_pow2;
     int sw_drc_compres_scl;
     int sw_drc_position;
@@ -78,14 +77,15 @@ typedef struct DrcProcResV30_s {
 } DrcProcResV30_t;
 
 typedef struct DrcProcRes_s {
-    union {
-        DrcProcResV21_t Drc_v21;
-        DrcProcResV30_t Drc_v30;
-    };
+#if RKAIQ_HAVE_DRC_V1
+    DrcProcResV21_t Drc_v21;
+#endif
+#if RKAIQ_HAVE_DRC_V2
+    DrcProcResV30_t Drc_v30;
+#endif
 } DrcProcRes_t;
 
-typedef struct RkAiqAdrcProcResult_s
-{
+typedef struct RkAiqAdrcProcResult_s {
     DrcProcRes_t DrcProcRes;
     CompressMode_t CompressMode;
     bool update;
@@ -110,8 +110,7 @@ typedef enum drc_OpMode_s {
     DRC_OPMODE_LOCAL_TMO = 4,
 } drc_OpMode_t;
 
-typedef struct mLocalDataV21_s
-{
+typedef struct mLocalDataV21_s {
     float         LocalWeit;
     float         GlobalContrast;
     float         LoLitContrast;
@@ -155,8 +154,7 @@ typedef struct mdrcAttr_V21_s {
     int IIR_frame;
 } mdrcAttr_V21_t;
 
-typedef struct mLocalDataV30_s
-{
+typedef struct mLocalDataV30_s {
     float         LocalWeit;
     int           LocalAutoEnable;
     float         LocalAutoWeit;
@@ -200,6 +198,5 @@ typedef struct drcAttr_s {
     mLocalDataV30_t stLocalDataV30;
     DrcInfo_t Info;
 } drcAttr_t;
-
 
 #endif

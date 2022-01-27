@@ -138,6 +138,7 @@ Isp21Params::convertAiqBlcToIsp21Params(T& isp_cfg,
 
 }
 
+#if RKAIQ_HAVE_DEHAZE_V2
 void
 Isp21Params::convertAiqAdehazeToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_dehaze_v21_t& dhaze)
@@ -202,8 +203,8 @@ Isp21Params::convertAiqAdehazeToIsp21Params(struct isp21_isp_params_cfg& isp_cfg
 
     for(int i = 0; i < ISP21_DHAZ_ENH_CURVE_NUM; i++)
         cfg->enh_curve[i]     = dhaze.ProcResV21.enh_curve[i];
-
 }
+#endif
 
 template<class T>
 void Isp21Params::convertAiqCcmToIsp21Params(T& isp_cfg,
@@ -888,6 +889,8 @@ Isp21Params::convertAiqSharpenToIsp21Params(struct isp21_isp_params_cfg& isp_cfg
     LOGD_ASHARP("%s:%d: exit\n", __FUNCTION__, __LINE__);
 
 }
+
+#if RKAIQ_HAVE_DRC_V1
 void
 Isp21Params::convertAiqDrcToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                         rk_aiq_isp_drc_v21_t& adrc_data)
@@ -944,6 +947,7 @@ Isp21Params::convertAiqDrcToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
 
 #endif
 }
+#endif
 
 template<class T>
 void Isp21Params::convertAiqAgicToIsp21Params(T& isp_cfg,
@@ -988,11 +992,11 @@ void Isp21Params::convertAiqAgicToIsp21Params(T& isp_cfg,
 template<class T>
 void
 Isp21Params::convertAiqCsmToIsp21Params(T& isp_cfg,
-                                       const rk_aiq_acsm_params_t& csm_param)
+                                        const rk_aiq_acsm_params_t& csm_param)
 {
     struct isp21_csm_cfg* csm_cfg = &isp_cfg.others.csm_cfg;
     if (csm_param.op_mode == RK_AIQ_OP_MODE_MANUAL ||
-        csm_param.op_mode == RK_AIQ_OP_MODE_AUTO) {
+            csm_param.op_mode == RK_AIQ_OP_MODE_AUTO) {
         isp_cfg.module_ens |= ISP2X_MODULE_CSM;
         isp_cfg.module_en_update |= ISP2X_MODULE_CSM;
         isp_cfg.module_cfg_update |= ISP2X_MODULE_CSM;
@@ -1058,9 +1062,11 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_DRC_PARAM:
     {
+#if RKAIQ_HAVE_DRC_V1
         SmartPtr<RkAiqIspDrcParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDrcParamsProxy>();
         if (params.ptr())
             convertAiqDrcToIsp21Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_BLC_PARAM:
@@ -1100,9 +1106,11 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_DEHAZE_PARAM:
     {
+#if RKAIQ_HAVE_DEHAZE_V2
         SmartPtr<RkAiqIspDehazeParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDehazeParamsProxy>();
         if (params.ptr())
             convertAiqAdehazeToIsp21Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_GIC_PARAM:
@@ -1144,10 +1152,12 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_MERGE_PARAM:
     {
+#if RKAIQ_HAVE_MERGE_V1
         SmartPtr<RkAiqIspMergeParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspMergeParamsProxy>();
         if (params.ptr()) {
             convertAiqMergeToIsp20Params(isp_cfg, params->data()->result);
         }
+#endif
     }
     break;
     case RESULT_TYPE_LSC_PARAM:

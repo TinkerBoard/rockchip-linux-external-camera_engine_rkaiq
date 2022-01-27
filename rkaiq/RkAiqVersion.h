@@ -357,10 +357,12 @@
  * v3.0x8.3
  * - complete rk3588 module camgroup API
  * - add API sample code for lsc/dpcc/ldch...
+ * v4.0x8.3
+ * - initial version for isp32(rv1106)
  */
 
-#define RK_AIQ_VERSION_REAL_V "v3.0x8.3"
-#define RK_AIQ_RELEASE_DATE "2022-01-14"
+#define RK_AIQ_VERSION_REAL_V "v4.0x8.3"
+#define RK_AIQ_RELEASE_DATE "2022-02-10"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

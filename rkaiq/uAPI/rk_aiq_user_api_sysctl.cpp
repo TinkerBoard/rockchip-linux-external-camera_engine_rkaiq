@@ -28,6 +28,7 @@
 #include "isp20/Isp20_module_dbg.h"
 #include "isp21/CamHwIsp21.h"
 #include "isp3x/CamHwIsp3x.h"
+#include "isp32/CamHwIsp32.h"
 #endif
 
 using namespace RkCam;
@@ -81,8 +82,8 @@ bool is_ctx_need_bypass(const rk_aiq_sys_ctx_t* ctx)
         for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
             if(camCtx && camCtx->_socket) {
                 if (camCtx->_socket->is_connected() && \
-                    camCtx->ctx_type != CTX_TYPE_TOOL_SERVER) {
-                        return true;
+                        camCtx->ctx_type != CTX_TYPE_TOOL_SERVER) {
+                    return true;
                 }
             }
         }
@@ -90,8 +91,8 @@ bool is_ctx_need_bypass(const rk_aiq_sys_ctx_t* ctx)
     } else {
         if(ctx->_socket) {
             if (ctx->_socket->is_connected() && \
-                ctx->ctx_type != CTX_TYPE_TOOL_SERVER) {
-                    return true;
+                    ctx->ctx_type != CTX_TYPE_TOOL_SERVER) {
+                return true;
             }
         }
     }
@@ -161,51 +162,51 @@ static int rk_aiq_offline_init(rk_aiq_sys_ctx_t* ctx)
     ENTER_XCORE_FUNCTION();
 
     if (aiq_ini) {
-      const char* raw_offline_str = rkaiq_ini_get(aiq_ini, "rkaiq", "offline");
-      const char* raw_w_str = rkaiq_ini_get(aiq_ini, "rkaiq", "width");
-      const char* raw_h_str = rkaiq_ini_get(aiq_ini, "rkaiq", "height");
-      const char* raw_fmt_str = rkaiq_ini_get(aiq_ini, "rkaiq", "format");
+        const char* raw_offline_str = rkaiq_ini_get(aiq_ini, "rkaiq", "offline");
+        const char* raw_w_str = rkaiq_ini_get(aiq_ini, "rkaiq", "width");
+        const char* raw_h_str = rkaiq_ini_get(aiq_ini, "rkaiq", "height");
+        const char* raw_fmt_str = rkaiq_ini_get(aiq_ini, "rkaiq", "format");
 
-      bool offline = atoi(raw_offline_str) > 0 ? true : false;
-      int raw_w = atoi(raw_w_str);
-      int raw_h = atoi(raw_h_str);
+        bool offline = atoi(raw_offline_str) > 0 ? true : false;
+        int raw_w = atoi(raw_w_str);
+        int raw_h = atoi(raw_h_str);
 
-      // valid offline mode
-      if (offline && raw_w && raw_h && raw_fmt_str) {
-        ctx->_raw_prop.frame_width = raw_w;
-        ctx->_raw_prop.frame_height = raw_h;
-        ctx->_raw_prop.rawbuf_type = RK_AIQ_RAW_FILE;
-        ctx->_use_fakecam = true;
+        // valid offline mode
+        if (offline && raw_w && raw_h && raw_fmt_str) {
+            ctx->_raw_prop.frame_width = raw_w;
+            ctx->_raw_prop.frame_height = raw_h;
+            ctx->_raw_prop.rawbuf_type = RK_AIQ_RAW_FILE;
+            ctx->_use_fakecam = true;
 
-        if (strcmp(raw_fmt_str, "BG10") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SBGGR10;
-        else if (strcmp(raw_fmt_str, "GB10") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SGBRG10;
-        else if (strcmp(raw_fmt_str, "RG10") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SRGGB10;
-        else if (strcmp(raw_fmt_str, "BA10") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SGRBG10;
-        else if (strcmp(raw_fmt_str, "BG12") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SBGGR12;
-        else if (strcmp(raw_fmt_str, "GB12") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SGBRG12;
-        else if (strcmp(raw_fmt_str, "RG12") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SRGGB12;
-        else if (strcmp(raw_fmt_str, "BA12") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SGRBG12;
-        else if (strcmp(raw_fmt_str, "BG14") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SBGGR14;
-        else if (strcmp(raw_fmt_str, "GB14") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SGBRG14;
-        else if (strcmp(raw_fmt_str, "RG14") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SRGGB14;
-        else if (strcmp(raw_fmt_str, "BA14") == 0)
-          ctx->_raw_prop.format = RK_PIX_FMT_SGRBG14;
-        else
-          ctx->_raw_prop.format = RK_PIX_FMT_SBGGR10;
-      }
+            if (strcmp(raw_fmt_str, "BG10") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SBGGR10;
+            else if (strcmp(raw_fmt_str, "GB10") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SGBRG10;
+            else if (strcmp(raw_fmt_str, "RG10") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SRGGB10;
+            else if (strcmp(raw_fmt_str, "BA10") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SGRBG10;
+            else if (strcmp(raw_fmt_str, "BG12") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SBGGR12;
+            else if (strcmp(raw_fmt_str, "GB12") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SGBRG12;
+            else if (strcmp(raw_fmt_str, "RG12") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SRGGB12;
+            else if (strcmp(raw_fmt_str, "BA12") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SGRBG12;
+            else if (strcmp(raw_fmt_str, "BG14") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SBGGR14;
+            else if (strcmp(raw_fmt_str, "GB14") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SGBRG14;
+            else if (strcmp(raw_fmt_str, "RG14") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SRGGB14;
+            else if (strcmp(raw_fmt_str, "BA14") == 0)
+                ctx->_raw_prop.format = RK_PIX_FMT_SGRBG14;
+            else
+                ctx->_raw_prop.format = RK_PIX_FMT_SBGGR10;
+        }
 
-      rkaiq_ini_free(aiq_ini);
+        rkaiq_ini_free(aiq_ini);
     }
 
     if (use_as_fake_cam_env)
@@ -278,6 +279,8 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
             ctx->_camHw = new FakeCamHwIsp21 ();
         else if (s_info->isp_hw_ver == 6)
             ctx->_camHw = new FakeCamHwIsp3x ();
+        else if (s_info->isp_hw_ver == 7)
+            ctx->_camHw = new FakeCamHwIsp32 ();
         else {
             LOGE("do not support this isp hw version %d !", s_info->isp_hw_ver);
             goto error;
@@ -289,6 +292,8 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
             ctx->_camHw = new CamHwIsp21();
         else if (s_info->isp_hw_ver == 6)
             ctx->_camHw = new CamHwIsp3x();
+        else if (s_info->isp_hw_ver == 7)
+            ctx->_camHw = new CamHwIsp32();
         else {
             LOGE("do not support this isp hw version %d !", s_info->isp_hw_ver);
             goto error;
@@ -360,6 +365,8 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
         ctx->_analyzer = new RkAiqCore(1);
     else if (s_info->isp_hw_ver == 6)
         ctx->_analyzer = new RkAiqCore(3);
+    else if (s_info->isp_hw_ver == 7)
+        ctx->_analyzer = new RkAiqCore(4);
 
 #ifndef RK_SIMULATOR_HW
     ctx->_hw_info.fl_supported = s_info->has_fl;
@@ -484,12 +491,12 @@ rk_aiq_uapi_sysctl_prepare(const rk_aiq_sys_ctx_t* ctx,
     ENTER_XCORE_FUNCTION();
     XCAM_ASSERT(ctx != nullptr);
 
-   if (ctx->_use_fakecam && ctx->_raw_prop.format &&
-       ctx->_raw_prop.frame_width &&
-       ctx->_raw_prop.frame_height &&
-       ctx->_raw_prop.rawbuf_type) {
-     rk_aiq_uapi_sysctl_prepareRkRaw(ctx, ctx->_raw_prop);
-   }
+    if (ctx->_use_fakecam && ctx->_raw_prop.format &&
+            ctx->_raw_prop.frame_width &&
+            ctx->_raw_prop.frame_height &&
+            ctx->_raw_prop.rawbuf_type) {
+        rk_aiq_uapi_sysctl_prepareRkRaw(ctx, ctx->_raw_prop);
+    }
 
     RKAIQ_API_SMART_LOCK(ctx);
 
@@ -906,7 +913,10 @@ extern RkAiqAlgoDescription g_RkIspAlgoDescAwb;
 extern RkAiqAlgoDescription g_RkIspAlgoDescAf;
 #endif
 extern RkAiqAlgoDescription g_RkIspAlgoDescAmerge;
+#if RKAIQ_HAVE_TMO_V1
 extern RkAiqAlgoDescription g_RkIspAlgoDescAtmo;
+#endif
+
 
 static void _print_versions()
 {
@@ -949,7 +959,10 @@ void rk_aiq_uapi_get_version_info(rk_aiq_ver_info_t* vers)
     strcpy(vers->af_algo_ver, g_RkIspAlgoDescAf.common.version);
 #endif
     strcpy(vers->ahdr_algo_ver, g_RkIspAlgoDescAmerge.common.version);
+#if RKAIQ_HAVE_TMO_V1
     strcpy(vers->ahdr_algo_ver, g_RkIspAlgoDescAtmo.common.version);
+#endif
+
 
     LOGI("aiq ver %s, parser ver %s, magic code %d, awb ver %s\n"
          "ae ver %s, af ver %s, ahdr ver %s", vers->aiq_ver,
@@ -976,6 +989,8 @@ static void rk_aiq_init_lib(void)
             g_rkaiq_isp_hw_ver = 21;
         else if (s_info->isp_hw_ver == 6)
             g_rkaiq_isp_hw_ver = 30;
+        else if (s_info->isp_hw_ver == 7)
+            g_rkaiq_isp_hw_ver = 32;
         else
             LOGE("do not support isp hw ver %d now !", s_info->isp_hw_ver);
     }
@@ -986,6 +1001,8 @@ static void rk_aiq_init_lib(void)
     assert(g_rkaiq_isp_hw_ver == 21);
 #elif defined(ISP_HW_V30)
     assert(g_rkaiq_isp_hw_ver == 30);
+#elif defined(ISP_HW_V32)
+    assert(g_rkaiq_isp_hw_ver == 32);
 #else
 #error "WRONG ISP_HW_VERSION, ONLY SUPPORT V20 AND V21 NOW !"
 #endif

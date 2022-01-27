@@ -23,6 +23,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_DEHAZE_V1 || RKAIQ_HAVE_DEHAZE_V2 || RKAIQ_HAVE_DEHAZE_V3
 XCamReturn  rk_aiq_user_api2_adehaze_setSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adehaze_sw_V2_t attr)
 {
     CHECK_USER_API_ENABLE2(sys_ctx);
@@ -99,6 +100,17 @@ XCamReturn  rk_aiq_user_api2_adehaze_getSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx
 
     return XCAM_RETURN_NO_ERROR;
 }
+#else
+XCamReturn
+rk_aiq_user_api2_adehaze_setSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adehaze_sw_V2_t attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn
+rk_aiq_user_api2_adehaze_getSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adehaze_sw_V2_t *attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+#endif
 
 
 RKAIQ_END_DECLARE

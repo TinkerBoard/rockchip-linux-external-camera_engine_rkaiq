@@ -308,14 +308,16 @@ typedef struct AdehazeV30ProcResult_s
     int hist_wr[64];//calc in kernel
 } AdehazeV30ProcResult_t;
 
-typedef struct RkAiqAdehazeProcResult_s
-{
-    union {
+typedef struct RkAiqAdehazeProcResult_s{
+#if RKAIQ_HAVE_DEHAZE_V1
         AdehazeV20ProcResult_t ProcResV20;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V2
         AdehazeV21ProcResult_t ProcResV21;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V3
         AdehazeV30ProcResult_t ProcResV30;
-    };
-
+#endif
 } RkAiqAdehazeProcResult_t;
 
 #endif

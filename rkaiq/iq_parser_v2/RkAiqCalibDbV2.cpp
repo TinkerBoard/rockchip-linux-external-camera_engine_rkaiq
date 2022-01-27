@@ -42,6 +42,9 @@ CamCalibDbV2Context_t* calibdbV2_ctx_new() {
 #elif defined(ISP_HW_V30)
     calib_scene = new CamCalibDbV2ContextIsp30_t();
     memset(calib_scene, 0, sizeof(CamCalibDbV2ContextIsp30_t));
+#elif defined(ISP_HW_V32)
+    calib_scene = new CamCalibDbV2ContextIsp32_t();
+    memset(calib_scene, 0, sizeof(CamCalibDbV2ContextIsp32_t));
 #else
     XCAM_LOG_ERROR("not supported ISP plateform");
     return NULL;
@@ -1028,15 +1031,20 @@ int RkAiqCalibDbV2::CamCalibDbFreeAwbV21Ctx(CalibDbV2_Wb_Para_V21_t* awb)
     return 0;
 }
 #endif
+
+#if RKAIQ_HAVE_GAMMA_V1
 int RkAiqCalibDbV2::CamCalibDbFreeGammaCtx(CalibDbV2_gamma_t* gamma)
 {
     return 0;
 }
+#endif
 
+#if RKAIQ_HAVE_GAMMA_V2
 int RkAiqCalibDbV2::CamCalibDbFreeGammaV2Ctx(CalibDbV2_gamma_V30_t* gamma)
 {
     return 0;
 }
+#endif
 
 #if RKAIQ_HAVE_BLC_V1
 int RkAiqCalibDbV2::CamCalibDbFreeBlcCtx(CalibDbV2_Ablc_t* blc)
@@ -1313,6 +1321,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeDpccCtx(CalibDbV2_Dpcc_t* dpcc)
     return 0;
 }
 
+#if RKAIQ_HAVE_MERGE_V1
 int RkAiqCalibDbV2::CamCalibDbFreeMergeCtx(CalibDbV2_merge_t* merge)
 {
     MergeV20_t* MergeTuningPara = &merge->MergeTuningPara;
@@ -1338,7 +1347,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeMergeCtx(CalibDbV2_merge_t* merge)
 
     return 0;
 }
+#endif
 
+#if RKAIQ_HAVE_MERGE_V2
 int RkAiqCalibDbV2::CamCalibDbFreeMergeV2Ctx(CalibDbV2_merge_V2_t* merge)
 {
     MergeV21_t* MergeTuningPara = &merge->MergeTuningPara;
@@ -1382,7 +1393,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeMergeV2Ctx(CalibDbV2_merge_V2_t* merge)
 
     return 0;
 }
+#endif
 
+#if RKAIQ_HAVE_DRC_V1
 int RkAiqCalibDbV2::CamCalibDbFreeDrcCtx(CalibDbV2_drc_t* drc)
 {
     CalibDbV2_Adrc_t* DrcTuningPara = &drc->DrcTuningPara;
@@ -1415,7 +1428,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeDrcCtx(CalibDbV2_drc_t* drc)
 
     return 0;
 }
+#endif
 
+#if RKAIQ_HAVE_DRC_V2
 int RkAiqCalibDbV2::CamCalibDbFreeDrcV2Ctx(CalibDbV2_drc_V2_t* drc)
 {
     CalibDbV2_Adrc_V2_t* DrcTuningPara = &drc->DrcTuningPara;
@@ -1452,6 +1467,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeDrcV2Ctx(CalibDbV2_drc_V2_t* drc)
 
     return 0;
 }
+#endif
 
 int RkAiqCalibDbV2::CamCalibDbFreeCpslCtx(CalibDbV2_Cpsl_t* cpsl)
 {
@@ -2071,41 +2087,43 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
 
     CamCalibDbV2Context_t* ctx = &ctx_temp;
 #if RKAIQ_HAVE_CCM_V1
-    if(CHECK_ISP_HW_V21() || CHECK_ISP_HW_V30()) {
-        CalibDbV2_Ccm_Para_V2_t *ccm_calib =
-            (CalibDbV2_Ccm_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ccm_calib));
-        if (ccm_calib)
-            CamCalibDbFreeCcmCtx(ccm_calib);
+    CalibDbV2_Ccm_Para_V2_t* ccm_calib =
+        (CalibDbV2_Ccm_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ccm_calib));
+    if (ccm_calib) CamCalibDbFreeCcmCtx(ccm_calib);
 #endif
 
-#if 0 // TODO: move out
+#if 0  // TODO: move out
         CalibDb_Module_ParaV2_t *module_calib =
             (CalibDb_Module_ParaV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, module_calib));
         CamCalibDbFreeModuleCtx(module_calib);
 #endif
-        CalibDb_Aec_ParaV2_t *ae_calib =
-            (CalibDb_Aec_ParaV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ae_calib));
-        if (ae_calib)
-            CamCalibDbFreeAeCtx(ae_calib);
+    CalibDb_Aec_ParaV2_t* ae_calib =
+        (CalibDb_Aec_ParaV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ae_calib));
+    if (ae_calib) CamCalibDbFreeAeCtx(ae_calib);
+
 #if RKAIQ_HAVE_AWB_V21
-        CalibDbV2_Wb_Para_V21_t *wb_v21 =
-            (CalibDbV2_Wb_Para_V21_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, wb_v21));
-        if (wb_v21)
-            CamCalibDbFreeAwbV21Ctx(wb_v21);
+    CalibDbV2_Wb_Para_V21_t* wb_v21 =
+        (CalibDbV2_Wb_Para_V21_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, wb_v21));
+    if (wb_v21) CamCalibDbFreeAwbV21Ctx(wb_v21);
 #endif
+
+#if RKAIQ_HAVE_GAMMA_V1 || RKAIQ_HAVE_GAMMA_V1
         CalibDbV2_gamma_t *agamma_calib =
             (CalibDbV2_gamma_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, agamma_calib));
         if (agamma_calib) {
-            if (CHECK_ISP_HW_V30())
-                CamCalibDbFreeGammaV2Ctx((CalibDbV2_gamma_V30_t*)agamma_calib);
-            else
-                CamCalibDbFreeGammaCtx(agamma_calib);
+#if RKAIQ_HAVE_GAMMA_V2
+            CamCalibDbFreeGammaV2Ctx((CalibDbV2_gamma_V30_t*)agamma_calib);
+#endif
+#if RKAIQ_HAVE_GAMMA_V1
+            CamCalibDbFreeGammaCtx(agamma_calib);
+#endif
         }
+#endif
+
 #if RKAIQ_HAVE_BLC_V1
-        CalibDbV2_Ablc_t *ablc_calib =
-            (CalibDbV2_Ablc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ablc_calib));
-        if (ablc_calib)
-            CamCalibDbFreeBlcCtx(ablc_calib);
+    CalibDbV2_Ablc_t* ablc_calib =
+        (CalibDbV2_Ablc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ablc_calib));
+    if (ablc_calib) CamCalibDbFreeBlcCtx(ablc_calib);
 #endif
         CalibDbV2_Gic_V21_t *agic_calib_v21 =
             (CalibDbV2_Gic_V21_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, agic_calib_v21));
@@ -2131,166 +2149,127 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
         CalibDbV2_merge_t *amerge_calib =
             (CalibDbV2_merge_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, amerge_calib));
         if (amerge_calib) {
-            if (CHECK_ISP_HW_V30())
-                CamCalibDbFreeMergeV2Ctx((CalibDbV2_merge_V2_t*)amerge_calib);
-            else
-                CamCalibDbFreeMergeCtx(amerge_calib);
+#if RKAIQ_HAVE_MERGE_V2
+            CamCalibDbFreeMergeV2Ctx((CalibDbV2_merge_V2_t*)amerge_calib);
+#endif
+#if RKAIQ_HAVE_MERGE_V1
+            CamCalibDbFreeMergeCtx(amerge_calib);
+#endif
         }
 
         CalibDbV2_drc_t *adrc_calib =
             (CalibDbV2_drc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adrc_calib));
         if (adrc_calib) {
-            if (CHECK_ISP_HW_V30())
-                CamCalibDbFreeDrcV2Ctx((CalibDbV2_drc_V2_t*)adrc_calib);
-            else
-                CamCalibDbFreeDrcCtx(adrc_calib);
+#if RKAIQ_HAVE_DRC_V2
+            CamCalibDbFreeDrcV2Ctx((CalibDbV2_drc_V2_t*)adrc_calib);
+#endif
+#if RKAIQ_HAVE_DRC_V1
+            CamCalibDbFreeDrcCtx(adrc_calib);
+#endif
         }
 
-        CalibDbV2_Cpsl_t *cpsl =
-            (CalibDbV2_Cpsl_t *)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cpsl));
-        if (cpsl)
-            CamCalibDbFreeCpslCtx(cpsl);
+    CalibDbV2_Cpsl_t* cpsl = (CalibDbV2_Cpsl_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cpsl));
+    if (cpsl) CamCalibDbFreeCpslCtx(cpsl);
 
 #if RKAIQ_HAVE_ORB_V1
-        CalibDbV2_Orb_t *orb =
-            (CalibDbV2_Orb_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, orb));
-        if (orb)
-            CamCalibDbFreeOrbCtx(orb);
+    CalibDbV2_Orb_t* orb = (CalibDbV2_Orb_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, orb));
+    if (orb) CamCalibDbFreeOrbCtx(orb);
 #endif
 
-        CalibDbV2_Debayer_t *debayer =
-            (CalibDbV2_Debayer_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, debayer));
-        if (debayer)
-            CamCalibDbFreeDebayerCtx(debayer);
+    CalibDbV2_Debayer_t* debayer =
+        (CalibDbV2_Debayer_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, debayer));
+    if (debayer) CamCalibDbFreeDebayerCtx(debayer);
 
-        CalibDbV2_Cproc_t *cproc =
-            (CalibDbV2_Cproc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cproc));
-        if (cproc)
-            CamCalibDbFreeCprocCtx(cproc);
+    CalibDbV2_Cproc_t* cproc = (CalibDbV2_Cproc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cproc));
+    if (cproc) CamCalibDbFreeCprocCtx(cproc);
 
-        CalibDbV2_IE_t *ie =
-            (CalibDbV2_IE_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ie));
-        if (ie)
-            CamCalibDbFreeIeCtx(ie);
+    CalibDbV2_IE_t* ie = (CalibDbV2_IE_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ie));
+    if (ie) CamCalibDbFreeIeCtx(ie);
 
-        CalibDbV2_LSC_t *lsc_v2 =
-            (CalibDbV2_LSC_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, lsc_v2));
-        if (lsc_v2)
-            CamCalibDbFreeLscCtx(lsc_v2);
+    CalibDbV2_LSC_t* lsc_v2 = (CalibDbV2_LSC_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, lsc_v2));
+    if (lsc_v2) CamCalibDbFreeLscCtx(lsc_v2);
 
-        CalibDbV2_ColorAsGrey_t *colorAsGrey =
-            (CalibDbV2_ColorAsGrey_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, colorAsGrey));
-        if (colorAsGrey)
-            CamCalibDbFreeColorAsGreyCtx(colorAsGrey);
+    CalibDbV2_ColorAsGrey_t* colorAsGrey =
+        (CalibDbV2_ColorAsGrey_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, colorAsGrey));
+    if (colorAsGrey) CamCalibDbFreeColorAsGreyCtx(colorAsGrey);
 
-        CalibDbV2_LUMA_DETECT_t *lumaDetect =
-            (CalibDbV2_LUMA_DETECT_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, lumaDetect));
-        if (lumaDetect)
-            CamCalibDbFreeLumaDetectCtx(lumaDetect);
+    CalibDbV2_LUMA_DETECT_t* lumaDetect =
+        (CalibDbV2_LUMA_DETECT_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, lumaDetect));
+    if (lumaDetect) CamCalibDbFreeLumaDetectCtx(lumaDetect);
 
-        CalibDbV2_LDCH_t *aldch =
-            (CalibDbV2_LDCH_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, aldch));
-        if (aldch)
-            CamCalibDbFreeLdchCtx(aldch);
+    CalibDbV2_LDCH_t* aldch = (CalibDbV2_LDCH_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, aldch));
+    if (aldch) CamCalibDbFreeLdchCtx(aldch);
 #if RKAIQ_HAVE_3DLUT_V1
-        CalibDbV2_Lut3D_Para_V2_t *lut3d_calib =
-            (CalibDbV2_Lut3D_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, lut3d_calib));
-        if (lut3d_calib)
-            CamCalibDbFreeLut3dCtx(lut3d_calib);
+    CalibDbV2_Lut3D_Para_V2_t* lut3d_calib =
+        (CalibDbV2_Lut3D_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, lut3d_calib));
+    if (lut3d_calib) CamCalibDbFreeLut3dCtx(lut3d_calib);
 #endif
 #if RKAIQ_HAVE_AF_V30
-        CalibDbV2_AFV30_t *af_v30 =
-            (CalibDbV2_AFV30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, af_v30));
-        if (af_v30)
-            CamCalibDbFreeAfV30Ctx(af_v30);
+    CalibDbV2_AFV30_t* af_v30 = (CalibDbV2_AFV30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, af_v30));
+    if (af_v30) CamCalibDbFreeAfV30Ctx(af_v30);
 #endif
 #if RKAIQ_HAVE_AF_V20
-        CalibDbV2_AF_t *af =
-            (CalibDbV2_AF_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, af));
-        if (af)
-            CamCalibDbFreeAfV2xCtx(af);
+    CalibDbV2_AF_t* af = (CalibDbV2_AF_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, af));
+    if (af) CamCalibDbFreeAfV2xCtx(af);
 #endif
-        CalibDbV2_Thumbnails_t *thumbnails =
-            (CalibDbV2_Thumbnails_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, thumbnails));
-        if (thumbnails)
-            CamCalibDbFreeThumbnailsCtx(thumbnails);
+    CalibDbV2_Thumbnails_t* thumbnails =
+        (CalibDbV2_Thumbnails_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, thumbnails));
+    if (thumbnails) CamCalibDbFreeThumbnailsCtx(thumbnails);
 
-        if (CHECK_ISP_HW_V30()) {
 #if RKAIQ_HAVE_BAYER2DNR_V2
-            CalibDbV2_Bayer2dnr_V2_t *bayer2dnr_v2 =
-                (CalibDbV2_Bayer2dnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayer2dnr_v2));
-            if (bayer2dnr_v2)
-                CamCalibDbFreeBayer2dnrV2Ctx(bayer2dnr_v2);
+    CalibDbV2_Bayer2dnr_V2_t* bayer2dnr_v2 =
+        (CalibDbV2_Bayer2dnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayer2dnr_v2));
+    if (bayer2dnr_v2) CamCalibDbFreeBayer2dnrV2Ctx(bayer2dnr_v2);
 #endif
 
 #if RKAIQ_HAVE_BAYERTNR_V2
-            CalibDbV2_BayerTnr_V2_t *bayertnr_v2 =
-                (CalibDbV2_BayerTnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayertnr_v2));
-            if (bayertnr_v2)
-                CamCalibDbFreeBayertnrV2Ctx(bayertnr_v2);
+    CalibDbV2_BayerTnr_V2_t* bayertnr_v2 =
+        (CalibDbV2_BayerTnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayertnr_v2));
+    if (bayertnr_v2) CamCalibDbFreeBayertnrV2Ctx(bayertnr_v2);
 #endif
 
 #if RKAIQ_HAVE_CNR_V2
-            CalibDbV2_CNRV2_t *cnr_v2 =
-                (CalibDbV2_CNRV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cnr_v2));
-            if (cnr_v2)
-                CamCalibDbFreeCnrV2Ctx(cnr_v2);
+    CalibDbV2_CNRV2_t* cnr_v2 = (CalibDbV2_CNRV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cnr_v2));
+    if (cnr_v2) CamCalibDbFreeCnrV2Ctx(cnr_v2);
 #endif
 
 #if RKAIQ_HAVE_YNR_V3
-            CalibDbV2_YnrV3_t *ynr_v3 =
-                (CalibDbV2_YnrV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ynr_v3));
-            if (ynr_v3)
-                CamCalibDbFreeYnrV3Ctx(ynr_v3);
+    CalibDbV2_YnrV3_t* ynr_v3 = (CalibDbV2_YnrV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ynr_v3));
+    if (ynr_v3) CamCalibDbFreeYnrV3Ctx(ynr_v3);
 #endif
 
 #if RKAIQ_HAVE_SHARP_V4
-            CalibDbV2_SharpV4_t *sharp_v4 =
-                (CalibDbV2_SharpV4_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, sharp_v4));
-            if (sharp_v4)
-                CamCalibDbFreeSharpV4Ctx(sharp_v4);
+    CalibDbV2_SharpV4_t* sharp_v4 =
+        (CalibDbV2_SharpV4_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, sharp_v4));
+    if (sharp_v4) CamCalibDbFreeSharpV4Ctx(sharp_v4);
 #endif
 
 #if RKAIQ_HAVE_CAC_V10
-            CalibDbV2_Cac_t *cac_calib =
-                (CalibDbV2_Cac_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cac_calib));
-            if (cac_calib)
-                CamCalibDbFreeCacCtx(cac_calib);
+    CalibDbV2_Cac_t* cac_calib =
+        (CalibDbV2_Cac_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cac_calib));
+    if (cac_calib) CamCalibDbFreeCacCtx(cac_calib);
 #endif
-        } else {
 #if RKAIQ_HAVE_BAYERNR_V2
-            CalibDbV2_BayerNrV2_t *bayernr_v2 =
-                (CalibDbV2_BayerNrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayernr_v2));
-            if (bayernr_v2)
-                CamCalibDbFreeBayerNrV2Ctx(bayernr_v2);
+    CalibDbV2_BayerNrV2_t* bayernr_v2 =
+        (CalibDbV2_BayerNrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayernr_v2));
+    if (bayernr_v2) CamCalibDbFreeBayerNrV2Ctx(bayernr_v2);
 #endif
 
 #if RKAIQ_HAVE_UVNR_V1
-            CalibDbV2_CNR_t *cnr_v1 =
-                (CalibDbV2_CNR_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cnr_v1));
-            if (cnr_v1)
-                CamCalibDbFreeCnrCtx(cnr_v1);
+    CalibDbV2_CNR_t* cnr_v1 = (CalibDbV2_CNR_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cnr_v1));
+    if (cnr_v1) CamCalibDbFreeCnrCtx(cnr_v1);
 #endif
 
 #if RKAIQ_HAVE_YNR_V2
-            CalibDbV2_YnrV2_t *ynr_v2 =
-                (CalibDbV2_YnrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ynr_v2));
-            if (ynr_v2)
-                CamCalibDbFreeYnrV2Ctx(ynr_v2);
+    CalibDbV2_YnrV2_t* ynr_v2 = (CalibDbV2_YnrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ynr_v2));
+    if (ynr_v2) CamCalibDbFreeYnrV2Ctx(ynr_v2);
 #endif
 
 #if RKAIQ_HAVE_SHARP_V3
-            CalibDbV2_SharpV3_t *sharp_v3 =
-                (CalibDbV2_SharpV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, sharp_v3));
-            if (sharp_v3)
-                CamCalibDbFreeSharpV3Ctx(sharp_v3);
+    CalibDbV2_SharpV3_t* sharp_v3 =
+        (CalibDbV2_SharpV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, sharp_v3));
+    if (sharp_v3) CamCalibDbFreeSharpV3Ctx(sharp_v3);
 #endif
-        }
-    } else if(CHECK_ISP_HW_V20()) {
-        // TODO: implement ispv20 calib free
-    } else {
-        XCAM_LOG_ERROR("%s unsupported isp plateform !", __func__);
-    }
     return 0;
 }
 

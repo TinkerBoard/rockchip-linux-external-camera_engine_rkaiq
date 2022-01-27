@@ -84,15 +84,13 @@ typedef struct AdrcGainConfig_s {
     float*            Clip;
 } AdrcGainConfig_t;
 
-typedef struct HighLightConfig_s
-{
+typedef struct HighLightConfig_s {
     int len;
     float*            EnvLv;
     float*            Strength;
 } HighLightConfig_t;
 
-typedef struct LocalDataConfig_s
-{
+typedef struct LocalDataConfig_s {
     int len;
     float*            EnvLv;
     float*            LocalWeit;
@@ -100,8 +98,7 @@ typedef struct LocalDataConfig_s
     float*            LoLitContrast;
 } LocalDataConfig_t;
 
-typedef struct LocalDataConfigV2_s
-{
+typedef struct LocalDataConfigV2_s {
     int len;
     float*            EnvLv;
     float*            LocalWeit;
@@ -111,8 +108,7 @@ typedef struct LocalDataConfigV2_s
     float*            LoLitContrast;
 } LocalDataConfigV2_t;
 
-typedef struct DrcOhters_s
-{
+typedef struct DrcOhters_s {
     float curPixWeit;
     float preFrameWeit;
     float Range_force_sgm;
@@ -128,14 +124,12 @@ typedef struct DrcOhters_s
     float damp;
 } DrcOhters_t;
 
-typedef struct CompressConfig_s
-{
+typedef struct CompressConfig_s {
     CompressMode_t Mode;
     uint16_t       Manual_curve[ADRC_Y_NUM];
 } CompressConfig_t;
 
-typedef struct AdrcConfigV21_s
-{
+typedef struct AdrcConfigV21_s {
     bool Enable;
     bool OutPutLongFrame;
     AdrcGainConfig_t DrcGain;
@@ -145,8 +139,7 @@ typedef struct AdrcConfigV21_s
     DrcOhters_t Others;
 } AdrcConfigV21_t;
 
-typedef struct AdrcConfigV30_s
-{
+typedef struct AdrcConfigV30_s {
     bool Enable;
     bool OutPutLongFrame;
     AdrcGainConfig_t DrcGain;
@@ -156,15 +149,7 @@ typedef struct AdrcConfigV30_s
     DrcOhters_t Others;
 } AdrcConfigV30_t;
 
-typedef struct AdrcConfig_s {
-    union {
-        AdrcConfigV21_t Drc_v21;
-        AdrcConfigV30_t Drc_v30;
-    };
-} AdrcConfig_t;
-
-typedef struct DrcHandleDataV21_s
-{
+typedef struct DrcHandleDataV21_s {
     float DrcGain;
     float Alpha;
     float Clip;
@@ -176,8 +161,7 @@ typedef struct DrcHandleDataV21_s
     uint16_t       Manual_curve[ADRC_Y_NUM];
 } DrcHandleDataV21_t;
 
-typedef struct DrcHandleDataV30_s
-{
+typedef struct DrcHandleDataV30_s {
     float DrcGain;
     float Alpha;
     float Clip;
@@ -192,14 +176,15 @@ typedef struct DrcHandleDataV30_s
 } DrcHandleDataV30_t;
 
 typedef struct DrcHandleData_s {
-    union {
-        DrcHandleDataV21_t Drc_v21;
-        DrcHandleDataV30_t Drc_v30;
-    };
+#if RKAIQ_HAVE_DRC_V1
+    DrcHandleDataV21_t Drc_v21;
+#endif
+#if RKAIQ_HAVE_DRC_V2
+    DrcHandleDataV30_t Drc_v30;
+#endif
 } DrcHandleData_t;
 
-typedef struct AdrcPrevData_s
-{
+typedef struct AdrcPrevData_s {
     float EnvLv;
     float ISO;
     float MotionCoef;
@@ -225,8 +210,7 @@ typedef struct CurrAeResult_s {
     float BlockLumaL[225];
 } CurrAeResult_t;
 
-typedef struct CurrData_s
-{
+typedef struct CurrData_s {
     bool Enable;
     float Ratio;
     float EnvLv;
@@ -239,8 +223,7 @@ typedef struct CurrData_s
     DrcOhters_t Others;
 } CurrData_t;
 
-typedef struct AdrcProcResData_s
-{
+typedef struct AdrcProcResData_s {
     DrcProcRes_t DrcProcRes;
     CompressMode_t CompressMode;
     bool LongFrameMode;
@@ -249,8 +232,7 @@ typedef struct AdrcProcResData_s
     bool isLinearTmo;
 } AdrcProcResData_t;
 
-typedef struct AdrcSensorInfo_s
-{
+typedef struct AdrcSensorInfo_s {
     bool  LongFrmMode;
     float HdrMinGain[MAX_HDR_FRAMENUM];
     float HdrMaxGain[MAX_HDR_FRAMENUM];
@@ -263,19 +245,17 @@ typedef struct AdrcSensorInfo_s
     float MinExpoS;
 } AdrcSensorInfo_t;
 
-typedef struct DrcCalibDB_s {
-    union {
-        CalibDbV2_drc_t Drc_v21;
-        CalibDbV2_drc_V2_t Drc_v30;
-    };
-} DrcCalibDB_t;
-
-typedef struct AdrcContext_s
-{
+typedef struct AdrcContext_s {
     drcAttr_t drcAttr;
-    DrcCalibDB_t pCalibDB;
+#if RKAIQ_HAVE_DRC_V1
+    CalibDbV2_drc_t CalibDBV1;
+    AdrcConfigV21_t ConfigV1;
+#endif
+#if RKAIQ_HAVE_DRC_V2
+    CalibDbV2_drc_V2_t CalibDBV2;
+    AdrcConfigV30_t ConfigV2;
+#endif
     AdrcState_t state;
-    AdrcConfig_t Config;
     AdrcPrevData_t PrevData ;
     AdrcProcResData_t AdrcProcRes;
     CurrAeResult_t CurrAeResult;;

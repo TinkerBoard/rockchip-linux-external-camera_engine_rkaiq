@@ -22,6 +22,7 @@
 #include "CamHwIsp20.h"
 #include "isp21/CamHwIsp21.h"
 #include "isp3x/CamHwIsp3x.h"
+#include "isp32/CamHwIsp32.h"
 
 namespace RkCam {
 
@@ -88,6 +89,25 @@ public:
 private:
 
 };
+
+class FakeCamHwIsp32 : virtual public CamHwIsp32, virtual public FakeCamHwIsp20 {
+public:
+    explicit FakeCamHwIsp32();
+    virtual ~FakeCamHwIsp32();
+    virtual XCamReturn init(const char* sns_ent_name);
+    virtual XCamReturn prepare(uint32_t width, uint32_t height, int mode, int t_delay, int g_delay);
+    virtual XCamReturn enqueueRawBuffer(void *rawdata, bool sync);
+    virtual XCamReturn enqueueRawFile(const char *path);
+    virtual XCamReturn registRawdataCb(void (*callback)(void *));
+    virtual XCamReturn rawdataPrepare(rk_aiq_raw_prop_t prop);
+    virtual XCamReturn poll_event_ready (uint32_t sequence, int type);
+    virtual XCamReturn poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_index) {
+            return FakeCamHwIsp20::poll_buffer_ready(buf, dev_index);
+    }
+private:
+
+};
+
 
 };
 #endif

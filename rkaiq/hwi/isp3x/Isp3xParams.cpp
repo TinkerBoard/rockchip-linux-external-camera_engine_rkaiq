@@ -821,6 +821,7 @@ void Isp3xParams::convertAiqGainToIsp3xParams(struct isp3x_isp_params_cfg& isp_c
     LOGD_ANR("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
 
+#if RKAIQ_HAVE_DRC_V2
 void Isp3xParams::convertAiqDrcToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         rk_aiq_isp_drc_v3x_t& adrc_data)
 {
@@ -881,6 +882,7 @@ void Isp3xParams::convertAiqDrcToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
 
 #endif
 }
+#endif
 
 void Isp3xParams::convertAiqAfToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_af_meas_v3x_t& af_data, bool af_cfg_udpate)
@@ -985,6 +987,7 @@ void Isp3xParams::convertAiqAfToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg
     }
 }
 
+#if RKAIQ_HAVE_MERGE_V2
 void Isp3xParams::convertAiqMergeToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_merge_v3x_t& amerge_data)
 {
@@ -1055,6 +1058,7 @@ void Isp3xParams::convertAiqMergeToIsp3xParams(struct isp3x_isp_params_cfg& isp_
 
 #endif
 }
+#endif
 
 void Isp3xParams::convertAiqAgammaToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_goc_v3x_t& gamma_out_cfg)
@@ -1123,6 +1127,7 @@ void Isp3xParams::convertAiqCacToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
 #endif
 }
 
+#if RKAIQ_HAVE_DEHAZE_V3
 void Isp3xParams::convertAiqAdehazeToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_dehaze_v3x_t& dhaze)
 {
@@ -1209,6 +1214,7 @@ void Isp3xParams::convertAiqAdehazeToIsp3xParams(struct isp3x_isp_params_cfg& is
                  cfg->sigma_lut[2], cfg->sigma_lut[3], cfg->sigma_lut[4], cfg->sigma_lut[5]);
 #endif
 }
+#endif
 
 bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
         void* isp_cfg_p)
@@ -1252,9 +1258,11 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_DRC_PARAM:
     {
+#if RKAIQ_HAVE_DRC_V2
         SmartPtr<RkAiqIspDrcParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDrcParamsProxy>();
         if (params.ptr())
             convertAiqDrcToIsp3xParams(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_TNR_PARAM:
@@ -1301,9 +1309,11 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_DEHAZE_PARAM:
     {
+#if RKAIQ_HAVE_DEHAZE_V3
         SmartPtr<RkAiqIspDehazeParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDehazeParamsProxy>();
         if (params.ptr())
             convertAiqAdehazeToIsp3xParams(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_GIC_PARAM:
@@ -1322,10 +1332,12 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_MERGE_PARAM:
     {
+#if RKAIQ_HAVE_MERGE_V2
         SmartPtr<RkAiqIspMergeParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspMergeParamsProxy>();
         if (params.ptr()) {
             convertAiqMergeToIsp3xParams(isp_cfg, params->data()->result);
         }
+#endif
     }
     break;
     case RESULT_TYPE_AGAMMA_PARAM:

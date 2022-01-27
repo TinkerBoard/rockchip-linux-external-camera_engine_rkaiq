@@ -49,5 +49,17 @@
 #cmakedefine01 RKAIQ_HAVE_AF_V31
 #cmakedefine01 RKAIQ_HAVE_3DLUT_V1
 #cmakedefine01 RKAIQ_HAVE_CCM_V1
+#cmakedefine01 RKAIQ_HAVE_GAMMA_V1
+#cmakedefine01 RKAIQ_HAVE_GAMMA_V2
+#cmakedefine01 RKAIQ_HAVE_MERGE_V1
+#cmakedefine01 RKAIQ_HAVE_MERGE_V2
+#cmakedefine01 RKAIQ_HAVE_DRC_V1
+#cmakedefine01 RKAIQ_HAVE_DRC_V2
+#cmakedefine01 RKAIQ_HAVE_DEHAZE_V1
+#cmakedefine01 RKAIQ_HAVE_DEHAZE_V2
+#cmakedefine01 RKAIQ_HAVE_DEHAZE_V3
+#cmakedefine01 RKAIQ_HAVE_DEGAMMA_V1
+#cmakedefine01 RKAIQ_HAVE_TMO_V1
+#cmakedefine01 RKAIQ_HAVE_WDR_V1
 
 #endif /* RKAIQ_CONFIG_H */

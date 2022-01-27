@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 Rockchip Corporation
+ * Copyright (c) 2019-2022 Rockchip Eletronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 #ifndef RK_AIQ_POOL_H
 #define RK_AIQ_POOL_H
@@ -402,6 +401,38 @@ typedef SharedItemProxy<rk_aiq_isp_gain_params_v3x_t>       RkAiqIspGainParamsPr
 typedef SharedItemPool<rk_aiq_isp_tnr_params_v3x_t>         RkAiqIspTnrParamsPoolV3x;
 typedef SharedItemProxy<rk_aiq_isp_tnr_params_v3x_t>        RkAiqIspTnrParamsProxyV3x;
 
+//v32 pools
+typedef SharedItemPool<rk_aiq_isp_blc_params_v32_t>         RkAiqIspBlcParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_blc_params_v32_t>        RkAiqIspBlcParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_merge_params_v32_t>       RkAiqIspMergeParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_merge_params_v32_t>      RkAiqIspMergeParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_drc_params_v32_t>         RkAiqIspDrcParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_drc_params_v32_t>        RkAiqIspDrcParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_bay3d_params_v32_t>       RkAiqIspBay3dParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_bay3d_params_v32_t>      RkAiqIspBay3dParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_baynr_params_v32_t>       RkAiqIspBaynrParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_baynr_params_v32_t>      RkAiqIspBaynrParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_cac_params_v32_t>         RkAiqIspCacParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_cac_params_v32_t>        RkAiqIspCacParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_debayer_params_v32_t>     RkAiqIspDebayerParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_debayer_params_v32_t>    RkAiqIspDebayerParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_ccm_params_v32_t>         RkAiqIspCcmParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_ccm_params_v32_t>        RkAiqIspCcmParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_dehaze_params_v32_t>      RkAiqIspDehazeParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_dehaze_params_v32_t>     RkAiqIspDehazeParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_ldch_params_v32_t>        RkAiqIspLdchParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_ldch_params_v32_t>       RkAiqIspLdchParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_ynr_params_v32_t>         RkAiqIspYnrParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_ynr_params_v32_t>        RkAiqIspYnrParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_cnr_params_v32_t>         RkAiqIspCnrParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_cnr_params_v32_t>        RkAiqIspCnrParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_sharp_params_v32_t>       RkAiqIspSharpParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_sharp_params_v32_t>      RkAiqIspSharpParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_awb_params_v32_t>         RkAiqIspAwbParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_awb_params_v32_t>        RkAiqIspAwbParamsProxyV32;
+typedef SharedItemPool<rk_aiq_isp_af_params_v32_t>          RkAiqIspAfParamsPoolV32;
+typedef SharedItemProxy<rk_aiq_isp_af_params_v32_t>         RkAiqIspAfParamsProxyV32;
+
 class RkAiqFullParams : public XCam::BufferData {
 public:
     explicit RkAiqFullParams()
@@ -464,7 +495,22 @@ public:
         , mSharpenV3xParams(NULL)
         , mCacV3xParams(NULL)
         , mGainV3xParams(NULL)
-        , mTnrV3xParams(NULL) {
+        , mTnrV3xParams(NULL) 
+        , mBlcV32Params(NULL)
+        , mMergeV32Params(NULL)
+        , mDrcV32Params(NULL)
+        , mBay3dV32Params(NULL)
+        , mBaynrV32Params(NULL)
+        , mCacV32Params(NULL)
+        , mDebayerV32Params(NULL)
+        , mCcmV32Params(NULL)
+        , mDehazeV32Params(NULL)
+        , mLdchV32Params(NULL)
+        , mYnrV32Params(NULL)
+        , mCnrV32Params(NULL)
+        , mSharpV32Params(NULL)
+        , mAwbV32Params(NULL)
+        , mAfV32Params(NULL) {
     };
     ~RkAiqFullParams() { reset(); };
 
@@ -534,6 +580,23 @@ public:
         mCacV3xParams.release();
         mGainV3xParams.release();
         mTnrV3xParams.release();
+
+        // V32 differential modules
+        mBlcV32Params.release();
+        mMergeV32Params.release();
+        mDrcV32Params.release();
+        mBay3dV32Params.release();
+        mBaynrV32Params.release();
+        mCacV32Params.release();
+        mDebayerV32Params.release();
+        mCcmV32Params.release();
+        mDehazeV32Params.release();
+        mLdchV32Params.release();
+        mYnrV32Params.release();
+        mCnrV32Params.release();
+        mSharpV32Params.release();
+        mAwbV32Params.release();
+        mAfV32Params.release();
     };
     SmartPtr<RkAiqExpParamsProxy>           mExposureParams;
     SmartPtr<RkAiqFocusParamsProxy>         mFocusParams;
@@ -598,6 +661,23 @@ public:
     SmartPtr<RkAiqIspCacParamsProxyV3x>     mCacV3xParams;
     SmartPtr<RkAiqIspGainParamsProxyV3x>    mGainV3xParams;
     SmartPtr<RkAiqIspTnrParamsProxyV3x>     mTnrV3xParams;
+
+    // V32 differential modules
+    SmartPtr<RkAiqIspBlcParamsProxyV32>      mBlcV32Params;
+    SmartPtr<RkAiqIspMergeParamsProxyV32>    mMergeV32Params;
+    SmartPtr<RkAiqIspDrcParamsProxyV32>      mDrcV32Params;
+    SmartPtr<RkAiqIspBay3dParamsProxyV32>    mBay3dV32Params;
+    SmartPtr<RkAiqIspBaynrParamsProxyV32>    mBaynrV32Params;
+    SmartPtr<RkAiqIspCacParamsProxyV32>      mCacV32Params;
+    SmartPtr<RkAiqIspDebayerParamsProxyV32>  mDebayerV32Params;
+    SmartPtr<RkAiqIspCcmParamsProxyV32>      mCcmV32Params;
+    SmartPtr<RkAiqIspDehazeParamsProxyV32>   mDehazeV32Params;
+    SmartPtr<RkAiqIspLdchParamsProxyV32>     mLdchV32Params;
+    SmartPtr<RkAiqIspYnrParamsProxyV32>      mYnrV32Params;
+    SmartPtr<RkAiqIspCnrParamsProxyV32>      mCnrV32Params;
+    SmartPtr<RkAiqIspSharpParamsProxyV32>    mSharpV32Params;
+    SmartPtr<RkAiqIspAwbParamsProxyV32>      mAwbV32Params;
+    SmartPtr<RkAiqIspAfParamsProxyV32>       mAfV32Params;
 private:
     XCAM_DEAD_COPY (RkAiqFullParams);
 };

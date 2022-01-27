@@ -24,6 +24,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_MERGE_V1 || RKAIQ_HAVE_MERGE_V2
 XCamReturn
 rk_aiq_user_api2_amerge_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib_t attr)
 {
@@ -102,5 +103,18 @@ rk_aiq_user_api2_amerge_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib
 
     return XCAM_RETURN_NO_ERROR;
 }
+#else
+XCamReturn
+rk_aiq_user_api2_amerge_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib_t attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn
+rk_aiq_user_api2_amerge_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib_t* attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+#endif
+
 
 RKAIQ_END_DECLARE

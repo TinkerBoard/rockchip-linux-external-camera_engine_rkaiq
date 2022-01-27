@@ -25,6 +25,7 @@
 #include "common/rkisp2-config.h"
 #include "common/rkisp21-config.h"
 #include "common/rkisp3-config.h"
+#include "common/rkisp32-config.h"
 #include "buffer_pool.h"
 
 #define RKAIQ_ISP_LDCH_ID           (1 << 0)
@@ -77,6 +78,7 @@ typedef struct rkisp_effect_params {
         struct isp2x_isp_params_cfg isp_params;
         struct isp21_isp_params_cfg isp_params_v21;
         struct isp3x_isp_params_cfg isp_params_v3x[3];
+        struct isp32_isp_params_cfg isp_params_v32;
     };
     union {
         rk_aiq_awb_stat_cfg_v200_t  awb_cfg;
@@ -128,6 +130,22 @@ typedef rk_aiq_isp_params_t<rk_aiq_isp_cac_v3x_t>             rk_aiq_isp_cac_par
 typedef rk_aiq_isp_params_t<rk_aiq_isp_gain_v3x_t>            rk_aiq_isp_gain_params_v3x_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_tnr_v3x_t>             rk_aiq_isp_tnr_params_v3x_t;
 
+// v32 param struct
+typedef rk_aiq_isp_params_t<rk_aiq_isp_blc_v32_t>             rk_aiq_isp_blc_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_merge_v32_t>           rk_aiq_isp_merge_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_drc_v32_t>             rk_aiq_isp_drc_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_bay3d_v32_t>           rk_aiq_isp_bay3d_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_baynr_v32_t>           rk_aiq_isp_baynr_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_cac_v32_t>             rk_aiq_isp_cac_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_debayer_v32_t>         rk_aiq_isp_debayer_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_ccm_v32_t>             rk_aiq_isp_ccm_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_dehaze_v32_t>          rk_aiq_isp_dehaze_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_ldch_v32_t>            rk_aiq_isp_ldch_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_ynr_v32_t>             rk_aiq_isp_ynr_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_cnr_v32_t>             rk_aiq_isp_cnr_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_sharp_v32_t>           rk_aiq_isp_sharp_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_awb_v32_t>             rk_aiq_isp_awb_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_af_v32_t>              rk_aiq_isp_af_params_v32_t;
 
 typedef enum rk_aiq_drv_share_mem_type_e {
     MEM_TYPE_LDCH,

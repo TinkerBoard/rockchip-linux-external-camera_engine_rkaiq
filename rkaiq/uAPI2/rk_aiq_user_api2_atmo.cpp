@@ -23,6 +23,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_TMO_V1
 XCamReturn
 rk_aiq_user_api2_atmo_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, atmo_attrib_t attr)
 {
@@ -41,6 +42,7 @@ rk_aiq_user_api2_atmo_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, atmo_attrib_t a
 
     return XCAM_RETURN_NO_ERROR;
 }
+
 XCamReturn
 rk_aiq_user_api2_atmo_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, atmo_attrib_t* attr)
 {
@@ -57,5 +59,17 @@ rk_aiq_user_api2_atmo_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, atmo_attrib_t* 
 
     return XCAM_RETURN_NO_ERROR;
 }
+#else
+XCamReturn
+rk_aiq_user_api2_atmo_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, atmo_attrib_t attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn
+rk_aiq_user_api2_atmo_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, atmo_attrib_t* attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+#endif
+
 
 RKAIQ_END_DECLARE

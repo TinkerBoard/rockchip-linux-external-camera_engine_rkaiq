@@ -26,6 +26,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_GAMMA_V1
 void
 GammaTransferSetData(rk_aiq_gamma_attrib_V2_t* DegammaV2, rk_aiq_gamma_attrib_t *DegammaV1)
 {
@@ -113,5 +114,17 @@ rk_aiq_user_api_agamma_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_gamma_a
 
     return ret_gamma;
 }
+#else
+XCamReturn
+rk_aiq_user_api_agamma_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_gamma_attrib_t attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn
+rk_aiq_user_api_agamma_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_gamma_attrib_t *attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+#endif
+
 
 RKAIQ_END_DECLARE

@@ -45,11 +45,13 @@ protected:
                                         bool awb_gain_update);
     template<class T>
     void convertAiqCsmToIsp21Params(T& isp_cfg,
-                                   const rk_aiq_acsm_params_t& csm_cfg);
+                                    const rk_aiq_acsm_params_t& csm_cfg);
 private:
     XCAM_DEAD_COPY(Isp21Params);
+#if RKAIQ_HAVE_DEHAZE_V2
     void convertAiqAdehazeToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                         const rk_aiq_isp_dehaze_v21_t& dhaze);
+#endif
     void convertAiqAwbToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                     const rk_aiq_awb_stat_cfg_v201_t& awb_meas,
                                     bool awb_cfg_udpate);
@@ -63,8 +65,10 @@ private:
                                     rk_aiq_isp_ynr_v21_t& ynr);
     void convertAiqSharpenToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                         rk_aiq_isp_sharp_v21_t& sharp);
+#if RKAIQ_HAVE_DRC_V1
     void convertAiqDrcToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_drc_v21_t& adrc_data);
+#endif
 };
 
 };

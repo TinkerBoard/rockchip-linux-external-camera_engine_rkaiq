@@ -36,6 +36,7 @@
 // #include "MessageBus.h"
 #include "RkAiqResourceTranslatorV21.h"
 #include "RkAiqResourceTranslatorV3x.h"
+#include "RkAiqResourceTranslatorV32.h"
 #include "RkAiqAnalyzeGroupManager.h"
 #ifdef RKAIQ_ENABLE_CAMGROUP
 #include "RkAiqCamGroupManager.h"
@@ -153,6 +154,10 @@ RkAiqCore::RkAiqCore(int isp_hw_ver)
     } else if (mIspHwVer == 3){
         mHasPp = false;
         mTranslator = new RkAiqResourceTranslatorV3x();
+    } else if (mIspHwVer == 4){
+        mHasPp = false;
+        mTranslator = new RkAiqResourceTranslatorV32();
+        mIsSingleThread = true;
     }
     EXIT_ANALYZER_FUNCTION();
 }
@@ -600,7 +605,9 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
             NEW_PARAMS_BUFFER(Hist, hist);
             break;
         case RK_AIQ_ALGO_TYPE_AWB:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Awb, awb, 32);
+#elif defined(ISP_HW_V30)
             NEW_PARAMS_BUFFER_WITH_V(Awb, awb, 3x);
 #elif defined(ISP_HW_V21)
             NEW_PARAMS_BUFFER_WITH_V(Awb, awb, 21);
@@ -616,14 +623,18 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
                 LOGE_ANALYZER("no free focus params buffer!");
                 return XCAM_RETURN_ERROR_MEM;
             }
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Af, af, 32);
+#elif defined(ISP_HW_V30)
             NEW_PARAMS_BUFFER_WITH_V(Af, af, 3x);
 #else
             NEW_PARAMS_BUFFER(Af, af);
 #endif
             break;
         case RK_AIQ_ALGO_TYPE_ABLC:
-#if defined(ISP_HW_V30) || defined(ISP_HW_V21)
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Blc, blc, 32);
+#elif defined(ISP_HW_V30) || defined(ISP_HW_V21)
             NEW_PARAMS_BUFFER_WITH_V(Blc, blc, 21);
 #else
             NEW_PARAMS_BUFFER(Blc, blc);
@@ -638,7 +649,11 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
             break;
 #else
         case RK_AIQ_ALGO_TYPE_AMERGE:
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Merge, merge, 32);
+#else
             NEW_PARAMS_BUFFER(Merge, merge);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_ATMO:
             NEW_PARAMS_BUFFER(Tmo, tmo);
@@ -651,10 +666,18 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
             NEW_PARAMS_BUFFER(Gic, gic);
             break;
         case RK_AIQ_ALGO_TYPE_ADEBAYER:
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Debayer, debayer, 32);
+#else
             NEW_PARAMS_BUFFER(Debayer, debayer);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_ACCM:
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Ccm, ccm, 32);
+#else
             NEW_PARAMS_BUFFER(Ccm, ccm);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_AGAMMA:
             NEW_PARAMS_BUFFER(Agamma, agamma);
@@ -663,13 +686,21 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
             NEW_PARAMS_BUFFER(Wdr, wdr);
             break;
         case RK_AIQ_ALGO_TYPE_ADHAZ:
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Dehaze, dehaze, 32);
+#else
             NEW_PARAMS_BUFFER(Dehaze, dehaze);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_A3DLUT:
             NEW_PARAMS_BUFFER(Lut3d, lut3d);
             break;
         case RK_AIQ_ALGO_TYPE_ALDCH:
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Ldch, ldch, 32);
+#else
             NEW_PARAMS_BUFFER(Ldch, ldch);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_ACSM:
             NEW_PARAMS_BUFFER(Csm, csm);
@@ -686,13 +717,19 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
         case RK_AIQ_ALGO_TYPE_ASD:
             break;
         case RK_AIQ_ALGO_TYPE_ADRC:
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Drc, drc, 32);
+#else
             NEW_PARAMS_BUFFER(Drc, drc);
+#endif
             break;
         case RK_AIQ_ALGO_TYPE_ADEGAMMA:
             NEW_PARAMS_BUFFER(Adegamma, adegamma);
             break;
         case RK_AIQ_ALGO_TYPE_ARAWNR:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Baynr, baynr, 32);
+#elif defined(ISP_HW_V30)
             NEW_PARAMS_BUFFER_WITH_V(Baynr, baynr, 3x);
 #elif defined(ISP_HW_V21)
             NEW_PARAMS_BUFFER_WITH_V(Baynr, baynr, 21);
@@ -701,14 +738,18 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
 #endif
             break;
         case RK_AIQ_ALGO_TYPE_AMFNR:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Bay3d, Bay3d, 32);
+#elif defined(ISP_HW_V30)
             NEW_PARAMS_BUFFER_WITH_V(Tnr, tnr, 3x);
 #else
             NEW_PARAMS_BUFFER(Tnr, tnr);
 #endif
             break;
         case RK_AIQ_ALGO_TYPE_AYNR:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Ynr, ynr, 32);
+#elif defined(ISP_HW_V30)
             NEW_PARAMS_BUFFER_WITH_V(Ynr, ynr, 3x);
 #elif defined(ISP_HW_V21)
             NEW_PARAMS_BUFFER_WITH_V(Ynr, ynr, 21);
@@ -717,7 +758,9 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
 #endif
             break;
         case RK_AIQ_ALGO_TYPE_ACNR:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Cnr, cnr, 32);
+#elif defined(ISP_HW_V30)
             NEW_PARAMS_BUFFER_WITH_V(Cnr, cnr, 3x);
 #elif defined(ISP_HW_V21)
             NEW_PARAMS_BUFFER_WITH_V(Cnr, cnr, 21);
@@ -726,7 +769,9 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
 #endif
             break;
         case RK_AIQ_ALGO_TYPE_ASHARP:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Sharp, sharp, 32);
+#elif defined(ISP_HW_V30)
             NEW_PARAMS_BUFFER_WITH_V(Sharpen, sharpen, 3x);
 #elif defined(ISP_HW_V21)
             NEW_PARAMS_BUFFER_WITH_V(Sharpen, sharpen, 21);
@@ -754,12 +799,16 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
             NEW_PARAMS_BUFFER(Md, md);
             break;
         case RK_AIQ_ALGO_TYPE_AGAIN:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V30) || defined(ISP_HW_V32)
             NEW_PARAMS_BUFFER_WITH_V(Gain, Gain, 3x);
 #endif
             break;
         case RK_AIQ_ALGO_TYPE_ACAC:
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Cac, cac, 32);
+#elif defined(ISP_HW_V30)
             NEW_PARAMS_BUFFER_WITH_V(Cac, cac, 3x);
+#endif
             break;
         default:
             break;
@@ -2154,7 +2203,10 @@ void RkAiqCore::newAiqParamsPool()
             case RK_AIQ_ALGO_TYPE_AWB:
                 if (!mAiqAwbStatsPool.ptr())
                     mAiqAwbStatsPool = new RkAiqAwbStatsPool("RkAiqAwbStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+                mAiqIspAwbV32ParamsPool = new RkAiqIspAwbParamsPoolV32(
+                    "RkAiqIspAwbV32Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V30)
                 mAiqIspAwbV3xParamsPool = new RkAiqIspAwbParamsPoolV3x(
                     "RkAiqIspAwbV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #elif defined(ISP_HW_V21)
@@ -2173,7 +2225,10 @@ void RkAiqCore::newAiqParamsPool()
                 if (!mAiqPdafStatsPool.ptr())
                     mAiqPdafStatsPool = new RkAiqPdafStatsPool("RkAiqPdafStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqFocusParamsPool = new RkAiqFocusParamsPool("RkAiqFocusParams", RkAiqCore::DEFAULT_POOL_SIZE);
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+                mAiqIspAfV32ParamsPool =
+                    new RkAiqIspAfParamsPoolV32("RkAiqIspAfParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V30)
                 mAiqIspAfV3xParamsPool =
                     new RkAiqIspAfParamsPoolV3x("RkAiqIspAfParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #else
@@ -2185,7 +2240,11 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspDpccParamsPool       = new RkAiqIspDpccParamsPool("RkAiqIspDpccParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_AMERGE:
+#if defined(ISP_HW_V32)
+                mAiqIspMergeV32ParamsPool   = new RkAiqIspMergeParamsPoolV32("RkAiqIspMergeParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspMergeParamsPool      = new RkAiqIspMergeParamsPool("RkAiqIspMergeParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_ATMO:
                 if (!mAiqAtmoStatsPool.ptr())
@@ -2194,20 +2253,28 @@ void RkAiqCore::newAiqParamsPool()
                     new RkAiqIspTmoParamsPool("RkAiqIspTmoParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_ACCM:
+#if defined(ISP_HW_V32)
+                mAiqIspCcmV32ParamsPool     = new RkAiqIspCcmParamsPoolV32("RkAiqIspCcmV32Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspCcmParamsPool        = new RkAiqIspCcmParamsPool("RkAiqIspCcmParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_ALSC:
                 mAiqIspLscParamsPool        = new RkAiqIspLscParamsPool("RkAiqIspLscParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_ABLC:
-#if defined(ISP_HW_V21) || defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+                mAiqIspBlcV32ParamsPool     = new RkAiqIspBlcParamsPoolV32("RkAiqIspBlcParamsV32", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V21) || defined(ISP_HW_V30)
                 mAiqIspBlcV21ParamsPool     = new RkAiqIspBlcParamsPoolV21("RkAiqIspBlcParamsV21", RkAiqCore::DEFAULT_POOL_SIZE);
 #else
                 mAiqIspBlcParamsPool        = new RkAiqIspBlcParamsPool("RkAiqIspBlcParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #endif
                 break;
             case RK_AIQ_ALGO_TYPE_ARAWNR:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+                mAiqIspBaynrV32ParamsPool      = new RkAiqIspBaynrParamsPoolV32("RkAiqIspRawnrParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V30)
                 mAiqIspBaynrV3xParamsPool      = new RkAiqIspBaynrParamsPoolV3x("RkAiqIspRawnrParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #elif defined(ISP_HW_V21)
                 mAiqIspBaynrV21ParamsPool      = new RkAiqIspBaynrParamsPoolV21("RkAiqIspRawnrParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2219,10 +2286,18 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspGicParamsPool        = new RkAiqIspGicParamsPool("RkAiqIspGicParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_ADEBAYER:
+#if defined(ISP_HW_V32)
+                mAiqIspDebayerV32ParamsPool = new RkAiqIspDebayerParamsPoolV32("RkAiqIspDebayerParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspDebayerParamsPool    = new RkAiqIspDebayerParamsPool("RkAiqIspDebayerParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_ALDCH:
+#if defined(ISP_HW_V32)
+                mAiqIspLdchV32ParamsPool    = new RkAiqIspLdchParamsPoolV32("RkAiqIspLdchParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspLdchParamsPool       = new RkAiqIspLdchParamsPool("RkAiqIspLdchParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_A3DLUT:
                 mAiqIspLut3dParamsPool      = new RkAiqIspLut3dParamsPool("RkAiqIspLut3dParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2230,8 +2305,13 @@ void RkAiqCore::newAiqParamsPool()
             case RK_AIQ_ALGO_TYPE_ADHAZ:
                 if (!mAiqAdehazeStatsPool.ptr())
                     mAiqAdehazeStatsPool = new RkAiqAdehazeStatsPool("RkAiqAdehazeStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
+#if defined(ISP_HW_V32)
+                mAiqIspDehazeV32ParamsPool = new RkAiqIspDehazeParamsPoolV32(
+                    "RkAiqIspDehazeParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspDehazeParamsPool = new RkAiqIspDehazeParamsPool(
                     "RkAiqIspDehazeParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_AGAMMA:
                 mAiqIspAgammaParamsPool     = new RkAiqIspAgammaParamsPool("RkAiqIspAgammaParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2249,7 +2329,7 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspCgcParamsPool        = new RkAiqIspCgcParamsPool("RkAiqIspCgcParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_AGAIN:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V30) || defined(ISP_HW_V32)
                 mAiqIspGainV3xParamsPool     = new RkAiqIspGainParamsPoolV3x("RkAiqIspGainV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #else
                 mAiqIspGainParamsPool       = new RkAiqIspGainParamsPool("RkAiqIspGainParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2265,14 +2345,18 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspMdParamsPool         = new RkAiqIspMdParamsPool("RkAiqIspMdParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_AMFNR:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+                mAiqIspBay3dV32ParamsPool   = new RkAiqIspBay3dParamsPoolV32("RkAiqIspBay3dV32Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V30)
                 mAiqIspTnrV3xParamsPool     = new RkAiqIspTnrParamsPoolV3x("RkAiqIspTnrV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #else
                 mAiqIspTnrParamsPool        = new RkAiqIspTnrParamsPool("RkAiqIspTnrParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #endif
                 break;
             case RK_AIQ_ALGO_TYPE_AYNR:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+                mAiqIspYnrV32ParamsPool     = new RkAiqIspYnrParamsPoolV32("RkAiqIspYnrV32Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V30)
                 mAiqIspYnrV3xParamsPool     = new RkAiqIspYnrParamsPoolV3x("RkAiqIspYnrV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #elif defined(ISP_HW_V21)
                 mAiqIspYnrV21ParamsPool     = new RkAiqIspYnrParamsPoolV21("RkAiqIspYnrV21Params", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2281,7 +2365,9 @@ void RkAiqCore::newAiqParamsPool()
 #endif
                 break;
             case RK_AIQ_ALGO_TYPE_ACNR:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+                mAiqIspCnrV32ParamsPool     = new RkAiqIspCnrParamsPoolV32("RkAiqIspCnrV32Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V30)
                 mAiqIspCnrV3xParamsPool     = new RkAiqIspCnrParamsPoolV3x("RkAiqIspCnrV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #elif defined(ISP_HW_V21)
                 mAiqIspCnrV21ParamsPool     = new RkAiqIspCnrParamsPoolV21("RkAiqIspCnrV21Params", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2290,7 +2376,9 @@ void RkAiqCore::newAiqParamsPool()
 #endif
                 break;
             case RK_AIQ_ALGO_TYPE_ASHARP:
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V32)
+                mAiqIspSharpV32ParamsPool   = new RkAiqIspSharpParamsPoolV32("RkAiqIspSharpV32Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V30)
                 mAiqIspSharpenV3xParamsPool   = new RkAiqIspSharpenParamsPoolV3x("RkAiqIspSharpenV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #elif defined(ISP_HW_V21)
                 mAiqIspSharpenV21ParamsPool   = new RkAiqIspSharpenParamsPoolV21("RkAiqIspSharpenV21Params", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2311,10 +2399,18 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspFecParamsPool        = new RkAiqIspFecParamsPool("RkAiqIspFecParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_ACAC:
+#if defined(ISP_HW_V32)
+                mAiqIspCacV32ParamsPool     = new RkAiqIspCacParamsPoolV32("RkAiqIspCacV32Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V30)
                 mAiqIspCacV3xParamsPool     = new RkAiqIspCacParamsPoolV3x("RkAiqIspCacV3xParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_ADRC:
+#if defined(ISP_HW_V32)
+                mAiqIspDrcV32ParamsPool     = new RkAiqIspDrcParamsPoolV32("RkAiqIspDrcV32ParamsPool", RkAiqCore::DEFAULT_POOL_SIZE);
+#else
                 mAiqIspDrcParamsPool        = new RkAiqIspDrcParamsPool("RkAiqIspDrcParamsPool", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
             default:
                 break;
             }

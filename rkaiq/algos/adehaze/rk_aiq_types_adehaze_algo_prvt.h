@@ -58,11 +58,15 @@ typedef struct AdehazeAePreResV21_s {
 } AdehazeAePreResV21_t;
 
 typedef struct AdehazeAePreRes_s {
-    union {
+#if RKAIQ_HAVE_DEHAZE_V1
         AdehazeAePreResV20_t V20;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V2
         AdehazeAePreResV21_t V21;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V3
         AdehazeAePreResV21_t V30;
-    };
+#endif
 } AdehazeAePreRes_t;
 
 typedef struct CalibDbV2_dehaze_V30_prvt_s {
@@ -71,11 +75,15 @@ typedef struct CalibDbV2_dehaze_V30_prvt_s {
 } CalibDbV2_dehaze_V30_prvt_t;
 
 typedef struct CalibDbDehazePrvt_s {
-    union {
+#if RKAIQ_HAVE_DEHAZE_V1
         CalibDbV2_dehaze_V20_t Dehaze_v20;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V2
         CalibDbV2_dehaze_V21_t Dehaze_v21;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V3
         CalibDbV2_dehaze_V30_prvt_t Dehaze_v30;
-    };
+#endif
 } CalibDbDehazePrvt_t;
 
 typedef struct AdehazeHandle_s {

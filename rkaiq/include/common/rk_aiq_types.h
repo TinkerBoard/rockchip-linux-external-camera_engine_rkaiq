@@ -75,6 +75,7 @@
 #endif
 
 #include "rk_aiq_types_v3x.h" /*< v3x types */
+#include "rk_aiq_types_v32.h"
 
 #define ANR_NO_SEPERATE_MARCO (0)
 
