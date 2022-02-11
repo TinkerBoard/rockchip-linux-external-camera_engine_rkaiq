@@ -39,11 +39,13 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
 
 #set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 
+set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -fPIC")
+
 #set ADD_RK_AIQ
 set(ADD_RK_AIQ true)
 
 #SET RK_AIQ SOURCE DIR
-set(RK_AIQ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/..)
+set(RK_AIQ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/../rkaiq)
 message("rkaiq src path" ${RK_AIQ_SOURCE_DIR})
 
 if(ENABLE_ASAN)
@@ -56,25 +58,40 @@ add_compile_options(-std=c++11)
 add_compile_options(-DADD_RK_AIQ)
 add_compile_options(-O)
 # add_compile_options(-v)
-SET(RK_AIQ_LIB_DIR ${RK_AIQ_SOURCE_DIR}/all_lib/${CMAKE_BUILD_TYPE})
+find_path(RKAIQ_INCLUDE_DIR
+    NAMES
+	rk_aiq.h
+    PATH
+	common
+	rkaiq/common
+)
+find_library(RKAIQ_LIBRARY_DIR
+	rkaiq
+)
+if(RKAIQ_INCLUDE_DIR AND RKAIQ_LIBRARY_DIR)
+set(RK_AIQ_INSTALLED_DIR ${RKAIQ_INCLUDE_DIR})
+set(RK_AIQ_LIB_DIR ${RKAIQ_LIBRARY_DIR})
 message("rkaiq lib path" ${RK_AIQ_LIB_DIR})
 SET(RK_AIQ_INCLUDE_DIR
-${RK_AIQ_SOURCE_DIR}/include/xcore/
-${RK_AIQ_SOURCE_DIR}/include/xcore/base/
-#${RK_AIQ_SOURCE_DIR}/include/aiq_core/
-${RK_AIQ_SOURCE_DIR}/include/algos/
-${RK_AIQ_SOURCE_DIR}/include/common/
-${RK_AIQ_SOURCE_DIR}/include/iq_parser/
-${RK_AIQ_SOURCE_DIR}/include/iq_parser2/
-${RK_AIQ_SOURCE_DIR}/include/uAPI/
-${RK_AIQ_SOURCE_DIR}/include/uAPI2/
-${RK_AIQ_SOURCE_DIR}/
+        ${RK_AIQ_INSTALLED_DIR}/rkaiq/
+        ${RK_AIQ_INSTALLED_DIR}/rkaiq/uAPI2
+        ${RK_AIQ_INSTALLED_DIR}/rkaiq/xcore/
+        ${RK_AIQ_INSTALLED_DIR}/rkaiq/algos/
+        ${RK_AIQ_INSTALLED_DIR}/rkaiq/common/
+        ${RK_AIQ_INSTALLED_DIR}/rkaiq/iq_parser/
+        ${RK_AIQ_INSTALLED_DIR}/rkaiq/iq_parser_v2/
 )
 SET(RK_AIQ_LIB rkaiq)
+else()
+message(FATAL_ERROR "Please check librkaiq.so and include files")
+endif()
 endif()
 
 include_directories(
 ${RK_AIQ_INCLUDE_DIR}
+include/common/mediactl
+./
+./common/
 )
 
 if(GENMESH_ONLINE)
@@ -92,7 +109,7 @@ endif()
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 link_directories("${RK_AIQ_LIB_DIR}" "${GENMESH_LIBS_DIR}")
-ADD_EXECUTABLE(rkaiq_3A_server rkaiq_3A_server.cpp)
+ADD_EXECUTABLE(rkaiq_3A_server rkaiq_3A_server.cpp common/mediactl/mediactl.c)
 
 target_link_libraries(rkaiq_3A_server ${RK_AIQ_LIB} pthread dl)
 

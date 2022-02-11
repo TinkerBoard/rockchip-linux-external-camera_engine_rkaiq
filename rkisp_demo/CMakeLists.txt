@@ -14,13 +14,23 @@ include(BuildOptions)
 include(CompileOptions)
 include(GNUInstallDirs)
 
+find_package(librga QUIET)
+if (LIBRGA_FOUND)
+    add_compile_options(${LIBRGA_CFLAGS})
+endif()
+
+find_package(libdrm QUIET)
+if (LIBDRM_FOUND)
+    add_compile_options(${LIBDRM_CFLAGS})
+endif()
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
 
 set(ADD_RK_AIQ true)
 option(ENABLE_IIO_API "Enable IIO API for EIS algorithm" OFF)
 
-set(RK_AIQ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/../rk_aiq)
+set(RK_AIQ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/../rkaiq)
 message("rkaiq src path" ${RK_AIQ_SOURCE_DIR})
 
 if(ADD_RK_AIQ)
@@ -31,33 +41,33 @@ if(ADD_RK_AIQ)
     else ()
         add_compile_options(-DARCH_FPGA)
     endif()
-    set(RK_AIQ_INSTALLED_DIR ${RK_AIQ_SOURCE_DIR}/build/linux/output/${ARCH}/installed)
-    set(RK_AIQ_LIB_DIR ${RK_AIQ_INSTALLED_DIR}/lib)
-    message("rkaiq lib path" ${RK_AIQ_LIB_DIR})
-    set(RK_AIQ_INCLUDE_DIR
-        ${RK_AIQ_INSTALLED_DIR}/include/
-        ${RK_AIQ_INSTALLED_DIR}/include/rkaiq/
-        ${RK_AIQ_INSTALLED_DIR}/include/rkaiq/uAPI2
-        ${RK_AIQ_INSTALLED_DIR}/include/rkaiq/xcore/
-        ${RK_AIQ_INSTALLED_DIR}/include/rkaiq/algos/
-        ${RK_AIQ_INSTALLED_DIR}/include/rkaiq/common/
-        ${RK_AIQ_INSTALLED_DIR}/include/rkaiq/iq_parser/
-        ${RK_AIQ_INSTALLED_DIR}/include/rkaiq/iq_parser_v2/
-        )
-    set(RK_AIQ_LIB rkaiq)
-endif()
-
-if (ARCH STREQUAL "aarch64")
-    set(RK_DRM_LIB_DIR ${PROJECT_SOURCE_DIR}/demo/libs/arm64/)
-elseif (ARCH STREQUAL "arm")
-    set(RK_DRM_LIB_DIR
-        ${PROJECT_SOURCE_DIR}/demo/libs/arm32/
-        )
-endif()
-
-SET(RK_DRM_LIB drm)
-if(NOT ARCH STREQUAL "fpga")
-    set(RK_RGA_LIB rga)
+	find_path(RKAIQ_INCLUDE_DIR
+		NAMES
+		rk_aiq.h
+		PATH
+		common
+		rkaiq/common
+		)
+	find_library(RKAIQ_LIBRARY_DIR
+		rkaiq
+		)
+	if(RKAIQ_INCLUDE_DIR AND RKAIQ_LIBRARY_DIR)
+		set(RK_AIQ_INSTALLED_DIR ${RKAIQ_INCLUDE_DIR})
+		set(RK_AIQ_LIB_DIR ${RK_AIQ_INSTALLED_DIR}/lib)
+		message("rkaiq lib path" ${RK_AIQ_LIB_DIR})
+		set(RK_AIQ_INCLUDE_DIR
+			${RK_AIQ_INSTALLED_DIR}/rkaiq/
+			${RK_AIQ_INSTALLED_DIR}/rkaiq/uAPI2
+			${RK_AIQ_INSTALLED_DIR}/rkaiq/xcore/
+			${RK_AIQ_INSTALLED_DIR}/rkaiq/algos/
+			${RK_AIQ_INSTALLED_DIR}/rkaiq/common/
+			${RK_AIQ_INSTALLED_DIR}/rkaiq/iq_parser/
+			${RK_AIQ_INSTALLED_DIR}/rkaiq/iq_parser_v2/
+			)
+		set(RK_AIQ_LIB rkaiq)
+	else()
+		message(FATAL_ERROR "Please check librkaiq.so and include files")
+	endif()
 endif()
 
 if (ENABLE_IIO_API)
@@ -121,6 +131,35 @@ message(${LIBRARY_OUTPUT_PATH})
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${RK_DRM_LIB_DIR}" "${IIO_LIB_DIR}")
+link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}")
 add_executable(rkisp_demo ${DIR_SRCS})
-target_link_libraries(rkisp_demo ${RK_AIQ_LIB} ${RK_DRM_LIB} ${RK_RGA_LIB} ${IIO_LIBS} pthread)
+target_link_libraries(rkisp_demo ${RK_AIQ_LIB} ${IIO_LIBS} pthread)
+
+if (LIBDRM_FOUND)
+    target_link_libraries(rkisp_demo
+        PRIVATE
+        libdrm::libdrm
+        )
+endif()
+
+if (LIBRGA_FOUND)
+    target_link_libraries(rkisp_demo
+        PRIVATE
+        librga::librga
+        )
+endif()
+
+#FIXME: buildroot and ipc sdk shall use the same setting
+if(BUILDROOT_BUILD_PROJECT)
+	install(TARGETS rkisp_demo
+		RUNTIME DESTINATION /usr/bin
+		LIBRARY DESTINATION /usr/lib
+		)
+
+else()
+	install(TARGETS rkisp_demo
+		RUNTIME DESTINATION "usr/bin"
+		LIBRARY DESTINATION "usr/lib"
+		)
+
+endif()

@@ -10,7 +10,7 @@
 #include <pthread.h>
 
 #include <linux/videodev2.h>
-#include "rk_aiq_user_api2_sysctl.h"
+#include "uAPI2/rk_aiq_user_api2_sysctl.h"
 #include "common/mediactl/mediactl.h"
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
