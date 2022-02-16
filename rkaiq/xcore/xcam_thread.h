@@ -50,7 +50,7 @@ private:
 
 
 private:
-    static int thread_func (void *user_data);
+    static void* thread_func (void *user_data);
 
 private:
     char           *_name;
@@ -61,6 +61,6 @@ private:
     bool            _stopped;
 };
 
-};
+}
 
 #endif //XCAM_THREAD_H

@@ -38,11 +38,11 @@ public:
     virtual XCamReturn getSensorModeData(const char* sns_ent_name,
                                  rk_aiq_exposure_sensor_descriptor& sns_des);
 
-    virtual XCamReturn handle_sof(int64_t time, int frameid);
+    virtual XCamReturn handle_sof(int64_t time, uint32_t frameid);
     virtual int get_pixel(rk_aiq_exposure_sensor_descriptor* sns_des);
     virtual int get_blank(rk_aiq_exposure_sensor_descriptor* sns_des);
     virtual int get_exposure_range(rk_aiq_exposure_sensor_descriptor* sns_des);
-    virtual int get_format(rk_aiq_exposure_sensor_descriptor* sns_des);
+    virtual int get_sensor_desc(rk_aiq_exposure_sensor_descriptor* sns_des);
 
     virtual XCamReturn get_sensor_descriptor (rk_aiq_exposure_sensor_descriptor* sns_des);
     virtual XCamReturn set_working_mode(int mode);
@@ -97,6 +97,6 @@ private:
     void OnTimer();
     FakeSensorHw *_dev;
 };
-}; //namespace RkCam
+} //namespace RkCam
 
 #endif

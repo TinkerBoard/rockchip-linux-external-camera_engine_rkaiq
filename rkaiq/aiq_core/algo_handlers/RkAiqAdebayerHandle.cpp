@@ -67,7 +67,7 @@ XCamReturn RkAiqAdebayerHandleInt::setAttrib(adebayer_attrib_t att) {
     // called by RkAiqCore
     bool isChanged = false;
     if (att.sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
-        memcmp(&mNewAtt, &att, sizeof(att)))
+            memcmp(&mNewAtt, &att, sizeof(att)))
         isChanged = true;
     else if (att.sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
              memcmp(&mCurAtt, &att, sizeof(att)))
@@ -210,16 +210,20 @@ XCamReturn RkAiqAdebayerHandleInt::postProcess() {
 }
 
 XCamReturn RkAiqAdebayerHandleInt::genIspResult(RkAiqFullParams* params,
-                                                RkAiqFullParams* cur_params) {
+        RkAiqFullParams* cur_params) {
     ENTER_ANALYZER_FUNCTION();
-
     XCamReturn ret                = XCAM_RETURN_NO_ERROR;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
     RkAiqAlgoProcResAdebayer* adebayer_com = (RkAiqAlgoProcResAdebayer*)mProcOutParam;
-    rk_aiq_isp_debayer_params_v20_t* debayer_param = params->mDebayerParams->data().ptr();
 
+#if RKAIQ_HAVE_DEBAYER_V1
+    rk_aiq_isp_debayer_params_v20_t* debayer_param = params->mDebayerParams->data().ptr();
+#endif
+#if RKAIQ_HAVE_DEBAYER_V2
+    rk_aiq_isp_debayer_params_v32_t* debayer_param = params->mDebayerV32Params->data().ptr();
+#endif
     if (!adebayer_com) {
         LOGD_ANALYZER("no adebayer result");
         return XCAM_RETURN_NO_ERROR;
@@ -232,14 +236,26 @@ XCamReturn RkAiqAdebayerHandleInt::genIspResult(RkAiqFullParams* params,
         } else {
             debayer_param->frame_id = shared->frameId;
         }
-        memcpy(&debayer_param->result, &adebayer_rk->debayerRes.config, sizeof(AdebayerConfig_t));
+#if RKAIQ_HAVE_DEBAYER_V1
+        memcpy(&debayer_param->result, &adebayer_rk->debayerRes.config, sizeof(AdebayerHwConfigV1_t));
+#endif
+#if RKAIQ_HAVE_DEBAYER_V2
+        memcpy(&debayer_param->result, &adebayer_rk->debayerRes.config, sizeof(AdebayerHwConfigV2_t));
+#endif
+
     }
 
+#if RKAIQ_HAVE_DEBAYER_V1
     cur_params->mDebayerParams = params->mDebayerParams;
+#endif
+#if RKAIQ_HAVE_DEBAYER_V2
+    cur_params->mDebayerV32Params = params->mDebayerV32Params;
+#endif
+
 
     EXIT_ANALYZER_FUNCTION();
 
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

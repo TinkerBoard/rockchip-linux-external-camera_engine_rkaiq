@@ -6,7 +6,7 @@ struct MediaBuffer_s;
 
 typedef struct _MotionBufMetaData_t
 {
-    int frame_id;
+    uint32_t frame_id;
     //to do: add more for future
     //var1
     //var2

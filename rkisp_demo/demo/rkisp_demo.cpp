@@ -962,6 +962,10 @@ static void process_image(const void *p, int sequence, int size, demo_context_t 
         printf(">\n");
         fwrite(p, size, 1, ctx->fp);
         fflush(ctx->fp);
+        fsync(fileno(ctx->fp));
+    } else if (ctx->fp && sequence >= ctx->skipCnt && ctx->outputCnt-- == 0) {
+        fclose(ctx->fp);
+        ctx->fp = NULL;
     } else if (ctx->writeFileSync) {
         int ret = 0;
         if (!ctx->is_capture_yuv) {
@@ -2157,7 +2161,15 @@ static void rkisp_routine(demo_context_t *ctx)
 #endif
             if (ctx->isOrp) {
                 rk_aiq_raw_prop_t prop;
-                if (strcmp(ctx->orpRawFmt, "BG10") == 0)
+                if (strcmp(ctx->orpRawFmt, "BA81") == 0)
+                    prop.format = RK_PIX_FMT_SBGGR8;
+                else if (strcmp(ctx->orpRawFmt, "GBRG") == 0)
+                    prop.format = RK_PIX_FMT_SGBRG8;
+                else if (strcmp(ctx->orpRawFmt, "RGGB") == 0)
+                    prop.format = RK_PIX_FMT_SRGGB8;
+                else if (strcmp(ctx->orpRawFmt, "GRBG") == 0)
+                    prop.format = RK_PIX_FMT_SGRBG8;
+                else if (strcmp(ctx->orpRawFmt, "BG10") == 0)
                     prop.format = RK_PIX_FMT_SBGGR10;
                 else if (strcmp(ctx->orpRawFmt, "GB10") == 0)
                     prop.format = RK_PIX_FMT_SGBRG10;

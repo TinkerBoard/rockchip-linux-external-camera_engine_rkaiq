@@ -30,11 +30,26 @@ rk_aiq_uapi_accm_QueryCcmInfo(const RkAiqAlgoContext *ctx,
 {
 
     accm_context_t* ccm_contex = (accm_context_t*)ctx->accm_para;
+#if RKAIQ_HAVE_CCM_V1
     memcpy(ccm_querry_info->y_alpha_curve, ccm_contex->ccmHwConf.alp_y, sizeof(ccm_contex->ccmHwConf.alp_y));
     memcpy(ccm_querry_info->ccMatrix, ccm_contex->ccmHwConf.matrix, sizeof(ccm_contex->ccmHwConf.matrix));
     memcpy(ccm_querry_info->ccOffsets, ccm_contex->ccmHwConf.offs, sizeof(ccm_contex->ccmHwConf.offs));
     ccm_querry_info->ccm_en = ccm_contex->ccmHwConf.ccmEnable;
     ccm_querry_info->low_bound_pos_bit = ccm_contex->ccmHwConf.bound_bit;
+#endif
+
+#if RKAIQ_HAVE_CCM_V2
+    memcpy(ccm_querry_info->y_alpha_curve, ccm_contex->ccmHwConf_v2.alp_y,
+           sizeof(ccm_contex->ccmHwConf_v2.alp_y));
+    memcpy(ccm_querry_info->ccMatrix, ccm_contex->ccmHwConf_v2.matrix,
+           sizeof(ccm_contex->ccmHwConf_v2.matrix));
+    memcpy(ccm_querry_info->ccOffsets, ccm_contex->ccmHwConf_v2.offs,
+           sizeof(ccm_contex->ccmHwConf_v2.offs));
+    ccm_querry_info->ccm_en            = ccm_contex->ccmHwConf_v2.ccmEnable;
+    ccm_querry_info->low_bound_pos_bit = ccm_contex->ccmHwConf_v2.bound_bit;
+    ccm_querry_info->right_pos_bit     = ccm_contex->ccmHwConf_v2.right_bit;
+#endif
+
     ccm_querry_info->color_inhibition_level = ccm_contex->accmRest.color_inhibition_level;
     ccm_querry_info->color_saturation_level = ccm_contex->accmRest.color_saturation_level;
 

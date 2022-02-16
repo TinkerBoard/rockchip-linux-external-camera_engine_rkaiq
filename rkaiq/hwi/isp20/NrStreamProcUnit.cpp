@@ -120,7 +120,7 @@ XCamReturn NrStreamProcUnit::configToDrv(uint32_t frameId)
         struct rkispp_params_nrcfg* ispp_nr_params = (struct rkispp_params_nrcfg*)v4l2buf_nr->get_buf().m.userptr;
         if (mCamHw->merge_results(ready_results, *ispp_nr_params) != XCAM_RETURN_NO_ERROR)
             LOGE_CAMHW_SUBM(ISPP_NR_SUBM, "nr parameter translation error\n");
-        LOGD_CAMHW_SUBM(ISPP_NR_SUBM, "nr: frameid %d, en update 0x%x, ens 0x%x, cfg update 0x%x",frameId,
+        LOGD_CAMHW_SUBM(ISPP_NR_SUBM, "nr: frameid %u, en update 0x%x, ens 0x%x, cfg update 0x%x",frameId,
                         ispp_nr_params->head.module_en_update, ispp_nr_params->head.module_ens,
                         ispp_nr_params->head.module_cfg_update);
 
@@ -181,4 +181,4 @@ XCamReturn NrStreamProcUnit::config_params(uint32_t frameId, SmartPtr<cam3aResul
     return ret;
 }
 
-}; //namspace RkCam
+} //namspace RkCam

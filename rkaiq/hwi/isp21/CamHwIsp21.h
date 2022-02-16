@@ -35,8 +35,8 @@ public:
     virtual ~CamHwIsp21();
     virtual XCamReturn init(const char* sns_ent_name);
     virtual XCamReturn stop();
-    XCamReturn setIspParamsSync(int frameId);
-    XCamReturn setIsppParamsSync(int frameId);
+    XCamReturn setIspParamsSync(uint32_t frameId);
+    XCamReturn setIsppParamsSync(uint32_t frameId);
 protected:
     virtual XCamReturn setIspConfig();
     virtual XCamReturn dispatchResult(SmartPtr<cam3aResult> cam3a_result);
@@ -50,6 +50,6 @@ private:
     struct isp21_isp_params_cfg _full_active_isp21_params;
 };
 
-};
+}
 
 #endif

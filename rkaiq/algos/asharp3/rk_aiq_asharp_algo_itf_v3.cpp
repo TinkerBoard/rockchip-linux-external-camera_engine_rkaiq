@@ -25,7 +25,7 @@
 RKAIQ_BEGIN_DECLARE
 
 typedef struct _RkAiqAlgoContext {
-    void* place_holder[0];
+    Asharp_Context_V3_t AsharpCtx;
 } RkAiqAlgoContext;
 
 

@@ -26,7 +26,7 @@ rk_aiq_uapi_aldch_SetAttrib(RkAiqAlgoContext *ctx,
                            rk_aiq_ldch_attrib_t attr,
                            bool need_sync)
 {
-    LDCHHandle_t ldch_contex = (LDCHHandle_t)ctx->hLDCH;;
+    LDCHHandle_t ldch_contex = (LDCHHandle_t)ctx->hLDCH;
 
     if (!ldch_contex->ldch_en && !attr.en) {
         LOGE_AFEC("failed, ldch is disalbed!");
@@ -53,7 +53,7 @@ XCamReturn
 rk_aiq_uapi_aldch_GetAttrib(const RkAiqAlgoContext *ctx,
                            rk_aiq_ldch_attrib_t *attr)
 {
-    LDCHHandle_t ldch_contex = (LDCHHandle_t)ctx->hLDCH;;
+    LDCHHandle_t ldch_contex = (LDCHHandle_t)ctx->hLDCH;
 
     memcpy(attr, &ldch_contex->user_config, sizeof(rk_aiq_ldch_attrib_t));
 

@@ -74,7 +74,8 @@ FakeV4l2Device::close ()
 }
 
 XCamReturn
-FakeV4l2Device::start () {
+FakeV4l2Device::start (bool prepared) {
+    (void)prepared;
     _active = true;
 
     return XCAM_RETURN_NO_ERROR;
@@ -124,12 +125,12 @@ void FakeV4l2Device::destroy_notify_pipe () {
 }
 
 int
-FakeV4l2Device::io_control (int cmd, void *arg)
+FakeV4l2Device::io_control (unsigned long cmd, void *arg)
 {
     if (_fd <= 0)
         return -1;
 
-    if ((int)VIDIOC_DQBUF == cmd) {
+    if (VIDIOC_DQBUF == cmd) {
         struct v4l2_buffer *v4l2_buf = (struct v4l2_buffer *)arg;
         v4l2_buf->index = get_available_buffer_index();
         _mutex.lock();
@@ -306,4 +307,4 @@ FakeV4l2Device::on_timer_proc ()
     }
 }
 
-};
+}

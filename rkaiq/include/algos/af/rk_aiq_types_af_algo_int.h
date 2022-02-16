@@ -40,6 +40,7 @@ typedef enum _RKAIQ_AF_HWVER
 {
     RKAIQ_AF_HW_V20 = 0,
     RKAIQ_AF_HW_V30,
+    RKAIQ_AF_HW_V31,
     RKAIQ_AF_HW_VMAX
 } RKAIQ_AF_HWVER;
 
@@ -65,6 +66,7 @@ typedef struct rk_aiq_af_attrib_s {
     union {
         rk_aiq_af_algo_meas_v20_t manual_meascfg;
         rk_aiq_af_algo_meas_v30_t manual_meascfg_v30;
+        rk_aiq_af_algo_meas_v31_t manual_meascfg_v31;
     };
 } rk_aiq_af_attrib_t;
 

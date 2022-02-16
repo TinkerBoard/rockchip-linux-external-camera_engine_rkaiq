@@ -70,6 +70,6 @@ class RkAiqCamgroupHandle {
     RkAiqCamgroupHandle* mParentHdl;
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

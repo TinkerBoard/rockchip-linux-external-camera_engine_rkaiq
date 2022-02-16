@@ -26,13 +26,33 @@ int getVersionInfo(rk_aiq_sys_ctx_t* ctx, char* data) {
     return 0;
 }
 
-int setMergeAttrib(rk_aiq_sys_ctx_t* ctx, char* data) {
-    return rk_aiq_user_api2_amerge_SetAttrib(ctx, *(amerge_attrib_t*)data);
+#if RKAIQ_HAVE_MERGE_V10
+int setMergeAttribV10(rk_aiq_sys_ctx_t* ctx, char* data) {
+    return rk_aiq_user_api2_amerge_V10_SetAttrib(ctx, *(mergeAttrV10_t*)data);
 }
 
-int getMergeAttrib(rk_aiq_sys_ctx_t* ctx, char* data) {
-    return rk_aiq_user_api2_amerge_GetAttrib(ctx, (amerge_attrib_t*)data);
+int getMergeAttribV10(rk_aiq_sys_ctx_t* ctx, char* data) {
+    return rk_aiq_user_api2_amerge_V10_GetAttrib(ctx, (mergeAttrV10_t*)data);
 }
+#endif
+#if RKAIQ_HAVE_MERGE_V11
+int setMergeAttribV11(rk_aiq_sys_ctx_t* ctx, char* data) {
+    return rk_aiq_user_api2_amerge_V11_SetAttrib(ctx, *(mergeAttrV11_t*)data);
+}
+
+int getMergeAttribV11(rk_aiq_sys_ctx_t* ctx, char* data) {
+    return rk_aiq_user_api2_amerge_V11_GetAttrib(ctx, (mergeAttrV11_t*)data);
+}
+#endif
+#if RKAIQ_HAVE_MERGE_V12
+int setMergeAttribV12(rk_aiq_sys_ctx_t* ctx, char* data) {
+    return rk_aiq_user_api2_amerge_V12_SetAttrib(ctx, *(mergeAttrV12_t*)data);
+}
+
+int getMergeAttribV12(rk_aiq_sys_ctx_t* ctx, char* data) {
+    return rk_aiq_user_api2_amerge_V12_GetAttrib(ctx, (mergeAttrV12_t*)data);
+}
+#endif
 
 int setTmoAttrib(rk_aiq_sys_ctx_t* ctx, char* data) {
     return rk_aiq_user_api2_atmo_SetAttrib(ctx, *(atmo_attrib_t*)data);

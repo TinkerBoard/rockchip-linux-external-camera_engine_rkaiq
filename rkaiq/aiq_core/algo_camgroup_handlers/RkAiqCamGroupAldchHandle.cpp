@@ -93,4 +93,4 @@ XCamReturn RkAiqCamGroupAldchHandleInt::getAttrib(rk_aiq_ldch_attrib_t* att) {
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

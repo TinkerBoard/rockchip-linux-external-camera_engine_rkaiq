@@ -51,10 +51,11 @@ RKStream::poll_type_to_str[ISP_POLL_POST_MAX] =
 
 RkPollThread::RkPollThread (const char* thName, int type, SmartPtr<V4l2Device> dev, RKStream *stream)
     :Thread(thName)
-    ,_poll_callback (NULL)
-    ,frameid (0)
     ,_dev(dev)
+    ,_subdev(NULL)
+    ,_poll_callback (NULL)
     ,_stream(stream)
+    ,frameid (0)
     ,_dev_type(type)
 {
     _poll_stop_fd[0] =  -1;
@@ -65,11 +66,11 @@ RkPollThread::RkPollThread (const char* thName, int type, SmartPtr<V4l2Device> d
 
 RkPollThread::RkPollThread (const char* thName, int type, SmartPtr<V4l2SubDevice> dev, RKStream *stream)
     :Thread(thName)
-    ,_poll_callback (NULL)
-    ,frameid (0)
-    ,_subdev(dev)
     ,_dev(dev)
+    ,_subdev(dev)
+    ,_poll_callback (NULL)
     ,_stream(stream)
+    ,frameid (0)
     ,_dev_type(type)
 {
     _poll_stop_fd[0] =  -1;
@@ -143,8 +144,9 @@ XCamReturn RkPollThread::stop ()
     if (_poll_stop_fd[1] != -1) {
         char buf = 0xf;  // random value to write to flush fd.
         unsigned int size = write(_poll_stop_fd[1], &buf, sizeof(char));
-        if (size != sizeof(char))
+        if (size != sizeof(char)) {
             XCAM_LOG_WARNING("Flush write not completed");
+        }
     }
     Thread::stop();
     destroy_stop_fds ();
@@ -494,7 +496,8 @@ RKStatsStream::new_video_buffer(SmartPtr<V4l2Buffer> buf,
     SmartPtr<Isp20StatsBuffer> isp20stats_buf = nullptr;
 
     // SmartPtr<RkAiqIspParamsProxy> ispParams = nullptr;
-    rkisp_effect_params_v20 ispParams = {0};
+    rkisp_effect_params_v20 ispParams;
+    memset(&ispParams, 0, sizeof(ispParams));
     SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
     SmartPtr<RkAiqIrisParamsProxy> irisParams = nullptr;
     SmartPtr<RkAiqAfInfoProxy> afParams = nullptr;
@@ -620,4 +623,4 @@ RKPdafStream::new_v4l2proxy_buffer(SmartPtr<V4l2Buffer> buf,
     return buf_proxy;
 }
 
-}; //namspace RkCam
+}  //namspace RkCam

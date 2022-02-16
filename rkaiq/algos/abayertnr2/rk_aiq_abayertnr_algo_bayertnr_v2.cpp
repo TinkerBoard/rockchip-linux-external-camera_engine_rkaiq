@@ -254,7 +254,7 @@ Abayertnr_result_V2_t bayertnr_fix_transfer_V2(RK_Bayertnr_Params_V2_Select_t* p
     pFix->bay3d_himed_bypass_en = !pSelect->hi_med_en;
     pFix->bay3d_lobypass_en = !pSelect->lo_enable;
     pFix->bay3d_hibypass_en = !pSelect->hi_enable;
-    pFix->bay3d_bypass_en = !pSelect->enable;;
+    pFix->bay3d_bypass_en = !pSelect->enable;
     pFix->bay3d_en_i = pSelect->enable;
 
     // BAY3D_BAY3D_KALRATIO 0x2c04

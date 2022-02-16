@@ -71,6 +71,6 @@ class DvsLibrary {
     DvsOps ops_;
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif  // ALGOS_AEIS_EIS_LOADER_H

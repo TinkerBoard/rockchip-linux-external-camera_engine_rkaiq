@@ -308,7 +308,7 @@ CamHwSimulator::setIspParams(SmartPtr<RkAiqIspParamsProxy>& ispParams)
 }
 
 XCamReturn
-CamHwSimulator::setHdrProcessCount(int frame_id, rk_aiq_luma_params_t luma_params)
+CamHwSimulator::setHdrProcessCount(uint32_t frame_id, rk_aiq_luma_params_t luma_params)
 {
     ENTER_CAMHW_FUNCTION();
 

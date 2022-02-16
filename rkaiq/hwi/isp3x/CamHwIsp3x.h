@@ -34,7 +34,7 @@ public:
     virtual ~CamHwIsp3x();
     virtual XCamReturn init(const char* sns_ent_name);
     virtual XCamReturn stop();
-    XCamReturn setIspParamsSync(int frameId);
+    XCamReturn setIspParamsSync(uint32_t frameId);
 protected:
     virtual XCamReturn setIspConfig();
 private:
@@ -45,6 +45,6 @@ private:
     struct isp3x_isp_params_cfg _full_active_isp3x_params;
 };
 
-};
+}
 
 #endif

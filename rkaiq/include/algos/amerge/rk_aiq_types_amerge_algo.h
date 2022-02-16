@@ -11,5 +11,6 @@
 #ifndef __RK_AIQ_TYPES_AMERGE_ALGO_H__
 #define __RK_AIQ_TYPES_AMERGE_ALGO_H__
 
+#include "rk_aiq_types_amerge_hw.h"
 
 #endif

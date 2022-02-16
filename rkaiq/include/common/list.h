@@ -274,7 +274,7 @@ static void print_list(struct list_head* head)
 	p = head->next;
 	while (p != head)
 	{
-		printf("%p ", p);
+		printf("%p ", (void*)p);
 		p = p->next;
 	}
 	printf("\n");

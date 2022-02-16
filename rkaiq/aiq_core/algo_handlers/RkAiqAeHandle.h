@@ -23,7 +23,7 @@
 #include "xcam_mutex.h"
 
 namespace RkCam {
-
+#if RKAIQ_HAVE_AE_V1
 class RkAiqCustomAeHandle;
 
 class RkAiqAeHandleInt : public RkAiqHandle {
@@ -154,7 +154,7 @@ class RkAiqAeHandleInt : public RkAiqHandle {
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAeHandleInt);
 };
-
-};  // namespace RkCam
+#endif
+}  // namespace RkCam
 
 #endif

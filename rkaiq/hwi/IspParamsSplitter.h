@@ -81,6 +81,6 @@ private:
     Rectangle right_isp_rect_;
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif  // __COMMON_HWI_ISP_PARAMS_SPLITTER_H__

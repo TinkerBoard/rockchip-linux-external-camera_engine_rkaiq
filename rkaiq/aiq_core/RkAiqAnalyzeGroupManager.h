@@ -63,8 +63,8 @@ class RkAiqAnalyzerGroup {
     XCamReturn msgHandle(const SmartPtr<XCamMessage>& msg);
     XCamReturn stop();
 
-    const rk_aiq_core_analyze_type_e getType() const { return mGroupType; }
-    const uint64_t getDepsFlag() const { return mDepsFlag; }
+    rk_aiq_core_analyze_type_e getType() const { return mGroupType; }
+    uint64_t getDepsFlag() const { return mDepsFlag; }
     void setDepsFlag(uint64_t new_deps) { mDepsFlag = new_deps; }
 
  private:

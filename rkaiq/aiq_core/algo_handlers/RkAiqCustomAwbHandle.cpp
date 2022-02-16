@@ -65,4 +65,4 @@ XCamReturn RkAiqCustomAwbHandle::genIspResult(RkAiqFullParams* params, RkAiqFull
 #endif
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

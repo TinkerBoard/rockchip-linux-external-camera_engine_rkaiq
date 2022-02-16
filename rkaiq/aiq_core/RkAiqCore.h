@@ -78,7 +78,7 @@ class RkAiqCoreMsg
 public:
     RkAiqCoreMsg(XCamMessageType msg_id, uint32_t id, const SmartPtr<StandardMsg> &message)
         :  XCamMessage(msg_id, id)
-           , msg(message)
+        , msg(message)
     {};
     virtual ~RkAiqCoreMsg() {};
 
@@ -143,7 +143,7 @@ private:
 class RkAiqCoreEvtsThread
     : public Thread {
 public:
-     RkAiqCoreEvtsThread(RkAiqCore* rkAiqCore)
+    RkAiqCoreEvtsThread(RkAiqCore* rkAiqCore)
         : Thread("RkAiqCoreEvtsThread")
         , mRkAiqCore(rkAiqCore) {};
     ~RkAiqCoreEvtsThread() {
@@ -183,7 +183,7 @@ struct RkAiqHwInfo {
     bool lens_supported;
     bool is_multi_isp_mode;
     uint16_t multi_isp_extended_pixel;
-	enum RK_PS_SrcOverlapPosition module_rotation;
+    enum RK_PS_SrcOverlapPosition module_rotation;
 };
 
 #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -231,7 +231,7 @@ public:
     XCamReturn stop();
     // called before start(), get initial settings
     virtual XCamReturn prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
-                       int mode);
+                               int mode);
     // should called befor prepare
     void notifyIspStreamMode(rk_isp_stream_mode_t mode) {
         if (mode == RK_ISP_STREAM_MODE_ONLNIE) {
@@ -292,12 +292,16 @@ public:
     const rk_aiq_mems_sensor_intf_t* getMemsSensorIntf();
     XCamReturn set_sp_resolution(int &width, int &height, int &aligned_w, int &aligned_h);
 
-    void setMulCamConc(bool cc) { mAlogsComSharedParams.is_multi_sensor = cc; };
+    void setMulCamConc(bool cc) {
+        mAlogsComSharedParams.is_multi_sensor = cc;
+    };
     void setCamPhyId(int phyId) {
         mAlogsComSharedParams.mCamPhyId = phyId;
         mTranslator->setCamPhyId(phyId);
     }
-    int getCamPhyId() { return mAlogsComSharedParams.mCamPhyId;}
+    int getCamPhyId() {
+        return mAlogsComSharedParams.mCamPhyId;
+    }
 
     XCamReturn set_pdaf_support(bool support);
     bool get_pdaf_support();
@@ -441,7 +445,7 @@ protected:
                               SmartPtr<RkAiqAwbStatsProxy>& awbStat,
                               SmartPtr<RkAiqAfStatsProxy>& afStat,
                               rk_aiq_isp_stats_t* to);
-	virtual void setResultExpectedEffId(uint32_t& eff_id, enum RkAiqAlgoType_e type);
+    virtual void setResultExpectedEffId(uint32_t& eff_id, enum RkAiqAlgoType_e type);
     void cacheIspStatsToList(SmartPtr<RkAiqAecStatsProxy>& aecStat,
                              SmartPtr<RkAiqAwbStatsProxy>& awbStat,
                              SmartPtr<RkAiqAfStatsProxy>& afStat);
@@ -547,20 +551,18 @@ protected:
 
     // V32
     SmartPtr<RkAiqIspBlcParamsPoolV32>      mAiqIspBlcV32ParamsPool;
-    SmartPtr<RkAiqIspMergeParamsPoolV32>    mAiqIspMergeV32ParamsPool;
-    SmartPtr<RkAiqIspDrcParamsPoolV32>      mAiqIspDrcV32ParamsPool;
-    SmartPtr<RkAiqIspBay3dParamsPoolV32>    mAiqIspBay3dV32ParamsPool;
     SmartPtr<RkAiqIspBaynrParamsPoolV32>    mAiqIspBaynrV32ParamsPool;
     SmartPtr<RkAiqIspCacParamsPoolV32>      mAiqIspCacV32ParamsPool;
     SmartPtr<RkAiqIspDebayerParamsPoolV32>  mAiqIspDebayerV32ParamsPool;
     SmartPtr<RkAiqIspCcmParamsPoolV32>      mAiqIspCcmV32ParamsPool;
-    SmartPtr<RkAiqIspDehazeParamsPoolV32>   mAiqIspDehazeV32ParamsPool;
     SmartPtr<RkAiqIspLdchParamsPoolV32>     mAiqIspLdchV32ParamsPool;
     SmartPtr<RkAiqIspYnrParamsPoolV32>      mAiqIspYnrV32ParamsPool;
     SmartPtr<RkAiqIspCnrParamsPoolV32>      mAiqIspCnrV32ParamsPool;
     SmartPtr<RkAiqIspSharpParamsPoolV32>    mAiqIspSharpV32ParamsPool;
     SmartPtr<RkAiqIspAwbParamsPoolV32>      mAiqIspAwbV32ParamsPool;
     SmartPtr<RkAiqIspAfParamsPoolV32>       mAiqIspAfV32ParamsPool;
+    SmartPtr<RkAiqIspTnrParamsPoolV32>      mAiqIspTnrV32ParamsPool;
+    SmartPtr<RkAiqIspAwbGainParamsPoolV32>  mAiqIspAwbGainV32ParamsPool;
 
 #endif
     static uint16_t DEFAULT_POOL_SIZE;
@@ -630,7 +632,7 @@ protected:
     XCamReturn handleOrbStats(const SmartPtr<VideoBuffer> &buffer);
     XCamReturn handlePdafStats(const SmartPtr<VideoBuffer> &buffer);
     inline uint64_t grpId2GrpMask(uint32_t grpId) {
-        return grpId == RK_AIQ_CORE_ANALYZE_ALL ? grpId : 1 << grpId;
+        return grpId == RK_AIQ_CORE_ANALYZE_ALL ? (uint64_t)grpId : (1ULL << grpId);
     }
 
     virtual void setReqAlgoResMask(int algoType, bool req);
@@ -652,6 +654,6 @@ private:
     bool mPdafSupport;
 };
 
-};
+}
 
 #endif //_RK_AIQ_CORE_H_

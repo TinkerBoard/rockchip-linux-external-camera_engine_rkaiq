@@ -21,6 +21,7 @@
 #define ALGOS_AEIS_IMU_SERVICE_H
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -43,9 +44,9 @@ class EisImuData {
     const EisImuData& operator=(const EisImuData&) = delete;
     ~EisImuData();
 
-    const mems_sensor_type_t GetType();
-    const mems_sensor_event_t* GetData();
-    const size_t GetCount();
+    mems_sensor_type_t GetType() const;
+    mems_sensor_event_t* GetData() const;
+    size_t GetCount() const;
 
  private:
     const std::shared_ptr<EisImuAdaptor> imu_;
@@ -63,7 +64,7 @@ class EisImuAdaptor : std::enable_shared_from_this<EisImuAdaptor> {
     const EisImuAdaptor& operator=(const EisImuAdaptor&) = delete;
     ~EisImuAdaptor();
 
-    constexpr const mems_sensor_type_t GetType() { return type_; };
+    mems_sensor_type_t GetType() const { return type_; };
     std::shared_ptr<EisImuAdaptor> GetPtr() { return shared_from_this(); }
 
     mems_sensor_event_t* GetData(size_t* num_sample);
@@ -83,7 +84,7 @@ class EisImuAdaptor : std::enable_shared_from_this<EisImuAdaptor> {
 };
 
 struct imu_param {
-    int frame_id;
+    uint32_t frame_id;
     TaskTimePoint time_point;
     std::unique_ptr<EisImuData> data;
 };
@@ -104,6 +105,6 @@ class ImuTask final : public ServiceTask<imu_param> {
 
 using ImuService = TaskService<imu_param>;
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif  // ALGOS_AEIS_IMU_SERVICE_H

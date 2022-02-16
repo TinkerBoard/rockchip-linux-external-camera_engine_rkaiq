@@ -31,8 +31,10 @@ XCamReturn illuminant_index_estimation_ccm(int light_num, const CalibDbV2_Ccm_Ac
 XCamReturn Damping(const float damp, float *pMatrixUndamped, float *pMatrixDamped, float *pOffsetUndamped, float *pOffsetDamped);
 void Saturationadjust(float fScale, accm_handle_t hAccm );
 XCamReturn CamCalibDbGetCcmProfileByName(const CalibDbV2_Ccm_Tuning_Para_t *calibCcm, char* name, const CalibDbV2_Ccm_Ccm_Matrix_Para_t **pCcmMatrixProfile);
-XCamReturn interpCCMbywbgain(const CalibDbV2_Ccm_Para_V2_t *pCcm, accm_handle_t hAccm, float fSaturation);
-XCamReturn selectCCM(const CalibDbV2_Ccm_Para_V2_t *pCcm, accm_handle_t hAccm, float fSaturation);
+XCamReturn interpCCMbywbgain(const CalibDbV2_Ccm_Tuning_Para_t* pCcm, accm_handle_t hAccm,
+                             float fSaturation);
+XCamReturn selectCCM(const CalibDbV2_Ccm_Tuning_Para_t* pCcm, accm_handle_t hAccm,
+                     float fSaturation);
 bool JudgeCcmRes3aConverge(ccm_3ares_info_t *res3a_info, accm_sw_info_t *accmSwInfo, float gain_th, float wbgain_th);
 XCamReturn Swinfo_wbgain_init(float awbGain[2], const CalibDbV2_Ccm_Tuning_Para_t *pCalib, const char* illuName);
 XCamReturn pCcmMatrixAll_init(accm_context_t* accm_context, const CalibDbV2_Ccm_Tuning_Para_t *pCalib );

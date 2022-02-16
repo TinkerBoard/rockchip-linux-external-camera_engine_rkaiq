@@ -59,7 +59,7 @@ function lunch() {
 
   case $selection in
     rv1106)
-      set_isp_hw 30
+      set_isp_hw 32
       ;;
     rk3588)
       set_isp_hw 30

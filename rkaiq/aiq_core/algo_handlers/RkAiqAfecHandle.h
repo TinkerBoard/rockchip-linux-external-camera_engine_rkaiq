@@ -24,6 +24,7 @@
 
 namespace RkCam {
 
+#if RKAIQ_HAVE_FEC_V10
 class RkAiqAfecHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAfecHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
@@ -54,7 +55,8 @@ class RkAiqAfecHandleInt : virtual public RkAiqHandle {
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAfecHandleInt);
 };
+#endif
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

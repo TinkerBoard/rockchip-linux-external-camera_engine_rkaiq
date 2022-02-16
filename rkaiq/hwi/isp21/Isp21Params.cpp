@@ -15,10 +15,77 @@
  */
 #include "Isp21Params.h"
 
+#include <cstdint>
+#include <type_traits>
+
+#include "common/rk_aiq_types.h"
+
 namespace RkCam {
 
 #define ISP2X_WBGAIN_FIXSCALE_BIT  8//check
 #define ISP2X_BLC_BIT_MAX 12
+
+template <typename T>
+struct ConvertBlcHelper {
+    template < typename U                          = T,
+               typename std::enable_if < (std::is_same<U, struct isp2x_isp_params_cfg>::value ||
+                                          std::is_same<U, struct isp21_isp_params_cfg>::value ||
+                                          std::is_same<U, struct isp3x_isp_params_cfg>::value),
+                                         bool >::type = true >
+    void FixFromAwbGain(U& isp_cfg, rk_aiq_isp_blc_v21_t& blc) {
+        int tmp = 0;
+        struct isp21_awb_gain_cfg* awb_cfg = &isp_cfg.others.awb_gain_cfg;
+        uint16_t base_wb_gain              = 1 << ISP2X_WBGAIN_FIXSCALE_BIT;
+
+        isp_cfg.others.bls_cfg.bls1_en = blc.v0.blc1_enable;
+        tmp                            = blc.v0.blc1_r * awb_cfg->gain0_red / base_wb_gain;
+        if (tmp > 0x1fff) tmp = 0x1fff;
+        if (tmp < 0) tmp = 0;
+        isp_cfg.others.bls_cfg.bls1_val.r = tmp;
+
+        tmp = blc.v0.blc1_gr * awb_cfg->gain0_green_r / base_wb_gain;
+        if (tmp > 0x1fff) tmp = 0x1fff;
+        if (tmp < 0) tmp = 0;
+        isp_cfg.others.bls_cfg.bls1_val.gr = tmp;
+
+        tmp = blc.v0.blc1_gb * awb_cfg->gain0_green_b / base_wb_gain;
+        if (tmp > 0x1fff) tmp = 0x1fff;
+        if (tmp < 0) tmp = 0;
+        isp_cfg.others.bls_cfg.bls1_val.gb = tmp;
+
+        tmp = blc.v0.blc1_b * awb_cfg->gain0_blue / base_wb_gain;
+        if (tmp > 0x1fff) tmp = 0x1fff;
+        if (tmp < 0) tmp = 0;
+        isp_cfg.others.bls_cfg.bls1_val.b = tmp;
+    }
+
+    template <typename U                          = T,
+              typename std::enable_if<std::is_same<U, struct isp32_isp_params_cfg>::value,
+                                      bool>::type = false>
+    void FixFromAwbGain(U& isp_cfg, rk_aiq_isp_blc_v21_t& blc) {
+        int tmp = 0;
+        isp_cfg.others.bls_cfg.bls1_en = blc.v0.blc1_enable;
+        tmp                            = blc.v0.blc1_r;
+        if (tmp > 0x1fff) tmp = 0x1fff;
+        if (tmp < 0) tmp = 0;
+        isp_cfg.others.bls_cfg.bls1_val.r = tmp;
+
+        tmp = blc.v0.blc1_gr;
+        if (tmp > 0x1fff) tmp = 0x1fff;
+        if (tmp < 0) tmp = 0;
+        isp_cfg.others.bls_cfg.bls1_val.gr = tmp;
+
+        tmp = blc.v0.blc1_gb;
+        if (tmp > 0x1fff) tmp = 0x1fff;
+        if (tmp < 0) tmp = 0;
+        isp_cfg.others.bls_cfg.bls1_val.gb = tmp;
+
+        tmp = blc.v0.blc1_b;
+        if (tmp > 0x1fff) tmp = 0x1fff;
+        if (tmp < 0) tmp = 0;
+        isp_cfg.others.bls_cfg.bls1_val.b = tmp;
+    }
+};
 
 template<class T>
 void Isp21Params::convertAiqAwbGainToIsp21Params(T& isp_cfg,
@@ -63,13 +130,9 @@ void Isp21Params::convertAiqAwbGainToIsp21Params(T& isp_cfg,
 
 }
 
-template<class T>
-void
-Isp21Params::convertAiqBlcToIsp21Params(T& isp_cfg,
-                                        rk_aiq_isp_blc_v21_t &blc)
-{
-    LOGD_CAMHW_SUBM(ISP20PARAM_SUBM, "%s:(%d) enter \n", __FUNCTION__, __LINE__);
-    int tmp = 0;
+template <class T>
+void Isp21Params::convertAiqBlcToIsp21Params(T& isp_cfg, rk_aiq_isp_blc_v21_t& blc) {
+    LOGD_ABLC( "%s:(%d) enter enable:%d\n", __FUNCTION__, __LINE__, blc.v0.enable);
 
     if(blc.v0.enable) {
         isp_cfg.module_ens |= ISP2X_MODULE_BLS;
@@ -100,55 +163,22 @@ Isp21Params::convertAiqBlcToIsp21Params(T& isp_cfg,
     //TODO bls1 params
     isp_cfg.others.bls_cfg.bls1_en = 0;
 
-#if defined(ISP_HW_V30)
-    struct isp21_awb_gain_cfg *awb_cfg = &isp_cfg.others.awb_gain_cfg;
-    uint16_t base_wb_gain = 1 << ISP2X_WBGAIN_FIXSCALE_BIT;
+    ConvertBlcHelper<T> helper;
+    helper.FixFromAwbGain(isp_cfg, blc);
 
-    isp_cfg.others.bls_cfg.bls1_en = blc.v0.blc1_enable;
-    tmp = blc.v0.blc1_r * awb_cfg->gain0_red  / base_wb_gain;
-    if(tmp > 0x1fff)
-        tmp = 0x1fff;
-    if(tmp < 0)
-        tmp = 0;
-    isp_cfg.others.bls_cfg.bls1_val.r = tmp;
-
-    tmp = blc.v0.blc1_gr * awb_cfg->gain0_green_r / base_wb_gain;
-    if(tmp > 0x1fff)
-        tmp = 0x1fff;
-    if(tmp < 0)
-        tmp = 0;
-    isp_cfg.others.bls_cfg.bls1_val.gr = tmp;
-
-    tmp = blc.v0.blc1_gb * awb_cfg->gain0_green_b / base_wb_gain;
-    if(tmp > 0x1fff)
-        tmp = 0x1fff;
-    if(tmp < 0)
-        tmp = 0;
-    isp_cfg.others.bls_cfg.bls1_val.gb = tmp;
-
-    tmp = blc.v0.blc1_b * awb_cfg->gain0_blue / base_wb_gain;
-    if(tmp > 0x1fff)
-        tmp = 0x1fff;
-    if(tmp < 0)
-        tmp = 0;
-    isp_cfg.others.bls_cfg.bls1_val.b = tmp;
-#endif
-
-    LOGD_CAMHW_SUBM(ISP20PARAM_SUBM, "%s:(%d) exit \n", __FUNCTION__, __LINE__);
-
+    LOGD_ABLC("%s:(%d) exit \n", __FUNCTION__, __LINE__);
 }
 
-#if RKAIQ_HAVE_DEHAZE_V2
+#if RKAIQ_HAVE_DEHAZE_V11
 void
 Isp21Params::convertAiqAdehazeToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_dehaze_v21_t& dhaze)
 {
-    if(dhaze.ProcResV21.enable) {
+    if (dhaze.ProcResV11.enable) {
         isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
         isp_cfg.module_ens |= ISP2X_MODULE_DHAZ;
         isp_cfg.module_cfg_update |= ISP2X_MODULE_DHAZ;
-    }
-    else {
+    } else {
         isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
         isp_cfg.module_ens &= ~(ISP2X_MODULE_DHAZ);
         isp_cfg.module_cfg_update &= ~(ISP2X_MODULE_DHAZ);
@@ -156,56 +186,56 @@ Isp21Params::convertAiqAdehazeToIsp21Params(struct isp21_isp_params_cfg& isp_cfg
 
     struct isp21_dhaz_cfg *  cfg = &isp_cfg.others.dhaz_cfg;
 
-    cfg->enhance_en     = dhaze.ProcResV21.enhance_en;
-    cfg->air_lc_en  = dhaze.ProcResV21.air_lc_en;
-    cfg->hpara_en   = dhaze.ProcResV21.hpara_en;
-    cfg->hist_en    = dhaze.ProcResV21.hist_en;
-    cfg->dc_en  = dhaze.ProcResV21.dc_en;
-    cfg->yblk_th    = dhaze.ProcResV21.yblk_th;
-    cfg->yhist_th   = dhaze.ProcResV21.yhist_th;
-    cfg->dc_max_th  = dhaze.ProcResV21.dc_max_th;
-    cfg->dc_min_th  = dhaze.ProcResV21.dc_min_th;
-    cfg->wt_max     = dhaze.ProcResV21.wt_max;
-    cfg->bright_max     = dhaze.ProcResV21.bright_max;
-    cfg->bright_min     = dhaze.ProcResV21.bright_min;
-    cfg->tmax_base  = dhaze.ProcResV21.tmax_base;
-    cfg->dark_th    = dhaze.ProcResV21.dark_th;
-    cfg->air_max    = dhaze.ProcResV21.air_max;
-    cfg->air_min    = dhaze.ProcResV21.air_min;
-    cfg->tmax_max   = dhaze.ProcResV21.tmax_max;
-    cfg->tmax_off   = dhaze.ProcResV21.tmax_off;
-    cfg->hist_k     = dhaze.ProcResV21.hist_k;
-    cfg->hist_th_off    = dhaze.ProcResV21.hist_th_off;
-    cfg->hist_min   = dhaze.ProcResV21.hist_min;
-    cfg->hist_gratio    = dhaze.ProcResV21.hist_gratio;
-    cfg->hist_scale     = dhaze.ProcResV21.hist_scale;
-    cfg->enhance_value  = dhaze.ProcResV21.enhance_value;
-    cfg->enhance_chroma     = dhaze.ProcResV21.enhance_chroma;
-    cfg->iir_wt_sigma   = dhaze.ProcResV21.iir_wt_sigma;
-    cfg->iir_sigma  = dhaze.ProcResV21.iir_sigma;
-    cfg->stab_fnum  = dhaze.ProcResV21.stab_fnum;
-    cfg->iir_tmax_sigma     = dhaze.ProcResV21.iir_tmax_sigma;
-    cfg->iir_air_sigma  = dhaze.ProcResV21.iir_air_sigma;
-    cfg->iir_pre_wet    = dhaze.ProcResV21.iir_pre_wet;
-    cfg->cfg_wt     = dhaze.ProcResV21.cfg_wt;
-    cfg->cfg_air    = dhaze.ProcResV21.cfg_air;
-    cfg->cfg_alpha  = dhaze.ProcResV21.cfg_alpha;
-    cfg->cfg_gratio     = dhaze.ProcResV21.cfg_gratio;
-    cfg->cfg_tmax   = dhaze.ProcResV21.cfg_tmax;
-    cfg->range_sima     = dhaze.ProcResV21.range_sima;
-    cfg->space_sigma_cur    = dhaze.ProcResV21.space_sigma_cur;
-    cfg->space_sigma_pre    = dhaze.ProcResV21.space_sigma_pre;
-    cfg->dc_weitcur     = dhaze.ProcResV21.dc_weitcur;
-    cfg->bf_weight  = dhaze.ProcResV21.bf_weight;
-    cfg->gaus_h0    = dhaze.ProcResV21.gaus_h0;
-    cfg->gaus_h1    = dhaze.ProcResV21.gaus_h1;
-    cfg->gaus_h2    = dhaze.ProcResV21.gaus_h2;
+    cfg->enhance_en      = dhaze.ProcResV11.enhance_en;
+    cfg->air_lc_en       = dhaze.ProcResV11.air_lc_en;
+    cfg->hpara_en        = dhaze.ProcResV11.hpara_en;
+    cfg->hist_en         = dhaze.ProcResV11.hist_en;
+    cfg->dc_en           = dhaze.ProcResV11.dc_en;
+    cfg->yblk_th         = dhaze.ProcResV11.yblk_th;
+    cfg->yhist_th        = dhaze.ProcResV11.yhist_th;
+    cfg->dc_max_th       = dhaze.ProcResV11.dc_max_th;
+    cfg->dc_min_th       = dhaze.ProcResV11.dc_min_th;
+    cfg->wt_max          = dhaze.ProcResV11.wt_max;
+    cfg->bright_max      = dhaze.ProcResV11.bright_max;
+    cfg->bright_min      = dhaze.ProcResV11.bright_min;
+    cfg->tmax_base       = dhaze.ProcResV11.tmax_base;
+    cfg->dark_th         = dhaze.ProcResV11.dark_th;
+    cfg->air_max         = dhaze.ProcResV11.air_max;
+    cfg->air_min         = dhaze.ProcResV11.air_min;
+    cfg->tmax_max        = dhaze.ProcResV11.tmax_max;
+    cfg->tmax_off        = dhaze.ProcResV11.tmax_off;
+    cfg->hist_k          = dhaze.ProcResV11.hist_k;
+    cfg->hist_th_off     = dhaze.ProcResV11.hist_th_off;
+    cfg->hist_min        = dhaze.ProcResV11.hist_min;
+    cfg->hist_gratio     = dhaze.ProcResV11.hist_gratio;
+    cfg->hist_scale      = dhaze.ProcResV11.hist_scale;
+    cfg->enhance_value   = dhaze.ProcResV11.enhance_value;
+    cfg->enhance_chroma  = dhaze.ProcResV11.enhance_chroma;
+    cfg->iir_wt_sigma    = dhaze.ProcResV11.iir_wt_sigma;
+    cfg->iir_sigma       = dhaze.ProcResV11.iir_sigma;
+    cfg->stab_fnum       = dhaze.ProcResV11.stab_fnum;
+    cfg->iir_tmax_sigma  = dhaze.ProcResV11.iir_tmax_sigma;
+    cfg->iir_air_sigma   = dhaze.ProcResV11.iir_air_sigma;
+    cfg->iir_pre_wet     = dhaze.ProcResV11.iir_pre_wet;
+    cfg->cfg_wt          = dhaze.ProcResV11.cfg_wt;
+    cfg->cfg_air         = dhaze.ProcResV11.cfg_air;
+    cfg->cfg_alpha       = dhaze.ProcResV11.cfg_alpha;
+    cfg->cfg_gratio      = dhaze.ProcResV11.cfg_gratio;
+    cfg->cfg_tmax        = dhaze.ProcResV11.cfg_tmax;
+    cfg->range_sima      = dhaze.ProcResV11.range_sima;
+    cfg->space_sigma_cur = dhaze.ProcResV11.space_sigma_cur;
+    cfg->space_sigma_pre = dhaze.ProcResV11.space_sigma_pre;
+    cfg->dc_weitcur      = dhaze.ProcResV11.dc_weitcur;
+    cfg->bf_weight       = dhaze.ProcResV11.bf_weight;
+    cfg->gaus_h0         = dhaze.ProcResV11.gaus_h0;
+    cfg->gaus_h1         = dhaze.ProcResV11.gaus_h1;
+    cfg->gaus_h2         = dhaze.ProcResV11.gaus_h2;
 
     for(int i = 0; i < ISP21_DHAZ_ENH_CURVE_NUM; i++)
-        cfg->enh_curve[i]     = dhaze.ProcResV21.enh_curve[i];
+        cfg->enh_curve[i] = dhaze.ProcResV11.enh_curve[i];
 }
 #endif
-
+#if RKAIQ_HAVE_CCM_V1
 template<class T>
 void Isp21Params::convertAiqCcmToIsp21Params(T& isp_cfg,
         const rk_aiq_ccm_cfg_t& ccm)
@@ -245,7 +275,7 @@ void Isp21Params::convertAiqCcmToIsp21Params(T& isp_cfg,
     }
 
 }
-
+#endif
 
 void
 Isp21Params::convertAiqAwbToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
@@ -890,7 +920,7 @@ Isp21Params::convertAiqSharpenToIsp21Params(struct isp21_isp_params_cfg& isp_cfg
 
 }
 
-#if RKAIQ_HAVE_DRC_V1
+#if RKAIQ_HAVE_DRC_V10
 void
 Isp21Params::convertAiqDrcToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                         rk_aiq_isp_drc_v21_t& adrc_data)
@@ -909,30 +939,38 @@ Isp21Params::convertAiqDrcToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
         isp_cfg.module_cfg_update &= ~(1LL << Rk_ISP21_DRC_ID);
     }
 
-    isp_cfg.others.drc_cfg.sw_drc_offset_pow2     = adrc_data.DrcProcRes.Drc_v21.sw_drc_offset_pow2;
-    isp_cfg.others.drc_cfg.sw_drc_compres_scl  = adrc_data.DrcProcRes.Drc_v21.sw_drc_compres_scl;
-    isp_cfg.others.drc_cfg.sw_drc_position  = adrc_data.DrcProcRes.Drc_v21.sw_drc_position;
-    isp_cfg.others.drc_cfg.sw_drc_delta_scalein        = adrc_data.DrcProcRes.Drc_v21.sw_drc_delta_scalein;
-    isp_cfg.others.drc_cfg.sw_drc_hpdetail_ratio      = adrc_data.DrcProcRes.Drc_v21.sw_drc_hpdetail_ratio;
-    isp_cfg.others.drc_cfg.sw_drc_lpdetail_ratio     = adrc_data.DrcProcRes.Drc_v21.sw_drc_lpdetail_ratio;
-    isp_cfg.others.drc_cfg.sw_drc_weicur_pix      = adrc_data.DrcProcRes.Drc_v21.sw_drc_weicur_pix;
-    isp_cfg.others.drc_cfg.sw_drc_weipre_frame  = adrc_data.DrcProcRes.Drc_v21.sw_drc_weipre_frame;
-    isp_cfg.others.drc_cfg.sw_drc_force_sgm_inv0   = adrc_data.DrcProcRes.Drc_v21.sw_drc_force_sgm_inv0;
-    isp_cfg.others.drc_cfg.sw_drc_motion_scl     = adrc_data.DrcProcRes.Drc_v21.sw_drc_motion_scl;
-    isp_cfg.others.drc_cfg.sw_drc_edge_scl   = adrc_data.DrcProcRes.Drc_v21.sw_drc_edge_scl;
-    isp_cfg.others.drc_cfg.sw_drc_space_sgm_inv1    = adrc_data.DrcProcRes.Drc_v21.sw_drc_space_sgm_inv1;
-    isp_cfg.others.drc_cfg.sw_drc_space_sgm_inv0     = adrc_data.DrcProcRes.Drc_v21.sw_drc_space_sgm_inv0;
-    isp_cfg.others.drc_cfg.sw_drc_range_sgm_inv1     = adrc_data.DrcProcRes.Drc_v21.sw_drc_range_sgm_inv1;
-    isp_cfg.others.drc_cfg.sw_drc_range_sgm_inv0 = adrc_data.DrcProcRes.Drc_v21.sw_drc_range_sgm_inv0;
-    isp_cfg.others.drc_cfg.sw_drc_weig_maxl    = adrc_data.DrcProcRes.Drc_v21.sw_drc_weig_maxl;
-    isp_cfg.others.drc_cfg.sw_drc_weig_bilat  = adrc_data.DrcProcRes.Drc_v21.sw_drc_weig_bilat;
-    isp_cfg.others.drc_cfg.sw_drc_iir_weight  = adrc_data.DrcProcRes.Drc_v21.sw_drc_iir_weight;
-    isp_cfg.others.drc_cfg.sw_drc_min_ogain  = adrc_data.DrcProcRes.Drc_v21.sw_drc_min_ogain;
+    isp_cfg.others.drc_cfg.sw_drc_offset_pow2   = adrc_data.DrcProcRes.Drc_v10.sw_drc_offset_pow2;
+    isp_cfg.others.drc_cfg.sw_drc_compres_scl   = adrc_data.DrcProcRes.Drc_v10.sw_drc_compres_scl;
+    isp_cfg.others.drc_cfg.sw_drc_position      = adrc_data.DrcProcRes.Drc_v10.sw_drc_position;
+    isp_cfg.others.drc_cfg.sw_drc_delta_scalein = adrc_data.DrcProcRes.Drc_v10.sw_drc_delta_scalein;
+    isp_cfg.others.drc_cfg.sw_drc_hpdetail_ratio =
+        adrc_data.DrcProcRes.Drc_v10.sw_drc_hpdetail_ratio;
+    isp_cfg.others.drc_cfg.sw_drc_lpdetail_ratio =
+        adrc_data.DrcProcRes.Drc_v10.sw_drc_lpdetail_ratio;
+    isp_cfg.others.drc_cfg.sw_drc_weicur_pix   = adrc_data.DrcProcRes.Drc_v10.sw_drc_weicur_pix;
+    isp_cfg.others.drc_cfg.sw_drc_weipre_frame = adrc_data.DrcProcRes.Drc_v10.sw_drc_weipre_frame;
+    isp_cfg.others.drc_cfg.sw_drc_force_sgm_inv0 =
+        adrc_data.DrcProcRes.Drc_v10.sw_drc_force_sgm_inv0;
+    isp_cfg.others.drc_cfg.sw_drc_motion_scl = adrc_data.DrcProcRes.Drc_v10.sw_drc_motion_scl;
+    isp_cfg.others.drc_cfg.sw_drc_edge_scl   = adrc_data.DrcProcRes.Drc_v10.sw_drc_edge_scl;
+    isp_cfg.others.drc_cfg.sw_drc_space_sgm_inv1 =
+        adrc_data.DrcProcRes.Drc_v10.sw_drc_space_sgm_inv1;
+    isp_cfg.others.drc_cfg.sw_drc_space_sgm_inv0 =
+        adrc_data.DrcProcRes.Drc_v10.sw_drc_space_sgm_inv0;
+    isp_cfg.others.drc_cfg.sw_drc_range_sgm_inv1 =
+        adrc_data.DrcProcRes.Drc_v10.sw_drc_range_sgm_inv1;
+    isp_cfg.others.drc_cfg.sw_drc_range_sgm_inv0 =
+        adrc_data.DrcProcRes.Drc_v10.sw_drc_range_sgm_inv0;
+    isp_cfg.others.drc_cfg.sw_drc_weig_maxl  = adrc_data.DrcProcRes.Drc_v10.sw_drc_weig_maxl;
+    isp_cfg.others.drc_cfg.sw_drc_weig_bilat = adrc_data.DrcProcRes.Drc_v10.sw_drc_weig_bilat;
+    isp_cfg.others.drc_cfg.sw_drc_iir_weight = adrc_data.DrcProcRes.Drc_v10.sw_drc_iir_weight;
+    isp_cfg.others.drc_cfg.sw_drc_min_ogain  = adrc_data.DrcProcRes.Drc_v10.sw_drc_min_ogain;
 
     for(int i = 0; i < 17; i++) {
-        isp_cfg.others.drc_cfg.sw_drc_gain_y[i]    = adrc_data.DrcProcRes.Drc_v21.sw_drc_gain_y[i];
-        isp_cfg.others.drc_cfg.sw_drc_compres_y[i]    = adrc_data.DrcProcRes.Drc_v21.sw_drc_compres_y[i];
-        isp_cfg.others.drc_cfg.sw_drc_scale_y[i]    = adrc_data.DrcProcRes.Drc_v21.sw_drc_scale_y[i];
+        isp_cfg.others.drc_cfg.sw_drc_gain_y[i] = adrc_data.DrcProcRes.Drc_v10.sw_drc_gain_y[i];
+        isp_cfg.others.drc_cfg.sw_drc_compres_y[i] =
+            adrc_data.DrcProcRes.Drc_v10.sw_drc_compres_y[i];
+        isp_cfg.others.drc_cfg.sw_drc_scale_y[i] = adrc_data.DrcProcRes.Drc_v10.sw_drc_scale_y[i];
     }
 
 #if 0
@@ -1003,16 +1041,38 @@ Isp21Params::convertAiqCsmToIsp21Params(T& isp_cfg,
         csm_cfg->csm_full_range = csm_param.full_range ? 1 : 0;
         csm_cfg->csm_y_offset = csm_param.y_offset;
         csm_cfg->csm_c_offset = csm_param.c_offset;
-        csm_cfg->csm_coeff[ISP21_CSM_COEFF_NUM];
-        memcpy(csm_cfg->csm_coeff, csm_param.coeff, sizeof(csm_cfg->csm_coeff));
+        for (int i = 0; i < RK_AIQ_CSM_COEFF_NUM; i++) {
+            csm_cfg->csm_coeff[i] = csm_param.coeff[i] > 0
+                                        ? (short)(csm_param.coeff[i] * 128 + 0.5)
+                                        : (short)(csm_param.coeff[i] * 128 - 0.5);
+        }
     } else {
         isp_cfg.module_ens &= ~ISP2X_MODULE_CSM;
         isp_cfg.module_en_update |= ISP2X_MODULE_CSM;
     }
 }
+#if RKAIQ_HAVE_CGC_V1
+template <class T>
+void Isp21Params::convertAiqCgcToIsp21Params(T& isp_cfg,
+                                             const rk_aiq_acgc_params_t& cgc_param) {
+    struct isp21_cgc_cfg* cgc_cfg = &isp_cfg.others.cgc_cfg;
+    if (cgc_param.op_mode == RK_AIQ_OP_MODE_MANUAL ||
+            cgc_param.op_mode == RK_AIQ_OP_MODE_AUTO) {
+        isp_cfg.module_ens |= ISP2X_MODULE_CGC;
+        isp_cfg.module_en_update |= ISP2X_MODULE_CGC;
+        isp_cfg.module_cfg_update |= ISP2X_MODULE_CGC;
+        cgc_cfg->ratio_en  = cgc_param.cgc_ratio_en;
+        cgc_cfg->yuv_limit = cgc_param.cgc_yuv_limit;
+    } else {
+        isp_cfg.module_ens &= ~ISP2X_MODULE_CGC;
+        isp_cfg.module_en_update |= ISP2X_MODULE_CGC;
+        isp_cfg.module_cfg_update &= ~(ISP2X_MODULE_CGC);
+    }
+}
+#endif
 
 bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
-        void* isp_cfg_p)
+        void* isp_cfg_p, bool is_multi_isp)
 {
     struct isp21_isp_params_cfg& isp_cfg = *(struct isp21_isp_params_cfg*)isp_cfg_p;
 
@@ -1054,7 +1114,7 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     case RESULT_TYPE_CCM_PARAM:
     {
         SmartPtr<RkAiqIspCcmParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspCcmParamsProxy>();
-#ifndef ISP_HW_V30
+#if RKAIQ_HAVE_CCM_V1
         if (params.ptr())
             convertAiqCcmToIsp21Params(isp_cfg, params->data()->result);
 #endif
@@ -1062,7 +1122,7 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_DRC_PARAM:
     {
-#if RKAIQ_HAVE_DRC_V1
+#if RKAIQ_HAVE_DRC_V10
         SmartPtr<RkAiqIspDrcParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDrcParamsProxy>();
         if (params.ptr())
             convertAiqDrcToIsp21Params(isp_cfg, params->data()->result);
@@ -1106,7 +1166,7 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_DEHAZE_PARAM:
     {
-#if RKAIQ_HAVE_DEHAZE_V2
+#if RKAIQ_HAVE_DEHAZE_V11
         SmartPtr<RkAiqIspDehazeParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDehazeParamsProxy>();
         if (params.ptr())
             convertAiqAdehazeToIsp21Params(isp_cfg, params->data()->result);
@@ -1152,7 +1212,7 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_MERGE_PARAM:
     {
-#if RKAIQ_HAVE_MERGE_V1
+#if RKAIQ_HAVE_MERGE_V10
         SmartPtr<RkAiqIspMergeParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspMergeParamsProxy>();
         if (params.ptr()) {
             convertAiqMergeToIsp20Params(isp_cfg, params->data()->result);
@@ -1185,16 +1245,20 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_LUT3D_PARAM:
     {
+#if RKAIQ_HAVE_3DLUT_V1
         SmartPtr<RkAiqIspLut3dParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspLut3dParamsProxy>();
         if (params.ptr())
             convertAiqA3dlutToIsp20Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_AGAMMA_PARAM:
     {
+#if RKAIQ_HAVE_GAMMA_V10
         SmartPtr<RkAiqIspAgammaParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspAgammaParamsProxy>();
         if (params.ptr())
             convertAiqAgammaToIsp20Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_ADEGAMMA_PARAM:
@@ -1220,8 +1284,14 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
             convertAiqCsmToIsp21Params(isp_cfg, params->data()->result);
     }
     break;
-    case RESULT_TYPE_CGC_PARAM:
-        break;
+    case RESULT_TYPE_CGC_PARAM: {
+#if RKAIQ_HAVE_CGC_V1
+        SmartPtr<RkAiqIspCgcParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspCgcParamsProxy>();
+        if (params.ptr())
+            convertAiqCgcToIsp21Params(isp_cfg, params->data()->result);
+#endif
+    }
+    break;
     case RESULT_TYPE_CONV422_PARAM:
         break;
     case RESULT_TYPE_YUVCONV_PARAM:
@@ -1248,4 +1318,4 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     return true;
 }
 
-}; //namspace RkCam
+} //namspace RkCam

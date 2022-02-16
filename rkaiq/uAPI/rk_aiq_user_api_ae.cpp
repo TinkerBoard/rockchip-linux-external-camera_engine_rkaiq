@@ -19,6 +19,8 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_AE_V1
+
 XCamReturn rk_aiq_user_api_ae_setExpSwAttr
 (
     const rk_aiq_sys_ctx_t* sys_ctx,
@@ -265,6 +267,103 @@ XCamReturn rk_aiq_user_api_ae_getExpWinAttr
     return(ret);
 
 }
+
+#else
+
+XCamReturn rk_aiq_user_api_ae_setExpSwAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    const Uapi_ExpSwAttr_t expSwAttr
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+XCamReturn rk_aiq_user_api_ae_getExpSwAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    Uapi_ExpSwAttr_t*        pExpSwAttr
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+XCamReturn rk_aiq_user_api_ae_setLinAeRouteAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    const Uapi_LinAeRouteAttr_t linAeRouteAttr
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+XCamReturn rk_aiq_user_api_ae_getLinAeRouteAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    Uapi_LinAeRouteAttr_t* pLinAeRouteAttr
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+XCamReturn rk_aiq_user_api_ae_setHdrAeRouteAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    const Uapi_HdrAeRouteAttr_t hdrAeRouteAttr
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+XCamReturn rk_aiq_user_api_ae_getHdrAeRouteAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    Uapi_HdrAeRouteAttr_t* pHdrAeRouteAttr
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn rk_aiq_user_api_ae_setLinExpAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    const Uapi_LinExpAttr_t linExpAttr
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+XCamReturn rk_aiq_user_api_ae_getLinExpAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    Uapi_LinExpAttr_t* pLinExpAttr
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+XCamReturn rk_aiq_user_api_ae_setHdrExpAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    const Uapi_HdrExpAttr_t hdrExpAttr
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+XCamReturn rk_aiq_user_api_ae_getHdrExpAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    Uapi_HdrExpAttr_t* pHdrExpAttr
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+XCamReturn rk_aiq_user_api_ae_queryExpResInfo
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    Uapi_ExpQueryInfo_t* pExpResInfo
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+XCamReturn rk_aiq_user_api_ae_setExpWinAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    const Uapi_ExpWin_t ExpWin
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+XCamReturn rk_aiq_user_api_ae_getExpWinAttr
+(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    Uapi_ExpWin_t* pExpWin
+) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+#endif
 
 RKAIQ_END_DECLARE
 

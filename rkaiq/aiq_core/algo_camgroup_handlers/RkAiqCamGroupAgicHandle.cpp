@@ -156,4 +156,4 @@ XCamReturn RkAiqCamGroupAgicHandleInt::getAttribV2(rkaiq_gic_v2_api_attr_t* att)
 }
 
 
-};  // namespace RkCam
+}  // namespace RkCam

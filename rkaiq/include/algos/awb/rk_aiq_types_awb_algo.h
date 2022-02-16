@@ -25,7 +25,7 @@
 
 #include "rk_aiq_types_awb_stat_v200.h"
 #include "rk_aiq_types_awb_stat_v201.h"
-
+#include "rk_aiq_types_awb_stat_v32.h"
 typedef struct rk_aiq_wb_gain_s {
     float rgain;
     float grgain;
@@ -33,6 +33,18 @@ typedef struct rk_aiq_wb_gain_s {
     float bgain;
 } rk_aiq_wb_gain_t;
 
-#endif
+typedef enum rk_aiq_wb_gapin_aplly_pos_s{
+    IN_AWBGAIN0 =0,
+    IN_AWBGAIN1
+}rk_aiq_wb_gapin_aplly_pos_e;
 
+typedef struct rk_aiq_wb_gain_v32_s {
+    float rgain;
+    float grgain;
+    float gbgain;
+    float bgain;
+    rk_aiq_wb_gapin_aplly_pos_e applyPosition;
+} rk_aiq_wb_gain_v32_t;
+
+#endif
 

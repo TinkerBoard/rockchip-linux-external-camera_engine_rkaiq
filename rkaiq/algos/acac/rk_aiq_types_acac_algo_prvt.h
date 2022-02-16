@@ -17,13 +17,13 @@
  *
  * Author: Cody Xie <cody.xie@rock-chips.com>
  */
-
 #ifndef _RK_AIQ_TYPES_ACAC_ALGO_PRVT_H_
 #define _RK_AIQ_TYPES_ACAC_ALGO_PRVT_H_
 
-#include "rk_aiq_types.h"
-#include "xcam_common.h"
-#include "xcam_log.h"
+#include "base/xcam_common.h"
+#include "algos/acac/cac_adaptor.h"
+#include "common/rk_aiq_comm.h"
+#include "common/rk_aiq_types.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -33,4 +33,4 @@ typedef struct _RkAiqAlgoContext {
 
 RKAIQ_END_DECLARE
 
-#endif
+#endif  // _RK_AIQ_TYPES_ACAC_ALGO_PRVT_H_

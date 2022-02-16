@@ -54,7 +54,7 @@
     }while(0)
 
 #define XCAM_STATIC_PROFILING_START(name)               \
-    static unsigned int name##_times = 0;               \
+    static long long int name##_times = 0;               \
     static struct timeval name##_start_time;            \
     static struct timeval name##_end_time;              \
     gettimeofday (& name##_start_time, NULL);           \

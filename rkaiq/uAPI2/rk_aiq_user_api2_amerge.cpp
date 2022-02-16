@@ -24,10 +24,9 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
-#if RKAIQ_HAVE_MERGE_V1 || RKAIQ_HAVE_MERGE_V2
-XCamReturn
-rk_aiq_user_api2_amerge_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib_t attr)
-{
+#if RKAIQ_HAVE_MERGE_V10
+XCamReturn rk_aiq_user_api2_amerge_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV10_t attr) {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AMERGE);
 
@@ -37,7 +36,7 @@ rk_aiq_user_api2_amerge_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib
             camgroupAlgoHandle<RkAiqCamGroupAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
 
         if (algo_handle) {
-            return algo_handle->setAttrib(attr);
+            return algo_handle->setAttribV10(attr);
         } else {
             const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
             for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
@@ -46,8 +45,7 @@ rk_aiq_user_api2_amerge_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib
 
                 RkAiqAmergeHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAmergeHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AMERGE);
-                if (singleCam_algo_handle)
-                    return singleCam_algo_handle->setAttrib(attr);
+                if (singleCam_algo_handle) return singleCam_algo_handle->setAttribV10(attr);
             }
         }
 #else
@@ -58,16 +56,15 @@ rk_aiq_user_api2_amerge_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib
             algoHandle<RkAiqAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
 
         if (algo_handle) {
-            return algo_handle->setAttrib(attr);
+            return algo_handle->setAttribV10(attr);
         }
     }
 
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn
-rk_aiq_user_api2_amerge_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib_t* attr)
-{
+XCamReturn rk_aiq_user_api2_amerge_V10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV10_t* attr) {
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
@@ -76,7 +73,7 @@ rk_aiq_user_api2_amerge_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib
             camgroupAlgoHandle<RkAiqCamGroupAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
 
         if (algo_handle) {
-            return algo_handle->getAttrib(attr);
+            return algo_handle->getAttribV10(attr);
         } else {
             const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
             for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
@@ -85,8 +82,7 @@ rk_aiq_user_api2_amerge_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib
 
                 RkAiqAmergeHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAmergeHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AMERGE);
-                if (singleCam_algo_handle)
-                    return singleCam_algo_handle->getAttrib(attr);
+                if (singleCam_algo_handle) return singleCam_algo_handle->getAttribV10(attr);
             }
         }
 #else
@@ -97,24 +93,195 @@ rk_aiq_user_api2_amerge_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib
             algoHandle<RkAiqAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
 
         if (algo_handle) {
-            return algo_handle->getAttrib(attr);
+            return algo_handle->getAttribV10(attr);
         }
     }
 
     return XCAM_RETURN_NO_ERROR;
 }
 #else
-XCamReturn
-rk_aiq_user_api2_amerge_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib_t attr) {
+XCamReturn rk_aiq_user_api2_amerge_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV10_t attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
-XCamReturn
-rk_aiq_user_api2_amerge_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, amerge_attrib_t* attr) {
+XCamReturn rk_aiq_user_api2_amerge_V10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV10_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
 #endif
 
+#if RKAIQ_HAVE_MERGE_V11
+XCamReturn rk_aiq_user_api2_amerge_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV11_t attr) {
+    CHECK_USER_API_ENABLE2(sys_ctx);
+    CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AMERGE);
+
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        RkAiqCamGroupAmergeHandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
+
+        if (algo_handle) {
+            return algo_handle->setAttribV11(attr);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t*)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx) continue;
+
+                RkAiqAmergeHandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAmergeHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AMERGE);
+                if (singleCam_algo_handle) return singleCam_algo_handle->setAttribV11(attr);
+            }
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif
+    } else {
+        RkAiqAmergeHandleInt* algo_handle =
+            algoHandle<RkAiqAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
+
+        if (algo_handle) {
+            return algo_handle->setAttribV11(attr);
+        }
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn rk_aiq_user_api2_amerge_V11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV11_t* attr) {
+    RKAIQ_API_SMART_LOCK(sys_ctx);
+
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        RkAiqCamGroupAmergeHandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
+
+        if (algo_handle) {
+            return algo_handle->getAttribV11(attr);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t*)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx) continue;
+
+                RkAiqAmergeHandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAmergeHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AMERGE);
+                if (singleCam_algo_handle) return singleCam_algo_handle->getAttribV11(attr);
+            }
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif
+    } else {
+        RkAiqAmergeHandleInt* algo_handle =
+            algoHandle<RkAiqAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
+
+        if (algo_handle) {
+            return algo_handle->getAttribV11(attr);
+        }
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
+#else
+XCamReturn rk_aiq_user_api2_amerge_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV11_t attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn rk_aiq_user_api2_amerge_V11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV11_t* attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+#endif
+
+#if RKAIQ_HAVE_MERGE_V12
+XCamReturn rk_aiq_user_api2_amerge_V12_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV12_t attr) {
+    CHECK_USER_API_ENABLE2(sys_ctx);
+    CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AMERGE);
+
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        RkAiqCamGroupAmergeHandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
+
+        if (algo_handle) {
+            return algo_handle->setAttribV12(attr);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t*)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx) continue;
+
+                RkAiqAmergeHandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAmergeHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AMERGE);
+                if (singleCam_algo_handle) return singleCam_algo_handle->setAttribV12(attr);
+            }
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif
+    } else {
+        RkAiqAmergeHandleInt* algo_handle =
+            algoHandle<RkAiqAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
+
+        if (algo_handle) {
+            return algo_handle->setAttribV12(attr);
+        }
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn rk_aiq_user_api2_amerge_V12_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV12_t* attr) {
+    RKAIQ_API_SMART_LOCK(sys_ctx);
+
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        RkAiqCamGroupAmergeHandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
+
+        if (algo_handle) {
+            return algo_handle->getAttribV12(attr);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t*)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx) continue;
+
+                RkAiqAmergeHandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAmergeHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AMERGE);
+                if (singleCam_algo_handle) return singleCam_algo_handle->getAttribV12(attr);
+            }
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif
+    } else {
+        RkAiqAmergeHandleInt* algo_handle =
+            algoHandle<RkAiqAmergeHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMERGE);
+
+        if (algo_handle) {
+            return algo_handle->getAttribV12(attr);
+        }
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
+#else
+XCamReturn rk_aiq_user_api2_amerge_V12_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV12_t attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn rk_aiq_user_api2_amerge_V12_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 mergeAttrV12_t* attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+#endif
 
 RKAIQ_END_DECLARE

@@ -61,4 +61,4 @@ TaskResult ScalerTask::operator()(ServiceParam<scaler_param>& p) {
     return TaskResult::kSuccess;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

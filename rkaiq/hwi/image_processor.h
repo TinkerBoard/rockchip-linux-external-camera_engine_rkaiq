@@ -91,6 +91,6 @@ class ImageProcessor {
     std::unique_ptr<ImageOperator> operator_;
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif  // _IMAGE_PROC_HW_H_

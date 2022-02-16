@@ -19,11 +19,14 @@
 
 #include "amerge/rk_aiq_algo_amerge_itf.h"
 #include "xcam_log.h"
-#if RKAIQ_HAVE_MERGE_V1
-#include "amerge/rk_aiq_amerge_algo_v1.h"
+#if RKAIQ_HAVE_MERGE_V10
+#include "amerge/rk_aiq_amerge_algo_v10.h"
 #endif
-#if RKAIQ_HAVE_MERGE_V2
-#include "amerge/rk_aiq_amerge_algo_v2.h"
+#if RKAIQ_HAVE_MERGE_V11
+#include "amerge/rk_aiq_amerge_algo_v11.h"
+#endif
+#if RKAIQ_HAVE_MERGE_V12
+#include "amerge/rk_aiq_amerge_algo_v12.h"
 #endif
 #include "amerge/rk_aiq_types_amerge_algo_prvt.h"
 #include "rk_aiq_algo_types.h"
@@ -89,15 +92,29 @@ static XCamReturn AmergePrepare(RkAiqAlgoCom* params)
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
         LOGD_AMERGE("%s: Amerge Reload Para!\n", __FUNCTION__);
-#if RKAIQ_HAVE_MERGE_V1
-        CalibDbV2_merge_t* calibv2_amerge_calib =
-            (CalibDbV2_merge_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, amerge_calib));
-        memcpy(&pAmergeCtx->CalibDBV1, calibv2_amerge_calib, sizeof(CalibDbV2_merge_t));//load iq paras
+#if RKAIQ_HAVE_MERGE_V10
+        CalibDbV2_merge_V10_t* calibv2_amerge_calib =
+            (CalibDbV2_merge_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, amerge_calib));
+        memcpy(&pAmergeCtx->CalibDBV10, calibv2_amerge_calib,
+               sizeof(CalibDbV2_merge_V10_t));  // load iq paras
+        memcpy(&pAmergeCtx->mergeAttrV10.stAuto, calibv2_amerge_calib,
+               sizeof(CalibDbV2_merge_V10_t));  // set stAuto
 #endif
-#if RKAIQ_HAVE_MERGE_V2
-        CalibDbV2_merge_V2_t* calibv2_amerge_calib =
-            (CalibDbV2_merge_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, amerge_calib));
-        memcpy(&pAmergeCtx->CalibDBV2, calibv2_amerge_calib, sizeof(CalibDbV2_merge_V2_t));//load iq paras
+#if RKAIQ_HAVE_MERGE_V11
+        CalibDbV2_merge_V11_t* calibv2_amerge_calib =
+            (CalibDbV2_merge_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, amerge_calib));
+        memcpy(&pAmergeCtx->CalibDBV11, calibv2_amerge_calib,
+               sizeof(CalibDbV2_merge_V11_t));  // load iq paras
+        memcpy(&pAmergeCtx->mergeAttrV11.stAuto, calibv2_amerge_calib,
+               sizeof(CalibDbV2_merge_V11_t));  // set stAuto
+#endif
+#if RKAIQ_HAVE_MERGE_V12
+        CalibDbV2_merge_V12_t* calibv2_amerge_calib =
+            (CalibDbV2_merge_V12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, amerge_calib));
+        memcpy(&pAmergeCtx->CalibDBV12, calibv2_amerge_calib,
+               sizeof(CalibDbV2_merge_V12_t));  // load iq paras
+        memcpy(&pAmergeCtx->mergeAttrV12.stAuto, calibv2_amerge_calib,
+               sizeof(CalibDbV2_merge_V12_t));  // set stAuto
 #endif
     }
 
@@ -109,9 +126,6 @@ static XCamReturn AmergePrepare(RkAiqAlgoCom* params)
             return(XCAM_RETURN_ERROR_FAILED);
         }
     }
-
-    if(pAmergeCtx->FrameNumber == HDR_2X_NUM || pAmergeCtx->FrameNumber == HDR_3X_NUM)
-        MergePrepareJsonMallocAndUpdateConfig(pAmergeCtx);
 
     LOG1_AMERGE("%s:Exit!\n", __FUNCTION__);
     return(XCAM_RETURN_NO_ERROR);
@@ -143,17 +157,6 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
 
     if(pAmergeCtx->FrameNumber == HDR_2X_NUM || pAmergeCtx->FrameNumber == HDR_3X_NUM) {
         LOGD_AMERGE("%s:/#####################################Amerge Start#####################################/ \n", __func__);
-
-        //update config
-        merge_OpModeV21_t mode = MERGE_OPMODE_API_OFF;
-#if RKAIQ_HAVE_MERGE_V1
-        mode = pAmergeCtx->mergeAttr.attrV21.opMode;
-#endif
-#if RKAIQ_HAVE_MERGE_V2
-        mode = pAmergeCtx->mergeAttr.attrV30.opMode;
-#endif
-        if(mode == MERGE_OPMODE_MANU)
-            MergeProcApiMallocAndUpdateConfig(pAmergeCtx);
 
         //get Sensor Info
         XCamVideoBuffer* xCamAeProcRes = pAmergeParams->com.u.proc.res_comb->ae_proc_res;
@@ -239,27 +242,36 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
         else
             LOGE_AMERGE("%s: AE ratio for merge expo sync is under one!!!\n", __FUNCTION__);
 
-#if RKAIQ_HAVE_MERGE_V1
-        pAmergeCtx->PrevData.CtrlData.ApiMode = pAmergeCtx->mergeAttr.attrV21.opMode;
+#if RKAIQ_HAVE_MERGE_V10
+        pAmergeCtx->PrevData.CtrlData.ApiMode = pAmergeCtx->mergeAttrV10.opMode;
 #endif
-#if RKAIQ_HAVE_MERGE_V2
-        pAmergeCtx->PrevData.CtrlData.ApiMode = pAmergeCtx->mergeAttr.attrV30.opMode;
+#if RKAIQ_HAVE_MERGE_V11
+        pAmergeCtx->PrevData.CtrlData.ApiMode = pAmergeCtx->mergeAttrV11.opMode;
+#endif
+#if RKAIQ_HAVE_MERGE_V12
+        pAmergeCtx->PrevData.CtrlData.ApiMode = pAmergeCtx->mergeAttrV12.opMode;
 #endif
         pAmergeCtx->ProcRes.update = !bypass;
         pAmergeCtx->ProcRes.LongFrameMode = pAmergeCtx->SensorInfo.LongFrmMode;
         pAmergeProcRes->AmergeProcRes.update = pAmergeCtx->ProcRes.update;
         pAmergeProcRes->AmergeProcRes.LongFrameMode = pAmergeCtx->ProcRes.LongFrameMode;
-#if RKAIQ_HAVE_MERGE_V1
-        memcpy(&pAmergeProcRes->AmergeProcRes.Merge_v20, &pAmergeCtx->ProcRes.Merge_v20, sizeof(MgeProcRes_t));
+#if RKAIQ_HAVE_MERGE_V10
+        memcpy(&pAmergeProcRes->AmergeProcRes.Merge_v10, &pAmergeCtx->ProcRes.Merge_v10,
+               sizeof(MgeProcResV10_t));
 #endif
-#if RKAIQ_HAVE_MERGE_V2
-        memcpy(&pAmergeProcRes->AmergeProcRes.Merge_v30, &pAmergeCtx->ProcRes.Merge_v30, sizeof(MgeProcResV2_t));
+#if RKAIQ_HAVE_MERGE_V11
+        memcpy(&pAmergeProcRes->AmergeProcRes.Merge_v11, &pAmergeCtx->ProcRes.Merge_v11,
+               sizeof(MgeProcResV11_t));
+#endif
+#if RKAIQ_HAVE_MERGE_V12
+        memcpy(&pAmergeProcRes->AmergeProcRes.Merge_v12, &pAmergeCtx->ProcRes.Merge_v12,
+               sizeof(MgeProcResV12_t));
 #endif
 
         LOGD_AMERGE("%s:/#####################################Amerge Over#####################################/ \n", __func__);
-    }
-    else
+    } else {
         LOGD_AMERGE("%s FrameID:%d, It's in Linear Mode, Merge function bypass\n", __FUNCTION__, pAmergeCtx->frameCnt);
+    }
 
     LOG1_AMERGE("%s:Exit!\n", __FUNCTION__);
     return(XCAM_RETURN_NO_ERROR);

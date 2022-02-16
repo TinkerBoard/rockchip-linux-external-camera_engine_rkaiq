@@ -68,6 +68,6 @@ public:
 };
 
 
-}; //namespace RkCam
+} //namespace RkCam
 
 #endif

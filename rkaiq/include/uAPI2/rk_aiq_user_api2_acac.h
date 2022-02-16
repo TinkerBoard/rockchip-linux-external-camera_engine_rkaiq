@@ -18,15 +18,24 @@
 #ifndef _RK_AIQ_USER_API2_ACAC_H_
 #define _RK_AIQ_USER_API2_ACAC_H_
 
-#include "rk_aiq_user_api_acac.h"
+#include "algos/acac/rk_aiq_types_acac_algo_int.h"
 
 RKAIQ_BEGIN_DECLARE
 
-XCamReturn rk_aiq_user_api2_acac_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                           rk_aiq_cac_attrib_t attr);
-XCamReturn rk_aiq_user_api2_acac_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                           rk_aiq_cac_attrib_t* attr);
+XCamReturn rk_aiq_user_api2_acac_v03_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               const rkaiq_cac_v03_api_attr_t* attr);
+XCamReturn rk_aiq_user_api2_acac_v03_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               rkaiq_cac_v03_api_attr_t* attr);
 
+XCamReturn rk_aiq_user_api2_acac_v10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               const rkaiq_cac_v10_api_attr_t* attr);
+XCamReturn rk_aiq_user_api2_acac_v10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               rkaiq_cac_v10_api_attr_t* attr);
+
+XCamReturn rk_aiq_user_api2_acac_v11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               const rkaiq_cac_v11_api_attr_t* attr);
+XCamReturn rk_aiq_user_api2_acac_v11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               rkaiq_cac_v11_api_attr_t* attr);
 RKAIQ_END_DECLARE
 
 #endif

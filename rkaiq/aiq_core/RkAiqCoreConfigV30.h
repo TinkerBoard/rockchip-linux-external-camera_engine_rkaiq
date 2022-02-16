@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2019-2022 Rockchip Eletronics Co., Ltd.
  *
@@ -103,28 +104,36 @@ static RkAiqGrpCondition_t otherGrpCondV3x[] = {
 static RkAiqGrpConditions_t otherGrpCondsV3x = {grp_conds_array_info(otherGrpCondV3x)};
 
 static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
-    // clang-format off
+// clang-format off
+#if RKAIQ_HAVE_AE_V1
     { &g_RkIspAlgoDescAe.common,            RK_AIQ_CORE_ANALYZE_AE,     0, 2, 0,    aeGrpCondsV3x      },
+#endif
 #if RKAIQ_HAVE_BLC_V1
     { &g_RkIspAlgoDescAblc.common,          RK_AIQ_CORE_ANALYZE_AWB,    0, 0, 0,    awbGrpConds        },
 #endif
 #if RKAIQ_HAVE_AWB_V21
     { &g_RkIspAlgoDescAwb.common,           RK_AIQ_CORE_ANALYZE_AWB,    1, 1, 21,   awbGrpConds        },
 #endif
+#if RKAIQ_HAVE_DEBAYER_V1
     { &g_RkIspAlgoDescAdebayer.common,      RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
-#if RKAIQ_HAVE_GAMMA_V2
+#endif
+#if RKAIQ_HAVE_GAMMA_V11
     { &g_RkIspAlgoDescAgamma.common,        RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
 #endif
 #if RKAIQ_HAVE_DEGAMMA_V1
     { &g_RkIspAlgoDescAdegamma.common,      RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
 #endif
-#if RKAIQ_HAVE_MERGE_V2
+#if RKAIQ_HAVE_MERGE_V11
     { &g_RkIspAlgoDescAmerge.common,        RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
 #endif
+#if RKAIQ_HAVE_CAC_V03
+    { &g_RkIspAlgoDescAcac.common,          RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 3,    grp0Conds          },
+#endif
+
 #if RKAIQ_HAVE_CAC_V10
     { &g_RkIspAlgoDescAcac.common,          RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
 #endif
-#if RKAIQ_HAVE_DEHAZE_V3
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
     { &g_RkIspAlgoDescAdhaz.common,         RK_AIQ_CORE_ANALYZE_GRP0,   0, 1, 0,    grp0Conds          },
 #endif
 #if RKAIQ_HAVE_BAYER2DNR_V2
@@ -142,7 +151,7 @@ static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
 #if RKAIQ_HAVE_SHARP_V4
     { &g_RkIspAlgoDescAsharpV4.common,      RK_AIQ_CORE_ANALYZE_GRP0,   4, 4, 4,    grp0Conds          },
 #endif
-#if RKAIQ_HAVE_DRC_V2
+#if RKAIQ_HAVE_DRC_V11
     { &g_RkIspAlgoDescAdrc.common,          RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
 #endif
 #if RKAIQ_HAVE_3DLUT_V1
@@ -155,9 +164,15 @@ static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
     { &g_RkIspAlgoDescAcp.common,           RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
     { &g_RkIspAlgoDescAie.common,           RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
     { &g_RkIspAlgoDescAdpcc.common,         RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+#if RKAIQ_HAVE_LDCH_V10
     { &g_RkIspAlgoDescAldch.common,         RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+#endif
+#if RKAIQ_HAVE_CGC_V1
     { &g_RkIspAlgoDescAcgc.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+#endif
+#if RKAIQ_HAVE_CSM_V1
     { &g_RkIspAlgoDescAcsm.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+#endif
 #if RKAIQ_HAVE_AF_V30
     { &g_RkIspAlgoDescAf.common,            RK_AIQ_CORE_ANALYZE_AF,     0, 1, 0,    afGrpCondsV3x      },
 #endif
@@ -171,7 +186,10 @@ static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
 #if RKAIQ_HAVE_GAIN_V2
     { &g_RkIspAlgoDescAgainV2.common,       RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,    grp0Conds          },
 #endif
-    { NULL,                                 RK_AIQ_CORE_ANALYZE_ALL,    0, 0, 0,    {0}                },
+#if RKAIQ_HAVE_FEC_V10
+    { &g_RkIspAlgoDescAfec.common,          RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0,     otherGrpCondsV3x   },
+#endif
+    { NULL,                                 RK_AIQ_CORE_ANALYZE_ALL,    0, 0, 0,    {0, 0}             },
     // clang-format on
 };
 

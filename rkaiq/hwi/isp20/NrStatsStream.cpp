@@ -196,4 +196,4 @@ int NrStatsStream::get_NRImg_fd(uint32_t frameid)
     return fd;
 }
 
-}; //namspace RkCam
+} //namspace RkCam

@@ -71,19 +71,19 @@ typedef struct CamCalibDbV2ContextIsp20_s {
     // M4_STRUCT_DESC("wb_v20", "normal_ui_style")
     CalibDbV2_Wb_Para_V20_t wb_v20;
     // M4_STRUCT_DESC("agamma_calib", "normal_ui_style")
-    CalibDbV2_gamma_t agamma_calib;
+    CalibDbV2_gamma_V10_t agamma_calib_V10;
     // M4_STRUCT_DESC("ablc_calib", "normal_ui_style")
     CalibDbV2_Ablc_t ablc_calib;
     // M4_STRUCT_DESC("degamma", "curve_ui_type_A")
     CalibDbV2_Adegmma_t adegamma_calib;
     // M4_STRUCT_DESC("agic_calib_v20", "normal_ui_style")
     CalibDbV2_Gic_V20_t agic_calib_v20;
-    // M4_STRUCT_DESC("adehaze_calib_v20", "normal_ui_style")
-    CalibDbV2_dehaze_V20_t adehaze_calib_v20;
+    // M4_STRUCT_DESC("adehaze_calib", "normal_ui_style")
+    CalibDbV2_dehaze_V10_t adehaze_calib_v10;
     // M4_STRUCT_DESC("adpcc_calib", "normal_ui_style")
     CalibDbV2_Dpcc_t adpcc_calib;
     // M4_STRUCT_DESC("amerge_calib", "normal_ui_style")
-    CalibDbV2_merge_t amerge_calib;
+    CalibDbV2_merge_V10_t amerge_calib;
     // M4_STRUCT_DESC("atmo_calib", "normal_ui_style")
     CalibDbV2_tmo_t atmo_calib;
     // M4_STRUCT_DESC("cpsl", "normal_ui_style")
@@ -121,12 +121,12 @@ typedef struct CamCalibDbV2ContextIsp20_s {
     // M4_STRUCT_DESC("aldch", "normal_ui_style")
     CalibDbV2_LDCH_t aldch;
     // M4_STRUCT_DESC("ccm_calib", "normal_ui_style")
-   CalibDbV2_Ccm_Para_V2_t ccm_calib;
-   // M4_STRUCT_DESC("lut3d_calib", "normal_ui_style")
-   CalibDbV2_Lut3D_Para_V2_t lut3d_calib;
-   // M4_STRUCT_DESC("af_calib", "normal_ui_style")
-   CalibDbV2_AF_t af;
-   CalibDbV2_Thumbnails_t thumbnails;
+    CalibDbV2_Ccm_Para_V2_t ccm_calib;
+    // M4_STRUCT_DESC("lut3d_calib", "normal_ui_style")
+    CalibDbV2_Lut3D_Para_V2_t lut3d_calib;
+    // M4_STRUCT_DESC("af_calib", "normal_ui_style")
+    CalibDbV2_AF_t af;
+    CalibDbV2_Thumbnails_t thumbnails;
 } CamCalibDbV2ContextIsp20_t;
 
 RKAIQ_END_DECLARE

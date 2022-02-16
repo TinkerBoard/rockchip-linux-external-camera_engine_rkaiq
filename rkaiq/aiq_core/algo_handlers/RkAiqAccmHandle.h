@@ -23,7 +23,7 @@
 #include "xcam_mutex.h"
 
 namespace RkCam {
-
+#if RKAIQ_HAVE_CCM_V1 || RKAIQ_HAVE_CCM_V2
 class RkAiqAccmHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAccmHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
@@ -55,7 +55,7 @@ class RkAiqAccmHandleInt : virtual public RkAiqHandle {
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAccmHandleInt);
 };
-
-};  // namespace RkCam
+#endif
+}  // namespace RkCam
 
 #endif

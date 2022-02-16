@@ -66,6 +66,6 @@ typedef std::list<SmartPtr<MetaBase>>  MetaBaseList;
 typedef std::list<SmartPtr<MetaData>>  MetaDataList;
 typedef std::list<SmartPtr<DevicePose>>  DevicePoseList;
 
-};
+}
 
 #endif //XCAM_META_DATA_H

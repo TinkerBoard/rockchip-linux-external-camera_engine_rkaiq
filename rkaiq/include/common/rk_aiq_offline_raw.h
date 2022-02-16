@@ -1,6 +1,8 @@
 #ifndef _RK_AIQ_OFFLINE_RAW_H_
 #define _RK_AIQ_OFFLINE_RAW_H_
 
+#include <stdint.h>
+
 #define START_TAG           0xFF00
 #define FORMAT_TAG          0xFF01
 #define NORMAL_RAW_TAG      0xFF02
@@ -38,7 +40,7 @@ struct _raw_format
     unsigned short vesrion;
     char sensor[32];
     char scene[32];
-    unsigned int frame_id;
+    uint32_t frame_id;
     unsigned short width;
     unsigned short height;
     unsigned char bit_width;
@@ -55,7 +57,7 @@ struct _frame_info
     unsigned short tag;
     unsigned int size;
     unsigned short vesrion;
-    unsigned int frame_id;
+    uint32_t frame_id;
 
     float normal_exp;
     float normal_gain;

@@ -126,8 +126,10 @@ static RkAiqGrpCondition_t orbGrpCond[] = {
 static RkAiqGrpConditions_t orbGrpConds = {grp_conds_array_info(orbGrpCond)};
 
 const static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
-    // clang-format off
+// clang-format off
+#if RKAIQ_HAVE_AE_V1
     { &g_RkIspAlgoDescAe.common,        RK_AIQ_CORE_ANALYZE_AE,    0, 0, 0, aeGrpConds    },
+#endif
 #if RKAIQ_HAVE_AWB_V20
     { &g_RkIspAlgoDescAwb.common,       RK_AIQ_CORE_ANALYZE_AWB,   0, 0, 0, awbGrpConds   },
 #endif
@@ -141,7 +143,7 @@ const static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
     { &g_RkIspAlgoDescAdegamma.common,  RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
 #endif
     { &g_RkIspAlgoDescAdpcc.common,     RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
-#if RKAIQ_HAVE_MERGE_V1
+#if RKAIQ_HAVE_MERGE_V10
     { &g_RkIspAlgoDescAmerge.common,    RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
 #endif
 #if RKAIQ_HAVE_TMO_V1
@@ -180,38 +182,48 @@ const static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
 #if RKAIQ_HAVE_GIC_V1
     { &g_RkIspAlgoDescAgic.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
 #endif
+#if RKAIQ_HAVE_DEBAYER_V1
     { &g_RkIspAlgoDescAdebayer.common,  RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+#endif
 #if RKAIQ_HAVE_CCM_V1
     { &g_RkIspAlgoDescAccm.common,      RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
 #endif
-#if RKAIQ_HAVE_GAMMA_V1
+#if RKAIQ_HAVE_GAMMA_V10
     { &g_RkIspAlgoDescAgamma.common,    RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
 #endif
 #if RKAIQ_HAVE_WDR_V1
     { &g_RkIspAlgoDescAwdr.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
 #endif
-#if RKAIQ_HAVE_DEHAZE_V1
+#if RKAIQ_HAVE_DEHAZE_V10
     { &g_RkIspAlgoDescAdhaz.common,     RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
 #endif
 #if RKAIQ_HAVE_3DLUT_V1
     { &g_RkIspAlgoDescA3dlut.common,    RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
 #endif
+#if RKAIQ_HAVE_LDCH_V10
     { &g_RkIspAlgoDescAldch.common,     RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+#endif
+#if RKAIQ_HAVE_CSM_V1
     { &g_RkIspAlgoDescAcsm.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+#endif
     { &g_RkIspAlgoDescAcp.common,       RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
     { &g_RkIspAlgoDescAie.common,       RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
     { &g_RkIspAlgoDescAsharp.common,    RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
 #if RKAIQ_HAVE_ORB_V1
     { &g_RkIspAlgoDescAorb.common,      RK_AIQ_CORE_ANALYZE_ORB,   0, 0, 0, orbGrpConds   },
 #endif
+#if RKAIQ_HAVE_CGC_V1
     { &g_RkIspAlgoDescAcgc.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+#endif
     { &g_RkIspAlgoDescAsd.common,       RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
-    //{ &g_RkIspAlgoDescAfec.common,    RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+#if RKAIQ_HAVE_FEC_V10
+    { &g_RkIspAlgoDescAfec.common,    RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
+#endif
     { &g_RkIspAlgoDescAeis.common,      RK_AIQ_CORE_ANALYZE_EIS,   0, 0, 0, eisGrpConds   },
 #if 0
     { &g_RkIspAlgoDescAmd.common,       RK_AIQ_CORE_ANALYZE_AMD,   0, 0, 0, amdGrpConds   },
 #endif
-    { NULL,                             RK_AIQ_CORE_ANALYZE_ALL,   0, 0, 0, {0}           },
+    { NULL,                             RK_AIQ_CORE_ANALYZE_ALL,   0, 0, 0, {0, 0}        },
     // clang-format on
 };
 

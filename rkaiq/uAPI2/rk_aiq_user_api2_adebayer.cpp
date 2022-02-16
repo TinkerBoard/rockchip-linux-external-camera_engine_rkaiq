@@ -23,6 +23,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_DEBAYER_V1 || RKAIQ_HAVE_DEBAYER_V2
 XCamReturn
 rk_aiq_user_api2_adebayer_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_attrib_t attr)
 {
@@ -34,5 +35,18 @@ rk_aiq_user_api2_adebayer_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_at
 {
     return rk_aiq_user_api_adebayer_GetAttrib(sys_ctx, attr);
 }
+#else
+XCamReturn
+rk_aiq_user_api2_adebayer_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_attrib_t attr)
+{
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn
+rk_aiq_user_api2_adebayer_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_attrib_t *attr)
+{
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+#endif
 
 RKAIQ_END_DECLARE

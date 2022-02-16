@@ -43,6 +43,6 @@ private:
     static XCam::Mutex mMutex;
 };
 
-}; //namespace RkCam
+} //namespace RkCam
 
 #endif

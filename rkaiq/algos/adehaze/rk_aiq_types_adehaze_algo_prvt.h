@@ -20,18 +20,28 @@
 #ifndef _RK_AIQ_TYPES_ADEHAZE_ALGO_PRVT_H_
 #define _RK_AIQ_TYPES_ADEHAZE_ALGO_PRVT_H_
 
-#include "adehaze/rk_aiq_types_adehaze_algo_int.h"
 #include "RkAiqCalibDbTypes.h"
 #include "RkAiqCalibDbTypesV2.h"
-#include "rk_aiq_types_adehaze_stat.h"
-#include "rk_aiq_algo_types.h"
-#include "xcam_log.h"
+#include "adehaze/rk_aiq_types_adehaze_algo_int.h"
 #include "amerge/rk_aiq_types_amerge_algo_prvt.h"
+#include "rk_aiq_algo_types.h"
+#include "rk_aiq_types_adehaze_hw.h"
+#include "rk_aiq_types_adehaze_stat.h"
+#include "xcam_log.h"
 
 #define ADHZ10BITMAX     (1023)
 #define ADHZ10BITMIN     (0)
 #define DEHAZE_API_MANUAL_DEFAULT_LEVEL     (50)
 #define DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL     (50)
+#define DEHAZE_GAUS_H0                              (2)
+#define DEHAZE_GAUS_H1                              4
+#define DEHAZE_GAUS_H2                              2
+#define DEHAZE_GAUS_H3                              4
+#define DEHAZE_GAUS_H4                              8
+#define DEHAZE_GAUS_H5                              4
+#define DEHAZE_GAUS_H6                              2
+#define DEHAZE_GAUS_H7                              4
+#define DEHAZE_GAUS_H8                              2
 
 //define for dehaze local gain
 #define YNR_BIT_CALIB (12)
@@ -45,55 +55,62 @@ typedef enum YnrSnrMode_e {
     YNRSNRMODE_HSNR     = 1,
 } YnrSnrMode_t;
 
-typedef struct AdehazeAePreResV20_s {
+typedef struct AdehazeExpInfo_s {
+    int hdr_mode;
+    float arTime[3];
+    float arAGain[3];
+    float arDGain[3];
+    int arIso[3];
+} AdehazeExpInfo_t;
+
+typedef struct AdehazeAePreResV10_s {
     float ISO;
     dehaze_api_mode_t ApiMode;
-} AdehazeAePreResV20_t;
+} AdehazeAePreResV10_t;
 
-typedef struct AdehazeAePreResV21_s {
+typedef struct AdehazeAePreResV11_s {
     float EnvLv;
     float ISO;
     YnrSnrMode_t SnrMode;
     dehaze_api_mode_t ApiMode;
-} AdehazeAePreResV21_t;
+} AdehazeAePreResV11_t;
 
-typedef struct AdehazeAePreRes_s {
-#if RKAIQ_HAVE_DEHAZE_V1
-        AdehazeAePreResV20_t V20;
-#endif
-#if RKAIQ_HAVE_DEHAZE_V2
-        AdehazeAePreResV21_t V21;
-#endif
-#if RKAIQ_HAVE_DEHAZE_V3
-        AdehazeAePreResV21_t V30;
-#endif
-} AdehazeAePreRes_t;
+typedef struct CalibDbV2_dehaze_V11_duo_prvt_s {
+    CalibDbDehazeV11_t DehazeTuningPara;
+    CalibDbV2_YnrV3_CalibPara_t YnrCalibPara;
+} CalibDbV2_dehaze_V11_duo_prvt_t;
 
-typedef struct CalibDbV2_dehaze_V30_prvt_s {
-    CalibDbDehazeV21_t DehazeTuningPara;
+typedef struct CalibDbV2_dehaze_V12_prvt_s {
+    CalibDbDehazeV12_t DehazeTuningPara;
     CalibDbV2_YnrV3_CalibPara_t  YnrCalibPara;
-} CalibDbV2_dehaze_V30_prvt_t;
-
-typedef struct CalibDbDehazePrvt_s {
-#if RKAIQ_HAVE_DEHAZE_V1
-        CalibDbV2_dehaze_V20_t Dehaze_v20;
-#endif
-#if RKAIQ_HAVE_DEHAZE_V2
-        CalibDbV2_dehaze_V21_t Dehaze_v21;
-#endif
-#if RKAIQ_HAVE_DEHAZE_V3
-        CalibDbV2_dehaze_V30_prvt_t Dehaze_v30;
-#endif
-} CalibDbDehazePrvt_t;
+} CalibDbV2_dehaze_V12_prvt_t;
 
 typedef struct AdehazeHandle_s {
-    adehaze_sw_V2_t AdehazeAtrr;
-    CalibDbDehazePrvt_t Calib;
+#if RKAIQ_HAVE_DEHAZE_V10
+    adehaze_sw_V10_t AdehazeAtrrV10;
+    CalibDbV2_dehaze_V10_t CalibV10;
+    AdehazeAePreResV10_t CurrDataV10;
+    AdehazeAePreResV10_t PreDataV10;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V11
+    adehaze_sw_V11_t AdehazeAtrrV11;
+    AdehazeAePreResV11_t CurrDataV11;
+    AdehazeAePreResV11_t PreDataV11;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+    adehaze_sw_V11_t AdehazeAtrrV11duo;
+    CalibDbV2_dehaze_V11_duo_prvt_t CalibV11duo;
+    AdehazeAePreResV11_t CurrDataV11duo;
+    AdehazeAePreResV11_t PreDataV11duo;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+    adehaze_sw_V12_t AdehazeAtrrV12;
+    CalibDbV2_dehaze_V12_prvt_t CalibV12;
+    AdehazeAePreResV11_t CurrDataV12;
+    AdehazeAePreResV11_t PreDataV12;
+#endif
     RkAiqAdehazeProcResult_t ProcRes;
     rkisp_adehaze_stats_t stats;
-    AdehazeVersion_t HWversion;
-    AdehazeAePreRes_t CurrData;
-    AdehazeAePreRes_t PreData;
     bool byPassProc;
     bool is_multi_isp_mode;
     int width;

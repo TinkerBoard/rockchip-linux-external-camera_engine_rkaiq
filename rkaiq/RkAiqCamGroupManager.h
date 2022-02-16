@@ -253,8 +253,8 @@ protected:
     CamCalibDbCamgroup_t* mCamgroupCalib;
 protected:
     XCamReturn reProcess(rk_aiq_groupcam_result_t* gc_res);
-    rk_aiq_groupcam_result_t* getGroupCamResult(uint32_t frameId, bool alloc = true);
-    rk_aiq_groupcam_sofsync_t* getGroupCamSofsync(uint32_t frameId, bool alloc = true);
+    rk_aiq_groupcam_result_t* getGroupCamResult(uint32_t frameId, bool query_ready = true);
+    rk_aiq_groupcam_sofsync_t* getGroupCamSofsync(uint32_t frameId, bool query_ready = true);
     void setSingleCamStatusReady(rk_aiq_singlecam_result_status_t* status, rk_aiq_groupcam_result_t* gc_result);
     void relayToHwi(rk_aiq_groupcam_result_t* gc_res);
     void clearGroupCamResult(uint32_t frameId);
@@ -265,6 +265,6 @@ protected:
     std::map<int, SmartPtr<RkAiqCamgroupHandle>>* getAlgoTypeHandleMap(int algo_type);
 };
 
-}; //namespace
+} //namespace
 
 #endif

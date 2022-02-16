@@ -38,16 +38,39 @@ typedef struct accm_sw_info_s {
     bool ccmConverged;
 } accm_sw_info_t;
 
-typedef struct rk_aiq_ccm_mccm_attrib_s {
-    // M4_ARRAY_DESC("ccMatrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.0000,1.0000]", M4_DIGIT(4), M4_DYNAMIC(0))
+typedef struct rk_aiq_ccm_mccm_attrib_v1_s {
+    // M4_ARRAY_DESC("ccMatrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1,0,0,0,1,0,0,0,1]", M4_DIGIT(4), M4_DYNAMIC(0))
     float  ccMatrix[9];
     // M4_ARRAY_DESC("ccOffsets", "f32", M4_SIZE(1,3), M4_RANGE(-4095,4095), "0", M4_DIGIT(1), M4_DYNAMIC(0))
     float  ccOffsets[3];
     // M4_ARRAY_DESC("y_alpha_curve", "f32", M4_SIZE(1,17), M4_RANGE(-4095,4095), "1024", M4_DIGIT(0), M4_DYNAMIC(0))
     float  y_alpha_curve[CCM_CURVE_DOT_NUM];
-    // M4_NUMBER_DESC("bound pos bit", "f32", M4_RANGE(0, 10), "8", M4_DIGIT(0))
+    // M4_NUMBER_DESC("bound pos bit", "f32", M4_RANGE(4, 10), "8", M4_DIGIT(0))
     float low_bound_pos_bit;
-} rk_aiq_ccm_mccm_attrib_t;
+} rk_aiq_ccm_mccm_attrib_v1_t;
+
+typedef struct rk_aiq_ccm_mccm_attrib_v2_s {
+    // M4_ARRAY_DESC("ccMatrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1,0,0,0,1,0,0,0,1]", M4_DIGIT(4), M4_DYNAMIC(0))
+    float ccMatrix[9];
+    // M4_ARRAY_DESC("ccOffsets", "f32", M4_SIZE(1,3), M4_RANGE(-4095,4095), "0", M4_DIGIT(1), M4_DYNAMIC(0))
+    float ccOffsets[3];
+    // M4_BOOL_DESC("high Y adjust enable", "1")
+    bool highy_adj_en;
+    // M4_BOOL_DESC("asym enable", "0")
+    bool asym_enable;
+    // M4_NUMBER_DESC("left bound pos bit", "f32", M4_RANGE(3, 11), "10", M4_DIGIT(0))
+    float bound_pos_bit;  // low y alpha adjust
+    // M4_NUMBER_DESC("right bound pos bit", "f32", M4_RANGE(3, 11), "10", M4_DIGIT(0))
+    float right_pos_bit;  // high y alpha adjust
+    // M4_ARRAY_DESC("y alpha curve", "f32", M4_SIZE(1,18), M4_RANGE(-4095,4095), "1024", M4_DIGIT(0), M4_DYNAMIC(0))
+    float y_alpha_curve[CCM_CURVE_DOT_NUM_V2];
+    // M4_NUMBER_DESC("ccm enhance enable", "u8", M4_RANGE(0, 1), "0", M4_DIGIT(0))
+    unsigned short enh_adj_en;
+    // M4_ARRAY_DESC("Enhance RGB2Y para", "u8", M4_SIZE(1,3), M4_RANGE(0,128), "[38 75 15]", M4_DIGIT(0),  M4_DYNAMIC(0))
+    unsigned char enh_rgb2y_para[3];
+    // M4_NUMBER_DESC("Enhance ratio max", "f32", M4_RANGE(0, 8), "0", M4_DIGIT(1))
+    float enh_rat_max;
+} rk_aiq_ccm_mccm_attrib_v2_t;
 
 typedef struct rk_aiq_ccm_color_inhibition_s {
     float sensorGain[RK_AIQ_ACCM_COLOR_GAIN_NUM];
@@ -74,26 +97,31 @@ typedef enum rk_aiq_ccm_op_mode_s {
 
 typedef struct rk_aiq_ccm_attrib_s {
     rk_aiq_uapi_sync_t sync;
-
     bool byPass;
     // M4_ENUM_DESC("mode", "rk_aiq_ccm_op_mode_t", "RK_AIQ_CCM_MODE_AUTO");
     rk_aiq_ccm_op_mode_t mode;
     // M4_STRUCT_DESC("stManual", "normal_ui_style")
-    rk_aiq_ccm_mccm_attrib_t stManual;
+    union {
+        rk_aiq_ccm_mccm_attrib_v1_t stManual;
+        rk_aiq_ccm_mccm_attrib_v2_t stManual_v2;
+    };
     rk_aiq_ccm_accm_attrib_t stAuto;
     // to do whm
-    CalibDbV2_Ccm_Para_V2_t stTool;
+    union {
+        CalibDbV2_Ccm_Para_V2_t stTool;
+        CalibDbV2_Ccm_Para_V32_t stTool_v2;
+    };
 } rk_aiq_ccm_attrib_t;
 
+#if RKAIQ_HAVE_CCM_V1
 typedef struct rk_aiq_ccm_querry_info_s {
     bool ccm_en;
     // M4_ARRAY_DESC("ccMatrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.0000,1.0000]", M4_DIGIT(4), M4_DYNAMIC(0))
     float  ccMatrix[9];
     // M4_ARRAY_DESC("ccOffsets", "f32", M4_SIZE(1,3), M4_RANGE(-4095,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     float  ccOffsets[3];
-    // M4_ARRAY_DESC("y alpha curve", "f32", M4_SIZE(1,17), M4_RANGE(0,1024), "[0,64,128,192,256,320,384,448,512,576,640,704,768,832,896,960,1024]", M4_DIGIT(0), M4_DYNAMIC(0))
     float  y_alpha_curve[CCM_CURVE_DOT_NUM];
-    // M4_NUMBER_DESC("bound pos bit", "f32", M4_RANGE(0, 10), "8", M4_DIGIT(0))
+    // M4_NUMBER_DESC("bound pos bit", "f32", M4_RANGE(3, 11), "8", M4_DIGIT(0))
     float low_bound_pos_bit;
     float color_inhibition_level;
     float color_saturation_level;
@@ -104,6 +132,28 @@ typedef struct rk_aiq_ccm_querry_info_s {
     // M4_STRING_DESC("usedCcm2", M4_SIZE(1,1), M4_RANGE(0, 25), "A_100",M4_DYNAMIC(0))
     char  ccmname2[25];
 } rk_aiq_ccm_querry_info_t;
+#else
+typedef struct rk_aiq_ccm_querry_info_s {
+    bool ccm_en;
+    // M4_ARRAY_DESC("ccMatrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1,0,0,0,1,0,0,0,1]", M4_DIGIT(4), M4_DYNAMIC(0))
+    float ccMatrix[9];
+    // M4_ARRAY_DESC("ccOffsets", "f32", M4_SIZE(1,3), M4_RANGE(-4095,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    float ccOffsets[3];
+    float y_alpha_curve[CCM_CURVE_DOT_NUM_V2];
+    // M4_NUMBER_DESC("bound pos bit", "f32", M4_RANGE(3, 11), "8", M4_DIGIT(0))
+    float low_bound_pos_bit;
+    // M4_NUMBER_DESC("high bound pos bit", "f32", M4_RANGE(3, 11), "8", M4_DIGIT(0))
+    float right_pos_bit;
+    float color_inhibition_level;
+    float color_saturation_level;
+    // M4_NUMBER_DESC("CCM Saturation", "f32", M4_RANGE(0,200), "0", M4_DIGIT(2))
+    float finalSat;
+    // M4_STRING_DESC("usedCcm1", M4_SIZE(1,1), M4_RANGE(0, 25), "A_100",M4_DYNAMIC(0))
+    char ccmname1[25];
+    // M4_STRING_DESC("usedCcm2", M4_SIZE(1,1), M4_RANGE(0, 25), "A_100",M4_DYNAMIC(0))
+    char ccmname2[25];
+} rk_aiq_ccm_querry_info_t;
+#endif
 
 RKAIQ_END_DECLARE
 

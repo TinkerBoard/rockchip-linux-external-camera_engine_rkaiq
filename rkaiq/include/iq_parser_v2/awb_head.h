@@ -439,6 +439,28 @@ typedef struct CalibDbV2_Awb_gain_offset_cfg_s{
   float offset[4];//rggb
 }CalibDbV2_Awb_gain_offset_cfg_t;
 
+typedef struct CalibDbV2_Awb_SmartRun_cfg_s{
+    // M4_ARRAY_DESC("lumaValue", "f32", M4_SIZE(1,5), M4_RANGE(0,255000), "0", M4_DIGIT(1), M4_DYNAMIC(1))
+    float *lumaValue;
+    int lumaValue_len;
+    // M4_ARRAY_DESC("lvVarTh", "f32", M4_SIZE(1,5), M4_RANGE(0,255), "0", M4_DIGIT(1), M4_DYNAMIC(1))
+    float *lvVarTh;
+    int lvVarTh_len;
+    // M4_ARRAY_DESC("wbgainAlgDiffTh", "f32", M4_SIZE(1,5), M4_RANGE(0,1), "0", M4_DIGIT(1), M4_DYNAMIC(1))
+    float *wbgainAlgDiffTh;
+    int wbgainAlgDiffTh_len;
+    // M4_ARRAY_DESC("wbgainHwDiffTh", "f32", M4_SIZE(1,5), M4_RANGE(0,1), "0", M4_DIGIT(1), M4_DYNAMIC(1))
+    float *wbgainHwDiffTh;
+    int wbgainHwDiffTh_len;
+}CalibDbV2_Awb_SmartRun_cfg_t;
+
+typedef struct CalibDbV2_Awb_SmartRun_s{
+    // M4_BOOL_DESC("enable", "1")
+    bool  enable;
+    // M4_ARRAY_TABLE_DESC("cfg", "array_table_ui", M4_INDEX_DEFAULT)
+    CalibDbV2_Awb_SmartRun_cfg_t cfg;
+}CalibDbV2_Awb_SmartRun_t;
+
 typedef struct CalibDbV2_Wb_Awb_Ext_Com_Para_t{
   // M4_STRING_DESC("lightSourceForFirstFrame", M4_SIZE(1,1), M4_RANGE(-128, 127), "default", M4_DYNAMIC(0))
   char *lightSourceForFirstFrame;
@@ -481,14 +503,65 @@ typedef struct CalibDbV2_Wb_Awb_Ext_Com_Para_t{
   float lineRgBg[3];
   // M4_ARRAY_DESC("lineRgProjCCT", "f32", M4_SIZE(1,3), M4_RANGE(-2147483648,2147483647), "1", M4_DIGIT(4), M4_DYNAMIC(0), M4_HIDE(1))
   float lineRgProjCCT[3];
+#if (RKAIQ_HAVE_AWB_V20||RKAIQ_HAVE_AWB_V21)
   // M4_STRUCT_DESC("chrAdpttAdj", "normal_ui_style", M4_HIDE(1))
   CalibDbV2_Wb_Awb_Caga_t chrAdpttAdj;
+#endif
   // M4_STRUCT_DESC("remosaicCfg", "normal_ui_style")
   CalibDbV2_Awb_Remosaic_Para_t remosaicCfg;
   // M4_STRUCT_DESC("wbGainOffset", "normal_ui_style")
   CalibDbV2_Awb_gain_offset_cfg_t wbGainOffset;
 } CalibDbV2_Wb_Awb_Ext_Com_Para_t;
 
+typedef struct CalibDbV2_Wb_Awb_Ext_Com_Para_V32_s{
+  // M4_STRING_DESC("lightSourceForFirstFrame", M4_SIZE(1,1), M4_RANGE(-128, 127), "default", M4_DYNAMIC(0))
+  char *lightSourceForFirstFrame;
+  // M4_STRUCT_DESC("smartRun", "normal_ui_style")
+  CalibDbV2_Awb_SmartRun_t smartRun;
+  // M4_ARRAY_TABLE_DESC("tolerance", "array_table_ui", M4_INDEX_DEFAULT)
+  CalibDbV2_Awb_Tolerance_t tolerance;//wb gain diff th for awb gain update, set 0 to disable this function
+  // M4_ARRAY_TABLE_DESC("runInterval", "array_table_ui", M4_INDEX_DEFAULT)
+  CalibDbV2_Awb_runinterval_t runInterval;
+  // M4_STRUCT_DESC("dampFactor", "normal_ui_style")
+  CalibDbV2_Awb_DampFactor_t dampFactor;
+  // M4_STRUCT_DESC("wbGainAdjust", "normal_ui_style")
+  CalibDbV2_Awb_GainAdjust_t wbGainAdjust;
+  // M4_STRUCT_DESC("wbGainDaylightClip", "normal_ui_style")
+  CalibDbV2_Awb_Cct_DaylightClip_Cfg_t wbGainDaylightClip;
+  // M4_STRUCT_DESC("wbGainClip", "normal_ui_style")
+  CalibDbV2_Awb_Cct_Clip_Cfg_t wbGainClip;
+  // M4_STRUCT_DESC("division", "normal_ui_style")
+  CalibDbV2_Wb_Awb_Div_t division;
+  // M4_ARRAY_DESC("defaultNightGain", "f32", M4_SIZE(1,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))
+  float defaultNightGain[4];
+  // M4_ARRAY_DESC("lumaValueMatrix", "u32", M4_SIZE(1,16), M4_RANGE(0,255000), "1", M4_DIGIT(0), M4_DYNAMIC(0))
+  unsigned int lumaValueMatrix[CALD_AWB_LV_NUM_MAX];
+  // M4_ARRAY_DESC("defaultNightGainWeight", "u8", M4_SIZE(1,16), M4_RANGE(0,100), "1", M4_DIGIT(0), M4_DYNAMIC(0))
+  unsigned char defaultNightGainWeight[CALD_AWB_LV_NUM_MAX];
+  // M4_STRUCT_DESC("probCalcDis", "normal_ui_style")
+  CalibDbV2_Wb_Awb_Prob_Calc_Dis_t probCalcDis;
+  // M4_STRUCT_DESC("probCalcLv", "normal_ui_style")
+  CalibDbV2_Wb_Awb_Prob_Calc_Lv_t probCalcLv;
+  // M4_STRUCT_DESC("probCalcWp", "normal_ui_style")
+  CalibDbV2_Wb_Awb_Prob_Calc_Wp_t probCalcWp;
+  // M4_STRUCT_DESC("converged", "normal_ui_style")
+  CalibDbV2_Wb_Awb_Convg_t converged;
+  // M4_STRUCT_DESC("xyRegionStableSelection", "normal_ui_style")
+  CalibDbV2_Awb_xyRegion_stable_t xyRegionStableSelection;
+  // M4_ARRAY_DESC("weightForNightGainCalc", "u8", M4_SIZE(1,16), M4_RANGE(0,100), "1", M4_DIGIT(0), M4_DYNAMIC(1))
+  unsigned char *weightForNightGainCalc;
+  int weightForNightGainCalc_len;
+  // M4_STRUCT_DESC("singleColorProces", "normal_ui_style")
+  CalibDbV2_Awb_Sgc_t singleColorProces;
+  // M4_ARRAY_DESC("lineRgBg", "f32", M4_SIZE(1,3), M4_RANGE(-2147483648,2147483647), "1", M4_DIGIT(4), M4_DYNAMIC(0), M4_HIDE(1))
+  float lineRgBg[3];
+  // M4_ARRAY_DESC("lineRgProjCCT", "f32", M4_SIZE(1,3), M4_RANGE(-2147483648,2147483647), "1", M4_DIGIT(4), M4_DYNAMIC(0), M4_HIDE(1))
+  float lineRgProjCCT[3];
+  // M4_STRUCT_DESC("remosaicCfg", "normal_ui_style")
+  CalibDbV2_Awb_Remosaic_Para_t remosaicCfg;
+  // M4_STRUCT_DESC("wbGainOffset", "normal_ui_style")
+  CalibDbV2_Awb_gain_offset_cfg_t wbGainOffset;
+} CalibDbV2_Wb_Awb_Ext_Com_Para_V32_t;
 
 typedef struct CalibDbV2_Wb_Awb_Para_V20_t {
   // M4_STRUCT_DESC("hdrPara", "normal_ui_style")
@@ -702,6 +775,142 @@ typedef struct CalibDbV2_Wb_Para_V21_s {
   // M4_STRUCT_DESC("autoExtPara", "normal_ui_style")
   CalibDbV2_Wb_Awb_Ext_Com_Para_t autoExtPara;
 } CalibDbV2_Wb_Para_V21_t;
+
+typedef enum CalibDbV2_Awb_Raw_Select_Mode_s {
+    CALIB_AWB_INPUT_RAW_FIXED = 0,
+    CALIB_AWB_INPUT_RAW_AUTO = 1,
+    CALIB_AWB_INPUT_BAYERNR = 3,
+    CALIB_AWB_INPUT_DRC = 4,
+}CalibDbV2_Awb_Raw_Select_Mode_e;
+
+typedef struct CalibDbV2_Awb_Raw_Select_s {
+    // M4_ENUM_DESC("frameChooseMode", "CalibDbV2_Awb_Raw_Select_Mode_e", "CALIB_AWB_INPUT_BAYERNR")
+    CalibDbV2_Awb_Raw_Select_Mode_e frameChooseMode;
+    // M4_NUMBER_DESC("frameChoose", "u8", M4_RANGE(0,2), "1", M4_DIGIT(0))
+    unsigned char frameChoose;
+} CalibDbV2_Awb_Raw_Select_t;
+
+typedef struct CalibDbV2_ExtRange_V32_s {
+    // M4_ENUM_DESC("domain", "CalibDbV2_Awb_Ext_Range_Domain_t", "CALIB_AWB_EXTRA_RANGE_DOMAIN_UV")
+    CalibDbV2_Awb_Ext_Range_Domain_t domain;/*0uv domain,1 xy domain*/
+    // M4_ENUM_DESC("mode", "CalibDbV2_Awb_Ext_Range_Mode_t", "CALIB_AWB_EXCLUDE_WP_MODE")
+    CalibDbV2_Awb_Ext_Range_Mode_t mode;
+    // M4_ARRAY_DESC("region", "s32", M4_SIZE(1,4), M4_RANGE(-8192, 8191), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    int region[4];
+    // M4_NUMBER_DESC("weightInculde", "f32", M4_RANGE(0,1), "0", M4_DIGIT(4), M4_DYNAMIC(0))
+    float weightInculde;
+} CalibDbV2_ExtRange_V32_t;
+
+typedef struct CalibDbV2_Awb_Blc_data_s {
+    // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
+    float* ISO;
+    int ISO_len;
+    // M4_ARRAY_DESC("R_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
+    float* R_Channel;
+    int R_Channel_len;
+    // M4_ARRAY_DESC("Gr_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
+    float* Gr_Channel;
+    int Gr_Channel_len;
+    // M4_ARRAY_DESC("Gb_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
+    float* Gb_Channel;
+    int Gb_Channel_len;
+    // M4_ARRAY_DESC("B_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
+    float* B_Channel;
+    int B_Channel_len;
+} CalibDbV2_Awb_Blc_data_t;
+
+typedef struct CalibDbV2_Awb_Blc_s {
+    // M4_BOOL_DESC("enable", "0");
+    bool enable;
+    // M4_ARRAY_TABLE_DESC("BLC_Data", "array_table_ui", M4_INDEX_DEFAULT)
+    CalibDbV2_Awb_Blc_data_t BLC_Data;//r gr gb b
+} CalibDbV2_Awb_Blc_t;
+
+typedef struct CalibDbV2_Awb_Limit_Range_V32_s {
+    // M4_ARRAY_DESC("lumaValue", "f32", M4_SIZE(1,5), M4_RANGE(0,255000), "0", M4_DIGIT(1), M4_DYNAMIC(1))
+    float* lumaValue;
+    int lumaValue_len;
+    // M4_ARRAY_DESC("maxR", "f32", M4_SIZE(1,5), M4_RANGE(0,255), "0", M4_DIGIT(4), M4_DYNAMIC(1))
+    float* maxR;
+    int maxR_len;
+    // M4_ARRAY_DESC("minR", "f32", M4_SIZE(1,5), M4_RANGE(0,255), "0", M4_DIGIT(4), M4_DYNAMIC(1))
+    float * minR;
+    int minR_len;
+    // M4_ARRAY_DESC("maxG", "f32", M4_SIZE(1,5), M4_RANGE(0,255), "0", M4_DIGIT(4), M4_DYNAMIC(1))
+    float * maxG;
+    int maxG_len;
+    // M4_ARRAY_DESC("minG", "f32", M4_SIZE(1,5), M4_RANGE(0,255), "0", M4_DIGIT(4), M4_DYNAMIC(1))
+    float * minG;
+    int minG_len;
+    // M4_ARRAY_DESC("maxB", "f32", M4_SIZE(1,5), M4_RANGE(0,255), "0", M4_DIGIT(4), M4_DYNAMIC(1))
+    float *maxB;
+    int maxB_len;
+    // M4_ARRAY_DESC("minB", "f32", M4_SIZE(1,5), M4_RANGE(0,255), "0", M4_DIGIT(4), M4_DYNAMIC(1))
+    float * minB;
+    int minB_len;
+    // M4_ARRAY_DESC("maxY", "f32", M4_SIZE(1,5), M4_RANGE(0,255), "0", M4_DIGIT(4), M4_DYNAMIC(1))
+    float * maxY;
+    int maxY_len;
+    // M4_ARRAY_DESC("minY", "f32", M4_SIZE(1,5), M4_RANGE(0,255), "0", M4_DIGIT(4), M4_DYNAMIC(1))
+    float *minY;
+    int minY_len;
+} CalibDbV2_Awb_Limit_Range_V32_t;
+
+
+typedef struct CalibDbV2_Wb_Awb_Para_V32_t {
+    // M4_STRUCT_DESC("rawSelectPara", "normal_ui_style")
+    CalibDbV2_Awb_Raw_Select_t rawSelectPara;//hdrFrameChoose;
+    // M4_STRUCT_DESC("blc", "normal_ui_style")
+    CalibDbV2_Awb_Blc_t blc2ForAwb;
+    // M4_BOOL_DESC("lscBypassEnable", "0");
+    bool                lscBypassEnable;
+    // M4_BOOL_DESC("uvDetectionEnable", "0");
+    bool                uvDetectionEnable;
+    // M4_BOOL_DESC("xyDetectionEnable", "0");
+    bool                xyDetectionEnable;
+    // M4_BOOL_DESC("yuvDetectionEnable", "0");
+    bool                yuvDetectionEnable;
+    // M4_BOOL_DESC("blkStatisticsEnable", "0");
+    bool                blkStatisticsEnable;
+    // M4_ENUM_DESC("downScaleMode", "CalibDbV2_Awb_Down_Scale_Mode_t", "CALIB_AWB_DS_8X8")
+    CalibDbV2_Awb_Down_Scale_Mode_t       downScaleMode;
+    // M4_ENUM_DESC("blkMeasureMode", "CalibDbV2_Awb_Blk_Stat_Mode_V21_t", "CALIB_AWB_BLK_STAT_MODE_REALWP_V201")
+    CalibDbV2_Awb_Blk_Stat_Mode_V21_t      blkMeasureMode;
+    // M4_STRUCT_DESC("mainWindow", "normal_ui_style")
+    CalibDbV2_StatWindow_t mainWindow;
+    // M4_ARRAY_TABLE_DESC("limitRange", "array_table_ui", M4_INDEX_DEFAULT)
+    CalibDbV2_Awb_Limit_Range_V32_t limitRange;
+    // M4_STRUCT_DESC("rgb2TcsPara", "normal_ui_style", M4_HIDE(1))
+    CalibDbV2_Rgb2Tcs_t rgb2TcsPara;
+    // M4_ARRAY_DESC("rgb2RotationYuvMat", "f32", M4_SIZE(4,4), M4_RANGE(-255,255), "0", M4_DIGIT(6), M4_DYNAMIC(0), M4_HIDE(1))
+    float rgb2RotationYuvMat[16];
+    //several winow in uv or xy domain
+    // M4_STRUCT_LIST_DESC("extraWpRange", M4_SIZE(1,7), "normal_ui_style")
+    CalibDbV2_ExtRange_V32_t extraWpRange[CALD_AWB_EXCRANGE_NUM_MAX];
+    // M4_STRUCT_DESC("wpDiffLumaWeight", "normal_ui_style")
+    CalibDbV2_Awb_Luma_Weight_t wpDiffLumaWeight;
+    // M4_BOOL_DESC("wpDiffBlkWeiEnable", "0");
+    bool           wpDiffBlkWeiEnable;
+    // M4_ARRAY_DESC("wpDiffBlkWeight", "u16", M4_SIZE(15,15), M4_RANGE(0,63), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    unsigned short wpDiffBlkWeight[CALD_AWB_GRID_NUM_TOTAL];
+    // M4_STRUCT_LIST_DESC("lightSources", M4_SIZE(1,7), "normal_ui_style")
+    CalibDbV2_Awb_Light_V21_t* lightSources; //to do
+    int lightSources_len;
+} CalibDbV2_Wb_Awb_Para_V32_t;
+
+
+
+
+typedef struct CalibDbV2_Wb_Para_V32_s {
+    // M4_STRUCT_DESC("control", "normal_ui_style")
+    CalibDbV2_Wb_Para_t control;
+    // M4_STRUCT_DESC("manualPara", "normal_ui_style")
+    CalibDbV2_Wb_Mwb_Para_t manualPara;
+    // M4_STRUCT_DESC("autoPara", "normal_ui_style")
+    CalibDbV2_Wb_Awb_Para_V32_t autoPara;
+    // M4_STRUCT_DESC("autoExtPara", "normal_ui_style")
+    CalibDbV2_Wb_Awb_Ext_Com_Para_V32_t autoExtPara;
+} CalibDbV2_Wb_Para_V32_t;
 
 RKAIQ_END_DECLARE
 

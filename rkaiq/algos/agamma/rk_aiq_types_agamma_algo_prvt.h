@@ -20,32 +20,36 @@
 #ifndef _RK_AIQ_TYPES_AGAMMA_ALGO_PRVT_H_
 #define _RK_AIQ_TYPES_AGAMMA_ALGO_PRVT_H_
 
-#include "agamma/rk_aiq_types_agamma_algo_int.h"
 #include "RkAiqCalibDbTypes.h"
+#include "agamma/rk_aiq_types_agamma_algo_int.h"
+#include "amerge/rk_aiq_types_amerge_algo_prvt.h"
+#include "rk_aiq_types_agamma_hw.h"
 #include "xcam_log.h"
-
-#define LIMIT_VALUE(value,max_value,min_value)      (value > max_value? max_value : value < min_value ? min_value : value)
 
 #define ISP3X_SEGNUM_LOG_49     (2)
 #define ISP3X_SEGNUM_LOG_45     (0)
 #define ISP3X_SEGNUM_EQU_45     (1)
 
+#define GAMMA_CRUVE_MAX (4095)
+#define GAMMA_CRUVE_MIN (0)
+
+enum { GAMMA_OUT_LOG_SEGMENT = 0, GAMMA_OUT_EQ_SEGMENT = 1 };
+
 typedef struct rk_aiq_gamma_cfg_s {
     bool gamma_en;
     int gamma_out_segnum;//0:log 45 segment ; 1:equal segment ;2:log 49 segment ;
     int gamma_out_offset;
-    int gamma_table[49];
+    int gamma_table[CALIBDB_AGAMMA_KNOTS_NUM_V11];
 }  rk_aiq_gamma_cfg_t;
 
 typedef struct AgammaHandle_s {
     rk_aiq_gamma_cfg_t  agamma_config;
-#if RKAIQ_HAVE_GAMMA_V1
-    CalibDbV2_gamma_t CalibDb;
+#if RKAIQ_HAVE_GAMMA_V10
+    rk_aiq_gamma_v10_attr_t agammaAttrV10;
 #endif
-#if RKAIQ_HAVE_GAMMA_V2
-    CalibDbV2_gamma_V30_t CalibDb;
+#if RKAIQ_HAVE_GAMMA_V11
+    rk_aiq_gamma_v11_attr_t agammaAttrV11;
 #endif
-    rk_aiq_gamma_attr_t agammaAttr;
     AgammaProcRes_t ProcRes;
     int working_mode;
     int prepare_type;

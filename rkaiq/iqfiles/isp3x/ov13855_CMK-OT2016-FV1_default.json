@@ -887,7 +887,7 @@
 								}
 							}
 						},
-						"agamma_calib_V30":	{
+						"agamma_calib_V11":	{
 							"GammaTuningPara":	{
 								"Gamma_en":	1,
 								"Gamma_out_offset":	0,
@@ -1805,7 +1805,7 @@
 								"lutAll_len":	1
 							}
 						},
-						"adehaze_calib_v30":	{
+						"adehaze_calib_V11":	{
 							"DehazeTuningPara":	{
 								"Enable":	1,
 								"cfg_alpha":	0,
@@ -1900,7 +1900,7 @@
 								}
 							}
 						},
-						"adrc_calib_V2":	{
+						"adrc_calib_V11":	{
 							"DrcTuningPara":	{
 								"Enable":	0,
 								"DrcGain":	{
@@ -2170,44 +2170,58 @@
 										"zoom_idx":	0,
 										"measiso":	[{
 												"iso":	50,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	100,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	200,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	400,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	800,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	1600,
-												"idx":	1
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	3200,
-												"idx":	1
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	6400,
-												"idx":	1
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	12800,
-												"idx":	1
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	25600,
-												"idx":	1
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	51200,
-												"idx":	1
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	102400,
-												"idx":	1
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	204800,
-												"idx":	1
-											}]
+												"idx":	1,
+												"spotlt_scene_idx":	1
+											}],
+										"measiso_len": 13
 									}],
 								"zoom_meas_len":	1,
 								"meascfg_tbl":	[{
@@ -2273,7 +2287,7 @@
 								"meascfg_tbl_len":	2
 							}
 						},
-						"amerge_calib_V2":	{
+						"amerge_calib_V11":	{
 							"MergeTuningPara":	{
 								"BaseFrm":	"BASEFRAME_LONG",
 								"ByPassThr":	0,
@@ -2326,76 +2340,96 @@
 								}
 							}
 						},
-						"cac_calib":	{
-							"SettingPara":	{
-								"enable":	0,
-								"psf_path":	"/etc/iqfiles/cac/cac_map_64x48x34_br0.bin",
-								"psf_shift_bits":	2,
-								"center_en":	0,
-								"center_x":	0,
-								"center_y":	0
-							},
-							"TuningPara":	{
-								"SettingByIso":	[{
-										"iso":	50,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	100,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	200,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	400,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	800,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	1600,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	3200,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	6400,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	12800,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	25600,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	51200,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	102400,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	204800,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}, {
-										"iso":	422400,
-										"bypass":	0,
-										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}],
-								"SettingByIso_len":	14
-							}
-						},
+                        "cac_v03":	{
+                            "SettingPara":	{
+                                "enable":	0
+                            },
+                            "TuningPara":	{
+                                "SettingByIso":	[{
+                                    "iso":	0,
+                                    "bypass":	0,
+                                    "AutoHighLightDetect":	0,
+                                    "AutoHighLightOffset":	0,
+                                    "FixHighLightBase":	0,
+                                    "YCompensate":	0,
+                                    "AutoStrengthU":	0,
+                                    "AutoStrengthV":	0,
+                                    "GrayStrengthU":	0,
+                                    "GrayStrengthV":	0
+                                }],
+                                "SettingByIso_len":	1
+                            }
+                        },
+                        "cac_v10": {
+                            "SettingPara": {
+                                "enable": 1,
+                                "psf_path":	"/etc/iqfiles/cac_map_42x24x34.bin",
+                                "psf_shift_bits": 2,
+                                "center_en": 0,
+                                "center_x":	0,
+                                "center_y":	0
+                            },
+                            "TuningPara": {
+                                "SettingByIso": [{
+                                    "iso": 50,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 100,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 200,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 400,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 800,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 1600,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 3200,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 6400,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 12800,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 25600,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 51200,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 102400,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 204800,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 409600,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }],
+                                "SettingByIso_len": 14
+                            }
+                        },
 						"bayer2dnr_v2":	{
 							"Version":	"",
 							"CalibPara":	{

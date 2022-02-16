@@ -39,6 +39,7 @@ public:
     virtual XCamReturn poll_event_ready (uint32_t sequence, int type);
     virtual XCamReturn poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_index);
 protected:
+    using CamHwIsp20::poll_buffer_ready;
     virtual XCamReturn init_mipi_devices(rk_sensor_full_info_t *s_info);
     void parse_rk_rawdata(void *rawdata, struct rk_aiq_vbuf *vbuf);
     void parse_rk_rawfile(FILE *fp, struct rk_aiq_vbuf *vbuf);
@@ -58,56 +59,56 @@ class FakeCamHwIsp21 : virtual public CamHwIsp21, virtual public FakeCamHwIsp20 
 public:
     explicit FakeCamHwIsp21();
     virtual ~FakeCamHwIsp21();
-    virtual XCamReturn init(const char* sns_ent_name);
-    virtual XCamReturn prepare(uint32_t width, uint32_t height, int mode, int t_delay, int g_delay);
-    virtual XCamReturn enqueueRawBuffer(void *rawdata, bool sync);
-    virtual XCamReturn enqueueRawFile(const char *path);
-    virtual XCamReturn registRawdataCb(void (*callback)(void *));
-    virtual XCamReturn rawdataPrepare(rk_aiq_raw_prop_t prop);
-    virtual XCamReturn poll_event_ready (uint32_t sequence, int type);
-    virtual XCamReturn poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_index) {
+    virtual XCamReturn init(const char* sns_ent_name) override;
+    virtual XCamReturn prepare(uint32_t width, uint32_t height, int mode, int t_delay, int g_delay) override;
+    virtual XCamReturn enqueueRawBuffer(void *rawdata, bool sync) override;
+    virtual XCamReturn enqueueRawFile(const char *path) override;
+    virtual XCamReturn registRawdataCb(void (*callback)(void *)) override;
+    virtual XCamReturn rawdataPrepare(rk_aiq_raw_prop_t prop) override;
+    virtual XCamReturn poll_event_ready (uint32_t sequence, int type) override;
+    virtual XCamReturn poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_index) override {
             return FakeCamHwIsp20::poll_buffer_ready(buf, dev_index);
     }
 private:
-
+    using CamHwIsp20::poll_buffer_ready;
 };
 
 class FakeCamHwIsp3x : virtual public CamHwIsp3x, virtual public FakeCamHwIsp20 {
 public:
     explicit FakeCamHwIsp3x();
     virtual ~FakeCamHwIsp3x();
-    virtual XCamReturn init(const char* sns_ent_name);
-    virtual XCamReturn prepare(uint32_t width, uint32_t height, int mode, int t_delay, int g_delay);
-    virtual XCamReturn enqueueRawBuffer(void *rawdata, bool sync);
-    virtual XCamReturn enqueueRawFile(const char *path);
-    virtual XCamReturn registRawdataCb(void (*callback)(void *));
-    virtual XCamReturn rawdataPrepare(rk_aiq_raw_prop_t prop);
-    virtual XCamReturn poll_event_ready (uint32_t sequence, int type);
-    virtual XCamReturn poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_index) {
+    virtual XCamReturn init(const char* sns_ent_name) override;
+    virtual XCamReturn prepare(uint32_t width, uint32_t height, int mode, int t_delay, int g_delay) override;
+    virtual XCamReturn enqueueRawBuffer(void *rawdata, bool sync) override;
+    virtual XCamReturn enqueueRawFile(const char *path) override;
+    virtual XCamReturn registRawdataCb(void (*callback)(void *)) override;
+    virtual XCamReturn rawdataPrepare(rk_aiq_raw_prop_t prop) override;
+    virtual XCamReturn poll_event_ready (uint32_t sequence, int type) override;
+    virtual XCamReturn poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_index) override {
             return FakeCamHwIsp20::poll_buffer_ready(buf, dev_index);
     }
 private:
-
+    using CamHwIsp20::poll_buffer_ready;
 };
 
 class FakeCamHwIsp32 : virtual public CamHwIsp32, virtual public FakeCamHwIsp20 {
 public:
     explicit FakeCamHwIsp32();
     virtual ~FakeCamHwIsp32();
-    virtual XCamReturn init(const char* sns_ent_name);
-    virtual XCamReturn prepare(uint32_t width, uint32_t height, int mode, int t_delay, int g_delay);
-    virtual XCamReturn enqueueRawBuffer(void *rawdata, bool sync);
-    virtual XCamReturn enqueueRawFile(const char *path);
-    virtual XCamReturn registRawdataCb(void (*callback)(void *));
-    virtual XCamReturn rawdataPrepare(rk_aiq_raw_prop_t prop);
-    virtual XCamReturn poll_event_ready (uint32_t sequence, int type);
-    virtual XCamReturn poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_index) {
+    virtual XCamReturn init(const char* sns_ent_name) override;
+    virtual XCamReturn prepare(uint32_t width, uint32_t height, int mode, int t_delay, int g_delay) override;
+    virtual XCamReturn enqueueRawBuffer(void *rawdata, bool sync) override;
+    virtual XCamReturn enqueueRawFile(const char *path) override;
+    virtual XCamReturn registRawdataCb(void (*callback)(void *)) override;
+    virtual XCamReturn rawdataPrepare(rk_aiq_raw_prop_t prop) override;
+    virtual XCamReturn poll_event_ready (uint32_t sequence, int type) override;
+    virtual XCamReturn poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_index) override {
             return FakeCamHwIsp20::poll_buffer_ready(buf, dev_index);
     }
 private:
-
+    using CamHwIsp20::poll_buffer_ready;
 };
 
 
-};
+}
 #endif

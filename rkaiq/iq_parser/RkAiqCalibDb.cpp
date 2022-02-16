@@ -710,7 +710,7 @@ void RkAiqCalibDb::parseXmlandWriteXml(char* iqFile)
 }
 
 
-}; //namespace RkCam
+} //namespace RkCam
 
 
 

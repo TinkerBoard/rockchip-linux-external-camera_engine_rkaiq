@@ -105,12 +105,11 @@ XCamReturn illuminant_index_candidate_ccm(int light_num, const CalibDbV2_Ccm_Acc
         LOGE_ACCM(" Illuminant Profile does not exit  !!!\n");
         return ret;
     }
-    LOGD_ACCM( "==================Illu Probability=========================\n");
-    LOGD_ACCM( " wbGain: %f, %f \n",awbGain[0], awbGain[1] );
+    LOGD_ACCM("wbGain: %f, %f \n", nRG, nBG);
     memset(prob, 0, light_num*sizeof(float));
     if (light_num == 1) {
         prob[0] =1;
-        LOGD_ACCM( " Only one illuminant profile: Illu Name is %s, prob = %f \n", illAll[0].name, prob[0]);
+        LOGD_ACCM(" Only one illuminant profile: %s\n", illAll[0].name);
         ret = XCAM_RETURN_NO_ERROR;}
     else {
         float mean_dist = 0;
@@ -130,8 +129,8 @@ XCamReturn illuminant_index_candidate_ccm(int light_num, const CalibDbV2_Ccm_Acc
         }
         if (minDist  < illAll[idx].minDist) {
             prob[idx] = 1;
-            LOGD_ACCM( " Illu Name: %s(%d), dist = %f, prob = %f \n", illAll[idx].name, idx,  dist[idx], prob[idx]);
-            LOGD_ACCM( "=======================================================\n");
+            LOGD_ACCM(" pick Illu: %s, dist = %f, prob = %f \n", illAll[idx].name, dist[idx],
+                      prob[idx]);
             ret = XCAM_RETURN_NO_ERROR;
             LOG1_ACCM( "%s: (exit)\n", __FUNCTION__);
             return ret;
@@ -150,17 +149,16 @@ XCamReturn illuminant_index_candidate_ccm(int light_num, const CalibDbV2_Ccm_Acc
             }
             // normalize prob
             float new_sum_prob = 0;
-            LOGD_ACCM( " prob_limit =  %f \n",prob_limit);
             for(int i = 0; i < light_num; i++) {
                 float prob_tmp;
                 prob_tmp = prob[i]/sum_prob;
-                LOGD_ACCM( " Illu Name: %s(%d), dist = %f, ori prob = %f \n", illAll[i].name, i,  dist[i], prob_tmp);
+                LOGD_ACCM(" Illu Name: %s, dist = %f, ori prob = %f \n", illAll[i].name, dist[i],
+                          prob_tmp);
                 if (prob_tmp < prob_limit ) {
                     prob[i] = 0;
                 }
                 new_sum_prob += prob[i];
             }
-            LOGD_ACCM( "------------------------------------\n");
             if (fabs(new_sum_prob)<DIVMIN) {
                 LOGE_ACCM(" prob_limit is too large  !!!\n");
                 float max_prob = DIVMIN;
@@ -173,7 +171,7 @@ XCamReturn illuminant_index_candidate_ccm(int light_num, const CalibDbV2_Ccm_Acc
                 }
                 memset(prob, 0, light_num*sizeof(float));
                 prob[maxprob_idx] = 1;
-                LOGD_ACCM(" pick max prob illu : %s(%d), dist = %f, ori prob = %f \n", illAll[maxprob_idx].name, maxprob_idx,  dist[maxprob_idx], prob[maxprob_idx]);
+                LOGD_ACCM(" pick max prob illu : %s \n", illAll[maxprob_idx].name);
             } else {
                 float *prob_test = (float*)malloc(light_num*sizeof(float));
                 memset(prob_test, 0, light_num*sizeof(float));
@@ -184,13 +182,14 @@ XCamReturn illuminant_index_candidate_ccm(int light_num, const CalibDbV2_Ccm_Acc
                         prob_test[i] = 0;
                     fsum_prob += prob_test[i];
                 }
-                if (fabs(fsum_prob)<DIVMIN)
+                if (fabs(fsum_prob)<DIVMIN) {
                     fsum_prob = new_sum_prob;
-                else
+                } else {
                     memcpy(prob,  prob_test, light_num*sizeof(float));
+                }
                 for(int i = 0; i < light_num; i++) {
                     prob[i] = prob[i]/fsum_prob;
-                    LOGD_ACCM( " Illu Name: %s(%d), dist = %f, prob = %f \n", illAll[i].name, i,  dist[i], prob[i]);
+                    LOGD_ACCM(" Illu Name: %s, prob = %f \n", illAll[i].name, prob[i]);
                 }
                 free(prob_test);
                 prob_test = NULL;
@@ -198,14 +197,14 @@ XCamReturn illuminant_index_candidate_ccm(int light_num, const CalibDbV2_Ccm_Acc
         }
         else {
             prob[default_illu_idx] = 1;
-            LOGD_ACCM( " All dist values are equal, pick Default Illu: %s(%d), dist = %f, prob = %f \n", illAll[default_illu_idx].name, default_illu_idx,  dist[default_illu_idx], prob[default_illu_idx]);
+            LOGD_ACCM(" All dist values are equal, pick Default Illu: %s\n",
+                      illAll[default_illu_idx].name);
         }
 
         ret = XCAM_RETURN_NO_ERROR;
     }
     if(ret != XCAM_RETURN_NO_ERROR)
             LOGE_ACCM(" Fail to get Illuminant Probability !!!\n");
-    LOGD_ACCM( "=======================================================\n");
     LOG1_ACCM( "%s: (exit)\n", __FUNCTION__);
     return ret;
 }
@@ -263,11 +262,9 @@ XCamReturn pCcmMatrixAll_init(accm_context_t* accm_context, const CalibDbV2_Ccm_
                       accm_context->pCcmMatrixAll[i][j]->ccMatrix[6],
                       accm_context->pCcmMatrixAll[i][j]->ccMatrix[7],
                       accm_context->pCcmMatrixAll[i][j]->ccMatrix[8]);
-            LOGV_ACCM("CCM name  %s off:%f,%f,%f  \n", name,
-                      accm_context->pCcmMatrixAll[i][j]->ccOffsets[0],
+            LOGV_ACCM("off:%f,%f,%f  \n", accm_context->pCcmMatrixAll[i][j]->ccOffsets[0],
                       accm_context->pCcmMatrixAll[i][j]->ccOffsets[1],
                       accm_context->pCcmMatrixAll[i][j]->ccOffsets[2]);
-
         }
         // order ccm-profiles by saturation
         ret = AwbOrderCcmProfilesBySaturation(accm_context->pCcmMatrixAll[i],
@@ -639,12 +636,8 @@ static void StableIlluEstimation(List l, int listSize, int illuNum, float varian
     LOGV_ACCM("final estmination illu is %d\n", *newIllu);
 }
 
-XCamReturn interpCCMbywbgain
-(
-    const CalibDbV2_Ccm_Para_V2_t *pCcm,
-    accm_handle_t hAccm,
-    float fSaturation
-) {
+XCamReturn interpCCMbywbgain(const CalibDbV2_Ccm_Tuning_Para_t* pCcm, accm_handle_t hAccm,
+                             float fSaturation) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     //1) estimate illuminant prob
     float probfSaturation = 0;
@@ -653,28 +646,29 @@ XCamReturn interpCCMbywbgain
 
     memset(hAccm->accmRest.undampedCcmMatrix, 0, sizeof(hAccm->accmRest.undampedCcmMatrix));
     memset(hAccm->accmRest.undampedCcOffset, 0, sizeof(hAccm->accmRest.undampedCcOffset));
-    float *prob = (float*)malloc(pCcm->TuningPara.aCcmCof_len*sizeof(float));
-    ret = illuminant_index_candidate_ccm(pCcm->TuningPara.aCcmCof_len, pCcm->TuningPara.aCcmCof,
-                        hAccm->accmSwInfo.awbGain, pCcm->TuningPara.illu_estim.default_illu,
-                        pCcm->TuningPara.illu_estim.prob_limit, pCcm->TuningPara.illu_estim.weightRB, prob);
+    float* prob = (float*)malloc(pCcm->aCcmCof_len * sizeof(float));
+    ret         = illuminant_index_candidate_ccm(
+        pCcm->aCcmCof_len, pCcm->aCcmCof, hAccm->accmSwInfo.awbGain, pCcm->illu_estim.default_illu,
+        pCcm->illu_estim.prob_limit, pCcm->illu_estim.weightRB, prob);
     RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
 
     // calculate stable prob
-    int problistsize = pCcm->TuningPara.illu_estim.frame_no*pCcm->TuningPara.aCcmCof_len;
-    for (int i = 0; i < pCcm->TuningPara.aCcmCof_len; i++)
+    int problistsize = pCcm->illu_estim.frame_no * pCcm->aCcmCof_len;
+    for (int i = 0; i < pCcm->aCcmCof_len; i++)
         UpdateIlluProbList(&hAccm->accmRest.problist, i, prob[i], problistsize);
-    int frames = (int)hAccm->count > (pCcm->TuningPara.illu_estim.frame_no-1) ? pCcm->TuningPara.illu_estim.frame_no : hAccm->count;//todo
+    int frames = (int)hAccm->count > (pCcm->illu_estim.frame_no - 1) ? pCcm->illu_estim.frame_no
+                                                                     : hAccm->count;  // todo
 
-    StableProbEstimation(hAccm->accmRest.problist, problistsize, frames, pCcm->TuningPara.aCcmCof_len, prob);
+    StableProbEstimation(hAccm->accmRest.problist, problistsize, frames, pCcm->aCcmCof_len, prob);
 
     // 2) all illuminant do interp by fSaturation
     float undampedCcmMatrix[9];
     float undampedCcOffset[3];
-    for (int i = 0; i < pCcm->TuningPara.aCcmCof_len; i++){
+    for (int i = 0; i < pCcm->aCcmCof_len; i++) {
         if (fabs(prob[i])<DIVMIN)
             continue;
         //     (1) get IlluProfiles of Candidate illuminants, and calculate fSaturation
-        const CalibDbV2_Ccm_Accm_Cof_Para_t* pDomIlluProfile = &pCcm->TuningPara.aCcmCof[i];
+        const CalibDbV2_Ccm_Accm_Cof_Para_t* pDomIlluProfile = &pCcm->aCcmCof[i];
         interpolation(pDomIlluProfile->gain_sat_curve.gains,
                         pDomIlluProfile->gain_sat_curve.sat,
                         4,
@@ -685,17 +679,23 @@ XCamReturn interpCCMbywbgain
                                     &pCcmProfile1, &pCcmProfile2);
         if (ret == XCAM_RETURN_NO_ERROR) {
             XCamReturn ret1 = XCAM_RETURN_NO_ERROR;
-            if (pCcmProfile1 && pCcmProfile2)
-                LOGV_ACCM("No.%d Illu : %s interp by sat, final fSaturation: %f (%f .. %f)\n",   i,  pDomIlluProfile->name, fSaturation, pCcmProfile1->saturation, pCcmProfile2->saturation);
-            ret = SatInterpolateMatrices(fSaturation, pCcmProfile1, pCcmProfile2, undampedCcmMatrix);
-            ret1 = SatInterpolateOffset(fSaturation, pCcmProfile1, pCcmProfile2, undampedCcOffset);
-            if ((ret != XCAM_RETURN_NO_ERROR) && (ret1 != XCAM_RETURN_NO_ERROR)) {
-                free(prob);
-                return (ret);
+            if (pCcmProfile1 && pCcmProfile2) {
+                LOGV_ACCM("Illu : %s interp by sat, final fSaturation: %f (%f .. %f)\n",
+                          pDomIlluProfile->name, fSaturation, pCcmProfile1->saturation,
+                          pCcmProfile2->saturation);
+                ret = SatInterpolateMatrices(fSaturation, pCcmProfile1, pCcmProfile2,
+                                             undampedCcmMatrix);
+                ret1 =
+                    SatInterpolateOffset(fSaturation, pCcmProfile1, pCcmProfile2, undampedCcOffset);
+                if ((ret != XCAM_RETURN_NO_ERROR) && (ret1 != XCAM_RETURN_NO_ERROR)) {
+                    free(prob);
+                    return (ret);
+                }
             }
         } else if (ret == XCAM_RETURN_ERROR_OUTOFRANGE) {
             /* we don't need to interpolate */
-            LOGV_ACCM("No.%d Illu : %s, final fSaturation: %f (%f)\n",  i,  pDomIlluProfile->name, fSaturation, pCcmProfile1->saturation);
+            LOGV_ACCM("Illu : %s, final fSaturation: %f (%f)\n", pDomIlluProfile->name, fSaturation,
+                      pCcmProfile1->saturation);
             memcpy(undampedCcmMatrix, pCcmProfile1->ccMatrix, sizeof(float)*9);
             memcpy(undampedCcOffset, pCcmProfile1->ccOffsets, sizeof(float)*3);
         } else {
@@ -719,12 +719,8 @@ XCamReturn interpCCMbywbgain
     return ret;
 }
 
-XCamReturn selectCCM
-(
-    const CalibDbV2_Ccm_Para_V2_t *pCcm,
-    accm_handle_t hAccm,
-    float fSaturation
-) {
+XCamReturn selectCCM(const CalibDbV2_Ccm_Tuning_Para_t* pCcm, accm_handle_t hAccm,
+                     float fSaturation) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     const CalibDbV2_Ccm_Ccm_Matrix_Para_t* pCcmProfile1 = NULL;
@@ -732,18 +728,19 @@ XCamReturn selectCCM
     int dominateIlluProfileIdx;
     int dominateIlluListSize = 15;//to do from xml;
     float varianceLumaTh = 0.006;//to do from xml;
-    ret = illuminant_index_estimation_ccm(pCcm->TuningPara.aCcmCof_len, pCcm->TuningPara.aCcmCof,
-                                        hAccm->accmSwInfo.awbGain, &dominateIlluProfileIdx);
+    ret                      = illuminant_index_estimation_ccm(pCcm->aCcmCof_len, pCcm->aCcmCof,
+                                          hAccm->accmSwInfo.awbGain, &dominateIlluProfileIdx);
     RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
     UpdateDominateIlluList(&hAccm->accmRest.dominateIlluList, dominateIlluProfileIdx, dominateIlluListSize);
-    StableIlluEstimation(hAccm->accmRest.dominateIlluList, dominateIlluListSize, pCcm->TuningPara.aCcmCof_len,
-        hAccm->accmSwInfo.varianceLuma ,varianceLumaTh, hAccm->accmSwInfo.awbConverged,
-        hAccm->accmRest.dominateIlluProfileIdx, &dominateIlluProfileIdx);
+    StableIlluEstimation(hAccm->accmRest.dominateIlluList, dominateIlluListSize, pCcm->aCcmCof_len,
+                         hAccm->accmSwInfo.varianceLuma, varianceLumaTh,
+                         hAccm->accmSwInfo.awbConverged, hAccm->accmRest.dominateIlluProfileIdx,
+                         &dominateIlluProfileIdx);
 
     hAccm->accmRest.dominateIlluProfileIdx = dominateIlluProfileIdx;
 
     // 2)
-    const CalibDbV2_Ccm_Accm_Cof_Para_t* pDomIlluProfile = &pCcm->TuningPara.aCcmCof[dominateIlluProfileIdx];
+    const CalibDbV2_Ccm_Accm_Cof_Para_t* pDomIlluProfile = &pCcm->aCcmCof[dominateIlluProfileIdx];
     interpolation(pDomIlluProfile->gain_sat_curve.gains,
                     pDomIlluProfile->gain_sat_curve.sat,
                     4,
@@ -752,19 +749,21 @@ XCamReturn selectCCM
     hAccm->accmRest.fSaturation =  fSaturation;
 
     //3)
-    ret = SatSelectCcmProfiles( hAccm->accmRest.fSaturation, pDomIlluProfile->matrixUsed_len, hAccm->pCcmMatrixAll[dominateIlluProfileIdx],
-                                &pCcmProfile1, &pCcmProfile2);
+    ret = SatSelectCcmProfiles(hAccm->accmRest.fSaturation, pDomIlluProfile->matrixUsed_len,
+                               hAccm->pCcmMatrixAll[dominateIlluProfileIdx], &pCcmProfile1,
+                               &pCcmProfile2);
     if (ret == XCAM_RETURN_NO_ERROR) {
-        if (pCcmProfile1 && pCcmProfile2)
-            LOGD_ACCM("final fSaturation: %f (%f .. %f)\n",   hAccm->accmRest.fSaturation, pCcmProfile1->saturation, pCcmProfile2->saturation);
-        ret = SatInterpolateMatrices( hAccm->accmRest.fSaturation, pCcmProfile1, pCcmProfile2,
-                                        hAccm->accmRest.undampedCcmMatrix);
-        RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
+        if (pCcmProfile1 && pCcmProfile2) {
+            LOGD_ACCM("final fSaturation: %f (%f .. %f)\n", hAccm->accmRest.fSaturation,
+                      pCcmProfile1->saturation, pCcmProfile2->saturation);
+            ret = SatInterpolateMatrices(hAccm->accmRest.fSaturation, pCcmProfile1, pCcmProfile2,
+                                         hAccm->accmRest.undampedCcmMatrix);
+            RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
 
-        ret = SatInterpolateOffset( hAccm->accmRest.fSaturation, pCcmProfile1, pCcmProfile2,
-                                    hAccm->accmRest.undampedCcOffset);
-        RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
-
+            ret = SatInterpolateOffset(hAccm->accmRest.fSaturation, pCcmProfile1, pCcmProfile2,
+                                       hAccm->accmRest.undampedCcOffset);
+            RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
+        }
     } else if (ret == XCAM_RETURN_ERROR_OUTOFRANGE) {
         /* we don't need to interpolate */
         LOGD_ACCM("final fSaturation: %f (%f)\n",   hAccm->accmRest.fSaturation, pCcmProfile1->saturation);

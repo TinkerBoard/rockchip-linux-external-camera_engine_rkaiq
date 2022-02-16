@@ -48,10 +48,10 @@ public:
     RkAiqResourceTranslatorV3x& SetPicInfo(RkAiqResourceTranslatorV3x::Rectangle&& pic_rect);
     RkAiqResourceTranslatorV3x& SetLeftIspRect(RkAiqResourceTranslatorV3x::Rectangle&& left_isp_rect);
     RkAiqResourceTranslatorV3x& SetRightIspRect(RkAiqResourceTranslatorV3x::Rectangle&& right_isp_rect);
-    const bool IsMultiIspMode() const;
-    const RkAiqResourceTranslatorV3x::Rectangle& GetPicInfo() const;
-    const RkAiqResourceTranslatorV3x::Rectangle& GetLeftIspRect() const;
-    const RkAiqResourceTranslatorV3x::Rectangle& GetRightIspRect() const;
+    bool IsMultiIspMode() const;
+    RkAiqResourceTranslatorV3x::Rectangle GetPicInfo();
+    RkAiqResourceTranslatorV3x::Rectangle GetLeftIspRect();
+    RkAiqResourceTranslatorV3x::Rectangle GetRightIspRect();
 
     virtual XCamReturn translateAecStats (const SmartPtr<VideoBuffer> &from,
                                           SmartPtr<RkAiqAecStatsProxy> &to);

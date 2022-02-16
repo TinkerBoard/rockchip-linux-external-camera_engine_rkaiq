@@ -202,6 +202,9 @@ CamHwIsp3x::gen_full_isp_params(const struct isp3x_isp_params_cfg* update_params
             case Rk_ISP2x_CSM_ID:
                 CHECK_UPDATE_PARAMS(full_params->others.csm_cfg, update_params->others.csm_cfg);
                 break;
+            case Rk_ISP2x_CGC_ID:
+                CHECK_UPDATE_PARAMS(full_params->others.cgc_cfg, update_params->others.cgc_cfg);
+                break;
             default:
                 break;
             }
@@ -218,7 +221,7 @@ CamHwIsp3x::setIspConfig()
     ENTER_CAMHW_FUNCTION();
 
     SmartPtr<V4l2Buffer> v4l2buf;
-    uint32_t frameId = -1;
+    uint32_t frameId = (uint32_t)(-1);
 
     {
         SmartLock locker (_isp_params_cfg_mutex);
@@ -242,7 +245,7 @@ CamHwIsp3x::setIspConfig()
         return XCAM_RETURN_ERROR_PARAM;
     }
 
-    LOGD_ANALYZER("----------%s, start config id(%d)'s isp params", __FUNCTION__, frameId);
+    LOGD_ANALYZER("----------%s, start config id(%u)'s isp params", __FUNCTION__, frameId);
 
     struct isp3x_isp_params_cfg update_params[2];
     memset(update_params, 0, sizeof(struct isp3x_isp_params_cfg)*2);
@@ -263,7 +266,7 @@ CamHwIsp3x::setIspConfig()
         _full_active_isp3x_params.module_cfg_update = 0;
     }
 
-    if (frameId >= 0) {
+    if (frameId != (uint32_t)(-1)) {
         SmartPtr<cam3aResult> awb_res = get_3a_module_result(ready_results, RESULT_TYPE_AWB_PARAM);
         SmartPtr<RkAiqIspAwbParamsProxyV3x> awbParams;
         if (awb_res.ptr()) {
@@ -310,7 +313,7 @@ CamHwIsp3x::setIspConfig()
 
     // TODO: merge_isp_results would cause the compile warning: reference to merge_isp_results is ambiguous
     // now use Isp21Params::merge_isp_results instead
-    if (Isp3xParams::merge_isp_results(ready_results, update_params) != XCAM_RETURN_NO_ERROR)
+    if (Isp3xParams::merge_isp_results(ready_results, update_params, mIsMultiIspMode) != XCAM_RETURN_NO_ERROR)
         LOGE_CAMHW_SUBM(ISP20HW_SUBM, "ISP parameter translation error\n");
     if(mIsMultiIspMode == false) {
         Isp3xParams::fixedAwbOveflowToIsp3xParams(update_params, mIsMultiIspMode);
@@ -320,11 +323,12 @@ CamHwIsp3x::setIspConfig()
     gen_full_isp_params(update_params, &_full_active_isp3x_params,
                         &module_en_update_partial, &module_cfg_update_partial);
 
-    if (_state == CAM_HW_STATE_STOPPED)
+    if (_state == CAM_HW_STATE_STOPPED) {
         LOGD_CAMHW_SUBM(ISP20HW_SUBM, "ispparam ens 0x%llx, en_up 0x%llx, cfg_up 0x%llx",
                         _full_active_isp3x_params.module_ens,
                         _full_active_isp3x_params.module_en_update,
                         _full_active_isp3x_params.module_cfg_update);
+    }
 #ifdef RUNTIME_MODULE_DEBUG
     _full_active_isp3x_params.module_en_update &= ~g_disable_isp_modules_en;
     _full_active_isp3x_params.module_ens |= g_disable_isp_modules_en;
@@ -391,13 +395,13 @@ CamHwIsp3x::setIspConfig()
 
         {
             SmartLock locker(_isp_params_cfg_mutex);
-            if (frameId < 0) {
+            if (frameId == (uint32_t)(-1)) {
                 _effecting_ispparam_map[0].isp_params_v3x[0] = _full_active_isp3x_params;
             } else {
                 _effecting_ispparam_map[frameId].isp_params_v3x[0] = _full_active_isp3x_params;
             }
             if (isMultiIsp) {
-                if (frameId < 0) {
+                if (frameId == (uint32_t)(-1)) {
                     _effecting_ispparam_map[0].isp_params_v3x[1] = isp_params[0];
                     _effecting_ispparam_map[0].isp_params_v3x[2] = isp_params[1];
                 } else {
@@ -431,4 +435,4 @@ CamHwIsp3x::setIspConfig()
     return ret;
 }
 
-};
+}

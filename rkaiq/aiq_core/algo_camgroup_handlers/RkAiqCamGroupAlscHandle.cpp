@@ -107,4 +107,4 @@ XCamReturn RkAiqCamGroupAlscHandleInt::queryLscInfo(
   return ret;
 }
 
-}; // namespace RkCam
+} // namespace RkCam

@@ -158,5 +158,5 @@ void SafeList<OBj>::clear ()
     }
 }
 
-};
+}
 #endif //XCAM_SAFE_LIST_H

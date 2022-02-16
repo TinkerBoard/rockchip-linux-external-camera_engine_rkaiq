@@ -19,13 +19,16 @@
 /* Auto generated file, do not modify */
 
 #cmakedefine01 RKAIQ_HAVE_YNR_V2
+#cmakedefine01 RKAIQ_HAVE_AWB_V32
 #cmakedefine01 RKAIQ_HAVE_AWB_V21
 #cmakedefine01 RKAIQ_HAVE_AWB_V20
 #cmakedefine01 RKAIQ_HAVE_GIC_V1
 #cmakedefine01 RKAIQ_HAVE_GIC_V2
 #cmakedefine01 RKAIQ_HAVE_ORB_V1
 #cmakedefine01 RKAIQ_HAVE_EIS_V1
+#cmakedefine01 RKAIQ_HAVE_CAC_V03
 #cmakedefine01 RKAIQ_HAVE_CAC_V10
+#cmakedefine01 RKAIQ_HAVE_CAC_V11
 #cmakedefine01 RKAIQ_HAVE_YNR_V1
 #cmakedefine01 RKAIQ_HAVE_YNR_V3
 #cmakedefine01 RKAIQ_HAVE_UVNR_V1
@@ -49,17 +52,32 @@
 #cmakedefine01 RKAIQ_HAVE_AF_V31
 #cmakedefine01 RKAIQ_HAVE_3DLUT_V1
 #cmakedefine01 RKAIQ_HAVE_CCM_V1
-#cmakedefine01 RKAIQ_HAVE_GAMMA_V1
-#cmakedefine01 RKAIQ_HAVE_GAMMA_V2
-#cmakedefine01 RKAIQ_HAVE_MERGE_V1
-#cmakedefine01 RKAIQ_HAVE_MERGE_V2
-#cmakedefine01 RKAIQ_HAVE_DRC_V1
-#cmakedefine01 RKAIQ_HAVE_DRC_V2
-#cmakedefine01 RKAIQ_HAVE_DEHAZE_V1
-#cmakedefine01 RKAIQ_HAVE_DEHAZE_V2
-#cmakedefine01 RKAIQ_HAVE_DEHAZE_V3
+#cmakedefine01 RKAIQ_HAVE_CCM_V2
+#cmakedefine01 RKAIQ_HAVE_GAMMA_V10
+#cmakedefine01 RKAIQ_HAVE_GAMMA_V11
+#cmakedefine01 RKAIQ_HAVE_MERGE_V10
+#cmakedefine01 RKAIQ_HAVE_MERGE_V11
+#cmakedefine01 RKAIQ_HAVE_MERGE_V12
+#cmakedefine01 RKAIQ_HAVE_DRC_V10
+#cmakedefine01 RKAIQ_HAVE_DRC_V11
+#cmakedefine01 RKAIQ_HAVE_DRC_V12
+#cmakedefine01 RKAIQ_HAVE_DEHAZE_V10
+#cmakedefine01 RKAIQ_HAVE_DEHAZE_V11
+#cmakedefine01 RKAIQ_HAVE_DEHAZE_V11_DUO
+#cmakedefine01 RKAIQ_HAVE_DEHAZE_V12
 #cmakedefine01 RKAIQ_HAVE_DEGAMMA_V1
 #cmakedefine01 RKAIQ_HAVE_TMO_V1
 #cmakedefine01 RKAIQ_HAVE_WDR_V1
-
+#cmakedefine01 RKAIQ_HAVE_LDCH_V10
+#cmakedefine01 RKAIQ_HAVE_FEC_V10
+#cmakedefine01 RKAIQ_HAVE_CSM_V1
+#cmakedefine01 RKAIQ_HAVE_CGC_V1
+#cmakedefine01 RKAIQ_HAVE_AE_V1
+#cmakedefine01 RKAIQ_HAVE_DEBAYER_V1
+#cmakedefine01 RKAIQ_HAVE_DEBAYER_V2
+#cmakedefine01 RKAIQ_HAVE_BAYER2DNR_V23
+#cmakedefine01 RKAIQ_HAVE_BAYERTNR_V23
+#cmakedefine01 RKAIQ_HAVE_YNR_V22
+#cmakedefine01 RKAIQ_HAVE_CNR_V30
+#cmakedefine01 RKAIQ_HAVE_SHARP_V33
 #endif /* RKAIQ_CONFIG_H */

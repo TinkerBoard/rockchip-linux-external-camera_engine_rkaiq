@@ -199,7 +199,7 @@ XCamReturn rk_aiq_uapi_setManualExp(const rk_aiq_sys_ctx_t* ctx, float gain, flo
 * Desc: set exposure parameter
 * Argument:
 *    auto exposure mode:
-*      exposure gain will be adjust between [gain->min, gain->max]�?*    manual exposure mode:
+*      exposure gain will be adjust between [gain->min, gain->max]锛?*    manual exposure mode:
 *      gain->min == gain->max
 *
 *****************************
@@ -271,7 +271,7 @@ XCamReturn rk_aiq_uapi_getExpGainRange(const rk_aiq_sys_ctx_t* ctx, paRange_t *g
 * Desc: set exposure parameter
 * Argument:
 *    auto exposure mode:
-*       exposure time will be adjust between [time->min, time->max]�?*    manual exposure mode:
+*       exposure time will be adjust between [time->min, time->max]锛?*    manual exposure mode:
 *       exposure time will be set gain->min == gain->max;
 *
 *****************************
@@ -1355,7 +1355,7 @@ XCamReturn rk_aiq_uapi_getOpZoomSpeed(const rk_aiq_sys_ctx_t* ctx, unsigned int 
 * Argument:
 *   mode:
 *     auto: auto noise reduction
-*     manual：manual noise reduction
+*     manual锛歮anual noise reduction
 *
 *****************************
 */
@@ -1999,7 +1999,7 @@ XCamReturn rk_aiq_uapi_setContrast(const rk_aiq_sys_ctx_t* ctx, unsigned int lev
 
     LOGD("setContrast enter, level=%d\n", level);
     acp_attrib_t attrib;
-    if (level < 0 || level > 255) {
+    if ((int)level < 0 || level > 255) {
         ret = XCAM_RETURN_ERROR_PARAM;
         RKAIQ_IMGPROC_CHECK_RET(ret, "level out of range, setContrast failed!");
     }
@@ -2050,7 +2050,7 @@ XCamReturn rk_aiq_uapi_setBrightness(const rk_aiq_sys_ctx_t* ctx, unsigned int l
     }
 
     LOGD("setBrightness enter, level=%d\n", level);
-    if (level < 0 || level > 255) {
+    if ((int)level < 0 || level > 255) {
         ret = XCAM_RETURN_ERROR_PARAM;
         RKAIQ_IMGPROC_CHECK_RET(ret, "level out of range, set brightness failed!");
     }
@@ -2099,7 +2099,7 @@ XCamReturn rk_aiq_uapi_setSaturation(const rk_aiq_sys_ctx_t* ctx, unsigned int l
     }
 
     LOGD("setSaturation enter, level=%d\n", level);
-    if (level < 0 || level > 255) {
+    if ((int)level < 0 || level > 255) {
         ret = XCAM_RETURN_ERROR_PARAM;
         RKAIQ_IMGPROC_CHECK_RET(ret, "level out of range, set saturation failed!");
     }
@@ -2148,7 +2148,7 @@ XCamReturn rk_aiq_uapi_setHue(const rk_aiq_sys_ctx_t* ctx, unsigned int level)
     }
 
     LOGD("setHue enter, level=%d\n", level);
-    if (level < 0 || level > 255) {
+    if ((int)level < 0 || level > 255) {
         ret = XCAM_RETURN_ERROR_PARAM;
         RKAIQ_IMGPROC_CHECK_RET(ret, "level out of range, set hue failed!");
     }
@@ -2197,7 +2197,7 @@ XCamReturn rk_aiq_uapi_setSharpness(const rk_aiq_sys_ctx_t* ctx, unsigned int le
     }
 
     LOGD("setSharpness enter, level=%d\n", level);
-    if (level < 0 || level > 100) {
+    if ((int)level < 0 || level > 100) {
         ret = XCAM_RETURN_ERROR_PARAM;
         RKAIQ_IMGPROC_CHECK_RET(ret, "level out of range, set sharpeness failed!");
     }

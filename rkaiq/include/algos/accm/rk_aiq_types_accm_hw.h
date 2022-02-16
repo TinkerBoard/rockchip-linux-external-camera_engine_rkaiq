@@ -24,6 +24,7 @@
 
 RKAIQ_BEGIN_DECLARE
 #define CCM_CURVE_DOT_NUM 17
+#define CCM_CURVE_DOT_NUM_V2 18
 
 typedef struct rk_aiq_ccm_cfg_s {
     bool ccmEnable;
@@ -34,6 +35,20 @@ typedef struct rk_aiq_ccm_cfg_s {
     float rgb2y_para[3];
 } rk_aiq_ccm_cfg_t;
 
+typedef struct rk_aiq_ccm_cfg_v2_s {
+    bool ccmEnable;
+    bool asym_adj_en;
+    unsigned short enh_adj_en;
+    bool highy_adj_en;
+    float matrix[9];
+    float offs[3];
+    float alp_y[CCM_CURVE_DOT_NUM_V2];
+    float right_bit;
+    float bound_bit;
+    float rgb2y_para[3];
+    unsigned char enh_rgb2y_para[3];
+    float enh_rat_max;
+} rk_aiq_ccm_cfg_v2_t;
 
 RKAIQ_END_DECLARE
 

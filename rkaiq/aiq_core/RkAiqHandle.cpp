@@ -79,7 +79,6 @@ XCamReturn RkAiqHandle::configInparamsCom(RkAiqAlgoCom* com, int type) {
         com->u.proc.nxtExp = &shared->nxtExp;
         com->u.proc.res_comb = &shared->res_comb;
     }
-out:
     EXIT_ANALYZER_FUNCTION();
 
     return XCAM_RETURN_NO_ERROR;
@@ -184,4 +183,4 @@ RkAiqHandle::sendSignal(rk_aiq_uapi_mode_sync_e sync_mode)
 
 
 
-};  // namespace RkCam
+}  // namespace RkCam

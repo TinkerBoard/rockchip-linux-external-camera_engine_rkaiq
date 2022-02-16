@@ -1,9 +1,11 @@
 #include "rk_aiq_again_algo_gain_v2.h"
 
+#include <stdint.h>
 
 uint32_t gain_float_lim2_int(float In, int bit_deci_dst, int type)
 {
-    int exp_val = (((uint32_t*)(&In))[0] >> 23) & 0xff;
+    uint8_t *in_u8 = reinterpret_cast<uint8_t *>(&In);
+    int exp_val = ((in_u8[3] << 1) & (in_u8[2] >> 7) & 0xff);
     uint32_t dst;
     int shf_bit;
     if (exp_val - 127 <= bit_deci_dst || type == 1)

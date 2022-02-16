@@ -44,9 +44,9 @@ public:
     void set_rx_format              (const struct v4l2_subdev_format& sns_sd_fmt, uint32_t sns_v4l_pix_fmt);
     void set_rx_format              (const struct v4l2_subdev_selection& sns_sd_sel, uint32_t sns_v4l_pix_fmt);
     void set_devices                (SmartPtr<V4l2SubDevice> ispdev, CamHwIsp20* handle);
-    void set_hdr_frame_readback_infos(int frame_id, int times);
-    void set_hdr_global_tmo_mode(int frame_id, bool mode);
-    void notify_sof(uint64_t time, int frameid);
+    void set_hdr_frame_readback_infos(uint32_t frame_id, int times);
+    void set_hdr_global_tmo_mode(uint32_t frame_id, bool mode);
+    void notify_sof(uint64_t time, uint32_t frameid);
     void send_sync_buf(SmartPtr<V4l2BufferProxy> &buf_s, SmartPtr<V4l2BufferProxy> &buf_m, SmartPtr<V4l2BufferProxy> &buf_l);
     bool raw_buffer_proc();
     void setMulCamConc(bool cc) {

@@ -266,6 +266,9 @@ CamHwIsp21::gen_full_isp_params(const struct isp21_isp_params_cfg* update_params
             case Rk_ISP2x_CSM_ID:
                 CHECK_UPDATE_PARAMS(full_params->others.csm_cfg, update_params->others.csm_cfg);
                 break;
+            case Rk_ISP2x_CGC_ID:
+                CHECK_UPDATE_PARAMS(full_params->others.cgc_cfg, update_params->others.cgc_cfg);
+                break;
             default:
                 break;
             }
@@ -326,7 +329,7 @@ CamHwIsp21::setIspConfig()
         _full_active_isp21_params.module_cfg_update = 0;
     }
 
-    if (frameId >= 0) {
+    if (frameId != (uint32_t)(-1)) {
         SmartPtr<cam3aResult> awb_res = get_3a_module_result(ready_results, RESULT_TYPE_AWB_PARAM);
         SmartPtr<RkAiqIspAwbParamsProxyV21> awbParams;
         if (awb_res.ptr()) {
@@ -341,15 +344,15 @@ CamHwIsp21::setIspConfig()
             SmartLock locker (_isp_params_cfg_mutex);
             if (!_effecting_ispparam_map.empty()) {
                 _effecting_ispparam_map[frameId].awb_cfg_v201 = (_effecting_ispparam_map.rbegin())->second.awb_cfg_v201;
-                LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %d awb params for frame %d !\n",
+                LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %u awb params for frame %u !\n",
                                 frameId, (_effecting_ispparam_map.rbegin())->first);
             } else {
-                LOGW_CAMHW_SUBM(ISP20HW_SUBM, "get awb params from 3a result failed for frame %d !\n", frameId);
+                LOGW_CAMHW_SUBM(ISP20HW_SUBM, "get awb params from 3a result failed for frame %u !\n", frameId);
             }
         }
     }
 
-    if (frameId >= 0) {
+    if (frameId != (uint32_t)(-1)) {
         SmartPtr<cam3aResult> af_res = get_3a_module_result(ready_results, RESULT_TYPE_AF_PARAM);
         SmartPtr<RkAiqIspAfParamsProxy> afParams;
         if (af_res.ptr()) {
@@ -370,11 +373,12 @@ CamHwIsp21::setIspConfig()
     gen_full_isp_params(&update_params, &_full_active_isp21_params,
                         &module_en_update_partial, &module_cfg_update_partial);
 
-    if (_state == CAM_HW_STATE_STOPPED)
+    if (_state == CAM_HW_STATE_STOPPED) {
         LOGD_CAMHW_SUBM(ISP20HW_SUBM, "ispparam ens 0x%llx, en_up 0x%llx, cfg_up 0x%llx",
                         _full_active_isp21_params.module_ens,
                         _full_active_isp21_params.module_en_update,
                         _full_active_isp21_params.module_cfg_update);
+    }
 #ifdef RUNTIME_MODULE_DEBUG
     _full_active_isp21_params.module_en_update &= ~g_disable_isp_modules_en;
     _full_active_isp21_params.module_ens |= g_disable_isp_modules_en;
@@ -385,7 +389,7 @@ CamHwIsp21::setIspConfig()
 
     {
         SmartLock locker (_isp_params_cfg_mutex);
-        if (frameId < 0) {
+        if (frameId == (uint32_t)(-1)) {
             _effecting_ispparam_map[0].isp_params_v21 = _full_active_isp21_params;
         } else {
             _effecting_ispparam_map[frameId].isp_params_v21 = _full_active_isp21_params;
@@ -464,4 +468,4 @@ CamHwIsp21::setIspConfig()
 }
 
 
-};
+}

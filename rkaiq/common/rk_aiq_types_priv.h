@@ -84,6 +84,8 @@ typedef struct rkisp_effect_params {
         rk_aiq_awb_stat_cfg_v200_t  awb_cfg;
         rk_aiq_awb_stat_cfg_v201_t  awb_cfg_v201;
         rk_aiq_isp_awb_meas_cfg_v3x_t awb_cfg_v3x;
+        rk_aiq_awb_stat_cfg_v32_t awb_cfg_v32;
+
     };
     rk_aiq_isp_blc_v21_t blc_cfg;
 } rkisp_effect_params_v20;
@@ -132,20 +134,19 @@ typedef rk_aiq_isp_params_t<rk_aiq_isp_tnr_v3x_t>             rk_aiq_isp_tnr_par
 
 // v32 param struct
 typedef rk_aiq_isp_params_t<rk_aiq_isp_blc_v32_t>             rk_aiq_isp_blc_params_v32_t;
-typedef rk_aiq_isp_params_t<rk_aiq_isp_merge_v32_t>           rk_aiq_isp_merge_params_v32_t;
-typedef rk_aiq_isp_params_t<rk_aiq_isp_drc_v32_t>             rk_aiq_isp_drc_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_bay3d_v32_t>           rk_aiq_isp_bay3d_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_baynr_v32_t>           rk_aiq_isp_baynr_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_cac_v32_t>             rk_aiq_isp_cac_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_debayer_v32_t>         rk_aiq_isp_debayer_params_v32_t;
-typedef rk_aiq_isp_params_t<rk_aiq_isp_ccm_v32_t>             rk_aiq_isp_ccm_params_v32_t;
-typedef rk_aiq_isp_params_t<rk_aiq_isp_dehaze_v32_t>          rk_aiq_isp_dehaze_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_ccm_cfg_v2_t>              rk_aiq_isp_ccm_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_ldch_v32_t>            rk_aiq_isp_ldch_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_ynr_v32_t>             rk_aiq_isp_ynr_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_cnr_v32_t>             rk_aiq_isp_cnr_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_sharp_v32_t>           rk_aiq_isp_sharp_params_v32_t;
-typedef rk_aiq_isp_params_t<rk_aiq_isp_awb_v32_t>             rk_aiq_isp_awb_params_v32_t;
-typedef rk_aiq_isp_params_t<rk_aiq_isp_af_v32_t>              rk_aiq_isp_af_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_awb_meas_cfg_v32_t>    rk_aiq_isp_awb_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_af_v31_t>              rk_aiq_isp_af_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_tnr_v32_t>             rk_aiq_isp_tnr_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_wb_gain_v32_t>             rk_aiq_isp_awb_gain_params_v32_t;
 
 typedef enum rk_aiq_drv_share_mem_type_e {
     MEM_TYPE_LDCH,
@@ -453,6 +454,7 @@ public:
         rk_aiq_awb_stat_res_v200_t awb_stats;
         rk_aiq_awb_stat_res_v201_t awb_stats_v201;
         rk_aiq_isp_awb_stats_v3x_t awb_stats_v3x;
+        rk_aiq_isp_awb_stats_v32_t awb_stats_v32;
     };
     bool awb_stats_valid;
     bool awb_cfg_effect_valid;
@@ -562,6 +564,10 @@ enum rk_aiq_core_analyze_type_e {
     RK_AIQ_CORE_ANALYZE_ALL                             = 0xffffffff,
 };
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 static const char* AnalyzerGroupType2Str[32]    = {
     [RK_AIQ_CORE_ANALYZE_MEAS]                  = "GRP_MEAS",
     [RK_AIQ_CORE_ANALYZE_OTHER]                 = "GRP_OTHER",
@@ -578,6 +584,9 @@ static const char* AnalyzerGroupType2Str[32]    = {
     [RK_AIQ_CORE_ANALYZE_EIS]                   = "EIS",
     [RK_AIQ_CORE_ANALYZE_ORB]                   = "ORB",
 };
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 typedef enum _RkAiqSharedDataType {
     RK_AIQ_SHARED_TYPE_INVALID,

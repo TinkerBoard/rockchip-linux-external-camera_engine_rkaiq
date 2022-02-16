@@ -141,5 +141,5 @@ error_out:
 
 DvsOps* DvsLibrary::GetOps() { return &ops_; }
 
-};  // namespace RkCam
+}  // namespace RkCam
 

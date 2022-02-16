@@ -231,4 +231,4 @@ XCamReturn RkAiqAcsmHandleInt::getAttrib(rk_aiq_uapi_acsm_attrib_t* att) {
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

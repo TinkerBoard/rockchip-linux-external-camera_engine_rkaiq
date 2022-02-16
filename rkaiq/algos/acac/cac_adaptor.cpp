@@ -1,7 +1,5 @@
 /*
- * cac_algo_adaptor.h
- *
- *  Copyright (c) 2021 Rockchip Electronics Co., Ltd.
+ *  Copyright (c) 2022 Rockchip Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,63 +17,60 @@
  */
 #include "cac_adaptor.h"
 
+#include <fcntl.h>
+
 #include <fstream>
 #include <iostream>
 
-#include "rk_aiq_types_priv.h"
-#include "xcam_log.h"
-#include <fcntl.h> 
-
 #define __STDC_FORMAT_MACROS
-#include <inttypes.h>
+#include <cinttypes>
 
-using namespace XCam;
+#include "algos/acac/lut_buffer.h"
+#include "algos/acac/rk_aiq_types_acac_algo.h"
+#include "common/rk_aiq_comm.h"
+#include "common/rk_aiq_types_priv.h"
+#include "xcore/base/xcam_log.h"
 
 namespace RkCam {
 
-#define BITS_PER_BYTE  8
-#define BYTES_PER_WORD 4
-#define BITS_PER_WORD  (BITS_PER_BYTE * BYTES_PER_WORD)
+#define RKCAC_STRENGTH_FIX_BITS    7
+#define RKCAC_EDGE_DETECT_FIX_BITS 4
+
+#define CAC_PSF_BUF_NUM 2
+#define BITS_PER_BYTE   8
+#define BYTES_PER_WORD  4
+#define BITS_PER_WORD   (BITS_PER_BYTE * BYTES_PER_WORD)
 
 #define INTERP_CAC(x0, x1, ratio) ((ratio) * ((x1) - (x0)) + (x0))
 
 #define DIV_ROUND_UP(n, d) (((n) + (d)-1) / (d))
 
-enum class LutBufferState {
-    kInitial   = MESH_BUF_INIT,
-    kWait2Chip = MESH_BUF_WAIT2CHIP,
-    kChipInUse = MESH_BUF_CHIPINUSE,
-};
-
-struct LutBufferConfig {
-    bool IsBigMode;
-    uint32_t Width;
-    uint32_t Height;
-    uint32_t LutHCount;
-    uint32_t LutVCount;
-    uint8_t ScaleFactor;
-    uint16_t PsfCfgCount;
-};
-
+#if RKAIQ_HAVE_CAC_V03 || RKAIQ_HAVE_CAC_V10
 static const uint32_t IspBigModeWidthLimit = 2688;
 static const uint32_t IspBigModeSizeLimit  = IspBigModeWidthLimit * 1536;
+static const uint32_t CacPsfCountLimit     = 1632;
+static const uint8_t CacChannelCount       = 2;
+#else  // RKAIQ_HAVE_CAC_V11
+static const uint32_t IspBigModeWidthLimit = 1536;
+static const uint32_t IspBigModeSizeLimit  = IspBigModeWidthLimit * 864;
+static const uint32_t CacPsfCountLimit     = 336;
+static const uint8_t CacChannelCount       = 2;
+#endif
 static const uint8_t CacScaleFactorDefault = 64;
 static const uint8_t CacScaleFactorBigMode = 128;
 static const uint8_t CacStrengthDistance   = 128;
 static const uint8_t CacPsfKernelSize      = 7 * 5;
 static const uint8_t CacPsfKernelWordSizeInMemory =
     DIV_ROUND_UP((CacPsfKernelSize - 1) * BITS_PER_BYTE, BITS_PER_WORD);
-static const uint8_t CacChannelCount   = 2;
-static const uint32_t CacPsfCountLimit = 1632;
-
-static const uint8_t CacPsfBufferCount = ISP2X_MESH_BUF_NUM;
+static const uint8_t CacPsfBufferCount = CAC_PSF_BUF_NUM;
 
 static inline bool IsIspBigMode(uint32_t width, uint32_t height, bool is_multi_sensor) {
-    if (is_multi_sensor || width > IspBigModeWidthLimit || width * height > IspBigModeSizeLimit)
+    if (is_multi_sensor || width > IspBigModeWidthLimit || width * height > IspBigModeSizeLimit) {
         return true;
-    else
-        return false;
-};
+    }
+
+    return false;
+}
 
 /**
  * cac_wsize=bigmode_en ? (pic_width+126)>>7 : (pic_width+62)>>6;
@@ -108,105 +103,160 @@ static inline void CalcCacLutConfig(uint32_t width, uint32_t height, bool is_big
      */
 }
 
-struct LutBuffer {
-    LutBuffer() = delete;
-    LutBuffer(const LutBufferConfig& config)
-        : State(LutBufferState::kInitial), Config(config), Fd(-1), Size(0), Addr(0) {}
-    LutBuffer(const LutBufferConfig& config, const rk_aiq_cac_share_mem_info_t* mem_info)
-        : Config(config) {
-        State = static_cast<LutBufferState>(*mem_info->state);
-        Fd    = mem_info->fd;
-        Addr  = mem_info->addr;
-        Size  = mem_info->size;
+CacAlgoAdaptor::~CacAlgoAdaptor() = default;
+
+#if RKAIQ_HAVE_CAC_V03
+XCamReturn CacAlgoAdaptor::SetApiAttr(const rkaiq_cac_v03_api_attr_t* attr) {
+    if (!attr_) {
+        attr_ = std::unique_ptr<rkaiq_cac_v03_api_attr_t>(new rkaiq_cac_v03_api_attr_t);
     }
-    LutBuffer(const LutBuffer&) = delete;
-    LutBuffer& operator=(const LutBuffer&) = delete;
-
-    LutBufferState State;
-    LutBufferConfig Config;
-    int Fd;
-    int Size;
-    void* Addr;
-};
-
-class LutBufferManager {
- public:
-    LutBufferManager() = delete;
-    LutBufferManager(const LutBufferConfig& config, const isp_drv_share_mem_ops_t* mem_ops)
-        : config_(config), mem_ops_(mem_ops) {}
-    LutBufferManager(const LutBufferManager&) = delete;
-    LutBufferManager& operator=(const LutBufferManager&) = delete;
-    ~LutBufferManager() {
-        // TODO(Cody)
-        ReleaseHwBuffers(0);
-        ReleaseHwBuffers(1);
+    if (attr->op_mode == RKAIQ_CAC_API_OPMODE_INVALID) {
+        return XCAM_RETURN_ERROR_PARAM;
+    } else if (attr->op_mode == RKAIQ_CAC_API_OPMODE_AUTO) {
+        attr_->iso_cnt = attr->iso_cnt;
+        attr_->op_mode = attr->op_mode;
+        memcpy(attr_->auto_params, attr->auto_params, sizeof(attr->auto_params));
+    } else if (attr->op_mode == RKAIQ_CAC_API_OPMODE_MANUAL) {
+        attr_->op_mode = attr->op_mode;
+        memcpy(&attr_->manual_param, &attr->manual_param, sizeof(attr->manual_param));
     }
+    enable_ = attr_->enable = attr->enable;
 
-    void ImportHwBuffers(uint8_t isp_id) {
-        assert(mem_ops_ != nullptr);
-        rk_aiq_share_mem_config_t hw_config_;
-        hw_config_.mem_type           = MEM_TYPE_CAC;
-        hw_config_.alloc_param.width  = config_.Width;
-        hw_config_.alloc_param.height = config_.Height;
-
-        mem_ops_->alloc_mem(isp_id, (void*)mem_ops_, &hw_config_, &mem_ctx_);
-    }
-
-    void ReleaseHwBuffers(uint8_t isp_id) {
-        if (mem_ctx_ && mem_ops_) mem_ops_->release_mem(isp_id, mem_ctx_);
-    }
-
-    LutBuffer* GetFreeHwBuffer(uint8_t isp_id) {
-        if (mem_ops_ == nullptr || mem_ctx_ == nullptr) {
-            return nullptr;
-        }
-
-        const auto* mem_info = reinterpret_cast<rk_aiq_cac_share_mem_info_t*>(
-            mem_ops_->get_free_item(isp_id, mem_ctx_));
-        if (mem_info != nullptr) {
-            return new LutBuffer(config_, mem_info);
-        }
-        return nullptr;
-    }
-
- private:
-    const isp_drv_share_mem_ops_t* mem_ops_;
-    void* mem_ctx_;
-    LutBufferConfig config_;
-};
-
-CacAlgoAdaptor::~CacAlgoAdaptor() {
-    if (current_lut_[0]) delete current_lut_[0];
-    if (current_lut_[1]) delete current_lut_[1];
-    if (lut_manger_ != nullptr) delete lut_manger_;
+    return XCAM_RETURN_NO_ERROR;
 }
+#elif RKAIQ_HAVE_CAC_V10
+XCamReturn CacAlgoAdaptor::SetApiAttr(const rkaiq_cac_v10_api_attr_t* attr) {
+    if (!attr_) {
+        attr_ = std::unique_ptr<rkaiq_cac_v10_api_attr_t>(new rkaiq_cac_v10_api_attr_t);
+    }
+    if (attr->op_mode == RKAIQ_CAC_API_OPMODE_INVALID) {
+        return XCAM_RETURN_ERROR_PARAM;
+    } else if (attr->op_mode == RKAIQ_CAC_API_OPMODE_AUTO) {
+        attr_->iso_cnt = attr->iso_cnt;
+        memcpy(attr_->auto_params, attr->auto_params, sizeof(attr->auto_params));
+    } else if (attr->op_mode == RKAIQ_CAC_API_OPMODE_MANUAL) {
+        memcpy(&attr_->manual_param, &attr->manual_param, sizeof(attr->manual_param));
+    }
+    attr_->op_mode = attr->op_mode;
+    enable_ = attr_->enable = attr->enable;
 
+    return XCAM_RETURN_NO_ERROR;
+}
+#elif RKAIQ_HAVE_CAC_V11
+XCamReturn CacAlgoAdaptor::SetApiAttr(const rkaiq_cac_v11_api_attr_t* attr) {
+    if (attr->op_mode == RKAIQ_CAC_API_OPMODE_INVALID) {
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    if (!attr_) {
+        attr_ = std::unique_ptr<rkaiq_cac_v11_api_attr_t>(new rkaiq_cac_v11_api_attr_t);
+    }
+
+    attr_->op_mode = attr->op_mode;
+    if (attr->op_mode == RKAIQ_CAC_API_OPMODE_AUTO) {
+        attr_->iso_cnt = attr->iso_cnt;
+        memcpy(attr_->auto_params, attr->auto_params, sizeof(attr->auto_params));
+    } else if (attr->op_mode == RKAIQ_CAC_API_OPMODE_MANUAL) {
+        memcpy(&attr_->manual_param, &attr->manual_param, sizeof(attr->manual_param));
+    }
+    enable_ = attr_->enable = attr->enable;
+
+    return XCAM_RETURN_NO_ERROR;
+}
+#endif
+
+#if RKAIQ_HAVE_CAC_V03
+XCamReturn CacAlgoAdaptor::GetApiAttr(rkaiq_cac_v03_api_attr_t* attr) {
+    if (attr_ == nullptr) {
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+    memcpy(attr, attr_.get(), sizeof(*attr));
+
+    return XCAM_RETURN_NO_ERROR;
+}
+#elif RKAIQ_HAVE_CAC_V10
+XCamReturn CacAlgoAdaptor::GetApiAttr(rkaiq_cac_v10_api_attr_t* attr) {
+    if (attr_ == nullptr) {
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+    memcpy(attr, attr_.get(), sizeof(*attr));
+
+    return XCAM_RETURN_NO_ERROR;
+}
+#elif RKAIQ_HAVE_CAC_V11
+XCamReturn CacAlgoAdaptor::GetApiAttr(rkaiq_cac_v11_api_attr_t* attr) {
+    if (attr_ == nullptr) {
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+    memcpy(attr, attr_.get(), sizeof(*attr));
+
+    return XCAM_RETURN_NO_ERROR;
+}
+#endif
+
+#if RKAIQ_HAVE_CAC_V03
 XCamReturn CacAlgoAdaptor::Config(const AlgoCtxInstanceCfg* config,
-                                  const CalibDbV2_Cac_t* calib) {
+                                  const CalibDbV2_Cac_V03_t* calib) {
+#elif RKAIQ_HAVE_CAC_V10
+XCamReturn CacAlgoAdaptor::Config(const AlgoCtxInstanceCfg* config,
+                                  const CalibDbV2_Cac_V10_t* calib) {
+#elif RKAIQ_HAVE_CAC_V11
+XCamReturn CacAlgoAdaptor::Config(const AlgoCtxInstanceCfg* config,
+                                  const CalibDbV2_Cac_V11_t* calib) {
+#endif
+    (void)(config);
+
     LOGD_ACAC("%s : Enter", __func__);
-    enable_ = calib ? calib->SettingPara.enable : false;
+    enable_ = calib != nullptr ? calib->SettingPara.enable : false;
     calib_  = calib;
+
+    if (attr_ == nullptr) {
+#if RKAIQ_HAVE_CAC_V03
+        attr_ = std::unique_ptr<rkaiq_cac_v03_api_attr_t>(new rkaiq_cac_v03_api_attr_t);
+#elif RKAIQ_HAVE_CAC_V10
+        attr_ = std::unique_ptr<rkaiq_cac_v10_api_attr_t>(new rkaiq_cac_v10_api_attr_t);
+#elif RKAIQ_HAVE_CAC_V11
+        attr_ = std::unique_ptr<rkaiq_cac_v11_api_attr_t>(new rkaiq_cac_v11_api_attr_t);
+#endif
+    }
+
     if (!enable_) {
+        attr_->enable = false;
         return XCAM_RETURN_BYPASS;
     }
 
-    if (access(calib->SettingPara.psf_path, O_RDONLY)) {
+#if RKAIQ_HAVE_CAC_V10 || RKAIQ_HAVE_CAC_V11
+    if (0 != access(calib->SettingPara.psf_path, O_RDONLY)) {
         LOGE_ACAC("The PSF file path %s cannot be accessed", calib->SettingPara.psf_path);
         valid_ = false;
         return XCAM_RETURN_ERROR_FILE;
     }
+#endif
+    attr_->op_mode = RKAIQ_CAC_API_OPMODE_AUTO;
+    attr_->iso_cnt = calib_->TuningPara.SettingByIso_len;
+    XCAM_ASSERT(attr_->iso_cnt <= RKAIQ_CAC_MAX_ISO_CNT);
+    memcpy(attr_->auto_params, calib_->TuningPara.SettingByIso,
+           sizeof(calib_->TuningPara.SettingByIso[0]) * attr_->iso_cnt);
+#if !RKAIQ_HAVE_CAC_V03
+    memcpy(&attr_->persist_params, &calib->SettingPara, sizeof(calib->SettingPara));
+    attr_->enable = attr_->persist_params.enable;
+#else
+    attr_->enable = enable_;
+#endif
+
+
     valid_ = true;
     return XCAM_RETURN_NO_ERROR;
 }
 
 XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcac* config) {
-    LutBufferConfig lut_config;
-    LutBufferConfig full_lut_config;
+    LutBufferConfig lut_config{};
+    LutBufferConfig full_lut_config{};
     uint32_t width   = config->width;
     uint32_t height  = config->height;
     bool is_big_mode = IsIspBigMode(width, height, config->is_multi_sensor);
 
-    LOGD_ACAC("%s : Enter", __func__);
+    LOGD_ACAC("%s : en %d valid: %d Enter", __func__, enable_, valid_);
 
     if (!enable_ || !valid_) {
         return XCAM_RETURN_BYPASS;
@@ -214,89 +264,104 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcac* config) {
 
     config_ = config;
     if (config->is_multi_isp) {
+#if (RKAIQ_HAVE_CAC_V03 || RKAIQ_HAVE_CAC_V10) && defined(ISP_HW_V30)
         CalcCacLutConfig(width, height, is_big_mode, full_lut_config);
         width = width / 2 + config->multi_isp_extended_pixel;
         CalcCacLutConfig(width, height, is_big_mode, lut_config);
+#endif
     } else {
         CalcCacLutConfig(width, height, is_big_mode, lut_config);
     }
-    lut_manger_ = new LutBufferManager(lut_config, config->mem_ops);
+    lut_manger_ =
+        std::unique_ptr<LutBufferManager>(new LutBufferManager(lut_config, config->mem_ops));
     lut_manger_->ImportHwBuffers(0);
-    current_lut_[0] = lut_manger_->GetFreeHwBuffer(0);
-    XCAM_ASSERT(current_lut_[0] != nullptr);
+    auto* buf = lut_manger_->GetFreeHwBuffer(0);
+    XCAM_ASSERT(buf != nullptr);
+    current_lut_.emplace_back(buf);
+#if (RKAIQ_HAVE_CAC_V03 || RKAIQ_HAVE_CAC_V10) && defined(ISP_HW_V30)
     if (config->is_multi_isp) {
         lut_manger_->ImportHwBuffers(1);
-        current_lut_[1] = lut_manger_->GetFreeHwBuffer(1);
-        XCAM_ASSERT(current_lut_[1] != nullptr);
+        auto* buf = lut_manger_->GetFreeHwBuffer(1);
+        XCAM_ASSERT(buf != nullptr);
+        current_lut_.emplace_back(buf);
     }
+#endif
 
-    std::ifstream ifs(calib_->SettingPara.psf_path, std::ios::binary);
+#if !RKAIQ_HAVE_CAC_V03
+    std::ifstream ifs(attr_->persist_params.psf_path, std::ios::binary);
     if (!ifs.is_open()) {
-        LOGE_ACAC("Failed to open PSF file %s", calib_->SettingPara.psf_path);
+        LOGE_ACAC("Failed to open PSF file %s", attr_->persist_params.psf_path);
         valid_ = false;
         return XCAM_RETURN_ERROR_FILE;
+    }
+
+    if (!config->is_multi_isp) {
+        uint32_t line_offset = lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
+        uint32_t size = lut_config.LutHCount * lut_config.LutVCount * CacPsfKernelWordSizeInMemory *
+                        BYTES_PER_WORD;
+        for (int ch = 0; ch < CacChannelCount; ch++) {
+            char* addr0 = reinterpret_cast<char*>(current_lut_[0]->Addr) + ch * size;
+            ifs.read(addr0, size);
+        }
     } else {
-        if (!config->is_multi_isp) {
-            uint32_t line_offset = lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
-            uint32_t size = lut_config.LutHCount * lut_config.LutVCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
-            for (int ch = 0; ch < CacChannelCount; ch++) {
-                char* addr0 = reinterpret_cast<char*>(current_lut_[0]->Addr) +
-                              ch * size;
-                ifs.read(addr0, size);
-            }
-        } else {
-            // Read and Split Memory
-            //   a == line_size - line_offset
-            //   b == line_offset
-            //   c == line_offset - a = 2 * line_offset - line_size
-            // For each line:
-            //   read b size to left
-            //   copy c from left to right
-            //   read a' to right
-            // - +---------------------------+
-            // | |<---a---->|  |  |<---a'--->|
-            // | |          |<-c->|          |
-            // v |<---b---------->|          |
-            // | |          |  |  |          |
-            // - +---------------------------+
-            //   |<---------line_size------->|
-            //
-            uint32_t line_offset = lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
-            uint32_t line_size = full_lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
-            for (int ch = 0; ch < CacChannelCount; ch++) {
-                char* addr0 = reinterpret_cast<char*>(current_lut_[0]->Addr) +
-                              ch * line_offset * lut_config.LutVCount;
-                char* addr1 = reinterpret_cast<char*>(current_lut_[1]->Addr) +
-                              ch * line_offset * lut_config.LutVCount;
-                for (uint32_t i = 0; i < full_lut_config.LutVCount; i++) {
-                    ifs.read(addr0 + (i * line_offset), line_offset);
-                    memcpy(addr1 + (i * line_offset),
-                           addr0 + (i * line_offset) + line_size - line_offset,
-                           2 * line_offset - line_size);
-                    ifs.read(addr1 + (i * line_size) + line_offset, line_size - line_offset);
-                }
+#if RKAIQ_HAVE_CAC_V10 && defined(ISP_HW_V30)
+        XCAM_ASSERT(current_lut_.size() > 1);
+        // Read and Split Memory
+        //   a == line_size - line_offset
+        //   b == line_offset
+        //   c == line_offset - a = 2 * line_offset - line_size
+        // For each line:
+        //   read b size to left
+        //   copy c from left to right
+        //   read a' to right
+        // - +---------------------------+
+        // | |<---a---->|  |  |<---a'--->|
+        // | |          |<-c->|          |
+        // v |<---b---------->|          |
+        // | |          |  |  |          |
+        // - +---------------------------+
+        //   |<---------line_size------->|
+        //
+        uint32_t line_offset = lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
+        uint32_t line_size =
+            full_lut_config.LutHCount * CacPsfKernelWordSizeInMemory * BYTES_PER_WORD;
+        for (int ch = 0; ch < CacChannelCount; ch++) {
+            char* addr0 = reinterpret_cast<char*>(current_lut_[0]->Addr) +
+                          ch * line_offset * lut_config.LutVCount;
+            char* addr1 = reinterpret_cast<char*>(current_lut_[1]->Addr) +
+                          ch * line_offset * lut_config.LutVCount;
+            for (uint32_t i = 0; i < full_lut_config.LutVCount; i++) {
+                ifs.read(addr0 + (i * line_offset), line_offset);
+                memcpy(addr1 + (i * line_offset),
+                       addr0 + (i * line_offset) + line_size - line_offset,
+                       2 * line_offset - line_size);
+                ifs.read(addr1 + (i * line_size) + line_offset, line_size - line_offset);
             }
         }
+#endif
     }
+#endif
 
     return XCAM_RETURN_NO_ERROR;
 }
 
-void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input,
-                                  RkAiqAlgoProcResAcac* output) {
+void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcResAcac* output) {
     int i;
     int iso_low  = 50;
     int iso_high = 50;
     int gain_high, gain_low;
-    float ratio;
+    float ratio      = 1.0;
     int iso_div      = 50;
-    int max_iso_step = RKCAC_MAX_ISO_LEVEL;
+    int max_iso_step = attr_->iso_cnt;
     int iso          = input->iso;
-    LOGD_ACAC("%s : Enter", __func__);
+    LOGD_ACAC("%s : en %d valid: %d Enter", __func__, enable_, valid_);
 
     if (!enable_ || !valid_) {
         output->config[0].bypass_en = 1;
+#if (RKAIQ_HAVE_CAC_V03 || RKAIQ_HAVE_CAC_V10) && defined(ISP_HW_V30)
         output->config[1].bypass_en = 1;
+#endif
+        output->enable = false;
         return;
     }
 
@@ -306,7 +371,7 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input,
             iso_high = iso_div * (2 << i);
         }
     }
-    ratio = (float)(iso - iso_low) / (iso_high - iso_low);
+    ratio = static_cast<float>(iso - iso_low) / (iso_high - iso_low);
     if (iso_low == iso) {
         iso_high = iso;
         ratio    = 0;
@@ -315,14 +380,33 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input,
         iso_low = iso;
         ratio   = 1;
     }
-    gain_high = (int)(log((float)iso_high / 50) / log((float)2));
-    gain_low  = (int)(log((float)iso_low / 50) / log((float)2));
+    gain_high = (int)(std::log(static_cast<float>(iso_high) / 50) / std::log(2.0));
+    gain_low  = (int)(std::log(static_cast<float>(iso_low) / 50) / std::log(2.0));
 
     gain_low  = MIN(MAX(gain_low, 0), max_iso_step - 1);
     gain_high = MIN(MAX(gain_high, 0), max_iso_step - 1);
 
     XCAM_ASSERT(gain_low >= 0 && gain_low < max_iso_step);
     XCAM_ASSERT(gain_high >= 0 && gain_high < max_iso_step);
+
+#if RKAIQ_HAVE_CAC_V03
+    output->enable = attr_->enable;
+    output->config[0].center_en     = 0;
+    output->config[0].center_width  = 0;
+    output->config[0].center_height = 0;
+    output->config[0].psf_sft_bit   = 2;
+    output->config[0].bypass_en = attr_->enable;
+    output->config[0].cfg_num       = current_lut_[0]->Config.PsfCfgCount;
+    output->config[0].buf_fd        = current_lut_[0]->Fd;
+    output->config[0].hsize = current_lut_[0]->Config.LutHCount * CacPsfKernelWordSizeInMemory;
+    output->config[0].vsize = current_lut_[0]->Config.LutVCount * CacChannelCount;
+    if (config_->is_multi_isp) {
+        memcpy(&output->config[1], &output->config[0], sizeof(output->config[0]));
+        if (current_lut_.size() > 1) {
+            output->config[1].buf_fd = current_lut_[1]->Fd;
+        }
+    }
+#else
 
 #if 0
     output->config[0].strength[0] = 128;
@@ -348,55 +432,149 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input,
     output->config[0].strength[20] = 1824;
     output->config[0].strength[21] = 2047;
 #endif
-    float strength[RKCAC_STRENGTH_TABLE_LEN] = {1.0f};
-    for (i = 0; i < RKCAC_STRENGTH_TABLE_LEN; i++) {
-        strength[i] =
-            INTERP_CAC(calib_->TuningPara.SettingByIso[gain_low].strength_table[i],
-                       calib_->TuningPara.SettingByIso[gain_high].strength_table[i], ratio);
-        output->config[0].strength[i] = ROUND_F(strength[i] * (1 << RKCAC_STRENGTH_FIX_BITS));
-        output->config[0].strength[i] =
-            output->config[0].strength[i] > 2047 ? 2047 : output->config[0].strength[i];
-    }
-    output->config[0].bypass_en =
-        INTERP_CAC(calib_->TuningPara.SettingByIso[gain_low].bypass,
-                   calib_->TuningPara.SettingByIso[gain_high].bypass, ratio);
-    output->config[0].center_en     = calib_->SettingPara.center_en;
-    output->config[0].center_width  = calib_->SettingPara.center_x;
-    output->config[0].center_height = calib_->SettingPara.center_y;
-    output->config[0].psf_sft_bit   = calib_->SettingPara.psf_shift_bits;
+    output->config[0].center_en     = attr_->persist_params.center_en;
+    output->config[0].center_width  = attr_->persist_params.center_x;
+    output->config[0].center_height = attr_->persist_params.center_y;
+    output->config[0].psf_sft_bit   = attr_->persist_params.psf_shift_bits;
     output->config[0].cfg_num       = current_lut_[0]->Config.PsfCfgCount;
     output->config[0].buf_fd        = current_lut_[0]->Fd;
-    output->config[0].hsize         = current_lut_[0]->Config.LutHCount * CacPsfKernelWordSizeInMemory;
-    output->config[0].vsize         = current_lut_[0]->Config.LutVCount * CacChannelCount;
-    if (current_lut_[1]) {
-        memcpy(&output->config[1], &output->config[0], sizeof(output->config[0]));
+    output->config[0].hsize = current_lut_[0]->Config.LutHCount * CacPsfKernelWordSizeInMemory;
+    output->config[0].vsize = current_lut_[0]->Config.LutVCount * CacChannelCount;
+#if (RKAIQ_HAVE_CAC_V10) && defined(ISP_HW_V30)
+    memcpy(&output->config[1], &output->config[0], sizeof(output->config[0]));
+    if (current_lut_.size() > 1) {
         output->config[1].buf_fd = current_lut_[1]->Fd;
         if (output->config[0].center_en) {
-            uint16_t w = config_->width / 4;
-            uint16_t e = config_->multi_isp_extended_pixel / 4;
-            uint16_t x = calib_->SettingPara.center_x;
+            uint16_t w                     = config_->width / 4;
+            uint16_t e                     = config_->multi_isp_extended_pixel / 4;
+            uint16_t x                     = attr_->persist_params.center_x;
             output->config[1].center_width = x - (w / 2 - e);
         }
     }
+#endif
 
-    LOGD_ACAC("global en : %d", calib_->SettingPara.enable);
-    LOGD_ACAC("current bypass: %d", output->config[0].bypass_en);
+    if (attr_->op_mode == RKAIQ_CAC_API_OPMODE_MANUAL) {
+        for (i = 0; i < RKCAC_STRENGTH_TABLE_LEN; i++) {
+            output->config[0].strength[i] = ROUND_F(attr_->manual_param.strength_table[i] * (1 << RKCAC_STRENGTH_FIX_BITS));
+            output->config[0].strength[i] =
+                output->config[0].strength[i] > 2047 ? 2047 : output->config[0].strength[i];
+        }
+        output->config[0].bypass_en = attr_->manual_param.bypass;
+#if RKAIQ_HAVE_CAC_V11
+        output->config[0].clip_g_mode    = attr_->manual_param.clip_g_mode;
+        output->config[0].neg_clip0_en   = attr_->manual_param.neg_clip0_enable;
+        output->config[0].edge_detect_en = attr_->manual_param.edge_detect_en;
+        output->config[0].flat_thed_b =
+            ROUND_F(attr_->manual_param.flat_thed_b * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+        output->config[0].flat_thed_r =
+            ROUND_F(attr_->manual_param.flat_thed_r * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+        output->config[0].offset_r = ROUND_F(attr_->manual_param.offset_r);
+        output->config[0].offset_b = ROUND_F(attr_->manual_param.offset_b);
+        output->config[0].expo_thed_b =
+            (!attr_->manual_param.expo_det_b_en << 20) | (attr_->manual_param.expo_thed_b & 0xfffff);
+        output->config[0].expo_thed_r =
+            (!attr_->manual_param.expo_det_r_en << 20) | (attr_->manual_param.expo_thed_r & 0xfffff);
+        output->config[0].expo_adj_b = attr_->manual_param.expo_adj_b & 0xfffff;
+        output->config[0].expo_adj_r = attr_->manual_param.expo_adj_r & 0xfffff;
+        output->enable = attr_->enable;
+#endif
+    } else if (attr_->op_mode == RKAIQ_CAC_API_OPMODE_AUTO) {
+        float strength[RKCAC_STRENGTH_TABLE_LEN] = {1.0f};
+        for (i = 0; i < RKCAC_STRENGTH_TABLE_LEN; i++) {
+            strength[i] = INTERP_CAC(attr_->auto_params[gain_low].strength_table[i],
+                                     attr_->auto_params[gain_high].strength_table[i], ratio);
+            output->config[0].strength[i] = ROUND_F(strength[i] * (1 << RKCAC_STRENGTH_FIX_BITS));
+            output->config[0].strength[i] =
+                output->config[0].strength[i] > 2047 ? 2047 : output->config[0].strength[i];
+        }
+        output->config[0].bypass_en = INTERP_CAC(attr_->auto_params[gain_low].bypass,
+                                                 attr_->auto_params[gain_high].bypass, ratio);
+
+#if RKAIQ_HAVE_CAC_V11
+        output->config[0].clip_g_mode =
+            INTERP_CAC((int)attr_->auto_params[gain_low].clip_g_mode,
+                       (int)attr_->auto_params[gain_high].clip_g_mode, ratio);
+        output->config[0].neg_clip0_en =
+            INTERP_CAC((int)attr_->auto_params[gain_low].neg_clip0_enable,
+                       (int)attr_->auto_params[gain_high].neg_clip0_enable, ratio);
+        output->config[0].edge_detect_en =
+            INTERP_CAC((int)attr_->auto_params[gain_low].edge_detect_en,
+                       (int)attr_->auto_params[gain_high].edge_detect_en, ratio);
+
+        float flat_thed_b             = INTERP_CAC(attr_->auto_params[gain_low].flat_thed_b,
+                                       attr_->auto_params[gain_high].flat_thed_b, ratio);
+        output->config[0].flat_thed_b = ROUND_F(flat_thed_b * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+
+        float flat_thed_r             = INTERP_CAC(attr_->auto_params[gain_low].flat_thed_r,
+                                       attr_->auto_params[gain_high].flat_thed_r, ratio);
+        output->config[0].flat_thed_r = ROUND_F(flat_thed_r * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+
+        float offset_b             = INTERP_CAC(attr_->auto_params[gain_low].offset_b,
+                                    attr_->auto_params[gain_high].offset_b, ratio);
+        output->config[0].offset_b = ROUND_F(offset_b);
+
+        float offset_r             = INTERP_CAC(attr_->auto_params[gain_low].offset_r,
+                                    attr_->auto_params[gain_high].offset_r, ratio);
+        output->config[0].offset_r = ROUND_F(offset_r);
+
+        bool exp_det_r_en = INTERP_CAC(attr_->auto_params[gain_low].expo_det_r_en,
+                                       attr_->auto_params[gain_high].expo_det_r_en, ratio);
+        bool exp_det_b_en = INTERP_CAC(attr_->auto_params[gain_low].expo_det_b_en,
+                                       attr_->auto_params[gain_high].expo_det_b_en, ratio);
+
+        uint32_t expo_thed_b          = INTERP_CAC(attr_->auto_params[gain_low].expo_thed_b,
+                                          attr_->auto_params[gain_high].expo_thed_b, ratio);
+        uint32_t expo_thed_r          = INTERP_CAC(attr_->auto_params[gain_low].expo_thed_r,
+                                          attr_->auto_params[gain_high].expo_thed_r, ratio);
+        uint32_t expo_adj_b          = INTERP_CAC(attr_->auto_params[gain_low].expo_adj_r,
+                                         attr_->auto_params[gain_high].expo_adj_r, ratio);
+        uint32_t expo_adj_r          = INTERP_CAC(attr_->auto_params[gain_low].expo_adj_r,
+                                         attr_->auto_params[gain_high].expo_adj_r, ratio);
+        expo_thed_b = input->hdr_ratio * expo_thed_b;
+        expo_thed_r = input->hdr_ratio * expo_thed_r;
+        expo_adj_b = input->hdr_ratio * expo_adj_b;
+        expo_adj_r = input->hdr_ratio * expo_adj_r;
+        output->config[0].expo_thed_b =
+            (static_cast<int>(!exp_det_b_en) << 20) | (expo_thed_b & 0xfffff);
+        output->config[0].expo_thed_r =
+            (static_cast<int>(!exp_det_r_en) << 20) | (expo_thed_r & 0xfffff);
+        output->config[0].expo_adj_b = expo_adj_b & 0xfffff;
+        output->config[0].expo_adj_r = expo_adj_r & 0xfffff;
+#endif
+    }
+#endif
+    output->enable = attr_->enable;
+
+    LOGD_ACAC("global en : %d", output->enable);
     LOGD_ACAC("center en: %d", output->config[0].center_en);
     LOGD_ACAC("center x: %u", output->config[0].center_width);
     LOGD_ACAC("center y: %u", output->config[0].center_height);
     LOGD_ACAC("psf shift bits: %u", output->config[0].psf_sft_bit);
     LOGD_ACAC("psf cfg num: %u", output->config[0].cfg_num);
     LOGD_ACAC("psf buf fd: %d", output->config[0].buf_fd);
-    if (current_lut_[1]) {
+#if (RKAIQ_HAVE_CAC_V03 || RKAIQ_HAVE_CAC_V10) && defined(ISP_HW_V30)
+    if (current_lut_.size() > 1) {
         LOGD_ACAC("psf buf fd right: %d", output->config[1].buf_fd);
         LOGD_ACAC("center x right: %d", output->config[1].center_width);
         LOGD_ACAC("center y right: %d", output->config[1].center_height);
     }
+#endif
     LOGD_ACAC("psf hwsize: %u", output->config[0].hsize);
-    LOGD_ACAC("psf size: %u", output->config[0].vsize);
+    LOGD_ACAC("psf vsize: %u", output->config[0].vsize);
     for (i = 0; i < RKCAC_STRENGTH_TABLE_LEN; i++) {
         LOGD_ACAC("strength %d: %u", i, output->config[0].strength[i]);
     }
+#if RKAIQ_HAVE_CAC_V11
+    LOGD_ACAC("clip_g_mode: %u", output->config[0].clip_g_mode);
+    LOGD_ACAC("edge_detect_en: %u", output->config[0].edge_detect_en);
+    LOGD_ACAC("neg_clip0_en: %u", output->config[0].neg_clip0_en);
+    LOGD_ACAC("expo_thed_b: %u", output->config[0].expo_thed_b);
+    LOGD_ACAC("expo_thed_r: %u", output->config[0].expo_thed_r);
+    LOGD_ACAC("expo_adj_b: %u", output->config[0].expo_adj_b);
+    LOGD_ACAC("expo_adj_r: %u", output->config[0].expo_adj_r);
+    LOGD_ACAC("flat_thed_b: %u", output->config[0].flat_thed_b);
+    LOGD_ACAC("flat_thed_r: %u", output->config[0].flat_thed_r);
+#endif
 }
 
 }  // namespace RkCam

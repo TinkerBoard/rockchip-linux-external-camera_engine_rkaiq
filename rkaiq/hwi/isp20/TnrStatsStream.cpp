@@ -159,4 +159,4 @@ TnrStatsStream::deinit_tnrbuf()
 //    _nr_stream_unit = stream;
 //}
 
-}; //namspace RkCam
+} //namspace RkCam

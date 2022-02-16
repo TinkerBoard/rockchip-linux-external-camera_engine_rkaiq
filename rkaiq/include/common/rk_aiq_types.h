@@ -24,7 +24,7 @@
 #include "rk_aiq_comm.h"
 #include "rk_aiq_mems_sensor.h"
 #include "common/rk-camera-module.h"
-#include "adebayer/rk_aiq_types_algo_adebayer.h"
+#include "adebayer/rk_aiq_types_adebayer_algo.h"
 #include "ae/rk_aiq_types_ae_algo.h"
 #include "awb/rk_aiq_types_awb_algo.h"
 #include "alsc/rk_aiq_types_alsc_algo.h"
@@ -65,6 +65,7 @@
 #include "auvnr/rk_aiq_types_auvnr_algo_v1.h"
 #include "again/rk_aiq_types_again_algo.h"
 #include "acsm/rk_aiq_types_acsm_algo.h"
+#include "acgc/rk_aiq_types_acgc_algo.h"
 
 #ifdef RK_SIMULATOR_HW
 #include "simulator/isp20_hw_simulator.h"
@@ -478,7 +479,7 @@ typedef struct {
 
 typedef AgicProcResult_t rk_aiq_isp_gic_t;
 
-typedef AdebayerConfig_t rk_aiq_isp_debayer_t;
+typedef AdebayerHwConfigV1_t rk_aiq_isp_debayer_t;
 
 typedef struct {
     unsigned char  equ_segm;
@@ -524,21 +525,20 @@ typedef struct {
     //unsigned char sw_mesh_yf[FEC_MESH_XY_NUM_ALGO];
     int img_buf_index;
     int img_buf_size;
-    int32_t frame_id;
+    uint32_t frame_id;
 } rk_aiq_isp_fec_t;
 
-typedef struct {
-    int UNKNOWN;
-} rk_aiq_isp_cgc_t;
+typedef rk_aiq_acgc_params_t rk_aiq_isp_cgc_t;
 
 typedef struct {
-    sint32_t frame_id;
+    uint32_t frame_id;
     rk_aiq_isp_aec_stats_t aec_stats;
     int awb_hw_ver;
     union {
         rk_aiq_awb_stat_res_v200_t awb_stats_v200;
         rk_aiq_awb_stat_res2_v201_t awb_stats_v21;
         rk_aiq_isp_awb_stats2_v3x_t awb_stats_v3x;
+        rk_aiq_isp_awb_stats_v32_t awb_stats_v32;
     };
     int af_hw_ver;
     union {
@@ -799,7 +799,7 @@ typedef struct rk_aiq_raw_prop_s {
 } rk_aiq_raw_prop_t;
 
 typedef struct {
-    int frame_id;
+    uint32_t frame_id;
     uint16_t hdrProcessCnt;
     unsigned int luma[3][16];
 } rk_aiq_luma_params_t;
@@ -810,6 +810,6 @@ typedef enum rk_isp_stream_mode_e {
     RK_ISP_STREAM_MODE_OFFLNIE,
 } rk_isp_stream_mode_t;
 
-#define RK_AIQ_CAM_GROUP_MAX_CAMS (6)
+#define RK_AIQ_CAM_GROUP_MAX_CAMS (8)
 
 #endif

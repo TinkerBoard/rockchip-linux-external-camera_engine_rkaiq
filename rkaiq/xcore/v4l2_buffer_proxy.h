@@ -195,6 +195,6 @@ private:
 private:
     SmartPtr<V4l2Device>  _device;
 };
-};
+}
 
 #endif //XCAM_V4L2_BUFFER_PROXY_H

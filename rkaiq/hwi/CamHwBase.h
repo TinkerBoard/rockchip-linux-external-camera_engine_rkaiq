@@ -126,7 +126,7 @@ public:
         return  XCAM_RETURN_ERROR_FAILED;
     }
     virtual void getShareMemOps(isp_drv_share_mem_ops_t** mem_ops) {};
-    virtual XCamReturn getEffectiveIspParams(rkisp_effect_params_v20& ispParams, int frame_id) {
+    virtual XCamReturn getEffectiveIspParams(rkisp_effect_params_v20& ispParams, uint32_t frame_id) {
         return  XCAM_RETURN_ERROR_FAILED;
     };
     uint64_t getIspModuleEnState() {
@@ -169,6 +169,6 @@ private:
     XCAM_DEAD_COPY (CamHwBase);
 };
 
-}; //namespace RkCam
+} //namespace RkCam
 
 #endif

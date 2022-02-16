@@ -237,8 +237,9 @@ CaptureRawData::set_value_to_file(const char* path, int value, uint32_t sequence
         ftruncate(fp, 0);
         lseek(fp, 0, SEEK_SET);
         snprintf(buffer, sizeof(buffer), "%3d %8d\n", _capture_raw_num, sequence);
-        if (write(fp, buffer, sizeof(buffer)) <= 0)
+        if (write(fp, buffer, sizeof(buffer)) <= 0) {
             LOGW_CAMHW_SUBM(CAPTURERAW_SUBM, "%s write %s failed!\n", __func__, path);
+        }
         close(fp);
         return true;
     }
@@ -806,8 +807,10 @@ CaptureRawData::capture_raw_ctl(capture_raw_t type, int count, const char* captu
         _capture_image_mutex.lock();
         if (_capture_image_cond.timedwait(_capture_image_mutex, 30000000) != 0)
             ret = XCAM_RETURN_ERROR_TIMEOUT;
-        else
-            strncpy(output_dir, raw_dir_path, strlen(raw_dir_path));
+        else {
+            // TODO(FIX ME): mistaken use of strncpy.
+            strcpy(output_dir, raw_dir_path);
+        }
         _capture_image_mutex.unlock();
     } else if (_capture_raw_type == CAPTURE_RAW_AND_YUV_SYNC) {
         LOGD_CAMHW_SUBM(CAPTURERAW_SUBM, "capture raw and yuv images simultaneously!");
@@ -860,4 +863,4 @@ void CaptureRawData::save_metadata_and_register
     }
 }
 
-}; //namspace RkCam
+} //namspace RkCam

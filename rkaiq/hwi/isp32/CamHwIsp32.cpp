@@ -198,6 +198,9 @@ void CamHwIsp32::gen_full_isp_params(const struct isp32_isp_params_cfg* update_p
                 case Rk_ISP2x_CSM_ID:
                     CHECK_UPDATE_PARAMS(full_params->others.csm_cfg, update_params->others.csm_cfg);
                     break;
+                case Rk_ISP2x_CGC_ID:
+                    CHECK_UPDATE_PARAMS(full_params->others.cgc_cfg, update_params->others.cgc_cfg);
+                    break;
                 default:
                     break;
             }
@@ -261,30 +264,30 @@ XCamReturn CamHwIsp32::setIspConfig() {
     }
 
     // TODO(Cody) : Fix this workaround code
-#if 0 
-    if (frameId >= 0) {
+    if (frameId != (uint32_t)(-1)) {
         SmartPtr<cam3aResult> awb_res = get_3a_module_result(ready_results, RESULT_TYPE_AWB_PARAM);
-        SmartPtr<RkAiqIspAwbParamsProxyV3x> awbParams;
+        SmartPtr<RkAiqIspAwbParamsProxyV32> awbParams;
         if (awb_res.ptr()) {
-            awbParams = awb_res.dynamic_cast_ptr<RkAiqIspAwbParamsProxyV3x>();
+            awbParams = awb_res.dynamic_cast_ptr<RkAiqIspAwbParamsProxyV32>();
             {
                 SmartLock locker(_isp_params_cfg_mutex);
-                _effecting_ispparam_map[frameId].awb_cfg_v3x = awbParams->data()->result;
+                _effecting_ispparam_map[frameId].awb_cfg_v32 = awbParams->data()->result;
             }
         } else {
             /* use the latest */
             SmartLock locker(_isp_params_cfg_mutex);
             if (!_effecting_ispparam_map.empty()) {
-                _effecting_ispparam_map[frameId].awb_cfg_v3x =
-                    (_effecting_ispparam_map.rbegin())->second.awb_cfg_v3x;
-                LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %d awb params for frame %d !\n", frameId,
+                _effecting_ispparam_map[frameId].awb_cfg_v32 =
+                    (_effecting_ispparam_map.rbegin())->second.awb_cfg_v32;
+                LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %u awb params for frame %u !\n", frameId,
                                 (_effecting_ispparam_map.rbegin())->first);
             } else {
                 LOGW_CAMHW_SUBM(ISP20HW_SUBM,
-                                "get awb params from 3a result failed for frame %d !\n", frameId);
+                                "get awb params from 3a result failed for frame %u !\n", frameId);
             }
         }
 
+#if 0 // to do , should be repalced weith blc32
         SmartPtr<cam3aResult> blc_res = get_3a_module_result(ready_results, RESULT_TYPE_BLC_PARAM);
         SmartPtr<RkAiqIspBlcParamsProxyV21> blcParams;
         if (blc_res.ptr()) {
@@ -306,8 +309,8 @@ XCamReturn CamHwIsp32::setIspConfig() {
                                 "get blc params from 3a result failed for frame %d !\n", frameId);
             }
         }
-    }
 #endif
+    }
 
     // TODO: merge_isp_results would cause the compile warning: reference to merge_isp_results is
     // ambiguous now use Isp21Params::merge_isp_results instead
@@ -319,11 +322,12 @@ XCamReturn CamHwIsp32::setIspConfig() {
     gen_full_isp_params(update_params, &_full_active_isp32_params, &module_en_update_partial,
                         &module_cfg_update_partial);
 
-    if (_state == CAM_HW_STATE_STOPPED)
+    if (_state == CAM_HW_STATE_STOPPED) {
         LOGD_CAMHW_SUBM(ISP20HW_SUBM, "ispparam ens 0x%llx, en_up 0x%llx, cfg_up 0x%llx",
                         _full_active_isp32_params.module_ens,
                         _full_active_isp32_params.module_en_update,
                         _full_active_isp32_params.module_cfg_update);
+    }
 
 #ifdef RUNTIME_MODULE_DEBUG
     _full_active_isp32_params.module_en_update &= ~g_disable_isp_modules_en;
@@ -352,7 +356,7 @@ XCamReturn CamHwIsp32::setIspConfig() {
 
         {
             SmartLock locker(_isp_params_cfg_mutex);
-            if (frameId < 0) {
+            if (frameId == (uint32_t)(-1)) {
                 _effecting_ispparam_map[0].isp_params_v32 = _full_active_isp32_params;
             } else {
                 _effecting_ispparam_map[frameId].isp_params_v32 = _full_active_isp32_params;
@@ -385,4 +389,4 @@ XCamReturn CamHwIsp32::setIspConfig() {
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

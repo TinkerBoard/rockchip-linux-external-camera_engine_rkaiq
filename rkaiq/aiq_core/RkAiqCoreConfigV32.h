@@ -18,12 +18,15 @@
 
 #include "a3dlut/rk_aiq_algo_a3dlut_itf.h"
 #include "abayer2dnr2/rk_aiq_abayer2dnr_algo_itf_v2.h"
+#include "abayer2dnrV23/rk_aiq_abayer2dnr_algo_itf_v23.h"
 #include "abayertnr2/rk_aiq_abayertnr_algo_itf_v2.h"
+#include "abayertnrV23/rk_aiq_abayertnr_algo_itf_v23.h"
 #include "ablc/rk_aiq_algo_ablc_itf.h"
 #include "acac/rk_aiq_algo_acac_itf.h"
 #include "accm/rk_aiq_algo_accm_itf.h"
 #include "acgc/rk_aiq_algo_acgc_itf.h"
 #include "acnr2/rk_aiq_acnr_algo_itf_v2.h"
+#include "acnrV30/rk_aiq_acnr_algo_itf_v30.h"
 #include "acp/rk_aiq_algo_acp_itf.h"
 #include "acsm/rk_aiq_algo_acsm_itf.h"
 #include "adebayer/rk_aiq_algo_adebayer_itf.h"
@@ -43,9 +46,11 @@
 #include "amerge/rk_aiq_algo_amerge_itf.h"
 #include "asd/rk_aiq_algo_asd_itf.h"
 #include "asharp4/rk_aiq_asharp_algo_itf_v4.h"
+#include "asharpV33/rk_aiq_asharp_algo_itf_v33.h"
 #include "awb/rk_aiq_algo_awb_itf.h"
 #include "awdr/rk_aiq_algo_awdr_itf.h"
 #include "aynr3/rk_aiq_aynr_algo_itf_v3.h"
+#include "aynrV22/rk_aiq_aynr_algo_itf_v22.h"
 
 namespace RkCam {
 
@@ -103,39 +108,76 @@ static RkAiqGrpCondition_t otherGrpCondV3x[] = {
 static RkAiqGrpConditions_t otherGrpCondsV3x = {grp_conds_array_info(otherGrpCondV3x)};
 
 static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
-    // clang-format off
-    { &g_RkIspAlgoDescAe.common,            RK_AIQ_CORE_ANALYZE_AE,     0, 1, 0,    aeGrpCondsV3x      },
-#if 0
-    { &g_RkIspAlgoDescAblc.common,          RK_AIQ_CORE_ANALYZE_AWB,    0, 0, 0,    awbGrpConds        },
-#if RKAIQ_HAVE_AWB_V21
-    { &g_RkIspAlgoDescAwb.common,           RK_AIQ_CORE_ANALYZE_AWB,    1, 1, 21,   awbGrpConds        },
+// clang-format off
+
+#if RKAIQ_HAVE_AE_V1
+    { &g_RkIspAlgoDescAe.common,            RK_AIQ_CORE_ANALYZE_AE,     0, 3, 0,    aeGrpCondsV3x      },
 #endif
-    { &g_RkIspAlgoDescAdebayer.common,      RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
+#if RKAIQ_HAVE_AWB_V32
+    { &g_RkIspAlgoDescAwb.common,           RK_AIQ_CORE_ANALYZE_AWB,    1, 2, 32,   awbGrpConds        },
+#endif
+#if RKAIQ_HAVE_BLC_V1
+    { &g_RkIspAlgoDescAblc.common,          RK_AIQ_CORE_ANALYZE_AWB,    0, 0, 0,    awbGrpConds        },
+#endif
+#if RKAIQ_HAVE_CAC_V11
+    { &g_RkIspAlgoDescAcac.common,          RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 11,   grp0Conds          },
+#endif
+
+#if RKAIQ_HAVE_DEBAYER_V2
+    { &g_RkIspAlgoDescAdebayer.common,      RK_AIQ_CORE_ANALYZE_GRP0,   0, 1, 0,    grp0Conds          },
+#endif
+
+#if RKAIQ_HAVE_GAIN_V2
+    { &g_RkIspAlgoDescAgainV2.common,       RK_AIQ_CORE_ANALYZE_OTHER,   2, 2, 2,    otherGrpCondsV3x          },
+#endif
+
+#if RKAIQ_HAVE_GAMMA_V11
     { &g_RkIspAlgoDescAgamma.common,        RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
-    { &g_RkIspAlgoDescAdegamma.common,      RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+    { &g_RkIspAlgoDescAdhaz.common,         RK_AIQ_CORE_ANALYZE_GRP0,   0, 1, 0,    grp0Conds          },
+#endif
+#if RKAIQ_HAVE_DRC_V12
+    { &g_RkIspAlgoDescAdrc.common,          RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
+#endif
+#if RKAIQ_HAVE_MERGE_V12
     { &g_RkIspAlgoDescAmerge.common,        RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
+#endif
+#if RKAIQ_HAVE_CCM_V2
+    { &g_RkIspAlgoDescAccm.common,          RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp1Conds          },
+#endif
+#if RKAIQ_HAVE_3DLUT_V1
+    { &g_RkIspAlgoDescA3dlut.common,        RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp1Conds          },
+#endif
+#if 0
+    { &g_RkIspAlgoDescAdegamma.common,      RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
 #if RKAIQ_HAVE_CAC_V10
     { &g_RkIspAlgoDescAcac.common,          RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
 #endif
-    { &g_RkIspAlgoDescAdhaz.common,         RK_AIQ_CORE_ANALYZE_GRP0,   0, 1, 0,    grp0Conds          },
     { &g_RkIspAlgoDescAbayer2dnrV2.common,  RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,    grp0Conds          },
     { &g_RkIspAlgoDescAbayertnrV2.common,   RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,    grp0Conds          },
     { &g_RkIspAlgoDescAynrV3.common,        RK_AIQ_CORE_ANALYZE_GRP0,   3, 3, 3,    grp0Conds          },
     { &g_RkIspAlgoDescAcnrV2.common,        RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,    grp0Conds          },
     { &g_RkIspAlgoDescAsharpV4.common,      RK_AIQ_CORE_ANALYZE_GRP0,   4, 4, 4,    grp0Conds          },
-    { &g_RkIspAlgoDescAdrc.common,          RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
-    { &g_RkIspAlgoDescA3dlut.common,        RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp1Conds          },
     { &g_RkIspAlgoDescAlsc.common,          RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp1Conds          },
-    { &g_RkIspAlgoDescAccm.common,          RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp1Conds          },
+
     { &g_RkIspAlgoDescAcp.common,           RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
     { &g_RkIspAlgoDescAie.common,           RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
     { &g_RkIspAlgoDescAdpcc.common,         RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+#if RKAIQ_HAVE_LDCH_V10
     { &g_RkIspAlgoDescAldch.common,         RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+#endif
+#endif
+#if RKAIQ_HAVE_CGC_V1
     { &g_RkIspAlgoDescAcgc.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
 #endif
+#if RKAIQ_HAVE_CSM_V1
     { &g_RkIspAlgoDescAcsm.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
+#endif
+#if RKAIQ_HAVE_AF_V31
+    { &g_RkIspAlgoDescAf.common,            RK_AIQ_CORE_ANALYZE_AF,     0, 2, 0,    afGrpCondsV3x      },
+#endif
 #if 0
-    { &g_RkIspAlgoDescAf.common,            RK_AIQ_CORE_ANALYZE_AF,     0, 1, 0,    afGrpCondsV3x      },
 #if RKAIQ_HAVE_GIC_V2
     { &g_RkIspAlgoDescAgic.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 1, 0,    otherGrpCondsV3x   },
 #endif
@@ -143,8 +185,25 @@ static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
     { &g_RkIspAlgoDescAsd.common,           RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
     { &g_RkIspAlgoDescAgainV2.common,       RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,    grp0Conds          },
 #endif
-    { NULL,                                 RK_AIQ_CORE_ANALYZE_ALL,    0, 0, 0,    {0}                },
+
+#if RKAIQ_HAVE_BAYERTNR_V23
+    { &g_RkIspAlgoDescAbayertnrV23.common, RK_AIQ_CORE_ANALYZE_OTHER,    23, 23, 23, otherGrpCondsV3x          },
+#endif
+#if RKAIQ_HAVE_BAYER2DNR_V23
+    { &g_RkIspAlgoDescAbayer2dnrV23.common, RK_AIQ_CORE_ANALYZE_OTHER,   23, 23, 23, otherGrpCondsV3x          },
+#endif
+#if RKAIQ_HAVE_YNR_V22
+    { &g_RkIspAlgoDescAynrV22.common,       RK_AIQ_CORE_ANALYZE_OTHER,   22, 22, 22, otherGrpCondsV3x          },
+#endif
+#if RKAIQ_HAVE_CNR_V30
+    { &g_RkIspAlgoDescAcnrV30.common, RK_AIQ_CORE_ANALYZE_OTHER,    30, 30, 30, otherGrpCondsV3x          },
+#endif
+#if RKAIQ_HAVE_SHARP_V33
+    { &g_RkIspAlgoDescAsharpV33.common,       RK_AIQ_CORE_ANALYZE_OTHER,   33, 33, 33,    otherGrpCondsV3x          },
+#endif
+    { NULL,                                 RK_AIQ_CORE_ANALYZE_ALL,    0, 0, 0,    {0, 0}             },
     // clang-format on
+
 };
 
 }  // namespace RkCam

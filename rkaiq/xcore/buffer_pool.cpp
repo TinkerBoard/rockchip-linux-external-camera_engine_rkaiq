@@ -214,4 +214,4 @@ BufferPool::create_buffer_from_data (SmartPtr<BufferData> &data)
     return new BufferProxy (info, data);
 }
 
-};
+}

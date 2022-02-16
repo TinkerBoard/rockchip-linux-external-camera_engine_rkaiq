@@ -21,42 +21,77 @@
 #define ALGOS_ACAC_CAC_ALGO_H
 
 #include <memory>
+#include <vector>
 
-#include "RkAiqCalibDbTypesV2.h"
-#include "rk_aiq_algo_des.h"
-#include "rk_aiq_algo_types.h"
-#include "rk_aiq_types_priv.h"
-#include "xcam_common.h"
-
-using namespace XCam;
+#include "algos/acac/lut_buffer.h"
+#include "algos/acac/rk_aiq_types_acac_algo_int.h"
+#include "algos/rk_aiq_algo_des.h"
+#include "algos/rk_aiq_algo_types.h"
+#include "common/rk_aiq_types_priv.h"
+#include "iq_parser_v2/RkAiqCalibDbTypesV2.h"
+#include "xcore/base/xcam_common.h"
 
 namespace RkCam {
 
-struct LutBuffer;
-class LutBufferManager;
-
-class CacAlgoAdaptor : public std::enable_shared_from_this<CacAlgoAdaptor> {
+class CacAlgoAdaptor {
  public:
     CacAlgoAdaptor() = default;
     virtual ~CacAlgoAdaptor();
     CacAlgoAdaptor(const CacAlgoAdaptor&) = delete;
     const CacAlgoAdaptor& operator=(const CacAlgoAdaptor&) = delete;
 
-    XCamReturn Config(const AlgoCtxInstanceCfg* config, const CalibDbV2_Cac_t* calib);
+#if RKAIQ_HAVE_CAC_V03
+    XCamReturn Config(const AlgoCtxInstanceCfg* config, const CalibDbV2_Cac_V03_t* calib);
+#elif RKAIQ_HAVE_CAC_V10
+    XCamReturn Config(const AlgoCtxInstanceCfg* config, const CalibDbV2_Cac_V10_t* calib);
+#elif RKAIQ_HAVE_CAC_V11
+    XCamReturn Config(const AlgoCtxInstanceCfg* config, const CalibDbV2_Cac_V11_t* calib);
+#endif
+#if RKAIQ_HAVE_CAC_V03
+    XCamReturn SetApiAttr(const rkaiq_cac_v03_api_attr_t* attr);
+#elif RKAIQ_HAVE_CAC_V10
+    XCamReturn SetApiAttr(const rkaiq_cac_v10_api_attr_t* attr);
+#elif RKAIQ_HAVE_CAC_V11
+    XCamReturn SetApiAttr(const rkaiq_cac_v11_api_attr_t* attr);
+#endif
+#if RKAIQ_HAVE_CAC_V03
+    XCamReturn GetApiAttr(rkaiq_cac_v03_api_attr_t* attr);
+#elif RKAIQ_HAVE_CAC_V10
+    XCamReturn GetApiAttr(rkaiq_cac_v10_api_attr_t* attr);
+#elif RKAIQ_HAVE_CAC_V11
+    XCamReturn GetApiAttr(rkaiq_cac_v11_api_attr_t* attr);
+#endif
+
+
     XCamReturn Prepare(const RkAiqAlgoConfigAcac* config);
-    const bool IsEnabled() const { return enable_; }
-    const bool IsStarted() const { return started_; }
+    bool IsEnabled() const { return enable_; }
+    bool IsStarted() const { return started_; }
 
     void OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcResAcac* output);
 
  private:
-    const RkAiqAlgoConfigAcac* config_;
-    const CalibDbV2_Cac_t* calib_;
-    bool enable_;
-    bool started_;
-    bool valid_;
-    LutBufferManager* lut_manger_;
-    LutBuffer* current_lut_[2];
+    bool enable_  = false;
+    bool started_ = false;
+    bool valid_   = true;
+
+    std::unique_ptr<LutBufferManager> lut_manger_;
+    std::vector<std::unique_ptr<LutBuffer>> current_lut_ = {};
+
+    const RkAiqAlgoConfigAcac* config_ = nullptr;
+#if RKAIQ_HAVE_CAC_V03
+    const CalibDbV2_Cac_V03_t* calib_ = nullptr;
+#elif RKAIQ_HAVE_CAC_V10
+    const CalibDbV2_Cac_V10_t* calib_ = nullptr;
+#elif RKAIQ_HAVE_CAC_V11
+    const CalibDbV2_Cac_V11_t* calib_ = nullptr;
+#endif
+#if RKAIQ_HAVE_CAC_V03
+    std::unique_ptr<rkaiq_cac_v03_api_attr_t> attr_ = nullptr;
+#elif RKAIQ_HAVE_CAC_V10
+    std::unique_ptr<rkaiq_cac_v10_api_attr_t> attr_ = nullptr;
+#elif RKAIQ_HAVE_CAC_V11
+    std::unique_ptr<rkaiq_cac_v11_api_attr_t> attr_ = nullptr;
+#endif
 };
 
 }  // namespace RkCam

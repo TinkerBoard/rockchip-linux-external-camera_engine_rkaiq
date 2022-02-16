@@ -18,7 +18,7 @@
 #ifndef _RK_AIQ_USER_API2_ADPCC_H_
 #define _RK_AIQ_USER_API2_ADPCC_H_
 
-//#include "adpcc/rk_aiq_uapi_adpcc_int.h"
+#include "adpcc/rk_aiq_uapi_adpcc_int.h"
 
 typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 

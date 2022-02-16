@@ -58,6 +58,6 @@ class RkAiqAeisHandleInt : virtual public RkAiqHandle {
 
 #endif
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

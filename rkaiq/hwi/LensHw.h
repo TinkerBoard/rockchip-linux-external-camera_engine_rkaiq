@@ -149,8 +149,8 @@ public:
     virtual ~LensHw();
 
     XCamReturn getOTPData();
-    XCamReturn start();
-    XCamReturn stop();
+    XCamReturn start(bool prepared = false) override;
+    XCamReturn stop() override;
     XCamReturn start_internal();
     XCamReturn getLensModeData(rk_aiq_lens_descriptor& lens_des);
     XCamReturn getLensVcmCfg(rk_aiq_lens_vcmcfg& lens_cfg);
@@ -173,7 +173,7 @@ public:
     XCamReturn ZoomCorrection();
     XCamReturn ZoomFocusModifyPositionSync(SmartPtr<rk_aiq_focus_params_t> attrPtr);
     XCamReturn ZoomFocusModifyPosition(SmartPtr<RkAiqFocusParamsProxy>& focus_params);
-    XCamReturn handle_sof(int64_t time, int frameid);
+    XCamReturn handle_sof(int64_t time, uint32_t frameid);
     XCamReturn setLowPassFv(uint32_t sub_shp4_4[RKAIQ_RAWAF_SUMDATA_NUM], uint32_t sub_shp8_8[RKAIQ_RAWAF_SUMDATA_NUM],
                             uint32_t high_light[RKAIQ_RAWAF_SUMDATA_NUM], uint32_t high_light2[RKAIQ_RAWAF_SUMDATA_NUM], uint32_t frameid);
     XCamReturn getIrisInfoParams(SmartPtr<RkAiqIrisParamsProxy>& irisParams, uint32_t frame_id);
@@ -233,7 +233,9 @@ class LensHwHelperThd
 public:
     LensHwHelperThd(LensHw *lenshw, int id)
         : Thread("LensHwHelperThread")
-          , mLensHw(lenshw), mId(id) {};
+          , mLensHw(lenshw), mId(id) {
+        (void)(mId);
+   };
     ~LensHwHelperThd() {
         mAttrQueue.clear ();
     };
@@ -271,6 +273,6 @@ private:
     SafeList<rk_aiq_focus_params_t> mAttrQueue;
 };
 
-}; //namespace RkCam
+} //namespace RkCam
 
 #endif

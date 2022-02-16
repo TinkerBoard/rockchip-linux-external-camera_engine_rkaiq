@@ -239,7 +239,7 @@ V4l2Device::close ()
 }
 
 int
-V4l2Device::io_control (int cmd, void *arg)
+V4l2Device::io_control (unsigned long cmd, void *arg)
 
 {
     if (_fd <= 0)
@@ -1344,4 +1344,4 @@ XCamReturn V4l2SubDevice::stop ()
     return XCAM_RETURN_NO_ERROR;
 }
 
-};
+}

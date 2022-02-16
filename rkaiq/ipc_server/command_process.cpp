@@ -5,7 +5,7 @@
 #endif
 #define LOG_TAG "socket_server.cpp"
 
-int ProcessCommand(rk_aiq_sys_ctx_t* ctx, RkAiqSocketData *dataRecv, RkAiqSocketData *dataReply) {
+int ProcessCommand(rk_aiq_sys_ctx_t* ctx, RkAiqSocketPacket *dataRecv, RkAiqSocketPacket *dataReply) {
     switch(dataRecv->commandID) {
     case ENUM_ID_AE_SETEXPSWATTR:
         dataReply->commandResult = setExpSwAttr(ctx, dataRecv->data);
@@ -287,15 +287,35 @@ int ProcessCommand(rk_aiq_sys_ctx_t* ctx, RkAiqSocketData *dataRecv, RkAiqSocket
         break;
 
     case ENUM_ID_AMERGE_SETATTRIB: {
-        dataReply->commandResult = setMergeAttrib(ctx, dataRecv->data);
+#if RKAIQ_HAVE_MERGE_V10
+        dataReply->commandResult = setMergeAttribV10(ctx, dataRecv->data);
+#endif
+#if RKAIQ_HAVE_MERGE_V11
+        dataReply->commandResult = setMergeAttribV11(ctx, dataRecv->data);
+#endif
+#if RKAIQ_HAVE_MERGE_V12
+        dataReply->commandResult = setMergeAttribV12(ctx, dataRecv->data);
+#endif
         dataReply->data = NULL;
         dataReply->dataSize = 0;
         break;
     }
     case ENUM_ID_AMERGE_GETATTRIB: {
-        dataReply->dataSize = sizeof(amerge_attrib_t);
+#if RKAIQ_HAVE_MERGE_V10
+        dataReply->dataSize      = sizeof(mergeAttrV10_t);
         dataReply->data = (char*)malloc(dataReply->dataSize);
-        dataReply->commandResult =  getMergeAttrib(ctx, dataReply->data);
+        dataReply->commandResult = getMergeAttribV10(ctx, dataReply->data);
+#endif
+#if RKAIQ_HAVE_MERGE_V11
+        dataReply->dataSize      = sizeof(mergeAttrV11_t);
+        dataReply->data          = (char*)malloc(dataReply->dataSize);
+        dataReply->commandResult = getMergeAttribV11(ctx, dataReply->data);
+#endif
+#if RKAIQ_HAVE_MERGE_V12
+        dataReply->dataSize      = sizeof(mergeAttrV12_t);
+        dataReply->data          = (char*)malloc(dataReply->dataSize);
+        dataReply->commandResult = getMergeAttribV12(ctx, dataReply->data);
+#endif
         break;
     }
     case ENUM_ID_ATMO_SETATTRIB: {
@@ -405,7 +425,8 @@ int ProcessCommand(rk_aiq_sys_ctx_t* ctx, RkAiqSocketData *dataRecv, RkAiqSocket
 
     dataReply->commandID = dataRecv->commandID;
     if (dataReply->dataSize != 0 ) {
-        dataReply->dataHash = MurMurHash(dataReply->data, dataReply->dataSize);
+        dataReply->dataHash = RkMSG::MessageParser::MurMurHash(dataReply->data,
+                                                               dataReply->dataSize);
     }
     else {
         dataReply->dataHash = 0;

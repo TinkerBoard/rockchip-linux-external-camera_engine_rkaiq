@@ -117,7 +117,7 @@ void* j2s_read_file(const char* file, size_t* size)
     int fd;
 
     DASSERT_MSG(file && !stat(file, &st), return NULL, "no such file: '%s'\n",
-        file ?: "<null>");
+        file ? file : "<null>");
 
     fd = open(file, O_RDONLY);
     DASSERT_MSG(fd >= 0, return NULL, "failed to open: '%s'\n", file);
@@ -150,7 +150,7 @@ static char* j2s_cache_file(const char* file)
         return NULL;
     }
 
-    strcpy(cache_file, getenv("J2S_CACHE") ?: "/var/cache/j2s-cache");
+    strcpy(cache_file, getenv("J2S_CACHE") ? getenv("J2S_CACHE") : "/var/cache/j2s-cache");
 
     /* NULL for ctx cache file */
     if (!file)
@@ -403,7 +403,7 @@ int j2s_json_file_to_struct(j2s_ctx* ctx, const char* file, const char* name,
     int ret = -1;
 
     DASSERT_MSG(file && !stat(file, &st), return -1, "no such file: '%s'\n",
-        file ?: "<null>");
+        file ? file : "<null>");
 
 #ifdef J2S_USING_CACH
     cache_file = j2s_cache_file(file);

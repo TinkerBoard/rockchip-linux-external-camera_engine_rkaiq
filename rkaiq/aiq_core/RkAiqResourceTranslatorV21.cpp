@@ -52,7 +52,8 @@ RkAiqResourceTranslatorV21::translateAwbStats (const SmartPtr<VideoBuffer> &from
         return XCAM_RETURN_BYPASS;
     }
 
-    rkisp_effect_params_v20 ispParams = {0};
+    rkisp_effect_params_v20 ispParams;
+    memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveIspParams(stats->frame_id, ispParams) < 0) {
         LOGE("fail to get ispParams ,ignore\n");
         return XCAM_RETURN_BYPASS;
@@ -126,12 +127,13 @@ RkAiqResourceTranslatorV21::translateAdehazeStats (const SmartPtr<VideoBuffer> &
 
     //dehaze
     statsInt->adehaze_stats_valid = stats->meas_type >> 17 & 1;
-    statsInt->adehaze_stats.dehaze_stats_v21.dhaz_adp_air_base = stats->params.dhaz.dhaz_adp_air_base;
-    statsInt->adehaze_stats.dehaze_stats_v21.dhaz_adp_wt = stats->params.dhaz.dhaz_adp_wt;
-    statsInt->adehaze_stats.dehaze_stats_v21.dhaz_adp_gratio = stats->params.dhaz.dhaz_adp_gratio;
-    statsInt->adehaze_stats.dehaze_stats_v21.dhaz_adp_wt = stats->params.dhaz.dhaz_adp_wt;
+    statsInt->adehaze_stats.dehaze_stats_v11.dhaz_adp_air_base =
+        stats->params.dhaz.dhaz_adp_air_base;
+    statsInt->adehaze_stats.dehaze_stats_v11.dhaz_adp_wt     = stats->params.dhaz.dhaz_adp_wt;
+    statsInt->adehaze_stats.dehaze_stats_v11.dhaz_adp_gratio = stats->params.dhaz.dhaz_adp_gratio;
+    statsInt->adehaze_stats.dehaze_stats_v11.dhaz_adp_wt     = stats->params.dhaz.dhaz_adp_wt;
     for(int i = 0; i < 64; i++)
-        statsInt->adehaze_stats.dehaze_stats_v21.h_rgb_iir[i] = stats->params.dhaz.h_rgb_iir[i];
+        statsInt->adehaze_stats.dehaze_stats_v11.h_rgb_iir[i] = stats->params.dhaz.h_rgb_iir[i];
 
     to->set_sequence(stats->frame_id);
 

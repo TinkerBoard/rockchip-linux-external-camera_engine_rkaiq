@@ -163,7 +163,7 @@ protected:
     virtual SmartPtr<BufferProxy> create_buffer_from_data (SmartPtr<BufferData> &data);
 };
 
-};
+}
 
 #include "shared_item_pool.cpp"
 

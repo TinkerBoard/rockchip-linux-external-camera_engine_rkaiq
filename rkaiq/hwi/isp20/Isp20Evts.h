@@ -32,10 +32,12 @@ class Isp20Evt
     : public ispHwEvt_t, public BufferData {
 public:
     Isp20Evt(ICamHw *camHw, SmartPtr<SensorHw> sensor)
-        : mSensor(sensor), mCamHw(camHw), mTimestamp(-1) {}
+        : mSensor(sensor), mCamHw(camHw), mTimestamp(-1) {
+        (void)(mCamHw);
+    }
     virtual ~Isp20Evt() {}
 
-    XCamReturn getExpInfoParams(SmartPtr<RkAiqExpParamsProxy>& expInfo, sint32_t frameId);
+    XCamReturn getExpInfoParams(SmartPtr<RkAiqExpParamsProxy>& expInfo, uint32_t frameId);
 
     void setSofTimeStamp(int64_t timestamp) {
         mTimestamp = timestamp;

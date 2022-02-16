@@ -1219,7 +1219,7 @@
 								}
 							}
 						},
-						"amerge_calib_V2":	{
+						"amerge_calib_V11":	{
 							"MergeTuningPara":	{
 								"BaseFrm":	"BASEFRAME_LONG",
 								"ByPassThr":	0,
@@ -1248,7 +1248,7 @@
 								"OECurve_damp":	0
 							}
 						},
-						"adrc_calib_V2":	{
+						"adrc_calib_V11":	{
 							"DrcTuningPara":	{
 								"Enable":	1,
 								"DrcGain":	{
@@ -1303,14 +1303,14 @@
 								"damp":	0.9
 							}
 						},
-						"agamma_calib_V30":	{
+						"agamma_calib_V11":	{
 							"GammaTuningPara":	{
 								"Gamma_en":	1,
 								"Gamma_out_offset":	0,
 								"Gamma_curve":	[0, 5, 11, 17, 22, 28, 34, 39, 45, 57, 68, 79, 91, 113, 136, 158, 181, 225, 269, 311, 353, 432, 507, 577, 644, 772, 893, 1000, 1089, 1243, 1387, 1509, 1619, 1819, 1982, 2120, 2261, 2493, 2699, 2896, 3081, 3246, 3376, 3495, 3615, 3736, 3856, 3975, 4095]
 							}
 						},
-						"adehaze_calib_v30":	{
+						"adehaze_calib_V11":	{
 							"DehazeTuningPara":	{
 								"Enable":	1,
 								"cfg_alpha":	0,
@@ -5420,24 +5420,96 @@
 								"Setting_len":	2
 							}
 						},
-						"cac_calib":	{
-							"SettingPara":	{
-								"enable":	0,
-								"psf_path":	"",
-								"psf_shift_bits":	0,
-								"center_en":	0,
-								"center_x":	0,
-								"center_y":	0
-							},
-							"TuningPara":	{
-								"SettingByIso":	[{
-										"iso":	0,
-										"bypass":	0,
-										"strength_table":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-									}],
-								"SettingByIso_len":	1
-							}
-						},
+                        "cac_v03":	{
+                            "SettingPara":	{
+                                "enable":	0
+                            },
+                            "TuningPara":	{
+                                "SettingByIso":	[{
+                                    "iso":	0,
+                                    "bypass":	0,
+                                    "AutoHighLightDetect":	0,
+                                    "AutoHighLightOffset":	0,
+                                    "FixHighLightBase":	0,
+                                    "YCompensate":	0,
+                                    "AutoStrengthU":	0,
+                                    "AutoStrengthV":	0,
+                                    "GrayStrengthU":	0,
+                                    "GrayStrengthV":	0
+                                }],
+                                "SettingByIso_len":	1
+                            }
+                        },
+                        "cac_v10": {
+                            "SettingPara": {
+                                "enable": 1,
+                                "psf_path":	"/etc/iqfiles/cac_map_42x24x34.bin",
+                                "psf_shift_bits": 2,
+                                "center_en": 0,
+                                "center_x":	0,
+                                "center_y":	0
+                            },
+                            "TuningPara": {
+                                "SettingByIso": [{
+                                    "iso": 50,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 100,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 200,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 400,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 800,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 1600,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 3200,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 6400,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 12800,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 25600,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 51200,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 102400,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 204800,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 409600,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }],
+                                "SettingByIso_len": 14
+                            }
+                        },
 						"af_v30":	{
 							"TuningPara":	{
 								"af_mode":	"CalibDbV2_AF_MODE_NOT_SET",
@@ -5558,88 +5630,60 @@
 										"zoom_idx":	0,
 										"measiso":	[{
 												"iso":	50,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	100,
-												"idx":	1
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	200,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	400,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	800,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	1600,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	3200,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	6400,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	12800,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	25600,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	51200,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	102400,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	204800,
-												"idx":	0
-											}]
-									}, {
-										"zoom_idx":	1000,
-										"measiso":	[{
-												"iso":	50,
-												"idx":	0
-											}, {
-												"iso":	100,
-												"idx":	0
-											}, {
-												"iso":	200,
-												"idx":	0
-											}, {
-												"iso":	400,
-												"idx":	0
-											}, {
-												"iso":	800,
-												"idx":	0
-											}, {
-												"iso":	1600,
-												"idx":	0
-											}, {
-												"iso":	3200,
-												"idx":	0
-											}, {
-												"iso":	6400,
-												"idx":	0
-											}, {
-												"iso":	12800,
-												"idx":	0
-											}, {
-												"iso":	25600,
-												"idx":	0
-											}, {
-												"iso":	51200,
-												"idx":	0
-											}, {
-												"iso":	102400,
-												"idx":	0
-											}, {
-												"iso":	204800,
-												"idx":	0
-											}]
+												"idx":	0,
+												"spotlt_scene_idx":	0
+											}],
+										"measiso_len": 13
 									}],
-								"zoom_meas_len":	2,
+								"zoom_meas_len":	1,
 								"meascfg_tbl":	[{
 										"tbl_idx":	0,
 										"afmThres":	4,
@@ -6803,7 +6847,7 @@
 								}
 							}
 						},
-						"amerge_calib_V2":	{
+						"amerge_calib_V11":	{
 							"MergeTuningPara":	{
 								"BaseFrm":	"BASEFRAME_LONG",
 								"ByPassThr":	0,
@@ -6856,7 +6900,7 @@
 								}
 							}
 						},
-						"adrc_calib_V2":	{
+						"adrc_calib_V11":	{
 							"DrcTuningPara":	{
 								"Enable":	1,
 								"DrcGain":	{
@@ -6911,14 +6955,14 @@
 								"damp":	0.9
 							}
 						},
-						"agamma_calib_V30":	{
+						"agamma_calib_V11":	{
 							"GammaTuningPara":	{
 								"Gamma_en":	1,
 								"Gamma_out_offset":	0,
 								"Gamma_curve":	[0, 3, 6, 10, 13, 17, 20, 24, 27, 34, 41, 48, 55, 69, 83, 96, 110, 137, 164, 190, 216, 266, 314, 359, 403, 483, 557, 622, 680, 797, 927, 1049, 1178, 1400, 1601, 1800, 1976, 2323, 2573, 2809, 3018, 3188, 3344, 3481, 3601, 3722, 3845, 3969, 4095]
 							}
 						},
-						"adehaze_calib_v30":	{
+						"adehaze_calib_v11":	{
 							"DehazeTuningPara":	{
 								"Enable":	1,
 								"cfg_alpha":	0,
@@ -11028,24 +11072,96 @@
 								"Setting_len":	2
 							}
 						},
-						"cac_calib":	{
-							"SettingPara":	{
-								"enable":	0,
-								"psf_path":	"",
-								"psf_shift_bits":	0,
-								"center_en":	0,
-								"center_x":	0,
-								"center_y":	0
-							},
-							"TuningPara":	{
-								"SettingByIso":	[{
-										"iso":	0,
-										"bypass":	0,
-										"strength_table":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-									}],
-								"SettingByIso_len":	1
-							}
-						},
+                        "cac_v03":	{
+                            "SettingPara":	{
+                                "enable":	0
+                            },
+                            "TuningPara":	{
+                                "SettingByIso":	[{
+                                    "iso":	0,
+                                    "bypass":	0,
+                                    "AutoHighLightDetect":	0,
+                                    "AutoHighLightOffset":	0,
+                                    "FixHighLightBase":	0,
+                                    "YCompensate":	0,
+                                    "AutoStrengthU":	0,
+                                    "AutoStrengthV":	0,
+                                    "GrayStrengthU":	0,
+                                    "GrayStrengthV":	0
+                                }],
+                                "SettingByIso_len":	1
+                            }
+                        },
+                        "cac_v10": {
+                            "SettingPara": {
+                                "enable": 1,
+                                "psf_path":	"/etc/iqfiles/cac_map_42x24x34.bin",
+                                "psf_shift_bits": 2,
+                                "center_en": 0,
+                                "center_x":	0,
+                                "center_y":	0
+                            },
+                            "TuningPara": {
+                                "SettingByIso": [{
+                                    "iso": 50,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 100,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 200,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 400,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 800,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 1600,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 3200,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 6400,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 12800,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 25600,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 51200,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 102400,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 204800,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }, {
+                                    "iso": 409600,
+                                    "bypass": 0,
+                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                                }],
+                                "SettingByIso_len": 14
+                            }
+                        },
 						"af_v30":	{
 							"TuningPara":	{
 								"af_mode":	"CalibDbV2_AF_MODE_NOT_SET",
@@ -11166,88 +11282,60 @@
 										"zoom_idx":	0,
 										"measiso":	[{
 												"iso":	50,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	100,
-												"idx":	1
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	200,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	400,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	800,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	1600,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	3200,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	6400,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	12800,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	25600,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	51200,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	102400,
-												"idx":	0
+												"idx":	0,
+												"spotlt_scene_idx":	0
 											}, {
 												"iso":	204800,
-												"idx":	0
-											}]
-									}, {
-										"zoom_idx":	1000,
-										"measiso":	[{
-												"iso":	50,
-												"idx":	0
-											}, {
-												"iso":	100,
-												"idx":	0
-											}, {
-												"iso":	200,
-												"idx":	0
-											}, {
-												"iso":	400,
-												"idx":	0
-											}, {
-												"iso":	800,
-												"idx":	0
-											}, {
-												"iso":	1600,
-												"idx":	0
-											}, {
-												"iso":	3200,
-												"idx":	0
-											}, {
-												"iso":	6400,
-												"idx":	0
-											}, {
-												"iso":	12800,
-												"idx":	0
-											}, {
-												"iso":	25600,
-												"idx":	0
-											}, {
-												"iso":	51200,
-												"idx":	0
-											}, {
-												"iso":	102400,
-												"idx":	0
-											}, {
-												"iso":	204800,
-												"idx":	0
-											}]
+												"idx":	0,
+												"spotlt_scene_idx":	0
+											}],
+										"measiso_len": 13
 									}],
-								"zoom_meas_len":	2,
+								"zoom_meas_len":	1,
 								"meascfg_tbl":	[{
 										"tbl_idx":	0,
 										"afmThres":	4,

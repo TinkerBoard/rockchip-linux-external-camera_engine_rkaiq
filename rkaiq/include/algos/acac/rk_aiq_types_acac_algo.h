@@ -1,7 +1,5 @@
 /*
- * rk_aiq_types_acac_algo.h
- *
- *  Copyright (c) 2021 Rockchip Electronics Co., Ltd
+ *  Copyright (c) 2022 Rockchip Electronics Co., Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +19,6 @@
 #ifndef _RK_AIQ_TYPE_ACAC_ALGO_H_
 #define _RK_AIQ_TYPE_ACAC_ALGO_H_
 
-#include "acac/rk_aiq_types_acac_hw.h"
-
-RKAIQ_BEGIN_DECLARE
-
-RKAIQ_END_DECLARE
+#include "algos/acac/rk_aiq_types_acac_hw.h"
 
 #endif

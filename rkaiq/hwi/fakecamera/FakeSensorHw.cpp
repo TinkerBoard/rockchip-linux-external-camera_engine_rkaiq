@@ -111,7 +111,7 @@ FakeSensorHw::get_sensor_fps(float& fps)
 }
 
 int
-FakeSensorHw::get_format(rk_aiq_exposure_sensor_descriptor* sns_des)
+FakeSensorHw::get_sensor_desc(rk_aiq_exposure_sensor_descriptor* sns_des)
 {
     sns_des->sensor_output_width = _width;
     sns_des->sensor_output_height = _height;
@@ -145,7 +145,7 @@ FakeSensorHw::get_sensor_descriptor(rk_aiq_exposure_sensor_descriptor *sns_des)
 {
     memset(sns_des, 0, sizeof(rk_aiq_exposure_sensor_descriptor));
 
-    if (get_format(sns_des))
+    if (get_sensor_desc(sns_des))
         return XCAM_RETURN_ERROR_IOCTL;
 
     if (get_blank(sns_des))
@@ -240,7 +240,7 @@ FakeSensorHw::getSensorModeData(const char* sns_ent_name,
 }
 
 XCamReturn
-FakeSensorHw::handle_sof(int64_t time, int frameid)
+FakeSensorHw::handle_sof(int64_t time, uint32_t frameid)
 {
     ENTER_CAMHW_FUNCTION();
     EXIT_CAMHW_FUNCTION();
@@ -377,7 +377,8 @@ FakeSensorHw::enqueue_rawbuffer(struct rk_aiq_vbuf *vbuf, bool sync)
         max_count = 3;
     }
     if (vbuf->buf_info[0].frame_id <= _frame_sequence) {
-        LOGW_CAMHW_SUBM(FAKECAM_SUBM, "frameId %d <= cur_id %d, modify the id", _frame_sequence);
+        LOGW_CAMHW_SUBM(FAKECAM_SUBM, "frameId %u <= cur_id %u, modify the id",
+                        vbuf->buf_info[0].frame_id, _frame_sequence);
         vbuf->buf_info[0].frame_id = ++_frame_sequence;
     } else
         _frame_sequence = vbuf->buf_info[0].frame_id;
@@ -635,4 +636,4 @@ void CTimer::OnTimer()
     EXIT_XCORE_FUNCTION();
 }
 
-}; //namespace RkCam
+} //namespace RkCam

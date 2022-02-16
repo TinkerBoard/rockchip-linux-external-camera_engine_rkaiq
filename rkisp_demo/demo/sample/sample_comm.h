@@ -32,6 +32,7 @@
 enum RK_ISP_HW_MODULE_e {
     RK_ISP_AE,
     RK_ISP_AWB,
+    RK_ISP_AWB32,
     RK_ISP_AF,
     RK_ISP_ACCM,
     RK_ISP_A3DLUT,
@@ -51,6 +52,8 @@ enum RK_ISP_HW_MODULE_e {
     RK_ISP_ADEBAYER,
     RK_ISP_ACP,
     RK_ISP_AIE,
+    RK_ISP_CGC,
+    RK_ISP_CAC,
     RK_ISP_MAX,
 };
 

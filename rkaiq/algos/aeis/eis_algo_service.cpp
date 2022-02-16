@@ -422,7 +422,7 @@ void EisAlgoAdaptor::GetProcResult(RkAiqAlgoProcResAeis* output) {
     auto* mesh  = remap_->GetPendingHwResult();
     auto config = remap_->GetConfig();
     if (mesh != nullptr) {
-        LOGD_AEIS("Got DVS result : id %d, idx %d, fd %d", mesh->FrameId, mesh->ImageBufferIndex,
+        LOGD_AEIS("Got DVS result : id %u, idx %d, fd %d", mesh->FrameId, mesh->ImageBufferIndex,
                   mesh->Fd);
         output->update        = 1;
         output->frame_id      = mesh->FrameId > 0 ? mesh->FrameId : 0;

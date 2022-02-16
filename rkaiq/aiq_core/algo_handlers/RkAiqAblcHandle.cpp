@@ -70,7 +70,7 @@ XCamReturn RkAiqAblcHandleInt::setAttrib(rk_aiq_blc_attrib_t* att) {
     // called by RkAiqCore
     bool isChanged = false;
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
-        memcmp(&mNewAtt, att, sizeof(*att)))
+            memcmp(&mNewAtt, att, sizeof(*att)))
         isChanged = true;
     else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
              memcmp(&mCurAtt, att, sizeof(*att)))
@@ -228,11 +228,12 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
     RkAiqAlgoProcResAblc* ablc_com              = (RkAiqAlgoProcResAblc*)mProcOutParam;
-#if defined(ISP_HW_V21) || defined(ISP_HW_V30)
+#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32)
     rk_aiq_isp_blc_params_v21_t* blc_param = params->mBlcV21Params->data().ptr();
 #else
     rk_aiq_isp_blc_params_v20_t* blc_param = params->mBlcParams->data().ptr();
 #endif
+
 
     if (!ablc_com) {
         LOGD_ANALYZER("no ablc result");
@@ -248,14 +249,15 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
             blc_param->frame_id = shared->frameId;
         }
 
-#if defined(ISP_HW_V21) || defined(ISP_HW_V30)
+
+#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32)
         memcpy(&blc_param->result.v0, &ablc_rk->ablc_proc_res, sizeof(rk_aiq_isp_blc_t));
 #else
         memcpy(&blc_param->result, &ablc_rk->ablc_proc_res, sizeof(rk_aiq_isp_blc_t));
 #endif
     }
 
-#if defined(ISP_HW_V21) || defined(ISP_HW_V30)
+#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32)
     cur_params->mBlcV21Params = params->mBlcV21Params;
 #else
     cur_params->mBlcParams = params->mBlcParams;
@@ -266,4 +268,4 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

@@ -159,4 +159,4 @@ XCamReturn RkAiqCamGroupAsharpV4HandleInt::getStrength(rk_aiq_sharp_strength_v4_
 #endif
 
 
-};  // namespace RkCam
+}  // namespace RkCam

@@ -533,9 +533,13 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
     RkAiqAlgoProcResAf* af_com                  = &mProcResShared->result;
 
-#if defined(ISP_HW_V30)
+#if RKAIQ_HAVE_AF_V31
+    rk_aiq_isp_af_params_v32_t* af_param = params->mAfV32Params->data().ptr();
+#endif
+#if RKAIQ_HAVE_AF_V30
     rk_aiq_isp_af_params_v3x_t* af_param = params->mAfV3xParams->data().ptr();
-#else
+#endif
+#if RKAIQ_HAVE_AF_V20
     rk_aiq_isp_af_params_v20_t* af_param = params->mAfParams->data().ptr();
 #endif
 
@@ -567,13 +571,18 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
             af_param->frame_id    = shared->frameId;
             focus_param->frame_id = shared->frameId;
         }
-#if defined(ISP_HW_V30)
+
+#if RKAIQ_HAVE_AF_V31
+        af_param->result = af_rk->af_isp_param_v31;
+#endif
+#if RKAIQ_HAVE_AF_V30
         af_param->result = af_rk->af_isp_param_v3x;
-#else
+#endif
+#if RKAIQ_HAVE_AF_V20
         af_param->result = af_rk->af_isp_param;
 #endif
-        // isp_param->af_cfg_update = af_rk->af_cfg_update;
 #endif
+
         p_focus_param->zoomfocus_modifypos =
             af_rk->af_focus_param.zoomfocus_modifypos;
         p_focus_param->focus_correction  = af_rk->af_focus_param.focus_correction;
@@ -601,7 +610,6 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
         p_focus_param->vcm_end_ma       = af_rk->af_focus_param.vcm_end_ma;
         p_focus_param->vcm_config_valid = af_rk->af_focus_param.vcm_config_valid;
 
-#if defined(ISP_HW_V30)
         SmartPtr<RkAiqHandle>* ae_handle = mAiqCore->getCurAlgoTypeHandle(RK_AIQ_ALGO_TYPE_AE);
         int algo_id                      = (*ae_handle)->getAlgoId();
 
@@ -615,19 +623,21 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
                     ae_algo->setLockAeForAf(false);
             }
         }
-#endif
     }
 
-#if defined(ISP_HW_V30)
-    cur_params->mAfV3xParams = params->mAfV3xParams;
-#else
-    cur_params->mAfParams    = params->mAfParams;
+#if RKAIQ_HAVE_AF_V31
+    cur_params->mAfV32Params = params->mAfV32Params;
 #endif
+#if RKAIQ_HAVE_AF_V30
+    cur_params->mAfV3xParams = params->mAfV3xParams;
+#endif
+#if RKAIQ_HAVE_AF_V20
     cur_params->mFocusParams = params->mFocusParams;
+#endif
 
     EXIT_ANALYZER_FUNCTION();
 
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

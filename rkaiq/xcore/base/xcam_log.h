@@ -112,6 +112,7 @@ extern xcore_cam_log_module_info_t g_xcore_log_infos[XCORE_LOG_MODULE_MAX];
         xcam_print_log (module, submodules, XCORE_LOG_LEVEL_ERR, "XCAM ERROR %s:%d: " format "\n", __BI_FILENAME__, __LINE__, ## __VA_ARGS__); \
     } while(0) \
 
+#ifndef NDEBUG
 #define XCAM_MODULE_LOG_WARNING(module, submodules, format, ...)   \
     do { \
         if (XCORE_LOG_LEVEL_WARNING <= g_xcore_log_infos[module].log_level && \
@@ -132,6 +133,12 @@ extern xcore_cam_log_module_info_t g_xcore_log_infos[XCORE_LOG_MODULE_MAX];
                 (submodules & g_xcore_log_infos[module].sub_modules)) \
           xcam_print_log (module, submodules, XCORE_LOG_LEVEL_DEBUG, "XCAM DEBUG %s:%d: " format "\n", __BI_FILENAME__ , __LINE__, ## __VA_ARGS__); \
     } while(0)
+#else
+//#define XCAM_MODULE_LOG_ERROR(module, submodules, format, ...)
+#define XCAM_MODULE_LOG_WARNING(module, submodules, format, ...)
+#define XCAM_MODULE_LOG_INFO(module, submodules, format, ...)
+#define XCAM_MODULE_LOG_DEBUG(module, submodules, format, ...)
+#endif
 
 #ifdef NDEBUG
 

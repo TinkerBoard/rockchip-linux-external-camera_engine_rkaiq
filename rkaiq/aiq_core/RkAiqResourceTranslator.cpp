@@ -85,12 +85,13 @@ RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, S
         return XCAM_RETURN_BYPASS;
     }
 
-    LOGD_ANALYZER("stats frame_id(%d), meas_type; 0x%x, buf sequence(%d)",
-                  stats->frame_id, stats->meas_type, buf->get_sequence());
+    LOGD_ANALYZER("stats frame_id(%u), meas_type; 0x%x, buf sequence(%d)", stats->frame_id,
+                  stats->meas_type, buf->get_sequence());
 
     SmartPtr<RkAiqIrisParamsProxy> irisParams = buf->get_iris_params();
     SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
-    rkisp_effect_params_v20 ispParams = {0};
+    rkisp_effect_params_v20 ispParams;
+    memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveExpParams(stats->frame_id, expParams) < 0)
         LOGE("fail to get expParams");
     if (buf->getEffectiveIspParams(stats->frame_id, ispParams) < 0) {
@@ -355,7 +356,8 @@ RkAiqResourceTranslator::translateAwbStats (const SmartPtr<VideoBuffer> &from, S
         return XCAM_RETURN_BYPASS;
     }
 
-    rkisp_effect_params_v20 ispParams = {0};
+    rkisp_effect_params_v20 ispParams;
+    memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveIspParams(stats->frame_id, ispParams) < 0) {
         LOGE("fail to get ispParams ,ignore\n");
         return XCAM_RETURN_BYPASS;
@@ -505,14 +507,15 @@ RkAiqResourceTranslator::translateAdehazeStats (const SmartPtr<VideoBuffer> &fro
 
     //dehaze
     statsInt->adehaze_stats_valid = stats->meas_type >> 17 & 1;
-    statsInt->adehaze_stats.dehaze_stats_v20.dhaz_adp_air_base = stats->params.dhaz.dhaz_adp_air_base;
-    statsInt->adehaze_stats.dehaze_stats_v20.dhaz_adp_wt = stats->params.dhaz.dhaz_adp_wt;
-    statsInt->adehaze_stats.dehaze_stats_v20.dhaz_adp_gratio = stats->params.dhaz.dhaz_adp_gratio;
-    statsInt->adehaze_stats.dehaze_stats_v20.dhaz_adp_wt = stats->params.dhaz.dhaz_adp_wt;
+    statsInt->adehaze_stats.dehaze_stats_v10.dhaz_adp_air_base =
+        stats->params.dhaz.dhaz_adp_air_base;
+    statsInt->adehaze_stats.dehaze_stats_v10.dhaz_adp_wt     = stats->params.dhaz.dhaz_adp_wt;
+    statsInt->adehaze_stats.dehaze_stats_v10.dhaz_adp_gratio = stats->params.dhaz.dhaz_adp_gratio;
+    statsInt->adehaze_stats.dehaze_stats_v10.dhaz_adp_wt     = stats->params.dhaz.dhaz_adp_wt;
     for(int i = 0; i < 64; i++) {
-        statsInt->adehaze_stats.dehaze_stats_v20.h_b_iir[i] = stats->params.dhaz.h_b_iir[i];
-        statsInt->adehaze_stats.dehaze_stats_v20.h_g_iir[i] = stats->params.dhaz.h_g_iir[i];
-        statsInt->adehaze_stats.dehaze_stats_v20.h_r_iir[i] = stats->params.dhaz.h_r_iir[i];
+        statsInt->adehaze_stats.dehaze_stats_v10.h_b_iir[i] = stats->params.dhaz.h_b_iir[i];
+        statsInt->adehaze_stats.dehaze_stats_v10.h_g_iir[i] = stats->params.dhaz.h_g_iir[i];
+        statsInt->adehaze_stats.dehaze_stats_v10.h_r_iir[i] = stats->params.dhaz.h_r_iir[i];
     }
 
     to->set_sequence(stats->frame_id);
@@ -625,7 +628,7 @@ RkAiqResourceTranslator::translatePdafStats (const SmartPtr<VideoBuffer> &from, 
     {
         FILE* fp;
         char name[64];
-        int frame_id = buf->get_sequence() % 10;
+        uint32_t frame_id = buf->get_sequence() % 10;
 
         memset(name, 0, sizeof(name));
         sprintf(name, "/tmp/pdaf_raw_%d.raw", frame_id);

@@ -39,4 +39,4 @@ MessageThread::loop()
     return false;
 }
 
-};
+}

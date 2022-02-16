@@ -50,6 +50,6 @@ class RkAiqAtmoHandleInt : virtual public RkAiqHandle {
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAtmoHandleInt);
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

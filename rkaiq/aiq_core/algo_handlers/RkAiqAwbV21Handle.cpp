@@ -137,4 +137,4 @@ XCamReturn RkAiqAwbV21HandleInt::getWbV21Attrib(rk_aiq_uapiV2_wbV21_attrib_t* at
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

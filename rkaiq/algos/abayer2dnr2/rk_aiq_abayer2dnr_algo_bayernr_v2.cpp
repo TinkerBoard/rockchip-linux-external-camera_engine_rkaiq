@@ -253,8 +253,9 @@ Abayer2dnr_result_V2_t bayer2dnr_fix_transfer_V2(RK_Bayer2dnr_Params_V2_Select_t
     pFix->weit_d[2] = 0x31d;
 #else
     edgesofts = pSelect->edgesofts * fStrength;
-    if(edgesofts > 16.0);
-    edgesofts = 16.0;
+    if (edgesofts > 16.0) {
+        edgesofts = 16.0;
+    }
     for(i = 0; i < 8; i++)
     {
         tmp1 = (float)(ypos[i] * ypos[i] + xpos[i] * xpos[i]);

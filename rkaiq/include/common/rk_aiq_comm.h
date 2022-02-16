@@ -84,6 +84,8 @@ typedef enum RKAiqOPMode_e {
 #define SWAP(_T_,A,B)                   { _T_ tmp = (A); (A) = (B); (B) = tmp; }
 #define MIN2(a, b) ((a) > (b) ? (b) : (a))
 #define CLIP(a, min_v, max_v)               (((a) < (min_v)) ? (min_v) : (((a) > (max_v)) ? (max_v) : (a)))
+#define ROUND_INT(x, shf_bit)               (int)((((x) > 0) ? 1 : -1) * ((ABS(x) + (1<<((shf_bit)-1)))>>(shf_bit)))
+#define LOG2(x)                             (log((double)x)                 / log((double)2))
 
 
 #define RETURN_RESULT_IF_DIFFERENT( cur_res, exp_res ) if ( exp_res != cur_res ) { return ( cur_res ); }

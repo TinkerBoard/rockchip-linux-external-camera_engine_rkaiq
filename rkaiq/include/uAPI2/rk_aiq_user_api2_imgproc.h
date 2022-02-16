@@ -19,41 +19,41 @@
 #define _RK_AIQ_UAPI2_IMGPROC_H_
 
 #include "base/xcam_common.h"
-#include "rk_aiq_user_api_common.h"
-#include "rk_aiq_user_api2_ae.h"
-#include "rk_aiq_user_api2_adegamma.h"
-#include "rk_aiq_user_api2_agamma.h"
-#include "rk_aiq_user_api2_alsc.h"
-#include "rk_aiq_user_api2_ablc.h"
-#include "rk_aiq_user_api2_adehaze.h"
-#include "rk_aiq_user_api2_atmo.h"
-#include "rk_aiq_user_api2_amerge.h"
-#include "rk_aiq_user_api2_adrc.h"
-#include "rk_aiq_user_api2_abayernr_v2.h"
-#include "rk_aiq_user_api2_acnr_v1.h"
-#include "rk_aiq_user_api2_aynr_v2.h"
-#include "rk_aiq_user_api2_asharp_v3.h"
-#include "rk_aiq_user_api2_anr.h"
-#include "rk_aiq_user_api2_af.h"
-#include "rk_aiq_user_api2_awb.h"
-#include "rk_aiq_user_api2_accm.h"
 #include "rk_aiq_user_api2_a3dlut.h"
-
-#include "rk_aiq_user_api2_adpcc.h"
-#include "rk_aiq_user_api2_acp.h"
-#include "rk_aiq_user_api2_aie.h"
-#include "rk_aiq_user_api2_adebayer.h"
-#include "rk_aiq_user_api2_a3dlut.h"
-#include "rk_aiq_user_api2_aldch.h"
-#include "rk_aiq_user_api2_afec.h"
-
-#include "rk_aiq_user_api2_aynr_v3.h"
-#include "rk_aiq_user_api2_acnr_v2.h"
-#include "rk_aiq_user_api2_asharp_v4.h"
 #include "rk_aiq_user_api2_abayer2dnr_v2.h"
+#include "rk_aiq_user_api2_abayer2dnr_v23.h"
+#include "rk_aiq_user_api2_abayernr_v2.h"
 #include "rk_aiq_user_api2_abayertnr_v2.h"
-
-
+#include "rk_aiq_user_api2_abayertnr_v23.h"
+#include "rk_aiq_user_api2_ablc.h"
+#include "rk_aiq_user_api2_accm.h"
+#include "rk_aiq_user_api2_acnr_v1.h"
+#include "rk_aiq_user_api2_acnr_v2.h"
+#include "rk_aiq_user_api2_acnr_v30.h"
+#include "rk_aiq_user_api2_acp.h"
+#include "rk_aiq_user_api2_adebayer.h"
+#include "rk_aiq_user_api2_adegamma.h"
+#include "rk_aiq_user_api2_adehaze.h"
+#include "rk_aiq_user_api2_adpcc.h"
+#include "rk_aiq_user_api2_adrc.h"
+#include "rk_aiq_user_api2_ae.h"
+#include "rk_aiq_user_api2_af.h"
+#include "rk_aiq_user_api2_afec.h"
+#include "rk_aiq_user_api2_agamma.h"
+#include "rk_aiq_user_api2_aie.h"
+#include "rk_aiq_user_api2_aldch.h"
+#include "rk_aiq_user_api2_alsc.h"
+#include "rk_aiq_user_api2_amerge.h"
+#include "rk_aiq_user_api2_anr.h"
+#include "rk_aiq_user_api2_asharp_v3.h"
+#include "rk_aiq_user_api2_asharp_v33.h"
+#include "rk_aiq_user_api2_asharp_v4.h"
+#include "rk_aiq_user_api2_atmo.h"
+#include "rk_aiq_user_api2_awb.h"
+#include "rk_aiq_user_api2_aynr_v2.h"
+#include "rk_aiq_user_api2_aynr_v22.h"
+#include "rk_aiq_user_api2_aynr_v3.h"
+#include "rk_aiq_user_api_common.h"
 
 RKAIQ_BEGIN_DECLARE
 /*
@@ -66,11 +66,11 @@ RKAIQ_BEGIN_DECLARE
 *
 * Desc: set ae lock
 * Argument:
-*		true, ae lock
+*       true, ae lock
 *           false, ae unlock
 *****************************
 */
-XCamReturn rk_aiq_uapi2_setAeLock(const rk_aiq_sys_ctx_t* ctx,bool on);
+XCamReturn rk_aiq_uapi2_setAeLock(const rk_aiq_sys_ctx_t* ctx, bool on);
 
 /*
 *****************************

@@ -75,7 +75,7 @@ void CalibConverterAE::convert(CamCalibDbV2Context_t *calibv2,
         (CalibDb_Sensor_ParaV2_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, sensor_calib));
     convertSensorinfoCalibV1ToCalibV2(calibv1, calibv2_sensor_calib);
 
-    CalibDb_Module_ParaV2_t* calibv2_module_calib = 
+    CalibDb_Module_ParaV2_t* calibv2_module_calib =
         (CalibDb_Module_ParaV2_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, module_calib));
     convertModuleinfoCalibV1ToCalibV2(calibv1, calibv2_module_calib);
 #endif
@@ -521,8 +521,8 @@ void CalibConverterAmerge::convert(CamCalibDbV2Context_t *calibv2,
     if (!calibv1_amerge)
         return;
 
-    CalibDbV2_merge_t* calibv2_amerge_calib =
-        (CalibDbV2_merge_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, amerge_calib));
+    CalibDbV2_merge_V10_t* calibv2_amerge_calib =
+        (CalibDbV2_merge_V10_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, amerge_calib));
     if (!calibv2_amerge_calib)
         return;
 
@@ -715,8 +715,8 @@ void CalibConverterAgamma::convert(CamCalibDbV2Context_t *calibv2,
     if (!calibv1_gamma)
         return;
 
-    CalibDbV2_gamma_t* calibv2_agamma_calib =
-        (CalibDbV2_gamma_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, agamma_calib));
+    CalibDbV2_gamma_V10_t* calibv2_agamma_calib =
+        (CalibDbV2_gamma_V10_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, agamma_calib));
     if (!calibv2_agamma_calib)
         return;
 

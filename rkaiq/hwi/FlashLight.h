@@ -44,7 +44,7 @@ public:
     bool isStrengthAdj() {
         return  _v4l_flash_info[0].fl_strth_adj_enable || _v4l_flash_info[0].tc_strth_adj_enable;}
     XCamReturn set_params(rk_aiq_flash_setting_t& flash_settings);
-    XCamReturn get_status (rk_aiq_flash_setting_t& flash_settings, int frame_id = -1);
+    XCamReturn get_status (rk_aiq_flash_setting_t& flash_settings, uint32_t frame_id = -1);
 private:
     int get_flash_info ();
     XCamReturn v4l_set_params(int fl_mode, float fl_intensity[], int fl_timeout, int fl_on);
@@ -75,5 +75,5 @@ private:
     bool _keep_status;
 };
 
-}; //namespace RkCam
+} //namespace RkCam
 #endif // _FLASH_LIGHT_H_

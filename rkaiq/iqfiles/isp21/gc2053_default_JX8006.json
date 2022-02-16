@@ -887,7 +887,7 @@
 								}
 							}
 						},
-						"agamma_calib":	{
+						"agamma_calib_V10":	{
 							"GammaTuningPara":	{
 								"Gamma_en":	1,
 								"Gamma_out_segnum":	"GAMMATYPE_LOG",
@@ -971,7 +971,7 @@
 								}
 							}
 						},
-						"adehaze_calib_v21":	{
+						"adehaze_calib_v11":	{
 							"DehazeTuningPara":	{
 								"Enable":	1,
 								"cfg_alpha":	0,
@@ -1271,7 +1271,7 @@
 								"MDCurveMS_damp":	0.3
 							}
 						},
-						"adrc_calib":	{
+						"adrc_calib_V10":	{
 							"DrcTuningPara":	{
 								"Enable":	0,
 								"DrcGain":	{

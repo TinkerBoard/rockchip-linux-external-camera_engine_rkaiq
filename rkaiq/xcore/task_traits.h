@@ -73,6 +73,6 @@ constexpr uint8_t default_max_param_count   = 5;
 constexpr TaskDuration default_process_time = TaskDuration(33);
 constexpr bool default_may_block            = false;
 
-};  // namespace XCam
+}  // namespace XCam
 
 #endif  // TASK_TRAITS_H

@@ -138,4 +138,4 @@ CamHwBase::poll_event_failed (int64_t timestamp, const char *msg)
 {
     return XCAM_RETURN_ERROR_FAILED;
 }
-}; //namspace RkCam
+} //namspace RkCam

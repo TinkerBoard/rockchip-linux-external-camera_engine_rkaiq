@@ -24,6 +24,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_DEBAYER_V1
 XCamReturn
 rk_aiq_user_api_adebayer_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_attrib_t attr)
 {
@@ -32,7 +33,7 @@ rk_aiq_user_api_adebayer_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_att
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
-    #ifdef RKAIQ_ENABLE_CAMGROUP
+#ifdef RKAIQ_ENABLE_CAMGROUP
         RkAiqCamGroupAdebayerHandleInt* algo_handle =
             camgroupAlgoHandle<RkAiqCamGroupAdebayerHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADEBAYER);
 
@@ -52,9 +53,9 @@ rk_aiq_user_api_adebayer_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_att
             }
             return ret;
         }
-    #else
+#else
         return XCAM_RETURN_ERROR_FAILED;
-    #endif
+#endif
     } else {
         RkAiqAdebayerHandleInt* algo_handle =
             algoHandle<RkAiqAdebayerHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADEBAYER);
@@ -72,7 +73,7 @@ rk_aiq_user_api_adebayer_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_att
 {
     RKAIQ_API_SMART_LOCK(sys_ctx);
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
-    #ifdef RKAIQ_ENABLE_CAMGROUP
+#ifdef RKAIQ_ENABLE_CAMGROUP
         RkAiqCamGroupAdebayerHandleInt* algo_handle =
             camgroupAlgoHandle<RkAiqCamGroupAdebayerHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADEBAYER);
 
@@ -92,9 +93,9 @@ rk_aiq_user_api_adebayer_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_att
             }
             return ret;
         }
-    #else
+#else
         return XCAM_RETURN_ERROR_FAILED;
-    #endif
+#endif
     } else {
         RkAiqAdebayerHandleInt* algo_handle =
             algoHandle<RkAiqAdebayerHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ADEBAYER);
@@ -106,5 +107,18 @@ rk_aiq_user_api_adebayer_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_att
 
     return XCAM_RETURN_ERROR_FAILED;
 }
+#else
+XCamReturn
+rk_aiq_user_api_adebayer_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_attrib_t attr)
+{
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn
+rk_aiq_user_api_adebayer_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_attrib_t *attr)
+{
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+#endif
 
 RKAIQ_END_DECLARE

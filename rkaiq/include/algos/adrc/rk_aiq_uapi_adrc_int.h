@@ -6,7 +6,6 @@
 #include "rk_aiq_types_adrc_algo_int.h"
 #include "adrc_uapi_head.h"
 
-typedef drcAttr_t drc_attrib_t;
 
 // need_sync means the implementation should consider
 // the thread synchronization
@@ -15,15 +14,11 @@ typedef drcAttr_t drc_attrib_t;
 // sync should be done in inner. now we just need implement
 // the case of need_sync == false; need_sync is for future usage.
 
-XCamReturn
-rk_aiq_uapi_adrc_SetAttrib(RkAiqAlgoContext *ctx,
-                           drc_attrib_t attr,
-                           bool need_sync);
-
-
-XCamReturn
-rk_aiq_uapi_adrc_GetAttrib(RkAiqAlgoContext *ctx,
-                           drc_attrib_t *attr);
-
+XCamReturn rk_aiq_uapi_adrc_V10_SetAttrib(RkAiqAlgoContext* ctx, drcAttrV10_t attr, bool need_sync);
+XCamReturn rk_aiq_uapi_adrc_V10_GetAttrib(RkAiqAlgoContext* ctx, drcAttrV10_t* attr);
+XCamReturn rk_aiq_uapi_adrc_V11_SetAttrib(RkAiqAlgoContext* ctx, drcAttrV11_t attr, bool need_sync);
+XCamReturn rk_aiq_uapi_adrc_V11_GetAttrib(RkAiqAlgoContext* ctx, drcAttrV11_t* attr);
+XCamReturn rk_aiq_uapi_adrc_V12_SetAttrib(RkAiqAlgoContext* ctx, drcAttrV12_t attr, bool need_sync);
+XCamReturn rk_aiq_uapi_adrc_V12_GetAttrib(RkAiqAlgoContext* ctx, drcAttrV12_t* attr);
 
 #endif

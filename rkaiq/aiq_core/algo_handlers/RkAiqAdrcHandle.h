@@ -35,21 +35,41 @@ class RkAiqAdrcHandleInt : virtual public RkAiqHandle {
     virtual XCamReturn processing();
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
-    XCamReturn setAttrib(drc_attrib_t att);
-    XCamReturn getAttrib(drc_attrib_t* att);
+#if RKAIQ_HAVE_DRC_V10
+    XCamReturn setAttribV10(drcAttrV10_t att);
+    XCamReturn getAttribV10(drcAttrV10_t* att);
+#endif
+#if RKAIQ_HAVE_DRC_V11
+    XCamReturn setAttribV11(drcAttrV11_t att);
+    XCamReturn getAttribV11(drcAttrV11_t* att);
+#endif
+#if RKAIQ_HAVE_DRC_V12
+    XCamReturn setAttribV12(drcAttrV12_t att);
+    XCamReturn getAttribV12(drcAttrV12_t* att);
+#endif
 
  protected:
     virtual void init();
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
-    drc_attrib_t mCurAtt;
-    drc_attrib_t mNewAtt;
+#if RKAIQ_HAVE_DRC_V10
+    drcAttrV10_t mCurAttV10;
+    drcAttrV10_t mNewAttV10;
+#endif
+#if RKAIQ_HAVE_DRC_V11
+    drcAttrV11_t mCurAttV11;
+    drcAttrV11_t mNewAttV11;
+#endif
+#if RKAIQ_HAVE_DRC_V12
+    drcAttrV12_t mCurAttV12;
+    drcAttrV12_t mNewAttV12;
+#endif
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAdrcHandleInt);
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

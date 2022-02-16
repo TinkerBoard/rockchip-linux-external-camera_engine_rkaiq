@@ -16,16 +16,124 @@
  * limitations under the License.
  *
  */
-#include "acac/rk_aiq_uapi_acac_int.h"
+#include "algos/acac/rk_aiq_uapi_acac_int.h"
 
-#include "acac/rk_aiq_types_acac_algo_prvt.h"
-#include "xcam_log.h"
+#include "algos/acac/rk_aiq_types_acac_algo_prvt.h"
+#include "xcore/base/xcam_common.h"
 
-XCamReturn rk_aiq_uapi_acac_SetAttrib(RkAiqAlgoContext* ctx, rk_aiq_cac_attrib_t attr,
-                                      bool need_sync) {
+using RkCam::CacAlgoAdaptor;
+
+#if RKAIQ_HAVE_CAC_V03
+XCamReturn rk_aiq_uapi_acac_v03_SetAttrib(RkAiqAlgoContext* ctx,
+                                          const rkaiq_cac_v03_api_attr_t* attr, bool need_sync) {
+    if (ctx == nullptr) {
+        LOGE_ACAC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    auto* cac = static_cast<CacAlgoAdaptor*>(ctx->handle);
+    cac->SetApiAttr(attr);
+
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn rk_aiq_uapi_acac_GetAttrib(const RkAiqAlgoContext* ctx, rk_aiq_cac_attrib_t* attr) {
+XCamReturn rk_aiq_uapi_acac_v03_GetAttrib(const RkAiqAlgoContext* ctx,
+                                          rkaiq_cac_v03_api_attr_t* attr) {
+    if (ctx == nullptr) {
+        LOGE_ACAC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    auto* cac = static_cast<CacAlgoAdaptor*>(ctx->handle);
+    cac->GetApiAttr(attr);
+
     return XCAM_RETURN_NO_ERROR;
 }
+#else
+XCamReturn rk_aiq_uapi_acac_v03_SetAttrib(RkAiqAlgoContext* /* ctx */,
+                                          const rkaiq_cac_v03_api_attr_t* /* attr */,
+                                          bool /* need_sync */) {
+    return XCAM_RETURN_NO_ERROR;
+}
+XCamReturn rk_aiq_uapi_acac_v03_GetAttrib(const RkAiqAlgoContext* /* ctx */,
+                                          rkaiq_cac_v03_api_attr_t* /* attr */) {
+    return XCAM_RETURN_NO_ERROR;
+}
+#endif
+
+#if RKAIQ_HAVE_CAC_V10
+XCamReturn rk_aiq_uapi_acac_v10_SetAttrib(RkAiqAlgoContext* ctx,
+                                          const rkaiq_cac_v10_api_attr_t* attr, bool need_sync) {
+    if (ctx == nullptr) {
+        LOGE_ACAC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    auto* cac = static_cast<CacAlgoAdaptor*>(ctx->handle);
+    cac->SetApiAttr(attr);
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn rk_aiq_uapi_acac_v10_GetAttrib(const RkAiqAlgoContext* ctx,
+                                          rkaiq_cac_v10_api_attr_t* attr) {
+    if (ctx == nullptr) {
+        LOGE_ACAC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    auto* cac = static_cast<CacAlgoAdaptor*>(ctx->handle);
+    cac->GetApiAttr(attr);
+
+    return XCAM_RETURN_NO_ERROR;
+}
+#else
+XCamReturn rk_aiq_uapi_acac_v10_SetAttrib(RkAiqAlgoContext* /* ctx */,
+                                          const rkaiq_cac_v10_api_attr_t* /* attr */,
+                                          bool /* need_sync */) {
+    return XCAM_RETURN_NO_ERROR;
+}
+XCamReturn rk_aiq_uapi_acac_v10_GetAttrib(const RkAiqAlgoContext* /* ctx */,
+                                          rkaiq_cac_v10_api_attr_t* /* attr */) {
+    return XCAM_RETURN_NO_ERROR;
+}
+#endif
+
+#if RKAIQ_HAVE_CAC_V11
+XCamReturn rk_aiq_uapi_acac_v11_SetAttrib(RkAiqAlgoContext* ctx,
+                                          const rkaiq_cac_v11_api_attr_t* attr,
+                                          bool /* need_sync */) {
+    if (ctx == nullptr) {
+        LOGE_ACAC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    auto* cac = static_cast<CacAlgoAdaptor*>(ctx->handle);
+    cac->SetApiAttr(attr);
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn rk_aiq_uapi_acac_v11_GetAttrib(const RkAiqAlgoContext* ctx,
+                                          rkaiq_cac_v11_api_attr_t* attr) {
+    if (ctx == nullptr) {
+        LOGE_ACAC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    auto* cac = static_cast<CacAlgoAdaptor*>(ctx->handle);
+    cac->GetApiAttr(attr);
+
+    return XCAM_RETURN_NO_ERROR;
+}
+#else
+XCamReturn rk_aiq_uapi_acac_v11_SetAttrib(RkAiqAlgoContext* /* ctx */,
+                                          const rkaiq_cac_v11_api_attr_t* /* attr */,
+                                          bool /* need_sync */) {
+    return XCAM_RETURN_NO_ERROR;
+}
+XCamReturn rk_aiq_uapi_acac_v11_GetAttrib(const RkAiqAlgoContext* /* ctx */,
+                                          rkaiq_cac_v11_api_attr_t* /* attr */) {
+    return XCAM_RETURN_NO_ERROR;
+}
+#endif

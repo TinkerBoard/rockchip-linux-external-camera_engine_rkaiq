@@ -24,14 +24,12 @@
 
 namespace RkCam {
 
-#if RKAIQ_HAVE_CAC_V10
 class RkAiqAcacHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAcacHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
-        memset(&mCurAtt, 0, sizeof(rk_aiq_cac_attrib_t));
-        memset(&mNewAtt, 0, sizeof(rk_aiq_cac_attrib_t));
-        mCurAtt.en = 0xff;
+        memset(&mCurAtt, 0, sizeof(mCurAtt));
+        memset(&mNewAtt, 0, sizeof(mNewAtt));
     };
     virtual ~RkAiqAcacHandleInt() { RkAiqHandle::deInit(); };
     virtual XCamReturn updateConfig(bool needSync);
@@ -41,22 +39,21 @@ class RkAiqAcacHandleInt : virtual public RkAiqHandle {
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
 
-    XCamReturn setAttrib(rk_aiq_cac_attrib_t att);
-    XCamReturn getAttrib(rk_aiq_cac_attrib_t* att);
+    XCamReturn setAttrib(const rkaiq_cac_v10_api_attr_t* att);
+    XCamReturn getAttrib(rkaiq_cac_v10_api_attr_t* att);
 
  protected:
     virtual void init();
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
-    rk_aiq_cac_attrib_t mCurAtt;
-    rk_aiq_cac_attrib_t mNewAtt;
+    rkaiq_cac_v10_api_attr_t mCurAtt;
+    rkaiq_cac_v10_api_attr_t mNewAtt;
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAcacHandleInt);
 };
-#endif
 
-};  // namespace RkCam
+}  // namespace RkCam
 
-#endif
+#endif  // _RK_AIQ_CAC_HANDLE_INT_H_

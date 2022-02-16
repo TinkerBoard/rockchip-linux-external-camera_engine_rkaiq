@@ -55,4 +55,4 @@ SofEventBuffer::get_data()
     return buf.dynamic_cast_ptr<SofEventData>();
 }
 
-}; //namspace RkCam
+} //namspace RkCam

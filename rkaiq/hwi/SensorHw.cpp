@@ -29,8 +29,8 @@ uint16_t SensorHw::DEFAULT_POOL_SIZE = MAX_AEC_EFFECT_FNUM * 4;
 
 SensorHw::SensorHw(const char* name)
     : BaseSensorHw (name)
-    , _first(true)
     , _working_mode(RK_AIQ_WORKING_MODE_NORMAL)
+    , _first(true)
 {
     ENTER_CAMHW_FUNCTION();
     _last_exp_time = nullptr;
@@ -90,14 +90,12 @@ SensorHw::setHdrSensorExposure(RKAiqAecExpInfo_t* expPar)
         return XCAM_RETURN_ERROR_IOCTL;
     }
 
-    if (expPar->LinearExp.exp_sensor_params.analog_gain_code_global >= 0) {
-        memset(&ctrl, 0, sizeof(ctrl));
-        ctrl.id = V4L2_CID_ANALOGUE_GAIN;
-        ctrl.value = expPar->LinearExp.exp_sensor_params.analog_gain_code_global;
-        if (io_control(VIDIOC_S_CTRL, &ctrl) < 0) {
-            LOGD_CAMHW_SUBM(SENSOR_SUBM, "failed to  set again result(val: %d)", ctrl.value);
-            return XCAM_RETURN_ERROR_IOCTL;
-        }
+    memset(&ctrl, 0, sizeof(ctrl));
+    ctrl.id = V4L2_CID_ANALOGUE_GAIN;
+    ctrl.value = expPar->LinearExp.exp_sensor_params.analog_gain_code_global;
+    if (io_control(VIDIOC_S_CTRL, &ctrl) < 0) {
+        LOGD_CAMHW_SUBM(SENSOR_SUBM, "failed to  set again result(val: %d)", ctrl.value);
+        return XCAM_RETURN_ERROR_IOCTL;
     }
 
     memset(&hdrExp, 0, sizeof(hdrExp));
@@ -177,13 +175,11 @@ SensorHw::setLinearSensorExposure(RKAiqAecExpInfo_t* expPar)
     struct v4l2_control ctrl;
     rk_aiq_exposure_sensor_descriptor sensor_desc;
 
-    LOGD_CAMHW_SUBM(SENSOR_SUBM, "%s: frameid: %d, a-gain: %d, time: %d, dcg: %d, snr: %d\n",
-                    __FUNCTION__,
-                    _frame_sequence,
+    LOGD_CAMHW_SUBM(SENSOR_SUBM, "%s: frameid: %u, a-gain: %d, time: %d, dcg: %d, snr: %d\n",
+                    __FUNCTION__, _frame_sequence,
                     expPar->LinearExp.exp_sensor_params.analog_gain_code_global,
                     expPar->LinearExp.exp_sensor_params.coarse_integration_time,
-                    expPar->LinearExp.exp_real_params.dcg_mode,
-                    expPar->CISFeature.SNR);
+                    expPar->LinearExp.exp_real_params.dcg_mode, expPar->CISFeature.SNR);
 
     // set vts before exposure time firstly
     get_sensor_descriptor (&sensor_desc);
@@ -216,14 +212,12 @@ SensorHw::setLinearSensorExposure(RKAiqAecExpInfo_t* expPar)
         }
     }
 
-    if (expPar->LinearExp.exp_sensor_params.analog_gain_code_global >= 0) {
-        memset(&ctrl, 0, sizeof(ctrl));
-        ctrl.id = V4L2_CID_ANALOGUE_GAIN;
-        ctrl.value = expPar->LinearExp.exp_sensor_params.analog_gain_code_global;
-        if (io_control(VIDIOC_S_CTRL, &ctrl) < 0) {
-            LOGD_CAMHW_SUBM(SENSOR_SUBM, "failed to  set again result(val: %d)", ctrl.value);
-            return XCAM_RETURN_ERROR_IOCTL;
-        }
+    memset(&ctrl, 0, sizeof(ctrl));
+    ctrl.id = V4L2_CID_ANALOGUE_GAIN;
+    ctrl.value = expPar->LinearExp.exp_sensor_params.analog_gain_code_global;
+    if (io_control(VIDIOC_S_CTRL, &ctrl) < 0) {
+        LOGD_CAMHW_SUBM(SENSOR_SUBM, "failed to  set again result(val: %d)", ctrl.value);
+        return XCAM_RETURN_ERROR_IOCTL;
     }
 
     if (expPar->LinearExp.exp_sensor_params.digital_gain_global != 0) {
@@ -258,10 +252,8 @@ SensorHw::setLinearSensorExposure(pending_split_exps_t* expPar)
     struct v4l2_control ctrl;
     rk_aiq_exposure_sensor_descriptor sensor_desc;
 
-    LOGD_CAMHW_SUBM(SENSOR_SUBM, "%s: frameid: %d, a-gain: %d, time: %d, dcg: %d\n",
-                    __FUNCTION__,
-                    _frame_sequence,
-                    expPar->rk_exp_res.sensor_params[0].analog_gain_code_global,
+    LOGD_CAMHW_SUBM(SENSOR_SUBM, "%s: frameid: %u, a-gain: %d, time: %d, dcg: %d\n", __FUNCTION__,
+                    _frame_sequence, expPar->rk_exp_res.sensor_params[0].analog_gain_code_global,
                     expPar->rk_exp_res.sensor_params[0].coarse_integration_time,
                     expPar->rk_exp_res.dcg_mode[0]);
 
@@ -299,14 +291,12 @@ SensorHw::setLinearSensorExposure(pending_split_exps_t* expPar)
     }
 
     if (expPar->rk_exp_res.update_bits & (1 << RK_EXP_UPDATE_GAIN)) {
-        if (expPar->rk_exp_res.sensor_params[0].analog_gain_code_global >= 0) {
-            memset(&ctrl, 0, sizeof(ctrl));
-            ctrl.id = V4L2_CID_ANALOGUE_GAIN;
-            ctrl.value = expPar->rk_exp_res.sensor_params[0].analog_gain_code_global;
-            if (io_control(VIDIOC_S_CTRL, &ctrl) < 0) {
-                LOGD_CAMHW_SUBM(SENSOR_SUBM, "failed to  set again result(val: %d)", ctrl.value);
-                return XCAM_RETURN_ERROR_IOCTL;
-            }
+        memset(&ctrl, 0, sizeof(ctrl));
+        ctrl.id = V4L2_CID_ANALOGUE_GAIN;
+        ctrl.value = expPar->rk_exp_res.sensor_params[0].analog_gain_code_global;
+        if (io_control(VIDIOC_S_CTRL, &ctrl) < 0) {
+            LOGD_CAMHW_SUBM(SENSOR_SUBM, "failed to  set again result(val: %d)", ctrl.value);
+            return XCAM_RETURN_ERROR_IOCTL;
         }
 
         if (expPar->rk_exp_res.sensor_params[0].digital_gain_global != 0) {
@@ -489,7 +479,7 @@ SensorHw::get_sensor_fps(float& fps)
 }
 
 int
-SensorHw::get_format(rk_aiq_exposure_sensor_descriptor* sns_des)
+SensorHw::get_sensor_desc(rk_aiq_exposure_sensor_descriptor* sns_des)
 {
     struct v4l2_subdev_format fmt;
     uint32_t format_code;
@@ -549,7 +539,7 @@ SensorHw::get_sensor_descriptor(rk_aiq_exposure_sensor_descriptor *sns_des)
 {
     memset(sns_des, 0, sizeof(rk_aiq_exposure_sensor_descriptor));
 
-    if (get_format(sns_des))
+    if (get_sensor_desc(sns_des))
         return XCAM_RETURN_ERROR_IOCTL;
 
     if (get_blank(sns_des))
@@ -581,20 +571,20 @@ XCamReturn
 SensorHw::setI2cDAta(pending_split_exps_t* exps) {
     struct rkmodule_reg regs;
 
-    regs.nNumRegs = exps->i2c_exp_res.nNumRegs;
-    regs.pRegAddr = exps->i2c_exp_res.RegAddr;
-    regs.pRegValue = exps->i2c_exp_res.RegValue;
-    regs.pRegAddrBytes = exps->i2c_exp_res.AddrByteNum;
-    regs.pRegValueBytes = exps->i2c_exp_res.ValueByteNum;
+    regs.num_regs = (__u64)(exps->i2c_exp_res.nNumRegs);
+    regs.preg_addr = (__u64)(exps->i2c_exp_res.RegAddr);
+    regs.preg_value = (__u64)(exps->i2c_exp_res.RegValue);
+    regs.preg_addr_bytes = (__u64)(exps->i2c_exp_res.AddrByteNum);
+    regs.preg_value_bytes = (__u64)(exps->i2c_exp_res.ValueByteNum);
 
-    LOG1_CAMHW_SUBM(SENSOR_SUBM,"set sensor reg array num %d ------", regs.nNumRegs);
+    LOG1_CAMHW_SUBM(SENSOR_SUBM,"set sensor reg array num %d ------", exps->i2c_exp_res.nNumRegs);
     if (exps->i2c_exp_res.nNumRegs <= 0)
         return XCAM_RETURN_NO_ERROR;
 
-    for (uint32_t i = 0; i < regs.nNumRegs; i++) {
+    for (uint32_t i = 0; i < regs.num_regs; i++) {
         LOG1_CAMHW_SUBM(SENSOR_SUBM,"reg:(0x%04x,%d,0x%04x,%d)",
-                        regs.pRegAddr[i],regs.pRegAddrBytes[i],
-                        regs.pRegValue[i],regs.pRegValueBytes[i]);
+                        exps->i2c_exp_res.RegAddr[i], exps->i2c_exp_res.AddrByteNum[i],
+                        exps->i2c_exp_res.RegValue[i], exps->i2c_exp_res.ValueByteNum[i]);
     }
 
     if (io_control(RKMODULE_SET_REGISTER, &regs) < 0) {
@@ -733,13 +723,13 @@ SensorHw::setExposureParams(SmartPtr<RkAiqExpParamsProxy>& expPar)
 }
 
 XCamReturn
-SensorHw::getEffectiveExpParams(SmartPtr<RkAiqExpParamsProxy>& expParams, int frame_id)
+SensorHw::getEffectiveExpParams(SmartPtr<RkAiqExpParamsProxy>& expParams, uint32_t frame_id)
 {
     ENTER_CAMHW_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     std::map<int, SmartPtr<RkAiqExpParamsProxy>>::iterator it;
-    int search_id = frame_id < 0 ? 0 : frame_id;
+    int search_id = frame_id == (uint32_t)(-1) ? 0 : frame_id;
 //#ifdef ADD_LOCK
     SmartLock locker (_mutex);
 //#endif
@@ -914,9 +904,9 @@ SensorHw::split_locked(SmartPtr<RkAiqExpParamsProxy>& exp_param, uint32_t sof_id
             uint32_t dst_id;
             uint32_t type;
         } update_exps[3] = {
-            [0] = {dst_time_id, RK_EXP_UPDATE_TIME},
-            [1] = {dst_gain_id, RK_EXP_UPDATE_GAIN},
-            [2] = {dst_dcg_id, RK_EXP_UPDATE_DCG},
+            {dst_time_id, RK_EXP_UPDATE_TIME},
+            {dst_gain_id, RK_EXP_UPDATE_GAIN},
+            {dst_dcg_id, RK_EXP_UPDATE_DCG}
         };
 
         for (auto& update_exp : update_exps) {
@@ -1016,7 +1006,7 @@ SensorHw::split_locked(SmartPtr<RkAiqExpParamsProxy>& exp_param, uint32_t sof_id
 }
 
 XCamReturn
-SensorHw::handle_sof(int64_t time, int frameid)
+SensorHw::handle_sof(int64_t time, uint32_t frameid)
 {
     ENTER_CAMHW_FUNCTION();
     int effecting_frame_id = 0;
@@ -1029,10 +1019,10 @@ SensorHw::handle_sof(int64_t time, int frameid)
 
     _mutex.lock();
     if (frameid - _frame_sequence > 1)
-        LOGE_CAMHW_SUBM(SENSOR_SUBM, "!!!!frame losed,last frameid:%d,current farmeid:%d!!!!\n", _frame_sequence, frameid);
+        LOGE_CAMHW_SUBM(SENSOR_SUBM, "!!!!frame losed,last frameid:%u,current farmeid:%u!!!!\n", _frame_sequence, frameid);
 
     _frame_sequence = frameid;
-    LOGD_CAMHW_SUBM(SENSOR_SUBM, "%s: frameid=%d, exp_list size=%d, gain_list size=%d",
+    LOGD_CAMHW_SUBM(SENSOR_SUBM, "%s: frameid=%u, exp_list size=%d, gain_list size=%d",
                     __FUNCTION__, frameid, _exp_list.size(), _delayed_gain_list.size());
 
     SmartPtr<RkAiqExpParamsProxy> exp_time = nullptr;
@@ -1073,7 +1063,7 @@ SensorHw::handle_sof(int64_t time, int frameid)
     }
 
     _mutex.unlock();
-    LOGD_CAMHW_SUBM(SENSOR_SUBM, "%s: working_mode=%d,frameid=%d, status: set_time=%d,set_gain=%d\n",
+    LOGD_CAMHW_SUBM(SENSOR_SUBM, "%s: working_mode=%d,frameid=%u, status: set_time=%d,set_gain=%d\n",
                     __FUNCTION__, _working_mode, frameid, set_time, set_gain);
 
     if (set_time || set_gain || set_dcg_gain_mode) {
@@ -1111,7 +1101,7 @@ SensorHw::handle_sof(int64_t time, int frameid)
     }
 
     if (ret != XCAM_RETURN_NO_ERROR) {
-        LOGE_CAMHW_SUBM(SENSOR_SUBM, "%s: sof_id[%d]: set exposure failed!!!\n",
+        LOGE_CAMHW_SUBM(SENSOR_SUBM, "%s: sof_id[%u]: set exposure failed!!!\n",
                         __FUNCTION__,
                         frameid);
     }
@@ -1154,7 +1144,7 @@ SensorHw::handle_sof(int64_t time, int frameid)
 }
 
 XCamReturn
-SensorHw::handle_sof_internal(int64_t time, int frameid)
+SensorHw::handle_sof_internal(int64_t time, uint32_t frameid)
 {
     ENTER_CAMHW_FUNCTION();
     int effecting_frame_id = 0;
@@ -1162,10 +1152,10 @@ SensorHw::handle_sof_internal(int64_t time, int frameid)
 
     _mutex.lock();
     if (frameid - _frame_sequence > 1)
-        LOGE_CAMHW_SUBM(SENSOR_SUBM, "!!!!frame losed,last frameid:%d,current farmeid:%d!!!!\n", _frame_sequence, frameid);
+        LOGE_CAMHW_SUBM(SENSOR_SUBM, "!!!!frame losed,last frameid:%u,current farmeid:%u!!!!\n", _frame_sequence, frameid);
 
     _frame_sequence = frameid;
-    LOGD_CAMHW_SUBM(SENSOR_SUBM, "%s: frameid=%d, exp_list size=%d, gain_list size=%d",
+    LOGD_CAMHW_SUBM(SENSOR_SUBM, "%s: frameid=%u, exp_list size=%d, gain_list size=%d",
                     __FUNCTION__, frameid, _exp_list.size(), _delayed_gain_list.size());
 
     SmartPtr<RkAiqExpParamsProxy> new_exp = nullptr;
@@ -1213,9 +1203,10 @@ SensorHw::handle_sof_internal(int64_t time, int frameid)
     }
 
     _pending_spilt_map.erase(_pending_spilt_map.begin(), it_end);
-    if (_pending_spilt_map.size() > 100)
+    if (_pending_spilt_map.size() > 100) {
         LOGW_CAMHW_SUBM(SENSOR_SUBM, "_pending_spilt_map size %d > 100, may be error",
                         _pending_spilt_map.size());
+    }
     _mutex.unlock();
 
     if (!_is_i2c_exp && new_exp.ptr())
@@ -1517,4 +1508,4 @@ SensorHw::composeExpParam
     return XCAM_RETURN_NO_ERROR;
 }
 
-}; //namespace RkCam
+} //namespace RkCam

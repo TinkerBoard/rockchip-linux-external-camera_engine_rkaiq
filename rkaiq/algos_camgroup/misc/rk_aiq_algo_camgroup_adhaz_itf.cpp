@@ -21,14 +21,17 @@
 #include "rk_aiq_algo_camgroup_types.h"
 #include "algos/adehaze/rk_aiq_algo_adhaz_itf.h"
 #include "RkAiqCalibDbTypes.h"
-#if RKAIQ_HAVE_DEHAZE_V1
-#include "adehaze/rk_aiq_adehaze_algo_v1.h"
+#if RKAIQ_HAVE_DEHAZE_V10
+#include "adehaze/rk_aiq_adehaze_algo_v10.h"
 #endif
-#if RKAIQ_HAVE_DEHAZE_V2
-#include "adehaze/rk_aiq_adehaze_algo_v2.h"
+#if RKAIQ_HAVE_DEHAZE_V11
+#include "adehaze/rk_aiq_adehaze_algo_v11.h"
 #endif
-#if RKAIQ_HAVE_DEHAZE_V3
-#include "adehaze/rk_aiq_adehaze_algo_v3.h"
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+#include "adehaze/rk_aiq_adehaze_algo_v11_duo.h"
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+#include "adehaze/rk_aiq_adehaze_algo_v12.h"
 #endif
 #include "RkAiqCalibDbTypes.h"
 #include "xcam_log.h"
@@ -92,29 +95,61 @@ prepare(RkAiqAlgoCom* params)
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
         LOGD_ADEHAZE("%s: Adehaze Reload Para!\n", __FUNCTION__);
-#if RKAIQ_HAVE_DEHAZE_V1
-        CalibDbV2_dehaze_V20_t* calibv2_adehaze_calib_V20 =
-            (CalibDbV2_dehaze_V20_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib_v20));
-        if (calibv2_adehaze_calib_V20)
-            memcpy(&pAdehazeGrpHandle->Calib.Dehaze_v20, calibv2_adehaze_calib_V20, sizeof(CalibDbV2_dehaze_V20_t));
+#if RKAIQ_HAVE_DEHAZE_V10
+        CalibDbV2_dehaze_V10_t* calibv2_adehaze_calib_V10 =
+            (CalibDbV2_dehaze_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        if (calibv2_adehaze_calib_V10)
+            memcpy(&pAdehazeGrpHandle->CalibV10, calibv2_adehaze_calib_V10,
+                   sizeof(CalibDbV2_dehaze_V10_t));
 #endif
-#if RKAIQ_HAVE_DEHAZE_V2
-        CalibDbV2_dehaze_V21_t* calibv2_adehaze_calib_V21 =
-            (CalibDbV2_dehaze_V21_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib_v21));
-        if (calibv2_adehaze_calib_V21)
-            memcpy(&pAdehazeGrpHandle->Calib.Dehaze_v21, calibv2_adehaze_calib_V21, sizeof(CalibDbV2_dehaze_V21_t));
+#if RKAIQ_HAVE_DEHAZE_V11
+        CalibDbV2_dehaze_V11_t* calibv2_adehaze_calib_V11 =
+            (CalibDbV2_dehaze_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        if (calibv2_adehaze_calib_V11) {
+            memcpy(&pAdehazeGrpHandle->CalibV11, calibv2_adehaze_calib_V11,
+                   sizeof(CalibDbV2_dehaze_V11_t));
+            memcpy(&pAdehazeGrpHandle->AdehazeAtrrV11.stAuto, calibv2_adehaze_calib_V11,
+                   sizeof(CalibDbV2_dehaze_V11_t));
+        }
 #endif
-#if RKAIQ_HAVE_DEHAZE_V3
-        CalibDbV2_dehaze_V30_t* calibv2_adehaze_calib_V30 =
-            (CalibDbV2_dehaze_V30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib_v30));
-        if (calibv2_adehaze_calib_V30)
-            memcpy(&pAdehazeGrpHandle->Calib.Dehaze_v30, calibv2_adehaze_calib_V30, sizeof(CalibDbV2_dehaze_V30_t));
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+        CalibDbV2_dehaze_V11_t* calibv2_adehaze_calib_V11_duo =
+            (CalibDbV2_dehaze_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        if (calibv2_adehaze_calib_V11_duo) {
+            memcpy(&pAdehazeGrpHandle->CalibV11duo.DehazeTuningPara,
+                   &calibv2_adehaze_calib_V11_duo->DehazeTuningPara, sizeof(CalibDbDehazeV11_t));
+            memcpy(&pAdehazeGrpHandle->AdehazeAtrrV11duo.stAuto, calibv2_adehaze_calib_V11_duo,
+                   sizeof(CalibDbV2_dehaze_V11_t));
+        }
+
+        // dehaze local gain
+        CalibDbV2_YnrV3_t* calibv2_Ynr =
+            (CalibDbV2_YnrV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ynr_v3));
+        if (calibv2_Ynr)
+            memcpy(&pAdehazeGrpHandle->CalibV11duo.YnrCalibPara, &calibv2_Ynr->CalibPara,
+                   sizeof(CalibDbV2_YnrV3_CalibPara_t));
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+        CalibDbV2_dehaze_V12_t* calibv2_adehaze_calib_V12 =
+            (CalibDbV2_dehaze_V12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        if (calibv2_adehaze_calib_V12) {
+            memcpy(&pAdehazeGrpHandle->CalibV12.DehazeTuningPara,
+                   &calibv2_adehaze_calib_V12->DehazeTuningPara, sizeof(CalibDbDehazeV12_t));
+            memcpy(&pAdehazeGrpHandle->AdehazeAtrrV12.stAuto, calibv2_adehaze_calib_V12,
+                   sizeof(CalibDbV2_dehaze_V12_t));
+        }
+
+        // dehaze local gain
+        CalibDbV2_YnrV3_t* calibv2_Ynr =
+            (CalibDbV2_YnrV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ynr_v3));
+        if (calibv2_Ynr)
+            memcpy(&pAdehazeGrpHandle->CalibV12.YnrCalibPara, &calibv2_Ynr->CalibPara,
+                   sizeof(CalibDbV2_YnrV3_CalibPara_t));
 #endif
     }
 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;
-
 }
 
 static XCamReturn
@@ -131,34 +166,54 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     AdehazeGetCurrDataGroup(pAdehazeGrpHandle, &pGrpProcPara->camgroupParmasArray[0]->aec._effAecExpInfo,
                             pGrpProcPara->camgroupParmasArray[0]->aec._aePreRes);
 
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+    // get ynr snr mode
+    if (pGrpProcPara->gcom.com.u.proc.curExp->CISFeature.SNR == 0)
+        pAdehazeGrpHandle->CurrDataV11duo.SnrMode = YNRSNRMODE_LSNR;
+    else if (pGrpProcPara->gcom.com.u.proc.curExp->CISFeature.SNR == 1)
+        pAdehazeGrpHandle->CurrDataV11duo.SnrMode = YNRSNRMODE_HSNR;
+    else {
+        LOGI_ADEHAZE("%s(%d) Adehaze Get Wrong Snr Mode!!!, Using LSNR Params \n", __func__,
+                     __LINE__);
+        pAdehazeGrpHandle->CurrDataV11duo.SnrMode = YNRSNRMODE_LSNR;
+    }
+#endif
+
     //process
     if(!(AdehazeByPassProcessing(pAdehazeGrpHandle)))
         ret = AdehazeProcess(pAdehazeGrpHandle);
 
     //store data
-#if RKAIQ_HAVE_DEHAZE_V1
-    pAdehazeGrpHandle->PreData.V20.ApiMode = pAdehazeGrpHandle->AdehazeAtrr.mode;
+#if RKAIQ_HAVE_DEHAZE_V10
+    pAdehazeGrpHandle->PreDataV10.ApiMode = pAdehazeGrpHandle->AdehazeAtrrV10.mode;
 #endif
-#if RKAIQ_HAVE_DEHAZE_V2
-    pAdehazeGrpHandle->PreData.V21.ApiMode = pAdehazeGrpHandle->AdehazeAtrr.mode;
+#if RKAIQ_HAVE_DEHAZE_V11
+    pAdehazeGrpHandle->PreDataV11.ApiMode = pAdehazeGrpHandle->AdehazeAtrrV11.mode;
 #endif
-#if RKAIQ_HAVE_DEHAZE_V3
-    else if(pAdehazeGrpHandle->HWversion == ADEHAZE_ISP30)
-        pAdehazeGrpHandle->PreData.V30.ApiMode = pAdehazeGrpHandle->AdehazeAtrr.mode;
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+    pAdehazeGrpHandle->PreDataV11duo.ApiMode = pAdehazeGrpHandle->AdehazeAtrrV11duo.mode;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+    pAdehazeGrpHandle->PreDataV12.ApiMode = pAdehazeGrpHandle->AdehazeAtrrV12.mode;
 #endif
 
     //proc res
-#if RKAIQ_HAVE_DEHAZE_V1
-    pAdehazeGrpHandle->ProcRes.ProcResV20.enable = true;
-    pAdehazeGrpHandle->ProcRes.ProcResV20.update = !(pAdehazeGrpHandle->byPassProc) ;
+#if RKAIQ_HAVE_DEHAZE_V10
+    pAdehazeGrpHandle->ProcRes.ProcResV10.enable = true;
+    pAdehazeGrpHandle->ProcRes.ProcResV10.update = !(pAdehazeGrpHandle->byPassProc);
 #endif
-#if RKAIQ_HAVE_DEHAZE_V2
-    pAdehazeGrpHandle->ProcRes.ProcResV21.enable = pAdehazeGrpHandle->ProcRes.ProcResV21.enable;
-    pAdehazeGrpHandle->ProcRes.ProcResV21.update = !(pAdehazeGrpHandle->byPassProc);
+#if RKAIQ_HAVE_DEHAZE_V11
+    pAdehazeGrpHandle->ProcRes.ProcResV11.enable = pAdehazeGrpHandle->ProcRes.ProcResV11.enable;
+    pAdehazeGrpHandle->ProcRes.ProcResV11.update = !(pAdehazeGrpHandle->byPassProc);
 #endif
-#if RKAIQ_HAVE_DEHAZE_V3
-    pAdehazeGrpHandle->ProcRes.ProcResV30.enable = pAdehazeGrpHandle->ProcRes.ProcResV30.enable;
-    pAdehazeGrpHandle->ProcRes.ProcResV30.update = !(pAdehazeGrpHandle->byPassProc);
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+    pAdehazeGrpHandle->ProcRes.ProcResV11duo.enable =
+        pAdehazeGrpHandle->ProcRes.ProcResV11duo.enable;
+    pAdehazeGrpHandle->ProcRes.ProcResV11duo.update = !(pAdehazeGrpHandle->byPassProc);
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+    pAdehazeGrpHandle->ProcRes.ProcResV12.enable = pAdehazeGrpHandle->ProcRes.ProcResV12.enable;
+    pAdehazeGrpHandle->ProcRes.ProcResV12.update = !(pAdehazeGrpHandle->byPassProc);
 #endif
 
     for (int i = 0; i < pGrpProcResPara->arraySize; i++)

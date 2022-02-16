@@ -121,7 +121,7 @@ class ThumbnailsConfig;
 class ThumbnailsBufferManager;
 struct ScalerParam;
 using ScalerService = XCam::TaskService<ScalerParam>;
-};  // namespace thumbnails
+}  // namespace thumbnails
 
 class ThumbnailsService {
  public:
@@ -147,6 +147,6 @@ class ThumbnailsService {
     std::atomic_bool stopped_;
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif  // AIQ_CORE_THUMBNAILS_H

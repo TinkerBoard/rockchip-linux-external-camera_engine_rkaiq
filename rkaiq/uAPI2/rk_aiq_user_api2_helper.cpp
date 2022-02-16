@@ -30,6 +30,10 @@
 
 #include "rk_aiq_tool_api.h"
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif
 // json cmd example {
 //    "op":"replace",
 //    "path":"/uapi/0/system/crop"
@@ -52,7 +56,15 @@
 
 /*****************Add UAPI wrapper here if necessary*****************/
 __RKAIQUAPI_SET_WRAPPER(rk_aiq_tool_api_ae_setExpSwAttr, Uapi_ExpSwAttrV2_t);
-__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_SetAttrib, drcAttr_t);
+#if RKAIQ_HAVE_DRC_V10
+__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V10_SetAttrib, drcAttrV10_t);
+#endif
+#if RKAIQ_HAVE_DRC_V11
+__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V11_SetAttrib, drcAttrV11_t);
+#endif
+#if RKAIQ_HAVE_DRC_V12
+__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V12_SetAttrib, drcAttrV12_t);
+#endif
 
 /********************** Add Attr caller here ************************/
 __RKAIQUAPI_CALLER(uapi_expsw_attr_t);
@@ -62,49 +74,70 @@ __RKAIQUAPI_CALLER(work_mode_t);
 __RKAIQUAPI_CALLER(uapi_wb_gain_t);
 __RKAIQUAPI_CALLER(uapi_wb_mode_t);
 __RKAIQUAPI_CALLER(uapiMergeCurrCtlData_t);
-__RKAIQUAPI_CALLER(drcAttr_t);
+#if RKAIQ_HAVE_DRC_V10
+__RKAIQUAPI_CALLER(drcAttrV10_t);
+#endif
+#if RKAIQ_HAVE_DRC_V11
+__RKAIQUAPI_CALLER(drcAttrV11_t);
+#endif
+#if RKAIQ_HAVE_DRC_V12
+__RKAIQUAPI_CALLER(drcAttrV12_t);
+#endif
 __RKAIQUAPI_CALLER(uapi_ae_hwstats_t);
 __RKAIQUAPI_CALLER(rk_tool_awb_stat_res2_v30_t);
 __RKAIQUAPI_CALLER(rk_tool_awb_stat_res_full_t);
 __RKAIQUAPI_CALLER(rk_tool_awb_strategy_result_t);
 
 RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
-    __RKAIQUAPI_DESC_DEF(
-        "/uapi/0/ae_uapi/expsw_attr", uapi_expsw_attr_t,
-        __RKAIQUAPI_SET_WRAPPER_NAME(rk_aiq_tool_api_ae_setExpSwAttr),
-        rk_aiq_user_api2_ae_getExpSwAttr),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/ae_uapi/expsw_attr", uapi_expsw_attr_t,
+                         __RKAIQUAPI_SET_WRAPPER_NAME(rk_aiq_tool_api_ae_setExpSwAttr),
+                         rk_aiq_user_api2_ae_getExpSwAttr),
     __RKAIQUAPI_DESC_DEF("/uapi/0/ae_uapi/expinfo", uapi_expinfo_t, NULL,
                          rk_aiq_user_api_ae_queryExpResInfo),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/awb_uapi/wbgain", uapi_wb_gain_t,
-                         rk_aiq_tool_api_setMWBGain, rk_aiq_uapi2_getWBGain),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/awb_uapi/mode", uapi_wb_mode_t,
-                         rk_aiq_tool_api_setWBMode, rk_aiq_uapi2_getWBMode2),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/awb_uapi/wbgain", uapi_wb_gain_t, rk_aiq_tool_api_setMWBGain,
+                         rk_aiq_uapi2_getWBGain),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/awb_uapi/mode", uapi_wb_mode_t, rk_aiq_tool_api_setWBMode,
+                         rk_aiq_uapi2_getWBMode2),
+#if RKAIQ_HAVE_MERGE_V10
     __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/ctldata", uapiMergeCurrCtlData_t,
-                         rk_aiq_tool_api_amerge_SetAttrib2,
-                         rk_aiq_user_api2_amerge_GetAttrib2),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttr_t,
-                         rk_aiq_tool_api_adrc_SetAttrib,
-                         rk_aiq_user_api2_adrc_GetAttrib),
+                         rk_aiq_tool_api_amerge_V10_SetAttrib2,
+                         rk_aiq_user_api2_amerge_V10_GetAttrib2),
+#endif
+#if RKAIQ_HAVE_MERGE_V11
+    __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/ctldata", uapiMergeCurrCtlData_t,
+                         rk_aiq_tool_api_amerge_V11_SetAttrib2,
+                         rk_aiq_user_api2_amerge_V11_GetAttrib2),
+#endif
+#if RKAIQ_HAVE_MERGE_V12
+    __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/ctldata", uapiMergeCurrCtlData_t,
+                         rk_aiq_tool_api_amerge_V12_SetAttrib2,
+                         rk_aiq_user_api2_amerge_V12_GetAttrib2),
+#endif
+#if RKAIQ_HAVE_DRC_V10
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV10_t, rk_aiq_tool_api_adrc_V10_SetAttrib,
+                         rk_aiq_user_api2_adrc_V10_GetAttrib),
+#endif
+#if RKAIQ_HAVE_DRC_V11
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV11_t, rk_aiq_tool_api_adrc_V11_SetAttrib,
+                         rk_aiq_user_api2_adrc_V11_GetAttrib),
+#endif
+#if RKAIQ_HAVE_DRC_V12
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV12_t, rk_aiq_tool_api_adrc_V12_SetAttrib,
+                         rk_aiq_user_api2_adrc_V12_GetAttrib),
+#endif
     __RKAIQUAPI_DESC_DEF("/uapi/0/system/work_mode", work_mode_t,
                          rk_aiq_tool_api_sysctl_swWorkingModeDyn,
                          rk_aiq_uapi_sysctl_getWorkingModeDyn),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/system/scene", aiq_scene_t,
-                         rk_aiq_tool_api_set_scene,
+    __RKAIQUAPI_DESC_DEF("/uapi/0/system/scene", aiq_scene_t, rk_aiq_tool_api_set_scene,
                          rk_aiq_user_api2_get_scene),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/ae_hwstats", uapi_ae_hwstats_t,
-                         NULL,
+    __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/ae_hwstats", uapi_ae_hwstats_t, NULL,
                          rk_aiq_uapi_get_ae_hwstats),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_stat",
-                         rk_tool_awb_stat_res2_v30_t,
-                         NULL,
-                         rk_aiq_uapi_get_awb_stat),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_stat", rk_tool_awb_stat_res2_v30_t,
+                         NULL, rk_aiq_uapi_get_awb_stat),
     __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_stat_algo",
-                         rk_tool_awb_stat_res_full_t,
-                         NULL,
-                         rk_aiq_user_api2_awbV30_getAlgoSta),
+                         rk_tool_awb_stat_res_full_t, NULL, rk_aiq_user_api2_awbV30_getAlgoSta),
     __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_strategy_result",
-                         rk_tool_awb_strategy_result_t,
-                         NULL,
+                         rk_tool_awb_strategy_result_t, NULL,
                          rk_aiq_user_api2_awbV30_getStrategyResult),
 };
 /***********************END OF CUSTOM AREA**************************/
@@ -122,11 +155,10 @@ char *rkaiq_uapi_rpc_response(const char *cmd_path, cJSON *root_js,
   }
 
   if (0 == strcmp(sub_node, "/")) {
-    node_json = root_js;
+      node_json = root_js;
   } else {
-    node_json = cJSONUtils_GetPointer(root_js, sub_node);
-    if (node_json)
-      cJSON_DetachItemViaPointer(root_js, node_json);
+      node_json = cJSONUtils_GetPointer(root_js, sub_node);
+      if (node_json) cJSON_DetachItemViaPointer(root_js, node_json);
   }
 
   if (root_js) {
@@ -145,6 +177,34 @@ char *rkaiq_uapi_rpc_response(const char *cmd_path, cJSON *root_js,
     cJSON_free(node_json);
 
   return ret_str;
+}
+
+int rkaiq_uapi_best_match(const char* cmd_path_str)
+{
+  int i = 0;
+  int list_len = -1;
+  int beset_match = -1;
+  int max_length = -1;
+
+  list_len = sizeof(rkaiq_uapidesc_list) / sizeof(RkAiqUapiDesc_t);
+  if (list_len <= 0) {
+    return -1;
+  }
+
+  // Find most match uapi
+  for (i = 0; i < list_len; i++) {
+    RkAiqUapiDesc_t *temp_uapi_desc = &rkaiq_uapidesc_list[i];
+    if (strstr(cmd_path_str, temp_uapi_desc->arg_path)) {
+      int path_length = std::string(temp_uapi_desc->arg_path).length();
+      if (path_length < max_length) {
+        continue;
+      }
+      max_length = path_length;
+      beset_match = i;
+    }
+  }
+
+  return beset_match;
 }
 
 int rkaiq_uapi_unified_ctl(rk_aiq_sys_ctx_t *sys_ctx, const char *js_str,
@@ -178,30 +238,24 @@ int rkaiq_uapi_unified_ctl(rk_aiq_sys_ctx_t *sys_ctx, const char *js_str,
 
   for (int i = 0; i <= (change_sum - 1); ++i) {
     if (arr_item) {
-      if (strdup(cJSON_GetObjectItem(arr_item, JSON_PATCH_PATH)->valuestring)) {
+      if (cJSON_GetObjectItem(arr_item, JSON_PATCH_PATH)->valuestring) {
         cmd_path_str = std::string(
             cJSON_GetObjectItem(arr_item, JSON_PATCH_PATH)->valuestring);
+        int desc_i = rkaiq_uapi_best_match(cmd_path_str.c_str());
+        if (desc_i >= 0) {
+          uapi_desc = &rkaiq_uapidesc_list[desc_i];
+          if (0 == std::string(uapi_desc->arg_path).compare(cmd_path_str)) {
+            final_path = "/";
+          } else {
+            final_path = cmd_path_str.substr(
+                std::string(uapi_desc->arg_path).length());
+          }
+          cJSON_ReplaceItemInObject(arr_item, JSON_PATCH_PATH,
+                                    cJSON_CreateString(final_path.c_str()));
+        }
       }
     }
     arr_item = arr_item->next;
-  }
-
-  // Find most match uapi
-  for (i = 0; i < list_len; i++) {
-    RkAiqUapiDesc_t *temp_uapi_desc = &rkaiq_uapidesc_list[i];
-    if (strstr(cmd_path_str.c_str(), temp_uapi_desc->arg_path)) {
-      int path_length = std::string(temp_uapi_desc->arg_path).length();
-      if (path_length < max_length) {
-        continue;
-      }
-      max_length = path_length;
-      uapi_desc = temp_uapi_desc;
-      if (0 == std::string(uapi_desc->arg_path).compare(cmd_path_str)) {
-        final_path = "/";
-      } else {
-        final_path = cmd_path_str.substr(path_length);
-      }
-    }
   }
 
   if (!uapi_desc) {
@@ -223,3 +277,7 @@ int rkaiq_uapi_unified_ctl(rk_aiq_sys_ctx_t *sys_ctx, const char *js_str,
 
   return 0;
 }
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif

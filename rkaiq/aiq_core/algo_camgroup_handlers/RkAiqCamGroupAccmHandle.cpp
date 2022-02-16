@@ -106,4 +106,4 @@ XCamReturn RkAiqCamGroupAccmHandleInt::queryCcmInfo(rk_aiq_ccm_querry_info_t* cc
 }
 
 
-};  // namespace RkCam
+}  // namespace RkCam

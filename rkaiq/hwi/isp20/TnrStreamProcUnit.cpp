@@ -178,4 +178,4 @@ XCamReturn TnrStreamProcUnit::config_params(uint32_t frameId, SmartPtr<cam3aResu
     return ret;
 }
 
-}; //namspace RkCam
+} //namspace RkCam

@@ -69,7 +69,9 @@ public:
     NrParamProcThread (NrStatsStream *handle)
         : Thread ("NrParamProcThread")
         , _handle (handle)
-    {}
+    {
+        (void)(_handle);
+    }
 
 protected:
     virtual bool loop () {

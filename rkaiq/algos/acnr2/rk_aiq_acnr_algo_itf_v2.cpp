@@ -24,7 +24,7 @@
 RKAIQ_BEGIN_DECLARE
 
 typedef struct _RkAiqAlgoContext {
-    void* place_holder[0];
+    Acnr_Context_V2_t AcnrCtx;
 } RkAiqAlgoContext;
 
 

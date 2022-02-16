@@ -279,7 +279,11 @@ XCamReturn RkAiqAccmHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
     RkAiqAlgoProcResAccm* accm_com = (RkAiqAlgoProcResAccm*)mProcOutParam;
+#if defined(ISP_HW_V32)
+    rk_aiq_isp_ccm_params_v32_t* ccm_param = params->mCcmV32Params->data().ptr();
+#else
     rk_aiq_isp_ccm_params_v20_t* ccm_param = params->mCcmParams->data().ptr();
+#endif
 
     if (!accm_com) {
         LOGD_ANALYZER("no accm result");
@@ -293,17 +297,25 @@ XCamReturn RkAiqAccmHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     } else {
         ccm_param->frame_id = shared->frameId;
     }
+
+#if defined(ISP_HW_V32)
+    ccm_param->result = accm_rk->accm_hw_conf_v2;
+#else
     ccm_param->result = accm_rk->accm_hw_conf;
+#endif
 
     if (!this->getAlgoId()) {
         RkAiqAlgoProcResAccm* accm_rk_int = (RkAiqAlgoProcResAccm*)accm_com;
     }
-
+#if defined(ISP_HW_V32)
+    cur_params->mCcmV32Params = params->mCcmV32Params;
+#else
     cur_params->mCcmParams = params->mCcmParams;
+#endif
 
     EXIT_ANALYZER_FUNCTION();
 
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

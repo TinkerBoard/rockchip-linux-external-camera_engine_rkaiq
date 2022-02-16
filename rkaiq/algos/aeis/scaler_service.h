@@ -29,7 +29,7 @@ namespace XCam {
 
 class DmaVideoBuffer;
 
-};  // namespace XCam
+}  // namespace XCam
 
 using namespace XCam;
 
@@ -38,7 +38,7 @@ namespace RkCam {
 class ImageProcessor;
 
 struct scaler_param {
-    int frame_id;
+    uint32_t frame_id;
     std::shared_ptr<DmaVideoBuffer> input_image;
     std::vector<std::shared_ptr<DmaVideoBuffer>> scaled_images;
 };
@@ -59,6 +59,6 @@ class ScalerTask final : public ServiceTask<scaler_param> {
 
 using ScalerService = TaskService<scaler_param>;
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif  // ALGOS_AEIS_EIS_ALGO_H

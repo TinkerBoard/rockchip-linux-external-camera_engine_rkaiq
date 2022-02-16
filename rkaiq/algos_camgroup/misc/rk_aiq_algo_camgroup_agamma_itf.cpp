@@ -19,11 +19,11 @@
 
 #include "rk_aiq_algo_camgroup_types.h"
 #include "algos/agamma/rk_aiq_algo_agamma_itf.h"
-#if RKAIQ_HAVE_GAMMA_V1
-#include "agamma/rk_aiq_agamma_algo_v1.h"
+#if RKAIQ_HAVE_GAMMA_V10
+#include "agamma/rk_aiq_agamma_algo_v10.h"
 #endif
-#if RKAIQ_HAVE_GAMMA_V2
-#include "agamma/rk_aiq_agamma_algo_v2.h"
+#if RKAIQ_HAVE_GAMMA_V11
+#include "agamma/rk_aiq_agamma_algo_v11.h"
 #endif
 
 
@@ -34,6 +34,7 @@ static XCamReturn
 create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
 {
     LOG1_AGAMMA("ENTER: %s \n", __func__);
+
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     AgammaHandle_t* pAgammaGrpCtx = NULL;
     AlgoCtxInstanceCfgCamGroup* instanc_int = (AlgoCtxInstanceCfgCamGroup*)cfg;
@@ -71,15 +72,19 @@ prepare(RkAiqAlgoCom* params)
     pAgammaGrpCtx->prepare_type = pCfgParam->gcom.com.u.prepare.conf_type;
 
     if(!!(pAgammaGrpCtx->prepare_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
-#if RKAIQ_HAVE_GAMMA_V1
-        CalibDbV2_gamma_t* calibv2_agamma_calib =
-            (CalibDbV2_gamma_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2), agamma_calib));
-        memcpy(&pAgammaGrpCtx->CalibDb, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_t));//reload iq
+#if RKAIQ_HAVE_GAMMA_V10
+        CalibDbV2_gamma_V10_t* calibv2_agamma_calib =
+            (CalibDbV2_gamma_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2),
+                                                              agamma_calib));
+        memcpy(&pAgammaGrpCtx->agammaAttrV10.stAuto, calibv2_agamma_calib,
+               sizeof(CalibDbV2_gamma_V10_t));  // reload iq
 #endif
-#if RKAIQ_HAVE_GAMMA_V2
-        CalibDbV2_gamma_V30_t* calibv2_agamma_calib =
-            (CalibDbV2_gamma_V30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2), agamma_calib));
-        memcpy(&pAgammaGrpCtx->CalibDb, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_V30_t));//reload iq
+#if RKAIQ_HAVE_GAMMA_V11
+        CalibDbV2_gamma_V11_t* calibv2_agamma_calib =
+            (CalibDbV2_gamma_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2),
+                                                              agamma_calib));
+        memcpy(&pAgammaGrpCtx->agammaAttrV11.stAuto, calibv2_agamma_calib,
+               sizeof(CalibDbV2_gamma_V11_t));  // reload iq
 #endif
         LOGI_AGAMMA("%s: Agamma Reload Para!!!\n", __FUNCTION__);
     }

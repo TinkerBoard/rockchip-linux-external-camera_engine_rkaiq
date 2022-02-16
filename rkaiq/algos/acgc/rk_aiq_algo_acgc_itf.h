@@ -32,4 +32,4 @@ extern RkAiqAlgoDescription g_RkIspAlgoDescAcgc;
 
 XCAM_END_DECLARE
 
-#endif //_RK_AIQ_ALGO_ACGC_ITF_H_ 
+#endif  //_RK_AIQ_ALGO_ACGC_ITF_H_

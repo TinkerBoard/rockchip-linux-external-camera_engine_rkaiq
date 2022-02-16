@@ -246,6 +246,6 @@ private:
     bool mIsMain;
 };
 
-}; //namespace RkCam
+} //namespace RkCam
 
 #endif //_RK_AIQ_MANAGER_H_

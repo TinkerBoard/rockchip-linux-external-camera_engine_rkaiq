@@ -401,8 +401,9 @@ XCamReturn PollThread::stop ()
         if (_event_poll_stop_fd[1] != -1) {
             char buf = 0xf;  // random value to write to flush fd.
             unsigned int size = write(_event_poll_stop_fd[1], &buf, sizeof(char));
-            if (size != sizeof(char))
+            if (size != sizeof(char)) {
                 XCAM_LOG_WARNING("Flush write not completed");
+            }
         }
         _event_loop->stop ();
     }
@@ -411,8 +412,9 @@ XCamReturn PollThread::stop ()
         if (_ispp_poll_stop_fd[1] != -1) {
             char buf = 0xf;  // random value to write to flush fd.
             unsigned int size = write(_ispp_poll_stop_fd[1], &buf, sizeof(char));
-            if (size != sizeof(char))
+            if (size != sizeof(char)) {
                 XCAM_LOG_WARNING("Flush write not completed");
+            }
         }
         _ispp_stats_loop->stop ();
     }
@@ -421,8 +423,9 @@ XCamReturn PollThread::stop ()
         if (_3a_stats_poll_stop_fd[1] != -1) {
             char buf = 0xf;  // random value to write to flush fd.
             unsigned int size = write(_3a_stats_poll_stop_fd[1], &buf, sizeof(char));
-            if (size != sizeof(char))
+            if (size != sizeof(char)) {
                 XCAM_LOG_WARNING("Flush write not completed");
+            }
         }
         _isp_stats_loop->stop ();
     }
@@ -431,8 +434,9 @@ XCamReturn PollThread::stop ()
         if (_luma_poll_stop_fd[1] != -1) {
             char buf = 0xf;  // random value to write to flush fd.
             unsigned int size = write(_luma_poll_stop_fd[1], &buf, sizeof(char));
-            if (size != sizeof(char))
+            if (size != sizeof(char)) {
                 XCAM_LOG_WARNING("Flush write not completed");
+            }
         }
         _isp_luma_loop->stop ();
     }
@@ -441,8 +445,9 @@ XCamReturn PollThread::stop ()
         if (_isp_params_poll_stop_fd[1] != -1) {
             char buf = 0xf;  // random value to write to flush fd.
             unsigned int size = write(_isp_params_poll_stop_fd[1], &buf, sizeof(char));
-            if (size != sizeof(char))
+            if (size != sizeof(char)) {
                 XCAM_LOG_WARNING("Flush write not completed");
+            }
         }
         _isp_params_loop->stop ();
     }
@@ -451,8 +456,9 @@ XCamReturn PollThread::stop ()
         if (_isp_pparams_poll_stop_fd[1] != -1) {
             char buf = 0xf;  // random value to write to flush fd.
             unsigned int size = write(_isp_pparams_poll_stop_fd[1], &buf, sizeof(char));
-            if (size != sizeof(char))
+            if (size != sizeof(char)) {
                 XCAM_LOG_WARNING("Flush write not completed");
+            }
         }
         _isp_pparams_loop->stop ();
     }
@@ -463,7 +469,7 @@ XCamReturn PollThread::stop ()
 }
 
 XCamReturn
-PollThread::notify_sof (uint64_t time, int frameid)
+PollThread::notify_sof (uint64_t time, uint32_t frameid)
 {
     XCAM_UNUSED (time);
     XCAM_UNUSED (frameid);
@@ -616,4 +622,4 @@ PollThread::poll_buffer_loop (int type)
     return ret;
 }
 
-};
+}

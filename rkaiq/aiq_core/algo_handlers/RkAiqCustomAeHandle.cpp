@@ -203,4 +203,4 @@ XCamReturn RkAiqCustomAeHandle::genIspResult(RkAiqFullParams* params, RkAiqFullP
 #endif
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

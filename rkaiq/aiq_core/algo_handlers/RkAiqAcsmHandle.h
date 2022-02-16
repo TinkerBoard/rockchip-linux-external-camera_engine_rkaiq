@@ -23,7 +23,7 @@
 #include "xcam_mutex.h"
 
 namespace RkCam {
-
+#if RKAIQ_HAVE_CSM_V1
 class RkAiqAcsmHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAcsmHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
@@ -48,7 +48,7 @@ class RkAiqAcsmHandleInt : virtual public RkAiqHandle {
     rk_aiq_uapi_acsm_attrib_t mCurAtt;
     rk_aiq_uapi_acsm_attrib_t mNewAtt;
 };
-
-};  // namespace RkCam
+#endif
+}  // namespace RkCam
 
 #endif

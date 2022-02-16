@@ -41,7 +41,7 @@ struct DrmDumbObject {
     uint32_t handles[RKCAM_MAX_DRM_PLANES];
     size_t sizes[RKCAM_MAX_DRM_PLANES];
 };
-};
+}
 
 namespace XCam {
 
@@ -67,6 +67,6 @@ class DrmDevice {
     UniqueFd fd_;
 };
 
-};  // namespace XCam
+}  // namespace XCam
 
 #endif  // _DRM_DEVICE_H_

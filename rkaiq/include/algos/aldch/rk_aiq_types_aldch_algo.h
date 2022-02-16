@@ -11,6 +11,6 @@ typedef struct {
     unsigned int lut_map_size;
     //unsigned short lut_mapxy[LDCH_MESH_XY_NUM_ALGO];
     unsigned int lut_mapxy_buf_fd;
-} ldch_process_result_t;;
+} ldch_process_result_t;
 
 #endif

@@ -306,7 +306,7 @@ void AgicProcessV21(AgicContext_t* pAgicCtx, int ISO) {
         ratio = (1 << 4);
     } else {
         int i = 0;
-        for (i = 0; i < (pAgicCtx->attr.v2.iso_cnt - 2); i++) {
+        for (i = 0; i < (int)(pAgicCtx->attr.v2.iso_cnt - 2); i++) {
             iso_lo = (int)(pAgicCtx->attr.v2.auto_params[i].iso);
             iso_hi = (int)(pAgicCtx->attr.v2.auto_params[i + 1].iso);
             LOGD_AGIC("index=%d,  iso_lo=%d, iso_hi=%d", index, iso_lo, iso_hi);

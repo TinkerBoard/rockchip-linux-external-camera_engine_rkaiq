@@ -36,8 +36,18 @@ class RkAiqAdhazHandleInt : virtual public RkAiqHandle {
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     // TODO add algo specific methords, this is a sample
-    XCamReturn setSwAttrib(adehaze_sw_V2_t att);
-    XCamReturn getSwAttrib(adehaze_sw_V2_t* att);
+#if RKAIQ_HAVE_DEHAZE_V10
+    XCamReturn setSwAttribV10(adehaze_sw_V10_t att);
+    XCamReturn getSwAttribV10(adehaze_sw_V10_t* att);
+#endif
+#if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
+    XCamReturn setSwAttribV11(adehaze_sw_V11_t att);
+    XCamReturn getSwAttribV11(adehaze_sw_V11_t* att);
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+    XCamReturn setSwAttribV12(adehaze_sw_V12_t att);
+    XCamReturn getSwAttribV12(adehaze_sw_V12_t* att);
+#endif
 
  protected:
     virtual void init();
@@ -45,13 +55,23 @@ class RkAiqAdhazHandleInt : virtual public RkAiqHandle {
 
  private:
     // TODO
-    adehaze_sw_V2_t mCurAtt;
-    adehaze_sw_V2_t mNewAtt;
+#if RKAIQ_HAVE_DEHAZE_V10
+    adehaze_sw_V10_t mCurAttV10;
+    adehaze_sw_V10_t mNewAttV10;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
+    adehaze_sw_V11_t mCurAttV11;
+    adehaze_sw_V11_t mNewAttV11;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+    adehaze_sw_V12_t mCurAttV12;
+    adehaze_sw_V12_t mNewAttV12;
+#endif
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAdhazHandleInt);
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

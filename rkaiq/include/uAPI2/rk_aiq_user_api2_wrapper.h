@@ -30,11 +30,23 @@ int rk_aiq_uapi2_setWBMode2(rk_aiq_sys_ctx_t *ctx, uapi_wb_mode_t *mode);
 
 int rk_aiq_uapi2_getWBMode2(rk_aiq_sys_ctx_t *ctx, uapi_wb_mode_t *mode);
 
-int rk_aiq_user_api2_amerge_SetAttrib2(const rk_aiq_sys_ctx_t *sys_ctx,
-                                       uapiMergeCurrCtlData_t *ctldata);
+int rk_aiq_user_api2_amerge_V10_SetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
+                                           uapiMergeCurrCtlData_t* ctldata);
 
-int rk_aiq_user_api2_amerge_GetAttrib2(const rk_aiq_sys_ctx_t *sys_ctx,
-                                       uapiMergeCurrCtlData_t *ctldata);
+int rk_aiq_user_api2_amerge_V10_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
+                                           uapiMergeCurrCtlData_t* ctldata);
+
+int rk_aiq_user_api2_amerge_V11_SetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
+                                           uapiMergeCurrCtlData_t* ctldata);
+
+int rk_aiq_user_api2_amerge_V11_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
+                                           uapiMergeCurrCtlData_t* ctldata);
+
+int rk_aiq_user_api2_amerge_V12_SetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
+                                           uapiMergeCurrCtlData_t* ctldata);
+
+int rk_aiq_user_api2_amerge_V12_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
+                                           uapiMergeCurrCtlData_t* ctldata);
 
 int rk_aiq_user_api2_set_scene(const rk_aiq_sys_ctx_t *sys_ctx,
                                aiq_scene_t *scene);

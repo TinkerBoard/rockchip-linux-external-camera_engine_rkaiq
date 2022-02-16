@@ -92,12 +92,10 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
     virtual void deInit() { RkAiqHandle::deInit(); };
     SmartPtr<RkAiqAlgoProcResAwbIntShared> mProcResShared;
 
- private:
-    // TODO
+ protected:
     rk_aiq_wb_attrib_t mCurAtt;
     rk_aiq_wb_attrib_t mNewAtt;
-    // v2
-    rk_aiq_uapiV2_wbV20_attrib_t mCurWbV20Attr;  // v21 todo
+    rk_aiq_uapiV2_wbV20_attrib_t mCurWbV20Attr;
     rk_aiq_uapiV2_wbV20_attrib_t mNewWbV20Attr;
     rk_aiq_uapiV2_wb_opMode_t mCurWbOpModeAttr;
     rk_aiq_uapiV2_wb_opMode_t mNewWbOpModeAttr;
@@ -123,6 +121,6 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAwbHandleInt);
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

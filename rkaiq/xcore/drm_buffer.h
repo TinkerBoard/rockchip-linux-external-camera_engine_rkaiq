@@ -19,7 +19,9 @@
 #ifndef _DRM_BUFFER_H_
 #define _DRM_BUFFER_H_
 
+extern "C" {
 #include <drm/drm_fourcc.h>
+}
 #include <sys/types.h>
 
 #include <memory>
@@ -29,7 +31,7 @@
 
 extern "C" {
 struct DrmDumbObject;
-};
+}
 
 namespace XCam {
 
@@ -91,10 +93,10 @@ class DrmBufferProxy : public virtual BufferProxy {
     virtual ~DrmBufferProxy() = default;
     DrmDumbObject* get_bo();
 
-    const int GetFd();
+    int GetFd();
 };
 
-};  // namespace XCam
+}  // namespace XCam
 
 #endif  // _DRM_BUFFER_H_
 

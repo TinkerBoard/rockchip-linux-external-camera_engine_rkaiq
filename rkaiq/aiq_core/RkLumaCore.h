@@ -134,6 +134,6 @@ private:
     static uint16_t DEFAULT_POOL_SIZE;
 };
 
-};
+}
 
 #endif //_RK_LUMA_CORE_H_

@@ -55,7 +55,7 @@ protected:
     PollCallback *_poll_callback;
     RKStream *_stream;
     //frame syncronization
-    int frameid;
+    uint32_t frameid;
     int _dev_type;
     int _poll_stop_fd[2];
 };

@@ -149,6 +149,7 @@ typedef enum awb_hardware_version_e
 {
     AWB_HARDWARE_V200 = 0,
     AWB_HARDWARE_V201 = 1,
+    AWB_HARDWARE_V32 = 2,
     AWB_HARDWARE_VMAX
 } awb_hardware_version_t;
 
@@ -205,7 +206,6 @@ typedef struct rk_aiq_uapiV2_wbV20_awb_attrib_s {
     CalibDbV2_Awb_Mul_Win_t  multiWindow;
 } rk_aiq_uapiV2_wbV20_awb_attrib_t;
 
-
 typedef struct rk_aiq_uapiV2_wbV21_attrib_s {
     rk_aiq_uapi_sync_t sync;
 
@@ -222,13 +222,29 @@ typedef struct rk_aiq_uapiV2_wbV20_attrib_s {
     rk_aiq_uapiV2_wbV20_awb_attrib_t stAuto;
 } rk_aiq_uapiV2_wbV20_attrib_t;
 
-typedef struct rk_aiq_uapiV2_wbV30_attrib_s {
+typedef rk_aiq_uapiV2_wbV21_attrib_t rk_aiq_uapiV2_wbV30_attrib_t;
+
+typedef struct rk_aiq_uapiV2_wbV32_awb_mulWindow_s {
+  rk_aiq_uapi_sync_t sync;
+  bool  enable;
+  float window[4][4];//percent
+} rk_aiq_uapiV2_wbV32_awb_mulWindow_t;
+
+typedef struct rk_aiq_uapiV2_wbV32_awb_attrib_s {
+    rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjust;
+    CalibDbV2_Awb_gain_offset_cfg_t wbGainOffset;
+    rk_aiq_uapiV2_wbV32_awb_mulWindow_t  multiWindow;
+} rk_aiq_uapiV2_wbV32_awb_attrib_t;
+
+typedef struct rk_aiq_uapiV2_wbV32_attrib_t {
     rk_aiq_uapi_sync_t sync;
 
     bool byPass;
     rk_aiq_wb_op_mode_t mode;
     rk_aiq_wb_mwb_attrib_t stManual;
-    rk_aiq_uapiV2_wbV30_awb_attrib_t stAuto;
-} rk_aiq_uapiV2_wbV30_attrib_t;
+    rk_aiq_uapiV2_wbV32_awb_attrib_t stAuto;
+} rk_aiq_uapiV2_wbV32_attrib_t;
+
+
 #endif
 

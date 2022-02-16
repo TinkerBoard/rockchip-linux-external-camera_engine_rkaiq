@@ -63,6 +63,6 @@ class UniqueFd final {
     int fd_;
 };
 
-};  // namespace XCam
+}  // namespace XCam
 
 #endif  // _UNIQUE_FD_H_

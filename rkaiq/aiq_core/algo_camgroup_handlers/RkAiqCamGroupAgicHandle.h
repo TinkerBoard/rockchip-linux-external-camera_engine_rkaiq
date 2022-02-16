@@ -49,6 +49,6 @@ class RkAiqCamGroupAgicHandleInt : public RkAiqCamgroupHandle {
     rkaiq_gic_v2_api_attr_t mNewAttV2;
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif  // _RK_AIQ_CAMGROUP_AGIC_HANDLE_INT_H_

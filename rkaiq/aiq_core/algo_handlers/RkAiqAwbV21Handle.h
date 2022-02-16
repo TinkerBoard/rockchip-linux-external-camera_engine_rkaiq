@@ -72,6 +72,6 @@ class RkAiqAwbV21HandleInt : public RkAiqAwbHandleInt {
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAwbV21HandleInt);
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 #endif
 #endif

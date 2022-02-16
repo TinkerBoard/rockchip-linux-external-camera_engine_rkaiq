@@ -165,4 +165,4 @@ VideoBuffer::clear_all_metadata ()
     _metadata_list.clear ();
 }
 
-};
+}

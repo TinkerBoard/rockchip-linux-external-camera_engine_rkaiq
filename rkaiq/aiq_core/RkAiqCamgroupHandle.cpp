@@ -190,4 +190,4 @@ RkAiqCamgroupHandle::sendSignal(rk_aiq_uapi_mode_sync_e sync_mode)
         mUpdateCond.signal();
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

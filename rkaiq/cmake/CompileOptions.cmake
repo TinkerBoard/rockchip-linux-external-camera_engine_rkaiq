@@ -1,8 +1,16 @@
-set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -fPIC")
+set(CMAKE_C_FLAGS                  "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -fPIC")
+set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -fPIC")
 set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g -gdwarf")
 set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE        "-O4 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -gdwarf")
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_C_EXTENSIONS ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (ARCH STREQUAL "arm")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mthumb")
@@ -10,17 +18,42 @@ if (ARCH STREQUAL "arm")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     execute_process(
         COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
-    if (NOT (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7))
-        message(FATAL_ERROR "${PROJECT_NAME} requires g++ 4.7 or greater.")
+    if (NOT (GCC_VERSION VERSION_GREATER 8.3 OR GCC_VERSION VERSION_EQUAL 8.3))
+        message(FATAL_ERROR "${PROJECT_NAME} requires g++ 8.3 or greater.")
     endif ()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections -Wl,-Map,librkaiq.map")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--version-script=${CMAKE_CURRENT_LIST_DIR}/librkaiq.version")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=gold -Wl,--icf=all -Wl,--gdb-index")
+
+    # Flags that affects code size
+    if (NOT ARCH STREQUAL "arm")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_ASSERTIONS")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fstack-protector-strong -D_FORTIFY_SOURCE=2")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fstack-clash-protection")
+        set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -fstack-protector-strong -D_FORTIFY_SOURCE=2")
+        set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -fstack-clash-protection")
+        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs -Wl,-z,noexecstack -Wl,-z,now -Wl,-z,relro")
+    endif (NOT ARCH STREQUAL "arm")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -fgnuc-version=8.3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fgnuc-version=8.3")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fstack-protector-strong")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -fstack-protector-strong")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections -Wl,-Map,librkaiq.map")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--version-script=${CMAKE_CURRENT_LIST_DIR}/librkaiq.version")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--push-state -Wl,--no-as-needed -lpthread -Wl,--pop-state")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--push-state -Wl,--as-needed -latomic -Wl,--pop-state")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs -Wl,-z,noexecstack -Wl,-z,now -Wl,-z,relro")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld -Wl,--icf=all -Wl,--gdb-index")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /stdlib=libc++")
 else ()
@@ -29,17 +62,32 @@ endif ()
 
 # Workaround Compile Errors
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder")
     add_compile_options(
+        -fwrapv
+        -Wformat-security
+        )
+    add_compile_options(
+        -Wno-psabi
         -Wno-unused
         -Wno-unused-result
-        -Wno-misleading-indentation
-        -Wno-format-truncation
-        -fno-strict-aliasing
-        -Wno-address-of-packed-member
-        -Wno-psabi
         )
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fstack-protector-strong -D_FORTIFY_SOURCE=2")
+    if (GCC_VERSION VERSION_GREATER 9 OR GCC_VERSION VERSION_EQUAL 9)
+        add_compile_options(
+            -Wno-address-of-packed-member
+            )
+    endif()
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(
+        -fwrapv
+        -Wformat-security
+        )
+    add_compile_options(
+        -Wno-c99-designator
+        -Wno-unused-function
+        -Wno-unused-variable
+        -Wno-address-of-packed-member
+        -Wno-unused-parameter
+        )
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()

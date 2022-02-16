@@ -87,4 +87,4 @@ SmartPtr<BufferProxy> SharedItemPool<T>::create_buffer_from_data (SmartPtr<Buffe
     return new SharedItemProxy<T> (data_t);
 }
 
-};
+}

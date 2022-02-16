@@ -126,7 +126,7 @@ protected:
     bool                     _started;
 };
 
-};
+}
 
 #endif //XCAM_BUFFER_POOL_H
 

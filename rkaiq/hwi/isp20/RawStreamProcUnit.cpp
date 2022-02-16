@@ -4,8 +4,8 @@
 #include "CamHwIsp20.h"
 namespace RkCam {
 RawStreamProcUnit::RawStreamProcUnit ()
-: _first_trigger(true)
-, _is_multi_cam_conc(false)
+: _is_multi_cam_conc(false)
+, _first_trigger(true)
 {
     _raw_proc_thread = new RawProcThread(this);
     _PollCallback = NULL;
@@ -13,8 +13,8 @@ RawStreamProcUnit::RawStreamProcUnit ()
 }
 
 RawStreamProcUnit::RawStreamProcUnit (const rk_sensor_full_info_t *s_info, bool linked_to_isp)
-    : _first_trigger(true)
-    , _is_multi_cam_conc(false)
+    : _is_multi_cam_conc(false)
+    , _first_trigger(true)
 {
     _raw_proc_thread = new RawProcThread(this);
     _PollCallback = NULL;
@@ -234,7 +234,7 @@ RawStreamProcUnit::poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_in
 }
 
 void
-RawStreamProcUnit::set_hdr_frame_readback_infos(int frame_id, int times)
+RawStreamProcUnit::set_hdr_frame_readback_infos(uint32_t frame_id, int times)
 {
     if (_working_mode == RK_AIQ_WORKING_MODE_NORMAL)
         return;
@@ -319,7 +319,7 @@ RawStreamProcUnit::match_sof_timestamp_map(sint32_t sequence, uint64_t &timestam
 }
 
 void
-RawStreamProcUnit::set_hdr_global_tmo_mode(int frame_id, bool mode)
+RawStreamProcUnit::set_hdr_global_tmo_mode(uint32_t frame_id, bool mode)
 {
     _mipi_trigger_mutex.lock();
     _hdr_global_tmo_state_map[frame_id] = mode;
@@ -327,7 +327,7 @@ RawStreamProcUnit::set_hdr_global_tmo_mode(int frame_id, bool mode)
 }
 
 void
-RawStreamProcUnit::notify_sof(uint64_t time, int frameid)
+RawStreamProcUnit::notify_sof(uint64_t time, uint32_t frameid)
 {
     _mipi_trigger_mutex.lock();
     while (_sof_timestamp_map.size() > 8) {

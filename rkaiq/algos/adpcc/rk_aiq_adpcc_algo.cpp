@@ -2474,10 +2474,11 @@ void Api_Sensor_dpcc_process(AdpccContext_t *pAdpccCtx)
     pAdpccCtx->SenDpccRes.cur_multiple_dpcc = pAdpccCtx->stManual.stSensorDpcc.double_level;
     pAdpccCtx->SenDpccRes.total_dpcc = pAdpccCtx->stManual.stSensorDpcc.max_level;
 
-    if(pAdpccCtx->SenDpccRes.enable == false)
+    if (pAdpccCtx->SenDpccRes.enable == false) {
         LOGD_ADPCC("%s(%d):sensor dpcc setting off!!\n", __FUNCTION__, __LINE__);
-    else
+    } else {
         LOGD_ADPCC("%s(%d):sensor dpcc setting on!!\n", __FUNCTION__, __LINE__);
+    }
 
     LOGD_ADPCC("%s(%d):Api sensor dpcc cur_s_dpcc:%d cur_m_dpcc:%d total_dpcc:%d!!\n", __FUNCTION__, __LINE__,
                pAdpccCtx->SenDpccRes.cur_single_dpcc, pAdpccCtx->SenDpccRes.cur_multiple_dpcc, pAdpccCtx->SenDpccRes.total_dpcc);
@@ -2509,10 +2510,11 @@ void Sensor_dpcc_process(AdpccContext_t *pAdpccCtx)
     pAdpccCtx->SenDpccRes.cur_multiple_dpcc = (int)(sensor_dpcc_level_multi + 0.5);
     pAdpccCtx->SenDpccRes.total_dpcc = (int)(pAdpccCtx->stAuto.stSensorDpcc.max_level + 0.5);
 
-    if(pAdpccCtx->SenDpccRes.enable == false)
+    if (pAdpccCtx->SenDpccRes.enable == false) {
         LOGD_ADPCC("%s(%d):sensor dpcc setting off!!\n", __FUNCTION__, __LINE__);
-    else
+    } else {
         LOGD_ADPCC("%s(%d):sensor dpcc setting on!!\n", __FUNCTION__, __LINE__);
+    }
 
     LOGD_ADPCC("%s(%d):ISO:%d sensor dpcc cur_s_dpcc:%d cur_m_dpcc:%d total_dpcc:%d!!\n", __FUNCTION__, __LINE__, iso,
                pAdpccCtx->SenDpccRes.cur_single_dpcc, pAdpccCtx->SenDpccRes.cur_multiple_dpcc, pAdpccCtx->SenDpccRes.total_dpcc);

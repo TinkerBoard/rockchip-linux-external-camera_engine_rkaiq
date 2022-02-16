@@ -3,12 +3,16 @@ set(ADRC_SRC
     rk_aiq_uapi_adrc_int.cpp
     )
 
-if (RKAIQ_HAVE_DRC_V1)
-    list(APPEND ADRC_SRC rk_aiq_adrc_algo_v1.cpp)
+if (RKAIQ_HAVE_DRC_V10)
+    list(APPEND ADRC_SRC rk_aiq_adrc_algo_v10.cpp)
 endif()
 
-if (RKAIQ_HAVE_DRC_V2)
-    list(APPEND ADRC_SRC rk_aiq_adrc_algo_v2.cpp)
+if (RKAIQ_HAVE_DRC_V11)
+    list(APPEND ADRC_SRC rk_aiq_adrc_algo_v11.cpp)
+endif()
+
+if (RKAIQ_HAVE_DRC_V12)
+    list(APPEND ADRC_SRC rk_aiq_adrc_algo_v12.cpp)
 endif()
 
 dec_algo(adrc rk_aiq_algo_adrc_itf.cpp ${ADRC_SRC})

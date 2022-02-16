@@ -121,7 +121,7 @@ FlashLightHw::set_params(rk_aiq_flash_setting_t& flash_settings)
 }
 
 XCamReturn
-FlashLightHw::get_status (rk_aiq_flash_setting_t& flash_settings, int frame_id)
+FlashLightHw::get_status (rk_aiq_flash_setting_t& flash_settings, uint32_t frame_id)
 {
     if (!_active_fl_num)
         return XCAM_RETURN_ERROR_FAILED;
@@ -137,7 +137,7 @@ FlashLightHw::get_status (rk_aiq_flash_setting_t& flash_settings, int frame_id)
         }
         flash_settings.effect_ts = (int64_t)flash_time.tv_sec * 1000 * 1000 +
                                    (int64_t)flash_time.tv_usec;
-        LOGD_CAMHW_SUBM(FL_SUBM, "frameid %d, get RK_VIDIOC_FLASH_TIMEINFO flash ts %lld",
+        LOGD_CAMHW_SUBM(FL_SUBM, "frameid %u, get RK_VIDIOC_FLASH_TIMEINFO flash ts %lld",
                         frame_id, flash_settings.effect_ts);
     }
 
@@ -155,7 +155,7 @@ FlashLightHw::get_status (rk_aiq_flash_setting_t& flash_settings, int frame_id)
         }
         flash_settings.effect_ts = (int64_t)flash_time.tv_sec * 1000 * 1000 +
                                    (int64_t)flash_time.tv_usec;
-        LOGD_CAMHW_SUBM(FL_SUBM, "frameid %d, get RK_VIDIOC_FLASH_TIMEINFO flash ts %lld",
+        LOGD_CAMHW_SUBM(FL_SUBM, "frameid %u, get RK_VIDIOC_FLASH_TIMEINFO flash ts %lld",
                         frame_id, flash_settings.effect_ts);
     }
 
@@ -300,4 +300,4 @@ FlashLightHw::get_flash_info ()
     return XCAM_RETURN_NO_ERROR;
 }
 
-};
+}

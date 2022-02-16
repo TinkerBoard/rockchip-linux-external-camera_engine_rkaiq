@@ -86,7 +86,7 @@ struct FecMeshBuffer final : public MeshBuffer {
     }
     FecMeshBuffer(const FecMeshBuffer&) = default;
     FecMeshBuffer& operator=(const FecMeshBuffer&) = default;
-    int32_t FrameId;
+    uint32_t FrameId;
     int32_t ImageBufferIndex;
     int32_t ImageBufferSize;
     // Buffer Index
@@ -143,7 +143,7 @@ class FecRemapBackend final : public RemapBackend {
     size_t user_buffer_index_;
     std::vector<std::unique_ptr<FecMeshBuffer>> hw_buffers_;
     size_t hw_buffer_index_;
-    int32_t last_result_id_;
+    uint32_t last_result_id_;
 };
 
 }  // namespace RkCam

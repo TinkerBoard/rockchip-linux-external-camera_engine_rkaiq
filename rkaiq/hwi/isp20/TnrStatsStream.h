@@ -72,7 +72,9 @@ public:
     TnrProcThread (TnrStatsStream *handle)
         : Thread ("TnrProcThread")
         , _handle (handle)
-    {}
+    {
+        (void)(_handle);
+    }
 
 protected:
     virtual bool loop () {

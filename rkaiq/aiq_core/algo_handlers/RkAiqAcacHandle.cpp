@@ -118,14 +118,23 @@ XCamReturn RkAiqAcacHandleInt::processing() {
     RKAiqAecExpInfo_t* aeCurExp = &shared->curExp;
     if (aeCurExp != NULL) {
         if((rk_aiq_working_mode_t)sharedCom->working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
+            acac_proc_int->hdr_ratio = 1;
             acac_proc_int->iso = aeCurExp->LinearExp.exp_real_params.analog_gain * 50;
             LOGD_ACAC("%s:NORMAL:iso=%d,again=%f\n", __FUNCTION__, acac_proc_int->iso,
                       aeCurExp->LinearExp.exp_real_params.analog_gain);
         } else if ((rk_aiq_working_mode_t)sharedCom->working_mode == RK_AIQ_WORKING_MODE_ISP_HDR2) {
+            acac_proc_int->hdr_ratio = (aeCurExp->HdrExp[1].exp_real_params.analog_gain *
+                                        aeCurExp->HdrExp[1].exp_real_params.integration_time) /
+                                       (aeCurExp->HdrExp[0].exp_real_params.analog_gain *
+                                        aeCurExp->HdrExp[0].exp_real_params.integration_time);
             acac_proc_int->iso = aeCurExp->HdrExp[1].exp_real_params.analog_gain * 50;
             LOGD_ACAC("%s:HDR2:iso=%d,again=%f\n", __FUNCTION__, acac_proc_int->iso,
                       aeCurExp->HdrExp[1].exp_real_params.analog_gain);
         } else if ((rk_aiq_working_mode_t)sharedCom->working_mode == RK_AIQ_WORKING_MODE_ISP_HDR3) {
+            acac_proc_int->hdr_ratio = (aeCurExp->HdrExp[2].exp_real_params.analog_gain *
+                                        aeCurExp->HdrExp[2].exp_real_params.integration_time) /
+                                       (aeCurExp->HdrExp[0].exp_real_params.analog_gain *
+                                        aeCurExp->HdrExp[0].exp_real_params.integration_time);
             acac_proc_int->iso = aeCurExp->HdrExp[2].exp_real_params.analog_gain * 50;
             LOGD_ACAC("%s:HDR3:iso=%d,again=%f\n", __FUNCTION__, acac_proc_int->iso,
                       aeCurExp->HdrExp[2].exp_real_params.analog_gain);
@@ -135,7 +144,29 @@ XCamReturn RkAiqAcacHandleInt::processing() {
         LOGE_ACAC("%s: pAEPreRes is NULL, so use default instead \n", __FUNCTION__);
     }
 
-
+    acac_proc_int->hdr_mode = sharedCom->working_mode;
+    switch (sharedCom->snsDes.sensor_pixelformat) {
+        case V4L2_PIX_FMT_SBGGR14:
+        case V4L2_PIX_FMT_SGBRG14:
+        case V4L2_PIX_FMT_SGRBG14:
+        case V4L2_PIX_FMT_SRGGB14:
+            acac_proc_int->raw_bits = 14;
+            break;
+        case V4L2_PIX_FMT_SBGGR12:
+        case V4L2_PIX_FMT_SGBRG12:
+        case V4L2_PIX_FMT_SGRBG12:
+        case V4L2_PIX_FMT_SRGGB12:
+            acac_proc_int->raw_bits = 12;
+            break;
+        case V4L2_PIX_FMT_SBGGR10:
+        case V4L2_PIX_FMT_SGBRG10:
+        case V4L2_PIX_FMT_SGRBG10:
+        case V4L2_PIX_FMT_SRGGB10:
+            acac_proc_int->raw_bits = 10;
+            break;
+        default:
+            acac_proc_int->raw_bits = 8;
+    }
 
     ret = RkAiqHandle::processing();
     if (ret) {
@@ -190,7 +221,7 @@ XCamReturn RkAiqAcacHandleInt::updateConfig(bool needSync) {
     if (updateAtt) {
         mCurAtt   = mNewAtt;
         updateAtt = false;
-        rk_aiq_uapi_acac_SetAttrib(mAlgoCtx, mCurAtt, false);
+        rk_aiq_uapi_acac_v10_SetAttrib(mAlgoCtx, &mCurAtt, false);
         sendSignal();
     }
 
@@ -200,28 +231,61 @@ XCamReturn RkAiqAcacHandleInt::updateConfig(bool needSync) {
     return ret;
 }
 
-XCamReturn RkAiqAcacHandleInt::setAttrib(rk_aiq_cac_attrib_t att) {
+XCamReturn RkAiqAcacHandleInt::setAttrib(const rkaiq_cac_v10_api_attr_t* att) {
     ENTER_ANALYZER_FUNCTION();
+
+    if (att == nullptr) return XCAM_RETURN_ERROR_PARAM;
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
-    if (0 != memcmp(&mCurAtt, &att, sizeof(rk_aiq_cac_attrib_t))) {
-        mNewAtt   = att;
+
+    // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
+    // if something changed, set att to mNewAtt, and
+    // the new params will be effective later when updateConfig
+    // called by RkAiqCore
+    bool isChanged = false;
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
+        memcmp(&mNewAtt, att, sizeof(*att)))
+        isChanged = true;
+    else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
+             memcmp(&mCurAtt, att, sizeof(*att)))
+        isChanged = true;
+
+    // if something changed
+    if (isChanged) {
+        mNewAtt = *att;
         updateAtt = true;
-        waitSignal();
+        waitSignal(att->sync.sync_mode);
     }
+
     mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
 
-XCamReturn RkAiqAcacHandleInt::getAttrib(rk_aiq_cac_attrib_t* att) {
+XCamReturn RkAiqAcacHandleInt::getAttrib(rkaiq_cac_v10_api_attr_t* att) {
     ENTER_ANALYZER_FUNCTION();
+
+    if (att == nullptr) return XCAM_RETURN_ERROR_PARAM;
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    rk_aiq_uapi_acac_GetAttrib(mAlgoCtx, att);
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_acac_v10_GetAttrib(mAlgoCtx, att);
+        att->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        if (updateAtt) {
+            memcpy(att, &mNewAtt, sizeof(mNewAtt));
+            att->sync.done = false;
+        } else {
+            rk_aiq_uapi_acac_v10_GetAttrib(mAlgoCtx, att);
+            att->sync.sync_mode = mNewAtt.sync.sync_mode;
+            att->sync.done      = true;
+        }
+    }
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -245,6 +309,7 @@ XCamReturn RkAiqAcacHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
         } else {
             cac_param->frame_id = shared->frameId;
         }
+        cac_param->result.enable = cac_rk->enable;
         memcpy(&cac_param->result.cfg[0], &cac_rk->config[0], sizeof(cac_rk->config[0]));
         memcpy(&cac_param->result.cfg[1], &cac_rk->config[1], sizeof(cac_rk->config[1]));
     }
@@ -255,4 +320,4 @@ XCamReturn RkAiqAcacHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

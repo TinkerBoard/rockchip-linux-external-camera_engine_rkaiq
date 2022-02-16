@@ -833,8 +833,9 @@ XCamReturn RkAiqAeHandleInt::processing() {
     if (mAiqCore->mAlogsComSharedParams.init) {
         RkAiqCore::RkAiqAlgosGroupShared_t* measGroupshared = nullptr;
         if (mAiqCore->getGroupSharedParams(RK_AIQ_CORE_ANALYZE_MEAS, measGroupshared) !=
-                XCAM_RETURN_NO_ERROR)
+                XCAM_RETURN_NO_ERROR) {
             LOGW("get the shared of meas failed");
+        }
         if (measGroupshared) {
             measGroupshared->frameId                 = shared->frameId;
         }
@@ -958,4 +959,4 @@ XCamReturn RkAiqAeHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

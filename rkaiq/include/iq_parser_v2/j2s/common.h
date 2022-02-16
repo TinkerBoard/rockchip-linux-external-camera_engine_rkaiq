@@ -38,7 +38,7 @@ extern "C" {
 #ifndef MSG
 #define MSG(level, fmt, args...)                                      \
     fprintf(stderr, #level ": %s(%d) [%s]: " fmt, __FILE__, __LINE__, \
-        __FUNCTION__, ##args)
+        __func__, ##args)
 #endif
 
 #ifndef DBG

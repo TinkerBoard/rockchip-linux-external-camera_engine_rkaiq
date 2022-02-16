@@ -18,18 +18,18 @@
  */
 
 #include "agamma/rk_aiq_algo_agamma_itf.h"
-#if RKAIQ_HAVE_GAMMA_V1
-#include "agamma/rk_aiq_agamma_algo_v1.h"
+#if RKAIQ_HAVE_GAMMA_V10
+#include "agamma/rk_aiq_agamma_algo_v10.h"
 #endif
-#if RKAIQ_HAVE_GAMMA_V2
-#include "agamma/rk_aiq_agamma_algo_v2.h"
+#if RKAIQ_HAVE_GAMMA_V11
+#include "agamma/rk_aiq_agamma_algo_v11.h"
 #endif
 #include "rk_aiq_algo_types.h"
 
 RKAIQ_BEGIN_DECLARE
 
 typedef struct _RkAiqAlgoContext {
-    void* place_holder[0];
+    AgammaHandle_t AgammaHandle;
 } RkAiqAlgoContext;
 
 
@@ -75,15 +75,19 @@ prepare(RkAiqAlgoCom* params)
 
     if(!!(pAgammaHandle->prepare_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
         LOGI_AGAMMA("%s: Agamma Reload Para!!!\n", __FUNCTION__);
-#if RKAIQ_HAVE_GAMMA_V1
-        CalibDbV2_gamma_t* calibv2_agamma_calib =
-            (CalibDbV2_gamma_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->com.u.prepare.calibv2), agamma_calib));
-        memcpy(&pAgammaHandle->CalibDb, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_t));//reload iq
+#if RKAIQ_HAVE_GAMMA_V10
+        CalibDbV2_gamma_V10_t* calibv2_agamma_calib =
+            (CalibDbV2_gamma_V10_t*)(CALIBDBV2_GET_MODULE_PTR(
+                (void*)(pCfgParam->com.u.prepare.calibv2), agamma_calib));
+        memcpy(&pAgammaHandle->agammaAttrV10.stAuto, calibv2_agamma_calib,
+               sizeof(CalibDbV2_gamma_V10_t));  // reload iq
 #endif
-#if RKAIQ_HAVE_GAMMA_V2
-        CalibDbV2_gamma_V30_t* calibv2_agamma_calib =
-            (CalibDbV2_gamma_V30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->com.u.prepare.calibv2), agamma_calib));
-        memcpy(&pAgammaHandle->CalibDb, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_V30_t));//reload iq
+#if RKAIQ_HAVE_GAMMA_V11
+        CalibDbV2_gamma_V11_t* calibv2_agamma_calib =
+            (CalibDbV2_gamma_V11_t*)(CALIBDBV2_GET_MODULE_PTR(
+                (void*)(pCfgParam->com.u.prepare.calibv2), agamma_calib));
+        memcpy(&pAgammaHandle->agammaAttrV11.stAuto, calibv2_agamma_calib,
+               sizeof(CalibDbV2_gamma_V11_t));  // reload iq
 #endif
     }
 
@@ -110,6 +114,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
     //set proc res
     AgammaSetProcRes(pProcRes, &pAgammaHandle->agamma_config);
+
     LOG1_AGAMMA("EXIT: %s \n", __func__);
     return ret;
 }

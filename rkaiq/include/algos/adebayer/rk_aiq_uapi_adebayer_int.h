@@ -3,16 +3,39 @@
 
 #include "base/xcam_common.h"
 #include "rk_aiq_algo_des.h"
+#include "rk_aiq_types_adebayer_algo_int.h"
+//#include "xcam_log.h"
 
 typedef struct rk_aiq_uapi_sync_s rk_aiq_uapi_sync_t;
 
-typedef struct adebayer_attrib_s {
-    rk_aiq_uapi_sync_t sync;
+//auto params, change with iso
+typedef struct adebayer_attrib_auto_s {
+    uint8_t     sharp_strength[9];
+    uint8_t     low_freq_thresh;
+    uint8_t     high_freq_thresh;
+} adebayer_attrib_auto_t;
 
-    unsigned char enable;
-    unsigned char enhance_strength[9];
-    unsigned char low_freq_thresh;
-    unsigned char high_freq_thresh;
+
+//manual params
+//typedef AdebayerSeletedParamV1_t adebayer_attrib_manual_t;
+
+typedef struct adebayer_attrib_s {
+    rk_aiq_uapi_sync_t          sync;
+
+    uint8_t                     enable;
+
+    rk_aiq_debayer_op_mode_t    mode;
+
+#if RKAIQ_HAVE_DEBAYER_V1
+    AdebayerSeletedParamV1_t    stManual;
+    adebayer_attrib_auto_t      stAuto;
+#endif
+
+#if RKAIQ_HAVE_DEBAYER_V2
+    AdebayerSeletedParamV2_t    stManual;
+    CalibDbV2_Debayer_Tuning_t  stAuto;
+#endif
+
 } adebayer_attrib_t;
 
 // need_sync means the implementation should consider

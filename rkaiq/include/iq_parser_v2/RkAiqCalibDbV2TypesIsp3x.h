@@ -84,13 +84,13 @@ typedef struct CamCalibDbV2ContextIsp30_s {
     // M4_STRUCT_DESC("debayer_calib", "normal_ui_style")
     CalibDbV2_Debayer_t debayer;
     // M4_STRUCT_DESC("Amerge_calib", "normal_ui_style")
-    CalibDbV2_merge_V2_t amerge_calib_V2;
+    CalibDbV2_merge_V11_t amerge_calib_V11;
     // M4_STRUCT_DESC("Adrc_calib", "normal_ui_style")
-    CalibDbV2_drc_V2_t adrc_calib_V2;
+    CalibDbV2_drc_V11_t adrc_calib_V11;
     // M4_STRUCT_DESC("agamma_calib", "normal_ui_style")
-    CalibDbV2_gamma_V30_t agamma_calib_V30;
+    CalibDbV2_gamma_V11_t agamma_calib_V11;
     // M4_STRUCT_DESC("adehaze_calib", "normal_ui_style")
-    CalibDbV2_dehaze_V30_t adehaze_calib_v30;
+    CalibDbV2_dehaze_V11_t adehaze_calib_V11;
     // M4_STRUCT_DESC("adpcc_calib", "normal_ui_style")
     CalibDbV2_Dpcc_t adpcc_calib;
     // M4_STRUCT_DESC("aldch", "normal_ui_style")
@@ -115,10 +115,14 @@ typedef struct CamCalibDbV2ContextIsp30_s {
     CalibDbV2_CNRV2_t cnr_v2;
     // M4_STRUCT_DESC("sharp_v4", "normal_ui_style")
     CalibDbV2_SharpV4_t sharp_v4;
-    // M4_STRUCT_DESC("cac_calib", "normal_ui_style")
-    CalibDbV2_Cac_t cac_calib;
+    // M4_STRUCT_DESC("cac_v03", "normal_ui_style")
+    CalibDbV2_Cac_V03_t cac_v03;
+    // M4_STRUCT_DESC("cac_v10", "normal_ui_style")
+    CalibDbV2_Cac_V10_t cac_v10;
     // M4_STRUCT_DESC("af_calib", "normal_ui_style")
     CalibDbV2_AFV30_t af_v30;
+    // M4_STRUCT_DESC("afec_calib", "normal_ui_style")
+    CalibDbV2_FEC_t afec;
 } CamCalibDbV2ContextIsp30_t;
 
 RKAIQ_END_DECLARE

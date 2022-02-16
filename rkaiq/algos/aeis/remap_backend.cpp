@@ -60,7 +60,6 @@ FecRemapBackend::FecRemapBackend(const FecMeshConfig& config,
     : config_(config),
       mem_ops_(mem_ops),
       user_buffer_index_(-1),
-      hw_buffer_index_(-1),
       last_result_id_(-1) {
     assert(mem_ops != nullptr);
 
@@ -99,7 +98,7 @@ void FecRemapBackend::FreeUserBuffer(FecMeshBuffer* buf) {
     std::unique_lock<std::mutex> lk(user_mtx_);
     auto it = std::remove_if(
         user_buffers_.begin(), user_buffers_.end(),
-        [this, &buf](const std::unique_ptr<FecMeshBuffer>& p) { return (buf->Index == p->Index); });
+        [&buf](const std::unique_ptr<FecMeshBuffer>& p) { return (buf->Index == p->Index); });
     user_buffers_.erase(it, user_buffers_.end());
 }
 
@@ -195,7 +194,7 @@ void FecRemapBackend::Remap(MeshBuffer* info) {
 FecMeshBuffer* FecRemapBackend::GetPendingHwResult() {
     FecMeshBuffer* buf    = nullptr;
     FecMeshBuffer* hw_buf = nullptr;
-    int min_id            = INT32_MAX;
+    uint32_t min_id       = (uint32_t)(-1);
     {
         std::unique_lock<std::mutex> lk(user_mtx_);
         std::for_each(user_buffers_.begin(), user_buffers_.end(),
@@ -203,10 +202,10 @@ FecMeshBuffer* FecRemapBackend::GetPendingHwResult() {
                           if (p->State[0] == fec_hw_mesh_used_by_hardware ||
                               p->State[0] == fec_mesh_skipped) {
                               if (p->FrameId != -1 && p->FrameId <= last_result_id_) {
-                                  LOGW_AEIS("Get pending result id %d PASSED !!!", p->FrameId);
+                                  LOGW_AEIS("Get pending result id %u PASSED !!!", p->FrameId);
                                   p->State[0] = fec_mesh_available;
                               } else if (last_result_id_ != -1 && p->FrameId - last_result_id_ > 1) {
-                                  LOGV_AEIS("pending result id %d in FUTURE!!!", p->FrameId);
+                                  LOGV_AEIS("pending result id %u in FUTURE!!!", p->FrameId);
                               } else {
                                   if (min_id >= p->FrameId) {
                                       min_id = p->FrameId;
@@ -216,11 +215,11 @@ FecMeshBuffer* FecRemapBackend::GetPendingHwResult() {
                           }
                       });
     }
-    LOGV_AEIS("Get Pending result min id %d", min_id);
+    LOGV_AEIS("Get Pending result min id %u", min_id);
 
     if (buf != nullptr) {
         if (buf->State[0] == fec_mesh_skipped) {
-            LOGW_AEIS("Get pending result id %d SKIPPED ...", buf->FrameId);
+            LOGW_AEIS("Get pending result id %u SKIPPED ...", buf->FrameId);
             auto* mesh = AllocUserBuffer();
             if (mesh != nullptr) {
                 mesh->Fd               = -1;
@@ -236,7 +235,7 @@ FecMeshBuffer* FecRemapBackend::GetPendingHwResult() {
         } else {
             hw_buf = GetFreeHwBuffer();
             if (hw_buf != nullptr) {
-                LOGD_AEIS("Get pending result id %d HW ", buf->FrameId);
+                LOGD_AEIS("Get pending result id %u HW ", buf->FrameId);
                 memcpy(hw_buf->MeshXi, buf->MeshXi, (sizeof(*buf->MeshXi) * config_.MeshSize));
                 memcpy(hw_buf->MeshYi, buf->MeshYi, (sizeof(*buf->MeshYi) * config_.MeshSize));
                 memcpy(hw_buf->MeshXf, buf->MeshXf, (sizeof(*buf->MeshXf) * config_.MeshSize));
@@ -249,7 +248,7 @@ FecMeshBuffer* FecRemapBackend::GetPendingHwResult() {
                 buf->State[0]   = fec_mesh_available;
                 last_result_id_ = buf->FrameId;
             } else {
-                LOGW_AEIS("Get pending result id %d HW no buffer", buf->FrameId);
+                LOGW_AEIS("Get pending result id %u HW no buffer", buf->FrameId);
             }
             return hw_buf;
         }

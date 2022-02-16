@@ -75,7 +75,7 @@ inline std::string AlgoTypeToString(RkAiqAlgoType_t type) {
         { RK_AIQ_ALGO_TYPE_ASD,         "Asd"       },
         { RK_AIQ_ALGO_TYPE_ADRC,        "Adrc"      },
         { RK_AIQ_ALGO_TYPE_ADEGAMMA,    "Adegamma"  },
-#if defined(ISP_HW_V30)
+#if defined(ISP_HW_V30) ||defined(ISP_HW_V32)
         { RK_AIQ_ALGO_TYPE_ARAWNR,      "Abayer2dnr"},
         { RK_AIQ_ALGO_TYPE_AMFNR,       "Abayertnr" },
 #else
@@ -98,6 +98,10 @@ inline std::string AlgoTypeToString(RkAiqAlgoType_t type) {
 
 }  // namespace RkCam
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 #ifdef ISP_HW_V20
 #include "RkAiqCoreConfigV20.h"
 #endif
@@ -112,6 +116,10 @@ inline std::string AlgoTypeToString(RkAiqAlgoType_t type) {
 
 #ifdef ISP_HW_V32
 #include "RkAiqCoreConfigV32.h"
+#endif
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
 #endif
 
 #endif  // RK_AIQ_CORE_CONFIG_H

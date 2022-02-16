@@ -93,4 +93,4 @@ XCamReturn RkAiqCamGroupAdebayerHandleInt::getAttrib(adebayer_attrib_t* att) {
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

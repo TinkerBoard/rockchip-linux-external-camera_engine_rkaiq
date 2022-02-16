@@ -395,9 +395,10 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
     //    goto error;
     //ctx->_rkAiqManager->setAiqCalibDb(ctx->_calibDb);
 
-    //TODO: should not assume that the suffix of "config_file" has ".xml",
-    //      if the suffix is ".json", there will be error.
-    strcpy(config_file + strlen(config_file) - strlen(".xml"), ".json");
+    if (strstr(config_file, ".xml")) {
+        LOGE("Should use json instead of xml");
+        strcpy(config_file + strlen(config_file) - strlen(".xml"), ".json");
+    }
 
     CamCalibDbV2Context_t calibdbv2_ctx;
     xcam_mem_clear (calibdbv2_ctx);
@@ -835,6 +836,8 @@ camgroupAlgoHandle(const rk_aiq_sys_ctx_t* ctx, const int algo_type)
 #include "uAPI2/rk_aiq_user_api2_abayertnr_v2.cpp"
 #include "rk_aiq_user_api_abayertnr_v2.cpp"
 #include "uAPI2/rk_aiq_user_api2_acsm.cpp"
+#include "uAPI2/rk_aiq_user_api2_acgc.cpp"
+#include "uAPI2/rk_aiq_user_api2_acac.cpp"
 
 #define RK_AIQ_ALGO_TYPE_MODULES (RK_AIQ_ALGO_TYPE_MAX + 1)
 
@@ -912,7 +915,9 @@ extern RkAiqAlgoDescription g_RkIspAlgoDescAwb;
 #if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
 extern RkAiqAlgoDescription g_RkIspAlgoDescAf;
 #endif
+#if RKAIQ_HAVE_MERGE_V10 || RKAIQ_HAVE_MERGE_V11 || RKAIQ_HAVE_MERGE_V12
 extern RkAiqAlgoDescription g_RkIspAlgoDescAmerge;
+#endif
 #if RKAIQ_HAVE_TMO_V1
 extern RkAiqAlgoDescription g_RkIspAlgoDescAtmo;
 #endif
@@ -958,7 +963,9 @@ void rk_aiq_uapi_get_version_info(rk_aiq_ver_info_t* vers)
 #if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
     strcpy(vers->af_algo_ver, g_RkIspAlgoDescAf.common.version);
 #endif
+#if RKAIQ_HAVE_MERGE_V10 || RKAIQ_HAVE_MERGE_V11 || RKAIQ_HAVE_MERGE_V12
     strcpy(vers->ahdr_algo_ver, g_RkIspAlgoDescAmerge.common.version);
+#endif
 #if RKAIQ_HAVE_TMO_V1
     strcpy(vers->ahdr_algo_ver, g_RkIspAlgoDescAtmo.common.version);
 #endif

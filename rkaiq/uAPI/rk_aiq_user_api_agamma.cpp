@@ -26,10 +26,8 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
-#if RKAIQ_HAVE_GAMMA_V1
-void
-GammaTransferSetData(rk_aiq_gamma_attrib_V2_t* DegammaV2, rk_aiq_gamma_attrib_t *DegammaV1)
-{
+#if RKAIQ_HAVE_GAMMA_V10
+void GammaTransferSetData(rk_aiq_gamma_v10_attr_t* DegammaV2, rk_aiq_gamma_attrib_t* DegammaV1) {
     /*
         //op mode
         DegammaV2->mode = DegammaV1->mode;
@@ -61,9 +59,7 @@ GammaTransferSetData(rk_aiq_gamma_attrib_V2_t* DegammaV2, rk_aiq_gamma_attrib_t 
                 */
 }
 
-void
-GammaTransferGetData(rk_aiq_gamma_attrib_V2_t* DegammaV2, rk_aiq_gamma_attrib_t *DegammaV1)
-{
+void GammaTransferGetData(rk_aiq_gamma_v10_attr_t* DegammaV2, rk_aiq_gamma_attrib_t* DegammaV1) {
     /*
     //op mode
     DegammaV1->mode = DegammaV2->mode;
@@ -89,30 +85,33 @@ GammaTransferGetData(rk_aiq_gamma_attrib_V2_t* DegammaV2, rk_aiq_gamma_attrib_t 
     */
 }
 
-XCamReturn
-rk_aiq_user_api_agamma_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_gamma_attrib_t attr)
-{
-    rk_aiq_gamma_attrib_V2_t gammaAttr;
-    memset(&gammaAttr, 0, sizeof(rk_aiq_gamma_attrib_V2_t));
+XCamReturn rk_aiq_user_api_agamma_SetAttrib(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    rk_aiq_gamma_attrib_t
+        attr) { /*
+                   rk_aiq_gamma_v10_attr_t gammaAttr;
+                   memset(&gammaAttr, 0, sizeof(rk_aiq_gamma_v10_attr_t));
 
-    GammaTransferSetData(&gammaAttr, &attr);
+                   GammaTransferSetData(&gammaAttr, &attr);
 
-    XCamReturn ret_gamma = rk_aiq_user_api2_agamma_SetAttrib(sys_ctx, gammaAttr);
-
-    return ret_gamma;
+                   XCamReturn ret_gamma = rk_aiq_user_api2_agamma_V10_SetAttrib(sys_ctx, gammaAttr);
+               */
+    return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
-XCamReturn
-rk_aiq_user_api_agamma_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_gamma_attrib_t *attr)
-{
-    rk_aiq_gamma_attrib_V2_t gammaAttr;
-    memset(&gammaAttr, 0, sizeof(rk_aiq_gamma_attrib_V2_t));
+XCamReturn rk_aiq_user_api_agamma_GetAttrib(
+    const rk_aiq_sys_ctx_t* sys_ctx,
+    rk_aiq_gamma_attrib_t* attr) { /*
+                                      rk_aiq_gamma_v10_attr_t gammaAttr;
+                                      memset(&gammaAttr, 0, sizeof(rk_aiq_gamma_attrib_V10_t));
 
-    GammaTransferGetData(&gammaAttr, attr);
+                                      GammaTransferGetData(&gammaAttr, attr);
 
-    XCamReturn ret_gamma = rk_aiq_user_api2_agamma_GetAttrib(sys_ctx, &gammaAttr);
+                                      XCamReturn ret_gamma =
+                                      rk_aiq_user_api2_agamma_V10_GetAttrib(sys_ctx, &gammaAttr);
+                                      */
 
-    return ret_gamma;
+    return XCAM_RETURN_ERROR_UNKNOWN;
 }
 #else
 XCamReturn

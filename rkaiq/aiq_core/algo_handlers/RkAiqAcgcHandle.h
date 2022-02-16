@@ -17,12 +17,13 @@
 #define _RK_AIQ_CGC_HANDLE_INT_H_
 
 #include "RkAiqHandle.h"
+#include "acgc/rk_aiq_uapi_acgc_int.h"
 #include "rk_aiq_api_private.h"
 #include "rk_aiq_pool.h"
 #include "xcam_mutex.h"
 
 namespace RkCam {
-
+#if RKAIQ_HAVE_CGC_V1
 class RkAiqAcgcHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAcgcHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
@@ -32,6 +33,9 @@ class RkAiqAcgcHandleInt : virtual public RkAiqHandle {
     virtual XCamReturn preProcess();
     virtual XCamReturn processing();
     virtual XCamReturn postProcess();
+    virtual XCamReturn updateConfig(bool needSync);
+    XCamReturn setAttrib(const rk_aiq_uapi_acgc_attrib_t* att);
+    XCamReturn getAttrib(rk_aiq_uapi_acgc_attrib_t* att);
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
 
  protected:
@@ -40,8 +44,12 @@ class RkAiqAcgcHandleInt : virtual public RkAiqHandle {
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAcgcHandleInt);
-};
 
-};  // namespace RkCam
+    rk_aiq_uapi_acgc_attrib_t mCurAtt;
+    rk_aiq_uapi_acgc_attrib_t mNewAtt;
+};
+#endif
+
+}  // namespace RkCam
 
 #endif

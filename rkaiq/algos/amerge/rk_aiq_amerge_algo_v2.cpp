@@ -691,14 +691,15 @@ void MergeDamping
 
     LOGD_AMERGE("%s: Current BaseFrm:%d OECurve_smooth:%f OECurve_offset:%f \n", __FUNCTION__, pAmergeCtx->ConfigV2.BaseFrm,
                 pAmergeCtx->CurrData.HandleData.Merge_v30.OECurve_smooth, pAmergeCtx->CurrData.HandleData.Merge_v30.OECurve_offset);
-    if(pAmergeCtx->ConfigV2.BaseFrm == BASEFRAME_LONG)
+    if (pAmergeCtx->ConfigV2.BaseFrm == BASEFRAME_LONG) {
         LOGD_AMERGE("%s: Current MDCurveMS_smooth:%f MDCurveMS_offset:%f MDCurveLM_smooth:%f MDCurveLM_offset:%f \n", __FUNCTION__,
                     pAmergeCtx->CurrData.HandleData.Merge_v30.MDCurveMS_smooth, pAmergeCtx->CurrData.HandleData.Merge_v30.MDCurveMS_offset,
                     pAmergeCtx->CurrData.HandleData.Merge_v30.MDCurveLM_smooth, pAmergeCtx->CurrData.HandleData.Merge_v30.MDCurveLM_offset);
-    else if(pAmergeCtx->ConfigV2.BaseFrm == BASEFRAME_SHORT)
+    } else if(pAmergeCtx->ConfigV2.BaseFrm == BASEFRAME_SHORT) {
         LOGD_AMERGE("%s: Current MDCurve_Coef:%f MDCurve_ms_thd0:%f MDCurve_lm_thd0:%f\n", __FUNCTION__,
                     pAmergeCtx->CurrData.HandleData.Merge_v30.MDCurve_Coef, pAmergeCtx->CurrData.HandleData.Merge_v30.MDCurve_ms_thd0,
                     pAmergeCtx->CurrData.HandleData.Merge_v30.MDCurve_lm_thd0);
+    }
 
     LOG1_AMERGE("%s:Eixt!\n", __FUNCTION__);
 }

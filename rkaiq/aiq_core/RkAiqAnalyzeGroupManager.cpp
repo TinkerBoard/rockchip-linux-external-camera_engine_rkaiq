@@ -108,14 +108,14 @@ XCamReturn RkAiqAnalyzerGroup::msgHandle(const SmartPtr<XCamMessage>& msg) {
         LOGW_ANALYZER_SUBM(ANALYZER_SUBM, "msg is nullptr!");
         return XCAM_RETURN_ERROR_PARAM;
     }
-    if (!((1 << msg->msg_id) & mDepsFlag)) {
+    if (!((1ULL << msg->msg_id) & mDepsFlag)) {
         return XCAM_RETURN_BYPASS;
     }
 
     uint32_t delayCnt = getMsgDelayCnt(msg->msg_id);
     uint32_t userId = msg->frame_id + delayCnt;
     GroupMessage& msgWrapper = mGroupMsgMap[userId];
-    msgWrapper.msg_flags |= 1 << msg->msg_id;
+    msgWrapper.msg_flags |= 1ULL << msg->msg_id;
     msgWrapper.msgList.push_back(msg);
     LOGD_ANALYZER_SUBM(ANALYZER_SUBM,
         "camId: %d, group(%s): id[%d] push msg(%s), msg delayCnt(%d), map size is %d",
@@ -450,11 +450,11 @@ void RkAiqAnalyzeGroupManager::parseAlgoGroup(const struct RkAiqAlgoDesCommExt* 
     }
     for (size_t i = 0; algoDes[i].des != NULL; i++) {
         int algo_type = algoDes[i].des->type;
-        if (!(1 << algo_type & enAlgosMask))
+        if (!((1ULL << algo_type) & enAlgosMask))
             continue;
-        int deps_flag = 0;
+        uint64_t deps_flag = 0;
         for (size_t j = 0; j < algoDes[i].grpConds.size; j++)
-            deps_flag |= 1 << algoDes[i].grpConds.conds[j].cond;
+            deps_flag |= 1ULL << algoDes[i].grpConds.conds[j].cond;
         rk_aiq_core_analyze_type_e group = algoDes[i].group;
         mGroupAlgoListMap[group].push_back(*mAiqCore->getCurAlgoTypeHandle(algo_type));
         mGroupAlgoListMap[RK_AIQ_CORE_ANALYZE_ALL].push_back(*mAiqCore->getCurAlgoTypeHandle(algo_type));
@@ -473,7 +473,7 @@ void RkAiqAnalyzeGroupManager::parseAlgoGroup(const struct RkAiqAlgoDesCommExt* 
                 std::bind(&RkAiqAnalyzeGroupManager::groupMessageHandler, this,
                           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
         }
-        LOGD_ANALYZER_SUBM(ANALYZER_SUBM, "Created group %" PRIx64 " for dep flags %" PRIx64"", group, deps_flag);
+        LOGD_ANALYZER_SUBM(ANALYZER_SUBM, "Created group %" PRIx64 " for dep flags %" PRIx64"", (uint64_t)group, deps_flag);
     }
 }
 
@@ -485,7 +485,7 @@ XCamReturn RkAiqAnalyzeGroupManager::handleMessage(const SmartPtr<XCamMessage> &
                            msg->frame_id);
     } else {
         for (auto& it : mGroupMap) {
-            if ((it.first & (1 << msg->msg_id)) != 0) {
+            if ((it.first & (1ULL << msg->msg_id)) != 0) {
                 LOGD_ANALYZER_SUBM(
                     ANALYZER_SUBM, "Handle message(%s) id[%d] on group(%s), flags %" PRIx64 "",
                     MessageType2Str[msg->msg_id], msg->frame_id,
@@ -498,4 +498,4 @@ XCamReturn RkAiqAnalyzeGroupManager::handleMessage(const SmartPtr<XCamMessage> &
     return XCAM_RETURN_NO_ERROR;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

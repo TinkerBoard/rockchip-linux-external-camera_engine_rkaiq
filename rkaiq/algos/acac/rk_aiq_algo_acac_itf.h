@@ -1,6 +1,4 @@
 /*
- * rk_aiq_algo_acac_itf.h
- *
  *  Copyright (c) 2021 Rockchip Electronics Co., Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,16 +18,17 @@
 #ifndef _RK_AIQ_ALGO_ACAC_ITF_H_
 #define _RK_AIQ_ALGO_ACAC_ITF_H_
 
-#include "rk_aiq_algo_des.h"
+#include "algos/rk_aiq_algo_des.h"
+#include "common/rk_aiq_comm.h"
 
-#define RKISP_ALGO_ACAC_VERSION     "v0.0.1"
+#define RKISP_ALGO_ACAC_VERSION     "v0.0.2"
 #define RKISP_ALGO_ACAC_VENDOR      "Rockchip"
-#define RKISP_ALGO_ACAC_DESCRIPTION "Rockchip Acac algo for ISP2.0"
+#define RKISP_ALGO_ACAC_DESCRIPTION "Rockchip CAC algo for ISP3.0 and ISP3.2"
 
-XCAM_BEGIN_DECLARE
+RKAIQ_BEGIN_DECLARE
 
 extern RkAiqAlgoDescription g_RkIspAlgoDescAcac;
 
-XCAM_END_DECLARE
+RKAIQ_END_DECLARE
 
 #endif  //_RK_AIQ_ALGO_ACAC_ITF_H_

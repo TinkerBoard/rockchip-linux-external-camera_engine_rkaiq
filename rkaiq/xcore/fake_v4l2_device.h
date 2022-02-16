@@ -36,21 +36,21 @@ public:
     }
     virtual ~FakeV4l2Device () {
     }
-    virtual XCamReturn open (bool nonblock = false);
-    virtual XCamReturn close ();
+    virtual XCamReturn open (bool nonblock = false) override;
+    virtual XCamReturn close () override;
     int create_notify_pipe ();
     void destroy_notify_pipe ();
-    virtual XCamReturn start ();
-    virtual XCamReturn stop () ;
-    virtual XCamReturn get_format (struct v4l2_format &format);
-    virtual int poll_event (int timeout_msec, int stop_fd);
-    virtual XCamReturn dequeue_buffer (SmartPtr<V4l2Buffer> &buf);
+    virtual XCamReturn start(bool prepared = false) override;
+    virtual XCamReturn stop() override;
+    virtual XCamReturn get_format (struct v4l2_format &format) override;
+    virtual int poll_event (int timeout_msec, int stop_fd) override;
+    virtual XCamReturn dequeue_buffer (SmartPtr<V4l2Buffer> &buf) override;
     // use as less as possible
-    virtual int io_control (int cmd, void *arg);
+    virtual int io_control (unsigned long cmd, void *arg) override;
     void on_timer_proc();
     void enqueue_rawbuffer(struct rk_aiq_vbuf_info *vbinfo);
-    virtual int get_use_type() {return _use_type;}
-    virtual void set_use_type(int type) {_use_type = type;}
+    virtual int get_use_type() override {return _use_type;}
+    virtual void set_use_type(int type) override {_use_type = type;}
 protected:
     Mutex _mutex;
     int _pipe_fd[2];
@@ -60,6 +60,6 @@ protected:
     int _use_type;
 };
 
-};
+}
 #endif // XCAM_FAKE_V4L2_DEVICE_H
 

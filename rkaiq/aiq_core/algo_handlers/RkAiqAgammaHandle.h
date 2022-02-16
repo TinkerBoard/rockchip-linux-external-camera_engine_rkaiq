@@ -28,8 +28,14 @@ class RkAiqAgammaHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAgammaHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
-        memset(&mCurAtt, 0, sizeof(rk_aiq_gamma_attrib_V2_t));
-        memset(&mNewAtt, 0, sizeof(rk_aiq_gamma_attrib_V2_t));
+#if RKAIQ_HAVE_GAMMA_V10
+        memset(&mCurAttV10, 0, sizeof(rk_aiq_gamma_v10_attr_t));
+        memset(&mNewAttV10, 0, sizeof(rk_aiq_gamma_v10_attr_t));
+#endif
+#if RKAIQ_HAVE_GAMMA_V11
+        memset(&mCurAttV11, 0, sizeof(rk_aiq_gamma_v11_attr_t));
+        memset(&mNewAttV11, 0, sizeof(rk_aiq_gamma_v11_attr_t));
+#endif
     };
     virtual ~RkAiqAgammaHandleInt() { RkAiqHandle::deInit(); };
     virtual XCamReturn updateConfig(bool needSync);
@@ -38,24 +44,33 @@ class RkAiqAgammaHandleInt : virtual public RkAiqHandle {
     virtual XCamReturn processing();
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
-    // TODO add algo specific methords, this is a sample
-    XCamReturn setAttrib(rk_aiq_gamma_attrib_V2_t att);
-    XCamReturn getAttrib(rk_aiq_gamma_attrib_V2_t* att);
-    // XCamReturn queryLscInfo(rk_aiq_lsc_querry_info_t *lsc_querry_info );
+#if RKAIQ_HAVE_GAMMA_V10
+    XCamReturn setAttribV10(const rk_aiq_gamma_v10_attr_t* att);
+    XCamReturn getAttribV10(rk_aiq_gamma_v10_attr_t* att);
+#endif
+#if RKAIQ_HAVE_GAMMA_V11
+    XCamReturn setAttribV11(const rk_aiq_gamma_v11_attr_t* att);
+    XCamReturn getAttribV11(rk_aiq_gamma_v11_attr_t* att);
+#endif
 
  protected:
     virtual void init();
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
-    // TODO
-    rk_aiq_gamma_attrib_V2_t mCurAtt;
-    rk_aiq_gamma_attrib_V2_t mNewAtt;
+#if RKAIQ_HAVE_GAMMA_V10
+    rk_aiq_gamma_v10_attr_t mCurAttV10;
+    rk_aiq_gamma_v10_attr_t mNewAttV10;
+#endif
+#if RKAIQ_HAVE_GAMMA_V11
+    rk_aiq_gamma_v11_attr_t mCurAttV11;
+    rk_aiq_gamma_v11_attr_t mNewAttV11;
+#endif
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAgammaHandleInt);
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

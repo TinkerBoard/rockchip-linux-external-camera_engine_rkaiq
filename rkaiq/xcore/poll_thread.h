@@ -83,7 +83,7 @@ protected:
     virtual SmartPtr<VideoBuffer> new_video_buffer(SmartPtr<V4l2Buffer> buf,
             SmartPtr<V4l2Device> dev,
             int type);
-    virtual XCamReturn notify_sof (uint64_t time, int frameid);
+    virtual XCamReturn notify_sof (uint64_t time, uint32_t frameid);
 
 private:
     XCamReturn create_stop_fds ();
@@ -112,7 +112,7 @@ protected:
     PollCallback                    *_poll_callback;
 
     //frame syncronization
-    int frameid;
+    uint32_t frameid;
 
     int _ispp_poll_stop_fd[2];
     int _luma_poll_stop_fd[2];
@@ -122,6 +122,6 @@ protected:
     int _isp_pparams_poll_stop_fd[2];
 };
 
-};
+}
 
 #endif //XCAM_POLL_THREAD_H

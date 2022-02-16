@@ -169,4 +169,4 @@ V4l2BufferProxy::get_v4l2_buf ()
     return v4l2_data->get_buf ();
 }
 
-};
+}

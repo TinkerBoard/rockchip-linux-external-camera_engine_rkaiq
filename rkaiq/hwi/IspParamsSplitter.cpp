@@ -126,19 +126,19 @@ void SplitAecSubWin(
                 mode[i] = LEFT_AND_RIGHT_MODE;
 
                 left_win[i].h_offs = ori_win[i].h_offs;
-                left_win[i].h_size = MAX(0, left_isp_rect_.w - left_win[i].h_offs);
+                left_win[i].h_size = MAX(0, ((long)left_isp_rect_.w - (long)left_win[i].h_offs));
                 left_win[i].v_offs = ori_win[i].v_offs;
                 left_win[i].v_size = ori_win[i].v_size;
 
 
                 right_win[i].h_offs = left_win[i].h_offs + left_win[i].h_size - right_isp_rect_.x;
-                right_win[i].h_size = MAX(0, ori_win[i].h_size - left_win[i].h_size);
+                right_win[i].h_size = MAX(0, ((long)ori_win[i].h_size - (long)left_win[i].h_size));
                 right_win[i].v_offs = ori_win[i].v_offs;
                 right_win[i].v_size = ori_win[i].v_size;
             }
         }
     }
-};
+}
 
 void SplitAecCalcBlockSize(
     struct isp2x_window* left_win,
@@ -579,7 +579,7 @@ void SplitAwbMultiWin(
         left_win->v_offs = 0;
         left_win->v_size = 0;
 
-        right_win->h_offs = MAX(main_right_win->h_offs, ori_win->h_offs - right_isp_rect_.x);
+        right_win->h_offs = MAX((int)main_right_win->h_offs, (int)ori_win->h_offs - (int)right_isp_rect_.x);
         right_win->h_size = ori_win->h_size;
         right_win->v_offs = ori_win->v_offs;
         right_win->v_size = ori_win->v_size;
@@ -592,19 +592,19 @@ void SplitAwbMultiWin(
         *mode = LEFT_AND_RIGHT_MODE;
 
         left_win->h_offs = ori_win->h_offs;
-        left_win->h_size = MAX(0, main_left_win->h_offs + main_left_win->h_size - left_win->h_offs);
+        left_win->h_size = MAX(0, ((int)main_left_win->h_offs + (int)main_left_win->h_size - (int)left_win->h_offs));
         left_win->v_offs = ori_win->v_offs;
         left_win->v_size = ori_win->v_size;
 
 
-        right_win->h_offs = MAX(main_right_win->h_offs, left_win->h_offs + left_win->h_size - right_isp_rect_.x);
-        right_win->h_size = MAX(0, ori_win->h_size - left_win->h_size);
+        right_win->h_offs = MAX((int)main_right_win->h_offs, (int)left_win->h_offs + (int)left_win->h_size - (int)right_isp_rect_.x);
+        right_win->h_size = MAX(0, ((int)ori_win->h_size - (int)left_win->h_size));
         right_win->v_offs = ori_win->v_offs;
         right_win->v_size = ori_win->v_size;
     }
 }
 
-};
+}
 
 template <>
 XCamReturn IspParamsSplitter::SplitRawAeLiteParams<struct isp2x_rawaelite_meas_cfg>(
@@ -809,10 +809,11 @@ XCamReturn IspParamsSplitter::SplitAwbParams<struct isp3x_isp_params_cfg>(
 
     // Awb measure window
     u8 awb_ds;
-    if (ori->meas.rawawb.sw_rawawb_wind_size == 0)
+    if (ori->meas.rawawb.sw_rawawb_wind_size == 0) {
         awb_ds = 2;
-    else
+    } else {
         awb_ds = 3;
+    }
 	u16 min_hsize = wnd_num << awb_ds;
 
     SplitAwbWin(&ori_win, &left_win, &right_win, awb_ds, wnd_num, left_isp_rect_, right_isp_rect_, &mode);

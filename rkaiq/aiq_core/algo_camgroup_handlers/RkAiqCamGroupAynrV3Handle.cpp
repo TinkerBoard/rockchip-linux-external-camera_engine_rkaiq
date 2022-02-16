@@ -161,4 +161,4 @@ XCamReturn RkAiqCamGroupAynrV3HandleInt::getStrength(rk_aiq_ynr_strength_v3_t *p
 }
 #endif
 
-};  // namespace RkCam
+}  // namespace RkCam

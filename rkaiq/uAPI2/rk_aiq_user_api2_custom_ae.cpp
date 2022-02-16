@@ -1133,10 +1133,11 @@ void _customGrpAeRes2rkGrpAeRes(rk_aiq_rkAe_config_t* pConfig, rk_aiq_singlecam_
         RkAiqAlgoProcResAe* aeProcRes = nullptr;
         if(XaeProcRes) {
             aeProcRes = (RkAiqAlgoProcResAe*)XaeProcRes->map(XaeProcRes);
-            if(aeProcRes)
+            if (aeProcRes) {
                 aeProcRes->ae_proc_res_rk.LongFrmMode = customAeProcRes->is_longfrm_mode;
-            else
+            } else {
                 LOGW_GAEC("aeProcRes[%d] = nullptr", i);
+            }
         } else {
             LOGW_GAEC("XCamVideoBuffer of aeProcRes[%d] = nullptr", i);
         }

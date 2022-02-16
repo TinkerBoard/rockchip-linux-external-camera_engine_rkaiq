@@ -1,7 +1,5 @@
 /*
- * rk_aiq_algo_acac_itf.c
- *
- *  Copyright (c) 2021 Rockchip Electronics Co., Ltd
+ *  Copyright (c) 2022 Rockchip Electronics Co., Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +16,19 @@
  * Author: Cody Xie <cody.xie@rock-chips.com>
  */
 
-#include "rk_aiq_algo_acac_itf.h"
+#include "algos/acac/rk_aiq_algo_acac_itf.h"
 
-#include "cac_adaptor.h"
-#include "rk_aiq_types_acac_algo_prvt.h"
-#include "rk_aiq_algo_types.h"
-#include "RkAiqCalibDbV2Helper.h"
+#include "algos/acac/cac_adaptor.h"
+#include "algos/acac/rk_aiq_types_acac_algo_prvt.h"
+#include "algos/rk_aiq_algo_types.h"
+#include "iq_parser_v2/RkAiqCalibDbV2Helper.h"
 
-using namespace RkCam;
-using namespace XCam;
+using RkCam::CacAlgoAdaptor;
 
 RKAIQ_BEGIN_DECLARE
 
 static XCamReturn create_context(RkAiqAlgoContext** context, const AlgoCtxInstanceCfg* cfg) {
-    RkAiqAlgoContext* ctx = new RkAiqAlgoContext();
+    auto* ctx = new RkAiqAlgoContext();
     if (ctx == nullptr) {
         LOGE_ACAC("create acac context fail!");
         return XCAM_RETURN_ERROR_MEM;
@@ -44,10 +41,22 @@ static XCamReturn create_context(RkAiqAlgoContext** context, const AlgoCtxInstan
         return XCAM_RETURN_ERROR_MEM;
     }
 
-    CalibDbV2_Cac_t* calib_cac =
-        (CalibDbV2_Cac_t*)(CALIBDBV2_GET_MODULE_PTR(cfg->calibv2, cac_calib));
+#if RKAIQ_HAVE_CAC_V03
+    auto* calib_cac =
+        (CalibDbV2_Cac_V03_t*)(CALIBDBV2_GET_MODULE_PTR(cfg->calibv2, cac_v03));
     XCAM_ASSERT(calib_cac != nullptr);
     adaptor->Config(cfg, calib_cac);
+#elif RKAIQ_HAVE_CAC_V10
+    auto* calib_cac =
+        (CalibDbV2_Cac_V10_t*)(CALIBDBV2_GET_MODULE_PTR(cfg->calibv2, cac_v10));
+    XCAM_ASSERT(calib_cac != nullptr);
+    adaptor->Config(cfg, calib_cac);
+#elif RKAIQ_HAVE_CAC_V11
+    auto* calib_cac =
+        (CalibDbV2_Cac_V11_t*)(CALIBDBV2_GET_MODULE_PTR(cfg->calibv2, cac_v11));
+    XCAM_ASSERT(calib_cac != nullptr);
+    adaptor->Config(cfg, calib_cac);
+#endif
 
     ctx->handle = static_cast<void*>(adaptor);
     *context    = ctx;
@@ -56,9 +65,9 @@ static XCamReturn create_context(RkAiqAlgoContext** context, const AlgoCtxInstan
 }
 
 static XCamReturn destroy_context(RkAiqAlgoContext* context) {
-    if (context) {
-        if (context->handle) {
-            CacAlgoAdaptor* adaptor = static_cast<CacAlgoAdaptor*>(context->handle);
+    if (context != nullptr) {
+        if (context->handle != nullptr) {
+            auto* adaptor = static_cast<CacAlgoAdaptor*>(context->handle);
             delete adaptor;
             context->handle = nullptr;
         }
@@ -68,27 +77,27 @@ static XCamReturn destroy_context(RkAiqAlgoContext* context) {
 }
 
 static XCamReturn prepare(RkAiqAlgoCom* params) {
-    CacAlgoAdaptor* adaptor        = static_cast<CacAlgoAdaptor*>(params->ctx->handle);
+    auto* adaptor        = static_cast<CacAlgoAdaptor*>(params->ctx->handle);
     RkAiqAlgoConfigAcac* config = (RkAiqAlgoConfigAcac*)params;
 
     return adaptor->Prepare(config);
 }
 
-static XCamReturn pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
+static XCamReturn pre_process(const RkAiqAlgoCom* /* inparams */, RkAiqAlgoResCom* /* outparams */) {
     return XCAM_RETURN_NO_ERROR;
 }
 
 static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
     RkAiqAlgoProcAcac* input     = (RkAiqAlgoProcAcac*)(inparams);
     RkAiqAlgoProcResAcac* output = (RkAiqAlgoProcResAcac*)outparams;
-    CacAlgoAdaptor* adaptor         = static_cast<CacAlgoAdaptor*>(inparams->ctx->handle);
+    auto* adaptor         = static_cast<CacAlgoAdaptor*>(inparams->ctx->handle);
 
     adaptor->OnFrameEvent(input, output);
 
     return XCAM_RETURN_NO_ERROR;
 }
 
-static XCamReturn post_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
+static XCamReturn post_process(const RkAiqAlgoCom* /* inparams */, RkAiqAlgoResCom* /* outparams */) {
     return XCAM_RETURN_NO_ERROR;
 }
 

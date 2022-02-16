@@ -208,6 +208,88 @@ typedef struct {
     unsigned short highlit_thresh;
 }  rk_aiq_af_algo_meas_v30_t;
 
+typedef struct {
+    unsigned char af_en;
+    unsigned char rawaf_sel;
+    unsigned char gamma_en;
+    unsigned char gaus_en;
+    unsigned char v1_fir_sel;
+    unsigned char hiir_en;
+    unsigned char viir_en;
+    unsigned char v1_fv_outmode;    // 0 square, 1 absolute
+    unsigned char v2_fv_outmode;    // 0 square, 1 absolute
+    unsigned char h1_fv_outmode;    // 0 square, 1 absolute
+    unsigned char h2_fv_outmode;    // 0 square, 1 absolute
+    unsigned char ldg_en;
+    unsigned char accu_8bit_mode;
+    unsigned char ae_mode;
+    unsigned char y_mode;
+    unsigned char vldg_sel;
+    unsigned char sobel_sel;
+    unsigned char v_dnscl_mode;
+    unsigned char from_awb;
+    unsigned char from_ynr;
+    unsigned char ae_config_use;
+    unsigned char line_en[RKAIQ_RAWAF_LINE_NUM];
+    unsigned char line_num[RKAIQ_RAWAF_LINE_NUM];
+
+    unsigned char window_num;
+    unsigned short wina_h_offs;
+    unsigned short wina_v_offs;
+    unsigned short wina_h_size;
+    unsigned short wina_v_size;
+    unsigned short winb_h_offs;
+    unsigned short winb_v_offs;
+    unsigned short winb_h_size;
+    unsigned short winb_v_size;
+
+    unsigned short gamma_y[RKAIQ_RAWAF_GAMMA_NUM];
+
+    // [old version param]
+    unsigned short thres;
+    unsigned char shift_sum_a;
+    unsigned char shift_sum_b;
+    unsigned char shift_y_a;
+    unsigned char shift_y_b;
+
+    char gaus_coe[9];
+
+    /**********[Vertical IIR (v1 & v2)]************/
+    short v1_iir_coe[3];
+    short v1_fir_coe[3];
+    short v2_iir_coe[3];
+    short v2_fir_coe[3];
+
+    /**********[Horizontal IIR (h1 & h2)]************/
+    short h1_iir1_coe[6];
+    short h2_iir1_coe[6];
+    short h1_iir2_coe[6];
+    short h2_iir2_coe[6];
+
+    /**********[Focus value statistic param]**********/
+    // level depended gain
+    // input8 lumi, output8bit gain
+    unsigned char h_ldg_lumth[2];    //luminance thresh
+    unsigned char h_ldg_gain[2];     //gain for [minLum,maxLum]
+    unsigned short h_ldg_gslp[2];    //[slope_low,-slope_high]
+    unsigned char v_ldg_lumth[2];
+    unsigned char v_ldg_gain[2];
+    unsigned short v_ldg_gslp[2];
+
+    // coring
+    unsigned short v_fv_thresh;
+    unsigned short h_fv_thresh;
+
+    // left shift, more needed if outmode=square
+    unsigned char v1_fv_shift; //only for sel1
+    unsigned char v2_fv_shift;
+    unsigned char h1_fv_shift;
+    unsigned char h2_fv_shift;
+
+    /**********[High light]**********/
+    unsigned short highlit_thresh;
+}  rk_aiq_af_algo_meas_v31_t;
+
 typedef rk_aiq_af_algo_meas_v20_t rk_aiq_af_algo_meas_t;
 typedef rk_aiq_af_algo_stat_v20_t rk_aiq_af_algo_stat_t;
 

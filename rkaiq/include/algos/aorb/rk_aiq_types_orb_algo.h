@@ -21,7 +21,7 @@ typedef struct {
 typedef struct {
     unsigned int num_points;
     rk_aiq_orb_featue_point points[MAX_POINTS];
-    unsigned int frame_id;
+    uint32_t frame_id;
     int img_buf_index;
     unsigned int img_size;
     int buf_fd[16];

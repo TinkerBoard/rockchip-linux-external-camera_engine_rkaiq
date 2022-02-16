@@ -23,7 +23,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
-#if RKAIQ_HAVE_CCM_V1
+#if RKAIQ_HAVE_CCM_V1 || RKAIQ_HAVE_CCM_V2
 XCamReturn
 rk_aiq_user_api_accm_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ccm_attrib_t attr)
 {

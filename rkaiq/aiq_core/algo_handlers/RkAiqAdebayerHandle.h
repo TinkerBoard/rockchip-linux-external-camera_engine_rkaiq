@@ -25,10 +25,12 @@
 namespace RkCam {
 
 class RkAiqAdebayerHandleInt : virtual public RkAiqHandle {
- public:
+public:
     explicit RkAiqAdebayerHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {}
-    virtual ~RkAiqAdebayerHandleInt() { RkAiqHandle::deInit(); };
+    virtual ~RkAiqAdebayerHandleInt() {
+        RkAiqHandle::deInit();
+    };
     virtual XCamReturn updateConfig(bool needSync);
     virtual XCamReturn prepare();
     virtual XCamReturn preProcess();
@@ -39,18 +41,20 @@ class RkAiqAdebayerHandleInt : virtual public RkAiqHandle {
     XCamReturn setAttrib(adebayer_attrib_t att);
     XCamReturn getAttrib(adebayer_attrib_t* att);
 
- protected:
+protected:
     virtual void init();
-    virtual void deInit() { RkAiqHandle::deInit(); };
+    virtual void deInit() {
+        RkAiqHandle::deInit();
+    };
 
- private:
+private:
     adebayer_attrib_t mCurAtt;
     adebayer_attrib_t mNewAtt;
 
- private:
+private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAdebayerHandleInt);
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

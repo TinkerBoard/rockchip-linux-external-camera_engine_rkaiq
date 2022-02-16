@@ -15,125 +15,98 @@
 #include "amerge_head.h"
 #include "amerge_uapi_head.h"
 
-
-#define ISP20_HDRMGE_OE_CURVE_NUM   (17)
-#define ISP20_HDRMGE_MD_CURVE_NUM   (17)
-#define ISP3X_HDRMGE_OE_CURVE_NUM   ISP20_HDRMGE_OE_CURVE_NUM
-#define ISP3X_HDRMGE_MD_CURVE_NUM   ISP20_HDRMGE_MD_CURVE_NUM
-
-typedef enum merge_OpModeV21_e {
-    MERGE_OPMODE_API_OFF = 0, // run IQ ahdr
-    MERGE_OPMODE_MANU = 1, //run api manual ahdr
-} merge_OpModeV21_t;
+typedef enum merge_OpMode_e {
+    MERGE_OPMODE_AUTO   = 0,  // run auto merge
+    MERGE_OPMODE_MANUAL = 1,  // run manual merge
+} merge_OpMode_t;
 
 typedef uapiMergeCurrCtlData_t MergeCurrCtlData_t;
 
-typedef struct mMergeOECurveV21_s {
+// merge V10
+typedef struct mMergeOECurveV10_s {
     float Smooth;
     float Offset;
-} mMergeOECurveV21_t;
+} mMergeOECurveV10_t;
 
-typedef struct mMergeMDCurveV21_s {
+typedef struct mMergeMDCurveV10_s {
     float LM_smooth;
     float LM_offset;
     float MS_smooth;
     float MS_offset;
-} mMergeMDCurveV21_t;
+} mMergeMDCurveV10_t;
 
-typedef struct mmergeAttrV21_s {
-    mMergeOECurveV21_t OECurve;
-    mMergeMDCurveV21_t MDCurve;
-} mmergeAttrV21_t;
+typedef struct mmergeAttrV10_s {
+    mMergeOECurveV10_t OECurve;
+    mMergeMDCurveV10_t MDCurve;
+} mmergeAttrV10_t;
 
-typedef struct mergeAttrV21_s {
-    merge_OpModeV21_t    opMode;
-    mmergeAttrV21_t      stManual;
+typedef struct mergeAttrV10_s {
+    rk_aiq_uapi_sync_t sync;
+
+    merge_OpMode_t opMode;
+    mmergeAttrV10_t stManual;
+    CalibDbV2_merge_V10_t stAuto;
     MergeCurrCtlData_t   CtlInfo;
-} mergeAttrV21_t;
+} mergeAttrV10_t;
 
+// merge V11
 typedef struct mLongFrameModeData_s {
-    mMergeOECurveV21_t OECurve;
-    mMergeMDCurveV21_t MDCurve;
+    mMergeOECurveV10_t OECurve;
+    mMergeMDCurveV10_t MDCurve;
 } mLongFrameModeData_t;
 
-typedef struct mMergeMDCurveV30Short_s {
+typedef struct mMergeMDCurveV11Short_s {
     float Coef;
     float ms_thd0;
     float lm_thd0;
-} mMergeMDCurveV30Short_t;
+} mMergeMDCurveV11Short_t;
 
 typedef struct mShortFrameModeData_s {
-    mMergeOECurveV21_t OECurve;
-    mMergeMDCurveV30Short_t MDCurve;
+    mMergeOECurveV10_t OECurve;
+    mMergeMDCurveV11Short_t MDCurve;
 } mShortFrameModeData_t;
 
-typedef struct mMergeAttrV30_s {
+typedef struct mMergeAttrV11_s {
     MergeBaseFrame_t BaseFrm;
     mLongFrameModeData_t LongFrmModeData;
     mShortFrameModeData_t ShortFrmModeData;
-} mMergeAttrV30_t;
+} mMergeAttrV11_t;
 
-typedef struct mergeAttrV30_s {
-    merge_OpModeV21_t    opMode;
-    mMergeAttrV30_t stManual;
-    MergeCurrCtlData_t CtlInfo;
-} mergeAttrV30_t;
-
-typedef struct mergeAttr_s {
+typedef struct mergeAttrV11_s {
     rk_aiq_uapi_sync_t sync;
 
-    mergeAttrV21_t    attrV21;
-    mergeAttrV30_t    attrV30;
-} mergeAttr_t;
+    merge_OpMode_t opMode;
+    mMergeAttrV11_t stManual;
+    CalibDbV2_merge_V11_t stAuto;
+    MergeCurrCtlData_t CtlInfo;
+} mergeAttrV11_t;
 
-typedef struct MgeProcRes_s {
-    unsigned char  sw_hdrmge_mode;
-    unsigned short sw_hdrmge_gain0_inv;
-    unsigned short sw_hdrmge_gain0;
-    unsigned short sw_hdrmge_gain1_inv;
-    unsigned short sw_hdrmge_gain1;
-    unsigned char  sw_hdrmge_gain2;
-    unsigned char  sw_hdrmge_ms_dif_0p8;
-    unsigned char  sw_hdrmge_lm_dif_0p9;
-    unsigned char  sw_hdrmge_ms_dif_0p15;
-    unsigned char  sw_hdrmge_lm_dif_0p15;
-    unsigned short sw_hdrmge_l0_y[ISP20_HDRMGE_MD_CURVE_NUM];
-    unsigned short sw_hdrmge_l1_y[ISP20_HDRMGE_MD_CURVE_NUM];
-    unsigned short sw_hdrmge_e_y[ISP20_HDRMGE_OE_CURVE_NUM];
-} MgeProcRes_t;
+// merge V12
+typedef struct mMergeEachChnCurveV12_s {
+    float Smooth;
+    float Offset;
+} mMergeEachChnCurveV12_t;
 
-typedef struct MgeProcResV2_s {
-    unsigned char  sw_hdrmge_s_base;
-    unsigned char  sw_hdrmge_mode;
-    unsigned short sw_hdrmge_gain0_inv;
-    unsigned short sw_hdrmge_gain0;
-    unsigned short sw_hdrmge_gain1_inv;
-    unsigned short sw_hdrmge_gain1;
-    unsigned char  sw_hdrmge_gain2;
-    unsigned char  sw_hdrmge_ms_dif_0p8;
-    unsigned char  sw_hdrmge_lm_dif_0p9;
-    unsigned char  sw_hdrmge_ms_dif_0p15;
-    unsigned char  sw_hdrmge_lm_dif_0p15;
-    unsigned short sw_hdrmge_l0_y[ISP3X_HDRMGE_MD_CURVE_NUM];
-    unsigned short sw_hdrmge_l1_y[ISP3X_HDRMGE_MD_CURVE_NUM];
-    unsigned short sw_hdrmge_e_y[ISP3X_HDRMGE_OE_CURVE_NUM];
-    unsigned short sw_hdrmge_ms_thd1;
-    unsigned short sw_hdrmge_ms_thd0;
-    unsigned short sw_hdrmge_ms_scl;
-    unsigned short sw_hdrmge_lm_thd1;
-    unsigned short sw_hdrmge_lm_thd0;
-    unsigned short sw_hdrmge_lm_scl;
-} MgeProcResV2_t;
+typedef struct mLongFrameModeDataV12_s {
+    bool EnableEachChn;
+    mMergeOECurveV10_t OECurve;
+    mMergeMDCurveV10_t MDCurve;
+    mMergeEachChnCurveV12_t EachChnCurve;
+} mLongFrameModeDataV12_t;
 
-typedef struct RkAiqAmergeProcResult_s {
-#if RKAIQ_HAVE_MERGE_V1
-    MgeProcRes_t Merge_v20;
-#endif
-#if RKAIQ_HAVE_MERGE_V2
-    MgeProcResV2_t Merge_v30;
-#endif
-    bool update;;
-    bool LongFrameMode;
-} RkAiqAmergeProcResult_t;
+typedef struct mMergeAttrV12_s {
+    MergeBaseFrame_t BaseFrm;
+    mLongFrameModeDataV12_t LongFrmModeData;
+    mShortFrameModeData_t ShortFrmModeData;
+} mMergeAttrV12_t;
+
+typedef struct mergeAttrV12_s {
+    rk_aiq_uapi_sync_t sync;
+
+    merge_OpMode_t opMode;
+    mMergeAttrV12_t stManual;
+    CalibDbV2_merge_V12_t stAuto;
+    MergeCurrCtlData_t CtlInfo;
+} mergeAttrV12_t;
 
 #endif

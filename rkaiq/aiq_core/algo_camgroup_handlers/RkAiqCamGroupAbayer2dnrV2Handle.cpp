@@ -153,4 +153,4 @@ XCamReturn RkAiqCamGroupAbayer2dnrV2HandleInt::getStrength(rk_aiq_bayer2dnr_stre
 }
 #endif
 
-};  // namespace RkCam
+}  // namespace RkCam

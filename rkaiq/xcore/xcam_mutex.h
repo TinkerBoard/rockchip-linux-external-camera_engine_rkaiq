@@ -132,6 +132,6 @@ public:
 private:
     XCam::Mutex &_mutex;
 };
-};
+}
 #endif //XCAM_MUTEX_H
 

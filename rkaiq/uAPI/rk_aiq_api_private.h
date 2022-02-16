@@ -60,6 +60,8 @@ typedef struct rk_aiq_camgroup_ctx_s {
     SmartPtr<Mutex> _apiMutex;
     CamCalibDbCamgroup_t* _camgroup_calib;
     RK_PS_SrcOverlapMap* _srcOverlapMap_s;
+#else
+    void* place_holder;
 #endif
 } rk_aiq_camgroup_ctx_t;
 

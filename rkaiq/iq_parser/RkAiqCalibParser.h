@@ -479,6 +479,6 @@ private:
 #endif
 };
 
-}; //namespace RkCam
+} //namespace RkCam
 
 #endif

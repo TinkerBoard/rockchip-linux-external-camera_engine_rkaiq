@@ -106,21 +106,21 @@ RkAiqManager::RkAiqManager(const char* sns_ent_name,
                            rk_aiq_metas_cb metas_cb)
     : mCamHw(NULL)
     , mRkAiqAnalyzer(NULL)
-    , mRkLumaAnalyzer(NULL)
     , mAiqRstAppTh(new RkAiqRstApplyThread(this))
     , mAiqMngCmdTh(new RkAiqMngCmdThread(this))
+    , mRkLumaAnalyzer(NULL)
     , mErrCb(err_cb)
     , mMetasCb(metas_cb)
     , mHwEvtCb(NULL)
     , mHwEvtCbCtx(NULL)
     , mSnsEntName(sns_ent_name)
-    , mWorkingMode(RK_AIQ_WORKING_MODE_NORMAL)
-    , mOldWkModeForGray(RK_AIQ_WORKING_MODE_NORMAL)
-    , mWkSwitching(false)
 #ifdef RKAIQ_ENABLE_PARSER_V1
     , mCalibDb(NULL)
 #endif
     , mCalibDbV2(NULL)
+    , mWorkingMode(RK_AIQ_WORKING_MODE_NORMAL)
+    , mOldWkModeForGray(RK_AIQ_WORKING_MODE_NORMAL)
+    , mWkSwitching(false)
     , _state(AIQ_STATE_INVALID)
     , mCurMirror(false)
     , mCurFlip(false)
@@ -283,7 +283,7 @@ RkAiqManager::prepare(uint32_t width, uint32_t height, rk_aiq_working_mode_t mod
 
     xcam_mem_clear(sensor_des);
     ret = mCamHw->getSensorModeData(mSnsEntName, sensor_des);
-    int w,h,aligned_w,aligned_h;
+    int w, h, aligned_w, aligned_h;
     ret = mCamHw->get_sp_resolution(w, h, aligned_w, aligned_h);
     ret = mRkAiqAnalyzer->set_sp_resolution(w, h, aligned_w, aligned_h);
     if (mRkLumaAnalyzer.ptr())
@@ -519,7 +519,7 @@ RkAiqManager::syncSofEvt(SmartPtr<VideoBuffer>& hwres)
 {
     ENTER_XCORE_FUNCTION();
 
-    if (hwres->_buf_type == ISP_POLL_SOF){
+    if (hwres->_buf_type == ISP_POLL_SOF) {
         xcam_get_runtime_log_level();
         SmartPtr<CamHwIsp20> mCamHwIsp20 = mCamHw.dynamic_cast_ptr<CamHwIsp20>();
         mCamHwIsp20->notify_sof(hwres);
@@ -555,7 +555,7 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
     } else if (hwres->_buf_type == ISP_POLL_PARAMS) {
     } else if (hwres->_buf_type == ISPP_POLL_NR_STATS) {
         ret = mRkAiqAnalyzer->pushStats(hwres);
-    } else if (hwres->_buf_type == ISP_POLL_SOF){
+    } else if (hwres->_buf_type == ISP_POLL_SOF) {
         xcam_get_runtime_log_level();
 
 #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -581,12 +581,12 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
 #endif
     } else if (hwres->_buf_type == ISP_POLL_TX) {
 #if 0
-       XCamVideoBuffer* camVBuf = convert_to_XCamVideoBuffer(hwres);
+        XCamVideoBuffer* camVBuf = convert_to_XCamVideoBuffer(hwres);
         LOGD_ANALYZER("raw: \n format: 0x%x\n color_bits: %d\n width: %d\n height: %d\n aligned_width: %d\naligned_height: %d\n"
-                "size: %d\n components: %d\n strides[0]: %d\n strides[1]: %d\n offset[0]: %d\n offset[1]: %d\n",
-                camVBuf->info.format, camVBuf->info.color_bits, camVBuf->info.width, camVBuf->info.height,
-                camVBuf->info.aligned_width, camVBuf->info.aligned_height, camVBuf->info.size, camVBuf->info.components,
-                camVBuf->info.strides[0], camVBuf->info.strides[1], camVBuf->info.offsets[0], camVBuf->info.offsets[1]);
+                      "size: %d\n components: %d\n strides[0]: %d\n strides[1]: %d\n offset[0]: %d\n offset[1]: %d\n",
+                      camVBuf->info.format, camVBuf->info.color_bits, camVBuf->info.width, camVBuf->info.height,
+                      camVBuf->info.aligned_width, camVBuf->info.aligned_height, camVBuf->info.size, camVBuf->info.components,
+                      camVBuf->info.strides[0], camVBuf->info.strides[1], camVBuf->info.offsets[0], camVBuf->info.offsets[1]);
 
         camVBuf->unref(camVBuf);
 #endif
@@ -595,10 +595,10 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
 #if 0
         XCamVideoBuffer* camVBuf = convert_to_XCamVideoBuffer(hwres);
         LOGD_ANALYZER("spimg: frameid:%d \n format: 0x%x\n color_bits: %d\n width: %d\n height: %d\n aligned_width: %d\naligned_height: %d\n"
-                "size: %d\n components: %d\n strides[0]: %d\n strides[1]: %d\n offset[0]: %d\n offset[1]: %d\n",hwres->get_sequence(),
-                camVBuf->info.format, camVBuf->info.color_bits, camVBuf->info.width, camVBuf->info.height,
-                camVBuf->info.aligned_width, camVBuf->info.aligned_height, camVBuf->info.size, camVBuf->info.components,
-                camVBuf->info.strides[0], camVBuf->info.strides[1], camVBuf->info.offsets[0], camVBuf->info.offsets[1]);
+                      "size: %d\n components: %d\n strides[0]: %d\n strides[1]: %d\n offset[0]: %d\n offset[1]: %d\n", hwres->get_sequence(),
+                      camVBuf->info.format, camVBuf->info.color_bits, camVBuf->info.width, camVBuf->info.height,
+                      camVBuf->info.aligned_width, camVBuf->info.aligned_height, camVBuf->info.size, camVBuf->info.components,
+                      camVBuf->info.strides[0], camVBuf->info.strides[1], camVBuf->info.offsets[0], camVBuf->info.offsets[1]);
         camVBuf->unref(camVBuf);
 #endif
         LOGD_ANALYZER("ISP_IMG");
@@ -607,10 +607,10 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
 #if 0
         XCamVideoBuffer* camVBuf = convert_to_XCamVideoBuffer(hwres);
         LOGD_ANALYZER("nrimg: \n format: 0x%x\n color_bits: %d\n width: %d\n height: %d\n aligned_width: %d\naligned_height: %d\n"
-                "size: %d\n components: %d\n strides[0]: %d\n strides[1]: %d\n offset[0]: %d\n offset[1]: %d\n",
-                camVBuf->info.format, camVBuf->info.color_bits, camVBuf->info.width, camVBuf->info.height,
-                camVBuf->info.aligned_width, camVBuf->info.aligned_height, camVBuf->info.size, camVBuf->info.components,
-                camVBuf->info.strides[0], camVBuf->info.strides[1], camVBuf->info.offsets[0], camVBuf->info.offsets[1]);
+                      "size: %d\n components: %d\n strides[0]: %d\n strides[1]: %d\n offset[0]: %d\n offset[1]: %d\n",
+                      camVBuf->info.format, camVBuf->info.color_bits, camVBuf->info.width, camVBuf->info.height,
+                      camVBuf->info.aligned_width, camVBuf->info.aligned_height, camVBuf->info.size, camVBuf->info.components,
+                      camVBuf->info.strides[0], camVBuf->info.strides[1], camVBuf->info.offsets[0], camVBuf->info.offsets[1]);
         camVBuf->unref(camVBuf);
 #endif
         ret = mRkAiqAnalyzer->pushStats(hwres);
@@ -725,7 +725,6 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
     APPLY_ANALYZER_RESULT(CnrV21, UVNR);
     APPLY_ANALYZER_RESULT(SharpenV21, SHARPEN);
     APPLY_ANALYZER_RESULT(BaynrV21, RAWNR);
-    APPLY_ANALYZER_RESULT(Csm, CSM);
     // ispv3x
     APPLY_ANALYZER_RESULT(AwbV3x, AWB);
     APPLY_ANALYZER_RESULT(BlcV21, BLC);
@@ -737,7 +736,23 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
     APPLY_ANALYZER_RESULT(SharpenV3x, SHARPEN);
     APPLY_ANALYZER_RESULT(CacV3x, CAC);
     APPLY_ANALYZER_RESULT(GainV3x, GAIN);
-	APPLY_ANALYZER_RESULT(TnrV3x, TNR);
+    APPLY_ANALYZER_RESULT(TnrV3x, TNR);
+
+    // ispv32
+    //APPLY_ANALYZER_RESULT(BlcV32, BLC);
+    APPLY_ANALYZER_RESULT(TnrV32, TNR);
+    APPLY_ANALYZER_RESULT(BaynrV32, RAWNR);
+    APPLY_ANALYZER_RESULT(CacV32, CAC);
+    APPLY_ANALYZER_RESULT(DebayerV32, DEBAYER);
+    APPLY_ANALYZER_RESULT(CcmV32, CCM);
+    // APPLY_ANALYZER_RESULT(DehazeV32, DEHAZE);
+    APPLY_ANALYZER_RESULT(LdchV32, LDCH);
+    APPLY_ANALYZER_RESULT(YnrV32, YNR);
+    APPLY_ANALYZER_RESULT(CnrV32, UVNR);
+    APPLY_ANALYZER_RESULT(SharpV32, SHARPEN);
+    APPLY_ANALYZER_RESULT(AwbV32, AWB);
+    APPLY_ANALYZER_RESULT(AfV32, AF);
+    APPLY_ANALYZER_RESULT(AwbGainV32, AWBGAIN);
 
     mCamHw->applyAnalyzerResult(results_list);
 
@@ -1017,20 +1032,20 @@ void RkAiqManager::setMulCamConc(bool cc)
 
 CamCalibDbV2Context_t* RkAiqManager::getCurrentCalibDBV2()
 {
-  return mCalibDbV2;
+    return mCalibDbV2;
 }
 
 XCamReturn RkAiqManager::calibTuning(const CamCalibDbV2Context_t* aiqCalib,
                                      ModuleNameList& change_list)
 {
-  if (!aiqCalib) {
-    return XCAM_RETURN_ERROR_PARAM;
-  }
-  *mCalibDbV2 = *aiqCalib;
+    if (!aiqCalib) {
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+    *mCalibDbV2 = *aiqCalib;
 
-  mCamHw->setCalib(mCalibDbV2);
+    mCamHw->setCalib(mCalibDbV2);
 
-  return mRkAiqAnalyzer->calibTuning(aiqCalib, change_list);
+    return mRkAiqAnalyzer->calibTuning(aiqCalib, change_list);
 }
 
-}; //namespace RkCam
+} //namespace RkCam

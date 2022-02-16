@@ -643,6 +643,7 @@ XCamReturn RkAiqAwbHandleInt::processing() {
 #endif
 
     ret = RkAiqHandle::processing();
+
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "awb handle processing failed");
     }
@@ -724,10 +725,16 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
     rk_aiq_isp_awb_params_v3x_t* awb_param = params->mAwbV3xParams->data().ptr();
 #elif defined(ISP_HW_V21)
     rk_aiq_isp_awb_params_v21_t* awb_param = params->mAwbV21Params->data().ptr();
+#elif defined(ISP_HW_V32)
+    rk_aiq_isp_awb_params_v32_t* awb_param = params->mAwbV32Params->data().ptr();
 #else
     rk_aiq_isp_awb_params_v20_t* awb_param = params->mAwbParams->data().ptr();
 #endif
+#if defined(ISP_HW_V32)
+    rk_aiq_isp_awb_gain_params_v32_t* awb_gain_param = params->mAwbGainV32Params->data().ptr();
+#else
     rk_aiq_isp_awb_gain_params_v20_t* awb_gain_param = params->mAwbGainParams->data().ptr();
+#endif
     RkAiqAlgoProcResAwb* awb_rk                      = (RkAiqAlgoProcResAwb*)awb_com;
 
 #if 0
@@ -747,10 +754,20 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
         awb_gain_param->frame_id = shared->frameId;
         awb_param->frame_id      = shared->frameId;
     }
-
+#if defined(ISP_HW_V32)
+    rk_aiq_wb_gain_v32_t *awb_gain_v32 = &awb_gain_param->result;
+    awb_gain_v32->rgain = awb_rk->awb_gain_algo.rgain;
+    awb_gain_v32->grgain = awb_rk->awb_gain_algo.grgain;
+    awb_gain_v32->gbgain = awb_rk->awb_gain_algo.gbgain;
+    awb_gain_v32->bgain = awb_rk->awb_gain_algo.bgain;
+    awb_gain_v32->applyPosition = awb_rk->wbgainApplyPosition;
+#else
     awb_gain_param->result     = awb_rk->awb_gain_algo;
+#endif
 #if defined(ISP_HW_V30) || defined(ISP_HW_V21)
     awb_param->result = awb_rk->awb_hw1_para;
+#elif defined(ISP_HW_V32)
+    awb_param->result = awb_rk->awb_hw32_para;
 #else
     awb_param->result = awb_rk->awb_hw0_para;
 #endif
@@ -765,14 +782,20 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
     cur_params->mAwbV3xParams  = params->mAwbV3xParams;
 #elif defined(ISP_HW_V21)
     cur_params->mAwbV21Params  = params->mAwbV21Params;
+#elif defined(ISP_HW_V32)
+    cur_params->mAwbV32Params  = params->mAwbV32Params;
 #else
     cur_params->mAwbParams     = params->mAwbParams;
 #endif
+#if defined(ISP_HW_V32)
+    cur_params->mAwbGainV32Params = params->mAwbGainV32Params;
+#else
     cur_params->mAwbGainParams = params->mAwbGainParams;
+#endif
 
     EXIT_ANALYZER_FUNCTION();
 
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

@@ -38,35 +38,35 @@
 namespace RkCam {
 
 const static struct RkAiqAlgoDesCommExt g_camgroup_algos[] = {
-    { &g_RkIspAlgoDescCamgroupAe.common, RK_AIQ_CORE_ANALYZE_AE, 0, 2, 0},
-    { &g_RkIspAlgoDescCamgroupAblc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0},
-    { &g_RkIspAlgoDescCamgroupAwb.common, RK_AIQ_CORE_ANALYZE_AWB, 1, 1, 0},
-    { &g_RkIspAlgoDescCamgroupAlsc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0},
-    { &g_RkIspAlgoDescCamgroupAccm.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0},
-    { &g_RkIspAlgoDescCamgroupA3dlut.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0},
+    { &g_RkIspAlgoDescCamgroupAe.common, RK_AIQ_CORE_ANALYZE_AE, 0, 2, 0, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAblc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAwb.common, RK_AIQ_CORE_ANALYZE_AWB, 1, 1, 0, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAlsc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAccm.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupA3dlut.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
     /* dpcc group algo is not mandatory now */
-    //{ &g_RkIspAlgoDescCamgroupAdpcc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0},
-    { & g_RkIspAlgoDescCamgroupAdhaz.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 1, 0},
+    //{ &g_RkIspAlgoDescCamgroupAdpcc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
+    { & g_RkIspAlgoDescCamgroupAdhaz.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 1, 0, {0, 0}},
     /* gamma group algo is not mandatory now */
-    //{ &g_RkIspAlgoDescamgroupAgamma.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 0, 0 },
-    { & g_RkIspAlgoDescCamgroupAdrc.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 1, 0},
-    //{ &g_RkIspAlgoDescCamgroupAmerge.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 0, 0},
+    //{ &g_RkIspAlgoDescamgroupAgamma.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 0, 0 , {0, 0}},
+    { & g_RkIspAlgoDescCamgroupAdrc.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 1, 0, {0, 0}},
+    //{ &g_RkIspAlgoDescCamgroupAmerge.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 0, 0, {0, 0}},
 #if defined(ISP_HW_V30)
-    { &g_RkIspAlgoDescCamgroupAynrV3.common, RK_AIQ_CORE_ANALYZE_OTHER, 3, 3, 3},
-    { &g_RkIspAlgoDescCamgroupAcnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2},
-    { &g_RkIspAlgoDescCamgroupAbayertnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2},
-    { &g_RkIspAlgoDescCamgroupAbayer2dnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2},
-    { &g_RkIspAlgoDescCamgroupAsharpV4.common, RK_AIQ_CORE_ANALYZE_OTHER, 4, 4, 4},
-    { &g_RkIspAlgoDescCamgroupAgainV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2},
+    { &g_RkIspAlgoDescCamgroupAynrV3.common, RK_AIQ_CORE_ANALYZE_OTHER, 3, 3, 3, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAcnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAbayertnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAbayer2dnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAsharpV4.common, RK_AIQ_CORE_ANALYZE_OTHER, 4, 4, 4, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAgainV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
 #endif
 #if defined(ISP_HW_V21)
-    { &g_RkIspAlgoDescCamgroupAynrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2},
-    { &g_RkIspAlgoDescCamgroupAcnr.common, RK_AIQ_CORE_ANALYZE_OTHER, 1, 1, 1},
-    { &g_RkIspAlgoDescCamgroupAbayernrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2},
-    { &g_RkIspAlgoDescCamgroupAsharpV3.common, RK_AIQ_CORE_ANALYZE_OTHER, 3, 3, 3},
+    { &g_RkIspAlgoDescCamgroupAynrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAcnr.common, RK_AIQ_CORE_ANALYZE_OTHER, 1, 1, 1, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAbayernrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    { &g_RkIspAlgoDescCamgroupAsharpV3.common, RK_AIQ_CORE_ANALYZE_OTHER, 3, 3, 3, {0, 0}},
 #endif
 
-    { NULL, RK_AIQ_CORE_ANALYZE_ALL, 0, 0 },
+    { NULL, RK_AIQ_CORE_ANALYZE_ALL, 0, 0, 0, {0, 0}},
 };
 
 bool
@@ -100,8 +100,8 @@ RkAiqCamGroupManager::RkAiqCamGroupManager()
 {
     ENTER_CAMGROUP_FUNCTION();
     mCamGroupReprocTh = new RkAiqCamGroupReprocTh(this);
-    mRequiredMsgsMask = (1 << XCAM_MESSAGE_AWB_STATS_OK) | (1 << XCAM_MESSAGE_AWB_PROC_RES_OK) | (1 << XCAM_MESSAGE_SOF_INFO_OK) |
-                        (1 << XCAM_MESSAGE_AEC_STATS_OK) | (1 << XCAM_MESSAGE_AE_PRE_RES_OK) | (1 << XCAM_MESSAGE_AE_PROC_RES_OK);
+    mRequiredMsgsMask = (1ULL << XCAM_MESSAGE_AWB_STATS_OK) | (1ULL << XCAM_MESSAGE_AWB_PROC_RES_OK) | (1ULL << XCAM_MESSAGE_SOF_INFO_OK) |
+                        (1ULL << XCAM_MESSAGE_AEC_STATS_OK) | (1ULL << XCAM_MESSAGE_AE_PRE_RES_OK) | (1ULL << XCAM_MESSAGE_AE_PROC_RES_OK);
 
     mGroupAlgosDesArray = g_camgroup_algos;
     mState = CAMGROUP_MANAGER_INVALID;
@@ -121,16 +121,18 @@ RkAiqCamGroupManager::~RkAiqCamGroupManager()
 }
 
 rk_aiq_groupcam_result_t*
-RkAiqCamGroupManager::getGroupCamResult(uint32_t frameId, bool alloc)
+RkAiqCamGroupManager::getGroupCamResult(uint32_t frameId, bool query_ready)
 {
     SmartLock locker (mCamGroupResMutex);
     rk_aiq_groupcam_result_t* camGroupRes = NULL;
 
     if (mCamGroupResMap.find(frameId) != mCamGroupResMap.end()) {
         camGroupRes = mCamGroupResMap[frameId];
+        if (!query_ready && camGroupRes->_ready)
+            return NULL;
         LOG1_CAMGROUP("camgroup res of frame: %d exists", frameId);
     } else {
-        if (!alloc)
+        if (!query_ready)
             return NULL;
         camGroupRes = new rk_aiq_groupcam_result_t();
         if (!camGroupRes) {
@@ -178,16 +180,18 @@ RkAiqCamGroupManager::clearGroupCamResult(uint32_t frameId) {
 }
 
 rk_aiq_groupcam_sofsync_t*
-RkAiqCamGroupManager::getGroupCamSofsync(uint32_t frameId, bool alloc)
+RkAiqCamGroupManager::getGroupCamSofsync(uint32_t frameId, bool query_ready)
 {
     SmartLock locker (mCamGroupResMutex);
     rk_aiq_groupcam_sofsync_t* camGroupSofsync = NULL;
 
     if (mCamGroupSofsyncMap.find(frameId) != mCamGroupSofsyncMap.end()) {
         camGroupSofsync = mCamGroupSofsyncMap[frameId];
+        if (!query_ready && (camGroupSofsync->_validCamSofSyncBits == mRequiredCamsResMask))
+            return NULL;
         LOG1_CAMGROUP("camgroup sofSync of frame: %d exists", frameId);
     } else {
-        if (!alloc)
+        if (!query_ready)
             return NULL;
         camGroupSofsync = new rk_aiq_groupcam_sofsync_t();
         if (!camGroupSofsync ) {
@@ -275,8 +279,10 @@ RkAiqCamGroupManager::setSingleCamStatusReady(rk_aiq_singlecam_result_status_t* 
             mCamGroupReprocTh->sendFrame(last_gc_result);
         }
         // init params is reprocessed in func prepare
-        if (mState == CAMGROUP_MANAGER_STARTED)
+        if (mState == CAMGROUP_MANAGER_STARTED) {
+            LOGD_CAMGROUP("send frameId:%d ",gc_result->_frameId);
             mCamGroupReprocTh->sendFrame(gc_result);
+        }
     } else {
         if (status->_singleCamResults._fullIspParam.ptr()) {
             RkAiqFullParams* scam_aiqParams = status->_singleCamResults._fullIspParam->data().ptr();
@@ -300,7 +306,7 @@ RkAiqCamGroupManager::processAiqCoreMsgs(RkAiqCore* src, SmartPtr<XCamMessage> &
     uint32_t frameId = msg->frame_id;
 
     // check if the msg is required firstly
-    if (!(mRequiredMsgsMask & (1 << msg->msg_id))) {
+    if (!(mRequiredMsgsMask & (1ULL << msg->msg_id))) {
         LOG1_CAMGROUP("camgroup: not required core msg :%s of frameId: %d, ignore",
                       MessageType2Str[msg->msg_id], msg->frame_id);
         return;
@@ -1251,4 +1257,4 @@ RkAiqCamGroupManager::isAllVicapReady() {
     return (mVicapReadyMask == mRequiredCamsResMask) ? true : false;
 }
 
-}; //namespace
+} //namespace

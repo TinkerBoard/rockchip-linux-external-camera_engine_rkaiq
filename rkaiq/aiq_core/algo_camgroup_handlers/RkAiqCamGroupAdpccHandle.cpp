@@ -97,4 +97,4 @@ RkAiqCamGroupAdpccHandleInt::getAttrib(rk_aiq_dpcc_attrib_V20_t *att) {
   return ret;
 }
 
-}; // namespace RkCam
+} // namespace RkCam

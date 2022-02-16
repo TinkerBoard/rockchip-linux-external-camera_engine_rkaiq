@@ -40,6 +40,6 @@ enum NV12PlaneIdx {
     NV12PlaneMax,
 };
 
-};
+}
 
 #endif //XCAM_STD_H

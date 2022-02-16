@@ -216,5 +216,5 @@ private:
     mutable RefObj   *_ref;
 };
 
-}; // end namespace
+} // end namespace
 #endif //XCAM_SMARTPTR_H

@@ -97,14 +97,14 @@ class TaskService {
     const TaskService<T>& operator=(const TaskService<T>&) = delete;
 
     explicit TaskService(std::unique_ptr<ServiceTask<T>> task,
-                         const bool may_block_               = default_may_block,
+                         const bool may_block                = default_may_block,
                          const uint8_t max_param_count       = default_max_param_count,
                          const TaskDuration max_process_time = default_process_time)
-        : task_(std::move(task)),
-          may_block_(default_may_block),
-          max_param_count_(max_param_count),
+        : max_param_count_(max_param_count),
           max_process_time_(max_process_time),
-          started_(false) {
+          may_block_(may_block),
+          started_(false),
+          task_(std::move(task)) {
         assert(task_.get() != nullptr);
         allocServiceParam();
     }
@@ -291,7 +291,7 @@ class TaskService {
         out_params_.clear();
     }
 
-    const uint8_t getMaxParamCount() { return max_param_count_; }
+    uint8_t getMaxParamCount() const { return max_param_count_; }
     void setMaxParamCount(const uint8_t count) { max_param_count_ = count; }
 
     const TaskDuration getMaxProceedTime() { return max_process_time_; }
@@ -329,6 +329,6 @@ class TaskService {
 #endif
 };
 
-};  // namespace XCam
+}  // namespace XCam
 
 #endif  // ALGOS_AEIS_TASK_SERVICE_H

@@ -11,7 +11,7 @@
 #ifndef __RK_AIQ_TYPES_ADRC_ALGO_H__
 #define __RK_AIQ_TYPES_ADRC_ALGO_H__
 
+#include "rk_aiq_types_adrc_hw.h"
 #include "rk_aiq_types_adrc_stat_v200.h"
-
 
 #endif

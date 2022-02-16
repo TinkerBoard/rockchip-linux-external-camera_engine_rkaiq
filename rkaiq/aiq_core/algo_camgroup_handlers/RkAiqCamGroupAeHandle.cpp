@@ -391,4 +391,4 @@ XCamReturn RkAiqCamGroupAeHandleInt::queryExpInfo(Uapi_ExpQueryInfo_t* pExpQuery
 }
 
 
-};  // namespace RkCam
+}  // namespace RkCam

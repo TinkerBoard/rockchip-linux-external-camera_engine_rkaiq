@@ -463,4 +463,4 @@ XCamReturn RkAiqCamGroupAwbHandleInt::getStrategyResult(rk_tool_awb_strategy_res
 }
 
 
-};  // namespace RkCam
+}  // namespace RkCam

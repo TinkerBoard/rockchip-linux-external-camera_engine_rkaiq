@@ -128,7 +128,7 @@ public:
     // get free buf for type V4L2_BUF_TYPE_xxx_OUTPUT
     XCamReturn get_buffer (SmartPtr<V4l2Buffer> &buf, int index = -1) const;
     // use as less as possible
-    virtual int io_control (int cmd, void *arg);
+    virtual int io_control (unsigned long cmd, void *arg);
     virtual int get_use_type() { return 0;}
     virtual void set_use_type(int type) {}
     SmartPtr<V4l2Buffer> get_available_buffer ();
@@ -198,6 +198,6 @@ private:
     XCAM_DEAD_COPY (V4l2SubDevice);
 };
 
-};
+}
 #endif // XCAM_V4L2_DEVICE_H
 

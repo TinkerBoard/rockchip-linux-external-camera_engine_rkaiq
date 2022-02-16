@@ -49,7 +49,7 @@ public:
     XCamReturn queue(cam3aResultList& results);
     XCamReturn queue(SmartPtr<cam3aResult>& result);
     XCamReturn deQueOne(cam3aResultList& results, uint32_t& frame_id);
-    void forceReady(sint32_t frame_id);
+    void forceReady(uint32_t frame_id);
     bool ready();
     void reset();
     XCamReturn start();
@@ -64,9 +64,9 @@ private:
         cam3aResultList params;
     } params_t;
     // <frameId, result lists>
-    std::map<sint32_t, params_t> mParamsMap;
+    std::map<uint32_t, params_t> mParamsMap;
     Mutex mParamsMutex;
-    sint32_t mLatestReadyFrmId;
+    uint32_t mLatestReadyFrmId;
     uint64_t mReadyMask;
     uint32_t mReadyNums;
     std::string mName;
@@ -104,7 +104,7 @@ public:
                            s32 frameNum, s32 PixelNumBlock, float blc, float *luma);
     void hdrtmoGetAeInfo(RKAiqAecExpInfo_t* Next, RKAiqAecExpInfo_t* Cur, s32 frameNum, float* expo);
     s32 hdrtmoPredictK(float* luma, float* expo, s32 frameNum, PredictKPara_t *TmoPara);
-    bool hdrtmoSceneStable(sint32_t frameId, int IIRMAX, int IIR, int SetWeight, s32 frameNum, float *LumaDeviation, float StableThr);
+    bool hdrtmoSceneStable(uint32_t frameId, int IIRMAX, int IIR, int SetWeight, s32 frameNum, float *LumaDeviation, float StableThr);
 #if 0
     void forceOverwriteAiqIsppCfg(struct rkispp_params_cfg& pp_cfg,
                                   SmartPtr<RkAiqIspParamsProxy> aiq_meas_results,
@@ -118,7 +118,7 @@ public:
     XCamReturn get_tnr_cfg_params(cam3aResultList &results, struct rkispp_params_tnrcfg &tnr_cfg);
     //XCamReturn get_nr_cfg_params(cam3aResultList &results, struct rkispp_params_nrcfg &nr_cfg);
     XCamReturn get_fec_cfg_params(cam3aResultList &results, struct rkispp_params_feccfg &fec_cfg);
-    virtual XCamReturn merge_isp_results(cam3aResultList &results, void* isp_cfg);
+    virtual XCamReturn merge_isp_results(cam3aResultList &results, void* isp_cfg, bool is_multi_isp = false);
 protected:
     XCAM_DEAD_COPY(Isp20Params);
 
@@ -136,7 +136,7 @@ protected:
     void convertAiqAwbGainToIsp20Params(T& isp_cfg,
                                         const rk_aiq_wb_gain_t& awb_gain, const rk_aiq_isp_blc_t &blc,
                                         bool awb_gain_update);
-#if RKAIQ_HAVE_MERGE_V1
+#if RKAIQ_HAVE_MERGE_V10
     template<class T>
     void convertAiqMergeToIsp20Params(T& isp_cfg,
                                       const rk_aiq_isp_merge_t& amerge_data);
@@ -144,18 +144,19 @@ protected:
     template<class T>
     void convertAiqTmoToIsp20Params(T& isp_cfg,
                                     const rk_aiq_isp_tmo_t& atmo_data);
-#if RKAIQ_HAVE_DEHAZE_V1
+#if RKAIQ_HAVE_DEHAZE_V10
     template<class T>
     void convertAiqAdehazeToIsp20Params(T& isp_cfg,
                                         const rk_aiq_isp_dehaze_t& dhaze);
 #endif
+#if RKAIQ_HAVE_GAMMA_V10
     template<class T>
     void convertAiqAgammaToIsp20Params(T& isp_cfg,
                                        const AgammaProcRes_t& gamma_out_cfg);
+#endif
     template<class T>
     void convertAiqAdegammaToIsp20Params(T& isp_cfg,
                                          const AdegammaProcRes_t& degamma_cfg);
-
     template<class T>
     void convertAiqAdemosaicToIsp20Params(T& isp_cfg, rk_aiq_isp_debayer_t &demosaic);
 
@@ -167,13 +168,16 @@ protected:
 
     template<class T>
     void convertAiqDpccToIsp20Params(T& isp_cfg, rk_aiq_isp_dpcc_t &dpcc);
-
+#if RKAIQ_HAVE_CCM_V1
     template<class T>
     void convertAiqCcmToIsp20Params(T& isp_cfg,
                                     const rk_aiq_ccm_cfg_t& ccm);
+#endif
+#if RKAIQ_HAVE_3DLUT_V1
     template<class T>
     void convertAiqA3dlutToIsp20Params(T& isp_cfg,
                                        const rk_aiq_lut3d_cfg_t& lut3d_cfg);
+#endif
     template<class T>
     void convertAiqCpToIsp20Params(T& isp_cfg,
                                    const rk_aiq_acp_params_t& lut3d_cfg);
@@ -227,10 +231,10 @@ protected:
     AntiTmoFlicker_t AntiTmoFlicker;
     Mutex _mutex;
 
-    virtual bool convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result, void* isp_cfg_p);
+    virtual bool convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result, void* isp_cfg_p, bool is_multi_isp = false);
     SmartPtr<cam3aResult> get_3a_result (cam3aResultList &results, int32_t type);
     // std::map<int, std::list<SmartPtr<cam3aResult>>> _cam3aConfig;
     SmartPtr<cam3aResult> mBlcResult;
 };
-};
+}
 #endif

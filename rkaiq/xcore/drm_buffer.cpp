@@ -111,7 +111,7 @@ DrmDumbObject* DrmBufferProxy::get_bo() {
     return buffer->get_bo();
 }
 
-const int DrmBufferProxy::GetFd() {
+int DrmBufferProxy::GetFd() {
     auto data   = get_buffer_data();
     auto buffer = data.dynamic_cast_ptr<DrmBuffer>();
 

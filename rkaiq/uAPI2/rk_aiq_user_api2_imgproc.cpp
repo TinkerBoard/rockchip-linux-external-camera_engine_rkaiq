@@ -642,24 +642,51 @@ XCamReturn rk_aiq_uapi2_setGammaCoef(const rk_aiq_sys_ctx_t* ctx, float GammaCoe
         RKAIQ_IMGPROC_CHECK_RET(ret, "param error, SlopeAtZero range is [-0.05,0.05]!");
     }
 
-    rk_aiq_gamma_attrib_V2_t gammaAttr;
-    memset(&gammaAttr, 0x0, sizeof(rk_aiq_gamma_attrib_V2_t));
+#if RKAIQ_HAVE_GAMMA_V10
+    rk_aiq_gamma_v10_attr_t gammaAttr;
+    memset(&gammaAttr, 0x0, sizeof(rk_aiq_gamma_v10_attr_t));
     gammaAttr.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
-    gammaAttr.sync.done = false;
-    if(CHECK_ISP_HW_V21()) {
-        gammaAttr.atrrV21.mode = RK_AIQ_GAMMA_MODE_FAST;
-        gammaAttr.atrrV21.stFast.en = true;
-        gammaAttr.atrrV21.stFast.GammaCoef = GammaCoef;
-        gammaAttr.atrrV21.stFast.SlopeAtZero = SlopeAtZero;
-    }
-    else if(CHECK_ISP_HW_V30()) {
-        gammaAttr.atrrV30.mode = RK_AIQ_GAMMA_MODE_FAST;
-        gammaAttr.atrrV30.stFast.en = true;
-        gammaAttr.atrrV30.stFast.GammaCoef = GammaCoef;
-        gammaAttr.atrrV30.stFast.SlopeAtZero = SlopeAtZero;
-    }
+    gammaAttr.sync.done      = false;
 
-    ret = rk_aiq_user_api2_agamma_SetAttrib(ctx, gammaAttr);
+    gammaAttr.mode                                    = RK_AIQ_GAMMA_MODE_AUTO;
+    gammaAttr.stAuto.GammaTuningPara.Gamma_en         = true;
+    gammaAttr.stAuto.GammaTuningPara.Gamma_out_segnum = GAMMATYPE_LOG;
+    gammaAttr.stAuto.GammaTuningPara.Gamma_out_offset = 0;
+    float gamma_X_v10[CALIBDB_AGAMMA_KNOTS_NUM_V10]   = {
+        0,   1,   2,   3,   4,   5,   6,    7,    8,    10,   12,   14,   16,   20,   24,
+        28,  32,  40,  48,  56,  64,  80,   96,   112,  128,  160,  192,  224,  256,  320,
+        384, 448, 512, 640, 768, 896, 1024, 1280, 1536, 1792, 2048, 2560, 3072, 3584, 4095};
+    float gamma_Y_v10[CALIBDB_AGAMMA_KNOTS_NUM_V10];
+    for (int i = 0; i < CALIBDB_AGAMMA_KNOTS_NUM_V10; i++) {
+        gamma_Y_v10[i] = 4095 * pow(gamma_X_v10[i] / 4095, 1 / GammaCoef + SlopeAtZero);
+        gamma_Y_v10[i] = gamma_Y_v10[i] > 4095 ? 4095 : gamma_Y_v10[i] < 0 ? 0 : gamma_Y_v10[i];
+        gammaAttr.stAuto.GammaTuningPara.Gamma_curve[i] = (int)(gamma_Y_v10[i] + 0.5);
+    }
+    ret = rk_aiq_user_api2_agamma_V10_SetAttrib(ctx, gammaAttr);
+#endif
+#if RKAIQ_HAVE_GAMMA_V11
+    rk_aiq_gamma_v11_attr_t gammaAttr;
+    memset(&gammaAttr, 0x0, sizeof(rk_aiq_gamma_v11_attr_t));
+    gammaAttr.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
+    gammaAttr.sync.done      = false;
+
+    gammaAttr.mode                                    = RK_AIQ_GAMMA_MODE_AUTO;
+    gammaAttr.stAuto.GammaTuningPara.Gamma_en         = true;
+    gammaAttr.stAuto.GammaTuningPara.Gamma_out_offset = 0;
+    float gamma_X_v11[CALIBDB_AGAMMA_KNOTS_NUM_V11]   = {
+        0,    1,    2,    3,    4,    5,    6,    7,    8,    10,  12,   14,   16,
+        20,   24,   28,   32,   40,   48,   56,   64,   80,   96,  112,  128,  160,
+        192,  224,  256,  320,  384,  448,  512,  640,  768,  896, 1024, 1280, 1536,
+        1792, 2048, 2304, 2560, 2816, 3072, 3328, 3584, 3840, 4095};
+    float gamma_Y_v11[CALIBDB_AGAMMA_KNOTS_NUM_V11];
+    for (int i = 0; i < CALIBDB_AGAMMA_KNOTS_NUM_V11; i++) {
+        gamma_Y_v11[i] = 4095 * pow(gamma_X_v11[i] / 4095, 1 / GammaCoef + SlopeAtZero);
+        gamma_Y_v11[i] = gamma_Y_v11[i] > 4095 ? 4095 : gamma_Y_v11[i] < 0 ? 0 : gamma_Y_v11[i];
+        gammaAttr.stAuto.GammaTuningPara.Gamma_curve[i] = (int)(gamma_Y_v11[i] + 0.5);
+    }
+    ret = rk_aiq_user_api2_agamma_V11_SetAttrib(ctx, gammaAttr);
+#endif
+
     IMGPROC_FUNC_EXIT
     return ret;
 }
@@ -677,6 +704,7 @@ XCamReturn rk_aiq_uapi2_setGammaCoef(const rk_aiq_sys_ctx_t* ctx, float GammaCoe
 XCamReturn rk_aiq_uapi2_setMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned int level)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    /*
     adehaze_sw_V2_t attr;
     memset(&attr, 0, sizeof(attr));
     IMGPROC_FUNC_ENTER
@@ -696,12 +724,14 @@ XCamReturn rk_aiq_uapi2_setMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned in
     ret = rk_aiq_user_api2_adehaze_setSwAttrib(ctx, attr);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setMDhzStrth failed!");
     IMGPROC_FUNC_EXIT
+    */
     return ret;
 }
 
 XCamReturn rk_aiq_uapi2_getMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned int *level)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    /*
     adehaze_sw_V2_t attr;
     memset(&attr, 0, sizeof(attr));
     IMGPROC_FUNC_ENTER
@@ -717,6 +747,7 @@ XCamReturn rk_aiq_uapi2_getMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned in
     } else
         *level = attr.stDehazeManu.level;
     IMGPROC_FUNC_EXIT
+    */
     return ret;
 }
 /*
@@ -732,6 +763,7 @@ XCamReturn rk_aiq_uapi2_getMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned in
 XCamReturn rk_aiq_uapi2_setMEnhanceStrth(const rk_aiq_sys_ctx_t* ctx, unsigned int level)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    /*
     adehaze_sw_V2_t attr;
     memset(&attr, 0, sizeof(attr));
     IMGPROC_FUNC_ENTER
@@ -751,12 +783,14 @@ XCamReturn rk_aiq_uapi2_setMEnhanceStrth(const rk_aiq_sys_ctx_t* ctx, unsigned i
     ret = rk_aiq_user_api2_adehaze_setSwAttrib(ctx, attr);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setMEnhanceStrth failed!");
     IMGPROC_FUNC_EXIT
+    */
     return ret;
 }
 
 XCamReturn rk_aiq_uapi2_getMEnhanceStrth(const rk_aiq_sys_ctx_t* ctx, unsigned int *level)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    /*
     adehaze_sw_V2_t attr;
     memset(&attr, 0, sizeof(attr));
     IMGPROC_FUNC_ENTER
@@ -772,6 +806,7 @@ XCamReturn rk_aiq_uapi2_getMEnhanceStrth(const rk_aiq_sys_ctx_t* ctx, unsigned i
     } else
         *level = attr.stEnhanceManu.level;
     IMGPROC_FUNC_EXIT
+    */
     return ret;
 }
 
@@ -791,14 +826,15 @@ XCamReturn rk_aiq_uapi2_getMEnhanceStrth(const rk_aiq_sys_ctx_t* ctx, unsigned i
 XCamReturn rk_aiq_uapi2_setDrcLocalTMO(const rk_aiq_sys_ctx_t* ctx, float LocalWeit, float GlobalContrast, float LoLitContrast)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+    /*
     if(CHECK_ISP_HW_V20()) {
         ret = XCAM_RETURN_ERROR_PARAM;
         RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.0 do not support drc api!");
     }
     else if(CHECK_ISP_HW_V30()) {
         ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "RK356x do not support rk_aiq_uapi2_setDrcLocalTMO! Plesea use rk_aiq_uapi2_setDrcLocalData");
+        RKAIQ_IMGPROC_CHECK_RET(ret, "RK356x do not support rk_aiq_uapi2_setDrcLocalTMO! Plesea use
+    rk_aiq_uapi2_setDrcLocalData");
     }
     else if(CHECK_ISP_HW_V21()) {
         drc_attrib_t attr;
@@ -831,38 +867,40 @@ XCamReturn rk_aiq_uapi2_setDrcLocalTMO(const rk_aiq_sys_ctx_t* ctx, float LocalW
         RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
         IMGPROC_FUNC_EXIT
     }
-
+    */
     return ret;
 }
 
 XCamReturn rk_aiq_uapi2_getDrcLocalTMO(const rk_aiq_sys_ctx_t* ctx, float * LocalWeit, float * GlobalContrast, float * LoLitContrast)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
-    if(CHECK_ISP_HW_V20()) {
-        ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.0 do not support drc api!");
-    }
-    else if(CHECK_ISP_HW_V30()) {
-        ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "RK356x do not support rk_aiq_uapi2_getDrcLocalTMO! Plesea use rk_aiq_uapi2_getDrcLocalData");
-    }
-    else if(CHECK_ISP_HW_V21()) {
-        drc_attrib_t attr;
-        IMGPROC_FUNC_ENTER
-        if (ctx == NULL) {
+    /*
+        if(CHECK_ISP_HW_V20()) {
             ret = XCAM_RETURN_ERROR_PARAM;
-            RKAIQ_IMGPROC_CHECK_RET(ret, "param error, ctx is NULL!");
+            RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.0 do not support drc api!");
         }
-        ret = rk_aiq_user_api2_adrc_GetAttrib(ctx, &attr);
-        RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed in get attrib!");
+        else if(CHECK_ISP_HW_V30()) {
+            ret = XCAM_RETURN_ERROR_PARAM;
+            RKAIQ_IMGPROC_CHECK_RET(ret, "RK356x do not support rk_aiq_uapi2_getDrcLocalTMO! Plesea
+       use rk_aiq_uapi2_getDrcLocalData");
+        }
+        else if(CHECK_ISP_HW_V21()) {
+            drc_attrib_t attr;
+            IMGPROC_FUNC_ENTER
+            if (ctx == NULL) {
+                ret = XCAM_RETURN_ERROR_PARAM;
+                RKAIQ_IMGPROC_CHECK_RET(ret, "param error, ctx is NULL!");
+            }
+            ret = rk_aiq_user_api2_adrc_GetAttrib(ctx, &attr);
+            RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed in get attrib!");
 
-        *LocalWeit = attr.stLocalDataV21.LocalWeit;
-        *GlobalContrast = attr.stLocalDataV21.GlobalContrast;
-        *LoLitContrast = attr.stLocalDataV21.LoLitContrast;
+            *LocalWeit = attr.stLocalDataV21.LocalWeit;
+            *GlobalContrast = attr.stLocalDataV21.GlobalContrast;
+            *LoLitContrast = attr.stLocalDataV21.LoLitContrast;
 
-        IMGPROC_FUNC_EXIT
-    }
+            IMGPROC_FUNC_EXIT
+        }
+        */
 
     return ret;
 }
@@ -885,6 +923,7 @@ XCamReturn rk_aiq_uapi2_setDrcLocalData(const rk_aiq_sys_ctx_t* ctx, float Local
                                         float LoLitContrast, int LocalAutoEnable, float LocalAutoWeit)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    /*
 
     if(CHECK_ISP_HW_V20()) {
         ret = XCAM_RETURN_ERROR_PARAM;
@@ -892,7 +931,8 @@ XCamReturn rk_aiq_uapi2_setDrcLocalData(const rk_aiq_sys_ctx_t* ctx, float Local
     }
     else if(CHECK_ISP_HW_V21()) {
         ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "RK3588 do not support rk_aiq_uapi2_setDrcLocalData! Plesea use rk_aiq_uapi2_setDrcLocalTMO");
+        RKAIQ_IMGPROC_CHECK_RET(ret, "RK3588 do not support rk_aiq_uapi2_setDrcLocalData! Plesea use
+    rk_aiq_uapi2_setDrcLocalTMO");
     }
     else if(CHECK_ISP_HW_V30()) {
         drc_attrib_t attr;
@@ -935,6 +975,7 @@ XCamReturn rk_aiq_uapi2_setDrcLocalData(const rk_aiq_sys_ctx_t* ctx, float Local
         RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
         IMGPROC_FUNC_EXIT
     }
+    */
 
     return ret;
 }
@@ -943,6 +984,7 @@ XCamReturn rk_aiq_uapi2_getDrcLocalData(const rk_aiq_sys_ctx_t* ctx, float * Loc
                                         float * LoLitContrast, int* LocalAutoEnable, float* LocalAutoWeit)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    /*
 
     if(CHECK_ISP_HW_V20()) {
         ret = XCAM_RETURN_ERROR_PARAM;
@@ -950,7 +992,8 @@ XCamReturn rk_aiq_uapi2_getDrcLocalData(const rk_aiq_sys_ctx_t* ctx, float * Loc
     }
     else if(CHECK_ISP_HW_V21()) {
         ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "RK3588 do not support rk_aiq_uapi2_setDrcLocalData! Plesea use rk_aiq_uapi2_setDrcLocalTMO");
+        RKAIQ_IMGPROC_CHECK_RET(ret, "RK3588 do not support rk_aiq_uapi2_setDrcLocalData! Plesea use
+    rk_aiq_uapi2_setDrcLocalTMO");
     }
     else if(CHECK_ISP_HW_V30()) {
         drc_attrib_t attr;
@@ -970,6 +1013,7 @@ XCamReturn rk_aiq_uapi2_getDrcLocalData(const rk_aiq_sys_ctx_t* ctx, float * Loc
 
         IMGPROC_FUNC_EXIT
     }
+    */
 
     return ret;
 }
@@ -987,6 +1031,7 @@ XCamReturn rk_aiq_uapi2_getDrcLocalData(const rk_aiq_sys_ctx_t* ctx, float * Loc
 XCamReturn rk_aiq_uapi2_setDrcHiLit(const rk_aiq_sys_ctx_t* ctx, float Strength)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    /*
 
     if(CHECK_ISP_HW_V20()) {
         ret = XCAM_RETURN_ERROR_PARAM;
@@ -1013,6 +1058,7 @@ XCamReturn rk_aiq_uapi2_setDrcHiLit(const rk_aiq_sys_ctx_t* ctx, float Strength)
         RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
         IMGPROC_FUNC_EXIT
     }
+    */
 
     return ret;
 }
@@ -1020,6 +1066,7 @@ XCamReturn rk_aiq_uapi2_setDrcHiLit(const rk_aiq_sys_ctx_t* ctx, float Strength)
 XCamReturn rk_aiq_uapi2_getDrcHiLit(const rk_aiq_sys_ctx_t* ctx, float * Strength)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    /*
 
     if(CHECK_ISP_HW_V20()) {
         ret = XCAM_RETURN_ERROR_PARAM;
@@ -1039,6 +1086,7 @@ XCamReturn rk_aiq_uapi2_getDrcHiLit(const rk_aiq_sys_ctx_t* ctx, float * Strengt
 
         IMGPROC_FUNC_EXIT
     }
+    */
 
     return ret;
 }
@@ -1058,6 +1106,7 @@ XCamReturn rk_aiq_uapi2_getDrcHiLit(const rk_aiq_sys_ctx_t* ctx, float * Strengt
 XCamReturn rk_aiq_uapi2_setDrcGain(const rk_aiq_sys_ctx_t* ctx, float Gain, float Alpha, float Clip)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    /*
 
     if(CHECK_ISP_HW_V20()) {
         ret = XCAM_RETURN_ERROR_PARAM;
@@ -1094,6 +1143,7 @@ XCamReturn rk_aiq_uapi2_setDrcGain(const rk_aiq_sys_ctx_t* ctx, float Gain, floa
         RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
         IMGPROC_FUNC_EXIT
     }
+    */
 
     return ret;
 }
@@ -1101,26 +1151,27 @@ XCamReturn rk_aiq_uapi2_setDrcGain(const rk_aiq_sys_ctx_t* ctx, float Gain, floa
 XCamReturn rk_aiq_uapi2_getDrcGain(const rk_aiq_sys_ctx_t* ctx, float * Gain, float * Alpha, float * Clip)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
-    if(CHECK_ISP_HW_V20()) {
-        ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.0 do not support drc api!");
-    }
-    else if(CHECK_ISP_HW_V21() || CHECK_ISP_HW_V30()) {
-        drc_attrib_t attr;
-        IMGPROC_FUNC_ENTER
-        if (ctx == NULL) {
+    /*
+        if(CHECK_ISP_HW_V20()) {
             ret = XCAM_RETURN_ERROR_PARAM;
-            RKAIQ_IMGPROC_CHECK_RET(ret, "param error, ctx is NULL!");
+            RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.0 do not support drc api!");
         }
-        ret = rk_aiq_user_api2_adrc_GetAttrib(ctx, &attr);
-        RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed in get attrib!");
-        *Gain = attr.stDrcGain.DrcGain;
-        *Alpha = attr.stDrcGain.Alpha;
-        *Clip = attr.stDrcGain.Clip;
+        else if(CHECK_ISP_HW_V21() || CHECK_ISP_HW_V30()) {
+            drc_attrib_t attr;
+            IMGPROC_FUNC_ENTER
+            if (ctx == NULL) {
+                ret = XCAM_RETURN_ERROR_PARAM;
+                RKAIQ_IMGPROC_CHECK_RET(ret, "param error, ctx is NULL!");
+            }
+            ret = rk_aiq_user_api2_adrc_GetAttrib(ctx, &attr);
+            RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed in get attrib!");
+            *Gain = attr.stDrcGain.DrcGain;
+            *Alpha = attr.stDrcGain.Alpha;
+            *Clip = attr.stDrcGain.Clip;
 
-        IMGPROC_FUNC_EXIT
-    }
+            IMGPROC_FUNC_EXIT
+        }
+        */
 
     return ret;
 }
@@ -1138,80 +1189,81 @@ XCamReturn rk_aiq_uapi2_getDrcGain(const rk_aiq_sys_ctx_t* ctx, float * Gain, fl
 XCamReturn rk_aiq_uapi2_getDarkAreaBoostStrth(const rk_aiq_sys_ctx_t* ctx, unsigned int *level)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
-    if(CHECK_ISP_HW_V20()) {
-        atmo_attrib_t attr;
-        IMGPROC_FUNC_ENTER
-        if (ctx == NULL) {
+    /*
+        if(CHECK_ISP_HW_V20()) {
+            atmo_attrib_t attr;
+            IMGPROC_FUNC_ENTER
+            if (ctx == NULL) {
+                ret = XCAM_RETURN_ERROR_PARAM;
+                RKAIQ_IMGPROC_CHECK_RET(ret, "ctx is null, getDarkAreaBoostStrth failed!");
+            }
+            if (isHDRmode(ctx)) {
+                ret = XCAM_RETURN_ERROR_FAILED;
+                RKAIQ_IMGPROC_CHECK_RET(ret, "Not valid in tmo mode!");
+            }
+            ret = rk_aiq_user_api2_atmo_GetAttrib(ctx, &attr);
+            RKAIQ_IMGPROC_CHECK_RET(ret, "getDarkAreaBoostStrth failed!");
+            if (attr.opMode == TMO_OPMODE_DARKAREA)
+                *level = attr.stDarkArea.level;
+            else
+                *level = 0;
+            IMGPROC_FUNC_EXIT
+        }
+        else if(CHECK_ISP_HW_V21()) {
             ret = XCAM_RETURN_ERROR_PARAM;
-            RKAIQ_IMGPROC_CHECK_RET(ret, "ctx is null, getDarkAreaBoostStrth failed!");
+            RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.1 do not support tmo api!");
         }
-        if (isHDRmode(ctx)) {
-            ret = XCAM_RETURN_ERROR_FAILED;
-            RKAIQ_IMGPROC_CHECK_RET(ret, "Not valid in tmo mode!");
+        else if(CHECK_ISP_HW_V30()) {
+            ret = XCAM_RETURN_ERROR_PARAM;
+            RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.0 do not support tmo api!");
         }
-        ret = rk_aiq_user_api2_atmo_GetAttrib(ctx, &attr);
-        RKAIQ_IMGPROC_CHECK_RET(ret, "getDarkAreaBoostStrth failed!");
-        if (attr.opMode == TMO_OPMODE_DARKAREA)
-            *level = attr.stDarkArea.level;
-        else
-            *level = 0;
-        IMGPROC_FUNC_EXIT
-    }
-    else if(CHECK_ISP_HW_V21()) {
-        ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.1 do not support tmo api!");
-    }
-    else if(CHECK_ISP_HW_V30()) {
-        ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.0 do not support tmo api!");
-    }
-
+    */
     return ret;
 }
 XCamReturn rk_aiq_uapi2_setDarkAreaBoostStrth(const rk_aiq_sys_ctx_t* ctx, unsigned int level)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
-    if(CHECK_ISP_HW_V20()) {
-        atmo_attrib_t attr;
-        IMGPROC_FUNC_ENTER
-        if (ctx == NULL) {
-            ret = XCAM_RETURN_ERROR_PARAM;
-            RKAIQ_IMGPROC_CHECK_RET(ret, "ctx is null, getDarkAreaBoostStrth failed!");
-        }
-        if (isHDRmode(ctx)) {
+    /*
+        if(CHECK_ISP_HW_V20()) {
             atmo_attrib_t attr;
             IMGPROC_FUNC_ENTER
             if (ctx == NULL) {
                 ret = XCAM_RETURN_ERROR_PARAM;
-                RKAIQ_IMGPROC_CHECK_RET(ret, "ctx is null, setMHDRStrth failed!");
+                RKAIQ_IMGPROC_CHECK_RET(ret, "ctx is null, getDarkAreaBoostStrth failed!");
             }
-
             if (isHDRmode(ctx)) {
-                ret = XCAM_RETURN_ERROR_FAILED;
-                RKAIQ_IMGPROC_CHECK_RET(ret, "Not valid in HDR mode!");
-            }
-            if (level > 10) {
-                ret = XCAM_RETURN_ERROR_OUTOFRANGE;
-                RKAIQ_IMGPROC_CHECK_RET(ret, "level(%d) is out of range, setDarkAreaBoostStrth failed!");
-            }
-            attr.stDarkArea.level = level;
-            attr.opMode = TMO_OPMODE_DARKAREA;
-            ret = rk_aiq_user_api2_atmo_SetAttrib(ctx, attr);
-            RKAIQ_IMGPROC_CHECK_RET(ret, "setDarkAreaBoostStrth failed!");
-            IMGPROC_FUNC_EXIT
-        }
-    }
-    else if(CHECK_ISP_HW_V21()) {
-        ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.1 do not support tmo api!");
-    }
-    else if(CHECK_ISP_HW_V30()) {
-        ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.0 do not support tmo api!");
-    }
+                atmo_attrib_t attr;
+                IMGPROC_FUNC_ENTER
+                if (ctx == NULL) {
+                    ret = XCAM_RETURN_ERROR_PARAM;
+                    RKAIQ_IMGPROC_CHECK_RET(ret, "ctx is null, setMHDRStrth failed!");
+                }
 
+                if (isHDRmode(ctx)) {
+                    ret = XCAM_RETURN_ERROR_FAILED;
+                    RKAIQ_IMGPROC_CHECK_RET(ret, "Not valid in HDR mode!");
+                }
+                if (level > 10) {
+                    ret = XCAM_RETURN_ERROR_OUTOFRANGE;
+                    RKAIQ_IMGPROC_CHECK_RET(ret, "level(%d) is out of range, setDarkAreaBoostStrth
+       failed!");
+                }
+                attr.stDarkArea.level = level;
+                attr.opMode = TMO_OPMODE_DARKAREA;
+                ret = rk_aiq_user_api2_atmo_SetAttrib(ctx, attr);
+                RKAIQ_IMGPROC_CHECK_RET(ret, "setDarkAreaBoostStrth failed!");
+                IMGPROC_FUNC_EXIT
+            }
+        }
+        else if(CHECK_ISP_HW_V21()) {
+            ret = XCAM_RETURN_ERROR_PARAM;
+            RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.1 do not support tmo api!");
+        }
+        else if(CHECK_ISP_HW_V30()) {
+            ret = XCAM_RETURN_ERROR_PARAM;
+            RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.0 do not support tmo api!");
+        }
+    */
     return ret;
 }
 
@@ -1228,74 +1280,74 @@ XCamReturn rk_aiq_uapi2_setDarkAreaBoostStrth(const rk_aiq_sys_ctx_t* ctx, unsig
 XCamReturn rk_aiq_uapi2_setMHDRStrth(const rk_aiq_sys_ctx_t* ctx, bool on, unsigned int level)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    /*
+        if(CHECK_ISP_HW_V20()) {
+            atmo_attrib_t attr;
+            memset(&attr, 0, sizeof(attr));
+            IMGPROC_FUNC_ENTER
+            if (ctx == NULL) {
+                ret = XCAM_RETURN_ERROR_PARAM;
+                RKAIQ_IMGPROC_CHECK_RET(ret, "ctx is null, setMHDRStrth failed!");
+            }
 
-    if(CHECK_ISP_HW_V20()) {
-        atmo_attrib_t attr;
-        memset(&attr, 0, sizeof(attr));
-        IMGPROC_FUNC_ENTER
-        if (ctx == NULL) {
+            if (!isHDRmode(ctx)) {
+                ret = XCAM_RETURN_ERROR_FAILED;
+                RKAIQ_IMGPROC_CHECK_RET(ret, "not in HDR mode!");
+            }
+            if (level < 1 || level > 100) {
+                ret = XCAM_RETURN_ERROR_OUTOFRANGE;
+                RKAIQ_IMGPROC_CHECK_RET(ret, "level(%d) is out of range, setMHDRStrth failed!");
+            }
+
+            attr.stSetLevel.level = level;
+            attr.opMode = TMO_OPMODE_SET_LEVEL;
+            ret = rk_aiq_user_api2_atmo_SetAttrib(ctx, attr);
+            RKAIQ_IMGPROC_CHECK_RET(ret, "setMHDRStrth failed!");
+            IMGPROC_FUNC_EXIT
+        }
+        else if(CHECK_ISP_HW_V21()) {
             ret = XCAM_RETURN_ERROR_PARAM;
-            RKAIQ_IMGPROC_CHECK_RET(ret, "ctx is null, setMHDRStrth failed!");
+            RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.1 do not support tmo api, ctx is NULL!");
         }
-
-        if (!isHDRmode(ctx)) {
-            ret = XCAM_RETURN_ERROR_FAILED;
-            RKAIQ_IMGPROC_CHECK_RET(ret, "not in HDR mode!");
+        else if(CHECK_ISP_HW_V30()) {
+            ret = XCAM_RETURN_ERROR_PARAM;
+            RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.0 do not support tmo api!");
         }
-        if (level < 1 || level > 100) {
-            ret = XCAM_RETURN_ERROR_OUTOFRANGE;
-            RKAIQ_IMGPROC_CHECK_RET(ret, "level(%d) is out of range, setMHDRStrth failed!");
-        }
-
-        attr.stSetLevel.level = level;
-        attr.opMode = TMO_OPMODE_SET_LEVEL;
-        ret = rk_aiq_user_api2_atmo_SetAttrib(ctx, attr);
-        RKAIQ_IMGPROC_CHECK_RET(ret, "setMHDRStrth failed!");
-        IMGPROC_FUNC_EXIT
-    }
-    else if(CHECK_ISP_HW_V21()) {
-        ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.1 do not support tmo api, ctx is NULL!");
-    }
-    else if(CHECK_ISP_HW_V30()) {
-        ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.0 do not support tmo api!");
-    }
-
+    */
     return ret;
 }
 XCamReturn rk_aiq_uapi2_getMHDRStrth(const rk_aiq_sys_ctx_t* ctx, bool * on, unsigned int *level)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    /*
+        if(CHECK_ISP_HW_V20()) {
+            atmo_attrib_t attr;
+            memset(&attr, 0, sizeof(attr));
+            IMGPROC_FUNC_ENTER
+            if (ctx == NULL) {
+                ret = XCAM_RETURN_ERROR_PARAM;
+                RKAIQ_IMGPROC_CHECK_RET(ret, "ctx is null, getMHDRStrth failed!");
+            }
+            if (!isHDRmode(ctx)) {
+                ret = XCAM_RETURN_ERROR_FAILED;
+                RKAIQ_IMGPROC_CHECK_RET(ret, "not in HDR mode!");
+            }
+            ret = rk_aiq_user_api2_atmo_GetAttrib(ctx, &attr);
+            RKAIQ_IMGPROC_CHECK_RET(ret, "getMHDRStrth failed in get attrib!");
 
-    if(CHECK_ISP_HW_V20()) {
-        atmo_attrib_t attr;
-        memset(&attr, 0, sizeof(attr));
-        IMGPROC_FUNC_ENTER
-        if (ctx == NULL) {
+            *level = attr.stSetLevel.level;
+            IMGPROC_FUNC_EXIT
+
+        }
+        else if(CHECK_ISP_HW_V21()) {
             ret = XCAM_RETURN_ERROR_PARAM;
-            RKAIQ_IMGPROC_CHECK_RET(ret, "ctx is null, getMHDRStrth failed!");
+            RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.1 do not support tmo api, ctx is NULL!");
         }
-        if (!isHDRmode(ctx)) {
-            ret = XCAM_RETURN_ERROR_FAILED;
-            RKAIQ_IMGPROC_CHECK_RET(ret, "not in HDR mode!");
+        else if(CHECK_ISP_HW_V30()) {
+            ret = XCAM_RETURN_ERROR_PARAM;
+            RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.0 do not support tmo api!");
         }
-        ret = rk_aiq_user_api2_atmo_GetAttrib(ctx, &attr);
-        RKAIQ_IMGPROC_CHECK_RET(ret, "getMHDRStrth failed in get attrib!");
-
-        *level = attr.stSetLevel.level;
-        IMGPROC_FUNC_EXIT
-
-    }
-    else if(CHECK_ISP_HW_V21()) {
-        ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "ISP2.1 do not support tmo api, ctx is NULL!");
-    }
-    else if(CHECK_ISP_HW_V30()) {
-        ret = XCAM_RETURN_ERROR_PARAM;
-        RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.0 do not support tmo api!");
-    }
-
+    */
     return ret;
 }
 
@@ -1784,7 +1836,7 @@ XCamReturn rk_aiq_uapi2_setSharpness(const rk_aiq_sys_ctx_t* ctx, unsigned int l
     }
 
     LOGD("setSharpness enter, level=%d\n", level);
-    if (level < 0 || level > 100) {
+    if ((int)level < 0 || level > 100) {
         ret = XCAM_RETURN_ERROR_PARAM;
         RKAIQ_IMGPROC_CHECK_RET(ret, "level out of range, set sharpeness failed!");
     }

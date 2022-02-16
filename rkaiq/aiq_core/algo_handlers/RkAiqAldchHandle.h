@@ -24,6 +24,7 @@
 
 namespace RkCam {
 
+#if RKAIQ_HAVE_LDCH_V10
 class RkAiqAldchHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAldchHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
@@ -53,7 +54,8 @@ class RkAiqAldchHandleInt : virtual public RkAiqHandle {
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAldchHandleInt);
 };
+#endif
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

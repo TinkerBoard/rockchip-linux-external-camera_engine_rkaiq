@@ -441,7 +441,7 @@ static cJSON* _j2s_obj_to_json(j2s_ctx* ctx, int obj_index, void* ptr)
         ptr += obj->offset;
         if (obj->flags & J2S_FLAG_POINTER)
             ptr = *(char**)ptr;
-        return cJSON_CreateString(ptr ?: "");
+        return cJSON_CreateString(ptr ? ptr : "");
     }
 
     /* Handle array member */
@@ -694,17 +694,17 @@ static int _j2s_json_to_obj(j2s_ctx* ctx, cJSON* json, cJSON* parent,
             if (obj->flags == J2S_FLAG_POINTER)
                 ptr = *(char**)ptr;
 
-            cJSON_SetValuestring(root, ptr ?: "");
+            cJSON_SetValuestring(root, ptr ? ptr : "");
         } else {
             char* str = cJSON_GetStringValue(root);
 
             if (obj->flags == J2S_FLAG_ARRAY) {
-                strncpy(ptr, str ?: "", obj->num_elem);
+                strncpy(ptr, str ? str : "", obj->num_elem);
             } else {
                 char** buf = (char**)ptr;
                 if (*buf)
                     free(*buf);
-                *buf = strdup(str ?: "");
+                *buf = strdup(str ? str : "");
             }
         }
 

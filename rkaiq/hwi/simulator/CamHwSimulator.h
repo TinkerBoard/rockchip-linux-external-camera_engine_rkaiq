@@ -35,7 +35,7 @@ public:
     virtual XCamReturn getSensorModeData(const char* sns_ent_name,
                                          rk_aiq_exposure_sensor_descriptor& sns_des);
     virtual XCamReturn setIspParams(SmartPtr<RkAiqIspParamsProxy>& ispParams);
-    virtual XCamReturn setHdrProcessCount(int frame_id, int count);
+    virtual XCamReturn setHdrProcessCount(uint32_t frame_id, int count);
     virtual XCamReturn setExposureParams(SmartPtr<RkAiqExpParamsProxy>& expPar);
     virtual XCamReturn setFocusParams(SmartPtr<RkAiqFocusParamsProxy>& focus_params);
     virtual XCamReturn setIspLumaListener(IspLumaListener* lumaListener);

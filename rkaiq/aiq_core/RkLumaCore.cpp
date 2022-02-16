@@ -16,8 +16,10 @@
  * limitations under the License.
  *
  */
-
 #include "RkLumaCore.h"
+
+#include <string.h>
+
 #include "v4l2_buffer_proxy.h"
 #ifdef RK_SIMULATOR_HW
 #include "simulator/isp20_hw_simulator.h"
@@ -57,10 +59,10 @@ RkLumaCoreThread::loop()
 uint16_t RkLumaCore::DEFAULT_POOL_SIZE = 20;
 
 RkLumaCore::RkLumaCore()
-    : mRkLumaCoreTh(new RkLumaCoreThread(this))
+    : mState(RK_AIQ_CORE_STATE_INVALID)
     , mWorkingMode(RK_AIQ_WORKING_MODE_NORMAL)
     , mCb(NULL)
-    , mState(RK_AIQ_CORE_STATE_INVALID)
+    , mRkLumaCoreTh(new RkLumaCoreThread(this))
 {
     ENTER_ANALYZER_FUNCTION();
     EXIT_ANALYZER_FUNCTION();
@@ -174,7 +176,8 @@ RkLumaCore::prepare(int mode)
 XCamReturn
 RkLumaCore::analyze(const SmartPtr<VideoBuffer> &buffer)
 {
-    rk_aiq_luma_params_t luma_params = {0};
+    rk_aiq_luma_params_t luma_params;
+    memset(&luma_params, 0, sizeof(luma_params));
     const SmartPtr<V4l2BufferProxy> buf =
         buffer.dynamic_cast_ptr<V4l2BufferProxy>();
 #ifdef RK_SIMULATOR_HW

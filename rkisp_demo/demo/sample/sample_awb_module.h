@@ -21,6 +21,7 @@
 #include "base/xcam_common.h"
 
 void sample_print_awb_info(const void *arg);
+void sample_print_awb32_info(const void *arg);
 XCamReturn sample_awb_module(const void *arg);
-
+XCamReturn sample_awb32_module(const void *arg);
 #endif

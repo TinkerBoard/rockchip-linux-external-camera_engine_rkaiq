@@ -24,7 +24,7 @@
 RKAIQ_BEGIN_DECLARE
 
 typedef struct _RkAiqAlgoContext {
-    void* place_holder[0];
+    AdegammaHandle_t AdegammaHandle;
 } RkAiqAlgoContext;
 
 

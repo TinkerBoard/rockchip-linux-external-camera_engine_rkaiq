@@ -68,21 +68,21 @@ typedef struct CamCalibDbV2ContextIsp21_s {
     // M4_STRUCT_DESC("wb_v21", "normal_ui_style")
     CalibDbV2_Wb_Para_V21_t wb_v21;
     // M4_STRUCT_DESC("agamma_calib", "normal_ui_style")
-    CalibDbV2_gamma_t agamma_calib;
+    CalibDbV2_gamma_V10_t agamma_calib_V10;
     // M4_STRUCT_DESC("ablc_calib", "normal_ui_style")
     CalibDbV2_Ablc_t ablc_calib;
     // M4_STRUCT_DESC("degamma", "curve_ui_type_A")
     CalibDbV2_Adegmma_t adegamma_calib;
     // M4_STRUCT_DESC("agic_calib_v21", "normal_ui_style")
     CalibDbV2_Gic_V21_t agic_calib_v21;
-    // M4_STRUCT_DESC("adehaze_calib_v21", "normal_ui_style")
-    CalibDbV2_dehaze_V21_t adehaze_calib_v21;
+    // M4_STRUCT_DESC("adehaze_calib_v11", "normal_ui_style")
+    CalibDbV2_dehaze_V11_t adehaze_calib_v11;
     // M4_STRUCT_DESC("adpcc_calib", "normal_ui_style")
     CalibDbV2_Dpcc_t adpcc_calib;
     // M4_STRUCT_DESC("amerge_calib", "normal_ui_style")
-    CalibDbV2_merge_t amerge_calib;
+    CalibDbV2_merge_V10_t amerge_calib;
     // M4_STRUCT_DESC("adrc_calib", "normal_ui_style")
-    CalibDbV2_drc_t adrc_calib;
+    CalibDbV2_drc_V10_t adrc_calib_V10;
     // M4_STRUCT_DESC("cpsl", "normal_ui_style")
     CalibDbV2_Cpsl_t cpsl;
     // M4_STRUCT_DESC("debayer_calib", "normal_ui_style")

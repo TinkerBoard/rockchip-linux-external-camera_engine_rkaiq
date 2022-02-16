@@ -20,6 +20,7 @@
 #ifndef _RK_AIQ_TYPES_AGAMMA_ALGO_H_
 #define _RK_AIQ_TYPES_AGAMMA_ALGO_H_
 
+#include "rk_aiq_types_agamma_hw.h"
 
 RKAIQ_BEGIN_DECLARE
 

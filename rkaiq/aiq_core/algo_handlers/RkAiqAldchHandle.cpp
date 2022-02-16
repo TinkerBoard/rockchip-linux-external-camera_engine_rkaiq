@@ -253,4 +253,4 @@ XCamReturn RkAiqAldchHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullP
     return ret;
 }
 
-};  // namespace RkCam
+}  // namespace RkCam

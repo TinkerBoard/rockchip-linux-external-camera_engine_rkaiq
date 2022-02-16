@@ -72,6 +72,6 @@ private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqArawnrHandleInt);
 };
 #endif
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

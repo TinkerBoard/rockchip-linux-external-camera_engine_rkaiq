@@ -138,7 +138,11 @@ rk_aiq_user_api2_af_SetZoomIndex(const rk_aiq_sys_ctx_t* sys_ctx, int index)
     RkAiqAfHandleInt* algo_handle =
         algoHandle<RkAiqAfHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AF);
 
-    if (CHECK_ISP_HW_V30()) {
+    if (CHECK_ISP_HW_V32()) {
+        CalibDbV2_AFV31_t *af_v31 =
+            (CalibDbV2_AFV31_t*)(CALIBDBV2_GET_MODULE_PTR((&calibdbv2_ctx), af_v31));
+        zoomfocus_tbl = (CalibDbV2_Af_ZoomFocusTbl_t*)(&af_v31->TuningPara.zoomfocus_tbl);
+    } else if (CHECK_ISP_HW_V30()) {
         CalibDbV2_AFV30_t *af_v30 =
             (CalibDbV2_AFV30_t*)(CALIBDBV2_GET_MODULE_PTR((&calibdbv2_ctx), af_v30));
         zoomfocus_tbl = (CalibDbV2_Af_ZoomFocusTbl_t*)(&af_v30->TuningPara.zoomfocus_tbl);
@@ -274,7 +278,11 @@ rk_aiq_user_api2_af_GetZoomRange(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_af_zoom
     CalibDbV2_Af_ZoomFocusTbl_t *zoomfocus_tbl;
     int focal_length_len;
 
-    if (CHECK_ISP_HW_V30()) {
+    if (CHECK_ISP_HW_V32()) {
+        CalibDbV2_AFV31_t *af_v31 =
+            (CalibDbV2_AFV31_t*)(CALIBDBV2_GET_MODULE_PTR((&calibdbv2_ctx), af_v31));
+        zoomfocus_tbl = (CalibDbV2_Af_ZoomFocusTbl_t*)(&af_v31->TuningPara.zoomfocus_tbl);
+    } else if (CHECK_ISP_HW_V30()) {
         CalibDbV2_AFV30_t *af_v30 =
             (CalibDbV2_AFV30_t*)(CALIBDBV2_GET_MODULE_PTR((&calibdbv2_ctx), af_v30));
         zoomfocus_tbl = (CalibDbV2_Af_ZoomFocusTbl_t*)(&af_v30->TuningPara.zoomfocus_tbl);

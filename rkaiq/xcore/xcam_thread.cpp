@@ -45,7 +45,7 @@ Thread::~Thread ()
         xcam_free (_name);
 }
 
-int
+void *
 Thread::thread_func (void *user_data)
 {
     Thread *thread = (Thread *)user_data;
@@ -89,7 +89,7 @@ Thread::thread_func (void *user_data)
     }
     thread->_exit_cond.broadcast ();
 
-    return 0;
+    return NULL;
 }
 
 bool
@@ -157,4 +157,4 @@ bool Thread::is_running ()
     return _started;
 }
 
-};
+}

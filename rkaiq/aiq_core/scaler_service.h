@@ -20,6 +20,7 @@
 #ifndef AIQ_CORE_SCALER_SERVICE_H
 #define AIQ_CORE_SCALER_SERVICE_H
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -29,7 +30,7 @@ namespace XCam {
 
 class DmaVideoBuffer;
 
-};  // namespace XCam
+}  // namespace XCam
 
 using namespace XCam;
 
@@ -38,7 +39,7 @@ namespace RkCam {
 class ImageProcessor;
 
 struct scaler_param {
-    int frame_id;
+    uint32_t frame_id;
     std::shared_ptr<DmaVideoBuffer> input_image;
     std::vector<std::shared_ptr<DmaVideoBuffer>> scaled_images;
 };
@@ -59,6 +60,6 @@ class ScalerTask final : public ServiceTask<scaler_param> {
 
 using ScalerService = TaskService<scaler_param>;
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif  // AIQ_CORE_EIS_ALGO_H

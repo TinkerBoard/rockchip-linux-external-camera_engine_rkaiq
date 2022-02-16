@@ -145,8 +145,9 @@ const struct media_link *media_entity_get_link(struct media_entity *entity, unsi
 
 const char *media_entity_get_devname(struct media_entity *entity)
 {
-    if (entity == NULL)
+    if (entity == NULL) {
         return NULL;
+    }
 
 	return entity->devname[0] ? entity->devname : NULL;
 }
@@ -936,7 +937,7 @@ void media_print_streampos(struct media_device *media, const char *p,
 
 	pos = end - p + 1;
 
-	if (pos < 0)
+	if ((ssize_t)pos < 0)
 		pos = 0;
 	if (pos > strlen(p))
 		pos = strlen(p);

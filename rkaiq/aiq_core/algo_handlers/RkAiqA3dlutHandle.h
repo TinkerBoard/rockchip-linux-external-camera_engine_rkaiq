@@ -57,6 +57,6 @@ class RkAiqA3dlutHandleInt : virtual public RkAiqHandle {
 };
 
 #endif
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

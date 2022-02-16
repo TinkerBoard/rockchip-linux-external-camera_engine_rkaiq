@@ -9,7 +9,7 @@
 
 #include <linux/types.h>
 #include <linux/v4l2-controls.h>
-#include <rkisp3-config.h>
+#include "rkisp3-config.h"
 
 #define ISP32_MODULE_DPCC		ISP3X_MODULE_DPCC
 #define ISP32_MODULE_BLS		ISP3X_MODULE_BLS
@@ -47,6 +47,7 @@
 #define ISP32_MODULE_DRC		ISP3X_MODULE_DRC
 #define ISP32_MODULE_CAC		ISP3X_MODULE_CAC
 #define ISP32_MODULE_CSM		ISP3X_MODULE_CSM
+#define ISP32_MODULE_CGC		ISP3X_MODULE_CGC
 
 /* Measurement types */
 #define ISP32_STAT_RAWAWB		ISP3X_STAT_RAWAWB
@@ -74,7 +75,7 @@
 #define ISP32_GAIN_LUT_NUM		ISP3X_GAIN_LUT_NUM
 
 #define ISP32_RAWAWB_EXCL_STAT_NUM	ISP3X_RAWAWB_EXCL_STAT_NUM
-#define ISP32_RAWAWB_HSTBIN_NUM		4
+#define ISP32_RAWAWB_HSTBIN_NUM		ISP3X_RAWAWB_HSTBIN_NUM
 #define ISP32_RAWAWB_WEIGHT_NUM		ISP3X_RAWAWB_WEIGHT_NUM
 #define ISP32_RAWAWB_SUM_NUM		4
 #define ISP32_RAWAWB_RAMDATA_NUM	ISP3X_RAWAWB_RAMDATA_NUM
@@ -125,10 +126,10 @@
 #define ISP32_CNR_SIGMA_Y_NUM		ISP3X_CNR_SIGMA_Y_NUM
 #define ISP32_CNR_GAUS_COE_NUM		6
 
-#define ISP32_YNR_XY_NUM		ISP21_YNR_XY_NUM
+#define ISP32_YNR_XY_NUM		ISP3X_YNR_XY_NUM
 #define ISP32_YNR_NLM_COE_NUM		6
 
-#define ISP32_BAYNR_XY_NUM		ISP3X_YNR_XY_NUM
+#define ISP32_BAYNR_XY_NUM		ISP3X_BAYNR_XY_NUM
 #define ISP32_BAYNR_GAIN_NUM		16
 
 #define ISP32_BAY3D_XY_NUM		ISP3X_BAY3D_XY_NUM
@@ -183,25 +184,6 @@ struct isp32_awb_gain_cfg {
 	/* AWB0_GAIN2_RB*/
 	u16 gain2_blue;
 	u16 gain2_red;
-} __attribute__ ((packed));
-
-struct isp32_bls_cfg {
-	u8 enable_auto;
-	u8 en_windows;
-	u8 bls1_en;
-	u8 bls2_en;
-
-	u8 bls_samples;
-
-	struct isp2x_window bls_window1;
-	struct isp2x_window bls_window2;
-	struct isp2x_bls_fixed_val fixed_val;
-	struct isp2x_bls_fixed_val bls1_val;
-	struct isp2x_bls_fixed_val bls2_val;
-
-	u16 isp_ob_offset;
-	u16 isp_ob_predgain;
-	u32 isp_ob_max;
 } __attribute__ ((packed));
 
 struct isp32_ccm_cfg {
@@ -342,7 +324,7 @@ struct isp32_baynr_cfg {
 	u16 bgain_off;
 	/* BAYNR_GAIN */
 	u8 gain_x[ISP32_BAYNR_GAIN_NUM];
-	u8 gain_y[ISP32_BAYNR_GAIN_NUM];
+	u16 gain_y[ISP32_BAYNR_GAIN_NUM];
 } __attribute__ ((packed));
 
 struct isp32_bay3d_cfg {
@@ -526,55 +508,55 @@ struct isp32_cnr_cfg {
 } __attribute__ ((packed));
 
 struct isp32_sharp_cfg {
-	/* SHARP_EN */
-	u8 bypass;
-	u8 center_mode;
-	u8 exgain_bypass;
-	u8 radius_ds_mode;
-	u8 noiseclip_mode;
-	/* SHARP_RATIO */
-	u8 sharp_ratio;
-	u8 bf_ratio;
-	u8 gaus_ratio;
-	u8 pbf_ratio;
-	/* SHARP_LUMA_DX */
-	u8 luma_dx[ISP32_SHARP_X_NUM];
-	/* SHARP_SIGMA_SHIFT */
-	u8 bf_sigma_shift;
-	u8 pbf_sigma_shift;
-	/* SHARP_PBF_COEF */
-	u8 pbf_coef2;
-	u8 pbf_coef1;
-	u8 pbf_coef0;
-	/* SHARP_BF_COEF */
-	u8 bf_coef2;
-	u8 bf_coef1;
-	u8 bf_coef0;
-	/* SHARP_GAUS_COEF */
-	u8 gaus_coef[ISP32_SHARP_GAUS_COEF_NUM];
-	/* SHARP_GAIN */
-	u8 global_gain_alpha;
-	u8 local_gainscale;
-	/* SHARP_GAIN_DIS_STRENGTH */
-	u8 strength[ISP32_SHARP_STRENGTH_NUM];
-	/* SHARP_TEXTURE */
-	u8 enhance_bit;
-	/* SHARP_PBF_SIGMA_INV */
-	u16 pbf_sigma_inv[ISP32_SHARP_Y_NUM];
-	/* SHARP_BF_SIGMA_INV */
-	u16 bf_sigma_inv[ISP32_SHARP_Y_NUM];
-	/* SHARP_CLIP_HF */
-	u16 clip_hf[ISP32_SHARP_Y_NUM];
-	/* SHARP_GAIN */
-	u16 global_gain;
-	/* SHARP_GAIN_ADJUST */
-	u16 gain_adj[ISP32_SHARP_GAIN_ADJ_NUM];
-	/* SHARP_CENTER */
-	u16 center_wid;
-	u16 center_het;
-	/* SHARP_TEXTURE */
-	u16 noise_sigma;
-	u16 noise_strength;
+    /* SHARP_EN */
+    u8 bypass;
+    u8 center_mode;
+    u8 exgain_bypass;
+    u8 radius_ds_mode;
+    u8 noiseclip_mode;
+    /* SHARP_RATIO */
+    u8 sharp_ratio;
+    u8 bf_ratio;
+    u8 gaus_ratio;
+    u8 pbf_ratio;
+    /* SHARP_LUMA_DX */
+    u8 luma_dx[ISP32_SHARP_X_NUM];
+    /* SHARP_SIGMA_SHIFT */
+    u8 bf_sigma_shift;
+    u8 pbf_sigma_shift;
+    /* SHARP_PBF_COEF */
+    u8 pbf_coef2;
+    u8 pbf_coef1;
+    u8 pbf_coef0;
+    /* SHARP_BF_COEF */
+    u8 bf_coef2;
+    u8 bf_coef1;
+    u8 bf_coef0;
+    /* SHARP_GAUS_COEF */
+    u8 gaus_coef[ISP32_SHARP_GAUS_COEF_NUM];
+    /* SHARP_GAIN */
+    u8 global_gain_alpha;
+    u8 local_gainscale;
+    /* SHARP_GAIN_DIS_STRENGTH */
+    u8 strength[ISP32_SHARP_STRENGTH_NUM];
+    /* SHARP_TEXTURE */
+    u8 enhance_bit;
+    /* SHARP_PBF_SIGMA_INV */
+    u16 pbf_sigma_inv[ISP32_SHARP_Y_NUM];
+    /* SHARP_BF_SIGMA_INV */
+    u16 bf_sigma_inv[ISP32_SHARP_Y_NUM];
+    /* SHARP_CLIP_HF */
+    u16 clip_hf[ISP32_SHARP_Y_NUM];
+    /* SHARP_GAIN */
+    u16 global_gain;
+    /* SHARP_GAIN_ADJUST */
+    u16 gain_adj[ISP32_SHARP_GAIN_ADJ_NUM];
+    /* SHARP_CENTER */
+    u16 center_wid;
+    u16 center_het;
+    /* SHARP_TEXTURE */
+    u16 noise_sigma;
+    u16 noise_strength;
 } __attribute__ ((packed));
 
 struct isp32_dhaz_cfg {
@@ -696,6 +678,10 @@ struct isp32_drc_cfg {
 	u16 gain_y[ISP32_DRC_Y_NUM];
 	u16 compres_y[ISP32_DRC_Y_NUM];
 	u16 scale_y[ISP32_DRC_Y_NUM];
+
+	u16 isp_ob_offset;
+	u16 isp_ob_predgain;
+	u32 isp_ob_max;
 } __attribute__ ((packed));
 
 struct isp32_hdrmge_cfg {
@@ -731,6 +717,8 @@ struct isp32_hdrmge_cfg {
 } __attribute__ ((packed));
 
 struct isp32_rawawb_meas_cfg {
+	u8 bls2_en;
+
 	u8 rawawb_sel;
 	u8 bnr2awb_sel;
 	u8 drc2awb_sel;
@@ -1130,6 +1118,8 @@ struct isp32_rawawb_meas_cfg {
 	u32 islope12_3;
 	u32 islope23_3;
 	u32 islope30_3;
+
+	struct isp2x_bls_fixed_val bls2_val;
 } __attribute__ ((packed));
 
 struct isp32_rawaf_meas_cfg {
@@ -1223,7 +1213,7 @@ struct isp32_cac_cfg {
 } __attribute__ ((packed));
 
 struct isp32_isp_other_cfg {
-	struct isp32_bls_cfg bls_cfg;
+	struct isp21_bls_cfg bls_cfg;
 	struct isp2x_dpcc_cfg dpcc_cfg;
 	struct isp3x_lsc_cfg lsc_cfg;
 	struct isp32_awb_gain_cfg awb_gain_cfg;
@@ -1247,6 +1237,7 @@ struct isp32_isp_other_cfg {
 	struct isp32_cac_cfg cac_cfg;
 	struct isp3x_gain_cfg gain_cfg;
 	struct isp21_csm_cfg csm_cfg;
+	struct isp21_cgc_cfg cgc_cfg;
 } __attribute__ ((packed));
 
 struct isp32_isp_meas_cfg {
@@ -1266,52 +1257,39 @@ struct isp32_rawae_meas_data {
 	u32 channelg_xy:12;
 	u32 channelb_xy:10;
 	u32 channelr_xy:10;
-};
+} __attribute__ ((packed));
 
 struct isp32_rawaebig_stat0 {
 	struct isp32_rawae_meas_data data[ISP32_RAWAEBIG_MEAN_NUM];
 	u32 reserved[3];
-};
+} __attribute__ ((packed));
 
 struct isp32_rawaebig_stat1 {
 	u32 sumr[ISP32_RAWAEBIG_SUBWIN_NUM];
 	u32 sumg[ISP32_RAWAEBIG_SUBWIN_NUM];
 	u32 sumb[ISP32_RAWAEBIG_SUBWIN_NUM];
-};
+} __attribute__ ((packed));
 
 struct isp32_rawaelite_stat {
 	struct isp32_rawae_meas_data data[ISP32_RAWAELITE_MEAN_NUM];
-	//u32 reserved[59];
 	u32 reserved[21];
-};
-
-struct isp32_rawhist_stat {
-	u32 hist_bin[ISP32_HIST_BIN_N_MAX];
-};
-
-struct isp32_rawaf_ramdata {
-	u32 v1;
-	u32 v2;
-	u32 h1;
-	u32 h2;
-};
+} __attribute__ ((packed));
 
 struct isp32_rawaf_stat {
-	struct isp32_rawaf_ramdata ramdata[ISP32_RAWAF_SUMDATA_NUM];
+	struct isp3x_rawaf_ramdata ramdata[ISP32_RAWAF_SUMDATA_NUM];
 	u32 int_state;
 	u32 afm_sum_b;
 	u32 afm_lum_b;
 	u32 highlit_cnt_winb;
-	//u32 reserved[56];
 	u32 reserved[21];
-};
+} __attribute__ ((packed));
 
 struct isp32_rawawb_ramdata {
 	u64 b:18;
 	u64 g:18;
 	u64 r:18;
 	u64 wp:10;
-};
+} __attribute__ ((packed));
 
 struct isp32_rawawb_sum {
 	u32 rgain_nor;
@@ -1323,22 +1301,22 @@ struct isp32_rawawb_sum {
 	u32 bgain_big;
 	u32 wp_num_big;
 	u32 reserved;
-};
+} __attribute__ ((packed));
 
 struct isp32_rawawb_sum_exc {
 	u32 rgain_exc;
 	u32 bgain_exc;
 	u32 wp_num_exc;
 	u32 reserved;
-};
+} __attribute__ ((packed));
 
 struct isp32_rawawb_meas_stat {
 	struct isp32_rawawb_ramdata ramdata[ISP32_RAWAWB_RAMDATA_NUM];
 	u64 reserved;
 	struct isp32_rawawb_sum sum[ISP32_RAWAWB_SUM_NUM];
-	u32 yhist_bin[ISP32_RAWAWB_HSTBIN_NUM];
+	u16 yhist_bin[ISP32_RAWAWB_HSTBIN_NUM];
 	struct isp32_rawawb_sum_exc sum_exc[ISP32_RAWAWB_EXCL_STAT_NUM];
-};
+} __attribute__ ((packed));
 
 struct isp32_isp_params_cfg {
 	u64 module_en_update;
@@ -1359,10 +1337,10 @@ struct isp32_stat {
 	struct isp32_rawaebig_stat1 rawae1_1;
 	struct isp32_rawaebig_stat1 rawae2_1;
 	struct isp2x_bls_stat bls;
-	struct isp32_rawhist_stat rawhist3;	//offset 0xc00
-	struct isp32_rawhist_stat rawhist0;	//offset 0x1000
-	struct isp32_rawhist_stat rawhist1;	//offset 0x1400
-	struct isp32_rawhist_stat rawhist2;	//offset 0x1800
+	struct isp2x_rawhistbig_stat rawhist3;	//offset 0xc00
+	struct isp2x_rawhistlite_stat rawhist0;	//offset 0x1000
+	struct isp2x_rawhistbig_stat rawhist1;	//offset 0x1400
+	struct isp2x_rawhistbig_stat rawhist2;	//offset 0x1800
 	struct isp32_rawaf_stat rawaf;		//offset 0x1c00
 	struct isp3x_dhaz_stat dhaz;
 	struct isp32_rawawb_meas_stat rawawb;	//offset 0x2b00

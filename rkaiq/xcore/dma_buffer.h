@@ -58,7 +58,7 @@ class DmaBuffer {
     // std::string name_;
 };
 
-};  // namespace XCam
+}  // namespace XCam
 
 #endif  // _DMA_BUFFER_H_
 

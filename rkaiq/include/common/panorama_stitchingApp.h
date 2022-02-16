@@ -180,7 +180,7 @@ extern "C" {
 	 */
 	struct RK_PS_AlphaBuffer
 	{
-
+        void* place_holder;
 	};
 
 	/*
@@ -296,40 +296,40 @@ extern "C" {
 		unsigned char* output_blended_image;	/**< output-output blended image */
 	};
 
-	/* ´´½¨EngineµÄº¯Êý */
+	/* åˆ›å»ºEngineçš„å‡½æ•° */
 	DLL_PUBLIC int RK_PS_setEngine(struct RK_PS_Engine* engine);
 
-	/* Éú³Émesh±íºÍalpha±íÊ±µÄ³õÊ¼»¯±ê¶¨²ÎÊýµÄº¯Êý */
+	/* ç”Ÿæˆmeshè¡¨å’Œalphaè¡¨æ—¶çš„åˆå§‹åŒ–æ ‡å®šå‚æ•°çš„å‡½æ•° */
 	DLL_PUBLIC int RK_PS_initParams(struct RK_PS_Engine* engine, RK_PS_InitParams* params);
 
-	/* Éú³Émesh±íºÍalpha±íÊ±ÉèÖÃÊä³öÍ¼Ïñ¹æ¸ñµÄº¯Êý */
+	/* ç”Ÿæˆmeshè¡¨å’Œalphaè¡¨æ—¶è®¾ç½®è¾“å‡ºå›¾åƒè§„æ ¼çš„å‡½æ•° */
 	DLL_PUBLIC int RK_PS_setProjectParams(struct RK_PS_Engine* engine, struct RK_PS_SetProjectParams* params);
 
-	/* Éú³Émesh±íºÍalpha±íÊ±ÉèÖÃÃ¿¸öÏà»ú×ËÌ¬¾«µ÷²ÎÊýµÄº¯Êý */
+	/* ç”Ÿæˆmeshè¡¨å’Œalphaè¡¨æ—¶è®¾ç½®æ¯ä¸ªç›¸æœºå§¿æ€ç²¾è°ƒå‚æ•°çš„å‡½æ•° */
 	DLL_PUBLIC int RK_PS_setFineTuningParams(struct RK_PS_Engine* engine, struct RK_PS_FineTuningParams* params);
 
-	//»ñÈ¡GPUËùÐè²éÕÒ±íËùÐèµÄ×î´óbuffer
+	//èŽ·å–GPUæ‰€éœ€æŸ¥æ‰¾è¡¨æ‰€éœ€çš„æœ€å¤§buffer
 	DLL_PUBLIC int RK_PS_getMaxMeshBufferSize(struct RK_PS_Engine* engine, float* buffer_size);
 
-	/* Í¨¹ý±ê¶¨ÎÄ¼þÉú³Émesh±íºÍalpha±íµÄº¯Êý */
+	/* é€šè¿‡æ ‡å®šæ–‡ä»¶ç”Ÿæˆmeshè¡¨å’Œalphaè¡¨çš„å‡½æ•° */
 	DLL_PUBLIC int RK_PS_mesh_alphaFromCalibration(struct RK_PS_Engine* engine);
 	
-	/* Í¨¹ý±ê¶¨ÎÄ¼þ¼ÆËãÊäÈëÍ¼ÏñÖØµþÇøÓòmaskÐÅÏ¢ */
+	/* é€šè¿‡æ ‡å®šæ–‡ä»¶è®¡ç®—è¾“å…¥å›¾åƒé‡å åŒºåŸŸmaskä¿¡æ¯ */
 	DLL_PUBLIC int RK_PS_srcOverlapMaskFromCalibration(struct RK_PS_Engine* engine);
 
-	/* Í¨¹ýÖÐ¼äLUT±íÉú³Émesh±íºÍalpha±íµÄº¯Êý */
+	/* é€šè¿‡ä¸­é—´LUTè¡¨ç”Ÿæˆmeshè¡¨å’Œalphaè¡¨çš„å‡½æ•° */
 	DLL_PUBLIC int RK_PS_mesh_alphaFromProjection(struct RK_PS_Engine* engine);
 
-	/* Í¨¹ýÓÃ»§Ö¸¶¨µÄROI²ÎÊýÉú³ÉrectilinearÐ£ÕýµÄmesh±íµÄº¯Êý */
+	/* é€šè¿‡ç”¨æˆ·æŒ‡å®šçš„ROIå‚æ•°ç”Ÿæˆrectilinearæ ¡æ­£çš„meshè¡¨çš„å‡½æ•° */
 	DLL_PUBLIC int RK_PS_meshForRoiRectilinear(struct RK_PS_Engine* engine, RK_PS_RoiParams* roi_parmas, const char* save_mesh_path);
 
-	/* Æ´½ÓÍ¼ÏñµÄ³õÊ¼»¯º¯Êý */
+	/* æ‹¼æŽ¥å›¾åƒçš„åˆå§‹åŒ–å‡½æ•° */
 	DLL_PUBLIC int RK_PS_initBlendedImages(struct RK_PS_Engine* engine, struct RK_PS_InitBlendedImages* params);
 
-	/* Æ´½ÓÍ¼Ïñº¯ÊýÖ÷º¯Êý */
+	/* æ‹¼æŽ¥å›¾åƒå‡½æ•°ä¸»å‡½æ•° */
 	DLL_PUBLIC int RK_PS_blendedImages(struct RK_PS_Engine* engine, unsigned char** pinput_image);
 
-	/* Îö¹¹º¯Êý */
+	/* æžæž„å‡½æ•° */
 	DLL_PUBLIC int RK_PS_destroy(struct RK_PS_Engine* engine);
 
 #ifdef __cplusplus

@@ -106,4 +106,4 @@ XCamReturn RkAiqCamGroupA3dlutHandleInt::query3dlutInfo(rk_aiq_lut3d_querry_info
 }
 
 
-};  // namespace RkCam
+}  // namespace RkCam

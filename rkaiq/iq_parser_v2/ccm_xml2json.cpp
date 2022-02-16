@@ -20,7 +20,13 @@
 
 void CalibV2CCMFree(CamCalibDbV2Context_t *calibV2)
 {
+#if RKAIQ_HAVE_CCM_V1
     CalibDbV2_Ccm_Para_V2_t* ccm_v2 =  (CalibDbV2_Ccm_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR(calibV2, ccm_calib));
+#endif
+#if RKAIQ_HAVE_CCM_V2
+    CalibDbV2_Ccm_Para_V32_t* ccm_v2 =
+        (CalibDbV2_Ccm_Para_V32_t*)(CALIBDBV2_GET_MODULE_PTR(calibV2, ccm_calib_v2));
+#endif
     if(ccm_v2 ==NULL){
           return;
     }
@@ -44,14 +50,26 @@ void convertCCMCalib2CalibV2(const CamCalibDbContext_t *calib,CamCalibDbV2Contex
     const CalibDb_Ccm_t *ccm = (CalibDb_Ccm_t*)CALIBDB_GET_MODULE_PTR((void*)calib, ccm);
     if(ccm == NULL)
         return;
-
+#if RKAIQ_HAVE_CCM_V1
     CalibDbV2_Ccm_Para_V2_t* ccm_v2 =
         (CalibDbV2_Ccm_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR(calibV2, ccm_calib));
+#elif RKAIQ_HAVE_CCM_V2
+    CalibDbV2_Ccm_Para_V32_t* ccm_v2 =
+        (CalibDbV2_Ccm_Para_V32_t*)(CALIBDBV2_GET_MODULE_PTR(calibV2, ccm_calib_v2));
+#else
+    CalibDbV2_Ccm_Para_V2_t* ccm_v2 = NULL;
+#endif
+
     if(ccm_v2 == NULL)
         return;
 
      //malloc
+#if RKAIQ_HAVE_CCM_V1
     memset(ccm_v2, 0x00, sizeof(CalibDbV2_Ccm_Para_V2_t));
+#endif
+#if RKAIQ_HAVE_CCM_V2
+    memset(ccm_v2, 0x00, sizeof(CalibDbV2_Ccm_Para_V32_t));
+#endif
 
     ccm_v2->TuningPara.illu_estim.default_illu= (char*)malloc(sizeof(char)*CCM_PROFILE_NAME);
     ccm_v2->TuningPara.aCcmCof_len = ccm->mode_cell[0].aCcmCof.illuNum;
@@ -92,12 +110,28 @@ void convertCCMCalib2CalibV2(const CamCalibDbContext_t *calib,CamCalibDbV2Contex
     ccm_v2->TuningPara.illu_estim.prob_limit = 0.2;
     ccm_v2->TuningPara.illu_estim.frame_no = 8;
 
+#if RKAIQ_HAVE_CCM_V1
     CalibDbV2_Ccm_Luma_Ccm_Para_t *lumaCcm = &ccm_v2->lumaCCM;
     lumaCcm->low_bound_pos_bit = ccm->mode_cell[0].luma_ccm.low_bound_pos_bit;
     memcpy(lumaCcm->rgb2y_para, ccm->mode_cell[0].luma_ccm.rgb2y_para, sizeof(lumaCcm->rgb2y_para));
     memcpy(lumaCcm->y_alpha_curve, ccm->mode_cell[0].luma_ccm.y_alpha_curve, sizeof(lumaCcm->y_alpha_curve));
     memcpy(lumaCcm->gain_alphaScale_curve.gain, ccm->mode_cell[0].luma_ccm.alpha_gain, sizeof(lumaCcm->gain_alphaScale_curve.gain));
     memcpy(lumaCcm->gain_alphaScale_curve.scale, ccm->mode_cell[0].luma_ccm.alpha_scale, sizeof(lumaCcm->gain_alphaScale_curve.gain));
+#endif
+
+#if RKAIQ_HAVE_CCM_V2
+    CalibDbV2_Ccm_Luma_Ccm_Para_V2_t* lumaCcm = &ccm_v2->lumaCCM;
+    lumaCCM->asym_enable                      = 0;
+    lumaCCM->y_alp_sym.highy_adj_en           = 1;
+    lumaCcm->y_alp_sym.bound_pos_bit          = ccm->mode_cell[0].luma_ccm.low_bound_pos_bit;
+    memcpy(lumaCcm->rgb2y_para, ccm->mode_cell[0].luma_ccm.rgb2y_para, sizeof(lumaCcm->rgb2y_para));
+    memcpy(lumaCcm->y_alp_sym.y_alpha_curve, ccm->mode_cell[0].luma_ccm.y_alpha_curve,
+           sizeof(ccm->mode_cell[0].luma_ccm.y_alpha_curve));
+    memcpy(lumaCcm->gain_alphaScale_curve.gain, ccm->mode_cell[0].luma_ccm.alpha_gain,
+           sizeof(lumaCcm->gain_alphaScale_curve.gain));
+    memcpy(lumaCcm->gain_alphaScale_curve.scale, ccm->mode_cell[0].luma_ccm.alpha_scale,
+           sizeof(lumaCcm->gain_alphaScale_curve.gain));
+#endif
 
     for ( int i = 0; i < ccm_v2->TuningPara.aCcmCof_len; i++)
     {

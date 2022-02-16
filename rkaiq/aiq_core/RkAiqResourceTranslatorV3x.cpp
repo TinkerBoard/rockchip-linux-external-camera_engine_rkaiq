@@ -66,19 +66,19 @@ RkAiqResourceTranslatorV3x& RkAiqResourceTranslatorV3x::SetRightIspRect(
     return *this;
 }
 
-const bool RkAiqResourceTranslatorV3x::IsMultiIspMode() const {
+bool RkAiqResourceTranslatorV3x::IsMultiIspMode() const {
     return mIsMultiIsp;
 }
 
-const RkAiqResourceTranslatorV3x::Rectangle& RkAiqResourceTranslatorV3x::GetPicInfo() const {
+RkAiqResourceTranslatorV3x::Rectangle RkAiqResourceTranslatorV3x::GetPicInfo() {
     return pic_rect_;
 }
 
-const RkAiqResourceTranslatorV3x::Rectangle& RkAiqResourceTranslatorV3x::GetLeftIspRect() const {
+RkAiqResourceTranslatorV3x::Rectangle RkAiqResourceTranslatorV3x::GetLeftIspRect() {
     return left_isp_rect_;
 }
 
-const RkAiqResourceTranslatorV3x::Rectangle& RkAiqResourceTranslatorV3x::GetRightIspRect() const {
+RkAiqResourceTranslatorV3x::Rectangle RkAiqResourceTranslatorV3x::GetRightIspRect() {
     return right_isp_rect_;
 }
 
@@ -568,14 +568,16 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
         return XCAM_RETURN_BYPASS;
     }
 
-    if(left_stats->frame_id != right_stats->frame_id || left_stats->meas_type != right_stats->meas_type)
+    if (left_stats->frame_id != right_stats->frame_id || left_stats->meas_type != right_stats->meas_type) {
         LOGE_ANALYZER("status params(frmid or meas_type) of left isp and right isp are different");
-    else
+    } else {
         LOGD_ANALYZER("camId: %d, stats: frame_id: %d,  meas_type; 0x%x", mCamPhyId, left_stats->frame_id, left_stats->meas_type);
+    }
 
     SmartPtr<RkAiqIrisParamsProxy> irisParams = buf->get_iris_params();
     SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
-    rkisp_effect_params_v20 ispParams = {0};
+    rkisp_effect_params_v20 ispParams;
+    memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveExpParams(left_stats->frame_id, expParams) < 0)
         LOGE("fail to get expParams");
     if (buf->getEffectiveIspParams(left_stats->frame_id, ispParams) < 0) {
@@ -1005,10 +1007,11 @@ XCamReturn RkAiqResourceTranslatorV3x::translateMultiAwbStats(const SmartPtr<Vid
         return XCAM_RETURN_BYPASS;
     }
 
-    if(left_stats->frame_id != right_stats->frame_id || left_stats->meas_type != right_stats->meas_type)
+    if (left_stats->frame_id != right_stats->frame_id || left_stats->meas_type != right_stats->meas_type) {
         LOGE_ANALYZER("status params(frmid or meas_type) of left isp and right isp are different");
-    else
+    } else {
         LOGI_ANALYZER("stats: frame_id: %d,  meas_type; 0x%x", left_stats->frame_id, left_stats->meas_type);
+    }
 
 
     statsInt->awb_stats_valid = left_stats->meas_type >> 5 & 1;
@@ -1017,7 +1020,8 @@ XCamReturn RkAiqResourceTranslatorV3x::translateMultiAwbStats(const SmartPtr<Vid
         return XCAM_RETURN_BYPASS;
     }
 
-    rkisp_effect_params_v20 ispParams = {0};
+    rkisp_effect_params_v20 ispParams;
+    memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveIspParams(left_stats->frame_id, ispParams) < 0) {
         LOGE("fail to get ispParams ,ignore\n");
         return XCAM_RETURN_BYPASS;
@@ -1153,12 +1157,12 @@ RkAiqResourceTranslatorV3x::translateMultiAdehazeStats(const SmartPtr<VideoBuffe
     statsInt->adehaze_stats_valid = left_stats->meas_type >> 17 & 1;
     statsInt->frame_id = left_stats->frame_id;
 
-    statsInt->adehaze_stats.dehaze_stats_v30.dhaz_adp_air_base = (left_stats->params.dhaz.dhaz_adp_air_base + right_stats->params.dhaz.dhaz_adp_air_base) / 2;
-    statsInt->adehaze_stats.dehaze_stats_v30.dhaz_adp_wt = (left_stats->params.dhaz.dhaz_adp_wt + right_stats->params.dhaz.dhaz_adp_wt) / 2;
-    statsInt->adehaze_stats.dehaze_stats_v30.dhaz_adp_gratio = (left_stats->params.dhaz.dhaz_adp_gratio + right_stats->params.dhaz.dhaz_adp_gratio) / 2;
-    statsInt->adehaze_stats.dehaze_stats_v30.dhaz_adp_tmax = (left_stats->params.dhaz.dhaz_adp_tmax + right_stats->params.dhaz.dhaz_adp_tmax) / 2;
-    statsInt->adehaze_stats.dehaze_stats_v30.dhaz_pic_sumh_left = left_stats->params.dhaz.dhaz_adp_tmax;
-    statsInt->adehaze_stats.dehaze_stats_v30.dhaz_pic_sumh_right = right_stats->params.dhaz.dhaz_adp_tmax;
+    statsInt->adehaze_stats.dehaze_stats_v11_duo.dhaz_adp_air_base = (left_stats->params.dhaz.dhaz_adp_air_base + right_stats->params.dhaz.dhaz_adp_air_base) / 2;
+    statsInt->adehaze_stats.dehaze_stats_v11_duo.dhaz_adp_wt = (left_stats->params.dhaz.dhaz_adp_wt + right_stats->params.dhaz.dhaz_adp_wt) / 2;
+    statsInt->adehaze_stats.dehaze_stats_v11_duo.dhaz_adp_gratio = (left_stats->params.dhaz.dhaz_adp_gratio + right_stats->params.dhaz.dhaz_adp_gratio) / 2;
+    statsInt->adehaze_stats.dehaze_stats_v11_duo.dhaz_adp_tmax = (left_stats->params.dhaz.dhaz_adp_tmax + right_stats->params.dhaz.dhaz_adp_tmax) / 2;
+    statsInt->adehaze_stats.dehaze_stats_v11_duo.dhaz_pic_sumh_left = left_stats->params.dhaz.dhaz_adp_tmax;
+    statsInt->adehaze_stats.dehaze_stats_v11_duo.dhaz_pic_sumh_right = right_stats->params.dhaz.dhaz_adp_tmax;
 
     unsigned int ro_pic_sumh_left = left_stats->params.dhaz.dhaz_pic_sumh;
     unsigned int ro_pic_sumh_right = right_stats->params.dhaz.dhaz_pic_sumh;
@@ -1166,7 +1170,7 @@ RkAiqResourceTranslatorV3x::translateMultiAdehazeStats(const SmartPtr<VideoBuffe
     for (int i = 0; i < ISP3X_DHAZ_HIST_IIR_NUM; i++) {
         tmp = (left_stats->params.dhaz.h_rgb_iir[i] * ro_pic_sumh_left + right_stats->params.dhaz.h_rgb_iir[i] * ro_pic_sumh_right)
               / (ro_pic_sumh_left + ro_pic_sumh_right);
-        statsInt->adehaze_stats.dehaze_stats_v30.h_rgb_iir[i] = tmp > ISP3X_DHAZ_HIST_IIR_MAX ? ISP3X_DHAZ_HIST_IIR_MAX : tmp;
+        statsInt->adehaze_stats.dehaze_stats_v11_duo.h_rgb_iir[i] = tmp > ISP3X_DHAZ_HIST_IIR_MAX ? ISP3X_DHAZ_HIST_IIR_MAX : tmp;
     }
 #endif
 
@@ -1198,7 +1202,8 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
 
     SmartPtr<RkAiqIrisParamsProxy> irisParams = buf->get_iris_params();
     SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
-    rkisp_effect_params_v20 ispParams = {0};
+    rkisp_effect_params_v20 ispParams;
+    memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveExpParams(stats->frame_id, expParams) < 0)
         LOGE("fail to get expParams");
     if (buf->getEffectiveIspParams(stats->frame_id, ispParams) < 0) {
@@ -1282,7 +1287,7 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
 
             memset(statsInt->aec_stats.ae_data.chn[0].rawhist_lite.bins, 0, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
             memset(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins, 0, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
-            memset(statsInt->aec_stats.ae_data.chn[2].rawhist_lite.bins, 0, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+            memset(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins, 0, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
             for(int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
                 int tmp;
                 switch(isp_params->rawhist0.mode) {
@@ -1784,7 +1789,8 @@ RkAiqResourceTranslatorV3x::translateAwbStats (const SmartPtr<VideoBuffer> &from
         return XCAM_RETURN_BYPASS;
     }
 
-    rkisp_effect_params_v20 ispParams = {0};
+    rkisp_effect_params_v20 ispParams;
+    memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveIspParams(stats->frame_id, ispParams) < 0) {
         LOGE("fail to get ispParams ,ignore\n");
         return XCAM_RETURN_BYPASS;
@@ -1952,12 +1958,14 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
         return XCAM_RETURN_BYPASS;
     }
 
-    if (left_stats->frame_id != right_stats->frame_id || left_stats->meas_type != right_stats->meas_type)
+    if (left_stats->frame_id != right_stats->frame_id || left_stats->meas_type != right_stats->meas_type) {
         LOGE_ANALYZER("status params(frmid or meas_type) of left isp and right isp are different");
-    else
+    } else {
         LOGI_ANALYZER("stats: frame_id: %d,  meas_type; 0x%x", left_stats->frame_id, left_stats->meas_type);
+    }
 
-    rkisp_effect_params_v20 ispParams = {0};
+    rkisp_effect_params_v20 ispParams;
+    memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveIspParams(left_stats->frame_id, ispParams) < 0) {
         LOGE("fail to get ispParams ,ignore\n");
         return XCAM_RETURN_BYPASS;
@@ -2379,13 +2387,16 @@ RkAiqResourceTranslatorV3x::translateAdehazeStats (const SmartPtr<VideoBuffer> &
                   stats->frame_id, stats->meas_type);
     //dehaze
     statsInt->adehaze_stats_valid = stats->meas_type >> 17 & 1;
-    statsInt->adehaze_stats.dehaze_stats_v30.dhaz_adp_air_base = stats->params.dhaz.dhaz_adp_air_base;
-    statsInt->adehaze_stats.dehaze_stats_v30.dhaz_adp_wt = stats->params.dhaz.dhaz_adp_wt;
-    statsInt->adehaze_stats.dehaze_stats_v30.dhaz_adp_gratio = stats->params.dhaz.dhaz_adp_gratio;
-    statsInt->adehaze_stats.dehaze_stats_v30.dhaz_adp_wt = stats->params.dhaz.dhaz_adp_wt;
-    statsInt->adehaze_stats.dehaze_stats_v30.dhaz_pic_sumh_left = stats->params.dhaz.dhaz_pic_sumh;
+    statsInt->adehaze_stats.dehaze_stats_v11_duo.dhaz_adp_air_base =
+        stats->params.dhaz.dhaz_adp_air_base;
+    statsInt->adehaze_stats.dehaze_stats_v11_duo.dhaz_adp_wt = stats->params.dhaz.dhaz_adp_wt;
+    statsInt->adehaze_stats.dehaze_stats_v11_duo.dhaz_adp_gratio =
+        stats->params.dhaz.dhaz_adp_gratio;
+    statsInt->adehaze_stats.dehaze_stats_v11_duo.dhaz_adp_wt = stats->params.dhaz.dhaz_adp_wt;
+    statsInt->adehaze_stats.dehaze_stats_v11_duo.dhaz_pic_sumh_left =
+        stats->params.dhaz.dhaz_pic_sumh;
     for(int i = 0; i < ISP3X_DHAZ_HIST_IIR_NUM; i++)
-        statsInt->adehaze_stats.dehaze_stats_v30.h_rgb_iir[i] = stats->params.dhaz.h_rgb_iir[i];
+        statsInt->adehaze_stats.dehaze_stats_v11_duo.h_rgb_iir[i] = stats->params.dhaz.h_rgb_iir[i];
 
     to->set_sequence(stats->frame_id);
 

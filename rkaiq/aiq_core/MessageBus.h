@@ -51,6 +51,10 @@ enum XCamMessageType {
     XCAM_MESSAGE_ORB_STATS_OK,
 };
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 static const char* MessageType2Str[64]     = {
     [XCAM_MESSAGE_SOF_INFO_OK]              = "SOF_INFO",
     [XCAM_MESSAGE_ISP_STATS_OK]             = "ISP_STATS",
@@ -73,6 +77,9 @@ static const char* MessageType2Str[64]     = {
     [XCAM_MESSAGE_AE_PRE_RES_OK]            = "AE_PRE_RES",
     [XCAM_MESSAGE_PDAF_STATS_OK]            = "PDAF_STATS",
  };
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 struct XCamMessage {
     XCamMessageType  msg_id;
@@ -121,5 +128,5 @@ private:
     SafeList<XCamMessage> mMsgQueue;
 };
 
-};
+}
 #endif //_RK_MESSAGEBUS_H_

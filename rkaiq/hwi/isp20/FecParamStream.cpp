@@ -157,4 +157,4 @@ XCamReturn FecParamStream::config_params(uint32_t frameId, SmartPtr<cam3aResult>
 
     return ret;
 }
-}; //namspace RkCam
+} //namspace RkCam

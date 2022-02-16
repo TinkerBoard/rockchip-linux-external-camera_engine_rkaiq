@@ -23,78 +23,40 @@
 #include "RkAiqCalibDbTypes.h"
 #include "agamma_head.h"
 
-
-enum {
-    GAMMA_OUT_LOG_SEGMENT = 0,
-    GAMMA_OUT_EQ_SEGMENT = 1
-};
-
+// gamma v10
 typedef enum rk_aiq_gamma_op_mode_s {
-    RK_AIQ_GAMMA_MODE_OFF                     = 0,        /**< run iq gamma */
-    RK_AIQ_GAMMA_MODE_MANUAL                  = 1,        /**< run manual gamma */
-    RK_AIQ_GAMMA_MODE_FAST                    = 2,        /**< for tool*/
+    RK_AIQ_GAMMA_MODE_AUTO   = 0, /**< run Auto gamma */
+    RK_AIQ_GAMMA_MODE_MANUAL = 1, /**< run manual gamma */
 } rk_aiq_gamma_op_mode_t;
 
-typedef struct Agamma_api_Fast_s {
-    bool en;
-    float GammaCoef;
-    float SlopeAtZero;
-}  Agamma_api_Fast_t;
-
-typedef struct Agamma_api_manualV21_s {
+typedef struct AgammaApiManualV10_s {
     bool Gamma_en;
     GammaType_t Gamma_out_segnum;
     uint16_t Gamma_out_offset;
-    uint16_t Gamma_curve[CALIBDB_AGAMMA_KNOTS_NUM];
-}  Agamma_api_manualV21_t;
+    uint16_t Gamma_curve[CALIBDB_AGAMMA_KNOTS_NUM_V10];
+} AgammaApiManualV10_t;
 
-typedef struct rk_aiq_gamma_attrV21_s {
-    rk_aiq_gamma_op_mode_t mode;
-    Agamma_api_manualV21_t stManual;
-    Agamma_api_Fast_t stFast;
-}  rk_aiq_gamma_attrV21_t;
-
-typedef struct Agamma_api_manualV30_s {
-    bool Gamma_en;
-    uint16_t Gamma_out_offset;
-    uint16_t Gamma_curve[CALIBDB_AGAMMA_KNOTS_NUM_V30];;
-}  Agamma_api_manualV30_t;
-
-typedef struct rk_aiq_gamma_attrV30_s {
-    rk_aiq_gamma_op_mode_t mode;
-    Agamma_api_manualV30_t stManual;
-    Agamma_api_Fast_t stFast;
-}  rk_aiq_gamma_attrV30_t;
-
-typedef struct rk_aiq_gamma_attr_s {
+typedef struct rk_aiq_gamma_v10_attr_s {
     rk_aiq_uapi_sync_t sync;
 
-    rk_aiq_gamma_attrV21_t atrrV21;
-    rk_aiq_gamma_attrV30_t atrrV30;
-}  rk_aiq_gamma_attr_t;
+    rk_aiq_gamma_op_mode_t mode;
+    AgammaApiManualV10_t stManual;
+    CalibDbV2_gamma_V10_t stAuto;
+} rk_aiq_gamma_v10_attr_t;
 
-typedef struct AgammaProcResV20_s {
-    bool gamma_en;
-    int equ_segm;
-    int offset;
-    int gamma_y[45];
-}  AgammaProcResV20_t;
+// gamma v11
+typedef struct AgammaApiManualV11_s {
+    bool Gamma_en;
+    uint16_t Gamma_out_offset;
+    uint16_t Gamma_curve[CALIBDB_AGAMMA_KNOTS_NUM_V11];
+} AgammaApiManualV11_t;
 
-typedef struct AgammaProcResV21_s {
-    bool gamma_en;
-    int equ_segm;
-    bool EnableDot49;
-    int offset;
-    int gamma_y[49];
-}  AgammaProcResV21_t;
+typedef struct rk_aiq_gamma_v11_attr_s {
+    rk_aiq_uapi_sync_t sync;
 
-typedef struct AgammaProcRes_s {
-    union {
-        AgammaProcResV20_t Gamma_v20;
-        AgammaProcResV21_t Gamma_v30;
-    };
-} AgammaProcRes_t;
-
+    rk_aiq_gamma_op_mode_t mode;
+    AgammaApiManualV11_t stManual;
+    CalibDbV2_gamma_V11_t stAuto;
+} rk_aiq_gamma_v11_attr_t;
 
 #endif
-

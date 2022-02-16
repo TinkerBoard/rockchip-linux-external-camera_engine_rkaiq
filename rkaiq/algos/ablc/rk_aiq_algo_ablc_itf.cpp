@@ -24,7 +24,7 @@
 RKAIQ_BEGIN_DECLARE
 
 typedef struct _RkAiqAlgoContext {
-    void* place_holder[0];
+    AblcContext_t AblcCtx;
 } RkAiqAlgoContext;
 
 
@@ -159,7 +159,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             } else {
                 stExpInfo.arDGain[0] = curExp->LinearExp.exp_real_params.digital_gain;
             }
-            stExpInfo.arDGain[0] = curExp->LinearExp.exp_real_params.digital_gain;
+            // stExpInfo.arDGain[0] = curExp->LinearExp.exp_real_params.digital_gain;
             stExpInfo.arTime[0] = curExp->LinearExp.exp_real_params.integration_time;
             stExpInfo.arIso[0] = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * 50;
         } else {

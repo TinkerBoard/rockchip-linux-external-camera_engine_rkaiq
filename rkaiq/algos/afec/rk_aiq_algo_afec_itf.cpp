@@ -98,11 +98,16 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
 
     CalibDbV2_FEC_t* calib_fec_db =
             (CalibDbV2_FEC_t*)(CALIBDBV2_GET_MODULE_PTR(cfg->calibv2, afec));
+    if (!calib_fec_db) {
+        LOGE_AFEC("%s: Could not get fec iq calib!\n", __FUNCTION__);
+        return XCAM_RETURN_ERROR_MEM;
+    }
     CalibDbV2_Fec_Param_t* calib_fec = &calib_fec_db->param;
-    CalibDbV2_Eis_t* calib_eis =
-                (CalibDbV2_Eis_t*)(CALIBDBV2_GET_MODULE_PTR(cfg->calibv2, eis_calib));
 
     memset(&fecCtx->user_config, 0, sizeof(fecCtx->user_config));
+#if RKAIQ_HAVE_EIS_V1
+    CalibDbV2_Eis_t* calib_eis =
+                (CalibDbV2_Eis_t*)(CALIBDBV2_GET_MODULE_PTR(cfg->calibv2, eis_calib));
     fecCtx->fec_en = fecCtx->user_config.en = calib_eis->enable ? 0 : calib_fec->fec_en;
     if (!fecCtx->fec_en) {
         if (calib_eis->enable) {
@@ -110,6 +115,12 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
         }
         return XCAM_RETURN_NO_ERROR;
     }
+#else
+    fecCtx->fec_en = fecCtx->user_config.en = calib_fec->fec_en;
+    if (!fecCtx->fec_en) {
+        return XCAM_RETURN_NO_ERROR;
+    }
+#endif
 
 #if GENMESH_ONLINE
     ctx->hFEC->isAttribUpdated = false;

@@ -24,6 +24,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_FEC_V10
 XCamReturn
 rk_aiq_user_api_afec_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_fec_attrib_t attr)
 {
@@ -53,5 +54,18 @@ rk_aiq_user_api_afec_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_fec_attri
 
     return XCAM_RETURN_ERROR_FAILED;
 }
+#else
+XCamReturn
+rk_aiq_user_api_afec_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_fec_attrib_t attr)
+{
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn
+rk_aiq_user_api_afec_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_fec_attrib_t *attr)
+{
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+#endif
 
 RKAIQ_END_DECLARE

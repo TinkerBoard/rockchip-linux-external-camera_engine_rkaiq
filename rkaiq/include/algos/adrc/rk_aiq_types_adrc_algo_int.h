@@ -16,105 +16,17 @@
 #include "adrc_uapi_head.h"
 #include "rk_aiq_types_adrc_stat_v200.h"
 
-#define AIQ_ISP3X_DRC_Y_NUM 17
-
-
-typedef struct DrcProcResV21_s {
-    int sw_drc_offset_pow2;
-    int sw_drc_compres_scl;
-    int sw_drc_position;
-    int sw_drc_delta_scalein;
-    int sw_drc_hpdetail_ratio;
-    int sw_drc_lpdetail_ratio;
-    int sw_drc_weicur_pix;
-    int sw_drc_weipre_frame;
-    int sw_drc_force_sgm_inv0;
-    int sw_drc_motion_scl;
-    int sw_drc_edge_scl;
-    int sw_drc_space_sgm_inv1;
-    int sw_drc_space_sgm_inv0;
-    int sw_drc_range_sgm_inv1;
-    int sw_drc_range_sgm_inv0;
-    int sw_drc_weig_maxl;
-    int sw_drc_weig_bilat;
-    int sw_drc_gain_y[ISP21_DRC_Y_NUM];
-    int sw_drc_compres_y[ISP21_DRC_Y_NUM];
-    int sw_drc_scale_y[ISP21_DRC_Y_NUM];
-    float sw_drc_adrc_gain;
-    int sw_drc_iir_weight;
-    int sw_drc_min_ogain;
-} DrcProcResV21_t;
-
-typedef struct DrcProcResV30_s {
-    int bypass_en;
-    int offset_pow2;
-    int compres_scl;
-    int position;
-    int delta_scalein;
-    int hpdetail_ratio;
-    int lpdetail_ratio;
-    int weicur_pix;
-    int weipre_frame;
-    int bilat_wt_off;
-    int force_sgm_inv0;
-    int motion_scl;
-    int edge_scl;
-    int space_sgm_inv1;
-    int space_sgm_inv0;
-    int range_sgm_inv1;
-    int range_sgm_inv0;
-    int weig_maxl;
-    int weig_bilat;
-    int enable_soft_thd;
-    int bilat_soft_thd;
-    int gain_y[AIQ_ISP3X_DRC_Y_NUM];
-    int compres_y[AIQ_ISP3X_DRC_Y_NUM];
-    int scale_y[AIQ_ISP3X_DRC_Y_NUM];
-    float adrc_gain;
-    int wr_cycle;
-    int iir_weight;
-    int min_ogain;
-} DrcProcResV30_t;
-
-typedef struct DrcProcRes_s {
-#if RKAIQ_HAVE_DRC_V1
-    DrcProcResV21_t Drc_v21;
-#endif
-#if RKAIQ_HAVE_DRC_V2
-    DrcProcResV30_t Drc_v30;
-#endif
-} DrcProcRes_t;
-
-typedef struct RkAiqAdrcProcResult_s {
-    DrcProcRes_t DrcProcRes;
-    CompressMode_t CompressMode;
-    bool update;
-    bool LongFrameMode;
-    bool isHdrGlobalTmo;
-    bool bTmoEn;
-    bool isLinearTmo;
-} RkAiqAdrcProcResult_t;
-
-
-typedef enum AdrcVersion_e {
-    ADRC_VERSION_356X = 0,
-    ADRC_VERSION_3588 = 1,
-    ADRC_VERSION_MAX
-} AdrcVersion_t;
-
 typedef enum drc_OpMode_s {
-    DRC_OPMODE_API_OFF = 0, // run IQ ahdr
-    DRC_OPMODE_MANU = 1,    // run api manual ahdr
-    DRC_OPMODE_DRC_GAIN = 2,
-    DRC_OPMODE_HILIT = 3,
-    DRC_OPMODE_LOCAL_TMO = 4,
+    DRC_OPMODE_AUTO = 0,  // run auto drc
+    DRC_OPMODE_MANU = 1,  // run manual drc
 } drc_OpMode_t;
 
-typedef struct mLocalDataV21_s {
+// drc attr V10
+typedef struct mLocalDataV10_s {
     float         LocalWeit;
     float         GlobalContrast;
     float         LoLitContrast;
-} mLocalDataV21_t;
+} mLocalDataV10_t;
 
 typedef struct mDrcGain_t {
     float DrcGain;
@@ -126,8 +38,8 @@ typedef struct mDrcHiLit_s {
     float Strength;
 } mDrcHiLit_t;
 
-typedef struct mDrcLocalV21_s {
-    mLocalDataV21_t LocalData;
+typedef struct mDrcLocalV10_s {
+    mLocalDataV10_t LocalTMOData;
     float curPixWeit;
     float preFrameWeit;
     float Range_force_sgm;
@@ -135,35 +47,45 @@ typedef struct mDrcLocalV21_s {
     float Range_sgm_pre;
     int Space_sgm_cur;
     int Space_sgm_pre;
-} mDrcLocalV21_t;
+} mDrcLocalV10_t;
 
 typedef struct mDrcCompress_s {
     CompressMode_t Mode;
     uint16_t Manual_curve[ADRC_Y_NUM];
 } mDrcCompress_t;
 
-typedef struct mdrcAttr_V21_s {
+typedef struct mdrcAttr_V10_s {
     bool Enable;
     mDrcGain_t DrcGain;
-    mDrcHiLit_t HiLit;
-    mDrcLocalV21_t LocalSetting;
-    mDrcCompress_t Compress;
+    mDrcHiLit_t HiLight;
+    mDrcLocalV10_t LocalTMOSetting;
+    mDrcCompress_t CompressSetting;
     int Scale_y[ADRC_Y_NUM];
     float Edge_Weit;
     bool  OutPutLongFrame;
     int IIR_frame;
-} mdrcAttr_V21_t;
+} mdrcAttr_V10_t;
 
-typedef struct mLocalDataV30_s {
+typedef struct drcAttrV10_s {
+    rk_aiq_uapi_sync_t sync;
+
+    drc_OpMode_t opMode;
+    CalibDbV2_drc_V10_t stAuto;
+    mdrcAttr_V10_t stManual;
+    DrcInfo_t Info;
+} drcAttrV10_t;
+
+// drc attr V11
+typedef struct mLocalDataV11_s {
     float         LocalWeit;
     int           LocalAutoEnable;
     float         LocalAutoWeit;
     float         GlobalContrast;
     float         LoLitContrast;
-} mLocalDataV30_t;
+} mLocalDataV11_t;
 
-typedef struct mDrcLocalV30_s {
-    mLocalDataV30_t LocalData;
+typedef struct mDrcLocalV11_s {
+    mLocalDataV11_t LocalData;
     float curPixWeit;
     float preFrameWeit;
     float Range_force_sgm;
@@ -171,32 +93,93 @@ typedef struct mDrcLocalV30_s {
     float Range_sgm_pre;
     int Space_sgm_cur;
     int Space_sgm_pre;
-} mDrcLocalV30_t;
+} mDrcLocalV11_t;
 
-typedef struct mdrcAttr_V30_s {
+typedef struct mdrcAttr_V11_s {
     bool Enable;
     mDrcGain_t DrcGain;
     mDrcHiLit_t HiLight;
-    mDrcLocalV30_t LocalSetting;
+    mDrcLocalV11_t LocalSetting;
     mDrcCompress_t CompressSetting;
     int Scale_y[ADRC_Y_NUM];
     float Edge_Weit;
     bool  OutPutLongFrame;
     int IIR_frame;
-} mdrcAttr_V30_t;
+} mdrcAttr_V11_t;
 
-typedef struct drcAttr_s {
+typedef struct drcAttrV11_s {
     rk_aiq_uapi_sync_t sync;
 
-    AdrcVersion_t Version;
     drc_OpMode_t opMode;
-    mdrcAttr_V21_t stManualV21;
-    mdrcAttr_V30_t stManualV30;
-    mDrcGain_t stDrcGain;
-    mDrcHiLit_t stHiLit;
-    mLocalDataV21_t stLocalDataV21;
-    mLocalDataV30_t stLocalDataV30;
+    CalibDbV2_drc_V11_t stAuto;
+    mdrcAttr_V11_t stManual;
     DrcInfo_t Info;
-} drcAttr_t;
+} drcAttrV11_t;
+
+// drc attr V11
+typedef struct mHighLightDataV12_s {
+    float Strength;
+    float gas_t;
+} mHighLightDataV12_t;
+
+typedef struct mHighLightV12_s {
+    mHighLightDataV12_t HiLightData;
+    int gas_l0;
+    int gas_l1;
+    int gas_l2;
+    int gas_l3;
+} mHighLightV12_t;
+
+typedef struct mMotionData_s {
+    float MotionStr;
+} mMotionData_t;
+
+typedef struct mDrcLocalV12_s {
+    mLocalDataV11_t LocalData;
+    mMotionData_t MotionData;
+    float curPixWeit;
+    float preFrameWeit;
+    float Range_force_sgm;
+    float Range_sgm_cur;
+    float Range_sgm_pre;
+    int Space_sgm_cur;
+    int Space_sgm_pre;
+} mDrcLocalV12_t;
+
+typedef struct mdrcAttr_V12_drc_s {
+    bool Enable;
+    mDrcGain_t DrcGain;
+    mHighLightV12_t HiLight;
+    mDrcLocalV12_t LocalSetting;
+    mDrcCompress_t CompressSetting;
+    int Scale_y[ADRC_Y_NUM];
+    float Edge_Weit;
+    bool OutPutLongFrame;
+    int IIR_frame;
+} mdrcAttr_V12_drc_t;
+
+typedef struct mOBData_s {
+    int ob_offset;
+    float predgain;
+} mOBData_t;
+
+typedef struct mdrcAttr_V12_ob_s {
+    bool Enable;
+    mOBData_t OBData;
+} mdrcAttr_V12_ob_t;
+
+typedef struct mdrcAttr_V12_s {
+    mdrcAttr_V12_drc_t DrcTuningPara;
+    mdrcAttr_V12_ob_t OBTuningPara;
+} mdrcAttr_V12_t;
+
+typedef struct drcAttrV12_s {
+    rk_aiq_uapi_sync_t sync;
+
+    drc_OpMode_t opMode;
+    CalibDbV2_drc_V12_t stAuto;
+    mdrcAttr_V12_t stManual;
+    DrcInfo_t Info;
+} drcAttrV12_t;
 
 #endif

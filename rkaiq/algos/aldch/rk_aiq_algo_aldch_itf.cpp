@@ -116,8 +116,9 @@ static XCamReturn aiqGenLdchMeshInit(LDCHContext_t* ldchCtx)
 
     ldchCtx->ldchParams.isLdchOld = 1;
     ldchCtx->ldchParams.saveMeshX = false;
-    if (ldchCtx->ldchParams.saveMeshX)
+    if (ldchCtx->ldchParams.saveMeshX) {
         sprintf(ldchCtx->ldchParams.meshPath, "/tmp/");
+    }
 	genLdchMeshInit(ldchCtx->src_width, ldchCtx->src_height,
                     ldchCtx->dst_width, ldchCtx->dst_height,
                     ldchCtx->ldchParams, ldchCtx->camCoeff);
@@ -148,8 +149,9 @@ static bool aiqGenMesh(LDCHContext_t* ldchCtx)
                 ldchCtx->resource_path,
                 LDCH_CUSTOM_MESH);
         success = read_mesh_from_file(ldchCtx, filename);
-        if (success)
+        if (success) {
             LOGW_ALDCH("read mesh from %s", filename);
+        }
     }
 
     if (!success)
@@ -452,8 +454,9 @@ bool RKAiqAldchThread::loop()
 	    attrib->correct_level != hLDCH->correct_level)) {
         aiqGenLdchMeshInit(hLDCH);
         bool success = aiqGenMesh(hLDCH);
-        if (!success)
+        if (!success) {
             LOGW_ALDCH("lut is not exist");
+        }
     }
     hLDCH->ldch_en = hLDCH->user_config.en;
     hLDCH->correct_level = hLDCH->user_config.correct_level;

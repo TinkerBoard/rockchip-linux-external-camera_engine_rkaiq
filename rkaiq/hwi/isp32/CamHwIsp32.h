@@ -32,7 +32,7 @@ class CamHwIsp32 : virtual public CamHwIsp3x, virtual public Isp32Params {
     virtual ~CamHwIsp32();
     virtual XCamReturn init(const char* sns_ent_name);
     virtual XCamReturn stop();
-    XCamReturn setIspParamsSync(int frameId);
+    XCamReturn setIspParamsSync(uint32_t frameId);
 
  protected:
     virtual XCamReturn setIspConfig();
@@ -45,6 +45,6 @@ class CamHwIsp32 : virtual public CamHwIsp3x, virtual public Isp32Params {
     struct isp32_isp_params_cfg _full_active_isp32_params;
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif

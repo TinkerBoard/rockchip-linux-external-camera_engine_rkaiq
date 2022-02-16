@@ -77,6 +77,6 @@ class TreeNode {
     std::vector<TreeNode> children_;
 };
 
-};  // namespace RkCam
+}  // namespace RkCam
 
 #endif  // AIQ_CORE_TREE_NODE_H

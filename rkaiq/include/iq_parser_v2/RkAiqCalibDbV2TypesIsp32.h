@@ -32,20 +32,20 @@
 #include "amerge_head.h"
 #include "atmo_head.h"
 #include "awb_head.h"
-#include "bayer2dnr_head_v2.h"
-#include "bayertnr_head_v2.h"
+#include "bayer2dnr_head_v23.h"
+#include "bayertnr_head_v23.h"
 #include "cac_head.h"
 #include "ccm_head.h"
-#include "cnr_head_v2.h"
+#include "cnr_head_v30.h"
 #include "cproc_head.h"
 #include "cpsl_head.h"
 #include "debayer_head.h"
 #include "fec_head.h"
 #include "ldch_head.h"
 #include "lut3d_head.h"
-#include "sharp_head_v4.h"
+#include "sharp_head_v33.h"
 #include "thumbnails_head.h"
-#include "ynr_head_v3.h"
+#include "ynr_head_v22.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -70,11 +70,11 @@ typedef struct CamCalibDbV2ContextIsp32_s {
     // M4_STRUCT_DESC("AEC", "normal_ui_style")
     CalibDb_Aec_ParaV2_t ae_calib;
     // M4_STRUCT_DESC("wb_v21", "normal_ui_style")
-    CalibDbV2_Wb_Para_V21_t wb_v21;
+    CalibDbV2_Wb_Para_V32_t wb_v32;
     // M4_STRUCT_DESC("ablc_calib", "normal_ui_style")
     CalibDbV2_Ablc_t ablc_calib;
     // M4_STRUCT_DESC("ccm_calib", "normal_ui_style")
-    CalibDbV2_Ccm_Para_V2_t ccm_calib;
+    CalibDbV2_Ccm_Para_V32_t ccm_calib_v2;
     // M4_STRUCT_DESC("lut3d_calib", "normal_ui_style")
     CalibDbV2_Lut3D_Para_V2_t lut3d_calib;
     // M4_STRUCT_DESC("degamma", "curve_ui_type_A")
@@ -82,15 +82,15 @@ typedef struct CamCalibDbV2ContextIsp32_s {
     // M4_STRUCT_DESC("agic_calib_v21", "normal_ui_style")
     CalibDbV2_Gic_V21_t agic_calib_v21;
     // M4_STRUCT_DESC("debayer_calib", "normal_ui_style")
-    CalibDbV2_Debayer_t debayer;
+    CalibDbV2_Debayer_v2_t debayer_v2;
     // M4_STRUCT_DESC("Amerge_calib", "normal_ui_style")
-    CalibDbV2_merge_V2_t amerge_calib_V2;
+    CalibDbV2_merge_V12_t amerge_calib_V12;
     // M4_STRUCT_DESC("Adrc_calib", "normal_ui_style")
-    CalibDbV2_drc_V2_t adrc_calib_V2;
+    CalibDbV2_drc_V12_t adrc_calib_V12;
     // M4_STRUCT_DESC("agamma_calib", "normal_ui_style")
-    CalibDbV2_gamma_V30_t agamma_calib_V30;
+    CalibDbV2_gamma_V11_t agamma_calib_V11;
     // M4_STRUCT_DESC("adehaze_calib", "normal_ui_style")
-    CalibDbV2_dehaze_V30_t adehaze_calib_v30;
+    CalibDbV2_dehaze_V12_t adehaze_calib_v12;
     // M4_STRUCT_DESC("adpcc_calib", "normal_ui_style")
     CalibDbV2_Dpcc_t adpcc_calib;
     // M4_STRUCT_DESC("aldch", "normal_ui_style")
@@ -105,20 +105,20 @@ typedef struct CamCalibDbV2ContextIsp32_s {
     CalibDbV2_ColorAsGrey_t colorAsGrey;
     // M4_STRUCT_DESC("lsc_v2", "normal_ui_style")
     CalibDbV2_LSC_t lsc_v2;
-    // M4_STRUCT_DESC("bayer2dnr_v2", "normal_ui_style")
-    CalibDbV2_Bayer2dnr_V2_t bayer2dnr_v2;
-    // M4_STRUCT_DESC("bayertnr_v2", "normal_ui_style")
-    CalibDbV2_BayerTnr_V2_t bayertnr_v2;
-    // M4_STRUCT_DESC("ynr_v3", "normal_ui_style")
-    CalibDbV2_YnrV3_t ynr_v3;
-    // M4_STRUCT_DESC("cnr_v2", "normal_ui_style")
-    CalibDbV2_CNRV2_t cnr_v2;
-    // M4_STRUCT_DESC("sharp_v4", "normal_ui_style")
-    CalibDbV2_SharpV4_t sharp_v4;
-    // M4_STRUCT_DESC("cac_calib", "normal_ui_style")
-    CalibDbV2_Cac_t cac_calib;
+    // M4_STRUCT_DESC("bayer2dnr_v23", "normal_ui_style")
+    CalibDbV2_Bayer2dnr_V23_t bayer2dnr_v23;
+    // M4_STRUCT_DESC("bayertnr_v23", "normal_ui_style")
+    CalibDbV2_BayerTnr_V23_t bayertnr_v23;
+    // M4_STRUCT_DESC("ynr_v22", "normal_ui_style")
+    CalibDbV2_YnrV22_t ynr_v22;
+    // M4_STRUCT_DESC("cnr_v30", "normal_ui_style")
+    CalibDbV2_CNRV30_t cnr_v30;
+    // M4_STRUCT_DESC("sharp_v33", "normal_ui_style")
+    CalibDbV2_SharpV33_t sharp_v33;
+    // M4_STRUCT_DESC("cac_v11", "normal_ui_style")
+    CalibDbV2_Cac_V11_t cac_v11;
     // M4_STRUCT_DESC("af_calib", "normal_ui_style")
-    CalibDbV2_AFV30_t af_v30;
+    CalibDbV2_AFV31_t af_v31;
 } CamCalibDbV2ContextIsp32_t;
 
 RKAIQ_END_DECLARE

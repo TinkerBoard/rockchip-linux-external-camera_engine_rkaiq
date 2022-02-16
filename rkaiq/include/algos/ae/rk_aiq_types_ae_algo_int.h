@@ -394,7 +394,8 @@ typedef enum AecHwVersion_e
 {
     AEC_HARDWARE_V0 = 0,  //at most support Hdr 3_frame, 2 AEBIG & 1 AELITE for input raw, support yuv luma e.g. rk1126/1109
     AEC_HARDWARE_V1 = 1,  //at most support Hdr 2_frame, 1 AEBIG & 1 AELITE for input raw, not support yuv luma  e.g. rk356X
-    AEC_HARDWARE_V2 = 2,  //at most support Hdr 3_frame, 2 AEBIG & 1 AELITE for input raw, not support yuv luma e.g. rk3588
+    AEC_HARDWARE_V2 = 2,  //at most support Hdr 3_frame, 2 AEBIG & 1 AELITE for input raw, not support yuv luma, share AEBIG3 with AF e.g. rk3588
+    AEC_HARDWARE_V3 = 3,  //at most support Hdr 2_frame, 1 AEBIG & 1 AELITE for input raw, not support yuv luma, share AEBIG3 with AF e.g. rk1106
     AEC_HARDWARE_MAX,
 } AecHwVersion_t;
 

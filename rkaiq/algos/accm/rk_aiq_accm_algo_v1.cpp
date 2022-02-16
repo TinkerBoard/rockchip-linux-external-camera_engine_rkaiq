@@ -50,7 +50,7 @@ void CCMV1PrintReg(const rk_aiq_ccm_cfg_t* hw_param) {
 }
 
 void CCMV1PrintDBG(const accm_context_t* accm_context) {
-    const CalibDbV2_Ccm_Para_V2_t *pCcm = accm_context->calibV2Ccm;
+    const CalibDbV2_Ccm_Para_V2_t* pCcm = accm_context->calibV2Ccm.ccm_v1;
     const float *pMatrixUndamped = accm_context->accmRest.undampedCcmMatrix;
     const float *pOffsetUndamped = accm_context->accmRest.undampedCcOffset;
     const float *pMatrixDamped = accm_context->accmRest.dampedCcmMatrix;
@@ -116,14 +116,14 @@ XCamReturn AccmAutoConfig
         ret = pCcmMatrixAll_init(hAccm, &hAccm->mCurAtt.stTool.TuningPara);
         RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
     } else {
-        pCcm = hAccm->calibV2Ccm;
+        pCcm = hAccm->calibV2Ccm.ccm_v1;
     }
     if (hAccm->update || hAccm->updateAtt) {
         if (pCcm->TuningPara.illu_estim.interp_enable) {
-            ret = interpCCMbywbgain(pCcm, hAccm, fSaturation);
+            ret = interpCCMbywbgain(&pCcm->TuningPara, hAccm, fSaturation);
             RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
         } else {
-            ret = selectCCM(pCcm, hAccm, fSaturation);
+            ret = selectCCM(&pCcm->TuningPara, hAccm, fSaturation);
             RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
         }
 
@@ -238,7 +238,8 @@ XCamReturn AccmConfig
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     hAccm->update = JudgeCcmRes3aConverge(&hAccm->accmRest.res3a_info, &hAccm->accmSwInfo,
-        hAccm->calibV2Ccm->control.gain_tolerance, hAccm->calibV2Ccm->control.wbgain_tolerance);
+                                          hAccm->calibV2Ccm.ccm_v1->control.gain_tolerance,
+                                          hAccm->calibV2Ccm.ccm_v1->control.wbgain_tolerance);
 
     hAccm->update = hAccm->update || hAccm->calib_update;
     hAccm->calib_update = false;
@@ -262,7 +263,7 @@ XCamReturn AccmConfig
     }
 
     if (hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_AUTO){
-         hAccm->mCurAtt.byPass = !(hAccm->calibV2Ccm->control.enable);
+        hAccm->mCurAtt.byPass = !(hAccm->calibV2Ccm.ccm_v1->control.enable);
     }
     LOGD_ACCM("%s: byPass: %d  mode:%d \n", __FUNCTION__, hAccm->mCurAtt.byPass, hAccm->mCurAtt.mode);
     if(hAccm->mCurAtt.byPass != true && hAccm->accmSwInfo.grayMode != true) {
@@ -350,7 +351,7 @@ static XCamReturn UpdateCcmCalibV2ParaV1(accm_handle_t hAccm)
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     bool config_calib = !!(hAccm->accmSwInfo.prepare_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB);
-    const CalibDbV2_Ccm_Para_V2_t* calib_ccm = hAccm->calibV2Ccm;
+    const CalibDbV2_Ccm_Para_V2_t* calib_ccm = hAccm->calibV2Ccm.ccm_v1;
 
     if (!config_calib)
     {
@@ -420,8 +421,8 @@ XCamReturn AccmInit(accm_handle_t *hAccm, const CamCalibDbV2Context_t* calibv2)
 
     accm_context->accmSwInfo.prepare_type = RK_AIQ_ALGO_CONFTYPE_UPDATECALIB | RK_AIQ_ALGO_CONFTYPE_NEEDRESET;
 
-    // todo whm --- CalibDbV2_Ccm_Para_V2
-    accm_context->calibV2Ccm = calib_ccm;
+    // todo whm --- CalibDbV2_Ccm_Para
+    accm_context->calibV2Ccm.ccm_v1 = calib_ccm;
     ret = UpdateCcmCalibV2ParaV1(accm_context);
 
     for(int i = 0; i < RK_AIQ_ACCM_COLOR_GAIN_NUM; i++) {
