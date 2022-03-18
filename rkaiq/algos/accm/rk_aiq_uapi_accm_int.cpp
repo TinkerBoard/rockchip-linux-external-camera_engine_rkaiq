@@ -2,12 +2,12 @@
 #include "accm/rk_aiq_types_accm_algo_prvt.h"
 XCamReturn
 rk_aiq_uapi_accm_SetAttrib(RkAiqAlgoContext *ctx,
-                           rk_aiq_ccm_attrib_t attr,
+                           const rk_aiq_ccm_attrib_t* attr,
                            bool need_sync)
 {
 
     accm_context_t* ccm_contex = (accm_context_t*)ctx->accm_para;
-    ccm_contex->mNewAtt = attr;
+    ccm_contex->mNewAtt = *attr;
     ccm_contex->updateAtt = true;
     return XCAM_RETURN_NO_ERROR;
 }
@@ -36,9 +36,14 @@ rk_aiq_uapi_accm_QueryCcmInfo(const RkAiqAlgoContext *ctx,
     memcpy(ccm_querry_info->ccOffsets, ccm_contex->ccmHwConf.offs, sizeof(ccm_contex->ccmHwConf.offs));
     ccm_querry_info->ccm_en = ccm_contex->ccmHwConf.ccmEnable;
     ccm_querry_info->low_bound_pos_bit = ccm_contex->ccmHwConf.bound_bit;
+    ccm_querry_info->right_pos_bit = ccm_contex->ccmHwConf.bound_bit;
+    ccm_querry_info->highy_adj_en = true;
+    ccm_querry_info->asym_enable = false;
 #endif
 
 #if RKAIQ_HAVE_CCM_V2
+    ccm_querry_info->highy_adj_en = ccm_contex->ccmHwConf_v2.highy_adj_en;
+    ccm_querry_info->asym_enable  = ccm_contex->ccmHwConf_v2.asym_adj_en;
     memcpy(ccm_querry_info->y_alpha_curve, ccm_contex->ccmHwConf_v2.alp_y,
            sizeof(ccm_contex->ccmHwConf_v2.alp_y));
     memcpy(ccm_querry_info->ccMatrix, ccm_contex->ccmHwConf_v2.matrix,

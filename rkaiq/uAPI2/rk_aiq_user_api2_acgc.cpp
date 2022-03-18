@@ -84,7 +84,7 @@ XCamReturn rk_aiq_user_api2_acgc_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
 }
 #else
 XCamReturn rk_aiq_user_api2_acgc_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                           rk_aiq_uapi_acgc_attrib_t attr)
+                                           rk_aiq_uapi_acgc_attrib_t* attr)
 {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }

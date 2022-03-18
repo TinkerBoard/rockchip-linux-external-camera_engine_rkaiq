@@ -45,6 +45,7 @@
 #cmakedefine01 RKAIQ_HAVE_GAIN_V1
 #cmakedefine01 RKAIQ_HAVE_GAIN_V2
 #cmakedefine01 RKAIQ_HAVE_BLC_V1
+#cmakedefine01 RKAIQ_HAVE_BLC_V32
 #cmakedefine01 RKAIQ_HAVE_ANR_V1
 #cmakedefine01 RKAIQ_HAVE_AMD_V1
 #cmakedefine01 RKAIQ_HAVE_AF_V20
@@ -80,4 +81,7 @@
 #cmakedefine01 RKAIQ_HAVE_YNR_V22
 #cmakedefine01 RKAIQ_HAVE_CNR_V30
 #cmakedefine01 RKAIQ_HAVE_SHARP_V33
+#cmakedefine01 RKAIQ_HAVE_LSC_V1
+#cmakedefine01 RKAIQ_HAVE_LSC_V2
+
 #endif /* RKAIQ_CONFIG_H */

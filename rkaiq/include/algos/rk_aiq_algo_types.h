@@ -22,6 +22,7 @@
 #include "abayertnr2/rk_aiq_types_abayertnr_algo_int_v2.h"
 #include "abayertnrV23/rk_aiq_types_abayertnr_algo_int_v23.h"
 #include "ablc/rk_aiq_types_ablc_algo_int.h"
+#include "ablcV32/rk_aiq_types_ablc_algo_int_v32.h"
 #include "accm/rk_aiq_types_accm_algo_int.h"
 #include "acnr/rk_aiq_types_acnr_algo_int_v1.h"
 #include "acnr2/rk_aiq_types_acnr_algo_int_v2.h"
@@ -72,6 +73,9 @@ typedef struct _RkAiqResComb {
     XCamVideoBuffer* ae_pre_res;
     XCamVideoBuffer* ae_proc_res;
     XCamVideoBuffer* awb_proc_res;
+    AblcProc_t       ablc_proc_res;
+    AblcProc_V32_t   ablcV32_proc_res;
+    bool             bayernr3d_en;
 } RkAiqResComb;
 
 // Ae
@@ -155,6 +159,7 @@ typedef struct _RkAiqAlgoProcAwb {
     };
     XCamVideoBuffer* awbStatsBuf;
     AblcProc_t ablcProcRes;
+    AblcProc_V32_t ablcProcResV32;
     bool ablcProcResVaid;
 } RkAiqAlgoProcAwb;
 
@@ -574,6 +579,8 @@ typedef struct _RkAiqAlgoProcAdhaz {
 #ifdef RKAIQ_ENABLE_PARSER_V1
     const CamCalibDbContext_t *pCalibDehaze;
 #endif
+    int rawHeight;
+    int rawWidth;
     int iso;
     int hdr_mode;
 } RkAiqAlgoProcAdhaz;
@@ -657,6 +664,38 @@ typedef struct _RkAiqAlgoPostAblc {
 typedef struct _RkAiqAlgoPostResAblc {
     RkAiqAlgoResCom res_com;
 } RkAiqAlgoPostResAblc;
+
+// ablcV32
+typedef struct _RkAiqAlgoConfigAblcV32 {
+    RkAiqAlgoCom com;
+} RkAiqAlgoConfigAblcV32;
+
+typedef struct _RkAiqAlgoPreAblcV32 {
+    RkAiqAlgoCom com;
+} RkAiqAlgoPreAblcV32;
+
+typedef struct _RkAiqAlgoPreResAblcV32 {
+    RkAiqAlgoResCom res_com;
+} RkAiqAlgoPreResAblcV32;
+
+typedef struct _RkAiqAlgoProcAblcV32 {
+    RkAiqAlgoCom com;
+    int iso;
+    int hdr_mode;
+} RkAiqAlgoProcAblcV32;
+
+typedef struct _RkAiqAlgoProcResAblcV32 {
+    RkAiqAlgoResCom res_com;
+    AblcProc_V32_t ablcV32_proc_res;
+} RkAiqAlgoProcResAblcV32;
+
+typedef struct _RkAiqAlgoPostAblcV32 {
+    RkAiqAlgoCom com;
+} RkAiqAlgoPostAblcV32;
+
+typedef struct _RkAiqAlgoPostResAblcV32 {
+    RkAiqAlgoResCom res_com;
+} RkAiqAlgoPostResAblcV32;
 
 // accm
 typedef struct _RkAiqAlgoConfigAccm {
@@ -744,7 +783,10 @@ typedef struct _RkAiqAlgoProcAdebayer {
 
 typedef struct _RkAiqAlgoProcResAdebayer {
     RkAiqAlgoResCom res_com;
-    AdebayerProcResult_t debayerRes;
+    union {
+        AdebayerProcResultV1_t debayerResV1;
+        AdebayerProcResultV2_t debayerResV2;
+    };
 } RkAiqAlgoProcResAdebayer;
 
 typedef struct _RkAiqAlgoPostAdebayer {
@@ -1513,6 +1555,7 @@ typedef struct _RkAiqAlgoPreResAdrc {
 typedef struct _RkAiqAlgoProcAdrc {
     RkAiqAlgoCom com;
     rkisp_adrc_stats_t ispAdrcStats;
+    AblcProc_V32_t ablcV32_proc_res;
     uint32_t width;
     uint32_t height;
 } RkAiqAlgoProcAdrc;
@@ -1748,6 +1791,8 @@ typedef struct _RkAiqAlgoProcAbayer2dnrV23 {
     RkAiqAlgoCom com;
     int iso;
     int hdr_mode;
+    AblcProc_V32_t stAblcV32_proc_res;
+    int bayertnr_en;
 } RkAiqAlgoProcAbayer2dnrV23;
 
 typedef struct _RkAiqAlgoProcResAbayer2dnrV23 {
@@ -1782,6 +1827,7 @@ typedef struct _RkAiqAlgoProcAbayertnrV23 {
     RkAiqAlgoCom com;
     int iso;
     int hdr_mode;
+    AblcProc_V32_t stAblcV32_proc_res;
 } RkAiqAlgoProcAbayertnrV23;
 
 typedef struct _RkAiqAlgoProcResAbayertnrV23 {

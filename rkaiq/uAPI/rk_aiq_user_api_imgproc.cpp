@@ -918,7 +918,7 @@ XCamReturn rk_aiq_uapi_setCrSuppsn(const rk_aiq_sys_ctx_t* ctx, unsigned int lev
         ccm.stAuto.color_inhibition.sensorGain[i] = 2.0f;
         ccm.stAuto.color_inhibition.level[i] = level;
     }
-    ret = rk_aiq_user_api_accm_SetAttrib(ctx, ccm);
+    ret = rk_aiq_user_api_accm_SetAttrib(ctx, &ccm);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setCrSuppsn failed!");
     IMGPROC_FUNC_EXIT
     return ret;

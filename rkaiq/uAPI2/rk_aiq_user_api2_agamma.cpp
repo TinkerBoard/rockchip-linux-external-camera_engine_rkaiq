@@ -25,8 +25,8 @@ RKAIQ_BEGIN_DECLARE
 #endif
 
 #if RKAIQ_HAVE_GAMMA_V10
-XCamReturn rk_aiq_user_api2_agamma_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                 const rk_aiq_gamma_v10_attr_t attr) {
+XCamReturn rk_aiq_user_api2_agamma_v10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 const rk_aiq_gamma_v10_attr_t* attr) {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AGAMMA);
     RKAIQ_API_SMART_LOCK(sys_ctx);
@@ -37,7 +37,7 @@ XCamReturn rk_aiq_user_api2_agamma_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx
             camgroupAlgoHandle<RkAiqCamGroupAgammaHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AGAMMA);
 
         if (algo_handle) {
-            return algo_handle->setAttribV10(&attr);
+            return algo_handle->setAttribV10(attr);
         } else {
             const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
             for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
@@ -46,7 +46,7 @@ XCamReturn rk_aiq_user_api2_agamma_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx
 
                 RkAiqAgammaHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAgammaHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AGAMMA);
-                if (singleCam_algo_handle) return singleCam_algo_handle->setAttribV10(&attr);
+                if (singleCam_algo_handle) return singleCam_algo_handle->setAttribV10(attr);
             }
         }
 #else
@@ -57,14 +57,14 @@ XCamReturn rk_aiq_user_api2_agamma_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx
             algoHandle<RkAiqAgammaHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AGAMMA);
 
         if (algo_handle) {
-            return algo_handle->setAttribV10(&attr);
+            return algo_handle->setAttribV10(attr);
         }
     }
 
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn rk_aiq_user_api2_agamma_V10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_agamma_v10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                  rk_aiq_gamma_v10_attr_t* attr) {
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
@@ -101,20 +101,20 @@ XCamReturn rk_aiq_user_api2_agamma_V10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx
     return XCAM_RETURN_NO_ERROR;
 }
 #else
-XCamReturn rk_aiq_user_api2_agamma_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                 const rk_aiq_gamma_v10_attr_t attr) {
+XCamReturn rk_aiq_user_api2_agamma_v10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 const rk_aiq_gamma_v10_attr_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
-XCamReturn rk_aiq_user_api2_agamma_V10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_agamma_v10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                  rk_aiq_gamma_v10_attr_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 #endif
 
 #if RKAIQ_HAVE_GAMMA_V11
-XCamReturn rk_aiq_user_api2_agamma_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                 const rk_aiq_gamma_v11_attr_t attr) {
+XCamReturn rk_aiq_user_api2_agamma_v11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 const rk_aiq_gamma_v11_attr_t* attr) {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AGAMMA);
     RKAIQ_API_SMART_LOCK(sys_ctx);
@@ -125,7 +125,7 @@ XCamReturn rk_aiq_user_api2_agamma_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx
             camgroupAlgoHandle<RkAiqCamGroupAgammaHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AGAMMA);
 
         if (algo_handle) {
-            return algo_handle->setAttribV11(&attr);
+            return algo_handle->setAttribV11(attr);
         } else {
             const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t*)sys_ctx;
             for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
@@ -133,7 +133,7 @@ XCamReturn rk_aiq_user_api2_agamma_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx
 
                 RkAiqAgammaHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAgammaHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AGAMMA);
-                if (singleCam_algo_handle) return singleCam_algo_handle->setAttribV11(&attr);
+                if (singleCam_algo_handle) return singleCam_algo_handle->setAttribV11(attr);
             }
         }
 #else
@@ -144,14 +144,14 @@ XCamReturn rk_aiq_user_api2_agamma_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx
             algoHandle<RkAiqAgammaHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AGAMMA);
 
         if (algo_handle) {
-            return algo_handle->setAttribV11(&attr);
+            return algo_handle->setAttribV11(attr);
         }
     }
 
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn rk_aiq_user_api2_agamma_V11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_agamma_v11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                  rk_aiq_gamma_v11_attr_t* attr) {
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
@@ -187,12 +187,12 @@ XCamReturn rk_aiq_user_api2_agamma_V11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx
     return XCAM_RETURN_NO_ERROR;
 }
 #else
-XCamReturn rk_aiq_user_api2_agamma_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                 const rk_aiq_gamma_v11_attr_t attr) {
+XCamReturn rk_aiq_user_api2_agamma_v11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 const rk_aiq_gamma_v11_attr_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
-XCamReturn rk_aiq_user_api2_agamma_V11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_agamma_v11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                  rk_aiq_gamma_v11_attr_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }

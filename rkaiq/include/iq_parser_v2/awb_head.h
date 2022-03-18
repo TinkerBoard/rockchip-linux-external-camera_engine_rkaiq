@@ -443,13 +443,13 @@ typedef struct CalibDbV2_Awb_SmartRun_cfg_s{
     // M4_ARRAY_DESC("lumaValue", "f32", M4_SIZE(1,5), M4_RANGE(0,255000), "0", M4_DIGIT(1), M4_DYNAMIC(1))
     float *lumaValue;
     int lumaValue_len;
-    // M4_ARRAY_DESC("lvVarTh", "f32", M4_SIZE(1,5), M4_RANGE(0,255), "0", M4_DIGIT(1), M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("lvVarTh", "f32", M4_SIZE(1,5), M4_RANGE(0,255), "0", M4_DIGIT(4), M4_DYNAMIC(1))
     float *lvVarTh;
     int lvVarTh_len;
-    // M4_ARRAY_DESC("wbgainAlgDiffTh", "f32", M4_SIZE(1,5), M4_RANGE(0,1), "0", M4_DIGIT(1), M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("wbgainAlgDiffTh", "f32", M4_SIZE(1,5), M4_RANGE(0,1), "0", M4_DIGIT(4), M4_DYNAMIC(1))
     float *wbgainAlgDiffTh;
     int wbgainAlgDiffTh_len;
-    // M4_ARRAY_DESC("wbgainHwDiffTh", "f32", M4_SIZE(1,5), M4_RANGE(0,1), "0", M4_DIGIT(1), M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("wbgainHwDiffTh", "f32", M4_SIZE(1,5), M4_RANGE(0,1), "0", M4_DIGIT(4), M4_DYNAMIC(1))
     float *wbgainHwDiffTh;
     int wbgainHwDiffTh_len;
 }CalibDbV2_Awb_SmartRun_cfg_t;
@@ -503,10 +503,8 @@ typedef struct CalibDbV2_Wb_Awb_Ext_Com_Para_t{
   float lineRgBg[3];
   // M4_ARRAY_DESC("lineRgProjCCT", "f32", M4_SIZE(1,3), M4_RANGE(-2147483648,2147483647), "1", M4_DIGIT(4), M4_DYNAMIC(0), M4_HIDE(1))
   float lineRgProjCCT[3];
-#if (RKAIQ_HAVE_AWB_V20||RKAIQ_HAVE_AWB_V21)
   // M4_STRUCT_DESC("chrAdpttAdj", "normal_ui_style", M4_HIDE(1))
   CalibDbV2_Wb_Awb_Caga_t chrAdpttAdj;
-#endif
   // M4_STRUCT_DESC("remosaicCfg", "normal_ui_style")
   CalibDbV2_Awb_Remosaic_Para_t remosaicCfg;
   // M4_STRUCT_DESC("wbGainOffset", "normal_ui_style")
@@ -801,7 +799,7 @@ typedef struct CalibDbV2_ExtRange_V32_s {
     float weightInculde;
 } CalibDbV2_ExtRange_V32_t;
 
-typedef struct CalibDbV2_Awb_Blc_data_s {
+typedef struct CalibDbV2_Awb_offset_data_s {
     // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
     float* ISO;
     int ISO_len;
@@ -817,13 +815,13 @@ typedef struct CalibDbV2_Awb_Blc_data_s {
     // M4_ARRAY_DESC("B_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
     float* B_Channel;
     int B_Channel_len;
-} CalibDbV2_Awb_Blc_data_t;
+} CalibDbV2_Awb_offset_data_t;
 
 typedef struct CalibDbV2_Awb_Blc_s {
     // M4_BOOL_DESC("enable", "0");
     bool enable;
-    // M4_ARRAY_TABLE_DESC("BLC_Data", "array_table_ui", M4_INDEX_DEFAULT)
-    CalibDbV2_Awb_Blc_data_t BLC_Data;//r gr gb b
+    // M4_ARRAY_TABLE_DESC("offset", "array_table_ui", M4_INDEX_DEFAULT)
+    CalibDbV2_Awb_offset_data_t offset;//r gr gb b
 } CalibDbV2_Awb_Blc_t;
 
 typedef struct CalibDbV2_Awb_Limit_Range_V32_s {
@@ -860,7 +858,7 @@ typedef struct CalibDbV2_Awb_Limit_Range_V32_s {
 typedef struct CalibDbV2_Wb_Awb_Para_V32_t {
     // M4_STRUCT_DESC("rawSelectPara", "normal_ui_style")
     CalibDbV2_Awb_Raw_Select_t rawSelectPara;//hdrFrameChoose;
-    // M4_STRUCT_DESC("blc", "normal_ui_style")
+    // M4_STRUCT_DESC("blc2ForAwb", "normal_ui_style")
     CalibDbV2_Awb_Blc_t blc2ForAwb;
     // M4_BOOL_DESC("lscBypassEnable", "0");
     bool                lscBypassEnable;

@@ -85,15 +85,12 @@ typedef struct AdebayerSeletedParamV2_s {
 
 } AdebayerSeletedParamV2_t;
 
-
-typedef struct AdebayerProcResult_s {
-#if RKAIQ_HAVE_DEBAYER_V1
+typedef struct AdebayerProcResultV1_s {
     AdebayerHwConfigV1_t config;
-#endif
+} AdebayerProcResultV1_t;
 
-#if RKAIQ_HAVE_DEBAYER_V2
+typedef struct AdebayerProcResultV2_s {
     AdebayerHwConfigV2_t config;
-#endif
-} AdebayerProcResult_t;
+} AdebayerProcResultV2_t;
 
 #endif//__RKAIQ_TYPES_ADEBAYER_ALGO_INT_H__

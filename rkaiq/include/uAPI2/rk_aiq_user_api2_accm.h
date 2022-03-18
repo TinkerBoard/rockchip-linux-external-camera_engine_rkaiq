@@ -23,12 +23,12 @@ typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 
 RKAIQ_BEGIN_DECLARE
 
-XCamReturn
-rk_aiq_user_api2_accm_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ccm_attrib_t attr);
-XCamReturn
-rk_aiq_user_api2_accm_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ccm_attrib_t *attr);
-XCamReturn
-rk_aiq_user_api2_accm_QueryCcmInfo(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ccm_querry_info_t *ccm_querry_info);
+XCamReturn rk_aiq_user_api2_accm_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                           const rk_aiq_ccm_attrib_t* attr);
+XCamReturn rk_aiq_user_api2_accm_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                           rk_aiq_ccm_attrib_t* attr);
+XCamReturn rk_aiq_user_api2_accm_QueryCcmInfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                              rk_aiq_ccm_querry_info_t* ccm_querry_info);
 
 RKAIQ_END_DECLARE
 

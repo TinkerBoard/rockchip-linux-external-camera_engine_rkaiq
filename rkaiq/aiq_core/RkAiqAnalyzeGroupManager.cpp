@@ -340,6 +340,28 @@ XCamReturn RkAiqAnalyzeGroupManager::groupMessageHandler(std::vector<SmartPtr<XC
                 // vdBufMsg = msg.dynamic_cast_ptr<RkAiqCoreVdBufMsg>();
                 // if (vdBufMsg.ptr()) xCamAmdProcRes = convert_to_XCamVideoBuffer(vdBufMsg->msg);
                 break;
+            case XCAM_MESSAGE_BLC_PROC_RES_OK:
+                vdBufMsg = msg.dynamic_cast_ptr<RkAiqCoreVdBufMsg>();
+                shared->res_comb.ablc_proc_res = ((RkAiqAlgoProcResAblc *)vdBufMsg.ptr()->msg->map())->ablc_proc_res;
+                LOG1_ANALYZER_SUBM(ANALYZER_SUBM,
+                                   "camId: %d, group: %s: id: %d, blc_r: %d, blc1_r: %d",
+                                   mAiqCore->mAlogsComSharedParams.mCamPhyId,
+                                   AnalyzerGroupType2Str[grpId],
+                                   vdBufMsg.ptr()->msg->get_sequence(),
+                                   shared->res_comb.ablc_proc_res.blc_r,
+                                   shared->res_comb.ablc_proc_res.blc1_r);
+                break;
+            case XCAM_MESSAGE_BLC_V32_PROC_RES_OK:
+                vdBufMsg = msg.dynamic_cast_ptr<RkAiqCoreVdBufMsg>();
+                shared->res_comb.ablcV32_proc_res = ((RkAiqAlgoProcResAblcV32*)vdBufMsg.ptr()->msg->map())->ablcV32_proc_res;
+                LOG1_ANALYZER_SUBM(ANALYZER_SUBM,
+                                   "camId: %d, group: %s: id: %d, ob_offset: %d, ob_predgain: %f",
+                                   mAiqCore->mAlogsComSharedParams.mCamPhyId,
+                                   AnalyzerGroupType2Str[grpId],
+                                   vdBufMsg.ptr()->msg->get_sequence(),
+                                   shared->res_comb.ablcV32_proc_res.isp_ob_offset,
+                                   shared->res_comb.ablcV32_proc_res.isp_ob_predgain);
+                break;
             default:
                 break;
         }

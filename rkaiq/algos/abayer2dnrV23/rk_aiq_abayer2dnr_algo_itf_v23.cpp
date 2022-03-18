@@ -164,6 +164,17 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         stExpInfo.arDGain[i] = 1.0;
         stExpInfo.arTime[i] = 0.01;
     }
+    stExpInfo.blc_ob_predgain = 1.0;
+    stExpInfo.bayertnr_en = 1;
+
+    if(pAbayernrProcParams != NULL) {
+        stExpInfo.blc_ob_predgain = pAbayernrProcParams->stAblcV32_proc_res.isp_ob_predgain;
+        stExpInfo.bayertnr_en = pAbayernrProcParams->bayertnr_en;
+        if(stExpInfo.blc_ob_predgain != pAbayernrCtx->stExpInfo.blc_ob_predgain
+                || stExpInfo.bayertnr_en != pAbayernrCtx->stExpInfo.bayertnr_en) {
+            pAbayernrCtx->isReCalculate |= 1;
+        }
+    }
 
     if(pAbayernrProcParams->hdr_mode == RK_AIQ_WORKING_MODE_NORMAL) {
         stExpInfo.hdr_mode = 0;

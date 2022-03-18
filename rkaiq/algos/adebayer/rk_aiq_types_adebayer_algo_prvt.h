@@ -40,7 +40,6 @@
  * @{
  *
  */
-
 #include <atomic>
 #include "rk_aiq_types_adebayer_algo_int.h"
 #include "RkAiqCalibDbTypes.h"
@@ -80,12 +79,13 @@ typedef struct AdebayerFullParam_s {
     unsigned char dist_scale;
     unsigned char cnr_strength;
     unsigned char shift_num;
-    std::atomic<bool> updated;
 } AdebayerFullParam_t;
 
 typedef struct AdebayerContext_s {
+    std::atomic<bool> is_reconfig; //used for api
     AdebayerState_t state;
     rk_aiq_debayer_op_mode_t mode;
+
 
 #if RKAIQ_HAVE_DEBAYER_V1
     AdebayerHwConfigV1_t config; //result params

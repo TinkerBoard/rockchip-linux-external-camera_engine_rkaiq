@@ -3,7 +3,7 @@
 INPUT=$1
 OUTPUT=$2
 
-HEADER="#include \"$(basename $(realpath --relative-to=. $INPUT))\""
+HEADER="#include \"$(basename $INPUT)\""
 
 echo $HEADER
 

@@ -39,13 +39,16 @@ public:
     virtual XCamReturn processing();
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
-
+    XCamReturn setAttrib(const rk_aiq_gain_attrib_v2_t *att);
+    XCamReturn getAttrib(rk_aiq_gain_attrib_v2_t *att);
 protected:
     virtual void init();
     virtual void deInit() {
         RkAiqHandle::deInit();
     };
 private:
+    rk_aiq_gain_attrib_v2_t mCurAtt;
+    rk_aiq_gain_attrib_v2_t mNewAtt;
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAgainV2HandleInt);
 };
 #endif

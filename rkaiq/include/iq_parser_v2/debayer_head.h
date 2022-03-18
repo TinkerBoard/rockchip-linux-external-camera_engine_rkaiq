@@ -139,7 +139,7 @@ typedef struct CalibDbV2_Debayer_CFilter_s {
     // M4_ARRAY_DESC("debayer_cfilter_str", "f32",M4_SIZE(1,13), M4_RANGE(0,1), "0.0313", M4_DIGIT(4), M4_DYNAMIC(0))
     float  debayer_cfilter_str[DEBAYER_ISO_STEP_MAX];
 
-    // M4_ARRAY_DESC("debayer_wet_clip", "f32",M4_SIZE(1,13), M4_RANGE(0,1.98), "0.9", M4_DIGIT(2), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("debayer_wet_clip", "f32",M4_SIZE(1,13), M4_RANGE(0,15.875), "7.25", M4_DIGIT(2), M4_DYNAMIC(0))
     float debayer_wet_clip[DEBAYER_ISO_STEP_MAX];
 
     // M4_ARRAY_DESC("debayer_wet_ghost", "f32",M4_SIZE(1,13), M4_RANGE(0,0.98), "0.03", M4_DIGIT(2), M4_DYNAMIC(0))

@@ -24,13 +24,13 @@ typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 
 RKAIQ_BEGIN_DECLARE
 
-XCamReturn rk_aiq_user_api2_agamma_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                 const rk_aiq_gamma_v10_attr_t attr);
-XCamReturn rk_aiq_user_api2_agamma_V10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_agamma_v10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 const rk_aiq_gamma_v10_attr_t* attr);
+XCamReturn rk_aiq_user_api2_agamma_v10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                  rk_aiq_gamma_v10_attr_t* attr);
-XCamReturn rk_aiq_user_api2_agamma_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                 const rk_aiq_gamma_v11_attr_t attr);
-XCamReturn rk_aiq_user_api2_agamma_V11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_agamma_v11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 const rk_aiq_gamma_v11_attr_t* attr);
+XCamReturn rk_aiq_user_api2_agamma_v11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                  rk_aiq_gamma_v11_attr_t* attr);
 
 RKAIQ_END_DECLARE

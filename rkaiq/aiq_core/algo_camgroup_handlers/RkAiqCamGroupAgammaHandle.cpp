@@ -27,13 +27,13 @@ XCamReturn RkAiqCamGroupAgammaHandleInt::updateConfig(bool needSync) {
     if (updateAtt) {
 #if RKAIQ_HAVE_GAMMA_V10
         mCurAttV10 = mNewAttV10;
-        rk_aiq_uapi_agamma_V10_SetAttrib(mAlgoCtx, mCurAttV10, false);
+        rk_aiq_uapi_agamma_v10_SetAttrib(mAlgoCtx, &mCurAttV10, false);
         updateAtt = false;
         sendSignal(mCurAttV10.sync.sync_mode);
 #endif
 #if RKAIQ_HAVE_GAMMA_V11
         mCurAttV11 = mNewAttV11;
-        rk_aiq_uapi_agamma_V11_SetAttrib(mAlgoCtx, mCurAttV11, false);
+        rk_aiq_uapi_agamma_v11_SetAttrib(mAlgoCtx, &mCurAttV11, false);
         updateAtt = false;
         sendSignal(mCurAttV11.sync.sync_mode);
 #endif
@@ -84,7 +84,7 @@ XCamReturn RkAiqCamGroupAgammaHandleInt::getAttribV10(rk_aiq_gamma_v10_attr_t* a
 
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
-        rk_aiq_uapi_agamma_V10_GetAttrib(mAlgoCtx, att);
+        rk_aiq_uapi_agamma_v10_GetAttrib(mAlgoCtx, att);
         att->sync.done = true;
         mCfgMutex.unlock();
     } else {
@@ -92,7 +92,7 @@ XCamReturn RkAiqCamGroupAgammaHandleInt::getAttribV10(rk_aiq_gamma_v10_attr_t* a
             memcpy(att, &mNewAttV10, sizeof(updateAtt));
             att->sync.done = false;
         } else {
-            rk_aiq_uapi_agamma_V10_GetAttrib(mAlgoCtx, att);
+            rk_aiq_uapi_agamma_v10_GetAttrib(mAlgoCtx, att);
             att->sync.sync_mode = mNewAttV10.sync.sync_mode;
             att->sync.done      = true;
         }
@@ -141,7 +141,7 @@ XCamReturn RkAiqCamGroupAgammaHandleInt::getAttribV11(rk_aiq_gamma_v11_attr_t* a
 
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
-        rk_aiq_uapi_agamma_V11_GetAttrib(mAlgoCtx, att);
+        rk_aiq_uapi_agamma_v11_GetAttrib(mAlgoCtx, att);
         att->sync.done = true;
         mCfgMutex.unlock();
     } else {
@@ -149,7 +149,7 @@ XCamReturn RkAiqCamGroupAgammaHandleInt::getAttribV11(rk_aiq_gamma_v11_attr_t* a
             memcpy(att, &mNewAttV11, sizeof(updateAtt));
             att->sync.done = false;
         } else {
-            rk_aiq_uapi_agamma_V11_GetAttrib(mAlgoCtx, att);
+            rk_aiq_uapi_agamma_v11_GetAttrib(mAlgoCtx, att);
             att->sync.sync_mode = mNewAttV11.sync.sync_mode;
             att->sync.done      = true;
         }

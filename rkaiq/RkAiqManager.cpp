@@ -739,7 +739,7 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
     APPLY_ANALYZER_RESULT(TnrV3x, TNR);
 
     // ispv32
-    //APPLY_ANALYZER_RESULT(BlcV32, BLC);
+    APPLY_ANALYZER_RESULT(BlcV32, BLC);
     APPLY_ANALYZER_RESULT(TnrV32, TNR);
     APPLY_ANALYZER_RESULT(BaynrV32, RAWNR);
     APPLY_ANALYZER_RESULT(CacV32, CAC);

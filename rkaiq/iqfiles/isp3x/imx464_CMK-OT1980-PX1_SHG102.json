@@ -7867,7 +7867,7 @@
 								"lutAll_len":	1
 							}
 						},
-						"adehaze_calib_v11":	{
+						"adehaze_calib_V11":	{
 							"DehazeTuningPara":	{
 								"Enable":	1,
 								"cfg_alpha":	0,

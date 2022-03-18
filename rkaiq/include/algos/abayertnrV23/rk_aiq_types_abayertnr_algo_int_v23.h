@@ -79,6 +79,7 @@ typedef struct Abayertnr_ExpInfo_V23_s {
     float arDGain[3];
     int   arIso[3];
     int   snr_mode;
+    float blc_ob_predgain;
 } Abayertnr_ExpInfo_V23_t;
 
 
@@ -94,7 +95,9 @@ typedef struct RK_Bayertnr_Params_V23_Select_s
     int hi_sigma[16];
 
     //tuning
-    int thumbds;
+    int thumbds_w;
+    int thumbds_h;
+
     int lo_enable;
     int hi_enable;
     int lo_med_en;
@@ -102,31 +105,44 @@ typedef struct RK_Bayertnr_Params_V23_Select_s
     int lo_gslum_en;
     int hi_med_en;
     int hi_gslum_en;
-    int global_pk_en;
+
+    int trans_en;
+
+    int wgt_use_mode;
+    int wgt_mge_mode;
+    int hi_guass;
+    int kl_guass;
+
+    bool global_pk_en;
     int global_pksq;
 
     float lo_filter_strength;
     float hi_filter_strength;
     float soft_threshold_ratio;
 
-    float clipwgt;
-    float wgtratio;
+    float lo_clipwgt;
+    float hi_wgt_comp;
     int   hidif_th;
 
+    float lo_filter_rat0;
+    int   lo_filter_thed0;
+
+    int hi_filter_abs_ctrl;
+    int hi_filter_filt_bay;
+    int hi_filter_filt_avg;
+    int hi_filter_filt_mode;
+
     float hi_filter_rat0;
-    int   hi_filter_sig0;
+    int   hi_filter_thed0;
     float hi_filter_rat1;
-    int   hi_filter_sig1;
+    int   hi_filter_thed1;
 
 
-    int   hi_gaus3x3_mode;
     int   guass_guide_coeff0;
     int   guass_guide_coeff1;
     int   guass_guide_coeff2;
     int   guass_guide_coeff3;
-    int   wgtuse_mode;
-    int   hi_guass;
-    int   kl_guass;
+
 } RK_Bayertnr_Params_V23_Select_t;
 
 

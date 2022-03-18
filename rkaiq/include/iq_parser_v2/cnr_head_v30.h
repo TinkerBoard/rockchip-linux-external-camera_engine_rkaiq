@@ -30,9 +30,9 @@ typedef struct CalibDbV2_CNRV30_TuningPara_Setting_ISO_s {
     float iso;
 
     ///////////new/////////////
-    // M4_NUMBER_DESC("down_scale_x", "s32", M4_RANGE(4, 8), "8", M4_DIGIT(0))
+    // M4_NUMBER_DESC("down_scale_x", "s32", M4_RANGE(2, 8), "8", M4_DIGIT(0))
     int down_scale_x;
-    // M4_NUMBER_DESC("down_scale_y", "s32", M4_RANGE(4, 6), "6", M4_DIGIT(0))
+    // M4_NUMBER_DESC("down_scale_y", "s32", M4_RANGE(2, 6), "6", M4_DIGIT(0))
     int down_scale_y;
 
     // M4_NUMBER_DESC("thumb_sigma", "f32", M4_RANGE(0.0, 1.0), "0.0039", M4_DIGIT(4))
@@ -42,13 +42,13 @@ typedef struct CalibDbV2_CNRV30_TuningPara_Setting_ISO_s {
 
     // M4_NUMBER_DESC("chroma_filter_strength", "f32", M4_RANGE(0.0, 1.0), "0.0078", M4_DIGIT(4))
     float chroma_filter_strength;
-    // M4_NUMBER_DESC("chroma_filter_wgt_clip", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("chroma_filter_wgt_clip", "f32", M4_RANGE(0.0, 16.0), "1.0", M4_DIGIT(2))
     float chroma_filter_wgt_clip;
     // M4_NUMBER_DESC("anti_chroma_ghost", "f32", M4_RANGE(0.0, 1.0), "0.0313", M4_DIGIT(4))
     float anti_chroma_ghost;
     // M4_NUMBER_DESC("chroma_filter_uv_gain", "f32", M4_RANGE(0.0, 1.0), "0.333", M4_DIGIT(3))
     float chroma_filter_uv_gain;
-    // M4_NUMBER_DESC("wgt_slope", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("wgt_slope", "f32", M4_RANGE(0.0, 8.0), "1.0", M4_DIGIT(2))
     float wgt_slope;
 
     // M4_NUMBER_DESC("gaus_ratio", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
@@ -56,7 +56,7 @@ typedef struct CalibDbV2_CNRV30_TuningPara_Setting_ISO_s {
 
     // M4_NUMBER_DESC("bf_sigmaR", "f32", M4_RANGE(0.0, 1.0), "0.0314", M4_DIGIT(4))
     float bf_sigmaR;
-    // M4_NUMBER_DESC("bf_uvgain", "f32", M4_RANGE(0.0, 16.0), "3.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("bf_uvgain", "f32", M4_RANGE(0.0, 8.0), "3.0", M4_DIGIT(2))
     float bf_uvgain;
     // M4_NUMBER_DESC("bf_ratio", "f32", M4_RANGE(0.0, 1.0), "0.0625", M4_DIGIT(4))
     float bf_ratio;
@@ -67,28 +67,28 @@ typedef struct CalibDbV2_CNRV30_TuningPara_Setting_ISO_s {
     // M4_NUMBER_DESC("global_alpha", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
     float global_alpha;
 
-    // M4_NUMBER_DESC("saturation_adj_offset", "f32", M4_RANGE(0.0, 1.0), "0", M4_DIGIT(4))
+    // M4_NUMBER_DESC("saturation_adj_offset", "f32", M4_RANGE(0.0, 511.0), "0", M4_DIGIT(4))
     float saturation_adj_offset;
-    // M4_NUMBER_DESC("saturation_adj_ratio", "f32", M4_RANGE(0.0, 1.0), "0.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("saturation_adj_ratio", "f32", M4_RANGE(0.0, 32.0), "0.0", M4_DIGIT(2))
     float saturation_adj_ratio;
 
-    // M4_NUMBER_DESC("global_gain", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("global_gain", "f32", M4_RANGE(0.0, 64.0), "1.0", M4_DIGIT(2))
     float global_gain;
     // M4_NUMBER_DESC("global_gain_alpha", "f32", M4_RANGE(0.0, 1.0), "0.0", M4_DIGIT(2))
     float global_gain_alpha;
     // M4_NUMBER_DESC("local_gain_scale", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
     float local_gain_scale;
-    // M4_NUMBER_DESC("global_gain_thumb", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("global_gain_thumb", "f32", M4_RANGE(0.0, 4.0), "1.0", M4_DIGIT(2))
     float global_gain_thumb;
-    // M4_NUMBER_DESC("global_gain_alpha_thumb", "f32", M4_RANGE(0.0, 1.0), "0.0", M4_DIGIT(0))
+    // M4_NUMBER_DESC("global_gain_alpha_thumb", "f32", M4_RANGE(8.0, 8.0), "8.0", M4_DIGIT(0))
     float global_gain_alpha_thumb;
 
-    // M4_ARRAY_DESC("gain_adj_strength_ratio", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "1.0", M4_DIGIT(2), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("gain_adj_strength_ratio", "f32", M4_SIZE(1,13), M4_RANGE(0.0,4.0), "1.0", M4_DIGIT(2), M4_DYNAMIC(0))
     float gain_adj_strength_ratio[13];
 
-    // M4_ARRAY_DESC("thumb_filter_wgt_coeff", "f32", M4_SIZE(1,4), M4_RANGE(0,255), "1.0,1.0,1.0,1.0", M4_DIGIT(2), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("thumb_filter_wgt_coeff", "f32", M4_SIZE(1,4), M4_RANGE(0.0,1.0), "1.0,1.0,1.0,1.0", M4_DIGIT(2), M4_DYNAMIC(0))
     float thumb_filter_wgt_coeff[4];
-    // M4_ARRAY_DESC("gaus_coeff", "f32", M4_SIZE(1,6), M4_RANGE(0,255), "36,24,16,6,4,1", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("gaus_coeff", "f32", M4_SIZE(1,6), M4_RANGE(0,127), "36,24,16,6,4,1", M4_DIGIT(0), M4_DYNAMIC(0))
     float gaus_coeff[6];
 
 } CalibDbV2_CNRV30_TuningPara_Setting_ISO_t;

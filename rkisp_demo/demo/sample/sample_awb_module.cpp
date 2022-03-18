@@ -554,7 +554,12 @@ static int sample_awb_setWbGainAdjust(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_m
     //set
     rk_aiq_user_api2_awb_SetWbGainAdjustAttrib(ctx, attr);
     printf("set AWbGainAdjust\n\n");
-
+    //free
+    for(int i = 0; i < attr.lutAll_len; i++) {
+        safe_free(attr.lutAll[i].cri_lut_out);
+        safe_free(attr.lutAll[i].ct_lut_out);
+    }
+    safe_free(attr.lutAll);
     return 0;
 }
 
@@ -567,6 +572,12 @@ static int sample_awb_getWbGainAdjust(const rk_aiq_sys_ctx_t* ctx)
     printf("get AWbGainAdjust:\n\n");
     printf("\t sync = %d, done = %d\n", attr.sync.sync_mode, attr.sync.done);
     printf("\t enable = %s\n", (attr.enable ? "true" : "false"));
+    //free
+    for(int i = 0; i < attr.lutAll_len; i++) {
+        safe_free(attr.lutAll[i].cri_lut_out);
+        safe_free(attr.lutAll[i].ct_lut_out);
+    }
+    safe_free(attr.lutAll);
     return 0;
 }
 

@@ -45,7 +45,7 @@ XCamReturn RkAiqAccmHandleInt::updateConfig(bool needSync) {
     if (updateAtt) {
         mCurAtt   = mNewAtt;
         // TODO
-        rk_aiq_uapi_accm_SetAttrib(mAlgoCtx, mCurAtt, false);
+        rk_aiq_uapi_accm_SetAttrib(mAlgoCtx, &mCurAtt, false);
         updateAtt = false;
         sendSignal(mCurAtt.sync.sync_mode);
     }
@@ -56,8 +56,10 @@ XCamReturn RkAiqAccmHandleInt::updateConfig(bool needSync) {
     return ret;
 }
 
-XCamReturn RkAiqAccmHandleInt::setAttrib(rk_aiq_ccm_attrib_t att) {
+XCamReturn RkAiqAccmHandleInt::setAttrib(const rk_aiq_ccm_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
+
+    XCAM_ASSERT(att != nullptr);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
@@ -67,18 +69,18 @@ XCamReturn RkAiqAccmHandleInt::setAttrib(rk_aiq_ccm_attrib_t att) {
     // the new params will be effective later when updateConfig
     // called by RkAiqCore
     bool isChanged = false;
-    if (att.sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
-        memcmp(&mNewAtt, &att, sizeof(att)))
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
+        memcmp(&mNewAtt, att, sizeof(*att)))
         isChanged = true;
-    else if (att.sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
-             memcmp(&mCurAtt, &att, sizeof(att)))
+    else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
+             memcmp(&mCurAtt, att, sizeof(*att)))
         isChanged = true;
 
     // if something changed
     if (isChanged) {
-        mNewAtt   = att;
+        mNewAtt   = *att;
         updateAtt = true;
-        waitSignal(att.sync.sync_mode);
+        waitSignal(att->sync.sync_mode);
     }
 
     mCfgMutex.unlock();
@@ -89,6 +91,8 @@ XCamReturn RkAiqAccmHandleInt::setAttrib(rk_aiq_ccm_attrib_t att) {
 
 XCamReturn RkAiqAccmHandleInt::getAttrib(rk_aiq_ccm_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
+
+    XCAM_ASSERT(att != nullptr);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
@@ -114,6 +118,8 @@ XCamReturn RkAiqAccmHandleInt::getAttrib(rk_aiq_ccm_attrib_t* att) {
 
 XCamReturn RkAiqAccmHandleInt::queryCcmInfo(rk_aiq_ccm_querry_info_t* ccm_querry_info) {
     ENTER_ANALYZER_FUNCTION();
+
+    XCAM_ASSERT(ccm_querry_info != nullptr);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 

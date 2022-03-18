@@ -699,6 +699,8 @@ using RkAiqAlgoProcResAeIntShared = AlgoRstShared<RkAiqAlgoProcResAe>;
 using RkAiqAlgoProcResAwbIntShared = AlgoRstShared<RkAiqAlgoProcResAwb>;
 using RkAiqAlgoProcResAfIntShared = AlgoRstShared<RkAiqAlgoProcResAf>;
 using RkAiqAlgoProcResAmdIntShared = AlgoRstShared<RkAiqAlgoProcResAmd>;
+using RkAiqAlgoProcResAblcIntShared = AlgoRstShared<RkAiqAlgoProcResAblc>;
+using RkAiqAlgoProcResAblcV32IntShared = AlgoRstShared<RkAiqAlgoProcResAblcV32>;
 
 typedef SharedItemPool<AecProcResult_t> RkAiqAeProcResultPool;
 typedef SharedItemProxy<AecProcResult_t> RkAiqAeProcResultProxy;

@@ -63,7 +63,7 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
     unsigned int meas_type = 0;
 
     // TODO: need to adapt for isp3.2 bls
-    struct isp21_bls_cfg* bls_cfg = &ispParams.isp_params_v32.others.bls_cfg;
+    struct isp32_bls_cfg* bls_cfg = &ispParams.isp_params_v32.others.bls_cfg;
     struct isp2x_bls_fixed_val bls1_val;  // bls1_val = blc1_ori_val * awb * range_ratio
     float bls_ratio[3] = {1, 1, 1};
     u32 pixel_num      = 0;
@@ -437,7 +437,13 @@ XCamReturn RkAiqResourceTranslatorV32::translateAwbStats(const SmartPtr<VideoBuf
         LOGE("fail to get ispParams ,ignore\n");
         return XCAM_RETURN_BYPASS;
     }
-    statsInt->awb_stats_v32.awb_cfg_effect_v32 = ispParams.awb_cfg_v32;
+    statsInt->awb_stats_v32.awb_cfg_effect_v32.blkMeasureMode = ispParams.awb_cfg_v32.blkMeasureMode;
+    statsInt->awb_stats_v32.awb_cfg_effect_v32.lightNum = ispParams.awb_cfg_v32.lightNum;
+    statsInt->awb_stats_v32.awb_cfg_effect_v32.groupIllIndxCurrent = ispParams.awb_cfg_v32.groupIllIndxCurrent;
+    memcpy(statsInt->awb_stats_v32.awb_cfg_effect_v32.IllIndxSetCurrent, ispParams.awb_cfg_v32.IllIndxSetCurrent,
+        sizeof(statsInt->awb_stats_v32.awb_cfg_effect_v32.IllIndxSetCurrent));
+    memcpy(statsInt->awb_stats_v32.awb_cfg_effect_v32.timeSign, ispParams.awb_cfg_v32.timeSign,
+        sizeof(statsInt->awb_stats_v32.awb_cfg_effect_v32.timeSign));
     statsInt->awb_cfg_effect_valid = true;
     rk_aiq_isp_blc_t *bls_cfg = &ispParams.blc_cfg.v0;
     statsInt->blc_cfg_effect = ispParams.blc_cfg.v0;

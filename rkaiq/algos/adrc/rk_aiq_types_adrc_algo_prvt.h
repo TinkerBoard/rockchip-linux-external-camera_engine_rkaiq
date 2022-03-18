@@ -32,8 +32,6 @@
 #define CLIPMIN     (0.0)
 #define MINOGAINMAX     (2.0)
 #define MINOGAINMIN     (0.0)
-#define ADRCNORMALIZEMAX     (1.0)
-#define ADRCNORMALIZEMIN     (0.0)
 #define ADRCNORMALIZEINTMAX     (1)
 #define ADRCNORMALIZEINTMIN     (0)
 #define SPACESGMMAX     (4095)
@@ -52,10 +50,6 @@
 #define SW_DRC_MOTION_SCL_FIX (0)
 #define SW_DRC_BILAT_WT_OFF_FIX (255)
 #define MAX_AE_DRC_GAIN (256)
-#define OB_OFFSET_MAX           (511)
-#define OB_OFFSET_MIN           (0)
-#define OB_MAX_MAX              (1048575)
-#define OB_MAX_MIN              (0)
 #define OB_PREDGAIN_MAX         (255.9)
 #define OB_PREDGAIN_MIN         (GAINMIN)
 #define GAS_T_MAX               (4)
@@ -179,9 +173,6 @@ typedef struct DrcHandleDataV12_s {
     int gas_l1;
     int gas_l2;
     int gas_l3;
-    bool obEnable;
-    int ob_offset;
-    float predgain;
     float MotionStr;
 } DrcHandleDataV12_t;
 
@@ -248,6 +239,7 @@ typedef struct AdrcContext_s {
 #if RKAIQ_HAVE_DRC_V12
     drcAttrV12_t drcAttrV12;
     CalibDbV2_drc_V12_t CalibDBV12;
+    AblcProc_V32_t ablcV32_proc_res;
 #endif
     AdrcState_t state;
     AdrcPrevData_t PrevData ;

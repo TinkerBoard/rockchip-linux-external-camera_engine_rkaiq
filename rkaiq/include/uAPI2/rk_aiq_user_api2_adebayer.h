@@ -28,6 +28,11 @@ XCamReturn
 rk_aiq_user_api2_adebayer_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_attrib_t attr);
 XCamReturn
 rk_aiq_user_api2_adebayer_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_attrib_t *attr);
+XCamReturn
+rk_aiq_user_api2_adebayer_v2_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_v2_attrib_t attr);
+XCamReturn
+rk_aiq_user_api2_adebayer_v2_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_v2_attrib_t *attr);
+
 
 RKAIQ_END_DECLARE
 

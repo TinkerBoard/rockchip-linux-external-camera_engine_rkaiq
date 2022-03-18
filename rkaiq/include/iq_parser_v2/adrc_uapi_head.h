@@ -23,6 +23,8 @@ enum { ADRC_NORMAL = 0, ADRC_HDR = 1, ADRC_NIGHT = 2 };
 typedef struct DrcInfo_s {
     // M4_NUMBER_DESC("EnvLv", "f32", M4_RANGE(0,1), "0", M4_DIGIT(6))
     float EnvLv;
+    // M4_NUMBER_DESC("ISO", "f32", M4_RANGE(50.0,100000000), "0", M4_DIGIT(2))
+    float ISO;
 } DrcInfo_t;
 
 #endif /*__ADRC_UAPI_HEAD_H__*/

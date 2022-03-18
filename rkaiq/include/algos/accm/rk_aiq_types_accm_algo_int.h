@@ -91,7 +91,6 @@ typedef enum rk_aiq_ccm_op_mode_s {
     RK_AIQ_CCM_MODE_INVALID                     = 0,        /**< initialization value */
     RK_AIQ_CCM_MODE_MANUAL                      = 1,        /**< run manual lens shading correction */
     RK_AIQ_CCM_MODE_AUTO                        = 2,        /**< run auto lens shading correction */
-    RK_AIQ_CCM_MODE_TOOL                        = 3,        /**< config from stTool  */
     RK_AIQ_CCM_MODE_MAX
 } rk_aiq_ccm_op_mode_t;
 
@@ -113,32 +112,14 @@ typedef struct rk_aiq_ccm_attrib_s {
     };
 } rk_aiq_ccm_attrib_t;
 
-#if RKAIQ_HAVE_CCM_V1
 typedef struct rk_aiq_ccm_querry_info_s {
     bool ccm_en;
     // M4_ARRAY_DESC("ccMatrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.0000,1.0000]", M4_DIGIT(4), M4_DYNAMIC(0))
     float  ccMatrix[9];
     // M4_ARRAY_DESC("ccOffsets", "f32", M4_SIZE(1,3), M4_RANGE(-4095,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     float  ccOffsets[3];
-    float  y_alpha_curve[CCM_CURVE_DOT_NUM];
-    // M4_NUMBER_DESC("bound pos bit", "f32", M4_RANGE(3, 11), "8", M4_DIGIT(0))
-    float low_bound_pos_bit;
-    float color_inhibition_level;
-    float color_saturation_level;
-    // M4_NUMBER_DESC("CCM Saturation", "f32", M4_RANGE(0,200), "0", M4_DIGIT(2))
-    float finalSat;
-    // M4_STRING_DESC("usedCcm1", M4_SIZE(1,1), M4_RANGE(0, 25), "A_100",M4_DYNAMIC(0))
-    char  ccmname1[25];
-    // M4_STRING_DESC("usedCcm2", M4_SIZE(1,1), M4_RANGE(0, 25), "A_100",M4_DYNAMIC(0))
-    char  ccmname2[25];
-} rk_aiq_ccm_querry_info_t;
-#else
-typedef struct rk_aiq_ccm_querry_info_s {
-    bool ccm_en;
-    // M4_ARRAY_DESC("ccMatrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1,0,0,0,1,0,0,0,1]", M4_DIGIT(4), M4_DYNAMIC(0))
-    float ccMatrix[9];
-    // M4_ARRAY_DESC("ccOffsets", "f32", M4_SIZE(1,3), M4_RANGE(-4095,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
-    float ccOffsets[3];
+    bool highy_adj_en;
+    bool asym_enable;
     float y_alpha_curve[CCM_CURVE_DOT_NUM_V2];
     // M4_NUMBER_DESC("bound pos bit", "f32", M4_RANGE(3, 11), "8", M4_DIGIT(0))
     float low_bound_pos_bit;
@@ -153,7 +134,6 @@ typedef struct rk_aiq_ccm_querry_info_s {
     // M4_STRING_DESC("usedCcm2", M4_SIZE(1,1), M4_RANGE(0, 25), "A_100",M4_DYNAMIC(0))
     char ccmname2[25];
 } rk_aiq_ccm_querry_info_t;
-#endif
 
 RKAIQ_END_DECLARE
 

@@ -257,7 +257,7 @@ Aynr_result_V22_t ynr_fix_transfer_V22(RK_YNR_Params_V22_Select_t* pSelect, RK_Y
     tmp = pSelect->ynr_adjust_scale * (1 << 4);
     pFix->localgain_adj = CLIP(tmp, 0, 0xff);
     //tmp = pSelect->ynr_adjust_thresh * 16;  //new
-    tmp = pSelect->ynr_adjust_thresh * 1023;
+    tmp = pSelect->ynr_adjust_thresh * 16;
     pFix->localgain_adj_thresh = CLIP(tmp, 0, 0x3ff);;
 
     // YNR_2700_LOWNR_CTRL0 (0x0010)

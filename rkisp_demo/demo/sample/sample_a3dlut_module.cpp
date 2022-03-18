@@ -161,7 +161,7 @@ static int sample_3dlut_set3dlutAttr(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mo
         attr.mode = RK_AIQ_LUT3D_MODE_AUTO;
     }
     //set
-    ret = rk_aiq_user_api2_a3dlut_SetAttrib(ctx, attr);
+    ret = rk_aiq_user_api2_a3dlut_SetAttrib(ctx, &attr);
     RKAIQ_SAMPLE_CHECK_RET(ret, "set 3DLUT Attr failed!");
     printf("set 3DLUT Attr\n\n");
 
@@ -211,7 +211,7 @@ static int sample_3dlut_setModeManual(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_m
     attr.sync.sync_mode = sync;
     attr.mode = RK_AIQ_LUT3D_MODE_MANUAL;
     //set
-    ret = rk_aiq_user_api2_a3dlut_SetAttrib(ctx, attr);
+    ret = rk_aiq_user_api2_a3dlut_SetAttrib(ctx, &attr);
     RKAIQ_SAMPLE_CHECK_RET(ret, "set Mode Manual failed!");
     printf("set 3DLUT Mode Manual\n\n");
 
@@ -230,7 +230,7 @@ static int sample_3dlut_setModeAuto(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mod
     attr.sync.sync_mode = sync;
     attr.mode = RK_AIQ_LUT3D_MODE_AUTO;
     //set
-    ret = rk_aiq_user_api2_a3dlut_SetAttrib(ctx, attr);
+    ret = rk_aiq_user_api2_a3dlut_SetAttrib(ctx, &attr);
     RKAIQ_SAMPLE_CHECK_RET(ret, "set Mode Auto failed!");
     printf("set 3DLUT Mode Auto\n\n");
 
@@ -276,7 +276,7 @@ static int sample_3dlut_setM3dlut(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_
     }
 
     //set
-    ret = rk_aiq_user_api2_a3dlut_SetAttrib(ctx, attr);
+    ret = rk_aiq_user_api2_a3dlut_SetAttrib(ctx, &attr);
     RKAIQ_SAMPLE_CHECK_RET(ret, "set Manual attr failed!");
     printf("set Manual attr\n\n");
 

@@ -46,7 +46,7 @@
 #include "sharp_head_v4.h"
 #include "thumbnails_head.h"
 #include "ynr_head_v3.h"
-
+#include "gain_head_v2.h"
 RKAIQ_BEGIN_DECLARE
 
 typedef struct CalibDbV2_ColorAsGrey_Param_s {
@@ -123,6 +123,8 @@ typedef struct CamCalibDbV2ContextIsp30_s {
     CalibDbV2_AFV30_t af_v30;
     // M4_STRUCT_DESC("afec_calib", "normal_ui_style")
     CalibDbV2_FEC_t afec;
+    // M4_STRUCT_DESC("gain_v2", "normal_ui_style")
+    CalibDbV2_GainV2_t gain_v2;
 } CamCalibDbV2ContextIsp30_t;
 
 RKAIQ_END_DECLARE

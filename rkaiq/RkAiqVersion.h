@@ -371,10 +371,15 @@
  * - initial version for isp32(rv1106)
  * v4.0x8.5
  * - Merge isp3x branch v3.0x8.5
+ * v4.0x8.6
+ * - Add support blcv32 and predgain
+ * - Add support isp32 api for merge/drc/dehaze
+ * - Fix blc sychronization issue
+ * - Fix a few build error
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x8.5"
-#define RK_AIQ_RELEASE_DATE "2022-03-09"
+#define RK_AIQ_VERSION_REAL_V "v4.0x8.6"
+#define RK_AIQ_RELEASE_DATE "2022-03-18 Bringup"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

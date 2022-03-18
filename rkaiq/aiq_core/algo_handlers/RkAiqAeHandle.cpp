@@ -839,6 +839,20 @@ XCamReturn RkAiqAeHandleInt::processing() {
         if (measGroupshared) {
             measGroupshared->frameId                 = shared->frameId;
         }
+
+        /* Transfer the initial exposure to other algorithm modules */
+        for (auto type = RK_AIQ_CORE_ANALYZE_MEAS; type < RK_AIQ_CORE_ANALYZE_MAX; \
+             type = (rk_aiq_core_analyze_type_e)(type + 1)) {
+            uint64_t grpMask = grpId2GrpMask(type);
+            if (!mAiqCore->getGroupSharedParams(grpMask, shared)) {
+                if (shared) {
+                    shared->curExp.LinearExp = mProcResShared->result.new_ae_exp.LinearExp;
+                    memcpy(shared->curExp.HdrExp, mProcResShared->result.new_ae_exp.HdrExp,
+                           sizeof(mProcResShared->result.new_ae_exp.HdrExp));
+                }
+            }
+
+        }
     } else {
         if (mPostShared) {
             SmartPtr<BufferProxy> msg_data = new BufferProxy(mProcResShared);

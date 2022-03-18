@@ -45,7 +45,7 @@ XCamReturn RkAiqA3dlutHandleInt::updateConfig(bool needSync) {
     if (updateAtt) {
         mCurAtt = mNewAtt;
         // TODO
-        rk_aiq_uapi_a3dlut_SetAttrib(mAlgoCtx, mCurAtt, false);
+        rk_aiq_uapi_a3dlut_SetAttrib(mAlgoCtx, &mCurAtt, false);
         updateAtt = false;
         sendSignal(mCurAtt.sync.sync_mode);
     }
@@ -56,8 +56,10 @@ XCamReturn RkAiqA3dlutHandleInt::updateConfig(bool needSync) {
     return ret;
 }
 
-XCamReturn RkAiqA3dlutHandleInt::setAttrib(rk_aiq_lut3d_attrib_t att) {
+XCamReturn RkAiqA3dlutHandleInt::setAttrib(const rk_aiq_lut3d_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
+
+    XCAM_ASSERT(att != nullptr);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
@@ -67,18 +69,18 @@ XCamReturn RkAiqA3dlutHandleInt::setAttrib(rk_aiq_lut3d_attrib_t att) {
     // the new params will be effective later when updateConfig
     // called by RkAiqCore
     bool isChanged = false;
-    if (att.sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
-        memcmp(&mNewAtt, &att, sizeof(att)))
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
+        memcmp(&mNewAtt, att, sizeof(*att)))
         isChanged = true;
-    else if (att.sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
-             memcmp(&mCurAtt, &att, sizeof(att)))
+    else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
+             memcmp(&mCurAtt, att, sizeof(*att)))
         isChanged = true;
 
     // if something changed
     if (isChanged) {
-        mNewAtt   = att;
+        mNewAtt   = *att;
         updateAtt = true;
-        waitSignal(att.sync.sync_mode);
+        waitSignal(att->sync.sync_mode);
     }
 
     mCfgMutex.unlock();
@@ -89,6 +91,8 @@ XCamReturn RkAiqA3dlutHandleInt::setAttrib(rk_aiq_lut3d_attrib_t att) {
 
 XCamReturn RkAiqA3dlutHandleInt::getAttrib(rk_aiq_lut3d_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
+
+    XCAM_ASSERT(att != nullptr);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
@@ -114,6 +118,8 @@ XCamReturn RkAiqA3dlutHandleInt::getAttrib(rk_aiq_lut3d_attrib_t* att) {
 
 XCamReturn RkAiqA3dlutHandleInt::query3dlutInfo(rk_aiq_lut3d_querry_info_t* lut3d_querry_info) {
     ENTER_ANALYZER_FUNCTION();
+
+    XCAM_ASSERT(lut3d_querry_info != nullptr);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 

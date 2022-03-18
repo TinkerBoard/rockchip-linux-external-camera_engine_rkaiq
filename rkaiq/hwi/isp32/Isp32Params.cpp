@@ -19,8 +19,7 @@ namespace RkCam {
 #define ISP2X_WBGAIN_FIXSCALE_BIT  8
 
 void Isp32Params::convertAiqAwbGainToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-        const rk_aiq_wb_gain_v32_t& awb_gain, const rk_aiq_isp_blc_v32_t *blc,
-        bool awb_gain_update)
+        const rk_aiq_wb_gain_v32_t& awb_gain, bool awb_gain_update)
 {
 #if RKAIQ_HAVE_AWB_V32
     if(awb_gain_update) {
@@ -130,13 +129,10 @@ void Isp32Params::convertAiqAwbToIsp32Params(struct isp32_isp_params_cfg& isp_cf
     awb_cfg_v32->ddr_path_en = awb_meas.write2ddrEnable;
     awb_cfg_v32->ddr_path_sel = awb_meas.write2ddrSelc;
     awb_cfg_v32->in_rshift_to_12bit_en = awb_meas.inputShiftEnable;
-    awb_cfg_v32->in_rshift_to_12bit_en = false;
     awb_cfg_v32->in_overexposure_check_en = true;
-    if(awb_meas.overexposure_value != 0) {
-        awb_cfg_v32->in_overexposure_threshold = awb_meas.overexposure_value;
-    } else {
+    awb_cfg_v32->in_overexposure_threshold = awb_meas.overexposure_value;
+    if(awb_cfg_v32->in_overexposure_threshold == 0){
         awb_cfg_v32->in_overexposure_check_en = false;
-        awb_cfg_v32->in_overexposure_threshold = 255;/* to do ,auto calc by blc and hdrmerge_gain */;
     }
     awb_cfg_v32->xy_en0    = awb_meas.xyDetectionEnable[RK_AIQ_AWB_XY_TYPE_NORMAL_V201];
     awb_cfg_v32->uv_en0    = awb_meas.uvDetectionEnable[RK_AIQ_AWB_XY_TYPE_NORMAL_V201];
@@ -1260,9 +1256,6 @@ void Isp32Params::convertAiqDrcToIsp32Params(struct isp32_isp_params_cfg& isp_cf
     isp_cfg.others.drc_cfg.gas_l1          = adrc_data.DrcProcRes.Drc_v12.gas_l1;
     isp_cfg.others.drc_cfg.gas_l2          = adrc_data.DrcProcRes.Drc_v12.gas_l2;
     isp_cfg.others.drc_cfg.gas_l3          = adrc_data.DrcProcRes.Drc_v12.gas_l3;
-    isp_cfg.others.drc_cfg.isp_ob_offset   = adrc_data.DrcProcRes.Drc_v12.isp_ob_offset;
-    isp_cfg.others.drc_cfg.isp_ob_predgain = adrc_data.DrcProcRes.Drc_v12.isp_ob_predgain;
-    isp_cfg.others.drc_cfg.isp_ob_max      = adrc_data.DrcProcRes.Drc_v12.isp_ob_max;
 
 #if 0
     LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%d: sw_drc_offset_pow2 %d", __LINE__, isp_cfg.others.drc_cfg.offset_pow2);
@@ -1428,6 +1421,59 @@ void Isp32Params::convertAiqSharpenToIsp32Params(struct isp32_isp_params_cfg& is
     LOGD_ASHARP("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
 
+void Isp32Params::convertAiqBlcToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
+                                             rk_aiq_isp_blc_v32_t& blc) {
+    LOGD_ABLC("%s:(%d) enter enable:%d\n", __FUNCTION__, __LINE__, blc.enable);
+
+    if (blc.enable) {
+        isp_cfg.module_ens |= ISP3X_MODULE_BLS;
+    }
+    isp_cfg.module_en_update |= ISP3X_MODULE_BLS;
+    isp_cfg.module_cfg_update |= ISP3X_MODULE_BLS;
+
+#if 1
+    isp_cfg.others.bls_cfg.enable_auto = 0;
+    isp_cfg.others.bls_cfg.en_windows  = 0;
+
+    isp_cfg.others.bls_cfg.bls_window1.h_offs = 0;
+    isp_cfg.others.bls_cfg.bls_window1.v_offs = 0;
+    isp_cfg.others.bls_cfg.bls_window1.h_size = 0;
+    isp_cfg.others.bls_cfg.bls_window1.v_size = 0;
+
+    isp_cfg.others.bls_cfg.bls_window2.h_offs = 0;
+    isp_cfg.others.bls_cfg.bls_window2.v_offs = 0;
+    isp_cfg.others.bls_cfg.bls_window2.h_size = 0;
+    isp_cfg.others.bls_cfg.bls_window2.v_size = 0;
+
+    isp_cfg.others.bls_cfg.bls_samples = 0;
+
+    // blc0
+    isp_cfg.others.bls_cfg.fixed_val.r  = blc.blc_r;
+    isp_cfg.others.bls_cfg.fixed_val.gr = blc.blc_gr;
+    isp_cfg.others.bls_cfg.fixed_val.gb = blc.blc_gb;
+    isp_cfg.others.bls_cfg.fixed_val.b  = blc.blc_b;
+
+    isp_cfg.others.bls_cfg.bls1_val.r  = CLIP((int)(blc.blc1_r * blc.isp_ob_predgain), 0, 32767);
+    isp_cfg.others.bls_cfg.bls1_val.gr = CLIP((int)(blc.blc1_gr * blc.isp_ob_predgain), 0, 32767);
+    isp_cfg.others.bls_cfg.bls1_val.gb = CLIP((int)(blc.blc1_gb * blc.isp_ob_predgain), 0, 32767);
+    isp_cfg.others.bls_cfg.bls1_val.b  = CLIP((int)(blc.blc1_b * blc.isp_ob_predgain), 0, 32767);
+
+    // TODO bls1 params
+    isp_cfg.others.bls_cfg.bls1_en = 1;
+
+    // blc_ob
+
+    isp_cfg.others.bls_cfg.isp_ob_offset   = CLIP(blc.isp_ob_offset, 0, 511);
+    isp_cfg.others.bls_cfg.isp_ob_predgain = CLIP((int)(blc.isp_ob_predgain * (1 << 8)), 0, 65535);
+    isp_cfg.others.bls_cfg.isp_ob_max      = CLIP(blc.isp_ob_max, 0, 1048575);
+
+    LOGD_ABLC("isp_ob_offset = 0x%x ,isp_ob_predgain = 0x%x, isp_ob_max = %x \n",
+              isp_cfg.others.bls_cfg.isp_ob_offset, isp_cfg.others.bls_cfg.isp_ob_predgain,
+              isp_cfg.others.bls_cfg.isp_ob_max);
+
+#endif
+    LOGD_ABLC("%s:(%d) exit \n", __FUNCTION__, __LINE__);
+}
 bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* isp_cfg_p, bool is_multi_isp) {
     struct isp32_isp_params_cfg& isp_cfg       = *(struct isp32_isp_params_cfg*)isp_cfg_p;
 
@@ -1442,18 +1488,7 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
         SmartPtr<RkAiqIspAwbGainParamsProxyV32> awb_gain =
             result.dynamic_cast_ptr<RkAiqIspAwbGainParamsProxyV32>();
         if (awb_gain.ptr()) {
-            if (0 /*to domBlcResult.ptr()*/) {
-                SmartPtr<RkAiqIspBlcParamsProxyV21> blc =
-                    mBlcResult.dynamic_cast_ptr<RkAiqIspBlcParamsProxyV21>();
-                /*convertAiqAwbGainToIsp32Params(isp_cfg, awb_gain->data()->result,
-                                               &blc->data()->result, true);*/
-                convertAiqAwbGainToIsp32Params(isp_cfg, awb_gain->data()->result, nullptr,
-                                               true);
-            } else {
-                convertAiqAwbGainToIsp32Params(isp_cfg, awb_gain->data()->result, nullptr,
-                                               true);
-            }
-
+                convertAiqAwbGainToIsp32Params(isp_cfg, awb_gain->data()->result, true);
         } else
             LOGE("don't get awb_gain params, convert awbgain params failed!");
     }
@@ -1619,9 +1654,9 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
     break;
     case RESULT_TYPE_BLC_PARAM:
     {
-        SmartPtr<RkAiqIspBlcParamsProxyV21> params = result.dynamic_cast_ptr<RkAiqIspBlcParamsProxyV21>();
-        if (params.ptr())
-            convertAiqBlcToIsp21Params(isp_cfg, params->data()->result);
+        SmartPtr<RkAiqIspBlcParamsProxyV32> params =
+            result.dynamic_cast_ptr<RkAiqIspBlcParamsProxyV32>();
+        if (params.ptr()) convertAiqBlcToIsp32Params(isp_cfg, params->data()->result);
     }
     break;
     case RESULT_TYPE_GAIN_PARAM: {

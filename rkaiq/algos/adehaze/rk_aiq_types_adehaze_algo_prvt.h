@@ -29,19 +29,23 @@
 #include "rk_aiq_types_adehaze_stat.h"
 #include "xcam_log.h"
 
-#define ADHZ10BITMAX     (1023)
-#define ADHZ10BITMIN     (0)
-#define DEHAZE_API_MANUAL_DEFAULT_LEVEL     (50)
-#define DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL     (50)
 #define DEHAZE_GAUS_H0                              (2)
-#define DEHAZE_GAUS_H1                              4
-#define DEHAZE_GAUS_H2                              2
-#define DEHAZE_GAUS_H3                              4
-#define DEHAZE_GAUS_H4                              8
-#define DEHAZE_GAUS_H5                              4
-#define DEHAZE_GAUS_H6                              2
-#define DEHAZE_GAUS_H7                              4
-#define DEHAZE_GAUS_H8                              2
+#define DEHAZE_GAUS_H1                              (4)
+#define DEHAZE_GAUS_H2                              (2)
+#define DEHAZE_GAUS_H3                              (4)
+#define DEHAZE_GAUS_H4                              (8)
+#define DEHAZE_GAUS_H5                              (4)
+#define DEHAZE_GAUS_H6                              (2)
+#define DEHAZE_GAUS_H7                              (4)
+#define DEHAZE_GAUS_H8                              (2)
+#define CFG_ALPHA_MAX                               (255)
+#define CFG_ALPHA_MIN                               (NORMALIZE_MIN)
+#define CFG_AIR_MAX                                 (255)
+#define CFG_AIR_MIN                                 (NORMALIZE_MIN)
+#define ENHANCE_VALUE_MAX                           (16.0)
+#define ENHANCE_VALUE_MIN                           (1.0)
+#define ENHANCE_CHROME_MAX                          (16.0)
+#define ENHANCE_CHROME_MIN                          (1.0)
 
 //define for dehaze local gain
 #define YNR_BIT_CALIB (12)

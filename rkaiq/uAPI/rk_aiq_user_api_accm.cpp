@@ -24,8 +24,8 @@ RKAIQ_BEGIN_DECLARE
 #endif
 
 #if RKAIQ_HAVE_CCM_V1 || RKAIQ_HAVE_CCM_V2
-XCamReturn
-rk_aiq_user_api_accm_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ccm_attrib_t attr)
+XCamReturn rk_aiq_user_api_accm_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                          const rk_aiq_ccm_attrib_t* attr)
 {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ACCM);
@@ -69,7 +69,8 @@ rk_aiq_user_api_accm_QueryCcmInfo(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ccm_qu
 }
 #else
 
-XCamReturn rk_aiq_user_api_accm_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ccm_attrib_t attr)
+XCamReturn rk_aiq_user_api_accm_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                          const rk_aiq_ccm_attrib_t* attr)
 {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }

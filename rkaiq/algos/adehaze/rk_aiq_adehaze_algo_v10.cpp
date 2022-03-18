@@ -379,7 +379,7 @@ void AdehazeApiToolProcess(CalibDbV2_dehaze_V10_t* pStool, RkAiqAdehazeProcResul
 
     // cfg setting
     ProcRes->ProcResV10.cfg_alpha =
-        (int)LIMIT_VALUE((pStool->DehazeTuningPara.cfg_alpha * 256.0), 255, 0);
+        (int)LIMIT_VALUE((pStool->DehazeTuningPara.cfg_alpha * 256.0), BIT_8_MAX, BIT_MIN);
     LOGD_ADEHAZE("%s Config Alpha:%d\n", __func__, ProcRes->ProcResV10.cfg_alpha);
 
     // fuction enable
@@ -404,7 +404,7 @@ void AdehazeEnhanceApiBypassProcess(CalibDbV2_dehaze_V10_t* pCalib,
 
     // cfg setting
     ProcRes->ProcResV10.cfg_alpha =
-        (int)LIMIT_VALUE((pCalib->DehazeTuningPara.cfg_alpha * 256.0), 255, 0);
+        (int)LIMIT_VALUE((pCalib->DehazeTuningPara.cfg_alpha * 256.0), BIT_8_MAX, BIT_MIN);
     // LOGD_ADEHAZE("%s Config Alpha:%d\n", __func__, ProcRes->ProcResV10.cfg_alpha);
 
     // enable setting
@@ -439,8 +439,7 @@ void AdehazeEnhanceApiOffProcess(CalibDbV2_dehaze_V10_t* pCalib, RkAiqAdehazePro
 
     // cfg setting
     ProcRes->ProcResV10.cfg_alpha =
-        (int)LIMIT_VALUE((pCalib->DehazeTuningPara.cfg_alpha * 256.0), 255, 0);
-    // LOGD_ADEHAZE("%s Config Alpha:%d\n", __func__, ProcRes->ProcResV10.cfg_alpha);
+        (int)LIMIT_VALUE((pCalib->DehazeTuningPara.cfg_alpha * 256.0), BIT_8_MAX, BIT_MIN);
 
     // dehaze setting
     GetDehazeParams(pCalib, ProcRes, CtrlValue);
@@ -743,6 +742,7 @@ XCamReturn AdehazeProcess(AdehazeHandle_t* pAdehazeCtx) {
 
     // store pre data
     pAdehazeCtx->PreDataV10.ISO = pAdehazeCtx->CurrDataV10.ISO;
+    pAdehazeCtx->PreDataV10.ApiMode = pAdehazeCtx->CurrDataV10.ApiMode;
 
     LOG1_ADEHAZE("EXIT: %s \n", __func__);
     return ret;

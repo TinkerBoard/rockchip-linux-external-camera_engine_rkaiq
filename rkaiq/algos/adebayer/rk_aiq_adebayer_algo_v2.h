@@ -56,6 +56,6 @@ XCamReturn AdebayerPreProcess(AdebayerContext_t *pAdebayerCtx);
 
 XCamReturn AdebayerProcess(AdebayerContext_t *pAdebayerCtx, int ISO);
 
-XCamReturn AdebayerGetProcResult(AdebayerContext_t *pAdebayerCtx, AdebayerProcResult_t* pAdebayerResult);
+XCamReturn AdebayerGetProcResult(AdebayerContext_t *pAdebayerCtx, AdebayerProcResultV2_t* pAdebayerResult);
 
 #endif//__RK_AIQ_ADEBAYER_ALGO_V2_H__

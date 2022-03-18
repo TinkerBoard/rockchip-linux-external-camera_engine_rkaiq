@@ -25,7 +25,7 @@
 #include "acsm/rk_aiq_algo_acsm_itf.h"
 #include "adebayer/rk_aiq_algo_adebayer_itf.h"
 #include "adegamma/rk_aiq_algo_adegamma_itf.h"
-#include "adehaze/rk_aiq_algo_adhaz_itf.h"
+#include "adehaze/rk_aiq_algo_adehaze_itf.h"
 #include "adpcc/rk_aiq_algo_adpcc_itf.h"
 #include "adrc/rk_aiq_algo_adrc_itf.h"
 #include "ae/rk_aiq_algo_ae_itf.h"
@@ -178,7 +178,9 @@ const static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
 #endif
 #endif
 #endif
+#if RKAIQ_HAVE_LSC_V1
     { &g_RkIspAlgoDescAlsc.common,      RK_AIQ_CORE_ANALYZE_LSC,   0, 0, 0, lscGrpConds   },
+#endif
 #if RKAIQ_HAVE_GIC_V1
     { &g_RkIspAlgoDescAgic.common,      RK_AIQ_CORE_ANALYZE_OTHER, 0, 0, 0, otherGrpConds },
 #endif

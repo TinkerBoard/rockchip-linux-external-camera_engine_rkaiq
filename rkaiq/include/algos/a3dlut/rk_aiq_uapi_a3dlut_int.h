@@ -14,7 +14,7 @@
 
 XCamReturn
 rk_aiq_uapi_a3dlut_SetAttrib(RkAiqAlgoContext *ctx,
-                             rk_aiq_lut3d_attrib_t attr,
+                             const rk_aiq_lut3d_attrib_t* attr,
                              bool need_sync);
 XCamReturn
 rk_aiq_uapi_a3dlut_GetAttrib(const RkAiqAlgoContext *ctx,

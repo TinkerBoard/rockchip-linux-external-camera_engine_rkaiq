@@ -116,6 +116,19 @@ static XCamReturn groupAgainV2Prepare(RkAiqAlgoCom* params)
 
     if(CHECK_ISP_HW_V30()) {
         Again_Context_V2_t * again_contex_v2 = again_group_contex->again_contex_v2;
+        if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
+#if AGAIN_USE_JSON_FILE_V2
+#if 1
+            void *pCalibDbV2 = (void*)(para->s_calibv2);
+            CalibDbV2_GainV2_t * pcalibdbV2_gain_v2 =
+                (CalibDbV2_GainV2_t *)(CALIBDBV2_GET_MODULE_PTR((CamCalibDbV2Context_t*)pCalibDbV2, gain_v2));
+
+            again_contex_v2->gain_v2 = *pcalibdbV2_gain_v2;
+            again_contex_v2->isIQParaUpdate = true;
+            again_contex_v2->isReCalculate |= 1;
+#endif
+#endif
+        }
         Again_Config_V2_t stAgainConfigV2;
         Again_result_V2_t ret_v2 = AGAINV2_RET_SUCCESS;
         ret_v2 = Again_Prepare_V2(again_contex_v2, &stAgainConfigV2);
@@ -223,12 +236,15 @@ static XCamReturn groupAgainV2Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
                 ret = XCAM_RETURN_ERROR_FAILED;
                 LOGE_ANR("%s: processing ANR failed (%d)\n", __FUNCTION__, ret);
             }
-            //stAgainResultV2.isNeedUpdate = true;
+            Again_GetProcResult_V2(again_contex_v2, &again_contex_v2->stProcResult);
+            again_contex_v2->stProcResult.isNeedUpdate = true;
             LOGD_ANR("recalculate: %d delta_iso:%d \n ", again_contex_v2->isReCalculate, deltaIso);
+        } else {
+            again_contex_v2->stProcResult.isNeedUpdate = false;
         }
-        Again_GetProcResult_V2(again_contex_v2, &stAgainResultV2);
+
         for (int i = 0; i < procResParaGroup->arraySize; i++) {
-            *(procResParaGroup->camgroupParmasArray[i]->again._again_procRes_v2) = stAgainResultV2.stFix;
+            *(procResParaGroup->camgroupParmasArray[i]->again._again_procRes_v2) = again_contex_v2->stProcResult.stFix;
         }
         again_contex_v2->isReCalculate = 0;
     }

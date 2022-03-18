@@ -698,6 +698,7 @@ XCamReturn interpCCMbywbgain(const CalibDbV2_Ccm_Tuning_Para_t* pCcm, accm_handl
                       pCcmProfile1->saturation);
             memcpy(undampedCcmMatrix, pCcmProfile1->ccMatrix, sizeof(float)*9);
             memcpy(undampedCcOffset, pCcmProfile1->ccOffsets, sizeof(float)*3);
+            ret = XCAM_RETURN_NO_ERROR;
         } else {
             free(prob);
             return (ret);
@@ -769,6 +770,7 @@ XCamReturn selectCCM(const CalibDbV2_Ccm_Tuning_Para_t* pCcm, accm_handle_t hAcc
         LOGD_ACCM("final fSaturation: %f (%f)\n",   hAccm->accmRest.fSaturation, pCcmProfile1->saturation);
         memcpy(hAccm->accmRest.undampedCcmMatrix, pCcmProfile1->ccMatrix, sizeof(float)*9);
         memcpy(hAccm->accmRest.undampedCcOffset, pCcmProfile1->ccOffsets, sizeof(float)*3);
+        ret = XCAM_RETURN_NO_ERROR;
     } else {
         return (ret);
     }

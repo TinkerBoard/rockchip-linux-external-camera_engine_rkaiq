@@ -78,7 +78,7 @@ typedef struct rk_aiq_awb_stat_cfg_v32_s {
     uint16_t pre_wbgain_inv_r;//3i+f8;
     uint16_t pre_wbgain_inv_g;
     uint16_t pre_wbgain_inv_b;
-    unsigned int overexposure_value; //if overexposure_value ==0 ,will auto calc;
+    int overexposure_value; //if overexposure_value ==0 ,will auto calc;
     short          icrgb2RYuv_matrix[12];//3*3 matrix 9bit fracitional +0bit integer+1s
     //  3*1 off    4bit fractional +8bit integer+1s
     rk_aiq_awb_rt3dyuv_range_para_t     ic3Dyuv2Range_param[RK_AIQ_AWB_YUV_LS_PARA_NUM];
@@ -102,6 +102,14 @@ typedef struct rk_aiq_awb_stat_cfg_v32_s {
     char timeSign[64];
 } rk_aiq_awb_stat_cfg_v32_t;
 
+typedef struct rk_aiq_awb_stat_cfg_effect_v32_s {
+    rk_aiq_awb_blk_stat_mode_v201_t blkMeasureMode;
+    unsigned char lightNum;
+    int  groupIllIndxCurrent;//for time share
+    int  IllIndxSetCurrent[RK_AIQ_AWB_MAX_WHITEREGIONS_NUM_V32];//for time share
+    char timeSign[64];
+} rk_aiq_awb_stat_cfg_effect_v32_t;
+
 typedef struct rk_aiq_awb_stat_res_v32_s {
     //method1
     rk_aiq_awb_stat_wp_res_light_v201_t light[RK_AIQ_AWB_MAX_WHITEREGIONS_NUM_V32];
@@ -114,8 +122,7 @@ typedef struct rk_aiq_awb_stat_res_v32_s {
     rk_aiq_awb_stat_wp_res_v201_t excWpRangeResult[RK_AIQ_AWB_STAT_WP_RANGE_NUM_V201];
     //wpno histogram
     unsigned int WpNoHist[RK_AIQ_AWB_WP_HIST_BIN_NUM];
-
-    rk_aiq_awb_stat_cfg_v32_t  awb_cfg_effect_v32;
+    rk_aiq_awb_stat_cfg_effect_v32_t  awb_cfg_effect_v32;
 } rk_aiq_awb_stat_res_v32_t;
 
 #endif

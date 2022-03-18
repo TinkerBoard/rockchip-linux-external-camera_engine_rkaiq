@@ -63,7 +63,6 @@ AdebayerFullParamsInit
         pAdebayerCtx->full_param.offset = debayer->param.debayer_offset;
         pAdebayerCtx->full_param.shift_num = debayer->param.debayer_shift_num;
         pAdebayerCtx->full_param.cnr_strength = debayer->param.debayer_cnr_strength;
-        pAdebayerCtx->full_param.updated = false;
     } else {
         LOGE_ADEBAYER("%s(%d): calibDb are all null!\n", __FUNCTION__, __LINE__);
     }
@@ -260,6 +259,7 @@ AdebayerInit
 
     pAdebayerCtx->state = ADEBAYER_STATE_INITIALIZED;
     pAdebayerCtx->mode = RK_AIQ_DEBAYER_MODE_AUTO;
+    pAdebayerCtx->is_reconfig = false;
 
     LOGV_ADEBAYER("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return XCAM_RETURN_NO_ERROR;
@@ -355,7 +355,7 @@ XCamReturn
 AdebayerGetProcResult
 (
     AdebayerContext_t*    pAdebayerCtx,
-    AdebayerProcResult_t* pAdebayerResult
+    AdebayerProcResultV1_t* pAdebayerResult
 )
 {
     LOGV_ADEBAYER("%s(%d): enter!\n", __FUNCTION__, __LINE__);

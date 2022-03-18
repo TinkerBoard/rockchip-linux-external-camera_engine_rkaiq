@@ -150,10 +150,10 @@ void CalibrateDrcGainY(DrcProcRes_t* para, float DraGain, float alpha) {
 }
 
 /******************************************************************************
- * ConfigV10()
+ * SetDefaultValueV10()
  *set default Config data
  *****************************************************************************/
-void ConfigV10(AdrcContext_t* pAdrcCtx) {
+void SetDefaultValueV10(AdrcContext_t* pAdrcCtx) {
     LOGI_ATMO("%s:enter!\n", __FUNCTION__);
 
     // initial checks
@@ -227,6 +227,60 @@ void ConfigV10(AdrcContext_t* pAdrcCtx) {
     pAdrcCtx->drcAttrV10.stManual.OutPutLongFrame                             = false;
     pAdrcCtx->drcAttrV10.stManual.IIR_frame                                   = 2;
 
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Enable                                      = true;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.DrcGain.Alpha                               = 0.1;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.DrcGain.DrcGain                             = 1;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.DrcGain.Clip                                = 1;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.HiLight.Strength                            = 0.0;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.LocalTMOData.LocalWeit      = 1;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.LocalTMOData.GlobalContrast = 0.0;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.LocalTMOData.LoLitContrast  = 0.0;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.curPixWeit                  = 0.376471;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.preFrameWeit                = 0.8;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.Range_force_sgm             = 0.0;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.Range_sgm_cur               = 0.2;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.Range_sgm_pre               = 0.2;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.Space_sgm_cur               = 4068;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.Space_sgm_pre               = 3068;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Mode             = COMPRESS_AUTO;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[0]  = 0;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[1]  = 558;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[2]  = 1087;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[3]  = 1588;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[4]  = 2063;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[5]  = 2515;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[6]  = 2944;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[7]  = 3353;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[8]  = 3744;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[9]  = 4473;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[10] = 5139;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[11] = 5751;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[12] = 6316;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[13] = 6838;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[14] = 7322;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[15] = 7772;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[16] = 8192;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[0]                       = 0;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[1]                       = 2;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[2]                       = 20;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[3]                       = 76;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[4]                       = 193;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[5]                       = 381;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[6]                       = 631;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[7]                       = 772;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[8]                       = 919;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[9]                       = 1066;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[10]                      = 1211;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[11]                      = 1479;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[12]                      = 1700;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[13]                      = 1863;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[14]                      = 1968;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[15]                      = 2024;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[16]                      = 2048;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.Edge_Weit                        = 0.02;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.OutPutLongFrame                  = false;
+    pAdrcCtx->drcAttrV10.Info.ValidParams.IIR_frame                        = 2;
+
     LOG1_ATMO("%s:exit!\n", __FUNCTION__);
 }
 
@@ -266,7 +320,7 @@ bool DrcEnableSetting(AdrcContext_t* pAdrcCtx) {
     else if (pAdrcCtx->FrameNumber == LINEAR_NUM) {
         if (pAdrcCtx->drcAttrV10.opMode == DRC_OPMODE_AUTO)
             pAdrcCtx->CurrData.Enable = pAdrcCtx->CalibDBV10.DrcTuningPara.Enable;
-        else if (pAdrcCtx->drcAttrV10.opMode == DRC_OPMODE_MANU)
+        else if (pAdrcCtx->drcAttrV10.opMode == DRC_OPMODE_MANUAL)
             pAdrcCtx->CurrData.Enable = pAdrcCtx->drcAttrV10.stManual.Enable;
         else {
             LOGE_ATMO("%s: Drc api in WRONG MODE!!!, drc by pass!!!\n", __FUNCTION__);
@@ -288,7 +342,7 @@ void AdrcDampingV10(CurrData_t* pCurrData, AdrcPrevData_t* pPreData, drc_OpMode_
     bool enDamp;
     bool ifHDRModeChange = pCurrData->frameCnt == pPreData->frameCnt ? false : true;
 
-    if (opMode != DRC_OPMODE_MANU && FrameCnt != 0 && !ifHDRModeChange) {
+    if (opMode != DRC_OPMODE_MANUAL && FrameCnt != 0 && !ifHDRModeChange) {
         float diff = 0.0;
 
         diff = ABS(pCurrData->EnvLv - pPreData->EnvLv);
@@ -410,6 +464,63 @@ void AdrcGetTuningProcResV10(RkAiqAdrcProcResult_t* pAdrcProcRes, CurrData_t* pC
     LOG1_ATMO("%s:exit!\n", __FUNCTION__);
 }
 
+void AdrcParams2ApiV10(AdrcContext_t* pAdrcCtx) {
+    LOG1_ATMO("%s:enter!\n", __FUNCTION__);
+
+    // ctrl info
+    pAdrcCtx->drcAttrV10.Info.CtrlInfo.ISO   = pAdrcCtx->AeResult.Curr.ISO;
+    pAdrcCtx->drcAttrV10.Info.CtrlInfo.EnvLv = pAdrcCtx->CurrData.EnvLv;
+
+    // paras
+    if (pAdrcCtx->drcAttrV10.opMode == DRC_OPMODE_MANUAL)
+        memcpy(&pAdrcCtx->drcAttrV10.Info.ValidParams, &pAdrcCtx->drcAttrV10.stManual,
+               sizeof(mdrcAttr_V10_t));
+    else if (pAdrcCtx->drcAttrV10.opMode == DRC_OPMODE_AUTO) {
+        pAdrcCtx->drcAttrV10.Info.ValidParams.Enable = pAdrcCtx->CurrData.Enable;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.DrcGain.Alpha =
+            pAdrcCtx->CurrData.HandleData.Drc_v10.Alpha;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.DrcGain.DrcGain =
+            pAdrcCtx->CurrData.HandleData.Drc_v10.DrcGain;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.DrcGain.Clip =
+            pAdrcCtx->CurrData.HandleData.Drc_v10.Clip;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.HiLight.Strength =
+            pAdrcCtx->CurrData.HandleData.Drc_v10.Strength;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.LocalTMOData.LocalWeit =
+            pAdrcCtx->CurrData.HandleData.Drc_v10.LocalWeit;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.LocalTMOData.GlobalContrast =
+            pAdrcCtx->CurrData.HandleData.Drc_v10.GlobalContrast;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.LocalTMOData.LoLitContrast =
+            pAdrcCtx->CurrData.HandleData.Drc_v10.LoLitContrast;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.curPixWeit =
+            pAdrcCtx->CurrData.Others.curPixWeit;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.preFrameWeit =
+            pAdrcCtx->CurrData.Others.preFrameWeit;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.Range_force_sgm =
+            pAdrcCtx->CurrData.Others.Range_force_sgm;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.Range_sgm_cur =
+            pAdrcCtx->CurrData.Others.Range_sgm_cur;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.Range_sgm_pre =
+            pAdrcCtx->CurrData.Others.Range_sgm_pre;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.Space_sgm_cur =
+            pAdrcCtx->CurrData.Others.Space_sgm_cur;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.LocalTMOSetting.Space_sgm_pre =
+            pAdrcCtx->CurrData.Others.Space_sgm_pre;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.Edge_Weit = pAdrcCtx->CurrData.Others.Edge_Weit;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.OutPutLongFrame =
+            pAdrcCtx->CurrData.Others.OutPutLongFrame;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.IIR_frame = pAdrcCtx->CurrData.Others.IIR_frame;
+        pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Mode =
+            pAdrcCtx->CurrData.HandleData.Drc_v10.Mode;
+        for (int i = 0; i < ADRC_Y_NUM; i++) {
+            pAdrcCtx->drcAttrV10.Info.ValidParams.CompressSetting.Manual_curve[i] =
+                pAdrcCtx->CurrData.HandleData.Drc_v10.Manual_curve[i];
+            pAdrcCtx->drcAttrV10.Info.ValidParams.Scale_y[i] = pAdrcCtx->CurrData.Others.Scale_y[i];
+        }
+    }
+
+    LOG1_ATMO("%s:exit!\n", __FUNCTION__);
+}
+
 /******************************************************************************
  * AdrcTuningParaProcessing()
  *get handle para by config and current variate
@@ -492,7 +603,7 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
         for (int i = 0; i < ADRC_Y_NUM; i++)
             pAdrcCtx->CurrData.Others.Scale_y[i] =
                 pAdrcCtx->drcAttrV10.stAuto.DrcTuningPara.Scale_y[i];
-    } else if (pAdrcCtx->drcAttrV10.opMode == DRC_OPMODE_MANU) {
+    } else if (pAdrcCtx->drcAttrV10.opMode == DRC_OPMODE_MANUAL) {
         // store enable
         pAdrcCtx->CurrData.Enable = pAdrcCtx->drcAttrV10.stManual.Enable;
 
@@ -565,10 +676,6 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
         pAdrcCtx->CurrData.HandleData.Drc_v10.LoLitContrast,
         pAdrcCtx->CurrData.HandleData.Drc_v10.Mode);
 
-    // transfer data to api
-    // info
-    pAdrcCtx->drcAttrV10.Info.EnvLv = pAdrcCtx->CurrData.EnvLv;
-
     // damp
     AdrcDampingV10(&pAdrcCtx->CurrData, &pAdrcCtx->PrevData, pAdrcCtx->drcAttrV10.opMode,
                    pAdrcCtx->frameCnt);
@@ -577,6 +684,9 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
     AdrcGetTuningProcResV10(&pAdrcCtx->AdrcProcRes, &pAdrcCtx->CurrData,
                             pAdrcCtx->AeResult.LongFrmMode, pAdrcCtx->FrameNumber,
                             pAdrcCtx->frameCnt);
+
+    // store curr data 2 api
+    AdrcParams2ApiV10(pAdrcCtx);
 
     // store current handle data to pre data for next loop
     pAdrcCtx->PrevData.EnvLv = pAdrcCtx->CurrData.EnvLv;
@@ -737,7 +847,7 @@ bool AdrcByPassProcessing(AdrcContext_t* pAdrcCtx, AecPreResult_t AecHdrPreResul
 
     if (pAdrcCtx->frameCnt <= 2)  // start frame
         bypass = false;
-    else if (pAdrcCtx->drcAttrV10.opMode == DRC_OPMODE_MANU)  // api
+    else if (pAdrcCtx->drcAttrV10.opMode == DRC_OPMODE_MANUAL)  // api
         bypass = false;
     else if (pAdrcCtx->drcAttrV10.opMode != pAdrcCtx->PrevData.ApiMode)  // api change
         bypass = false;
@@ -750,7 +860,7 @@ bool AdrcByPassProcessing(AdrcContext_t* pAdrcCtx, AecPreResult_t AecHdrPreResul
 
         // transfer ae data to CurrHandle
         pAdrcCtx->CurrData.EnvLv =
-            LIMIT_VALUE(pAdrcCtx->CurrData.EnvLv, ADRCNORMALIZEMAX, ADRCNORMALIZEMIN);
+            LIMIT_VALUE(pAdrcCtx->CurrData.EnvLv, NORMALIZE_MAX, NORMALIZE_MIN);
 
         pAdrcCtx->CurrData.ISO = pAdrcCtx->AeResult.Next.ISO;
         pAdrcCtx->CurrData.ISO = LIMIT_VALUE(pAdrcCtx->CurrData.ISO, ISOMAX, ISOMIN);
@@ -807,7 +917,7 @@ XCamReturn AdrcInit(AdrcContext_t** ppAdrcCtx, CamCalibDbV2Context_t* pCalibDb) 
         (CalibDbV2_drc_V10_t*)(CALIBDBV2_GET_MODULE_PTR(pCalibDb, adrc_calib));
 
     pAdrcCtx->drcAttrV10.opMode = DRC_OPMODE_AUTO;
-    ConfigV10(pAdrcCtx);  // set default para
+    SetDefaultValueV10(pAdrcCtx);  // set default para
     memcpy(&pAdrcCtx->CalibDBV10, calibv2_adrc_calib, sizeof(CalibDbV2_drc_V10_t));  // load iq
                                                                                      // paras
     memcpy(&pAdrcCtx->drcAttrV10.stAuto, calibv2_adrc_calib,

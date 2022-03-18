@@ -18,7 +18,7 @@
 #ifndef ___RK_AIQ_CALIB_DB_V2_TYPES_ISP32_H__
 #define ___RK_AIQ_CALIB_DB_V2_TYPES_ISP32_H__
 
-#include "ablc_head.h"
+#include "ablc_head_V32.h"
 #include "adegamma_head.h"
 #include "adehaze_head.h"
 #include "adpcc_head.h"
@@ -46,6 +46,7 @@
 #include "sharp_head_v33.h"
 #include "thumbnails_head.h"
 #include "ynr_head_v22.h"
+#include "gain_head_v2.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -69,10 +70,10 @@ typedef struct CalibDbV2_LUMA_DETECT_s {
 typedef struct CamCalibDbV2ContextIsp32_s {
     // M4_STRUCT_DESC("AEC", "normal_ui_style")
     CalibDb_Aec_ParaV2_t ae_calib;
-    // M4_STRUCT_DESC("wb_v21", "normal_ui_style")
+    // M4_STRUCT_DESC("wb_v32", "normal_ui_style")
     CalibDbV2_Wb_Para_V32_t wb_v32;
-    // M4_STRUCT_DESC("ablc_calib", "normal_ui_style")
-    CalibDbV2_Ablc_t ablc_calib;
+    // M4_STRUCT_DESC("ablcV32_calib", "normal_ui_style")
+    CalibDbV2_Blc_V32_t ablcV32_calib;
     // M4_STRUCT_DESC("ccm_calib", "normal_ui_style")
     CalibDbV2_Ccm_Para_V32_t ccm_calib_v2;
     // M4_STRUCT_DESC("lut3d_calib", "normal_ui_style")
@@ -119,6 +120,8 @@ typedef struct CamCalibDbV2ContextIsp32_s {
     CalibDbV2_Cac_V11_t cac_v11;
     // M4_STRUCT_DESC("af_calib", "normal_ui_style")
     CalibDbV2_AFV31_t af_v31;
+    // M4_STRUCT_DESC("gain_v2", "normal_ui_style")
+    CalibDbV2_GainV2_t gain_v2;
 } CamCalibDbV2ContextIsp32_t;
 
 RKAIQ_END_DECLARE

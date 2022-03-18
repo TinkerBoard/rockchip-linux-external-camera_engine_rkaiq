@@ -629,7 +629,7 @@ XCamReturn RkAiqAwbHandleInt::processing() {
     awb_proc_int->ablcProcResVaid = false;
 #if defined(ISP_HW_V30)
 #if RKAIQ_HAVE_BLC_V1
-    SmartPtr<RkAiqHandle>* ablc_handle = mAiqCore->getCurAlgoTypeHandle(RK_AIQ_ALGO_TYPE_ABLC);
+    /*SmartPtr<RkAiqHandle>* ablc_handle = mAiqCore->getCurAlgoTypeHandle(RK_AIQ_ALGO_TYPE_ABLC);
     int algo_id                      = (*ablc_handle)->getAlgoId();
 
     if (ablc_handle) {
@@ -638,10 +638,15 @@ XCamReturn RkAiqAwbHandleInt::processing() {
             ablc_algo->getProcRes(&awb_proc_int->ablcProcRes);
             awb_proc_int->ablcProcResVaid = true;
         }
-    }
+    }*/
+    awb_proc_int->ablcProcRes= shared->res_comb.ablc_proc_res;
+    awb_proc_int->ablcProcResVaid = true;
 #endif
 #endif
-
+#if RKAIQ_HAVE_BLC_V32
+        awb_proc_int->ablcProcResV32= shared->res_comb.ablcV32_proc_res;
+        awb_proc_int->ablcProcResVaid = true;
+#endif
     ret = RkAiqHandle::processing();
 
     if (ret) {

@@ -111,13 +111,7 @@ XCamReturn AccmAutoConfig
     const CalibDbV2_Ccm_Para_V2_t * pCcm = NULL;
     float sensorGain =  hAccm->accmSwInfo.sensorGain;
     float fSaturation = 0;
-    if (hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_TOOL){
-        pCcm = &hAccm->mCurAtt.stTool;
-        ret = pCcmMatrixAll_init(hAccm, &hAccm->mCurAtt.stTool.TuningPara);
-        RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
-    } else {
-        pCcm = hAccm->calibV2Ccm.ccm_v1;
-    }
+    pCcm = hAccm->calibV2Ccm.ccm_v1;
     if (hAccm->update || hAccm->updateAtt) {
         if (pCcm->TuningPara.illu_estim.interp_enable) {
             ret = interpCCMbywbgain(&pCcm->TuningPara, hAccm, fSaturation);
@@ -251,12 +245,7 @@ XCamReturn AccmConfig
         hAccm->mCurAtt.mode = hAccm->mNewAtt.mode;
         hAccm->mCurAtt.byPass = hAccm->mNewAtt.byPass;
 
-        if (hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_TOOL)
-        {
-            hAccm->mCurAtt.byPass = !(hAccm->mNewAtt.stTool.control.enable);
-            hAccm->mCurAtt.stTool = hAccm->mNewAtt.stTool;
-            }
-        else if (hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_AUTO)
+        if (hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_AUTO)
             hAccm->mCurAtt.stAuto = hAccm->mNewAtt.stAuto;
         else
             hAccm->mCurAtt.stManual = hAccm->mNewAtt.stManual;
@@ -269,17 +258,15 @@ XCamReturn AccmConfig
     if(hAccm->mCurAtt.byPass != true && hAccm->accmSwInfo.grayMode != true) {
         hAccm->ccmHwConf.ccmEnable = true;
 
-        if((hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_AUTO)|| (hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_TOOL)){
+        if (hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_AUTO) {
             if (hAccm->updateAtt || hAccm->update ||(!hAccm->accmSwInfo.ccmConverged)) {
                 AccmAutoConfig(hAccm);
                 CCMV1PrintDBG(hAccm);
             }
 
-        } else if(hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_MANUAL) {
-             if (hAccm->updateAtt || hAccm->update)
-                AccmManualConfig(hAccm);
-        }
-        else {
+        } else if (hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_MANUAL) {
+            if (hAccm->updateAtt || hAccm->update) AccmManualConfig(hAccm);
+        } else {
             LOGE_ACCM("%s: hAccm->mCurAtt.mode(%d) is invalid \n", __FUNCTION__, hAccm->mCurAtt.mode);
         }
         memcpy(hAccm->mCurAtt.stManual.ccMatrix, hAccm->ccmHwConf.matrix, sizeof(hAccm->ccmHwConf.matrix));

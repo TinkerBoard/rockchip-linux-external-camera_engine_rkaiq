@@ -26,7 +26,7 @@ typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 RKAIQ_BEGIN_DECLARE
 
 XCamReturn
-rk_aiq_user_api_a3dlut_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_lut3d_attrib_t attr);
+rk_aiq_user_api_a3dlut_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_lut3d_attrib_t* attr);
 XCamReturn
 rk_aiq_user_api_a3dlut_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_lut3d_attrib_t *attr);
 XCamReturn

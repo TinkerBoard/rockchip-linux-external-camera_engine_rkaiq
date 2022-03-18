@@ -53,7 +53,7 @@
 #endif
 #if RKAIQ_HAVE_DEHAZE_V10 || RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO || \
     RKAIQ_HAVE_DEHAZE_V12
-#include "algo_handlers/RkAiqAdhazHandle.h"
+#include "algo_handlers/RkAiqAdehazeHandle.h"
 #endif
 #include "algo_handlers/RkAiqAdpccHandle.h"
 #if RKAIQ_HAVE_DRC_V10 || RKAIQ_HAVE_DRC_V11 || RKAIQ_HAVE_DRC_V12
@@ -77,7 +77,9 @@
 #endif
 #include "algo_handlers/RkAiqAieHandle.h"
 #include "algo_handlers/RkAiqAldchHandle.h"
+#if RKAIQ_HAVE_LSC_V1 || RKAIQ_HAVE_LSC_V2
 #include "algo_handlers/RkAiqAlscHandle.h"
+#endif
 #include "algo_handlers/RkAiqAmdHandle.h"
 #if RKAIQ_HAVE_MERGE_V10 || RKAIQ_HAVE_MERGE_V11 || RKAIQ_HAVE_MERGE_V12
 #include "algo_handlers/RkAiqAmergeHandle.h"

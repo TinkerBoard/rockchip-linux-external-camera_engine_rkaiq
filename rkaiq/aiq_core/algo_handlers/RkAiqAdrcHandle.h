@@ -36,15 +36,15 @@ class RkAiqAdrcHandleInt : virtual public RkAiqHandle {
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
 #if RKAIQ_HAVE_DRC_V10
-    XCamReturn setAttribV10(drcAttrV10_t att);
+    XCamReturn setAttribV10(const drcAttrV10_t* att);
     XCamReturn getAttribV10(drcAttrV10_t* att);
 #endif
 #if RKAIQ_HAVE_DRC_V11
-    XCamReturn setAttribV11(drcAttrV11_t att);
+    XCamReturn setAttribV11(const drcAttrV11_t* att);
     XCamReturn getAttribV11(drcAttrV11_t* att);
 #endif
 #if RKAIQ_HAVE_DRC_V12
-    XCamReturn setAttribV12(drcAttrV12_t att);
+    XCamReturn setAttribV12(const drcAttrV12_t* att);
     XCamReturn getAttribV12(drcAttrV12_t* att);
 #endif
 

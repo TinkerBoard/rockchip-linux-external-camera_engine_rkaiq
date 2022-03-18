@@ -137,6 +137,7 @@ include_directories(
     include/algos/aynrV22
     include/algos/acnrV30
     include/algos/asharpV33
+    include/algos/ablcV32
     ${PROJECT_BINARY_DIR}
     )
 
@@ -144,7 +145,6 @@ set(ALGO_HANDLE_SRC
     aiq_core/algo_handlers/RkAiqAcpHandle.cpp
     aiq_core/algo_handlers/RkAiqAdpccHandle.cpp
     aiq_core/algo_handlers/RkAiqAieHandle.cpp
-    aiq_core/algo_handlers/RkAiqAlscHandle.cpp
     aiq_core/algo_handlers/RkAiqAsdHandle.cpp
     aiq_core/algo_handlers/RkAiqAwbHandle.cpp
     )
@@ -305,6 +305,11 @@ if (RKAIQ_HAVE_BLC_V1)
     list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAblcHandle.cpp)
 endif()
 
+if (RKAIQ_HAVE_BLC_V32)
+    add_compile_options(-DRKAIQ_HAVE_BLC_V32=1)
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAblcV32Handle.cpp)
+endif()
+
 if (RKAIQ_HAVE_ANR_V1)
     add_compile_options(-DRKAIQ_HAVE_ANR_V1=1)
     list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAnrHandle.cpp)
@@ -392,7 +397,7 @@ if (RKAIQ_HAVE_DEHAZE_V10 OR RKAIQ_HAVE_DEHAZE_V11 OR RKAIQ_HAVE_DEHAZE_V11_DUO 
     if (RKAIQ_HAVE_DEHAZE_V12)
         add_compile_options(-DRKAIQ_HAVE_DEHAZE_V12=1)
     endif()
-    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAdhazHandle.cpp)
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAdehazeHandle.cpp)
 endif()
 
 if (RKAIQ_HAVE_DEGAMMA_V1)
@@ -444,6 +449,16 @@ if (RKAIQ_HAVE_DEBAYER_V1 OR RKAIQ_HAVE_DEBAYER_V2)
         add_compile_options(-DRKAIQ_HAVE_DEBAYER_V2=1)
     endif()
     list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAdebayerHandle.cpp)
+endif()
+
+if (RKAIQ_HAVE_LSC_V1 OR RKAIQ_HAVE_LSC_V2)
+    if (RKAIQ_HAVE_LSC_V1)
+        add_compile_options(-DRKAIQ_HAVE_LSC_V1=1)
+    endif()
+    if (RKAIQ_HAVE_LSC_V2)
+        add_compile_options(-DRKAIQ_HAVE_LSC_V2=1)
+    endif()
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAlscHandle.cpp)
 endif()
 
 set(AIQ_CORE_SRC
@@ -681,7 +696,6 @@ target_link_libraries(rkaiq
     rkaiq_acp
     rkaiq_adpcc
     rkaiq_aie
-    rkaiq_alsc
     ${OPENCV_LIBS}
     ${OPENCV_3RDPARTY_LIBS}
     ${GENMESH_LIBS}
@@ -870,6 +884,12 @@ target_link_libraries(rkaiq
     )
 endif()
 
+if (RKAIQ_HAVE_BLC_V32)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_ablc_v32
+    )
+endif()
 
 if (RKAIQ_HAVE_ANR_V1)
 target_link_libraries(rkaiq
@@ -997,6 +1017,13 @@ if (RKAIQ_HAVE_DEBAYER_V1 OR RKAIQ_HAVE_DEBAYER_V2)
 target_link_libraries(rkaiq
     PRIVATE
     rkaiq_adebayer
+    )
+endif()
+
+if (RKAIQ_HAVE_LSC_V1 OR RKAIQ_HAVE_LSC_V2)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_alsc
     )
 endif()
 

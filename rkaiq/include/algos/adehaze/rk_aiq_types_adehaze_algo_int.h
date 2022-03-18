@@ -23,7 +23,14 @@
 #include "adehaze_head.h"
 #include "adehaze/rk_aiq_types_adehaze_algo.h"
 
-// drc v10
+#define DEHAZE_API_MANUAL_DEFAULT_LEVEL         (50)
+#define DEHAZE_API_MANUAL_DEFAULT_CFG_WT_STEP   (0.005)
+#define DEHAZE_API_MANUAL_DEFAULT_CFG_AIR_STEP  (0.5)
+#define DEHAZE_API_MANUAL_DEFAULT_CFG_TMAX_STEP (0.005)
+#define DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL (50)
+#define DEHAZE_API_ENHANCE_MANUAL_DEFAULT_STEP  (0.08)
+
+// dehaze v10
 typedef enum dehaze_api_mode_s {
     DEHAZE_API_AUTO   = 0, /**< run atuo mode */
     DEHAZE_API_MANUAL = 1, /**< run manual mode*/
@@ -32,7 +39,7 @@ typedef enum dehaze_api_mode_s {
 typedef struct adehaze_sw_V10_s {
 } adehaze_sw_V10_t;
 
-// drc v11
+// dehaze v11
 typedef struct mDehazeDataV11_s {
     float dc_min_th;
     float dc_max_th;
@@ -103,15 +110,24 @@ typedef struct mDehazeAttrV11_s {
     mHist_setting_V11_t hist_setting;
 } mDehazeAttrV11_t;
 
+typedef struct mDehazeAttrInfoV11_s {
+    float ISO;
+    float EnvLv;
+    unsigned int MDehazeStrth;
+    unsigned int MEnhanceStrth;
+    unsigned int MEnhanceChromeStrth;
+} mDehazeAttrInfoV11_t;
+
 typedef struct adehaze_sw_V11_s {
     rk_aiq_uapi_sync_t sync;
 
     dehaze_api_mode_t mode;
     CalibDbV2_dehaze_V11_t stAuto;
     mDehazeAttrV11_t stManual;
+    mDehazeAttrInfoV11_t Info;
 } adehaze_sw_V11_t;
 
-// drc v12
+// dehaze v12
 typedef struct mEnhance_Setting_V12_s {
     bool en;
     bool color_deviate_en;
@@ -135,6 +151,7 @@ typedef struct adehaze_sw_V12_s {
     dehaze_api_mode_t mode;
     CalibDbV2_dehaze_V12_t stAuto;
     mDehazeAttrV12_t stManual;
+    mDehazeAttrInfoV11_t Info;
 } adehaze_sw_V12_t;
 
 #endif

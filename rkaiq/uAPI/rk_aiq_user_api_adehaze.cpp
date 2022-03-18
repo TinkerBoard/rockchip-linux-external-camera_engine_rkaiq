@@ -15,7 +15,7 @@
  */
 #include "rk_aiq_user_api_adehaze.h"
 
-#include "algo_handlers/RkAiqAdhazHandle.h"
+#include "algo_handlers/RkAiqAdehazeHandle.h"
 #include "uAPI2/rk_aiq_user_api2_adehaze.h"
 
 RKAIQ_BEGIN_DECLARE

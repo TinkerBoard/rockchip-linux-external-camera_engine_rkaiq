@@ -53,10 +53,10 @@ int rk_aiq_user_api2_amerge_V10_SetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
     mergeAttrV10_t setdata;
 
     memset(&setdata, 0, sizeof(mergeAttrV10_t));
-    rk_aiq_user_api2_amerge_V10_GetAttrib(sys_ctx, &setdata);
+    rk_aiq_user_api2_amerge_v10_GetAttrib(sys_ctx, &setdata);
     memcpy(&setdata.CtlInfo, ctldata, sizeof(uapiMergeCurrCtlData_t));
 
-    return rk_aiq_user_api2_amerge_V10_SetAttrib(sys_ctx, setdata);
+    return rk_aiq_user_api2_amerge_v10_SetAttrib(sys_ctx, &setdata);
 }
 
 int rk_aiq_user_api2_amerge_V10_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
@@ -64,7 +64,7 @@ int rk_aiq_user_api2_amerge_V10_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
     mergeAttrV10_t setdata;
 
     memset(&setdata, 0, sizeof(mergeAttrV10_t));
-    rk_aiq_user_api2_amerge_V10_GetAttrib(sys_ctx, &setdata);
+    rk_aiq_user_api2_amerge_v10_GetAttrib(sys_ctx, &setdata);
     memcpy(ctldata, &setdata.CtlInfo, sizeof(uapiMergeCurrCtlData_t));
 
     return 0;
@@ -76,10 +76,10 @@ int rk_aiq_user_api2_amerge_V11_SetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
     mergeAttrV11_t setdata;
 
     memset(&setdata, 0, sizeof(mergeAttrV11_t));
-    rk_aiq_user_api2_amerge_V11_GetAttrib(sys_ctx, &setdata);
+    rk_aiq_user_api2_amerge_v11_GetAttrib(sys_ctx, &setdata);
     memcpy(&setdata.CtlInfo, ctldata, sizeof(uapiMergeCurrCtlData_t));
 
-    return rk_aiq_user_api2_amerge_V11_SetAttrib(sys_ctx, setdata);
+    return rk_aiq_user_api2_amerge_v11_SetAttrib(sys_ctx, &setdata);
 }
 
 int rk_aiq_user_api2_amerge_V11_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
@@ -87,7 +87,7 @@ int rk_aiq_user_api2_amerge_V11_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
     mergeAttrV11_t setdata;
 
     memset(&setdata, 0, sizeof(mergeAttrV11_t));
-    rk_aiq_user_api2_amerge_V11_GetAttrib(sys_ctx, &setdata);
+    rk_aiq_user_api2_amerge_v11_GetAttrib(sys_ctx, &setdata);
     memcpy(ctldata, &setdata.CtlInfo, sizeof(uapiMergeCurrCtlData_t));
 
     return 0;
@@ -99,10 +99,10 @@ int rk_aiq_user_api2_amerge_V12_SetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
     mergeAttrV12_t setdata;
 
     memset(&setdata, 0, sizeof(mergeAttrV12_t));
-    rk_aiq_user_api2_amerge_V12_GetAttrib(sys_ctx, &setdata);
+    rk_aiq_user_api2_amerge_v12_GetAttrib(sys_ctx, &setdata);
     memcpy(&setdata.CtlInfo, ctldata, sizeof(uapiMergeCurrCtlData_t));
 
-    return rk_aiq_user_api2_amerge_V12_SetAttrib(sys_ctx, setdata);
+    return rk_aiq_user_api2_amerge_v12_SetAttrib(sys_ctx, &setdata);
 }
 
 int rk_aiq_user_api2_amerge_V12_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
@@ -110,7 +110,7 @@ int rk_aiq_user_api2_amerge_V12_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
     mergeAttrV12_t setdata;
 
     memset(&setdata, 0, sizeof(mergeAttrV12_t));
-    rk_aiq_user_api2_amerge_V12_GetAttrib(sys_ctx, &setdata);
+    rk_aiq_user_api2_amerge_v12_GetAttrib(sys_ctx, &setdata);
     memcpy(ctldata, &setdata.CtlInfo, sizeof(uapiMergeCurrCtlData_t));
 
     return 0;

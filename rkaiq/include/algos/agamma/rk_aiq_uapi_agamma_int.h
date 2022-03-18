@@ -13,13 +13,13 @@
 // sync should be done in inner. now we just need implement
 // the case of need_sync == false; need_sync is for future usage.
 
-XCamReturn rk_aiq_uapi_agamma_V10_SetAttrib(RkAiqAlgoContext* ctx,
-                                            const rk_aiq_gamma_v10_attr_t attr, bool need_sync);
-XCamReturn rk_aiq_uapi_agamma_V10_GetAttrib(const RkAiqAlgoContext* ctx,
+XCamReturn rk_aiq_uapi_agamma_v10_SetAttrib(RkAiqAlgoContext* ctx,
+                                            const rk_aiq_gamma_v10_attr_t* attr, bool need_sync);
+XCamReturn rk_aiq_uapi_agamma_v10_GetAttrib(const RkAiqAlgoContext* ctx,
                                             rk_aiq_gamma_v10_attr_t* attr);
-XCamReturn rk_aiq_uapi_agamma_V11_SetAttrib(RkAiqAlgoContext* ctx,
-                                            const rk_aiq_gamma_v11_attr_t attr, bool need_sync);
-XCamReturn rk_aiq_uapi_agamma_V11_GetAttrib(const RkAiqAlgoContext* ctx,
+XCamReturn rk_aiq_uapi_agamma_v11_SetAttrib(RkAiqAlgoContext* ctx,
+                                            const rk_aiq_gamma_v11_attr_t* attr, bool need_sync);
+XCamReturn rk_aiq_uapi_agamma_v11_GetAttrib(const RkAiqAlgoContext* ctx,
                                             rk_aiq_gamma_v11_attr_t* attr);
 
 #endif

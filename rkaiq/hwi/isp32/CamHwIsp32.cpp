@@ -363,6 +363,11 @@ XCamReturn CamHwIsp32::setIspConfig() {
             }
         }
 
+        LOGD_ABLC("isp_params_ob: ob_offset:0x%x ob_predgain:0x%x ob_max:0x%x",
+                  isp_params->others.bls_cfg.isp_ob_offset,
+                  isp_params->others.bls_cfg.isp_ob_predgain,
+                  isp_params->others.bls_cfg.isp_ob_max);
+
         if (mIspParamsDev->queue_buffer(v4l2buf) != 0) {
             LOGE_CAMHW_SUBM(ISP20HW_SUBM,
                             "RKISP1: failed to ioctl VIDIOC_QBUF for index %d, %d %s.\n", buf_index,

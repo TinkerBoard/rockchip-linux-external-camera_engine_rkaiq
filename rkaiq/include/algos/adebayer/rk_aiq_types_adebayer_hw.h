@@ -4,7 +4,7 @@
 #define RK_DEBAYER_V2_FIX_BIT_INT_TO_FLOAT      7
 #define RK_DEBAYER_V2_FIX_BIT_LOG2              12
 
-#define RK_DEBAYER_V2_FIX_BIT_IIR_WGT_CLIP      6
+#define RK_DEBAYER_V2_FIX_BIT_IIR_WGT_CLIP      3
 #define RK_DEBAYER_V2_FIX_BIT_IIR_GHOST         6
 
 #define RK_DEBAYER_V2_FIX_BIT_ALPHA_SCALE       10
@@ -34,7 +34,6 @@ typedef struct AdebayerHwConfigV1_s {
     unsigned char order_min;
     bool updatecfg;
 } AdebayerHwConfigV1_t;
-
 
 
 typedef struct AdebayerHwConfigV2_s {

@@ -71,15 +71,15 @@ typedef struct CalibDbV2_YnrV22_TuningPara_Setting_ISO_s {
     float iso;
 
     // M4_BOOL_DESC("ynr_bft3x3_bypass", "0")
-    float ynr_bft3x3_bypass;
+    bool ynr_bft3x3_bypass;
     // M4_BOOL_DESC("ynr_lbft5x5_bypass", "0")
-    float ynr_lbft5x5_bypass;
+    bool ynr_lbft5x5_bypass;
     // M4_BOOL_DESC("ynr_lgft3x3_bypass", "0")
-    float ynr_lgft3x3_bypass;
+    bool ynr_lgft3x3_bypass;
     // M4_BOOL_DESC("ynr_flt1x1_bypass", "0")
-    float ynr_flt1x1_bypass;
+    bool ynr_flt1x1_bypass;
     // M4_BOOL_DESC("ynr_nlm11x11_bypass", "0")
-    float ynr_nlm11x11_bypass;
+    bool ynr_nlm11x11_bypass;
 
     // M4_NUMBER_DESC("ynr_global_gain_alpha", "f32", M4_RANGE(0, 1.0), "0", M4_DIGIT(2))
     float ynr_global_gain_alpha;
@@ -109,7 +109,7 @@ typedef struct CalibDbV2_YnrV22_TuningPara_Setting_ISO_s {
     float low_lbf_weight_thresh;
     // M4_NUMBER_DESC("low_center_weight", "f32", M4_RANGE(0.0, 1.0), "0.5", M4_DIGIT(2))
     float low_center_weight;
-    // M4_NUMBER_DESC("low_dist_adj", "f32", M4_RANGE(0.0, 127.0), "8.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("low_dist_adj", "f32", M4_RANGE(0.0, 128.0), "8.0", M4_DIGIT(2))
     float low_dist_adj;
     // M4_NUMBER_DESC("low_weight", "f32", M4_RANGE(0.0, 1.0), "0.5", M4_DIGIT(2))
     float low_weight;
@@ -125,9 +125,9 @@ typedef struct CalibDbV2_YnrV22_TuningPara_Setting_ISO_s {
     // M4_NUMBER_DESC("hi_gain_alpha", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
     float hi_gain_alpha;
 
-    // M4_NUMBER_DESC("hi_center_weight", "f32", M4_RANGE(0.0, 128.0), "1.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("hi_center_weight", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
     float hi_center_weight;
-    // M4_NUMBER_DESC("hi_weight_offset", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(0))
+    // M4_NUMBER_DESC("hi_weight_offset", "f32", M4_RANGE(0.0, 1.0), "0.05", M4_DIGIT(0))
     float hi_weight_offset;
     // M4_NUMBER_DESC("hi_min_sigma", "f32", M4_RANGE(0.0, 1.0), "0.0068", M4_DIGIT(4))
     float hi_min_sigma;

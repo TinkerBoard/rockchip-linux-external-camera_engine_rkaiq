@@ -68,71 +68,97 @@ typedef struct CalibDbV2_BayerTnr_V23_TuningPara_Setting_ISO_s {
     // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index2")
     float iso;
 
+    // M4_NUMBER_DESC("thumbds_w", "s32", M4_RANGE(4, 8), "4", M4_DIGIT(0))
+    int thumbds_w;
+    // M4_NUMBER_DESC("thumbds_h", "s32", M4_RANGE(4, 8), "8", M4_DIGIT(0))
+    int thumbds_h;
+
     // M4_BOOL_DESC("lo_enable", "1")
-    int lo_enable;
+    bool lo_enable;
 
     // M4_BOOL_DESC("hi_enable", "1")
-    int hi_enable;
+    bool hi_enable;
 
     // M4_BOOL_DESC("lo_med_en", "1")
-    int lo_med_en;
+    bool lo_med_en;
     // M4_BOOL_DESC("lo_gsbay_en", "1")
-    int lo_gsbay_en;
+    bool lo_gsbay_en;
     // M4_BOOL_DESC("lo_gslum_en", "1")
-    int lo_gslum_en;
+    bool lo_gslum_en;
     // M4_BOOL_DESC("hi_med_en", "1")
-    int hi_med_en;
+    bool hi_med_en;
     // M4_BOOL_DESC("hi_gslum_en", "1")
-    int hi_gslum_en;
+    bool hi_gslum_en;
 
-    // M4_NUMBER_DESC("lo_filter_strength", "f32", M4_RANGE(0, 16), "1.0", M4_DIGIT(2))
-    float lo_filter_strength;
-    // M4_NUMBER_DESC("hi_filter_strength", "f32", M4_RANGE(0, 16), "1.0", M4_DIGIT(2))
-    float hi_filter_strength;
+    // M4_BOOL_DESC("trans_en", "0")
+    bool trans_en;
 
-    // M4_NUMBER_DESC("hi_filter_rat0", "f32", M4_RANGE(0, 16), "0", M4_DIGIT(2))
-    float hi_filter_rat0;
-    // M4_NUMBER_DESC("hi_filter_sig0", "s32", M4_RANGE(0, 4095), "1024", M4_DIGIT(0))
-    int hi_filter_sig0;
-    // M4_NUMBER_DESC("hi_filter_rat1", "f32", M4_RANGE(0, 16), "0", M4_DIGIT(2))
-    float hi_filter_rat1;
-    // M4_NUMBER_DESC("hi_filter_sig1", "s32", M4_RANGE(0, 4095), "1024", M4_DIGIT(0))
-    int hi_filter_sig1;
-
-
-    // M4_NUMBER_DESC("clipwgt", "f32", M4_RANGE(0, 1), "0.03215", M4_DIGIT(5))
-    float clipwgt;
+    // M4_BOOL_DESC("wgt_use_mode", "0")
+    bool wgt_use_mode;
+    // M4_BOOL_DESC("wgt_use_mode", "1")
+    bool wgt_mge_mode;
+    // M4_BOOL_DESC("wgt_use_mode", "0")
+    bool hi_guass;
+    // M4_BOOL_DESC("wgt_use_mode", "0")
+    bool kl_guass;
 
     // M4_BOOL_DESC("global_pk_en", "1")
     int global_pk_en;
     // M4_NUMBER_DESC("global_pksq", "s32", M4_RANGE(0, 268435455), "1024", M4_DIGIT(0))
     int global_pksq;
 
+    // M4_NUMBER_DESC("lo_filter_strength", "f32", M4_RANGE(0, 16), "1.0", M4_DIGIT(2))
+    float lo_filter_strength;
+    // M4_NUMBER_DESC("hi_filter_strength", "f32", M4_RANGE(0, 16), "1.0", M4_DIGIT(2))
+    float hi_filter_strength;
+
+
+    // M4_NUMBER_DESC("lo_clipwgt", "f32", M4_RANGE(0, 1), "0.03215", M4_DIGIT(5))
+    float lo_clipwgt;
+
     // M4_NUMBER_DESC("soft_threshold_ratio", "f32", M4_RANGE(0, 1.0), "0.0", M4_DIGIT(2))
     float soft_threshold_ratio;
-	// M4_NUMBER_DESC("wgtratio", "f32", M4_RANGE(0, 1.0), "0.16", M4_DIGIT(2))
-	float wgtratio;
+    // M4_NUMBER_DESC("hi_wgt_comp", "f32", M4_RANGE(0, 1.0), "0.16", M4_DIGIT(2))
+    float hi_wgt_comp;
 
-	// M4_NUMBER_DESC("hidif_th", "s32", M4_RANGE(0, 65535), "32767", M4_DIGIT(0))
-	int hidif_th;
-	
-	// M4_NUMBER_DESC("hi_gaus3x3_mode", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
-    int hi_gaus3x3_mode;
-	// M4_NUMBER_DESC("guass_guide_coeff0", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
+    // M4_NUMBER_DESC("hidif_th", "s32", M4_RANGE(0, 65535), "32767", M4_DIGIT(0))
+    int hidif_th;
+
+    // M4_NUMBER_DESC("lo_filter_rat0", "f32", M4_RANGE(0, 16), "0", M4_DIGIT(2))
+    float lo_filter_rat0;
+    // M4_NUMBER_DESC("lo_filter_thed0", "s32", M4_RANGE(0, 4095), "1024", M4_DIGIT(0))
+    int lo_filter_thed0;
+
+    // M4_NUMBER_DESC("hi_filter_abs_ctrl", "s32", M4_RANGE(0, 2), "0", M4_DIGIT(0))
+    int hi_filter_abs_ctrl;
+    // M4_NUMBER_DESC("hi_filter_filt_bay", "s32", M4_RANGE(0, 2), "0", M4_DIGIT(0))
+    int hi_filter_filt_bay;
+    // M4_NUMBER_DESC("hi_filter_filt_avg", "s32", M4_RANGE(0, 2), "0", M4_DIGIT(0))
+    int hi_filter_filt_avg;
+    // M4_NUMBER_DESC("hi_filter_filt_mode", "s32", M4_RANGE(0, 4), "4", M4_DIGIT(0))
+    int hi_filter_filt_mode;
+
+    // M4_NUMBER_DESC("hi_filter_rat0", "f32", M4_RANGE(0, 16), "0", M4_DIGIT(2))
+    float hi_filter_rat0;
+    // M4_NUMBER_DESC("hi_filter_thed0", "s32", M4_RANGE(0, 4095), "1024", M4_DIGIT(0))
+    int hi_filter_thed0;
+    // M4_NUMBER_DESC("hi_filter_rat1", "f32", M4_RANGE(0, 16), "0", M4_DIGIT(2))
+    float hi_filter_rat1;
+    // M4_NUMBER_DESC("hi_filter_thed1", "s32", M4_RANGE(0, 4095), "1024", M4_DIGIT(0))
+    int hi_filter_thed1;
+
+
+
+
+    // M4_NUMBER_DESC("guass_guide_coeff0", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
     int guass_guide_coeff0;
-	// M4_NUMBER_DESC("guass_guide_coeff1", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
+    // M4_NUMBER_DESC("guass_guide_coeff1", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
     int guass_guide_coeff1;
-	// M4_NUMBER_DESC("guass_guide_coeff2", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
+    // M4_NUMBER_DESC("guass_guide_coeff2", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
     int guass_guide_coeff2;
-	// M4_NUMBER_DESC("guass_guide_coeff3", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
+    // M4_NUMBER_DESC("guass_guide_coeff3", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
     int guass_guide_coeff3;
-	// M4_NUMBER_DESC("wgtuse_mode", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
-    int wgtuse_mode;
-	// M4_NUMBER_DESC("hi_guass", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
-    int hi_guass;
-	// M4_NUMBER_DESC("kl_guass", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
-    int kl_guass;
-	
+
 
 } CalibDbV2_BayerTnr_V23_TuningPara_Setting_ISO_t;
 

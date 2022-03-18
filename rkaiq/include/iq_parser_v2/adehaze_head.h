@@ -116,7 +116,8 @@ typedef struct EnhanceData_s {
     // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
     float* ISO;
     int ISO_len;
-    // M4_ARRAY_DESC("enhance_value", "f32", M4_SIZE(1,100), M4_RANGE(0,32), "1",M4_DIGIT(4), M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("enhance_value", "f32", M4_SIZE(1,100), M4_RANGE(1,16), "1",M4_DIGIT(4),
+    // M4_DYNAMIC(1))
     float* enhance_value;
     int enhance_value_len;
 } EnhanceData_t;
@@ -183,7 +184,7 @@ typedef struct CalibDbV2_dehaze_V10_s {
     CalibDbDehazeV10_t DehazeTuningPara;
 } CalibDbV2_dehaze_V10_t;
 
-// drc v11
+// dehaze v11
 typedef struct DehazeDataV11_s {
     // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(4), M4_DYNAMIC(1))
     float* EnvLv;
@@ -278,10 +279,12 @@ typedef struct EnhanceDataV11_s {
     // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(4), M4_DYNAMIC(1))
     float* EnvLv;
     int EnvLv_len;
-    // M4_ARRAY_DESC("enhance_value", "f32", M4_SIZE(1,100), M4_RANGE(0,32), "1",M4_DIGIT(4), M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("enhance_value", "f32", M4_SIZE(1,100), M4_RANGE(1,16), "1",M4_DIGIT(4),
+    // M4_DYNAMIC(1))
     float* enhance_value;
     int enhance_value_len;
-    // M4_ARRAY_DESC("enhance_chroma", "f32", M4_SIZE(1,100), M4_RANGE(0,32), "1",M4_DIGIT(4), M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("enhance_chroma", "f32", M4_SIZE(1,100), M4_RANGE(1,16), "1",M4_DIGIT(4),
+    // M4_DYNAMIC(1))
     float* enhance_chroma;
     int enhance_chroma_len;
 } EnhanceDataV11_t;
@@ -348,7 +351,7 @@ typedef struct CalibDbV2_dehaze_V11_s {
     CalibDbDehazeV11_t DehazeTuningPara;
 } CalibDbV2_dehaze_V11_t;
 
-// drc v12
+// dehaze v12
 typedef struct Enhance_Setting_V12_s {
     // M4_BOOL_DESC("en", "1")
     bool en;
@@ -356,13 +359,9 @@ typedef struct Enhance_Setting_V12_s {
     bool color_deviate_en;
     // M4_BOOL_DESC("enh_luma_en", "0")
     bool enh_luma_en;
-    // M4_ARRAY_DESC("enhance_curve", "f32", M4_SIZE(1,17),  M4_RANGE(0, 1024),
-    // "[0,64,128,192,256,320,384,448,512,576,640,704,768,832,896,960,1023]", M4_DIGIT(0),
-    // M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("enhance_curve", "f32", M4_SIZE(1,17),  M4_RANGE(0, 1024), "[0,64,128,192,256,320,384,448,512,576,640,704,768,832,896,960,1023]", M4_DIGIT(0), M4_DYNAMIC(0))
     float enhance_curve[CALIBDB_ADEHAZE_ENHANCE_CURVE_KNOTS_NUM];
-    // M4_ARRAY_DESC("enh_luma", "f32", M4_SIZE(1,17),  M4_RANGE(0, 1024),
-    // "[0,64,128,192,256,320,384,448,512,576,640,704,768,832,896,960,1023]", M4_DIGIT(0),
-    // M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("enh_luma", "f32", M4_SIZE(1,17),  M4_RANGE(0, 1024), "[0,64,128,192,256,320,384,448,512,576,640,704,768,832,896,960,1023]", M4_DIGIT(0), M4_DYNAMIC(0))
     float enh_luma[CALIBDB_ADEHAZE_ENHANCE_CURVE_KNOTS_NUM];
     // M4_ARRAY_TABLE_DESC("EnhanceData", "array_table_ui", "none")
     EnhanceDataV11_t EnhanceData;

@@ -1049,6 +1049,7 @@ Isp21Params::convertAiqCsmToIsp21Params(T& isp_cfg,
     } else {
         isp_cfg.module_ens &= ~ISP2X_MODULE_CSM;
         isp_cfg.module_en_update |= ISP2X_MODULE_CSM;
+        isp_cfg.module_cfg_update &= ~(ISP2X_MODULE_CSM);
     }
 }
 #if RKAIQ_HAVE_CGC_V1

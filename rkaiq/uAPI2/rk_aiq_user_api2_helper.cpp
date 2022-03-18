@@ -57,13 +57,13 @@
 /*****************Add UAPI wrapper here if necessary*****************/
 __RKAIQUAPI_SET_WRAPPER(rk_aiq_tool_api_ae_setExpSwAttr, Uapi_ExpSwAttrV2_t);
 #if RKAIQ_HAVE_DRC_V10
-__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V10_SetAttrib, drcAttrV10_t);
+//__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V10_SetAttrib, drcAttrV10_t);
 #endif
 #if RKAIQ_HAVE_DRC_V11
-__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V11_SetAttrib, drcAttrV11_t);
+//__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V11_SetAttrib, drcAttrV11_t);
 #endif
 #if RKAIQ_HAVE_DRC_V12
-__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V12_SetAttrib, drcAttrV12_t);
+//__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V12_SetAttrib, drcAttrV12_t);
 #endif
 
 /********************** Add Attr caller here ************************/
@@ -114,16 +114,16 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
                          rk_aiq_user_api2_amerge_V12_GetAttrib2),
 #endif
 #if RKAIQ_HAVE_DRC_V10
-    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV10_t, rk_aiq_tool_api_adrc_V10_SetAttrib,
-                         rk_aiq_user_api2_adrc_V10_GetAttrib),
+//__RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV10_t, rk_aiq_tool_api_adrc_V10_SetAttrib,
+//                     rk_aiq_user_api2_adrc_V10_GetAttrib),
 #endif
 #if RKAIQ_HAVE_DRC_V11
-    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV11_t, rk_aiq_tool_api_adrc_V11_SetAttrib,
-                         rk_aiq_user_api2_adrc_V11_GetAttrib),
+//__RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV11_t, rk_aiq_tool_api_adrc_V11_SetAttrib,
+//                     rk_aiq_user_api2_adrc_V11_GetAttrib),
 #endif
 #if RKAIQ_HAVE_DRC_V12
-    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV12_t, rk_aiq_tool_api_adrc_V12_SetAttrib,
-                         rk_aiq_user_api2_adrc_V12_GetAttrib),
+//__RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV12_t, rk_aiq_tool_api_adrc_V12_SetAttrib,
+//                     rk_aiq_user_api2_adrc_V12_GetAttrib),
 #endif
     __RKAIQUAPI_DESC_DEF("/uapi/0/system/work_mode", work_mode_t,
                          rk_aiq_tool_api_sysctl_swWorkingModeDyn,

@@ -112,7 +112,7 @@ AcnrV30_result_t cnr_select_params_by_ISO_V30(RK_CNR_Params_V30_t *pParams, RK_C
     RK_CNR_Params_V30_Select_t *pLowISO = &pParams->CnrParamsISO[isoIndexLow];
     RK_CNR_Params_V30_Select_t *pHighISO = &pParams->CnrParamsISO[isoIndexHigh];
 
-    if ((isoGainHigh - iso) > (iso - isoGainLow))   {
+    if ((isoGainHigh - iso) < (iso - isoGainLow))   {
         pSelect->down_scale_x = pHighISO->down_scale_x;
         pSelect->down_scale_y = pHighISO->down_scale_y;
         pSelect->bf_wgt0_sel = pHighISO->bf_wgt0_sel;
@@ -228,16 +228,16 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
 
 
     /* CNR_THUMB1 */
-    int yuvBit = 12;
+    int yuvBit = 10;
     int scale  = (1 << yuvBit) - 1;
     int log2e = (int)(0.8493f * (1 << (RKCNR_V30_log2e + RKCNR_V30_SIGMA_FIX_BIT)));
     int rkcnr_chroma_filter_uv_gain =
         ROUND_F((1 << RKCNR_V30_uvgain) * pSelect->chroma_filter_uv_gain);
     int thumbBFilterSigma = ROUND_F(pSelect->thumb_sigma * scale);
-    LOGE_ANR("scale:%d thumbBFilterSigma:%d\n", log2e, thumbBFilterSigma);
+    LOGD_ANR("scale:%d thumbBFilterSigma:%d\n", log2e, thumbBFilterSigma);
     thumbBFilterSigma = (int)(0.8493f * (1 << RKCNR_V30_FIX_BIT_INV_SIGMA) / thumbBFilterSigma);
     tmp = thumbBFilterSigma * ((1 << RKCNR_V30_uvgain) - rkcnr_chroma_filter_uv_gain * 2);
-    LOGE_ANR("thumbBFilterSigma:%d sigmaY:%d\n", thumbBFilterSigma, tmp);
+    LOGD_ANR("thumbBFilterSigma:%d sigmaY:%d\n", thumbBFilterSigma, tmp);
     tmp                 = ROUND_INT(tmp, 6);
     pFix->thumb_sigma_y = CLIP(tmp, 0, 0x3fff);
     tmp                 = thumbBFilterSigma * rkcnr_chroma_filter_uv_gain;
@@ -263,7 +263,7 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
     tmp = ROUND_F(1.2011 * (1 << RKCNR_V30_FIX_BIT_INV_SIGMA) / (pSelect->chroma_filter_strength * scale));
     int tmptmp = tmp * pFix->wgt_slope;
     int shiftBit = Math_LOG2(tmptmp) - RKCNR_V30_FIX_BIT_INT_TO_FLOAT;
-    LOGE_ANR("tmp:%d tmptmp:%d shiftBit:%d\n", tmp, tmptmp, shiftBit);
+    LOGD_ANR("tmp:%d tmptmp:%d shiftBit:%d\n", tmp, tmptmp, shiftBit);
     shiftBit = MAX(shiftBit, 0);
 
     tmp = RKCNR_V30_FIX_BIT_INV_SIGMA - shiftBit;
@@ -281,7 +281,7 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
     /* CNR_IIR_PARA2 */
     tmp = ROUND_F((1 << RKCNR_V30_FIX_BIT_IIR_WGT) * pSelect->anti_chroma_ghost);
     pFix->chroma_ghost = CLIP(tmp, 0, 0x3f);
-    tmp = ROUND_F((1 << RKCNR_V30_FIX_BIT_IIR_WGT) * pSelect->chroma_filter_wgt_clip);
+    tmp = ROUND_F((1 << 3) * pSelect->chroma_filter_wgt_clip);
     pFix->iir_uv_clip = CLIP(tmp, 0, 0x7f);
 
     /* CNR_GAUS_COE */
@@ -320,8 +320,8 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
     }
 
     /* CNR_IIR_GLOBAL_GAIN */
-    tmp = pSelect->global_gain_alpha_thumb * (1 << RKCNR_V30_G_GAIN_ALPHA_FIX_BITS);
-    pFix->iir_gain_alpha = 8;                                    // CLIP(tmp, 0, 0xf);
+    //tmp = pSelect->global_gain_alpha_thumb * (1 << RKCNR_V30_G_GAIN_ALPHA_FIX_BITS);
+    pFix->iir_gain_alpha = 8;    //ic suggest must be 8                                // CLIP(tmp, 0, 0xf);
     tmp = pSelect->global_gain_thumb * (1 << RKCNR_V30_sgmRatio);//(1 << RKCNR_V30_G_GAIN_FIX_BITS);
     pFix->iir_global_gain = CLIP(tmp, 0, 0xff);
 
@@ -427,7 +427,7 @@ AcnrV30_result_t cnr_fix_printf_V30(RK_CNR_Fix_V30_t  * pFix)
 }
 
 AcnrV30_result_t cnr_get_setting_by_name_json_V30(CalibDbV2_CNRV30_t* pCalibdbV2, char* name,
-                                                  int* tuning_idx) {
+        int* tuning_idx) {
     int i                = 0;
     AcnrV30_result_t res = ACNRV30_RET_SUCCESS;
 

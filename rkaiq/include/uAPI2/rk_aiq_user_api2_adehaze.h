@@ -24,17 +24,17 @@ typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 
 RKAIQ_BEGIN_DECLARE
 
-XCamReturn rk_aiq_user_api2_adehaze_V10_setSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                    adehaze_sw_V10_t attr);
-XCamReturn rk_aiq_user_api2_adehaze_V10_getSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_adehaze_v10_setSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                    const adehaze_sw_V10_t* attr);
+XCamReturn rk_aiq_user_api2_adehaze_v10_getSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                     adehaze_sw_V10_t* attr);
-XCamReturn rk_aiq_user_api2_adehaze_V11_setSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                    adehaze_sw_V11_t attr);
-XCamReturn rk_aiq_user_api2_adehaze_V11_getSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_adehaze_v11_setSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                    const adehaze_sw_V11_t* attr);
+XCamReturn rk_aiq_user_api2_adehaze_v11_getSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                     adehaze_sw_V11_t* attr);
-XCamReturn rk_aiq_user_api2_adehaze_V12_setSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                    adehaze_sw_V12_t attr);
-XCamReturn rk_aiq_user_api2_adehaze_V12_getSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_adehaze_v12_setSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                    const adehaze_sw_V12_t* attr);
+XCamReturn rk_aiq_user_api2_adehaze_v12_getSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                     adehaze_sw_V12_t* attr);
 
 RKAIQ_END_DECLARE

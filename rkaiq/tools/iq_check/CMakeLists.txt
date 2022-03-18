@@ -58,7 +58,7 @@ add_custom_target(
 #########################################################
 add_custom_target(
     parser_tool
-    COMMAND gcc -DJ2S_ENABLE_DESC ${PROJECT_SOURCE_DIR}/src/parser.c -o parser ${ISP_HW_VERSION}
+    COMMAND gcc -std=c99 -DJ2S_ENABLE_DESC ${PROJECT_SOURCE_DIR}/src/parser.c -o parser ${ISP_HW_VERSION}
     -I${ROOT_PROJ_DIR}/include/common
     -I${ROOT_PROJ_DIR}/include/iq_parser_v2
     -I${ROOT_PROJ_DIR}/include/iq_parser_v2/j2s

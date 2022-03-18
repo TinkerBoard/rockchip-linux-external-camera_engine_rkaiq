@@ -52,6 +52,7 @@ protected:
     virtual void deInit() {
         RkAiqHandle::deInit();
     };
+    SmartPtr<RkAiqAlgoProcResAblcIntShared> mProcResShared;
 
 private:
     // TODO

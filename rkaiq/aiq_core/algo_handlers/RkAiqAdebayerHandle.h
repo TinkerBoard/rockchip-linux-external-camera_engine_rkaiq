@@ -38,8 +38,15 @@ public:
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     // TODO add algo specific methords, this is a sample
+#if RKAIQ_HAVE_DEBAYER_V1
     XCamReturn setAttrib(adebayer_attrib_t att);
     XCamReturn getAttrib(adebayer_attrib_t* att);
+#endif
+
+#if RKAIQ_HAVE_DEBAYER_V2
+    XCamReturn setAttribV2(adebayer_v2_attrib_t att);
+    XCamReturn getAttribV2(adebayer_v2_attrib_t* att);
+#endif
 
 protected:
     virtual void init();
@@ -48,8 +55,17 @@ protected:
     };
 
 private:
+
+#if RKAIQ_HAVE_DEBAYER_V1
     adebayer_attrib_t mCurAtt;
     adebayer_attrib_t mNewAtt;
+#endif
+
+#if RKAIQ_HAVE_DEBAYER_V2
+    adebayer_v2_attrib_t mCurAttV2;
+    adebayer_v2_attrib_t mNewAttV2;
+#endif
+
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAdebayerHandleInt);

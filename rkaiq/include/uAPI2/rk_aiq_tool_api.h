@@ -46,17 +46,17 @@ int rk_aiq_tool_api_amerge_V12_SetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
 
 XCamReturn rk_aiq_tool_api_adrc_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drcAttrV10_t attr) {
     const rk_aiq_sys_ctx_t* tool_ctx = get_next_ctx(sys_ctx);
-    return rk_aiq_user_api2_adrc_V10_SetAttrib(tool_ctx, attr);
+    return rk_aiq_user_api2_adrc_v10_SetAttrib(tool_ctx, &attr);
 }
 
 XCamReturn rk_aiq_tool_api_adrc_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drcAttrV11_t attr) {
     const rk_aiq_sys_ctx_t* tool_ctx = get_next_ctx(sys_ctx);
-    return rk_aiq_user_api2_adrc_V11_SetAttrib(tool_ctx, attr);
+    return rk_aiq_user_api2_adrc_v11_SetAttrib(tool_ctx, &attr);
 }
 
 XCamReturn rk_aiq_tool_api_adrc_V12_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drcAttrV12_t attr) {
     const rk_aiq_sys_ctx_t* tool_ctx = get_next_ctx(sys_ctx);
-    return rk_aiq_user_api2_adrc_V12_SetAttrib(tool_ctx, attr);
+    return rk_aiq_user_api2_adrc_v12_SetAttrib(tool_ctx, &attr);
 }
 
 XCamReturn rk_aiq_tool_api_sysctl_swWorkingModeDyn

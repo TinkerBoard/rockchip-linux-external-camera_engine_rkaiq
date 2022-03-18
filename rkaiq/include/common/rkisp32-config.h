@@ -186,6 +186,23 @@ struct isp32_awb_gain_cfg {
 	u16 gain2_red;
 } __attribute__ ((packed));
 
+struct isp32_bls_cfg {
+	u8 enable_auto;
+	u8 en_windows;
+	u8 bls1_en;
+
+	u8 bls_samples;
+
+	struct isp2x_window bls_window1;
+	struct isp2x_window bls_window2;
+	struct isp2x_bls_fixed_val fixed_val;
+	struct isp2x_bls_fixed_val bls1_val;
+
+	u16 isp_ob_offset;
+	u16 isp_ob_predgain;
+	u32 isp_ob_max;
+} __attribute__ ((packed));
+
 struct isp32_ccm_cfg {
 	/* CTRL */
 	u8 highy_adjust_dis;
@@ -678,10 +695,6 @@ struct isp32_drc_cfg {
 	u16 gain_y[ISP32_DRC_Y_NUM];
 	u16 compres_y[ISP32_DRC_Y_NUM];
 	u16 scale_y[ISP32_DRC_Y_NUM];
-
-	u16 isp_ob_offset;
-	u16 isp_ob_predgain;
-	u32 isp_ob_max;
 } __attribute__ ((packed));
 
 struct isp32_hdrmge_cfg {
@@ -1213,31 +1226,31 @@ struct isp32_cac_cfg {
 } __attribute__ ((packed));
 
 struct isp32_isp_other_cfg {
-	struct isp21_bls_cfg bls_cfg;
-	struct isp2x_dpcc_cfg dpcc_cfg;
-	struct isp3x_lsc_cfg lsc_cfg;
-	struct isp32_awb_gain_cfg awb_gain_cfg;
-	struct isp21_gic_cfg gic_cfg;
-	struct isp32_debayer_cfg debayer_cfg;
-	struct isp32_ccm_cfg ccm_cfg;
-	struct isp3x_gammaout_cfg gammaout_cfg;
-	struct isp2x_cproc_cfg cproc_cfg;
-	struct isp2x_ie_cfg ie_cfg;
-	struct isp2x_sdg_cfg sdg_cfg;
-	struct isp32_drc_cfg drc_cfg;
-	struct isp32_hdrmge_cfg hdrmge_cfg;
-	struct isp32_dhaz_cfg dhaz_cfg;
-	struct isp2x_3dlut_cfg isp3dlut_cfg;
-	struct isp32_ldch_cfg ldch_cfg;
-	struct isp32_baynr_cfg baynr_cfg;
-	struct isp32_bay3d_cfg bay3d_cfg;
-	struct isp32_ynr_cfg ynr_cfg;
-	struct isp32_cnr_cfg cnr_cfg;
-	struct isp32_sharp_cfg sharp_cfg;
-	struct isp32_cac_cfg cac_cfg;
-	struct isp3x_gain_cfg gain_cfg;
-	struct isp21_csm_cfg csm_cfg;
-	struct isp21_cgc_cfg cgc_cfg;
+    struct isp32_bls_cfg bls_cfg;
+    struct isp2x_dpcc_cfg dpcc_cfg;
+    struct isp3x_lsc_cfg lsc_cfg;
+    struct isp32_awb_gain_cfg awb_gain_cfg;
+    struct isp21_gic_cfg gic_cfg;
+    struct isp32_debayer_cfg debayer_cfg;
+    struct isp32_ccm_cfg ccm_cfg;
+    struct isp3x_gammaout_cfg gammaout_cfg;
+    struct isp2x_cproc_cfg cproc_cfg;
+    struct isp2x_ie_cfg ie_cfg;
+    struct isp2x_sdg_cfg sdg_cfg;
+    struct isp32_drc_cfg drc_cfg;
+    struct isp32_hdrmge_cfg hdrmge_cfg;
+    struct isp32_dhaz_cfg dhaz_cfg;
+    struct isp2x_3dlut_cfg isp3dlut_cfg;
+    struct isp32_ldch_cfg ldch_cfg;
+    struct isp32_baynr_cfg baynr_cfg;
+    struct isp32_bay3d_cfg bay3d_cfg;
+    struct isp32_ynr_cfg ynr_cfg;
+    struct isp32_cnr_cfg cnr_cfg;
+    struct isp32_sharp_cfg sharp_cfg;
+    struct isp32_cac_cfg cac_cfg;
+    struct isp3x_gain_cfg gain_cfg;
+    struct isp21_csm_cfg csm_cfg;
+    struct isp21_cgc_cfg cgc_cfg;
 } __attribute__ ((packed));
 
 struct isp32_isp_meas_cfg {

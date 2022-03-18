@@ -49,6 +49,8 @@ enum XCamMessageType {
     XCAM_MESSAGE_AE_PRE_RES_OK,
     XCAM_MESSAGE_PDAF_STATS_OK,
     XCAM_MESSAGE_ORB_STATS_OK,
+    XCAM_MESSAGE_BLC_PROC_RES_OK,
+    XCAM_MESSAGE_BLC_V32_PROC_RES_OK,
 };
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -76,6 +78,9 @@ static const char* MessageType2Str[64]     = {
     [XCAM_MESSAGE_AMD_PROC_RES_OK]          = "AMD_PROC_RES",
     [XCAM_MESSAGE_AE_PRE_RES_OK]            = "AE_PRE_RES",
     [XCAM_MESSAGE_PDAF_STATS_OK]            = "PDAF_STATS",
+    [XCAM_MESSAGE_ORB_STATS_OK]             = "ORB_STATS",
+    [XCAM_MESSAGE_BLC_PROC_RES_OK]          = "BLC_PROC_RES",
+    [XCAM_MESSAGE_BLC_V32_PROC_RES_OK]      = "BLC_V32_PROC_RES",
  };
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop

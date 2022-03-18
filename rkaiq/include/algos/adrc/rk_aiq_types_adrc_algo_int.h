@@ -17,8 +17,8 @@
 #include "rk_aiq_types_adrc_stat_v200.h"
 
 typedef enum drc_OpMode_s {
-    DRC_OPMODE_AUTO = 0,  // run auto drc
-    DRC_OPMODE_MANU = 1,  // run manual drc
+    DRC_OPMODE_AUTO   = 0,  // run auto drc
+    DRC_OPMODE_MANUAL = 1,  // run manual drc
 } drc_OpMode_t;
 
 // drc attr V10
@@ -66,13 +66,18 @@ typedef struct mdrcAttr_V10_s {
     int IIR_frame;
 } mdrcAttr_V10_t;
 
+typedef struct DrcInfoV10_s {
+    DrcInfo_t CtrlInfo;
+    mdrcAttr_V10_t ValidParams;
+} DrcInfoV10_t;
+
 typedef struct drcAttrV10_s {
     rk_aiq_uapi_sync_t sync;
 
     drc_OpMode_t opMode;
     CalibDbV2_drc_V10_t stAuto;
     mdrcAttr_V10_t stManual;
-    DrcInfo_t Info;
+    DrcInfoV10_t Info;
 } drcAttrV10_t;
 
 // drc attr V11
@@ -107,13 +112,18 @@ typedef struct mdrcAttr_V11_s {
     int IIR_frame;
 } mdrcAttr_V11_t;
 
+typedef struct DrcInfoV11_s {
+    DrcInfo_t CtrlInfo;
+    mdrcAttr_V11_t ValidParams;
+} DrcInfoV11_t;
+
 typedef struct drcAttrV11_s {
     rk_aiq_uapi_sync_t sync;
 
     drc_OpMode_t opMode;
     CalibDbV2_drc_V11_t stAuto;
     mdrcAttr_V11_t stManual;
-    DrcInfo_t Info;
+    DrcInfoV11_t Info;
 } drcAttrV11_t;
 
 // drc attr V11
@@ -146,7 +156,7 @@ typedef struct mDrcLocalV12_s {
     int Space_sgm_pre;
 } mDrcLocalV12_t;
 
-typedef struct mdrcAttr_V12_drc_s {
+typedef struct mdrcAttr_V12_s {
     bool Enable;
     mDrcGain_t DrcGain;
     mHighLightV12_t HiLight;
@@ -156,22 +166,12 @@ typedef struct mdrcAttr_V12_drc_s {
     float Edge_Weit;
     bool OutPutLongFrame;
     int IIR_frame;
-} mdrcAttr_V12_drc_t;
-
-typedef struct mOBData_s {
-    int ob_offset;
-    float predgain;
-} mOBData_t;
-
-typedef struct mdrcAttr_V12_ob_s {
-    bool Enable;
-    mOBData_t OBData;
-} mdrcAttr_V12_ob_t;
-
-typedef struct mdrcAttr_V12_s {
-    mdrcAttr_V12_drc_t DrcTuningPara;
-    mdrcAttr_V12_ob_t OBTuningPara;
 } mdrcAttr_V12_t;
+
+typedef struct DrcInfoV12_s {
+    DrcInfo_t CtrlInfo;
+    mdrcAttr_V12_t ValidParams;
+} DrcInfoV12_t;
 
 typedef struct drcAttrV12_s {
     rk_aiq_uapi_sync_t sync;
@@ -179,7 +179,7 @@ typedef struct drcAttrV12_s {
     drc_OpMode_t opMode;
     CalibDbV2_drc_V12_t stAuto;
     mdrcAttr_V12_t stManual;
-    DrcInfo_t Info;
+    DrcInfoV12_t Info;
 } drcAttrV12_t;
 
 #endif

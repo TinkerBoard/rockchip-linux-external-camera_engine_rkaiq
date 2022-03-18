@@ -28,29 +28,29 @@ int getVersionInfo(rk_aiq_sys_ctx_t* ctx, char* data) {
 
 #if RKAIQ_HAVE_MERGE_V10
 int setMergeAttribV10(rk_aiq_sys_ctx_t* ctx, char* data) {
-    return rk_aiq_user_api2_amerge_V10_SetAttrib(ctx, *(mergeAttrV10_t*)data);
+    return rk_aiq_user_api2_amerge_v10_SetAttrib(ctx, (mergeAttrV10_t*)data);
 }
 
 int getMergeAttribV10(rk_aiq_sys_ctx_t* ctx, char* data) {
-    return rk_aiq_user_api2_amerge_V10_GetAttrib(ctx, (mergeAttrV10_t*)data);
+    return rk_aiq_user_api2_amerge_v10_GetAttrib(ctx, (mergeAttrV10_t*)data);
 }
 #endif
 #if RKAIQ_HAVE_MERGE_V11
 int setMergeAttribV11(rk_aiq_sys_ctx_t* ctx, char* data) {
-    return rk_aiq_user_api2_amerge_V11_SetAttrib(ctx, *(mergeAttrV11_t*)data);
+    return rk_aiq_user_api2_amerge_v11_SetAttrib(ctx, (mergeAttrV11_t*)data);
 }
 
 int getMergeAttribV11(rk_aiq_sys_ctx_t* ctx, char* data) {
-    return rk_aiq_user_api2_amerge_V11_GetAttrib(ctx, (mergeAttrV11_t*)data);
+    return rk_aiq_user_api2_amerge_v11_GetAttrib(ctx, (mergeAttrV11_t*)data);
 }
 #endif
 #if RKAIQ_HAVE_MERGE_V12
 int setMergeAttribV12(rk_aiq_sys_ctx_t* ctx, char* data) {
-    return rk_aiq_user_api2_amerge_V12_SetAttrib(ctx, *(mergeAttrV12_t*)data);
+    return rk_aiq_user_api2_amerge_v12_SetAttrib(ctx, (mergeAttrV12_t*)data);
 }
 
 int getMergeAttribV12(rk_aiq_sys_ctx_t* ctx, char* data) {
-    return rk_aiq_user_api2_amerge_V12_GetAttrib(ctx, (mergeAttrV12_t*)data);
+    return rk_aiq_user_api2_amerge_v12_GetAttrib(ctx, (mergeAttrV12_t*)data);
 }
 #endif
 
@@ -88,7 +88,7 @@ int getDehazeAttrib(rk_aiq_sys_ctx_t* ctx, char* data) {
 */
 int setCcmAttrib(rk_aiq_sys_ctx_t* ctx, char* data)
 {
-    return rk_aiq_user_api_accm_SetAttrib(ctx, *(rk_aiq_ccm_attrib_t*) data);
+    return rk_aiq_user_api_accm_SetAttrib(ctx, (rk_aiq_ccm_attrib_t*) data);
 }
 
 int getCcmAttrib(rk_aiq_sys_ctx_t* ctx, char* data)

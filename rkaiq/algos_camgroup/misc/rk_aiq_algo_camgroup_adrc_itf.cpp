@@ -145,6 +145,11 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     RkAiqAlgoCamGroupProcIn* pAdrcGrpParams = (RkAiqAlgoCamGroupProcIn*)inparams;
     RkAiqAlgoCamGroupProcOut* pAdrcGrpProcRes = (RkAiqAlgoCamGroupProcOut*)outparams;
 
+#if RKAIQ_HAVE_DRC_V12
+    // memcpy(&pAdrcGrpCtx->ablcV32_proc_res, &RkAiqAlgoCamGroupProcIn->ablcV32_proc_res,
+    // sizeof(AblcProc_t));
+#endif
+
     //update config
     bool Enable = DrcEnableSetting(pAdrcGrpCtx);
 

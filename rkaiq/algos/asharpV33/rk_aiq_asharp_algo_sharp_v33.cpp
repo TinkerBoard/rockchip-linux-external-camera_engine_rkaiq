@@ -22,8 +22,8 @@
 RKAIQ_BEGIN_DECLARE
 
 Asharp_result_V33_t sharp_select_params_by_ISO_V33(RK_SHARP_Params_V33_t* pParams,
-                                                   RK_SHARP_Params_V33_Select_t* pSelect,
-                                                   Asharp_ExpInfo_V33_t* pExpInfo) {
+        RK_SHARP_Params_V33_Select_t* pSelect,
+        Asharp_ExpInfo_V33_t* pExpInfo) {
     Asharp_result_V33_t res = ASHARP_V33_RET_SUCCESS;
 
     int i;
@@ -164,7 +164,7 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(RK_SHARP_Params_V33_t* pParam
         INTERP_V4(pParams->sharpParamsISO[gain_low].bf_gain,
                   pParams->sharpParamsISO[gain_high].bf_gain, ratio);
     pSelect->sharpParamsSelectISO.bf_add = INTERP_V4(
-        pParams->sharpParamsISO[gain_low].bf_add, pParams->sharpParamsISO[gain_high].bf_add, ratio);
+            pParams->sharpParamsISO[gain_low].bf_add, pParams->sharpParamsISO[gain_high].bf_add, ratio);
     pSelect->sharpParamsSelectISO.bf_ratio =
         INTERP_V4(pParams->sharpParamsISO[gain_low].bf_ratio,
                   pParams->sharpParamsISO[gain_high].bf_ratio, ratio);
@@ -230,8 +230,8 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(RK_SHARP_Params_V33_t* pParam
 }
 
 Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect,
-                                           RK_SHARP_Fix_V33_t* pFix, float fPercent,
-                                           Asharp_ExpInfo_V33_t *pExpInfo) {
+        RK_SHARP_Fix_V33_t* pFix, float fPercent,
+        Asharp_ExpInfo_V33_t *pExpInfo) {
     int sum_coeff, offset;
     int pbf_sigma_shift     = 0;
     int bf_sigma_shift      = 0;
@@ -259,7 +259,7 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
         return ASHARP_V33_RET_NULL_POINTER;
     }
 
-    LOGE_ASHARP("%s:%d strength:%f raw:width:%d height:%d\n",
+    LOGD_ASHARP("%s:%d strength:%f raw:width:%d height:%d\n",
                 __FUNCTION__, __LINE__,
                 fPercent, pExpInfo->rawHeight, pExpInfo->rawWidth);
 
@@ -274,29 +274,29 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
 
     // CENTER
     pFix->sharp_center_mode   = pSelect->center_mode;
-    tmp = cols /2;
+    tmp = cols / 2;
     pFix->sharp_center_wid = CLIP(tmp, 0, 8191);
-    tmp = rows /2;
+    tmp = rows / 2;
     pFix->sharp_center_het = CLIP(tmp, 0, 8191);
 
     // SHARP_SHARP_RATIO  (0x0004)
     tmp                     = (int)ROUND_F(pSelect->sharpParamsSelectISO.pbf_ratio / fPercent *
-                       (1 << RK_SHARP_V33_BF_RATIO_FIX_BITS));
+                                           (1 << RK_SHARP_V33_BF_RATIO_FIX_BITS));
     pFix->sharp_pbf_ratio   = CLIP(tmp, 0, 255);
     tmp                     = (int)ROUND_F(pSelect->sharpParamsSelectISO.gaus_ratio / fPercent *
-                       (1 << RK_SHARP_V33_GAUS_RATIO_FIX_BITS));
+                                           (1 << RK_SHARP_V33_GAUS_RATIO_FIX_BITS));
     pFix->sharp_gaus_ratio  = CLIP(tmp, 0, 255);
     tmp                     = (int)ROUND_F(pSelect->sharpParamsSelectISO.sharp_ratio * fPercent *
-                       (1 << RK_SHARP_V33_SHARP_RATIO_FIX_BITS));
+                                           (1 << RK_SHARP_V33_SHARP_RATIO_FIX_BITS));
     pFix->sharp_sharp_ratio = CLIP(tmp, 0, 127);
     tmp                     = (int)ROUND_F(pSelect->sharpParamsSelectISO.bf_ratio / fPercent *
-                       (1 << RK_SHARP_V33_BF_RATIO_FIX_BITS));
+                                           (1 << RK_SHARP_V33_BF_RATIO_FIX_BITS));
     pFix->sharp_bf_ratio    = CLIP(tmp, 0, 255);
 
     // SHARP_SHARP_LUMA_DX (0x0008)
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM - 1; i++) {
         tmp                    = (int16_t)LOG2(pSelect->sharpParamsSelectISO.luma_point[i + 1] -
-                            pSelect->sharpParamsSelectISO.luma_point[i]);
+                                               pSelect->sharpParamsSelectISO.luma_point[i]);
         pFix->sharp_luma_dx[i] = CLIP(tmp, 0, 15);
     }
 
@@ -310,9 +310,9 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     short sigma_bits[3];
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
         int cur_sigma = FLOOR(
-            (pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.pbf_gain +
-             pSelect->sharpParamsSelectISO.pbf_add) /
-            fPercent);
+                            (pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.pbf_gain +
+                             pSelect->sharpParamsSelectISO.pbf_add) /
+                            fPercent);
         if (max_val < cur_sigma) max_val = cur_sigma;
         if (min_val > cur_sigma) min_val = cur_sigma;
     }
@@ -322,10 +322,10 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     pbf_sigma_shift = sigma_bits[2] - 5;
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
         tmp = (int16_t)ROUND_F(
-            (float)1 /
-            (pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.pbf_gain +
-             pSelect->sharpParamsSelectISO.pbf_add) *
-            fPercent * (1 << sigma_bits[2]));
+                  (float)1 /
+                  (pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.pbf_gain +
+                   pSelect->sharpParamsSelectISO.pbf_add) *
+                  fPercent * (1 << sigma_bits[2]));
         pFix->sharp_pbf_sigma_inv[i] = CLIP(tmp, 0, 4095);
     }
 
@@ -338,9 +338,9 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     shf_bits        = 0;
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
         int cur_sigma = FLOOR(
-            (pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.bf_gain +
-             pSelect->sharpParamsSelectISO.bf_add) /
-            fPercent);
+                            (pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.bf_gain +
+                             pSelect->sharpParamsSelectISO.bf_add) /
+                            fPercent);
         if (max_val < cur_sigma) max_val = cur_sigma;
         if (min_val > cur_sigma) min_val = cur_sigma;
     }
@@ -350,10 +350,10 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     bf_sigma_shift = sigma_bits[2] - 5;
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
         tmp = (int16_t)ROUND_F(
-            (float)1 /
-            (pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.bf_gain +
-             pSelect->sharpParamsSelectISO.bf_add) *
-            fPercent * (1 << sigma_bits[2]));
+                  (float)1 /
+                  (pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.bf_gain +
+                   pSelect->sharpParamsSelectISO.bf_add) *
+                  fPercent * (1 << sigma_bits[2]));
         pFix->sharp_bf_sigma_inv[i] = CLIP(tmp, 0, 4095);
     }
 
@@ -524,29 +524,29 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     tmp = pSelect->sharpParamsSelectISO.global_gain * (1 << RK_SHARP_V33_GLOBAL_GAIN_FIX_BITS);
     pFix->sharp_global_gain = CLIP(tmp, 0, 1023);
     tmp                     = pSelect->sharpParamsSelectISO.global_gain_alpha *
-          (1 << RK_SHARP_V33_GLOBAL_GAIN_ALPHA_FIX_BITS);
+                              (1 << RK_SHARP_V33_GLOBAL_GAIN_ALPHA_FIX_BITS);
     pFix->sharp_global_gain_alpha = CLIP(tmp, 0, 15);
     tmp                           = pSelect->sharpParamsSelectISO.local_gainscale *
-          (1 << RK_SHARP_V33_LOCAL_GAIN_SACLE_FIX_BITS);
+                                    (1 << RK_SHARP_V33_LOCAL_GAIN_SACLE_FIX_BITS);
     pFix->sharp_local_gainscale = CLIP(tmp, 0, 255);
 
     // gain adjust strength
     for (int i = 0; i < RK_SHARP_V33_SHARP_ADJ_GAIN_TABLE_LEN; i++) {
         tmp                     = ROUND_F(pSelect->sharpParamsSelectISO.gain_adj_sharp_strength[i] *
-                      (1 << RK_SHARP_V33_ADJ_GAIN_FIX_BITS));
+                                          (1 << RK_SHARP_V33_ADJ_GAIN_FIX_BITS));
         pFix->sharp_gain_adj[i] = CLIP(tmp, 0, 32767);
     }
 
     // gain dis strength
     for (int i = 0; i < RK_SHARP_V33_STRENGTH_TABLE_LEN; i++) {
         tmp                     = ROUND_F(pSelect->sharpParamsSelectISO.dis_adj_sharp_strength[i] *
-                      (1 << RK_SHARP_V33_STRENGTH_TABLE_FIX_BITS));
+                                          (1 << RK_SHARP_V33_STRENGTH_TABLE_FIX_BITS));
         pFix->sharp_strength[i] = CLIP(tmp, 0, 255);
     }
 
     // texture: sharp enhence strength
     tmp                        = ROUND_F(pSelect->sharpParamsSelectISO.noiseclip_strength *
-                  (1 << RK_SHARP_V33_ADJ_GAIN_FIX_BITS));
+                                         (1 << RK_SHARP_V33_ADJ_GAIN_FIX_BITS));
     pFix->sharp_noise_strength = CLIP(tmp, 0, 16383);
     tmp                        = ROUND_F(pSelect->sharpParamsSelectISO.enhance_bit);
     pFix->sharp_enhance_bit    = CLIP(tmp, 0, 15);
@@ -651,7 +651,7 @@ Asharp_result_V33_t sharp_fix_printf_V33(RK_SHARP_Fix_V33_t* pFix) {
 }
 
 Asharp_result_V33_t sharp_get_setting_by_name_json_V33(CalibDbV2_SharpV33_t* pCalibdbV2, char* name,
-                                                       int* tuning_idx) {
+        int* tuning_idx) {
     int i                   = 0;
     Asharp_result_V33_t res = ASHARP_V33_RET_SUCCESS;
 
@@ -661,7 +661,7 @@ Asharp_result_V33_t sharp_get_setting_by_name_json_V33(CalibDbV2_SharpV33_t* pCa
 }
 
 Asharp_result_V33_t sharp_init_params_json_V33(RK_SHARP_Params_V33_t* pSharpParams,
-                                               CalibDbV2_SharpV33_t* pCalibdbV2, int tuning_idx) {
+        CalibDbV2_SharpV33_t* pCalibdbV2, int tuning_idx) {
     Asharp_result_V33_t res = ASHARP_V33_RET_SUCCESS;
     int i                   = 0;
     int j                   = 0;
@@ -685,8 +685,8 @@ Asharp_result_V33_t sharp_init_params_json_V33(RK_SHARP_Params_V33_t* pSharpPara
     pSharpParams->center_mode         = pCalibdbV2->TuningPara.Center_Mode;
 
     for (i = 0; i < pCalibdbV2->TuningPara.Setting[tuning_idx].Tuning_ISO_len &&
-                i < RK_SHARP_V33_MAX_ISO_NUM;
-         i++) {
+            i < RK_SHARP_V33_MAX_ISO_NUM;
+            i++) {
         pTuningISO           = &pCalibdbV2->TuningPara.Setting[tuning_idx].Tuning_ISO[i];
         pSharpParams->iso[i] = pTuningISO->iso;
 
@@ -759,8 +759,8 @@ Asharp_result_V33_t sharp_init_params_json_V33(RK_SHARP_Params_V33_t* pSharpPara
 }
 
 Asharp_result_V33_t sharp_config_setting_param_json_V33(RK_SHARP_Params_V33_t* pParams,
-                                                        CalibDbV2_SharpV33_t* pCalibdbV2,
-                                                        char* param_mode, char* snr_name) {
+        CalibDbV2_SharpV33_t* pCalibdbV2,
+        char* param_mode, char* snr_name) {
     Asharp_result_V33_t res = ASHARP_V33_RET_SUCCESS;
     int tuning_idx          = 0;
 

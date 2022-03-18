@@ -128,6 +128,7 @@ static calibdb_ctx_member_offset_info_t info_CamCalibDbV2ContextIsp30_t[] = {
     {"cac_v03", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(cac_v03)},
     {"cac_v10", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(cac_v10)},
     {"af_v30", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(af_v30)},
+    {"gain_v2", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(gain_v2)},
     {NULL, 0},
 };
 #endif
@@ -139,7 +140,7 @@ static calibdb_ctx_member_offset_info_t info_CamCalibDbV2ContextIsp30_t[] = {
 static calibdb_ctx_member_offset_info_t info_CamCalibDbV2ContextIsp32_t[] = {
     {"ae_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(ae_calib)},
     {"wb_v32", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(wb_v32)},
-    {"ablc_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(ablc_calib)},
+    {"ablcV32_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(ablcV32_calib)},
     {"adegamma_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(adegamma_calib)},
     {"agic_calib_v21", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(agic_calib_v21)},
     {"debayer_v2", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(debayer_v2)},
@@ -163,6 +164,7 @@ static calibdb_ctx_member_offset_info_t info_CamCalibDbV2ContextIsp32_t[] = {
     {"bayertnr_v23", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(bayertnr_v23)},
     {"cac_v11", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(cac_v11)},
     {"af_v31", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(af_v31)},
+    {"gain_v2", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(gain_v2)},
     {NULL, 0},
 };
 #endif

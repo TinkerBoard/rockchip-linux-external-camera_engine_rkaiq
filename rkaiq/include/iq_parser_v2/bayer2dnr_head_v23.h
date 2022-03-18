@@ -88,21 +88,29 @@ typedef struct CalibDbV2_Bayer2dnr_V23_TuningPara_Setting_ISO_s {
     // M4_NUMBER_DESC("gain_scale", "f32", M4_RANGE(0, 1.0), "1.0", M4_DIGIT(2))
     float gain_scale;
 
-    // M4_NUMBER_DESC("pix_diff", "f32", M4_RANGE(0, 1.0), "1.0", M4_DIGIT(0))
+    // M4_NUMBER_DESC("pix_diff", "s32", M4_RANGE(0, 16383), "16383", M4_DIGIT(0))
     int pix_diff;
 
-    // M4_NUMBER_DESC("diff_thld", "f32", M4_RANGE(0, 1.0), "1.0", M4_DIGIT(0))
+    // M4_NUMBER_DESC("diff_thld", "s32", M4_RANGE(0, 1023), "1023", M4_DIGIT(0))
     int diff_thld;
 
-	 // M4_NUMBER_DESC("trans_en", "s32", M4_RANGE(0, 1), "0.0", M4_DIGIT(0))
-    int trans_en;
-    // M4_NUMBER_DESC("trans_mode", "s32", M4_RANGE(0, 256), "0", M4_DIGIT(0))
+
+    // M4_NUMBER_DESC("trans_mode", "s32", M4_RANGE(0, 3), "0", M4_DIGIT(0))
     int trans_mode;
-    // M4_NUMBER_DESC("trans_offset", "s32", M4_RANGE(0, 256), "0.0", M4_DIGIT(0))
+    // M4_NUMBER_DESC("trans_offset", "s32", M4_RANGE(0, 8191), "256", M4_DIGIT(0))
     int trans_offset;
-    // M4_NUMBER_DESC("itrans_offset", "s32", M4_RANGE(0, 32768), "1024", M4_DIGIT(0))
+    // M4_NUMBER_DESC("itrans_offset", "s32", M4_RANGE(0, 65535), "32768", M4_DIGIT(0))
     int itrans_offset;
-	
+    // M4_NUMBER_DESC("trans_datmax", "s32", M4_RANGE(0, 1048575), "1048575", M4_DIGIT(0))
+    int trans_datmax;
+
+
+    // M4_NUMBER_DESC("hdr_dgain_scale_s", "f32", M4_RANGE(0, 128.0), "1.0", M4_DIGIT(2))
+    float hdr_dgain_scale_s;
+
+    // M4_NUMBER_DESC("hdr_dgain_scale_m", "f32", M4_RANGE(0, 128.0), "1.0", M4_DIGIT(2))
+    float hdr_dgain_scale_m;
+
     // M4_ARRAY_TABLE_DESC("gain_adj", "array_table_ui", "none")
     CalibDbV2_Bayer2dnr_V23_TuningPara_Setting_ISO_gain_t gain_adj;
 
@@ -118,9 +126,12 @@ typedef struct CalibDbV2_Bayer2dnr_V23_TuningPara_Setting_s {
     int Tuning_ISO_len;
 } CalibDbV2_Bayer2dnr_V23_TuningPara_Setting_t;
 
+
 typedef struct CalibDbV2_Bayer2dnr_V23_TuningPara_s {
     // M4_BOOL_DESC("enable", "1")
     bool enable;
+    // M4_BOOL_DESC("hdrdgain_ctrl_en", "0")
+    bool hdrdgain_ctrl_en;
     // M4_STRUCT_LIST_DESC("Setting", M4_SIZE_DYNAMIC, "double_index_list")
     CalibDbV2_Bayer2dnr_V23_TuningPara_Setting_t *Setting;
     int Setting_len;

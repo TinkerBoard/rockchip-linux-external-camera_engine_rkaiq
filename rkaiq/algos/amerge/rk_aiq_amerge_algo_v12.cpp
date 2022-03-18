@@ -769,12 +769,15 @@ XCamReturn AmergeInit(AmergeContext_t** ppAmergeCtx, CamCalibDbV2Context_t* pCal
     pAmergeCtx->mergeAttrV12.CtlInfo.MoveCoef = 0.0;
 
     pAmergeCtx->mergeAttrV12.stManual.BaseFrm                           = BASEFRAME_LONG;
+    pAmergeCtx->mergeAttrV12.stManual.LongFrmModeData.EnableEachChn       = false;
     pAmergeCtx->mergeAttrV12.stManual.LongFrmModeData.OECurve.Smooth    = 0.4;
     pAmergeCtx->mergeAttrV12.stManual.LongFrmModeData.OECurve.Offset    = 210;
     pAmergeCtx->mergeAttrV12.stManual.LongFrmModeData.MDCurve.LM_smooth = 0.4;
     pAmergeCtx->mergeAttrV12.stManual.LongFrmModeData.MDCurve.LM_offset = 38;
     pAmergeCtx->mergeAttrV12.stManual.LongFrmModeData.MDCurve.MS_smooth = 0.4;
     pAmergeCtx->mergeAttrV12.stManual.LongFrmModeData.MDCurve.MS_offset = 38;
+    pAmergeCtx->mergeAttrV12.stManual.LongFrmModeData.EachChnCurve.Smooth = 0.4;
+    pAmergeCtx->mergeAttrV12.stManual.LongFrmModeData.EachChnCurve.Offset = 0.38;
 
     pAmergeCtx->mergeAttrV12.stManual.ShortFrmModeData.OECurve.Smooth  = 0.4;
     pAmergeCtx->mergeAttrV12.stManual.ShortFrmModeData.OECurve.Offset  = 210;

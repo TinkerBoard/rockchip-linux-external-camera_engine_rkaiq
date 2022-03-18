@@ -15,28 +15,24 @@ typedef struct adebayer_attrib_auto_s {
     uint8_t     high_freq_thresh;
 } adebayer_attrib_auto_t;
 
-
-//manual params
-//typedef AdebayerSeletedParamV1_t adebayer_attrib_manual_t;
-
 typedef struct adebayer_attrib_s {
     rk_aiq_uapi_sync_t          sync;
-
-    uint8_t                     enable;
-
     rk_aiq_debayer_op_mode_t    mode;
 
-#if RKAIQ_HAVE_DEBAYER_V1
+    uint8_t                     enable;
     AdebayerSeletedParamV1_t    stManual;
     adebayer_attrib_auto_t      stAuto;
-#endif
-
-#if RKAIQ_HAVE_DEBAYER_V2
-    AdebayerSeletedParamV2_t    stManual;
-    CalibDbV2_Debayer_Tuning_t  stAuto;
-#endif
 
 } adebayer_attrib_t;
+
+typedef struct adebayer_v2_attrib_s {
+    rk_aiq_uapi_sync_t          sync;
+    rk_aiq_debayer_op_mode_t    mode;
+
+    AdebayerSeletedParamV2_t    stManual;
+    CalibDbV2_Debayer_Tuning_t  stAuto;
+
+} adebayer_v2_attrib_t;
 
 // need_sync means the implementation should consider
 // the thread synchronization
@@ -58,6 +54,21 @@ rk_aiq_uapi_adebayer_GetAttrib
 (
     RkAiqAlgoContext*  ctx,
     adebayer_attrib_t* attr
+);
+
+XCamReturn
+rk_aiq_uapi_adebayer_v2_SetAttrib
+(
+    RkAiqAlgoContext* ctx,
+    adebayer_v2_attrib_t attr,
+    bool need_sync
+);
+
+XCamReturn
+rk_aiq_uapi_adebayer_v2_GetAttrib
+(
+    RkAiqAlgoContext*  ctx,
+    adebayer_v2_attrib_t* attr
 );
 
 #endif//_RK_AIQ_UAPI_ADEBAYER_INT_H_

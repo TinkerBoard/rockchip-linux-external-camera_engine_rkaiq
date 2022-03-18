@@ -140,6 +140,7 @@ AdebayerInit
     //init other params
     pAdebayerCtx->mode = RK_AIQ_DEBAYER_MODE_AUTO;
     pAdebayerCtx->state = ADEBAYER_STATE_INITIALIZED;
+    pAdebayerCtx->is_reconfig = false;
 
     LOGV_ADEBAYER("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return XCAM_RETURN_NO_ERROR;
@@ -483,7 +484,7 @@ XCamReturn
 AdebayerGetProcResult
 (
     AdebayerContext_t*    pAdebayerCtx,
-    AdebayerProcResult_t* pAdebayerResult
+    AdebayerProcResultV2_t* pAdebayerResult
 )
 {
     LOGI_ADEBAYER("%s(%d): enter!\n", __FUNCTION__, __LINE__);

@@ -174,6 +174,15 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     }
     stExpInfo.snr_mode = 0;
 
+    stExpInfo.blc_ob_predgain = 0.0f;
+    if(pAbayertnrProcParams != NULL) {
+        LOGD_ANR(" predgain:%f\n",
+                 pAbayertnrProcParams->stAblcV32_proc_res.isp_ob_predgain);
+        stExpInfo.blc_ob_predgain = pAbayertnrProcParams->stAblcV32_proc_res.isp_ob_predgain;
+        if(stExpInfo.blc_ob_predgain != pAbayertnrCtx->stExpInfo.blc_ob_predgain) {
+            pAbayertnrCtx->isReCalculate |= 1;
+        }
+    }
 #if 1// TODO Merge:
     XCamVideoBuffer* xCamAePreRes = pAbayertnrProcParams->com.u.proc.res_comb->ae_pre_res;
     RkAiqAlgoPreResAe* pAEPreRes = nullptr;

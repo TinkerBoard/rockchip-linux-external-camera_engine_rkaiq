@@ -264,30 +264,9 @@ typedef struct CalibDbV2_Adrc_V12_s {
     float damp;
 } CalibDbV2_Adrc_V12_t;
 
-typedef struct OBData_s {
-    // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,100), M4_RANGE(50,102400), "0",M4_DIGIT(2), M4_DYNAMIC(1))
-    float* ISO;
-    int ISO_len;
-    // M4_ARRAY_DESC("ob_offset", "u16", M4_SIZE(1,100), M4_RANGE(0,512), "4",M4_DIGIT(0), M4_DYNAMIC(1))
-    int* ob_offset;
-    int ob_offset_len;
-    // M4_ARRAY_DESC("predgain", "f32", M4_SIZE(1,100), M4_RANGE(1,256), "4",M4_DIGIT(3), M4_DYNAMIC(1))
-    float* predgain;
-    int predgain_len;
-} OBData_t;
-
-typedef struct CalibDbV2_ob_V12_s {
-    // M4_BOOL_DESC("Enable", "0")
-    bool Enable;
-    // M4_ARRAY_TABLE_DESC("OBData", "array_table_ui", "none")
-    OBData_t OBData;
-} CalibDbV2_ob_V12_t;
-
 typedef struct CalibDbV2_drc_V12_s {
     // M4_STRUCT_DESC("DrcTuningPara", "normal_ui_style")
     CalibDbV2_Adrc_V12_t DrcTuningPara;
-    // M4_STRUCT_DESC("OBTuningPara", "normal_ui_style")
-    CalibDbV2_ob_V12_t OBTuningPara;
 } CalibDbV2_drc_V12_t;
 
 #pragma once

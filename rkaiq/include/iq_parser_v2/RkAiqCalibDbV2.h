@@ -27,6 +27,8 @@
 
 #include "RkAiqCalibDbTypesV2.h"
 #include "RkAiqCalibDbV2Helper.h"
+#include "ablc_head.h"
+#include "ablc_head_V32.h"
 #include "config.h"
 #include "j2s.h"
 #include "rk_aiq_algo_des.h"
@@ -246,6 +248,9 @@ private:
 // isp 32
 #if RKAIQ_HAVE_AWB_V32
     static int CamCalibDbFreeAwbV32Ctx(CalibDbV2_Wb_Para_V32_t* awb);
+#endif
+#if RKAIQ_HAVE_BLC_V32
+    static int CamCalibDbFreeBlcV32Ctx(CalibDbV2_Blc_V32_t* blc_v32);
 #endif
 #if RKAIQ_HAVE_DEBAYER_V2
     static int CamCalibDbFreeDebayerV2Ctx(CalibDbV2_Debayer_v2_t * debayer_v2);

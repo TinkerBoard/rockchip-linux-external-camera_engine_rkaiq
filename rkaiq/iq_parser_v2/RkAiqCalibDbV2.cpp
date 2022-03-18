@@ -1038,17 +1038,17 @@ int RkAiqCalibDbV2::CamCalibDbFreeAwbV21Ctx(CalibDbV2_Wb_Para_V21_t* awb)
 int RkAiqCalibDbV2::CamCalibDbFreeAwbV32Ctx(CalibDbV2_Wb_Para_V32_t* awb)
 {
     CalibDbV2_Wb_Awb_Para_V32_t* autoPara = &awb->autoPara;
-    CalibDbV2_Awb_Blc_data_t* BLC_Data = &autoPara->blc2ForAwb.BLC_Data;
-    if (BLC_Data->ISO)
-        calib_free(BLC_Data->ISO);
-    if (BLC_Data->R_Channel)
-        calib_free(BLC_Data->R_Channel);
-    if (BLC_Data->Gr_Channel)
-        calib_free(BLC_Data->Gr_Channel);
-    if (BLC_Data->Gb_Channel)
-        calib_free(BLC_Data->Gb_Channel);
-    if (BLC_Data->B_Channel)
-        calib_free(BLC_Data->B_Channel);
+    CalibDbV2_Awb_offset_data_t* offset = &autoPara->blc2ForAwb.offset;
+    if (offset->ISO)
+        calib_free(offset->ISO);
+    if (offset->R_Channel)
+        calib_free(offset->R_Channel);
+    if (offset->Gr_Channel)
+        calib_free(offset->Gr_Channel);
+    if (offset->Gb_Channel)
+        calib_free(offset->Gb_Channel);
+    if (offset->B_Channel)
+        calib_free(offset->B_Channel);
 
 
     CalibDbV2_Awb_Luma_Weight_t* wpDiffLumaWeight = &autoPara->wpDiffLumaWeight;
@@ -1203,6 +1203,48 @@ int RkAiqCalibDbV2::CamCalibDbFreeBlcCtx(CalibDbV2_Ablc_t* blc)
 }
 #endif
 
+#if RKAIQ_HAVE_BLC_V32
+int RkAiqCalibDbV2::CamCalibDbFreeBlcV32Ctx(CalibDbV2_Blc_V32_t* blc_v32)
+{
+    AblcV32ParaV2_t* Blc0TuingPara = &blc_v32->Blc0TuningPara;
+    AblcV32ParaV2_t* Blc1TuingPara = &blc_v32->Blc1TuningPara;
+    AblcV32OBPara_t* BlcOBTuningPara = &blc_v32->BlcObPara;
+    Blc_data_V32_t* BLC0_Data = &Blc0TuingPara->BLC_Data;
+    Blc_data_V32_t* BLC1_Data = &Blc1TuingPara->BLC_Data;
+    Blc_ob_dataV32_t* BLC_OB_Data = &BlcOBTuningPara->BLC_OB_Data;
+
+    if (BLC0_Data->ISO)
+        calib_free(BLC0_Data->ISO);
+    if (BLC0_Data->R_Channel)
+        calib_free(BLC0_Data->R_Channel);
+    if (BLC0_Data->Gr_Channel)
+        calib_free(BLC0_Data->Gr_Channel);
+    if (BLC0_Data->Gb_Channel)
+        calib_free(BLC0_Data->Gb_Channel);
+    if (BLC0_Data->B_Channel)
+        calib_free(BLC0_Data->B_Channel);
+
+    if (BLC1_Data->ISO)
+        calib_free(BLC1_Data->ISO);
+    if (BLC1_Data->R_Channel)
+        calib_free(BLC1_Data->R_Channel);
+    if (BLC1_Data->Gr_Channel)
+        calib_free(BLC1_Data->Gr_Channel);
+    if (BLC1_Data->Gb_Channel)
+        calib_free(BLC1_Data->Gb_Channel);
+    if (BLC1_Data->B_Channel)
+        calib_free(BLC1_Data->B_Channel);
+
+    if (BLC_OB_Data->ISO)
+        calib_free(BLC_OB_Data->ISO);
+    if (BLC_OB_Data->isp_ob_Offset)
+        calib_free(BLC_OB_Data->isp_ob_Offset);
+    if (BLC_OB_Data->isp_ob_preDgain)
+        calib_free(BLC_OB_Data->isp_ob_preDgain);
+
+    return 0;
+}
+#endif
 #if RKAIQ_HAVE_GIC_V21
 int RkAiqCalibDbV2::CamCalibDbFreeGicV21Ctx(CalibDbV2_Gic_V21_t* gic)
 {
@@ -1618,12 +1660,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeDrcV12Ctx(CalibDbV2_drc_V12_t* drc) {
     MotionData_t* MotionData = &LocalSetting->MotionData;
     if (MotionData->MotionCoef) calib_free(MotionData->MotionCoef);
     if (MotionData->MotionStr) calib_free(MotionData->MotionStr);
-
-    CalibDbV2_ob_V12_t* OBTuningPara = &drc->OBTuningPara;
-    OBData_t* OBData                 = &OBTuningPara->OBData;
-    if (OBData->ISO) calib_free(OBData->ISO);
-    if (OBData->ob_offset) calib_free(OBData->ob_offset);
-    if (OBData->predgain) calib_free(OBData->predgain);
 
     return 0;
 }
@@ -2616,6 +2652,13 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
         (CalibDbV2_Ablc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ablc_calib));
     if (ablc_calib) CamCalibDbFreeBlcCtx(ablc_calib);
 #endif
+
+#if RKAIQ_HAVE_BLC_V32
+    CalibDbV2_Blc_V32_t* ablcV32_calib =
+        (CalibDbV2_Blc_V32_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ablcV32_calib));
+    if (ablcV32_calib) CamCalibDbFreeBlcV32Ctx(ablcV32_calib);
+#endif
+
 #if RKAIQ_HAVE_GIC_V21
     CalibDbV2_Gic_V21_t *agic_calib_v21 =
         (CalibDbV2_Gic_V21_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, agic_calib_v21));

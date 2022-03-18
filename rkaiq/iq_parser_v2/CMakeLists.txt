@@ -39,8 +39,8 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/RkAiqCalibDbTypesV2_M4.h
 #                BUILD HOST PARSER tools                 #
 #########################################################
 add_custom_command(
-    OUTPUT ${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s/j2s_generated.h
-    COMMAND gcc -DJ2S_ENABLE_DESC ${CMAKE_SOURCE_DIR}/tools/iq_check/src/parser.c -o parser ${ISP_HW_VERSION}
+    OUTPUT ${CMAKE_BINARY_DIR}/j2s_generated.h
+    COMMAND gcc -std=gnu99 -DJ2S_ENABLE_DESC ${CMAKE_SOURCE_DIR}/tools/iq_check/src/parser.c -o parser ${ISP_HW_VERSION}
     -I${CMAKE_SOURCE_DIR}/include/common
     -I${CMAKE_SOURCE_DIR}/
     -I${CMAKE_SOURCE_DIR}/include/uAPI2
@@ -49,9 +49,9 @@ add_custom_command(
     -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s
     COMMAND ${CMAKE_SOURCE_DIR}/tools/iq_check/script/headerprocess.sh
     ${CMAKE_SOURCE_DIR}/include/iq_parser_v2/RkAiqCalibDbTypesV2.h
-    ${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s/j2s_generated.h
+    ${CMAKE_BINARY_DIR}/j2s_generated.h
     COMMAND ${CMAKE_SOURCE_DIR}/tools/iq_check/bin/parser RkAiqCalibDbTypesV2_M4.h CamCalibDbProj_t >>
-    ${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s/j2s_generated.h
+    ${CMAKE_BINARY_DIR}/j2s_generated.h
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/RkAiqCalibDbTypesV2_M4.h
     )
 
@@ -60,7 +60,7 @@ add_custom_command(
 #########################################################
 add_custom_target(
     j2s_parser
-    COMMAND gcc -DJ2S_ENABLE_DESC -o dump ${J2S_SRC} ${ISP_HW_VERSION}
+    COMMAND gcc -std=gnu99 -DJ2S_ENABLE_DESC -o dump ${J2S_SRC} ${ISP_HW_VERSION}
     ${CMAKE_SOURCE_DIR}/tools/iq_check/src/dump.c
     -I${CMAKE_SOURCE_DIR}/include/common
     -I${CMAKE_SOURCE_DIR}/
@@ -68,12 +68,13 @@ add_custom_target(
     -I${CMAKE_SOURCE_DIR}/include/algos
     -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2
     -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s
+    -I${CMAKE_BINARY_DIR}/
 
     COMMAND ./dump --template > .j2s_template.json
     COMMAND cp ${CMAKE_SOURCE_DIR}/tools/iq_check/script/dump_template.sh ./
     COMMAND ./dump_template.sh
-    ${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s/j2s_generated_template_json.h
-    DEPENDS ${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s/j2s_generated.h
+    ${CMAKE_BINARY_DIR}/j2s_generated_template_json.h
+    DEPENDS ${CMAKE_BINARY_DIR}/j2s_generated.h
     )
 
 SET(IQ_PARSERV2_SRC

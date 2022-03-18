@@ -24,17 +24,17 @@ typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 
 RKAIQ_BEGIN_DECLARE
 
-XCamReturn rk_aiq_user_api2_amerge_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                 mergeAttrV10_t attr);
-XCamReturn rk_aiq_user_api2_amerge_V10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_amerge_v10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 const mergeAttrV10_t* attr);
+XCamReturn rk_aiq_user_api2_amerge_v10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                  mergeAttrV10_t* attr);
-XCamReturn rk_aiq_user_api2_amerge_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                 mergeAttrV11_t attr);
-XCamReturn rk_aiq_user_api2_amerge_V11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_amerge_v11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 const mergeAttrV11_t* attr);
+XCamReturn rk_aiq_user_api2_amerge_v11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                  mergeAttrV11_t* attr);
-XCamReturn rk_aiq_user_api2_amerge_V12_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                 mergeAttrV12_t attr);
-XCamReturn rk_aiq_user_api2_amerge_V12_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_amerge_v12_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 const mergeAttrV12_t* attr);
+XCamReturn rk_aiq_user_api2_amerge_v12_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                  mergeAttrV12_t* attr);
 
 RKAIQ_END_DECLARE

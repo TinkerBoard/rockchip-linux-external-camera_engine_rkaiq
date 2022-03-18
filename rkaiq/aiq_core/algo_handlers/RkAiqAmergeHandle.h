@@ -36,15 +36,15 @@ class RkAiqAmergeHandleInt : virtual public RkAiqHandle {
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
 #if RKAIQ_HAVE_MERGE_V10
-    XCamReturn setAttribV10(mergeAttrV10_t att);
+    XCamReturn setAttribV10(const mergeAttrV10_t* att);
     XCamReturn getAttribV10(mergeAttrV10_t* att);
 #endif
 #if RKAIQ_HAVE_MERGE_V11
-    XCamReturn setAttribV11(mergeAttrV11_t att);
+    XCamReturn setAttribV11(const mergeAttrV11_t* att);
     XCamReturn getAttribV11(mergeAttrV11_t* att);
 #endif
 #if RKAIQ_HAVE_MERGE_V12
-    XCamReturn setAttribV12(mergeAttrV12_t att);
+    XCamReturn setAttribV12(const mergeAttrV12_t* att);
     XCamReturn getAttribV12(mergeAttrV12_t* att);
 #endif
 

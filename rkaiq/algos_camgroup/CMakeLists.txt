@@ -9,7 +9,9 @@ endif()
 cmake_minimum_required(VERSION 2.8)
 
 # surpress CXX_VISIBILITY_PRESET warning
-cmake_policy(SET CMP0063 NEW)
+if (POLICY CMP0063) # Visibility
+    cmake_policy(SET CMP0063 NEW)
+endif (POLICY CMP0063)
 
 include_directories(
 	../xcore
@@ -88,7 +90,7 @@ set (MISC_SRC
 	misc/rk_aiq_algo_camgroup_adpcc_itf.cpp
 	misc/rk_aiq_algo_camgroup_accm_itf.cpp
 	misc/rk_aiq_algo_camgroup_a3dlut_itf.cpp
-	misc/rk_aiq_algo_camgroup_adhaz_itf.cpp
+	misc/rk_aiq_algo_camgroup_adehaze_itf.cpp
 	misc/rk_aiq_algo_camgroup_agamma_itf.cpp
 	misc/rk_aiq_algo_camgroup_amerge_itf.cpp
 	misc/rk_aiq_algo_camgroup_adrc_itf.cpp
@@ -108,6 +110,7 @@ set (MISC_SRC
 	acnr/rk_aiq_algo_camgroup_acnr_itf.cpp
 	asharp3/rk_aiq_algo_camgroup_asharp_itf_v3.cpp
 	abayernr2/rk_aiq_algo_camgroup_abayernr_itf_v2.cpp
+	again2/rk_aiq_uapi_camgroup_again_int_v2.cpp
 )
 add_library(rkaiq_camgroup_misc STATIC ${MISC_SRC})
 set_target_properties(rkaiq_camgroup_misc PROPERTIES FOLDER "algos_camgroup/misc")

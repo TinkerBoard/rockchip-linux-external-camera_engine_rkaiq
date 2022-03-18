@@ -43,13 +43,15 @@ private:
     void convertAiqUvnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                      rk_aiq_isp_cnr_v32_t& uvnr);
    void convertAiqAwbGainToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-            const rk_aiq_wb_gain_v32_t& awb_gain, const rk_aiq_isp_blc_v32_t *blc,
-            bool awb_gain_update);
+            const rk_aiq_wb_gain_v32_t& awb_gain,  bool awb_gain_update);
     void convertAiqAwbToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     const rk_aiq_isp_awb_meas_cfg_v32_t& awb_meas,
                                     bool awb_cfg_udpate);
     void convertAiqSharpenToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                         rk_aiq_isp_sharp_v32_t& sharp);
+    void convertAiqBlcToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
+                                    rk_aiq_isp_blc_v32_t& blc);
+
     void convertAiqAfToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                    const rk_aiq_isp_af_v31_t& af_data, bool af_cfg_udpate);
 #if RKAIQ_HAVE_CAC_V11

@@ -46,6 +46,7 @@
 #include "sample_aie_module.h"
 #include "sample_cgc_module.h"
 #include "sample_cac_module.h"
+#include "sample_again_module.h"
 
 struct module_sample_info {
     const char * const name;
@@ -63,7 +64,7 @@ struct module_sample_info {
 static struct module_sample_info module_samples[] = {
     MODULE_INFO(RK_ISP_AE, sample_ae_module, sample_print_ae_info),
     MODULE_INFO(RK_ISP_AWB, sample_awb_module, sample_print_awb_info),
-    MODULE_INFO(RK_ISP_AWB32,sample_awb32_module, sample_print_awb32_info),
+    MODULE_INFO(RK_ISP_AWB32, sample_awb32_module, sample_print_awb32_info),
     MODULE_INFO(RK_ISP_AF, sample_af_module, sample_print_af_info),
     MODULE_INFO(RK_ISP_ACCM, sample_accm_module, sample_print_accm_info),
     MODULE_INFO(RK_ISP_A3DLUT, sample_a3dlut_module, sample_print_a3dlut_info),
@@ -85,6 +86,7 @@ static struct module_sample_info module_samples[] = {
     MODULE_INFO(RK_ISP_AIE, sample_aie_module, sample_print_aie_info),
     MODULE_INFO(RK_ISP_CGC, sample_cgc_module, sample_print_cgc_info),
     MODULE_INFO(RK_ISP_CAC, sample_cac_module, sample_print_cac_info),
+    MODULE_INFO(RK_ISP_AGAIN, sample_again_module, sample_print_again_info),
 };
 
 static void sample_usage()
@@ -116,6 +118,8 @@ static void sample_usage()
     printf("\t l) AIE:        module test sample.\n");
     printf("\t m) CGC:        module test sample.\n");
     printf("\t n) CAC:        module test sample.\n");
+    printf("\t n) AGAIN:      module test sample.\n");
+    printf("\t p) AWBV32:     module test sample.\n");
     printf("\n");
     printf("\t please press the key: ");
 
@@ -261,21 +265,21 @@ XCamReturn sample_main (const void *arg)
         break;
     }
     case 'j': {
-       printf("enter LSC module test\n");
-       sample_alsc_module(arg);
-       break;
+        printf("enter LSC module test\n");
+        sample_alsc_module(arg);
+        break;
     }
     case 'k': {
         struct module_sample_info *info = &module_samples[RK_ISP_ACP];
         info->debug (nullptr);
         info->func (arg);
-       break;
+        break;
     }
     case 'l': {
         struct module_sample_info *info = &module_samples[RK_ISP_AIE];
         info->debug (nullptr);
         info->func (arg);
-       break;
+        break;
     }
     case 'm': {
         printf("enter CGC module test\n");
@@ -288,7 +292,20 @@ XCamReturn sample_main (const void *arg)
         struct module_sample_info *info = &module_samples[RK_ISP_CAC];
         info->debug (nullptr);
         info->func (arg);
-       break;
+        break;
+    }
+    case 'o': {
+        printf("enter GAIN module test\n");
+        struct module_sample_info *info = &module_samples[RK_ISP_AGAIN];
+        info->debug (nullptr);
+        info->func (arg);
+        break;
+    }
+    case 'p': {
+        struct module_sample_info *info = &module_samples[RK_ISP_AWB32];
+        info->debug (nullptr);
+        info->func (arg);
+        break;
     }
     default:
         break;

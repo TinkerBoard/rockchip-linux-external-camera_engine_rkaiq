@@ -838,6 +838,8 @@ camgroupAlgoHandle(const rk_aiq_sys_ctx_t* ctx, const int algo_type)
 #include "uAPI2/rk_aiq_user_api2_acsm.cpp"
 #include "uAPI2/rk_aiq_user_api2_acgc.cpp"
 #include "uAPI2/rk_aiq_user_api2_acac.cpp"
+#include "uAPI2/rk_aiq_user_api2_again_v2.cpp"
+#include "rk_aiq_user_api_again_v2.cpp"
 
 #define RK_AIQ_ALGO_TYPE_MODULES (RK_AIQ_ALGO_TYPE_MAX + 1)
 

@@ -7,7 +7,9 @@ endif()
 cmake_minimum_required(VERSION 2.8)
 
 # surpress CXX_VISIBILITY_PRESET warning
-cmake_policy(SET CMP0063 NEW)
+if (POLICY CMP0063) # Visibility
+    cmake_policy(SET CMP0063 NEW)
+endif (POLICY CMP0063)
 
 include_directories(
     ../xcore
@@ -103,6 +105,9 @@ endif()
 if (RKAIQ_HAVE_BLC_V1)
 add_subdirectory(ablc)
 endif()
+if (RKAIQ_HAVE_BLC_V32)
+add_subdirectory(ablcV32)
+endif()
 if (RKAIQ_HAVE_CCM_V1 OR RKAIQ_HAVE_CCM_V2)
 add_subdirectory(accm)
 endif()
@@ -128,7 +133,9 @@ endif()
 if (RKAIQ_HAVE_LDCH_V10)
 add_subdirectory(aldch)
 endif()
+if (RKAIQ_HAVE_LSC_V1 OR RKAIQ_HAVE_LSC_V2)
 add_subdirectory(alsc)
+endif()
 if (RKAIQ_HAVE_ORB_V1)
 add_subdirectory(aorb)
 endif()

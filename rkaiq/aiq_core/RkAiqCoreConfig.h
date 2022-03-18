@@ -63,7 +63,7 @@ inline std::string AlgoTypeToString(RkAiqAlgoType_t type) {
         { RK_AIQ_ALGO_TYPE_ACCM,        "Accm"      },
         { RK_AIQ_ALGO_TYPE_AGAMMA,      "Agamma"    },
         { RK_AIQ_ALGO_TYPE_AWDR,        "Awdr"      },
-        { RK_AIQ_ALGO_TYPE_ADHAZ,       "Adhaz"     },
+        { RK_AIQ_ALGO_TYPE_ADHAZ,       "Adehaze"   },
         { RK_AIQ_ALGO_TYPE_A3DLUT,      "A3dlut"    },
         { RK_AIQ_ALGO_TYPE_ALDCH,       "Aldch"     },
         { RK_AIQ_ALGO_TYPE_ACSM,        "Acsm"      },

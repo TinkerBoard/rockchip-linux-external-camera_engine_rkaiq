@@ -80,17 +80,15 @@ typedef struct Abayer2dnr_ExpInfo_V23_s {
     int   arIso[3];
     int   snr_mode;
     int gray_mode;
+    float blc_ob_predgain;
+    int bayertnr_en;
 } Abayer2dnr_ExpInfo_V23_t;
 
 
-
-
-
-typedef struct RK_Bayer2dnr_Params_V23_Select_s
-{
+typedef struct RK_Bayer2dnr_Params_V23_Select_s {
     // v23 version register // edge filter params
     int enable;
-    int bayertnr_enable;
+    bool hdrdgain_ctrl_en;
 
     float filter_strength;
     int   lumapoint[16];
@@ -106,21 +104,21 @@ typedef struct RK_Bayer2dnr_Params_V23_Select_s
     int   pix_diff;
     int   diff_thld;
 
-    int   trans_en;
+    //int   trans_en;
     int   trans_mode;
     int   trans_offset;
     int   itrans_offset;
+    int   trans_datmax;
 
-
-
+    float hdr_dgain_scale_s;
+    float hdr_dgain_scale_m;
 } RK_Bayer2dnr_Params_V23_Select_t;
 
 typedef struct RK_Bayer2dnr_Params_V23_s
 {
     // bayernr version
     int enable;
-    int bayertnr_enable;
-
+    bool hdrdgain_ctrl_en;
     // v23 parse
     float iso[RK_BAYER2DNR_V23_MAX_ISO_NUM];
 

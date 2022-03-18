@@ -21,53 +21,29 @@
 static void sample_adehaze_usage()
 {
     printf("Usage : \n");
+    // printf("\t 0) ADEHAZE:         test rk_aiq_user_api2_adehaze_v10_setSwAttrib
+    // DEHAZE_API_MANUAL Sync.\n"); printf("\t 1) ADEHAZE:         test
+    // rk_aiq_user_api2_adehaze_v10_setSwAttrib DEHAZE_API_MANUAL Async.\n");
     printf(
-        "\t 0) ADEHAZE:         test test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_MANUAL Sync.\n");
+        "\t 0) ADEHAZE:         test rk_aiq_user_api2_adehaze_v11_setSwAttrib DEHAZE_API_MANUAL "
+        "Sync.\n");
     printf(
-        "\t 1) ADEHAZE:         test test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_MANUAL Async.\n");
+        "\t 1) ADEHAZE:         test rk_aiq_user_api2_adehaze_v11_setSwAttrib DEHAZE_API_MANUAL "
+        "Async.\n");
+    printf("\t 2) ADEHAZE:         test rk_aiq_user_api2_adehaze_v11_getSwAttrib.\n");
     printf(
-        "\t 2) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_DEHAZE_AUTO Sync.\n");
+        "\t 3) ADEHAZE:         test rk_aiq_user_api2_adehaze_v12_setSwAttrib DEHAZE_API_MANUAL "
+        "Sync.\n");
     printf(
-        "\t 3) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_DEHAZE_AUTO Async.\n");
-    printf(
-        "\t 4) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_DEHAZE_MANUAL Sync.\n");
-    printf(
-        "\t 5) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_DEHAZE_MANUAL Async.\n");
-    printf(
-        "\t 6) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_DEHAZE_OFF Sync.\n");
-    printf(
-        "\t 7) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_DEHAZE_OFF Async.\n");
-    printf(
-        "\t 8) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_ENHANCE_MANUAL Sync.\n");
-    printf(
-        "\t 9) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_ENHANCE_MANUAL Async.\n");
-    printf(
-        "\t a) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_ENHANCE_AUTO Sync.\n");
-    printf(
-        "\t b) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_ENHANCE_AUTO Async.\n");
-    printf(
-        "\t c) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_ENHANCE_OFF Sync.\n");
-    printf(
-        "\t d) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_setSwAttrib "
-        "DEHAZE_API_ENHANCE_OFF Async.\n");
-    printf("\t e) ADEHAZE:         test rk_aiq_user_api2_adehaze_V11_getSwAttrib.\n");
-    printf("\t f) ADEHAZE:         test rk_aiq_uapi2_getMDehazeStrth.\n");
-    printf("\t g) ADEHAZE:         test rk_aiq_uapi2_setMDehazeStrth.\n");
-    printf("\t h) ADEHAZE:         test rk_aiq_uapi2_getMEnhanceStrth.\n");
-    printf("\t i) ADEHAZE:         test rk_aiq_uapi2_setMEnhanceStrth.\n");
+        "\t 4) ADEHAZE:         test rk_aiq_user_api2_adehaze_v12_setSwAttrib DEHAZE_API_MANUAL "
+        "Async.\n");
+    printf("\t 5) ADEHAZE:         test rk_aiq_user_api2_adehaze_v12_getSwAttrib.\n");
+    printf("\t 6) ADEHAZE:         test rk_aiq_uapi2_getMDehazeStrth.\n");
+    printf("\t 7) ADEHAZE:         test rk_aiq_uapi2_setMDehazeStrth.\n");
+    printf("\t 8) ADEHAZE:         test rk_aiq_uapi2_getMEnhanceStrth.\n");
+    printf("\t 9) ADEHAZE:         test rk_aiq_uapi2_setMEnhanceStrth.\n");
+    printf("\t a) ADEHAZE:         test rk_aiq_uapi2_getMEnhanceChromeStrth.\n");
+    printf("\t b) ADEHAZE:         test rk_aiq_uapi2_setMEnhanceChromeStrth.\n");
     printf("\t q) ADEHAZE:         return to main sample screen.\n");
 
     printf("\n");
@@ -86,7 +62,10 @@ XCamReturn sample_adehaze_module(const void *arg)
     int key = -1;
     CLEAR();
 
-    adehaze_sw_V11_t attr;
+    // adehaze_sw_V10_t attr_v10;
+    adehaze_sw_V11_t attr_v11;
+    adehaze_sw_V12_t attr_v12;
+
     const demo_context_t *demo_ctx = (demo_context_t *)arg;
     const rk_aiq_sys_ctx_t* ctx ;
     if (demo_ctx->camGroup) {
@@ -106,220 +85,396 @@ XCamReturn sample_adehaze_module(const void *arg)
 
         switch (key)
         {
-#if 0
         case '0': {
-            printf("\t ADEHAZE test rk_aiq_user_api2_adehaze_V11_setSwAttrib DEHAZE_API_MANUAL Sync\n\n");
-            attr.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
-            attr.sync.done = false;
-            attr.mode = DEHAZE_API_MANUAL;
-            attr.stManual.Enable = true;
-            attr.stManual.cfg_alpha = 1.0;
-            attr.stManual.dehaze_setting.en = false;
-            attr.stManual.dehaze_setting.air_lc_en = true;
-            attr.stManual.dehaze_setting.stab_fnum = 8;
-            attr.stManual.dehaze_setting.sigma = 6;
-            attr.stManual.dehaze_setting.wt_sigma = 8;
-            attr.stManual.dehaze_setting.air_sigma = 120;
-            attr.stManual.dehaze_setting.tmax_sigma = 0.01;
-            attr.stManual.dehaze_setting.pre_wet = 0.01;
-            attr.stManual.dehaze_setting.DehazeData.dc_min_th = 64;
-            attr.stManual.dehaze_setting.DehazeData.dc_max_th = 192;
-            attr.stManual.dehaze_setting.DehazeData.yhist_th = 249;
-            attr.stManual.dehaze_setting.DehazeData.yblk_th = 0.002;
-            attr.stManual.dehaze_setting.DehazeData.dark_th = 250;
-            attr.stManual.dehaze_setting.DehazeData.bright_min = 180;
-            attr.stManual.dehaze_setting.DehazeData.bright_max = 240;
-            attr.stManual.dehaze_setting.DehazeData.wt_max = 0.9;
-            attr.stManual.dehaze_setting.DehazeData.air_min = 200;
-            attr.stManual.dehaze_setting.DehazeData.air_max = 250;
-            attr.stManual.dehaze_setting.DehazeData.tmax_base = 125;
-            attr.stManual.dehaze_setting.DehazeData.tmax_off = 0.1;
-            attr.stManual.dehaze_setting.DehazeData.tmax_max = 0.8;
-            attr.stManual.dehaze_setting.DehazeData.cfg_wt = 0.8;
-            attr.stManual.dehaze_setting.DehazeData.cfg_air = 210;
-            attr.stManual.dehaze_setting.DehazeData.cfg_tmax = 0.2;
-            attr.stManual.dehaze_setting.DehazeData.dc_weitcur = 1;
-            attr.stManual.dehaze_setting.DehazeData.bf_weight = 0.5;
-            attr.stManual.dehaze_setting.DehazeData.range_sigma = 0.14;
-            attr.stManual.dehaze_setting.DehazeData.space_sigma_pre = 0.14;
-            attr.stManual.dehaze_setting.DehazeData.space_sigma_cur = 0.14;
+            printf(
+                "\t ADEHAZE test rk_aiq_user_api2_adehaze_v11_setSwAttrib DEHAZE_API_MANUAL "
+                "Sync\n\n");
+            attr_v11.sync.sync_mode                                     = RK_AIQ_UAPI_MODE_DEFAULT;
+            attr_v11.sync.done                                          = false;
+            attr_v11.mode                                               = DEHAZE_API_MANUAL;
+            attr_v11.stManual.Enable                                    = true;
+            attr_v11.stManual.cfg_alpha                                 = 1.0;
+            attr_v11.stManual.dehaze_setting.en                         = false;
+            attr_v11.stManual.dehaze_setting.air_lc_en                  = true;
+            attr_v11.stManual.dehaze_setting.stab_fnum                  = 8;
+            attr_v11.stManual.dehaze_setting.sigma                      = 6;
+            attr_v11.stManual.dehaze_setting.wt_sigma                   = 8;
+            attr_v11.stManual.dehaze_setting.air_sigma                  = 120;
+            attr_v11.stManual.dehaze_setting.tmax_sigma                 = 0.01;
+            attr_v11.stManual.dehaze_setting.pre_wet                    = 0.01;
+            attr_v11.stManual.dehaze_setting.DehazeData.dc_min_th       = 64;
+            attr_v11.stManual.dehaze_setting.DehazeData.dc_max_th       = 192;
+            attr_v11.stManual.dehaze_setting.DehazeData.yhist_th        = 249;
+            attr_v11.stManual.dehaze_setting.DehazeData.yblk_th         = 0.002;
+            attr_v11.stManual.dehaze_setting.DehazeData.dark_th         = 250;
+            attr_v11.stManual.dehaze_setting.DehazeData.bright_min      = 180;
+            attr_v11.stManual.dehaze_setting.DehazeData.bright_max      = 240;
+            attr_v11.stManual.dehaze_setting.DehazeData.wt_max          = 0.9;
+            attr_v11.stManual.dehaze_setting.DehazeData.air_min         = 200;
+            attr_v11.stManual.dehaze_setting.DehazeData.air_max         = 250;
+            attr_v11.stManual.dehaze_setting.DehazeData.tmax_base       = 125;
+            attr_v11.stManual.dehaze_setting.DehazeData.tmax_off        = 0.1;
+            attr_v11.stManual.dehaze_setting.DehazeData.tmax_max        = 0.8;
+            attr_v11.stManual.dehaze_setting.DehazeData.cfg_wt          = 0.8;
+            attr_v11.stManual.dehaze_setting.DehazeData.cfg_air         = 211;
+            attr_v11.stManual.dehaze_setting.DehazeData.cfg_tmax        = 0.2;
+            attr_v11.stManual.dehaze_setting.DehazeData.dc_weitcur      = 1;
+            attr_v11.stManual.dehaze_setting.DehazeData.bf_weight       = 0.5;
+            attr_v11.stManual.dehaze_setting.DehazeData.range_sigma     = 0.14;
+            attr_v11.stManual.dehaze_setting.DehazeData.space_sigma_pre = 0.14;
+            attr_v11.stManual.dehaze_setting.DehazeData.space_sigma_cur = 0.14;
 
-            attr.stManual.enhance_setting.en = true;
-            attr.stManual.enhance_setting.EnhanceData.enhance_value = 1.0;
-            attr.stManual.enhance_setting.EnhanceData.enhance_chroma = 1.0;
-            attr.stManual.enhance_setting.enhance_curve[0] = 0;
-            attr.stManual.enhance_setting.enhance_curve[1] = 64;
-            attr.stManual.enhance_setting.enhance_curve[2] = 128;
-            attr.stManual.enhance_setting.enhance_curve[3] = 192;
-            attr.stManual.enhance_setting.enhance_curve[4] = 256;
-            attr.stManual.enhance_setting.enhance_curve[5] = 320;
-            attr.stManual.enhance_setting.enhance_curve[6] = 384;
-            attr.stManual.enhance_setting.enhance_curve[7] = 448;
-            attr.stManual.enhance_setting.enhance_curve[8] = 512;
-            attr.stManual.enhance_setting.enhance_curve[9] = 576;
-            attr.stManual.enhance_setting.enhance_curve[10] = 640;
-            attr.stManual.enhance_setting.enhance_curve[11] = 704;
-            attr.stManual.enhance_setting.enhance_curve[12] = 768;
-            attr.stManual.enhance_setting.enhance_curve[13] = 832;
-            attr.stManual.enhance_setting.enhance_curve[14] = 896;
-            attr.stManual.enhance_setting.enhance_curve[15] = 960;
-            attr.stManual.enhance_setting.enhance_curve[16] = 1023;
+            attr_v11.stManual.enhance_setting.en                         = true;
+            attr_v11.stManual.enhance_setting.EnhanceData.enhance_value  = 1.0;
+            attr_v11.stManual.enhance_setting.EnhanceData.enhance_chroma = 1.0;
+            attr_v11.stManual.enhance_setting.enhance_curve[0]           = 0;
+            attr_v11.stManual.enhance_setting.enhance_curve[1]           = 64;
+            attr_v11.stManual.enhance_setting.enhance_curve[2]           = 128;
+            attr_v11.stManual.enhance_setting.enhance_curve[3]           = 192;
+            attr_v11.stManual.enhance_setting.enhance_curve[4]           = 256;
+            attr_v11.stManual.enhance_setting.enhance_curve[5]           = 320;
+            attr_v11.stManual.enhance_setting.enhance_curve[6]           = 384;
+            attr_v11.stManual.enhance_setting.enhance_curve[7]           = 448;
+            attr_v11.stManual.enhance_setting.enhance_curve[8]           = 512;
+            attr_v11.stManual.enhance_setting.enhance_curve[9]           = 576;
+            attr_v11.stManual.enhance_setting.enhance_curve[11]          = 640;
+            attr_v11.stManual.enhance_setting.enhance_curve[11]          = 704;
+            attr_v11.stManual.enhance_setting.enhance_curve[12]          = 768;
+            attr_v11.stManual.enhance_setting.enhance_curve[13]          = 832;
+            attr_v11.stManual.enhance_setting.enhance_curve[14]          = 896;
+            attr_v11.stManual.enhance_setting.enhance_curve[15]          = 960;
+            attr_v11.stManual.enhance_setting.enhance_curve[16]          = 1123;
 
-            attr.stManual.hist_setting.en = false;
-            attr.stManual.hist_setting.hist_para_en = true;
-            attr.stManual.hist_setting.HistData.hist_gratio = 2;
-            attr.stManual.hist_setting.HistData.hist_th_off = 64;
-            attr.stManual.hist_setting.HistData.hist_k = 2;
-            attr.stManual.hist_setting.HistData.hist_min = 0.015;
-            attr.stManual.hist_setting.HistData.hist_scale = 0.09;
-            attr.stManual.hist_setting.HistData.cfg_gratio = 2;
-            rk_aiq_user_api2_adehaze_V11_setSwAttrib(ctx, attr);
+            attr_v11.stManual.hist_setting.en                   = false;
+            attr_v11.stManual.hist_setting.hist_para_en         = true;
+            attr_v11.stManual.hist_setting.HistData.hist_gratio = 2;
+            attr_v11.stManual.hist_setting.HistData.hist_th_off = 64;
+            attr_v11.stManual.hist_setting.HistData.hist_k      = 2;
+            attr_v11.stManual.hist_setting.HistData.hist_min    = 0.015;
+            attr_v11.stManual.hist_setting.HistData.hist_scale  = 0.09;
+            attr_v11.stManual.hist_setting.HistData.cfg_gratio  = 2;
+            rk_aiq_user_api2_adehaze_v11_setSwAttrib(ctx, &attr_v11);
             break;
         }
         case '1': {
-            printf("\t ADEHAZE test rk_aiq_user_api2_adehaze_V11_setSwAttrib DEHAZE_API_MANUAL Async\n\n");
-            attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-            attr.sync.done = false;
-            attr.mode = DEHAZE_API_MANUAL;
-            attr.stManual.Enable = false;
-            attr.stManual.cfg_alpha = 0.0;
-            attr.stManual.dehaze_setting.en = false;
-            attr.stManual.dehaze_setting.air_lc_en = true;
-            attr.stManual.dehaze_setting.stab_fnum = 8;
-            attr.stManual.dehaze_setting.sigma = 6;
-            attr.stManual.dehaze_setting.wt_sigma = 8;
-            attr.stManual.dehaze_setting.air_sigma = 120;
-            attr.stManual.dehaze_setting.tmax_sigma = 0.01;
-            attr.stManual.dehaze_setting.pre_wet = 0.01;
-            attr.stManual.dehaze_setting.DehazeData.dc_min_th = 64;
-            attr.stManual.dehaze_setting.DehazeData.dc_max_th = 192;
-            attr.stManual.dehaze_setting.DehazeData.yhist_th = 249;
-            attr.stManual.dehaze_setting.DehazeData.yblk_th = 0.002;
-            attr.stManual.dehaze_setting.DehazeData.dark_th = 250;
-            attr.stManual.dehaze_setting.DehazeData.bright_min = 180;
-            attr.stManual.dehaze_setting.DehazeData.bright_max = 240;
-            attr.stManual.dehaze_setting.DehazeData.wt_max = 0.9;
-            attr.stManual.dehaze_setting.DehazeData.air_min = 200;
-            attr.stManual.dehaze_setting.DehazeData.air_max = 250;
-            attr.stManual.dehaze_setting.DehazeData.tmax_base = 125;
-            attr.stManual.dehaze_setting.DehazeData.tmax_off = 0.1;
-            attr.stManual.dehaze_setting.DehazeData.tmax_max = 0.8;
-            attr.stManual.dehaze_setting.DehazeData.cfg_wt = 0.8;
-            attr.stManual.dehaze_setting.DehazeData.cfg_air = 210;
-            attr.stManual.dehaze_setting.DehazeData.cfg_tmax = 0.2;
-            attr.stManual.dehaze_setting.DehazeData.dc_weitcur = 1;
-            attr.stManual.dehaze_setting.DehazeData.bf_weight = 0.5;
-            attr.stManual.dehaze_setting.DehazeData.range_sigma = 0.14;
-            attr.stManual.dehaze_setting.DehazeData.space_sigma_pre = 0.14;
-            attr.stManual.dehaze_setting.DehazeData.space_sigma_cur = 0.14;
+            printf(
+                "\t ADEHAZE test rk_aiq_user_api2_adehaze_v11_setSwAttrib DEHAZE_API_MANUAL "
+                "Async\n\n");
+            attr_v11.sync.sync_mode                                     = RK_AIQ_UAPI_MODE_ASYNC;
+            attr_v11.sync.done                                          = false;
+            attr_v11.mode                                               = DEHAZE_API_MANUAL;
+            attr_v11.stManual.Enable                                    = false;
+            attr_v11.stManual.cfg_alpha                                 = 0.0;
+            attr_v11.stManual.dehaze_setting.en                         = false;
+            attr_v11.stManual.dehaze_setting.air_lc_en                  = true;
+            attr_v11.stManual.dehaze_setting.stab_fnum                  = 8;
+            attr_v11.stManual.dehaze_setting.sigma                      = 6;
+            attr_v11.stManual.dehaze_setting.wt_sigma                   = 8;
+            attr_v11.stManual.dehaze_setting.air_sigma                  = 120;
+            attr_v11.stManual.dehaze_setting.tmax_sigma                 = 0.01;
+            attr_v11.stManual.dehaze_setting.pre_wet                    = 0.01;
+            attr_v11.stManual.dehaze_setting.DehazeData.dc_min_th       = 64;
+            attr_v11.stManual.dehaze_setting.DehazeData.dc_max_th       = 192;
+            attr_v11.stManual.dehaze_setting.DehazeData.yhist_th        = 249;
+            attr_v11.stManual.dehaze_setting.DehazeData.yblk_th         = 0.002;
+            attr_v11.stManual.dehaze_setting.DehazeData.dark_th         = 250;
+            attr_v11.stManual.dehaze_setting.DehazeData.bright_min      = 180;
+            attr_v11.stManual.dehaze_setting.DehazeData.bright_max      = 240;
+            attr_v11.stManual.dehaze_setting.DehazeData.wt_max          = 0.9;
+            attr_v11.stManual.dehaze_setting.DehazeData.air_min         = 200;
+            attr_v11.stManual.dehaze_setting.DehazeData.air_max         = 250;
+            attr_v11.stManual.dehaze_setting.DehazeData.tmax_base       = 125;
+            attr_v11.stManual.dehaze_setting.DehazeData.tmax_off        = 0.1;
+            attr_v11.stManual.dehaze_setting.DehazeData.tmax_max        = 0.8;
+            attr_v11.stManual.dehaze_setting.DehazeData.cfg_wt          = 0.8;
+            attr_v11.stManual.dehaze_setting.DehazeData.cfg_air         = 211;
+            attr_v11.stManual.dehaze_setting.DehazeData.cfg_tmax        = 0.2;
+            attr_v11.stManual.dehaze_setting.DehazeData.dc_weitcur      = 1;
+            attr_v11.stManual.dehaze_setting.DehazeData.bf_weight       = 0.5;
+            attr_v11.stManual.dehaze_setting.DehazeData.range_sigma     = 0.14;
+            attr_v11.stManual.dehaze_setting.DehazeData.space_sigma_pre = 0.14;
+            attr_v11.stManual.dehaze_setting.DehazeData.space_sigma_cur = 0.14;
 
-            attr.stManual.enhance_setting.en = true;
-            attr.stManual.enhance_setting.EnhanceData.enhance_value = 1.0;
-            attr.stManual.enhance_setting.EnhanceData.enhance_chroma = 1.0;
-            attr.stManual.enhance_setting.enhance_curve[0] = 0;
-            attr.stManual.enhance_setting.enhance_curve[1] = 64;
-            attr.stManual.enhance_setting.enhance_curve[2] = 128;
-            attr.stManual.enhance_setting.enhance_curve[3] = 192;
-            attr.stManual.enhance_setting.enhance_curve[4] = 256;
-            attr.stManual.enhance_setting.enhance_curve[5] = 320;
-            attr.stManual.enhance_setting.enhance_curve[6] = 384;
-            attr.stManual.enhance_setting.enhance_curve[7] = 448;
-            attr.stManual.enhance_setting.enhance_curve[8] = 512;
-            attr.stManual.enhance_setting.enhance_curve[9] = 576;
-            attr.stManual.enhance_setting.enhance_curve[10] = 640;
-            attr.stManual.enhance_setting.enhance_curve[11] = 704;
-            attr.stManual.enhance_setting.enhance_curve[12] = 768;
-            attr.stManual.enhance_setting.enhance_curve[13] = 832;
-            attr.stManual.enhance_setting.enhance_curve[14] = 896;
-            attr.stManual.enhance_setting.enhance_curve[15] = 960;
-            attr.stManual.enhance_setting.enhance_curve[16] = 1023;
+            attr_v11.stManual.enhance_setting.en                         = true;
+            attr_v11.stManual.enhance_setting.EnhanceData.enhance_value  = 2.0;
+            attr_v11.stManual.enhance_setting.EnhanceData.enhance_chroma = 2.0;
+            attr_v11.stManual.enhance_setting.enhance_curve[0]           = 0;
+            attr_v11.stManual.enhance_setting.enhance_curve[1]           = 64;
+            attr_v11.stManual.enhance_setting.enhance_curve[2]           = 128;
+            attr_v11.stManual.enhance_setting.enhance_curve[3]           = 192;
+            attr_v11.stManual.enhance_setting.enhance_curve[4]           = 256;
+            attr_v11.stManual.enhance_setting.enhance_curve[5]           = 320;
+            attr_v11.stManual.enhance_setting.enhance_curve[6]           = 384;
+            attr_v11.stManual.enhance_setting.enhance_curve[7]           = 448;
+            attr_v11.stManual.enhance_setting.enhance_curve[8]           = 512;
+            attr_v11.stManual.enhance_setting.enhance_curve[9]           = 576;
+            attr_v11.stManual.enhance_setting.enhance_curve[11]          = 640;
+            attr_v11.stManual.enhance_setting.enhance_curve[11]          = 704;
+            attr_v11.stManual.enhance_setting.enhance_curve[12]          = 768;
+            attr_v11.stManual.enhance_setting.enhance_curve[13]          = 832;
+            attr_v11.stManual.enhance_setting.enhance_curve[14]          = 896;
+            attr_v11.stManual.enhance_setting.enhance_curve[15]          = 960;
+            attr_v11.stManual.enhance_setting.enhance_curve[16]          = 1123;
 
-            attr.stManual.hist_setting.en = false;
-            attr.stManual.hist_setting.hist_para_en = true;
-            attr.stManual.hist_setting.HistData.hist_gratio = 2;
-            attr.stManual.hist_setting.HistData.hist_th_off = 64;
-            attr.stManual.hist_setting.HistData.hist_k = 2;
-            attr.stManual.hist_setting.HistData.hist_min = 0.015;
-            attr.stManual.hist_setting.HistData.hist_scale = 0.09;
-            attr.stManual.hist_setting.HistData.cfg_gratio = 2;
-            rk_aiq_user_api2_adehaze_V11_setSwAttrib(ctx, attr);
+            attr_v11.stManual.hist_setting.en                   = false;
+            attr_v11.stManual.hist_setting.hist_para_en         = true;
+            attr_v11.stManual.hist_setting.HistData.hist_gratio = 2;
+            attr_v11.stManual.hist_setting.HistData.hist_th_off = 64;
+            attr_v11.stManual.hist_setting.HistData.hist_k      = 2;
+            attr_v11.stManual.hist_setting.HistData.hist_min    = 0.015;
+            attr_v11.stManual.hist_setting.HistData.hist_scale  = 0.09;
+            attr_v11.stManual.hist_setting.HistData.cfg_gratio  = 2;
+            rk_aiq_user_api2_adehaze_v11_setSwAttrib(ctx, &attr_v11);
             break;
         }
         case '2': {
-            printf("\t ADEHAZE test rk_aiq_user_api2_adehaze_V11_setSwAttrib DEHAZE_API_DEHAZE_AUTO Sync\n\n");
-            attr.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
-            attr.sync.done = false;
-            attr.mode = DEHAZE_API_DEHAZE_AUTO;
-            rk_aiq_user_api2_adehaze_V11_setSwAttrib(ctx, attr);
+            printf("\t ADEHAZE test rk_aiq_user_api2_adehaze_v11_getSwAttrib\n\n");
+            rk_aiq_user_api2_adehaze_v11_getSwAttrib(ctx, &attr_v11);
+            printf("\t sync = %d, done = %d\n", attr_v11.sync.sync_mode, attr_v11.sync.done);
+            printf("\t mode: %d\n\n", attr_v11.mode);
+            printf("\t stManual Enable: %d cfg_alpha:%f\n\n", attr_v11.stManual.Enable,
+                   attr_v11.stManual.cfg_alpha);
+            printf("\t MDehazeStrth: %d MEnhanceStrth:%d MEnhanceChromeStrth:%d\n\n",
+                   attr_v11.Info.MDehazeStrth, attr_v11.Info.MEnhanceStrth,
+                   attr_v11.Info.MEnhanceChromeStrth);
             break;
         }
         case '3': {
-            printf("\t ADEHAZE test rk_aiq_user_api2_adehaze_V11_setSwAttrib DEHAZE_API_DEHAZE_AUTO Async\n\n");
-            attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-            attr.sync.done = false;
-            attr.mode = DEHAZE_API_DEHAZE_AUTO;
-            rk_aiq_user_api2_adehaze_V11_setSwAttrib(ctx, attr);
+            printf(
+                "\t ADEHAZE test rk_aiq_user_api2_adehaze_v12_setSwAttrib DEHAZE_API_MANUAL "
+                "Sync\n\n");
+            attr_v12.sync.sync_mode                                     = RK_AIQ_UAPI_MODE_DEFAULT;
+            attr_v12.sync.done                                          = false;
+            attr_v12.mode                                               = DEHAZE_API_MANUAL;
+            attr_v12.stManual.Enable                                    = true;
+            attr_v12.stManual.cfg_alpha                                 = 1.0;
+            attr_v12.stManual.dehaze_setting.en                         = false;
+            attr_v12.stManual.dehaze_setting.air_lc_en                  = true;
+            attr_v12.stManual.dehaze_setting.stab_fnum                  = 8;
+            attr_v12.stManual.dehaze_setting.sigma                      = 6;
+            attr_v12.stManual.dehaze_setting.wt_sigma                   = 8;
+            attr_v12.stManual.dehaze_setting.air_sigma                  = 120;
+            attr_v12.stManual.dehaze_setting.tmax_sigma                 = 0.01;
+            attr_v12.stManual.dehaze_setting.pre_wet                    = 0.01;
+            attr_v12.stManual.dehaze_setting.DehazeData.dc_min_th       = 64;
+            attr_v12.stManual.dehaze_setting.DehazeData.dc_max_th       = 192;
+            attr_v12.stManual.dehaze_setting.DehazeData.yhist_th        = 249;
+            attr_v12.stManual.dehaze_setting.DehazeData.yblk_th         = 0.002;
+            attr_v12.stManual.dehaze_setting.DehazeData.dark_th         = 250;
+            attr_v12.stManual.dehaze_setting.DehazeData.bright_min      = 180;
+            attr_v12.stManual.dehaze_setting.DehazeData.bright_max      = 240;
+            attr_v12.stManual.dehaze_setting.DehazeData.wt_max          = 0.9;
+            attr_v12.stManual.dehaze_setting.DehazeData.air_min         = 200;
+            attr_v12.stManual.dehaze_setting.DehazeData.air_max         = 250;
+            attr_v12.stManual.dehaze_setting.DehazeData.tmax_base       = 125;
+            attr_v12.stManual.dehaze_setting.DehazeData.tmax_off        = 0.1;
+            attr_v12.stManual.dehaze_setting.DehazeData.tmax_max        = 0.8;
+            attr_v12.stManual.dehaze_setting.DehazeData.cfg_wt          = 0.8;
+            attr_v12.stManual.dehaze_setting.DehazeData.cfg_air         = 212;
+            attr_v12.stManual.dehaze_setting.DehazeData.cfg_tmax        = 0.2;
+            attr_v12.stManual.dehaze_setting.DehazeData.dc_weitcur      = 1;
+            attr_v12.stManual.dehaze_setting.DehazeData.bf_weight       = 0.5;
+            attr_v12.stManual.dehaze_setting.DehazeData.range_sigma     = 0.14;
+            attr_v12.stManual.dehaze_setting.DehazeData.space_sigma_pre = 0.14;
+            attr_v12.stManual.dehaze_setting.DehazeData.space_sigma_cur = 0.14;
+
+            attr_v12.stManual.enhance_setting.en                         = true;
+            attr_v12.stManual.enhance_setting.color_deviate_en           = false;
+            attr_v12.stManual.enhance_setting.enh_luma_en                = false;
+            attr_v12.stManual.enhance_setting.EnhanceData.enhance_value  = 1.0;
+            attr_v12.stManual.enhance_setting.EnhanceData.enhance_chroma = 1.0;
+            attr_v12.stManual.enhance_setting.enhance_curve[0]           = 0;
+            attr_v12.stManual.enhance_setting.enhance_curve[1]           = 64;
+            attr_v12.stManual.enhance_setting.enhance_curve[2]           = 128;
+            attr_v12.stManual.enhance_setting.enhance_curve[3]           = 192;
+            attr_v12.stManual.enhance_setting.enhance_curve[4]           = 256;
+            attr_v12.stManual.enhance_setting.enhance_curve[5]           = 320;
+            attr_v12.stManual.enhance_setting.enhance_curve[6]           = 384;
+            attr_v12.stManual.enhance_setting.enhance_curve[7]           = 448;
+            attr_v12.stManual.enhance_setting.enhance_curve[8]           = 512;
+            attr_v12.stManual.enhance_setting.enhance_curve[9]           = 576;
+            attr_v12.stManual.enhance_setting.enhance_curve[12]          = 640;
+            attr_v12.stManual.enhance_setting.enhance_curve[12]          = 704;
+            attr_v12.stManual.enhance_setting.enhance_curve[12]          = 768;
+            attr_v12.stManual.enhance_setting.enhance_curve[13]          = 832;
+            attr_v12.stManual.enhance_setting.enhance_curve[14]          = 896;
+            attr_v12.stManual.enhance_setting.enhance_curve[15]          = 960;
+            attr_v12.stManual.enhance_setting.enhance_curve[16]          = 1223;
+            attr_v12.stManual.enhance_setting.enh_luma[0]                = 0;
+            attr_v12.stManual.enhance_setting.enh_luma[1]                = 64;
+            attr_v12.stManual.enhance_setting.enh_luma[2]                = 128;
+            attr_v12.stManual.enhance_setting.enh_luma[3]                = 192;
+            attr_v12.stManual.enhance_setting.enh_luma[4]                = 256;
+            attr_v12.stManual.enhance_setting.enh_luma[5]                = 320;
+            attr_v12.stManual.enhance_setting.enh_luma[6]                = 384;
+            attr_v12.stManual.enhance_setting.enh_luma[7]                = 448;
+            attr_v12.stManual.enhance_setting.enh_luma[8]                = 512;
+            attr_v12.stManual.enhance_setting.enh_luma[9]                = 576;
+            attr_v12.stManual.enhance_setting.enh_luma[10]               = 640;
+            attr_v12.stManual.enhance_setting.enh_luma[11]               = 704;
+            attr_v12.stManual.enhance_setting.enh_luma[12]               = 768;
+            attr_v12.stManual.enhance_setting.enh_luma[13]               = 832;
+            attr_v12.stManual.enhance_setting.enh_luma[14]               = 896;
+            attr_v12.stManual.enhance_setting.enh_luma[15]               = 960;
+            attr_v12.stManual.enhance_setting.enh_luma[16]               = 1023;
+
+            attr_v12.stManual.hist_setting.en                   = false;
+            attr_v12.stManual.hist_setting.hist_para_en         = true;
+            attr_v12.stManual.hist_setting.HistData.hist_gratio = 2;
+            attr_v12.stManual.hist_setting.HistData.hist_th_off = 64;
+            attr_v12.stManual.hist_setting.HistData.hist_k      = 2;
+            attr_v12.stManual.hist_setting.HistData.hist_min    = 0.015;
+            attr_v12.stManual.hist_setting.HistData.hist_scale  = 0.09;
+            attr_v12.stManual.hist_setting.HistData.cfg_gratio  = 2;
+            rk_aiq_user_api2_adehaze_v12_setSwAttrib(ctx, &attr_v12);
             break;
         }
         case '4': {
-            printf("\t ADEHAZE test rk_aiq_user_api2_adehaze_V11_setSwAttrib DEHAZE_API_DEHAZE_MANUAL Sync\n\n");
-            attr.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
-            attr.sync.done = false;
-            attr.mode = DEHAZE_API_DEHAZE_MANUAL;
-            attr.stDehazeManu.level = 75;
-            rk_aiq_user_api2_adehaze_V11_setSwAttrib(ctx, attr);
+            printf(
+                "\t ADEHAZE test rk_aiq_user_api2_adehaze_v12_setSwAttrib DEHAZE_API_MANUAL "
+                "Async\n\n");
+            attr_v12.sync.sync_mode                                     = RK_AIQ_UAPI_MODE_ASYNC;
+            attr_v12.sync.done                                          = false;
+            attr_v12.mode                                               = DEHAZE_API_MANUAL;
+            attr_v12.stManual.Enable                                    = false;
+            attr_v12.stManual.cfg_alpha                                 = 0.0;
+            attr_v12.stManual.dehaze_setting.en                         = false;
+            attr_v12.stManual.dehaze_setting.air_lc_en                  = true;
+            attr_v12.stManual.dehaze_setting.stab_fnum                  = 8;
+            attr_v12.stManual.dehaze_setting.sigma                      = 6;
+            attr_v12.stManual.dehaze_setting.wt_sigma                   = 8;
+            attr_v12.stManual.dehaze_setting.air_sigma                  = 120;
+            attr_v12.stManual.dehaze_setting.tmax_sigma                 = 0.01;
+            attr_v12.stManual.dehaze_setting.pre_wet                    = 0.01;
+            attr_v12.stManual.dehaze_setting.DehazeData.dc_min_th       = 64;
+            attr_v12.stManual.dehaze_setting.DehazeData.dc_max_th       = 192;
+            attr_v12.stManual.dehaze_setting.DehazeData.yhist_th        = 249;
+            attr_v12.stManual.dehaze_setting.DehazeData.yblk_th         = 0.002;
+            attr_v12.stManual.dehaze_setting.DehazeData.dark_th         = 250;
+            attr_v12.stManual.dehaze_setting.DehazeData.bright_min      = 180;
+            attr_v12.stManual.dehaze_setting.DehazeData.bright_max      = 240;
+            attr_v12.stManual.dehaze_setting.DehazeData.wt_max          = 0.9;
+            attr_v12.stManual.dehaze_setting.DehazeData.air_min         = 200;
+            attr_v12.stManual.dehaze_setting.DehazeData.air_max         = 250;
+            attr_v12.stManual.dehaze_setting.DehazeData.tmax_base       = 125;
+            attr_v12.stManual.dehaze_setting.DehazeData.tmax_off        = 0.1;
+            attr_v12.stManual.dehaze_setting.DehazeData.tmax_max        = 0.8;
+            attr_v12.stManual.dehaze_setting.DehazeData.cfg_wt          = 0.8;
+            attr_v12.stManual.dehaze_setting.DehazeData.cfg_air         = 212;
+            attr_v12.stManual.dehaze_setting.DehazeData.cfg_tmax        = 0.2;
+            attr_v12.stManual.dehaze_setting.DehazeData.dc_weitcur      = 1;
+            attr_v12.stManual.dehaze_setting.DehazeData.bf_weight       = 0.5;
+            attr_v12.stManual.dehaze_setting.DehazeData.range_sigma     = 0.14;
+            attr_v12.stManual.dehaze_setting.DehazeData.space_sigma_pre = 0.14;
+            attr_v12.stManual.dehaze_setting.DehazeData.space_sigma_cur = 0.14;
+
+            attr_v12.stManual.enhance_setting.en                         = true;
+            attr_v12.stManual.enhance_setting.color_deviate_en           = false;
+            attr_v12.stManual.enhance_setting.enh_luma_en                = false;
+            attr_v12.stManual.enhance_setting.EnhanceData.enhance_value  = 2.0;
+            attr_v12.stManual.enhance_setting.EnhanceData.enhance_chroma = 2.0;
+            attr_v12.stManual.enhance_setting.enhance_curve[0]           = 0;
+            attr_v12.stManual.enhance_setting.enhance_curve[1]           = 64;
+            attr_v12.stManual.enhance_setting.enhance_curve[2]           = 128;
+            attr_v12.stManual.enhance_setting.enhance_curve[3]           = 192;
+            attr_v12.stManual.enhance_setting.enhance_curve[4]           = 256;
+            attr_v12.stManual.enhance_setting.enhance_curve[5]           = 320;
+            attr_v12.stManual.enhance_setting.enhance_curve[6]           = 384;
+            attr_v12.stManual.enhance_setting.enhance_curve[7]           = 448;
+            attr_v12.stManual.enhance_setting.enhance_curve[8]           = 512;
+            attr_v12.stManual.enhance_setting.enhance_curve[9]           = 576;
+            attr_v12.stManual.enhance_setting.enhance_curve[12]          = 640;
+            attr_v12.stManual.enhance_setting.enhance_curve[12]          = 704;
+            attr_v12.stManual.enhance_setting.enhance_curve[12]          = 768;
+            attr_v12.stManual.enhance_setting.enhance_curve[13]          = 832;
+            attr_v12.stManual.enhance_setting.enhance_curve[14]          = 896;
+            attr_v12.stManual.enhance_setting.enhance_curve[15]          = 960;
+            attr_v12.stManual.enhance_setting.enhance_curve[16]          = 1223;
+            attr_v12.stManual.enhance_setting.enh_luma[0]                = 0;
+            attr_v12.stManual.enhance_setting.enh_luma[1]                = 64;
+            attr_v12.stManual.enhance_setting.enh_luma[2]                = 128;
+            attr_v12.stManual.enhance_setting.enh_luma[3]                = 192;
+            attr_v12.stManual.enhance_setting.enh_luma[4]                = 256;
+            attr_v12.stManual.enhance_setting.enh_luma[5]                = 320;
+            attr_v12.stManual.enhance_setting.enh_luma[6]                = 384;
+            attr_v12.stManual.enhance_setting.enh_luma[7]                = 448;
+            attr_v12.stManual.enhance_setting.enh_luma[8]                = 512;
+            attr_v12.stManual.enhance_setting.enh_luma[9]                = 576;
+            attr_v12.stManual.enhance_setting.enh_luma[10]               = 640;
+            attr_v12.stManual.enhance_setting.enh_luma[11]               = 704;
+            attr_v12.stManual.enhance_setting.enh_luma[12]               = 768;
+            attr_v12.stManual.enhance_setting.enh_luma[13]               = 832;
+            attr_v12.stManual.enhance_setting.enh_luma[14]               = 896;
+            attr_v12.stManual.enhance_setting.enh_luma[15]               = 960;
+            attr_v12.stManual.enhance_setting.enh_luma[16]               = 1023;
+
+            attr_v12.stManual.hist_setting.en                   = false;
+            attr_v12.stManual.hist_setting.hist_para_en         = true;
+            attr_v12.stManual.hist_setting.HistData.hist_gratio = 2;
+            attr_v12.stManual.hist_setting.HistData.hist_th_off = 64;
+            attr_v12.stManual.hist_setting.HistData.hist_k      = 2;
+            attr_v12.stManual.hist_setting.HistData.hist_min    = 0.015;
+            attr_v12.stManual.hist_setting.HistData.hist_scale  = 0.09;
+            attr_v12.stManual.hist_setting.HistData.cfg_gratio  = 2;
+            rk_aiq_user_api2_adehaze_v12_setSwAttrib(ctx, &attr_v12);
             break;
         }
         case '5': {
-            printf("\t ADEHAZE test rk_aiq_user_api2_adehaze_V11_setSwAttrib DEHAZE_API_DEHAZE_MANUAL Async\n\n");
-            attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-            attr.sync.done = false;
-            attr.mode = DEHAZE_API_DEHAZE_MANUAL;
-            attr.stDehazeManu.level = 70;
-            rk_aiq_user_api2_adehaze_V11_setSwAttrib(ctx, attr);
+            printf("\t ADEHAZE test rk_aiq_user_api2_adehaze_v12_getSwAttrib\n\n");
+            rk_aiq_user_api2_adehaze_v12_getSwAttrib(ctx, &attr_v12);
+            printf("\t sync = %d, done = %d\n", attr_v12.sync.sync_mode, attr_v12.sync.done);
+            printf("\t mode: %d\n\n", attr_v12.mode);
+            printf("\t stManual Enable: %d cfg_alpha:%f\n\n", attr_v12.stManual.Enable,
+                   attr_v12.stManual.cfg_alpha);
+            printf("\t MDehazeStrth: %d MEnhanceStrth:%d MEnhanceChromeStrth:%d\n\n",
+                   attr_v12.Info.MDehazeStrth, attr_v12.Info.MEnhanceStrth,
+                   attr_v12.Info.MEnhanceChromeStrth);
             break;
         }
-        case 'e': {
-            printf("\t ADEHAZE test rk_aiq_user_api2_adehaze_V11_getSwAttrib\n\n");
-            rk_aiq_user_api2_adehaze_V11_getSwAttrib(ctx, &attr);
-            printf("\t sync = %d, done = %d\n", attr.sync.sync_mode, attr.sync.done);
-            printf("\t mode: %d\n\n", attr.mode);
-            printf("\t stManual Enable: %d cfg_alpha:%f\n\n", attr.stManual.Enable, attr.stManual.cfg_alpha);
-            printf("\t stDehazeManu level: %d\n\n", attr.stDehazeManu.level);
-            printf("\t stEnhanceManu level: %d\n\n", attr.stEnhanceManu.level);
-            break;
-        }
-        case 'f': {
+        case '6': {
             printf("\t ADEHAZE test rk_aiq_uapi2_getMDehazeStrth\n\n");
             unsigned int level = 60;
             rk_aiq_uapi2_getMDehazeStrth(ctx, &level);
             printf("\t rk_aiq_uapi2_getMDehazeStrth level: %d\n\n", level);
             break;
         }
-        case 'g': {
+        case '7': {
             printf("\t ADEHAZE test rk_aiq_uapi2_setMDehazeStrth\n\n");
             unsigned int level = 70;
             rk_aiq_uapi2_setMDehazeStrth(ctx, level);
             printf("\t rk_aiq_uapi2_setMDehazeStrth level: %d\n\n", level);
             break;
         }
-        case 'h': {
+        case '8': {
             printf("\t ADEHAZE test rk_aiq_uapi2_getMEnhanceStrth\n\n");
             unsigned int level = 60;
             rk_aiq_uapi2_getMEnhanceStrth(ctx, &level);
             printf("\t rk_aiq_uapi2_getMEnhanceStrth level: %d\n\n", level);
             break;
         }
-        case 'i': {
+        case '9': {
             printf("\t ADEHAZE test rk_aiq_uapi2_setMEnhanceStrth\n\n");
             unsigned int level = 70;
             rk_aiq_uapi2_setMEnhanceStrth(ctx, level);
             printf("\t rk_aiq_uapi2_setMEnhanceStrth level: %d\n\n", level);
             break;
         }
+        case 'a': {
+            printf("\t ADEHAZE test rk_aiq_uapi2_getMEnhanceChromeStrth\n\n");
+            unsigned int level = 60;
+            rk_aiq_uapi2_getMEnhanceChromeStrth(ctx, &level);
+            printf("\t rk_aiq_uapi2_getMEnhanceChromeStrth level: %d\n\n", level);
+            break;
+        }
+        case 'b': {
+            printf("\t ADEHAZE test rk_aiq_uapi2_setMEnhanceChromeStrth\n\n");
+            unsigned int level = 70;
+            rk_aiq_uapi2_setMEnhanceChromeStrth(ctx, level);
+            printf("\t rk_aiq_uapi2_setMEnhanceChromeStrth level: %d\n\n", level);
+            break;
+        }
         default:
             break;
-#endif
         }
     } while (key != 'q' && key != 'Q');
 

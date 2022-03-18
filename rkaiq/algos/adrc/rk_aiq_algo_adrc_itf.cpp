@@ -149,11 +149,20 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOG1_ATMO("%s:Enter!\n", __FUNCTION__);
     XCamReturn result = XCAM_RETURN_NO_ERROR;
     bool bypass = false;
-
     AdrcContext_t* pAdrcCtx = (AdrcContext_t*)inparams->ctx;
-    pAdrcCtx->frameCnt = inparams->frame_id > 2 ? (inparams->frame_id - 2) : 0;
     RkAiqAlgoProcAdrc* pAdrcParams = (RkAiqAlgoProcAdrc*)inparams;
     RkAiqAlgoProcResAdrc* pAdrcProcRes = (RkAiqAlgoProcResAdrc*)outparams;
+    pAdrcCtx->frameCnt                 = inparams->frame_id > 2 ? (inparams->frame_id - 2) : 0;
+
+#if RKAIQ_HAVE_DRC_V12
+    memcpy(&pAdrcCtx->ablcV32_proc_res, &pAdrcParams->ablcV32_proc_res, sizeof(AblcProc_V32_t));
+    if (pAdrcCtx->ablcV32_proc_res.blc_ob_enable &&
+        pAdrcCtx->ablcV32_proc_res.isp_ob_predgain < 1.0f) {
+        LOGE_ATMO("%s: ob_enable ON , and ob_predgain[%f]<1.0f!!!\n", __FUNCTION__,
+                  pAdrcCtx->ablcV32_proc_res.isp_ob_predgain);
+        pAdrcCtx->ablcV32_proc_res.isp_ob_predgain = 1.0f;
+    }
+#endif
 
     //update config
     bool Enable = DrcEnableSetting(pAdrcCtx);

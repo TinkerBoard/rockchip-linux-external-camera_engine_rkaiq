@@ -174,7 +174,15 @@ XCamReturn RkAiqAblcHandleInt::processing() {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     RkAiqAlgoProcAblc* ablc_proc_int        = (RkAiqAlgoProcAblc*)mProcInParam;
-    RkAiqAlgoProcResAblc* ablc_proc_res_int = (RkAiqAlgoProcResAblc*)mProcOutParam;
+
+    if (mDes->id == 0) {
+        mProcResShared = new RkAiqAlgoProcResAblcIntShared();
+        if (!mProcResShared.ptr()) {
+            LOGE("new BLC mProcResShared failed, bypass!");
+            return XCAM_RETURN_BYPASS;
+        }
+    }
+
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
@@ -188,8 +196,30 @@ XCamReturn RkAiqAblcHandleInt::processing() {
     ablc_proc_int->hdr_mode = sharedCom->working_mode;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
-    ret                       = des->processing(mProcInParam, mProcOutParam);
+    ret                       = des->processing(mProcInParam, (RkAiqAlgoResCom*)(&mProcResShared->result));
     RKAIQCORE_CHECK_RET(ret, "ablc algo processing failed");
+
+    if (mAiqCore->mAlogsComSharedParams.init) {
+        RkAiqCore::RkAiqAlgosGroupShared_t* grpShared = nullptr;
+        uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_AWB);
+        if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
+            if (grpShared)
+                memcpy(&grpShared->res_comb.ablc_proc_res, &mProcResShared->result.ablc_proc_res,
+                       sizeof(mProcResShared->result.ablc_proc_res));
+        }
+        grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_GRP0);
+        if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
+            if (grpShared)
+                memcpy(&grpShared->res_comb.ablc_proc_res, &mProcResShared->result.ablc_proc_res,
+                       sizeof(mProcResShared->result.ablc_proc_res));
+        }
+    } else if (mPostShared) {
+        SmartPtr<BufferProxy> msg_data = new BufferProxy(mProcResShared);
+        msg_data->set_sequence(shared->frameId);
+        SmartPtr<XCamMessage> msg =
+            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_BLC_PROC_RES_OK, shared->frameId, msg_data);
+        mAiqCore->post_message(msg);
+    }
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -227,7 +257,9 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqAlgoProcResAblc* ablc_com              = (RkAiqAlgoProcResAblc*)mProcOutParam;
+    if (!mProcResShared.ptr())
+        return XCAM_RETURN_NO_ERROR;
+    RkAiqAlgoProcResAblc* ablc_com             = (RkAiqAlgoProcResAblc*)&mProcResShared->result;
 #if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32)
     rk_aiq_isp_blc_params_v21_t* blc_param = params->mBlcV21Params->data().ptr();
 #else

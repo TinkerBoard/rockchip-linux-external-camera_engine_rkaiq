@@ -24,7 +24,8 @@ RKAIQ_BEGIN_DECLARE
 #endif
 
 #if RKAIQ_HAVE_DRC_V10
-XCamReturn rk_aiq_user_api2_adrc_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drcAttrV10_t attr) {
+XCamReturn rk_aiq_user_api2_adrc_v10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               const drcAttrV10_t* attr) {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ADRC);
 
@@ -60,7 +61,7 @@ XCamReturn rk_aiq_user_api2_adrc_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, 
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn rk_aiq_user_api2_adrc_V10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_adrc_v10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                drcAttrV10_t* attr) {
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
@@ -96,18 +97,20 @@ XCamReturn rk_aiq_user_api2_adrc_V10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
     return XCAM_RETURN_NO_ERROR;
 }
 #else
-XCamReturn rk_aiq_user_api2_adrc_V10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drcAttrV10_t attr) {
+XCamReturn rk_aiq_user_api2_adrc_v10_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               const drcAttrV10_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
-XCamReturn rk_aiq_user_api2_adrc_V10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_adrc_v10_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                drcAttrV10_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 #endif
 
 #if RKAIQ_HAVE_DRC_V11
-XCamReturn rk_aiq_user_api2_adrc_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drcAttrV11_t attr) {
+XCamReturn rk_aiq_user_api2_adrc_v11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               const drcAttrV11_t* attr) {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ADRC);
 
@@ -143,7 +146,7 @@ XCamReturn rk_aiq_user_api2_adrc_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, 
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn rk_aiq_user_api2_adrc_V11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_adrc_v11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                drcAttrV11_t* attr) {
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
@@ -179,18 +182,20 @@ XCamReturn rk_aiq_user_api2_adrc_V11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
     return XCAM_RETURN_NO_ERROR;
 }
 #else
-XCamReturn rk_aiq_user_api2_adrc_V11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drcAttrV11_t attr) {
+XCamReturn rk_aiq_user_api2_adrc_v11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               const drcAttrV11_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
-XCamReturn rk_aiq_user_api2_adrc_V11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_adrc_v11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                drcAttrV11_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 #endif
 
 #if RKAIQ_HAVE_DRC_V12
-XCamReturn rk_aiq_user_api2_adrc_V12_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drcAttrV12_t attr) {
+XCamReturn rk_aiq_user_api2_adrc_v12_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               const drcAttrV12_t* attr) {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ADRC);
 
@@ -227,7 +232,7 @@ XCamReturn rk_aiq_user_api2_adrc_V12_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, 
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn rk_aiq_user_api2_adrc_V12_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_adrc_v12_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                drcAttrV12_t* attr) {
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
@@ -264,11 +269,12 @@ XCamReturn rk_aiq_user_api2_adrc_V12_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
     return XCAM_RETURN_NO_ERROR;
 }
 #else
-XCamReturn rk_aiq_user_api2_adrc_V12_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drcAttrV12_t attr) {
+XCamReturn rk_aiq_user_api2_adrc_v12_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               const drcAttrV12_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
-XCamReturn rk_aiq_user_api2_adrc_V12_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+XCamReturn rk_aiq_user_api2_adrc_v12_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                drcAttrV12_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }

@@ -222,6 +222,9 @@ XCamReturn RkAiqAbayer2dnrV23HandleInt::processing() {
     arawnr_proc_int->iso      = sharedCom->iso;
     arawnr_proc_int->hdr_mode = sharedCom->working_mode;
 
+    arawnr_proc_int->stAblcV32_proc_res = shared->res_comb.ablcV32_proc_res;
+    arawnr_proc_int->bayertnr_en = shared->res_comb.bayernr3d_en;
+
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
     RKAIQCORE_CHECK_RET(ret, "aynr algo processing failed");

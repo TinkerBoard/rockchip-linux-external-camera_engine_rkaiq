@@ -2,12 +2,12 @@
 #include "a3dlut/rk_aiq_types_a3dlut_algo_prvt.h"
 XCamReturn
 rk_aiq_uapi_a3dlut_SetAttrib(RkAiqAlgoContext *ctx,
-                             rk_aiq_lut3d_attrib_t attr,
+                             const rk_aiq_lut3d_attrib_t* attr,
                              bool need_sync)
 {
 
     alut3d_context_t* alut3d_context = (alut3d_context_t*)ctx->a3dlut_para;
-    alut3d_context->mNewAtt = attr;
+    alut3d_context->mNewAtt = *attr;
     alut3d_context->updateAtt = true;
 
     return XCAM_RETURN_NO_ERROR;

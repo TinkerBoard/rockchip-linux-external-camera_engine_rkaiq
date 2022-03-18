@@ -639,7 +639,9 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
 #endif
             break;
         case RK_AIQ_ALGO_TYPE_ABLC:
-#if defined(ISP_HW_V30) || defined(ISP_HW_V21) || defined(ISP_HW_V32)
+#if defined(ISP_HW_V32)
+            NEW_PARAMS_BUFFER_WITH_V(Blc, blc, 32);
+#elif defined(ISP_HW_V30) || defined(ISP_HW_V21)
             NEW_PARAMS_BUFFER_WITH_V(Blc, blc, 21);
 #else
             NEW_PARAMS_BUFFER(Blc, blc);
@@ -933,7 +935,7 @@ RkAiqCore::addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes)
         // enable only the specified algorithm modules
         if (!((1ULL << algo_type) & mCustomEnAlgosMask))
             continue;
-        int32_t grpMask = 1ULL << algoDes[i].group;
+        int64_t grpMask = 1ULL << algoDes[i].group;
 #ifdef RKAIQ_ENABLE_PARSER_V1
         mAlogsComSharedParams.ctxCfigs[algo_type].calib =
             const_cast<CamCalibDbContext_t*>(mAlogsComSharedParams.calib);
@@ -2290,7 +2292,9 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspLscParamsPool        = new RkAiqIspLscParamsPool("RkAiqIspLscParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_ABLC:
-#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32)
+#if defined(ISP_HW_V32)
+                mAiqIspBlcV32ParamsPool     = new RkAiqIspBlcParamsPoolV32("RkAiqIspBlcV32Params", RkAiqCore::DEFAULT_POOL_SIZE);
+#elif defined(ISP_HW_V21) || defined(ISP_HW_V30)
                 mAiqIspBlcV21ParamsPool     = new RkAiqIspBlcParamsPoolV21("RkAiqIspBlcParamsV21", RkAiqCore::DEFAULT_POOL_SIZE);
 #else
                 mAiqIspBlcParamsPool        = new RkAiqIspBlcParamsPool("RkAiqIspBlcParams", RkAiqCore::DEFAULT_POOL_SIZE);

@@ -530,7 +530,7 @@ RkAiqCamGroupManager::newAlgoHandle(RkAiqAlgoDesComm* algo, int hw_ver)
     NEW_ALGO_HANDLE(Agamma, AGAMMA);
     NEW_ALGO_HANDLE(Amerge, AMERGE);
     NEW_ALGO_HANDLE(Adrc, ADRC);
-    NEW_ALGO_HANDLE(Adhaz, ADHAZ);
+    NEW_ALGO_HANDLE(Adehaze, ADHAZ);
     NEW_ALGO_HANDLE(Agic, AGIC);
     NEW_ALGO_HANDLE(AynrV3, AYNR);
     NEW_ALGO_HANDLE(AcnrV2, ACNR);
