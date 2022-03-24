@@ -1041,11 +1041,14 @@ XCamReturn RkAiqManager::calibTuning(const CamCalibDbV2Context_t* aiqCalib,
     if (!aiqCalib) {
         return XCAM_RETURN_ERROR_PARAM;
     }
+
+    mRkAiqAnalyzer->calibTuning(aiqCalib, change_list);
+
+    // RkAiqCalibDbV2::CamCalibDbFreeInternal(mCalibDbV2);
+    mCamHw->setCalib(aiqCalib);
     *mCalibDbV2 = *aiqCalib;
 
-    mCamHw->setCalib(mCalibDbV2);
-
-    return mRkAiqAnalyzer->calibTuning(aiqCalib, change_list);
+    return XCAM_RETURN_NO_ERROR;
 }
 
 } //namespace RkCam

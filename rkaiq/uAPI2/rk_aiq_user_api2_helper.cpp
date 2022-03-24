@@ -147,6 +147,7 @@ char *rkaiq_uapi_rpc_response(const char *cmd_path, cJSON *root_js,
   char *ret_str = NULL;
   cJSON *ret_json = NULL;
   cJSON *node_json = NULL;
+  cJSON *node_json_clone = NULL;
   ret_json = cJSON_CreateArray();
 
   if (!root_js || !sub_node) {
@@ -161,20 +162,19 @@ char *rkaiq_uapi_rpc_response(const char *cmd_path, cJSON *root_js,
       if (node_json) cJSON_DetachItemViaPointer(root_js, node_json);
   }
 
+  node_json_clone = cJSON_Duplicate(node_json, 1);
+
   if (root_js) {
     cJSON *ret_item = cJSON_CreateObject();
     cJSON_AddStringToObject(ret_item, JSON_PATCH_PATH, cmd_path);
-    cJSON_AddItemToObject(ret_item, JSON_PATCH_VALUE, node_json);
+    cJSON_AddItemToObject(ret_item, JSON_PATCH_VALUE, node_json_clone);
     cJSON_AddItemToArray(ret_json, ret_item);
   }
 
-  ret_str = cJSON_PrintUnformatted(ret_json);
+  ret_str = strdup(cJSON_PrintUnformatted(ret_json));
 
   if (ret_json)
-    cJSON_free(ret_json);
-
-  if (node_json && node_json != root_js)
-    cJSON_free(node_json);
+    cJSON_Delete(ret_json);
 
   return ret_str;
 }
@@ -271,7 +271,7 @@ int rkaiq_uapi_unified_ctl(rk_aiq_sys_ctx_t *sys_ctx, const char *js_str,
     if (ret_js) {
       *ret_str = rkaiq_uapi_rpc_response(cmd_path_str.c_str(), ret_js,
                                          final_path.c_str());
-      cJSON_free(ret_js);
+      cJSON_Delete(ret_js);
     }
   }
 

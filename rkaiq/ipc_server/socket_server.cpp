@@ -293,6 +293,8 @@ void rkaiq_params_tuning(aiq_tunning_ctx *tunning_ctx) {
     printf("---> read:\n%s\n", out_data);
 #endif
     rkaiq_ipc_send(sockfd, AIQ_IPC_CMD_READ, 0, 0, out_data, strlen(out_data));
+    if (out_data)
+      free(out_data);
   } break;
   default:
     break;

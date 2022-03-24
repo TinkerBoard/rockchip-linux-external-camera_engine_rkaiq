@@ -103,6 +103,8 @@ public:
     static TuningCalib analyzTuningCalib(const CamCalibDbV2Context_t *calib,
                                          const char* patch_str);
 
+    static int CamCalibDbFreeInternal(CamCalibDbV2Context_t* ctx);
+
 private:
     static std::map<std::string, CamCalibDbProj_t *> mCalibDbsMap;
     static CalibDb_Sensor_ParaV2_t mSensorInfo;
