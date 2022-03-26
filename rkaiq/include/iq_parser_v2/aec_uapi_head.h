@@ -174,30 +174,30 @@ typedef struct uapi_rawhist_stats_s {
 } uapi_rawhist_stats_t;
 
 typedef struct uapi_sihist_stats_s {
-    // M4_ARRAY_DESC("bins", "u32", M4_SIZE(1,32), M4_RANGE(0,268435456), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("bins", "u32", M4_SIZE(1,32), M4_RANGE(0,268435456), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
     unsigned int bins[SIHIST_BIN_N_MAX];
 } uapi_sihist_stats_t;
 
 typedef struct uapi_rawae_big_stats_s {
-    // M4_ARRAY_DESC("channelr_xy", "u16", M4_SIZE(1,225), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("channelr_xy", "u16", M4_SIZE(15,15), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t channelr_xy[RAWAEBIG_WIN_NUM];
 
-    // M4_ARRAY_DESC("channelg_xy", "u16", M4_SIZE(1,225), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("channelg_xy", "u16", M4_SIZE(15,15), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t channelg_xy[RAWAEBIG_WIN_NUM];
 
-    // M4_ARRAY_DESC("channelb_xy", "u16", M4_SIZE(1,225), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("channelb_xy", "u16", M4_SIZE(15,15), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t channelb_xy[RAWAEBIG_WIN_NUM];
 
-    // M4_ARRAY_DESC("channely_xy", "u16", M4_SIZE(1,225), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("channely_xy", "u16", M4_SIZE(15,15), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t channely_xy[RAWAEBIG_WIN_NUM]; //not HW!
 
-    // M4_ARRAY_DESC("wndx_sumr", "u64", M4_SIZE(1,4), M4_RANGE(0,536870912), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("wndx_sumr", "u32", M4_SIZE(1,4), M4_RANGE(0,536870912), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint64_t wndx_sumr[RAWAEBIG_SUBWIN_NUM];
 
-    // M4_ARRAY_DESC("wndx_sumg", "u64", M4_SIZE(1,4), M4_RANGE(0,4294967296), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("wndx_sumg", "u32", M4_SIZE(1,4), M4_RANGE(0,4294967296), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint64_t wndx_sumg[RAWAEBIG_SUBWIN_NUM];
 
-    // M4_ARRAY_DESC("wndx_sumb", "u64", M4_SIZE(1,4), M4_RANGE(0,536870912), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("wndx_sumb", "u32", M4_SIZE(1,4), M4_RANGE(0,536870912), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint64_t wndx_sumb[RAWAEBIG_SUBWIN_NUM];
 
     // M4_ARRAY_DESC("wndx_channelr", "u16", M4_SIZE(1,4), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
@@ -214,24 +214,24 @@ typedef struct uapi_rawae_big_stats_s {
 } uapi_rawae_big_stats_t;
 
 typedef struct uapi_rawae_lite_stat_s {
-    // M4_ARRAY_DESC("channelr_xy", "u16", M4_SIZE(1,25), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("channelr_xy", "u16", M4_SIZE(5,5), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t channelr_xy[RAWAELITE_WIN_NUM];
 
-    // M4_ARRAY_DESC("channelg_xy", "u16", M4_SIZE(1,25), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("channelg_xy", "u16", M4_SIZE(5,5), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t channelg_xy[RAWAELITE_WIN_NUM];
 
-    // M4_ARRAY_DESC("channelb_xy", "u16", M4_SIZE(1,25), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("channelb_xy", "u16", M4_SIZE(5,5), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t channelb_xy[RAWAELITE_WIN_NUM];
 
-    // M4_ARRAY_DESC("channely_xy", "u16", M4_SIZE(1,25), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("channely_xy", "u16", M4_SIZE(5,5), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t channely_xy[RAWAELITE_WIN_NUM]; //not HW!
 } uapi_rawae_lite_stat_t;
 
 typedef struct uapi_yuvae_stats_s {
-    // M4_ARRAY_DESC("channely_xy", "u64", M4_SIZE(1,4), M4_RANGE(0,4294967296), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("channely_xy", "u64", M4_SIZE(1,4), M4_RANGE(0,4294967296), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
     uint64_t ro_yuvae_sumy[YUVAE_SUBWIN_NUM];
 
-    // M4_ARRAY_DESC("channely_xy", "u8", M4_SIZE(1,225), M4_RANGE(0,255), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("channely_xy", "u8", M4_SIZE(15,15), M4_RANGE(0,255), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
     unsigned char mean[YUVAE_WIN_NUM];
 } uapi_yuvae_stats_t;
 
@@ -253,9 +253,9 @@ typedef struct uapi_ae_hwstats_s {
     uapi_raw_stats_t chn[3];
     // M4_STRUCT_DESC("extra", "normal_ui_style")
     uapi_raw_stats_t extra;
-    // M4_STRUCT_DESC("yuvae", "normal_ui_style")
+    // M4_STRUCT_DESC("yuvae", "normal_ui_style",M4_HIDE(1))
     uapi_yuvae_stats_t yuvae;
-    // M4_STRUCT_DESC("sihist", "normal_ui_style")
+    // M4_STRUCT_DESC("sihist", "normal_ui_style",M4_HIDE(1))
     uapi_sihist_stats_t sihist;
 } uapi_ae_hwstats_t;
 

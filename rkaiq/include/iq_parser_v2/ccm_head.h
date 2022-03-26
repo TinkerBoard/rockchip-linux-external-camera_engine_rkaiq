@@ -172,8 +172,8 @@ typedef struct CalibDbV2_Ccm_Control_Para_s {
 } CalibDbV2_Ccm_Control_Para_t;
 
 typedef struct CalibDbV2_Ccm_Enh_para_s {
-    // M4_ARRAY_DESC("gains", "u8", M4_SIZE(1,9), M4_RANGE(0,256), "1", M4_DIGIT(0), M4_DYNAMIC(0))
-    unsigned short gains[9];
+    // M4_ARRAY_DESC("gains", "f32", M4_SIZE(1,9), M4_RANGE(0,256), "1", M4_DIGIT(0), M4_DYNAMIC(0))
+    float gains[9];
     // M4_ARRAY_DESC("enable", "u8", M4_SIZE(1,9),  M4_RANGE(0, 1), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned short enh_adj_en[9];
     // M4_ARRAY_DESC("Enhance ratio max", "f32", M4_SIZE(1,9), M4_RANGE(0, 8), "0", M4_DIGIT(1), M4_DYNAMIC(0))

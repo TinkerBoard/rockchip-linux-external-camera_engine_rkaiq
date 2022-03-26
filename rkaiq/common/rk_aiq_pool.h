@@ -27,6 +27,7 @@ namespace RkCam {
 
 typedef struct RKAiqAecExpInfoWrapper_s : public XCam::BufferData {
     RKAiqAecExpInfo_t aecExpInfo;
+    RKAiqExpI2cParam_t exp_i2c_params;
     RKAiqAecExpInfo_t exp_tbl[MAX_AEC_EFFECT_FNUM + 1];
     Sensor_dpcc_res_t SensorDpccInfo;
     int exp_tbl_size;
@@ -35,6 +36,7 @@ typedef struct RKAiqAecExpInfoWrapper_s : public XCam::BufferData {
     struct RKAiqAecExpInfoWrapper_s& operator=(const struct RKAiqAecExpInfoWrapper_s& set)
     {
         this->aecExpInfo = set.aecExpInfo;
+        this->exp_i2c_params = set.exp_i2c_params;
         this->SensorDpccInfo = set.SensorDpccInfo;
         this->exp_tbl_size = set.exp_tbl_size;
         this->algo_id = set.algo_id;

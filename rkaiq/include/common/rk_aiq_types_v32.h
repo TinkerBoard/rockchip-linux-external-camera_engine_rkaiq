@@ -31,6 +31,10 @@
 #include "rk_aiq_comm.h"
 #include "rk_aiq_mems_sensor.h"
 
+#ifndef ISP32_LDCH_BIC_NUM
+#define ISP32_LDCH_BIC_NUM		36
+#endif
+
 // typedef struct rk_aiq_isp_blc_v32_s {
 // } rk_aiq_isp_blc_v32_t;
 
@@ -54,9 +58,22 @@ typedef struct rk_aiq_isp_ccm_v32_s {
 
 typedef RkAiqAdehazeProcResult_t rk_aiq_isp_dehaze_v32_t;
 
-typedef struct rk_aiq_isp_ldch_v32_s {
-} rk_aiq_isp_ldch_v32_t;
+typedef struct rk_aiq_isp_ldch_v21_s {
+    int32_t ldch_en;
+    int32_t lut_h_size;
+    int32_t lut_v_size;
+    int32_t lut_size;
+    uint32_t lut_mem_fd;
 
+    uint8_t frm_end_dis;
+    uint8_t zero_interp_en;
+    uint8_t sample_avr_en;
+    uint8_t bic_mode_en;
+    uint8_t force_map_en;
+    uint8_t map13p3_en;
+
+    uint8_t bicubic[ISP32_LDCH_BIC_NUM];
+} rk_aiq_isp_ldch_v21_t;
 
 typedef RK_YNR_Fix_V22_t rk_aiq_isp_ynr_v32_t ;
 

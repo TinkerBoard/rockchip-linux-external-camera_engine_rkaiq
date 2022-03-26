@@ -64,12 +64,12 @@ prepare(RkAiqAlgoCom* params)
     hAccm->accmSwInfo.prepare_type = params->u.prepare.conf_type;
    if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )){
 #if RKAIQ_HAVE_CCM_V1
-       hAccm->calibV2Ccm.ccm_v1 = (CalibDbV2_Ccm_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR(
+       hAccm->ccm_v1 = (CalibDbV2_Ccm_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR(
            (CamCalibDbV2Context_t*)(para->s_calibv2), ccm_calib));
 #endif
 
 #if RKAIQ_HAVE_CCM_V2
-       hAccm->calibV2Ccm.ccm_v2 = (CalibDbV2_Ccm_Para_V32_t*)(CALIBDBV2_GET_MODULE_PTR(
+       hAccm->ccm_v2 = (CalibDbV2_Ccm_Para_V32_t*)(CALIBDBV2_GET_MODULE_PTR(
            (CamCalibDbV2Context_t*)(para->s_calibv2), ccm_calib_v2));
 #endif
    }

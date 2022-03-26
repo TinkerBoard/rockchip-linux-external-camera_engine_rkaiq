@@ -507,14 +507,19 @@ void Isp32Params::convertAiqAfToIsp32Params(struct isp32_isp_params_cfg& isp_cfg
     isp_cfg.meas.rawaf.h2_fv_mode     = af_data.h2_fv_outmode;
     isp_cfg.meas.rawaf.ldg_en         = af_data.ldg_en;
     isp_cfg.meas.rawaf.accu_8bit_mode = af_data.accu_8bit_mode;
-    isp_cfg.meas.rawaf.ae_mode        = af_data.ae_mode;
     isp_cfg.meas.rawaf.y_mode         = af_data.y_mode;
     isp_cfg.meas.rawaf.vldg_sel       = af_data.vldg_sel;
     isp_cfg.meas.rawaf.sobel_sel      = af_data.sobel_sel;
     isp_cfg.meas.rawaf.v_dnscl_mode   = af_data.v_dnscl_mode;
     isp_cfg.meas.rawaf.from_awb       = af_data.from_awb;
     isp_cfg.meas.rawaf.from_ynr       = af_data.from_ynr;
-    isp_cfg.meas.rawaf.ae_config_use  = af_data.ae_config_use;
+    if (af_data.af_en) {
+        isp_cfg.meas.rawaf.ae_mode = af_data.ae_mode;
+        isp_cfg.meas.rawaf.ae_config_use = af_data.ae_config_use;
+    } else {
+        isp_cfg.meas.rawaf.ae_mode = 0;
+        isp_cfg.meas.rawaf.ae_config_use = 1;
+    }
 
     memcpy(isp_cfg.meas.rawaf.line_en, af_data.line_en,
            ISP32_RAWAF_LINE_NUM * sizeof(unsigned char));
@@ -614,6 +619,7 @@ void Isp32Params::convertAiqCacToIsp32Params(struct isp32_isp_params_cfg& isp_cf
 #if 1
     LOGD_ACAC("Dump CAC config: ");
     LOGD_ACAC("current enable: %d",    cac_cfg.enable);
+    LOGD_ACAC("by en: %d",             cfg->bypass_en);
     LOGD_ACAC("center en: %d",         cfg->center_en);
     LOGD_ACAC("center x: %d",          cfg->center_width);
     LOGD_ACAC("center y: %d",          cfg->center_height);
@@ -1453,13 +1459,20 @@ void Isp32Params::convertAiqBlcToIsp32Params(struct isp32_isp_params_cfg& isp_cf
     isp_cfg.others.bls_cfg.fixed_val.gb = blc.blc_gb;
     isp_cfg.others.bls_cfg.fixed_val.b  = blc.blc_b;
 
-    isp_cfg.others.bls_cfg.bls1_val.r  = CLIP((int)(blc.blc1_r * blc.isp_ob_predgain), 0, 32767);
-    isp_cfg.others.bls_cfg.bls1_val.gr = CLIP((int)(blc.blc1_gr * blc.isp_ob_predgain), 0, 32767);
-    isp_cfg.others.bls_cfg.bls1_val.gb = CLIP((int)(blc.blc1_gb * blc.isp_ob_predgain), 0, 32767);
-    isp_cfg.others.bls_cfg.bls1_val.b  = CLIP((int)(blc.blc1_b * blc.isp_ob_predgain), 0, 32767);
+    if (blc.isp_ob_predgain !=0 ) {
+        isp_cfg.others.bls_cfg.bls1_val.r  = CLIP((int)(blc.blc1_r * blc.isp_ob_predgain), 0, 32767);
+        isp_cfg.others.bls_cfg.bls1_val.gr = CLIP((int)(blc.blc1_gr * blc.isp_ob_predgain), 0, 32767);
+        isp_cfg.others.bls_cfg.bls1_val.gb = CLIP((int)(blc.blc1_gb * blc.isp_ob_predgain), 0, 32767);
+        isp_cfg.others.bls_cfg.bls1_val.b  = CLIP((int)(blc.blc1_b * blc.isp_ob_predgain), 0, 32767);
+    } else {
+        isp_cfg.others.bls_cfg.bls1_val.r  = blc.blc1_r;
+        isp_cfg.others.bls_cfg.bls1_val.gr = blc.blc1_gr;
+        isp_cfg.others.bls_cfg.bls1_val.gb = blc.blc1_gb;
+        isp_cfg.others.bls_cfg.bls1_val.b  = blc.blc1_b;
+    }
 
     // TODO bls1 params
-    isp_cfg.others.bls_cfg.bls1_en = 1;
+    isp_cfg.others.bls_cfg.bls1_en = blc.blc1_enable;
 
     // blc_ob
 
@@ -1474,6 +1487,36 @@ void Isp32Params::convertAiqBlcToIsp32Params(struct isp32_isp_params_cfg& isp_cf
 #endif
     LOGD_ABLC("%s:(%d) exit \n", __FUNCTION__, __LINE__);
 }
+
+void Isp32Params::convertAiqAldchToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
+        const rk_aiq_isp_ldch_v21_t& ldch_cfg)
+{
+    struct isp32_ldch_cfg *pLdchCfg = &isp_cfg.others.ldch_cfg;
+
+    // TODO: add update flag for ldch
+    if (ldch_cfg.ldch_en) {
+        isp_cfg.module_ens |= ISP3X_MODULE_LDCH;
+        isp_cfg.module_en_update |= ISP3X_MODULE_LDCH;
+        isp_cfg.module_cfg_update |= ISP3X_MODULE_LDCH;
+
+        pLdchCfg->hsize = ldch_cfg.lut_h_size;
+        pLdchCfg->vsize = ldch_cfg.lut_v_size;
+        pLdchCfg->buf_fd = ldch_cfg.lut_mem_fd;
+
+        pLdchCfg->frm_end_dis = ldch_cfg.frm_end_dis;
+        pLdchCfg->zero_interp_en = ldch_cfg.zero_interp_en;
+        pLdchCfg->sample_avr_en = ldch_cfg.sample_avr_en;
+        pLdchCfg->bic_mode_en = ldch_cfg.bic_mode_en;
+        memcpy(pLdchCfg->bicubic, ldch_cfg.bicubic, sizeof(ldch_cfg.bicubic));
+
+        LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "enable ldch h/v size: %d",
+                        pLdchCfg->hsize, pLdchCfg->vsize);
+    } else {
+        isp_cfg.module_ens &= ~ISP2X_MODULE_LDCH;
+        isp_cfg.module_en_update |= ISP2X_MODULE_LDCH;
+    }
+}
+
 bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* isp_cfg_p, bool is_multi_isp) {
     struct isp32_isp_params_cfg& isp_cfg       = *(struct isp32_isp_params_cfg*)isp_cfg_p;
 
@@ -1500,26 +1543,22 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
         if (params.ptr()) convertAiqAwbToIsp32Params(isp_cfg, params->data()->result, true);
     }
     break;
-#if 0
     case RESULT_TYPE_GIC_PARAM: {
+#if RKAIQ_HAVE_GIC_V2
         SmartPtr<RkAiqIspGicParamsProxy> params =
             result.dynamic_cast_ptr<RkAiqIspGicParamsProxy>();
         if (params.ptr()) convertAiqAgicToIsp21Params(isp_cfg, params->data()->result);
-    }
-    break;
-    case RESULT_TYPE_AF_PARAM: {
-        SmartPtr<RkAiqIspAfParamsProxyV3x> params =
-            result.dynamic_cast_ptr<RkAiqIspAfParamsProxyV3x>();
-        if (params.ptr()) convertAiqAfToIsp32Params(isp_cfg, params->data()->result, true);
+#endif
     }
     break;
     case RESULT_TYPE_LSC_PARAM: {
+#if RKAIQ_HAVE_LSC_V2
         SmartPtr<RkAiqIspLscParamsProxy> params =
             result.dynamic_cast_ptr<RkAiqIspLscParamsProxy>();
         if (params.ptr()) convertAiqLscToIsp20Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
-#endif
     case RESULT_TYPE_AF_PARAM: {
 #if RKAIQ_HAVE_AF_V31
         SmartPtr<RkAiqIspAfParamsProxyV32> params =
@@ -1614,13 +1653,6 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
         if (params.ptr()) convertAiqDpccToIsp20Params(isp_cfg, params->data()->result);
     }
     break;
-    case RESULT_TYPE_LDCH_PARAM: {
-        SmartPtr<RkAiqIspLdchParamsProxy> params =
-            result.dynamic_cast_ptr<RkAiqIspLdchParamsProxy>();
-        if (params.ptr() && params->data()->update_mask & RKAIQ_ISP_LDCH_ID)
-            convertAiqAldchToIsp20Params(isp_cfg, params->data()->result);
-    }
-    break;
 #endif
     case RESULT_TYPE_CSM_PARAM: {
         SmartPtr<RkAiqIspCsmParamsProxy> params =
@@ -1692,6 +1724,13 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
     }
     break;
 #endif
+    case RESULT_TYPE_LDCH_PARAM:
+    {
+        SmartPtr<RkAiqIspLdchParamsProxyV32> params = result.dynamic_cast_ptr<RkAiqIspLdchParamsProxyV32>();
+        if (params.ptr() && params->data()->update_mask & RKAIQ_ISP_LDCH_ID)
+            convertAiqAldchToIsp32Params(isp_cfg, params->data()->result);
+    }
+    break;
     default:
         LOGE("unknown param type: 0x%x!", type);
         return false;

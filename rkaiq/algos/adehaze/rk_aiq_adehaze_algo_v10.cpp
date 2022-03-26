@@ -65,7 +65,7 @@ int LinearInterpEnable(const float* pX, const unsigned char* pY, float posx, int
     return yOut;
 }
 
-void EnableSetting(CalibDbV2_dehaze_V10_t* pAdehazeCtx, RkAiqAdehazeProcResult_t* ProcRes) {
+void EnableSetting(CalibDbV2_dehaze_v10_t* pAdehazeCtx, RkAiqAdehazeProcResult_t* ProcRes) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
 
     ProcRes->ProcResV10.enable = true;
@@ -113,7 +113,7 @@ void EnableSetting(CalibDbV2_dehaze_V10_t* pAdehazeCtx, RkAiqAdehazeProcResult_t
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
 }
 
-void GetDehazeParams(CalibDbV2_dehaze_V10_t* pCalib, RkAiqAdehazeProcResult_t* ProcRes,
+void GetDehazeParams(CalibDbV2_dehaze_v10_t* pCalib, RkAiqAdehazeProcResult_t* ProcRes,
                      float CtrlValue) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
 
@@ -287,7 +287,7 @@ void GetDehazeParams(CalibDbV2_dehaze_V10_t* pCalib, RkAiqAdehazeProcResult_t* P
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
 }
 
-void GetEnhanceParams(CalibDbV2_dehaze_V10_t* pCalib, RkAiqAdehazeProcResult_t* ProcRes,
+void GetEnhanceParams(CalibDbV2_dehaze_v10_t* pCalib, RkAiqAdehazeProcResult_t* ProcRes,
                       float CtrlValue) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
 
@@ -305,7 +305,7 @@ void GetEnhanceParams(CalibDbV2_dehaze_V10_t* pCalib, RkAiqAdehazeProcResult_t* 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
 }
 
-void GetHistParams(CalibDbV2_dehaze_V10_t* pCalib, RkAiqAdehazeProcResult_t* ProcRes,
+void GetHistParams(CalibDbV2_dehaze_v10_t* pCalib, RkAiqAdehazeProcResult_t* ProcRes,
                    float CtrlValue) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
 
@@ -372,7 +372,7 @@ void GetHistParams(CalibDbV2_dehaze_V10_t* pCalib, RkAiqAdehazeProcResult_t* Pro
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
 }
 
-void AdehazeApiToolProcess(CalibDbV2_dehaze_V10_t* pStool, RkAiqAdehazeProcResult_t* ProcRes,
+void AdehazeApiToolProcess(CalibDbV2_dehaze_v10_t* pStool, RkAiqAdehazeProcResult_t* ProcRes,
                            float CtrlValue) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
     LOGD_ADEHAZE("%s: Adehaze in api TOOL !!! \n", __func__);
@@ -397,7 +397,7 @@ void AdehazeApiToolProcess(CalibDbV2_dehaze_V10_t* pStool, RkAiqAdehazeProcResul
     LOG1_ADEHAZE("EXIT: %s \n", __func__);
 }
 
-void AdehazeEnhanceApiBypassProcess(CalibDbV2_dehaze_V10_t* pCalib,
+void AdehazeEnhanceApiBypassProcess(CalibDbV2_dehaze_v10_t* pCalib,
                                     RkAiqAdehazeProcResult_t* ProcRes, float CtrlValue) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
     LOGD_ADEHAZE(" %s: Adehaze Api off!!!\n", __func__);
@@ -422,7 +422,7 @@ void AdehazeEnhanceApiBypassProcess(CalibDbV2_dehaze_V10_t* pCalib,
     LOG1_ADEHAZE("EXIT: %s \n", __func__);
 }
 
-void AdehazeEnhanceApiOffProcess(CalibDbV2_dehaze_V10_t* pCalib, RkAiqAdehazeProcResult_t* ProcRes,
+void AdehazeEnhanceApiOffProcess(CalibDbV2_dehaze_v10_t* pCalib, RkAiqAdehazeProcResult_t* ProcRes,
                                  float CtrlValue) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
     LOGD_ADEHAZE(" %s: Adehaze Api off!!!\n", __func__);
@@ -648,9 +648,9 @@ XCamReturn AdehazeInit(AdehazeHandle_t** pAdehazeCtx, CamCalibDbV2Context_t* pCa
     AdehazeHandle_t* handle = (AdehazeHandle_t*)calloc(1, sizeof(AdehazeHandle_t));
 
     // isp20
-    CalibDbV2_dehaze_V10_t* calibv2_adehaze_calib_V10 =
-        (CalibDbV2_dehaze_V10_t*)(CALIBDBV2_GET_MODULE_PTR(pCalib, adehaze_calib));
-    memcpy(&handle->CalibV10, calibv2_adehaze_calib_V10, sizeof(CalibDbV2_dehaze_V10_t));
+    CalibDbV2_dehaze_v10_t* calibv2_adehaze_calib_V10 =
+        (CalibDbV2_dehaze_v10_t*)(CALIBDBV2_GET_MODULE_PTR(pCalib, adehaze_calib));
+    memcpy(&handle->CalibV10, calibv2_adehaze_calib_V10, sizeof(CalibDbV2_dehaze_v10_t));
 
     handle->PreDataV10.ISO     = 50.0;
     handle->PreDataV10.ApiMode = DEHAZE_API_AUTO;

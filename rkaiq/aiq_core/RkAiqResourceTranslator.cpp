@@ -485,6 +485,7 @@ RkAiqResourceTranslator::translateAtmoStats (const SmartPtr<VideoBuffer> &from, 
     return ret;
 }
 
+#if RKAIQ_HAVE_DEHAZE_V10
 XCamReturn
 RkAiqResourceTranslator::translateAdehazeStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAdehazeStatsProxy> &to)
 {
@@ -522,6 +523,7 @@ RkAiqResourceTranslator::translateAdehazeStats (const SmartPtr<VideoBuffer> &fro
 
     return ret;
 }
+#endif
 
 XCamReturn
 RkAiqResourceTranslator::translateAfStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAfStatsProxy> &to)

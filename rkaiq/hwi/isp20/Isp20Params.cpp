@@ -1830,7 +1830,7 @@ Isp20Params::convertAiqLscToIsp20Params(T& isp_cfg,
     isp_cfg.module_en_update |= ISP2X_MODULE_LSC;
     isp_cfg.module_cfg_update |= ISP2X_MODULE_LSC;
 
-#ifdef ISP_HW_V30
+#if RKAIQ_HAVE_LSC_V2
     struct isp3x_lsc_cfg *  cfg = &isp_cfg.others.lsc_cfg;
     cfg->sector_16x16 = true;
 #else
@@ -3941,7 +3941,7 @@ bool Isp20Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_LSC_PARAM:
     {
-#ifndef ISP_HW_V30
+#ifndef RKAIQ_HAVE_LSC_V2
         SmartPtr<RkAiqIspLscParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspLscParamsProxy>();
         if (params.ptr())
             convertAiqLscToIsp20Params(isp_cfg, params->data()->result);

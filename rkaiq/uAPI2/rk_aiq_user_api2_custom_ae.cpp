@@ -961,17 +961,17 @@ void _customAeRes2rkAeRes(rk_aiq_rkAe_config_t* pConfig, RkAiqAlgoProcResAe* rkA
         rkAeProcRes->new_ae_exp.LinearExp = customAeProcRes->linear_exp;
     }
 
-    rkAeProcRes->new_ae_exp.exp_i2c_params.bValid = customAeProcRes->exp_i2c_params.bValid;
-    rkAeProcRes->new_ae_exp.exp_i2c_params.nNumRegs = customAeProcRes->exp_i2c_params.nNumRegs;
+    rkAeProcRes->exp_i2c_params.bValid = customAeProcRes->exp_i2c_params.bValid;
+    rkAeProcRes->exp_i2c_params.nNumRegs = customAeProcRes->exp_i2c_params.nNumRegs;
 
     if(customAeProcRes->exp_i2c_params.bValid) {
         if(customAeProcRes->exp_i2c_params.nNumRegs <= MAX_I2CDATA_LEN) {
             for(uint32_t i = 0; i < customAeProcRes->exp_i2c_params.nNumRegs; i++) {
-                rkAeProcRes->new_ae_exp.exp_i2c_params.DelayFrames[i] = customAeProcRes->exp_i2c_params.pDelayFrames[i];
-                rkAeProcRes->new_ae_exp.exp_i2c_params.RegAddr[i] = customAeProcRes->exp_i2c_params.pRegAddr[i];
-                rkAeProcRes->new_ae_exp.exp_i2c_params.AddrByteNum[i] = customAeProcRes->exp_i2c_params.pAddrByteNum[i];
-                rkAeProcRes->new_ae_exp.exp_i2c_params.RegValue[i] = customAeProcRes->exp_i2c_params.pRegValue[i];
-                rkAeProcRes->new_ae_exp.exp_i2c_params.ValueByteNum[i] = customAeProcRes->exp_i2c_params.pValueByteNum[i];
+                rkAeProcRes->exp_i2c_params.DelayFrames[i] = customAeProcRes->exp_i2c_params.pDelayFrames[i];
+                rkAeProcRes->exp_i2c_params.RegAddr[i] = customAeProcRes->exp_i2c_params.pRegAddr[i];
+                rkAeProcRes->exp_i2c_params.AddrByteNum[i] = customAeProcRes->exp_i2c_params.pAddrByteNum[i];
+                rkAeProcRes->exp_i2c_params.RegValue[i] = customAeProcRes->exp_i2c_params.pRegValue[i];
+                rkAeProcRes->exp_i2c_params.ValueByteNum[i] = customAeProcRes->exp_i2c_params.pValueByteNum[i];
             }
         } else {
             LOGE("too many i2c data to set!!");
@@ -1049,18 +1049,18 @@ void _customGrpAeSingleResSet(rk_aiq_rkAe_config_t* pConfig, rk_aiq_singlecam_3a
         rk_aiq_singlecam_3a_result->aec.exp_tbl[0].LinearExp = customAeRes.linear_exp;
     }
 
-    rk_aiq_singlecam_3a_result->aec.exp_tbl[0].exp_i2c_params.bValid = customAeRes.exp_i2c_params.bValid;
-    rk_aiq_singlecam_3a_result->aec.exp_tbl[0].exp_i2c_params.nNumRegs = customAeRes.exp_i2c_params.nNumRegs;
+    rk_aiq_singlecam_3a_result->aec.exp_i2c_params->bValid = customAeRes.exp_i2c_params.bValid;
+    rk_aiq_singlecam_3a_result->aec.exp_i2c_params->nNumRegs = customAeRes.exp_i2c_params.nNumRegs;
 
     if(customAeRes.exp_i2c_params.bValid) {
         if(customAeRes.exp_i2c_params.nNumRegs <= MAX_I2CDATA_LEN) {
 
             for(uint32_t i = 0; i < customAeRes.exp_i2c_params.nNumRegs; i++) {
-                rk_aiq_singlecam_3a_result->aec.exp_tbl[0].exp_i2c_params.DelayFrames[i] = customAeRes.exp_i2c_params.pDelayFrames[i];
-                rk_aiq_singlecam_3a_result->aec.exp_tbl[0].exp_i2c_params.RegAddr[i] = customAeRes.exp_i2c_params.pRegAddr[i];
-                rk_aiq_singlecam_3a_result->aec.exp_tbl[0].exp_i2c_params.AddrByteNum[i] = customAeRes.exp_i2c_params.pAddrByteNum[i];
-                rk_aiq_singlecam_3a_result->aec.exp_tbl[0].exp_i2c_params.RegValue[i] = customAeRes.exp_i2c_params.pRegValue[i];
-                rk_aiq_singlecam_3a_result->aec.exp_tbl[0].exp_i2c_params.ValueByteNum[i] = customAeRes.exp_i2c_params.pValueByteNum[i];
+                rk_aiq_singlecam_3a_result->aec.exp_i2c_params->DelayFrames[i] = customAeRes.exp_i2c_params.pDelayFrames[i];
+                rk_aiq_singlecam_3a_result->aec.exp_i2c_params->RegAddr[i] = customAeRes.exp_i2c_params.pRegAddr[i];
+                rk_aiq_singlecam_3a_result->aec.exp_i2c_params->AddrByteNum[i] = customAeRes.exp_i2c_params.pAddrByteNum[i];
+                rk_aiq_singlecam_3a_result->aec.exp_i2c_params->RegValue[i] = customAeRes.exp_i2c_params.pRegValue[i];
+                rk_aiq_singlecam_3a_result->aec.exp_i2c_params->ValueByteNum[i] = customAeRes.exp_i2c_params.pValueByteNum[i];
             }
         } else {
             LOGE("too many i2c data to set!!");

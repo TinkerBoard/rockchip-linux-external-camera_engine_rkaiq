@@ -252,7 +252,7 @@ XCamReturn RkAiqAdehazeHandleInt::updateConfig(bool needSync) {
 }
 
 #if RKAIQ_HAVE_DEHAZE_V10
-XCamReturn RkAiqAdehazeHandleInt::setSwAttribV10(const adehaze_sw_V10_t* att) {
+XCamReturn RkAiqAdehazeHandleInt::setSwAttribV10(const adehaze_sw_v10_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -264,10 +264,10 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV10(const adehaze_sw_V10_t* att) {
     // called by RkAiqCore
     bool isChanged = false;
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC &&
-        memcmp(&mNewAttV10, att, sizeof(adehaze_sw_V10_t)))
+        memcmp(&mNewAttV10, att, sizeof(adehaze_sw_v10_t)))
         isChanged = true;
     else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC &&
-             memcmp(&mCurAttV10, att, sizeof(adehaze_sw_V10_t)))
+             memcmp(&mCurAttV10, att, sizeof(adehaze_sw_v10_t)))
         isChanged = true;
 
     // if something changed
@@ -283,7 +283,7 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV10(const adehaze_sw_V10_t* att) {
     return ret;
 }
 
-XCamReturn RkAiqAdehazeHandleInt::getSwAttribV10(adehaze_sw_V10_t* att) {
+XCamReturn RkAiqAdehazeHandleInt::getSwAttribV10(adehaze_sw_v10_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -309,7 +309,7 @@ XCamReturn RkAiqAdehazeHandleInt::getSwAttribV10(adehaze_sw_V10_t* att) {
 }
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
-XCamReturn RkAiqAdehazeHandleInt::setSwAttribV11(const adehaze_sw_V11_t* att) {
+XCamReturn RkAiqAdehazeHandleInt::setSwAttribV11(const adehaze_sw_v11_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -321,10 +321,10 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV11(const adehaze_sw_V11_t* att) {
     // called by RkAiqCore
     bool isChanged = false;
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC &&
-        memcmp(&mNewAttV11, att, sizeof(adehaze_sw_V11_t)))
+        memcmp(&mNewAttV11, att, sizeof(adehaze_sw_v11_t)))
         isChanged = true;
     else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC &&
-             memcmp(&mCurAttV11, att, sizeof(adehaze_sw_V11_t)))
+             memcmp(&mCurAttV11, att, sizeof(adehaze_sw_v11_t)))
         isChanged = true;
 
     // if something changed
@@ -340,7 +340,7 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV11(const adehaze_sw_V11_t* att) {
     return ret;
 }
 
-XCamReturn RkAiqAdehazeHandleInt::getSwAttribV11(adehaze_sw_V11_t* att) {
+XCamReturn RkAiqAdehazeHandleInt::getSwAttribV11(adehaze_sw_v11_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -366,7 +366,7 @@ XCamReturn RkAiqAdehazeHandleInt::getSwAttribV11(adehaze_sw_V11_t* att) {
 }
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
-XCamReturn RkAiqAdehazeHandleInt::setSwAttribV12(const adehaze_sw_V12_t* att) {
+XCamReturn RkAiqAdehazeHandleInt::setSwAttribV12(const adehaze_sw_v12_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -378,10 +378,10 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV12(const adehaze_sw_V12_t* att) {
     // called by RkAiqCore
     bool isChanged = false;
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC &&
-        memcmp(&mNewAttV12, att, sizeof(adehaze_sw_V12_t)))
+        memcmp(&mNewAttV12, att, sizeof(adehaze_sw_v12_t)))
         isChanged = true;
     else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC &&
-             memcmp(&mCurAttV12, att, sizeof(adehaze_sw_V12_t)))
+             memcmp(&mCurAttV12, att, sizeof(adehaze_sw_v12_t)))
         isChanged = true;
 
     // if something changed
@@ -397,7 +397,7 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV12(const adehaze_sw_V12_t* att) {
     return ret;
 }
 
-XCamReturn RkAiqAdehazeHandleInt::getSwAttribV12(adehaze_sw_V12_t* att) {
+XCamReturn RkAiqAdehazeHandleInt::getSwAttribV12(adehaze_sw_v12_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;

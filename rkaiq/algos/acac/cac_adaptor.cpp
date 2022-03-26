@@ -207,6 +207,7 @@ XCamReturn CacAlgoAdaptor::Config(const AlgoCtxInstanceCfg* config,
     (void)(config);
 
     LOGD_ACAC("%s : Enter", __func__);
+    ctx_config_ = config;
     enable_ = calib != nullptr ? calib->SettingPara.enable : false;
     calib_  = calib;
 
@@ -272,20 +273,25 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcac* config) {
     } else {
         CalcCacLutConfig(width, height, is_big_mode, lut_config);
     }
-    lut_manger_ =
-        std::unique_ptr<LutBufferManager>(new LutBufferManager(lut_config, config->mem_ops));
-    lut_manger_->ImportHwBuffers(0);
-    auto* buf = lut_manger_->GetFreeHwBuffer(0);
-    XCAM_ASSERT(buf != nullptr);
-    current_lut_.emplace_back(buf);
-#if (RKAIQ_HAVE_CAC_V03 || RKAIQ_HAVE_CAC_V10) && defined(ISP_HW_V30)
-    if (config->is_multi_isp) {
-        lut_manger_->ImportHwBuffers(1);
-        auto* buf = lut_manger_->GetFreeHwBuffer(1);
+    if (lut_manger_ == nullptr) {
+        lut_manger_ =
+            std::unique_ptr<LutBufferManager>(new LutBufferManager(lut_config, config->mem_ops));
+    }
+    if (current_lut_.size() == 0) {
+        lut_manger_->ImportHwBuffers(0);
+        auto* buf = lut_manger_->GetFreeHwBuffer(0);
         XCAM_ASSERT(buf != nullptr);
         current_lut_.emplace_back(buf);
-    }
+#if (RKAIQ_HAVE_CAC_V03 || RKAIQ_HAVE_CAC_V10) && defined(ISP_HW_V30)
+        if (config->is_multi_isp) {
+            lut_manger_->ImportHwBuffers(1);
+            auto* buf = lut_manger_->GetFreeHwBuffer(1);
+            XCAM_ASSERT(buf != nullptr);
+            current_lut_.emplace_back(buf);
+        }
 #endif
+    }
+    XCAM_ASSERT(current_lut_.size() == (uint32_t)(config->is_multi_isp + 1));
 
 #if !RKAIQ_HAVE_CAC_V03
     std::ifstream ifs(attr_->persist_params.psf_path, std::ios::binary);
@@ -464,12 +470,14 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
         output->config[0].clip_g_mode    = attr_->manual_param.clip_g_mode;
         output->config[0].neg_clip0_en   = attr_->manual_param.neg_clip0_enable;
         output->config[0].edge_detect_en = attr_->manual_param.edge_detect_en;
-        output->config[0].flat_thed_b =
-            ROUND_F(attr_->manual_param.flat_thed_b * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
-        output->config[0].flat_thed_r =
-            ROUND_F(attr_->manual_param.flat_thed_r * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
-        output->config[0].offset_r = ROUND_F(attr_->manual_param.offset_r);
-        output->config[0].offset_b = ROUND_F(attr_->manual_param.offset_b);
+        output->config[0].flat_thed_b = attr_->manual_param.flat_thed_b;
+            //ROUND_F(attr_->manual_param.flat_thed_b * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+        output->config[0].flat_thed_r = attr_->manual_param.flat_thed_r;
+            //ROUND_F(attr_->manual_param.flat_thed_r * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+        output->config[0].offset_r = attr_->manual_param.offset_r;
+            //ROUND_F(attr_->manual_param.offset_r);
+        output->config[0].offset_b = attr_->manual_param.offset_b;
+            //ROUND_F(attr_->manual_param.offset_b);
         output->config[0].expo_thed_b =
             (!attr_->manual_param.expo_det_b_en << 20) | (attr_->manual_param.expo_thed_b & 0xfffff);
         output->config[0].expo_thed_r =
@@ -503,11 +511,13 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
 
         float flat_thed_b             = INTERP_CAC(attr_->auto_params[gain_low].flat_thed_b,
                                        attr_->auto_params[gain_high].flat_thed_b, ratio);
-        output->config[0].flat_thed_b = ROUND_F(flat_thed_b * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+        output->config[0].flat_thed_b = ROUND_F(flat_thed_b);
+            // ROUND_F(flat_thed_b * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
 
         float flat_thed_r             = INTERP_CAC(attr_->auto_params[gain_low].flat_thed_r,
                                        attr_->auto_params[gain_high].flat_thed_r, ratio);
-        output->config[0].flat_thed_r = ROUND_F(flat_thed_r * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+        output->config[0].flat_thed_r = ROUND_F(flat_thed_r);
+            // ROUND_F(flat_thed_r * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
 
         float offset_b             = INTERP_CAC(attr_->auto_params[gain_low].offset_b,
                                     attr_->auto_params[gain_high].offset_b, ratio);
@@ -517,17 +527,17 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
                                     attr_->auto_params[gain_high].offset_r, ratio);
         output->config[0].offset_r = ROUND_F(offset_r);
 
-        bool exp_det_r_en = INTERP_CAC(attr_->auto_params[gain_low].expo_det_r_en,
+        int exp_det_r_en = INTERP_CAC(attr_->auto_params[gain_low].expo_det_r_en,
                                        attr_->auto_params[gain_high].expo_det_r_en, ratio);
-        bool exp_det_b_en = INTERP_CAC(attr_->auto_params[gain_low].expo_det_b_en,
+        int exp_det_b_en = INTERP_CAC(attr_->auto_params[gain_low].expo_det_b_en,
                                        attr_->auto_params[gain_high].expo_det_b_en, ratio);
 
         uint32_t expo_thed_b          = INTERP_CAC(attr_->auto_params[gain_low].expo_thed_b,
                                           attr_->auto_params[gain_high].expo_thed_b, ratio);
         uint32_t expo_thed_r          = INTERP_CAC(attr_->auto_params[gain_low].expo_thed_r,
                                           attr_->auto_params[gain_high].expo_thed_r, ratio);
-        uint32_t expo_adj_b          = INTERP_CAC(attr_->auto_params[gain_low].expo_adj_r,
-                                         attr_->auto_params[gain_high].expo_adj_r, ratio);
+        uint32_t expo_adj_b          = INTERP_CAC(attr_->auto_params[gain_low].expo_adj_b,
+                                         attr_->auto_params[gain_high].expo_adj_b, ratio);
         uint32_t expo_adj_r          = INTERP_CAC(attr_->auto_params[gain_low].expo_adj_r,
                                          attr_->auto_params[gain_high].expo_adj_r, ratio);
         expo_thed_b = input->hdr_ratio * expo_thed_b;
@@ -545,6 +555,7 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
 #endif
     output->enable = attr_->enable;
 
+#if 0
     LOGD_ACAC("global en : %d", output->enable);
     LOGD_ACAC("center en: %d", output->config[0].center_en);
     LOGD_ACAC("center x: %u", output->config[0].center_width);
@@ -574,6 +585,7 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
     LOGD_ACAC("expo_adj_r: %u", output->config[0].expo_adj_r);
     LOGD_ACAC("flat_thed_b: %u", output->config[0].flat_thed_b);
     LOGD_ACAC("flat_thed_r: %u", output->config[0].flat_thed_r);
+#endif
 #endif
 }
 

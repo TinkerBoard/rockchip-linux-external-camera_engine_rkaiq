@@ -22,5 +22,7 @@
 
 void sample_print_accm_info(const void *arg);
 XCamReturn sample_accm_module(const void *arg);
+void sample_print_accm_v2_info(const void *arg);
+XCamReturn sample_accm_v2_module(const void *arg);
 
 #endif

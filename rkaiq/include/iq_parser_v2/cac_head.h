@@ -22,7 +22,7 @@ typedef enum CalibDbV2_Cac_ClipGMode_e {
 
 // clang-format off
 typedef struct CalibDbV2_Cac_V03_SettingByIso_s {
-    // M4_NUMBER_DESC("iso", "u32", M4_RANGE(0,65535), "0", M4_DIGIT(0), M4_HIDE(0))
+    // M4_NUMBER_MARK_DESC("iso", "u32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index1")
     uint32_t iso;
     // M4_BOOL_DESC("bypass", "0")
     bool bypass;
@@ -45,7 +45,7 @@ typedef struct CalibDbV2_Cac_V03_SettingByIso_s {
 } CalibDbV2_Cac_V03_SettingByIso_t;
 
 typedef struct CalibDbV2_Cac_V10_SettingByIso_s {
-    // M4_NUMBER_DESC("iso", "u32", M4_RANGE(0,65535), "0", M4_DIGIT(0),M4_HIDE(0))
+    // M4_NUMBER_MARK_DESC("iso", "u32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index1")
     uint32_t iso;
     // M4_BOOL_DESC("bypass", "0")
     bool bypass;
@@ -54,7 +54,7 @@ typedef struct CalibDbV2_Cac_V10_SettingByIso_s {
 } CalibDbV2_Cac_V10_SettingByIso_t;
 
 typedef struct CalibDbV2_Cac_V11_SettingByIso_s {
-    // M4_NUMBER_DESC("iso", "u32", M4_RANGE(0,65535), "0", M4_DIGIT(0),M4_HIDE(0))
+    // M4_NUMBER_MARK_DESC("iso", "u32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index1")
     uint32_t iso;
     // M4_BOOL_DESC("bypass", "0")
     bool bypass;
@@ -66,25 +66,25 @@ typedef struct CalibDbV2_Cac_V11_SettingByIso_s {
     bool neg_clip0_enable;
     // M4_BOOL_DESC("edge_detect_en", "0")
     bool edge_detect_en;
-    // M4_NUMBER_DESC("flat_thed_b", "f32", M4_RANGE(0,1.00), "0.0", M4_DIGIT(2),M4_HIDE(0))
-    float flat_thed_b;
-    // M4_NUMBER_DESC("flat_thed_r", "f32", M4_RANGE(0,1.00), "0.0", M4_DIGIT(2),M4_HIDE(0))
-    float flat_thed_r;
-    // M4_NUMBER_DESC("offset_b", "f32", M4_RANGE(0,1.00), "0.0", M4_DIGIT(2),M4_HIDE(0))
-    float offset_b;
-    // M4_NUMBER_DESC("offset_r", "f32", M4_RANGE(0,1.00), "0.0", M4_DIGIT(2),M4_HIDE(0))
-    float offset_r;
+    // M4_NUMBER_DESC("flat_thed_b", "u8", M4_RANGE(0,31), "0", M4_DIGIT(0),M4_HIDE(0))
+    uint8_t flat_thed_b;
+    // M4_NUMBER_DESC("flat_thed_r", "u8", M4_RANGE(0,31), "0", M4_DIGIT(0),M4_HIDE(0))
+    uint8_t flat_thed_r;
+    // M4_NUMBER_DESC("offset_b", "u32", M4_RANGE(0,65535), "0", M4_DIGIT(0),M4_HIDE(0))
+    uint32_t offset_b;
+    // M4_NUMBER_DESC("offset_r", "u32", M4_RANGE(0,65535), "0", M4_DIGIT(0),M4_HIDE(0))
+    uint32_t offset_r;
     // M4_BOOL_DESC("expo_det_b_en", "0")
     bool expo_det_b_en;
     // M4_BOOL_DESC("expo_det_r_en", "0")
     bool expo_det_r_en;
-    // M4_NUMBER_DESC("expo_thed_b", "u32", M4_RANGE(0,1048575), "0", M4_DIGIT(1),M4_HIDE(0))
+    // M4_NUMBER_DESC("expo_thed_b", "u32", M4_RANGE(0,1048575), "0", M4_DIGIT(0),M4_HIDE(0))
     uint32_t expo_thed_b;
-    // M4_NUMBER_DESC("expo_thed_r", "u32", M4_RANGE(0,1048575), "0", M4_DIGIT(1),M4_HIDE(0))
+    // M4_NUMBER_DESC("expo_thed_r", "u32", M4_RANGE(0,1048575), "0", M4_DIGIT(0),M4_HIDE(0))
     uint32_t expo_thed_r;
-    // M4_NUMBER_DESC("expo_adj_b", "u32", M4_RANGE(0,1048575), "0", M4_DIGIT(1),M4_HIDE(0))
+    // M4_NUMBER_DESC("expo_adj_b", "u32", M4_RANGE(0,1048575), "0", M4_DIGIT(0),M4_HIDE(0))
     uint32_t expo_adj_b;
-    // M4_NUMBER_DESC("expo_adj_r", "u32", M4_RANGE(0,1048575), "0", M4_DIGIT(1),M4_HIDE(0))
+    // M4_NUMBER_DESC("expo_adj_r", "u32", M4_RANGE(0,1048575), "0", M4_DIGIT(0),M4_HIDE(0))
     uint32_t expo_adj_r;
 } CalibDbV2_Cac_V11_SettingByIso_t;
 

@@ -906,7 +906,10 @@ void Isp3xParams::convertAiqAfToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg
     isp_cfg.meas.rawaf.h2_fv_mode = af_data.h2_fv_outmode;
     isp_cfg.meas.rawaf.ldg_en = af_data.ldg_en;
     isp_cfg.meas.rawaf.accu_8bit_mode = af_data.accu_8bit_mode;
-    isp_cfg.meas.rawaf.ae_mode = af_data.ae_mode;
+    if (af_data.af_en)
+        isp_cfg.meas.rawaf.ae_mode = af_data.ae_mode;
+    else
+        isp_cfg.meas.rawaf.ae_mode = 0;
     isp_cfg.meas.rawaf.y_mode = af_data.y_mode;
 
     memcpy(isp_cfg.meas.rawaf.line_en,
@@ -1363,7 +1366,7 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_LSC_PARAM:
     {
-#ifdef ISP_HW_V30
+#if RKAIQ_HAVE_LSC_V2
         SmartPtr<RkAiqIspLscParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspLscParamsProxy>();
         if (params.ptr())
             convertAiqLscToIsp20Params(isp_cfg, params->data()->result);

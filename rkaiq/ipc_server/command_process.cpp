@@ -362,9 +362,16 @@ int ProcessCommand(rk_aiq_sys_ctx_t* ctx, RkAiqSocketPacket *dataRecv, RkAiqSock
     }
     case ENUM_ID_ACCM_GETATTRIB:
     {
+#if RKAIQ_HAVE_CCM_V1
         dataReply->dataSize = sizeof(rk_aiq_ccm_attrib_t);
         dataReply->data = (char*)malloc(dataReply->dataSize);
         dataReply->commandResult =  getCcmAttrib(ctx, dataReply->data);
+#endif
+#if RKAIQ_HAVE_CCM_V2
+        dataReply->dataSize = sizeof(rk_aiq_ccm_v2_attrib_t);
+        dataReply->data = (char*)malloc(dataReply->dataSize);
+        dataReply->commandResult =  getCcmAttrib(ctx, dataReply->data);
+#endif
         break;
     }
     case ENUM_ID_ACCM_QUERYCCMINFO:

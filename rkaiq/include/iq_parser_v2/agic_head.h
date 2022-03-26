@@ -40,7 +40,7 @@ typedef struct Gic_setting_v20_s {
     // M4_ARRAY_DESC("k_grad1", "f32", M4_SIZE(1,100), M4_RANGE(0,15), "5",M4_DIGIT(4), M4_DYNAMIC(1))
     float* k_grad1;
     int k_grad1_len;
-    // M4_ARRAY_DESC("k_grad1", "f32", M4_SIZE(1,100), M4_RANGE(0,15), "1",M4_DIGIT(4), M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("k_grad2", "f32", M4_SIZE(1,100), M4_RANGE(0,15), "1",M4_DIGIT(4), M4_DYNAMIC(1))
     float* k_grad2;
     int k_grad2_len;
     // M4_ARRAY_DESC("gb_thre", "f32", M4_SIZE(1,100), M4_RANGE(0,15), "7",M4_DIGIT(4), M4_DYNAMIC(1))
@@ -121,7 +121,7 @@ typedef struct Gic_setting_v21_s {
     // M4_ARRAY_DESC("k_grad1", "f32", M4_SIZE(1,100), M4_RANGE(0,15), "5",M4_DIGIT(4), M4_DYNAMIC(1))
     float* k_grad1;
     int k_grad1_len;
-    // M4_ARRAY_DESC("k_grad1", "f32", M4_SIZE(1,100), M4_RANGE(0,15), "1",M4_DIGIT(4), M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("k_grad2", "f32", M4_SIZE(1,100), M4_RANGE(0,15), "1",M4_DIGIT(4), M4_DYNAMIC(1))
     float* k_grad2;
     int k_grad2_len;
     // M4_ARRAY_DESC("gb_thre", "f32", M4_SIZE(1,100), M4_RANGE(0,15), "7",M4_DIGIT(4), M4_DYNAMIC(1))

@@ -52,7 +52,12 @@ static void sample_accm_usage()
 
 void sample_print_accm_info(const void *arg)
 {
-    printf ("enter CCM modult test!\n");
+    printf ("enter CCM module test!\n");
+}
+
+void sample_print_accm_v2_info(const void *arg)
+{
+    printf ("enter CCM V2 module test!\n");
 }
 
 /*
@@ -138,27 +143,6 @@ static int sample_get_accm_matrix_name(const rk_aiq_sys_ctx_t* ctx)
     ccmname[1] = (char*)malloc(sizeof(char)*25);
     rk_aiq_uapi2_getACcmMatrixName(ctx, ccmname);
     printf("Get ACCM Matrix Name:  %s   %s \n\n", ccmname[0], ccmname[1]);
-    return 0;
-}
-
-// CCM V2
-static int sample_set_ccm_manual_matrix_V2(const rk_aiq_sys_ctx_t* ctx)
-{
-    rk_aiq_ccm_matrix_t mccm;
-    memset(&mccm, 0, sizeof(rk_aiq_ccm_matrix_t));
-    mccm.ccMatrix[0]  = 1.5;
-    mccm.ccMatrix[1]  = 0;
-    mccm.ccMatrix[2]  = -0.5;
-    mccm.ccMatrix[3]  = 0;
-    mccm.ccMatrix[4]  = 1;
-    mccm.ccMatrix[5]  = 0;
-    mccm.ccMatrix[6]  = 0;
-    mccm.ccMatrix[7]  = 0;
-    mccm.ccMatrix[8]  = 1;
-    mccm.ccOffsets[0] = 1000;
-    mccm.ccOffsets[1] = 0;
-    mccm.ccOffsets[2] = 0;
-    rk_aiq_uapi2_setMCcCoef_V2(ctx, &mccm);
     return 0;
 }
 
@@ -366,38 +350,117 @@ static int sample_query_ccm_info(const rk_aiq_sys_ctx_t* ctx)
 }
 
 // CCM V2
+static int sample_ccm_setCcmAttr_V2(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    rk_aiq_ccm_v2_attrib_t attr;
+    memset(&attr,0,sizeof(rk_aiq_ccm_v2_attrib_t));
+    //get
+    ret = rk_aiq_user_api2_accm_v2_GetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "setCcmAttr failed in getting accm attrib!");
+    //modify
+    attr.sync.sync_mode = sync;
+    attr.mode = RK_AIQ_CCM_MODE_AUTO;
+    if (attr.stAuto.color_saturation.level[0] == 100) {
+        for (int i = 0; i < 4; i++)
+            attr.stAuto.color_saturation.level[i] = 50;
+    } else {
+        for (int i = 0; i < 4; i++)
+            attr.stAuto.color_saturation.level[i] = 100;
+    }
+
+    //set
+    ret = rk_aiq_user_api2_accm_v2_SetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "set CCM Attr failed!");
+    printf("set CCM Attr\n\n");
+
+    return 0;
+}
+
 static int sample_ccm_getCcmAttr_V2(const rk_aiq_sys_ctx_t* ctx)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    rk_aiq_ccm_attrib_t attr;
-    memset(&attr, 0, sizeof(rk_aiq_ccm_attrib_t));
-    // get
-    ret = rk_aiq_user_api2_accm_GetAttrib(ctx, &attr);
-    RKAIQ_SAMPLE_CHECK_RET(ret, "get Ccm Attr V2 failed!");
-    printf("get CCM Attr V2:\n\n");
+    rk_aiq_ccm_v2_attrib_t attr;
+    memset(&attr,0,sizeof(rk_aiq_ccm_v2_attrib_t));
+    //get
+    ret = rk_aiq_user_api2_accm_v2_GetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "get Ccm Attr failed!");
+    printf("get CCM Attr:\n\n");
     printf("\t sync = %d, done = %d\n", attr.sync.sync_mode, attr.sync.done);
     printf("\t enable = %s\n", (attr.byPass ? "false" : "true"));
-    if (attr.mode == RK_AIQ_CCM_MODE_MANUAL) {
+    if (attr.mode == RK_AIQ_CCM_MODE_MANUAL){
         printf("\t mode = Manual\n");
         printf("\t matrix = [");
-        for (int i = 0; i < 9; i++) printf("%f ", attr.stManual_v2.ccMatrix[i]);
-        printf("\n\t offset = [%f %f %f]\n", attr.stManual_v2.ccOffsets[0], attr.stManual_v2.ccOffsets[1],
-               attr.stManual_v2.ccOffsets[2]);
-        printf("\t highy adj en = %d\n", attr.stManual_v2.highy_adj_en);
-        printf("\t alp asym en = %d\n", attr.stManual_v2.asym_enable);
-        printf("\t alp_y = [");
-        for (int i = 0; i < 17; i++) printf("%f ", attr.stManual_v2.y_alpha_curve[i]);
-        if (attr.stManual_v2.asym_enable)
-            printf("%f] \n", attr.stManual_v2.y_alpha_curve[17]);
-        else
-            printf("] \n");
-        printf("\t enh_adj_en = %d\n", attr.stManual_v2.enh_adj_en);
-        printf("\t color_enh_rat_max = %f\n", attr.stManual_v2.enh_rat_max);
-    } else if (attr.mode == RK_AIQ_CCM_MODE_AUTO) {
+        for (int i = 0; i < 9; i++)
+            printf("%f ", attr.stManual.ccMatrix[i]);
+        printf("\n\t offset = [%f %f %f]\n", attr.stManual.ccOffsets[0],
+                                attr.stManual.ccOffsets[1],
+                                attr.stManual.ccOffsets[2]);
+    } else if (attr.mode == RK_AIQ_CCM_MODE_AUTO){
         printf("\t mode = Auto\n");
-        printf("\t color_saturation level = {%f %f %f %f}\n", attr.stAuto.color_saturation.level[0],
-               attr.stAuto.color_saturation.level[1], attr.stAuto.color_saturation.level[2],
-               attr.stAuto.color_saturation.level[3]);
+        printf("\t color_saturation level = {%f %f %f %f}\n",
+                        attr.stAuto.color_saturation.level[0],
+                        attr.stAuto.color_saturation.level[1],
+                        attr.stAuto.color_saturation.level[2],
+                        attr.stAuto.color_saturation.level[3]);
+    } else {
+        printf("\t mode is invalid!");
+    }
+    return 0;
+}
+
+static int sample_ccm_setModeManual_V2(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    rk_aiq_ccm_v2_attrib_t attr;
+    memset(&attr,0,sizeof(rk_aiq_ccm_v2_attrib_t));
+    //get
+    ret = rk_aiq_user_api2_accm_v2_GetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "setModeManual failed in getting accm attrib!");
+    //modify
+    attr.sync.sync_mode = sync;
+    attr.mode = RK_AIQ_CCM_MODE_MANUAL;
+    //set
+    ret = rk_aiq_user_api2_accm_v2_SetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "set Mode Manual failed!");
+    printf("set CCM Mode Manual\n\n");
+
+    return 0;
+}
+
+static int sample_ccm_setModeAuto_V2(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    rk_aiq_ccm_v2_attrib_t attr;
+    memset(&attr,0,sizeof(rk_aiq_ccm_attrib_t));
+    //get
+    ret = rk_aiq_user_api2_accm_v2_GetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "setModeAuto failed in getting accm attrib!");
+    //modify
+    attr.sync.sync_mode = sync;
+    attr.mode = RK_AIQ_CCM_MODE_AUTO;
+    //set
+    ret = rk_aiq_user_api2_accm_v2_SetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "set Mode Auto failed!");
+    printf("set CCM Mode Auto\n\n");
+
+    return 0;
+}
+
+static int sample_ccm_getMode_V2(const rk_aiq_sys_ctx_t* ctx)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    rk_aiq_ccm_v2_attrib_t attr;
+    memset(&attr,0,sizeof(rk_aiq_ccm_v2_attrib_t));
+    //get
+    ret = rk_aiq_user_api2_accm_v2_GetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "get Ccm Mode failed!");
+    printf("get CCM Mode:\n\n");
+    printf("\t sync = %d, done = %d\n", attr.sync.sync_mode, attr.sync.done);
+    if (attr.mode == RK_AIQ_CCM_MODE_MANUAL){
+        printf("\t mode = Manual\n");
+    } else if (attr.mode == RK_AIQ_CCM_MODE_AUTO){
+        printf("\t mode = Auto\n");
     } else {
         printf("\t mode is invalid!");
     }
@@ -407,27 +470,55 @@ static int sample_ccm_getCcmAttr_V2(const rk_aiq_sys_ctx_t* ctx)
 static int sample_ccm_setMCcm_V2(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    rk_aiq_ccm_attrib_t attr;
-    memset(&attr, 0, sizeof(rk_aiq_ccm_attrib_t));
-    // get
-    ret = rk_aiq_user_api2_accm_GetAttrib(ctx, &attr);
+    rk_aiq_ccm_v2_attrib_t attr;
+    memset(&attr,0,sizeof(rk_aiq_ccm_v2_attrib_t));
+    //get
+    ret = rk_aiq_user_api2_accm_v2_GetAttrib(ctx, &attr);
     RKAIQ_SAMPLE_CHECK_RET(ret, "setMCcm failed in getting accm attrib!");
-    // modify
+    //modify
     attr.sync.sync_mode = sync;
-    attr.mode           = RK_AIQ_CCM_MODE_MANUAL;
-    if (attr.stManual_v2.ccOffsets[0] < 1000) {
-        attr.stManual_v2.ccOffsets[0] = 1000;
-        attr.stManual_v2.ccOffsets[1] = 0;
-        attr.stManual_v2.ccOffsets[2] = 0;
+    attr.mode = RK_AIQ_CCM_MODE_MANUAL;
+    if (attr.stManual.ccOffsets[0] < 1000) {
+        attr.stManual.ccOffsets[0] = 1000;
+        attr.stManual.ccOffsets[1] = 0;
+        attr.stManual.ccOffsets[2] = 0;
     } else {
-        attr.stManual_v2.ccOffsets[0] = 0;
-        attr.stManual_v2.ccOffsets[1] = 0;
-        attr.stManual_v2.ccOffsets[2] = 1000;
+        attr.stManual.ccOffsets[0] = 0;
+        attr.stManual.ccOffsets[1] = 0;
+        attr.stManual.ccOffsets[2] = 1000;
     }
-    // set
-    ret = rk_aiq_user_api2_accm_SetAttrib(ctx, &attr);
-    RKAIQ_SAMPLE_CHECK_RET(ret, "set Manual attr v2 failed!");
-    printf("set Manual attr v2\n\n");
+
+    //set
+    ret = rk_aiq_user_api2_accm_v2_SetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "set Manual attr failed!");
+    printf("set Manual attr\n\n");
+
+    return 0;
+}
+
+static int sample_ccm_setACcm_V2(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    rk_aiq_ccm_v2_attrib_t attr;
+    memset(&attr,0,sizeof(rk_aiq_ccm_v2_attrib_t));
+    //get
+    ret = rk_aiq_user_api2_accm_v2_GetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "setACcm failed in getting accm attrib!");
+    //modify
+    attr.sync.sync_mode = sync;
+    attr.mode = RK_AIQ_CCM_MODE_AUTO;
+    if (attr.stAuto.color_saturation.level[0] == 100) {
+        for (int i = 0; i < 4; i++)
+            attr.stAuto.color_saturation.level[i] = 50;
+    } else {
+        for (int i = 0; i < 4; i++)
+            attr.stAuto.color_saturation.level[i] = 100;
+    }
+    //set
+    ret = rk_aiq_user_api2_accm_v2_SetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "set Auto attr failed!");
+    printf("set Auto attr\n\n");
+
     return 0;
 }
 
@@ -567,13 +658,122 @@ XCamReturn sample_accm_module(const void *arg)
             case 'l':
                 sample_query_ccm_info(ctx);
                 break;
-            case 'm':
-                sample_ccm_setMCcm_V2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
-                sample_ccm_getCcmAttr_V2(ctx);
-                usleep(40 * 1000);
+            default:
+                break;
+        }
+    } while (key != 'q' && key != 'Q');
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn sample_accm_v2_module(const void *arg)
+{
+    int key = -1;
+    CLEAR();
+    const demo_context_t *demo_ctx = (demo_context_t *)arg;
+    const rk_aiq_sys_ctx_t* ctx;
+    if (demo_ctx->camGroup){
+        ctx = (rk_aiq_sys_ctx_t*)(demo_ctx->camgroup_ctx);
+    } else {
+        ctx = (rk_aiq_sys_ctx_t*)(demo_ctx->aiq_ctx);
+    }
+
+    /*TODO: when rkaiq_3A_server & rkisp_demo run in two different shell, rk_aiq_sys_ctx_t would be null?*/
+    if (ctx == NULL) {
+        ERR ("%s, ctx is nullptr\n", __FUNCTION__);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    sample_accm_usage ();
+
+    do {
+
+        key = getchar ();
+        while (key == '\n' || key == '\r')
+            key = getchar();
+        printf ("\n");
+
+        switch (key)
+        {
+            case 'h':
+                CLEAR();
+                sample_accm_usage ();
+                break;
+            case '0':
+                sample_set_ccm_manual(ctx);
+                printf("Set CCM MANUAL Mode\n\n");
+                break;
+            case '1':
+                sample_set_ccm_auto(ctx);
+                printf("Set CCM AUTO Mode\n\n");
+                break;
+            case '2':
+                sample_get_ccm_mode(ctx);
+                break;
+            case '3':
+                sample_set_ccm_manual_matrix(ctx);
+                printf("Set CCM Manual Matrix\n\n");
+                break;
+            case '4':
+                sample_get_ccm_matrix(ctx);
+                break;
+            case '5':
+                sample_get_accm_sat(ctx);
+                break;
+            case '6':
+                sample_get_accm_matrix_name(ctx);
+                break;
+            case 'a':
+                sample_ccm_setCcmAttr_V2(ctx, RK_AIQ_UAPI_MODE_DEFAULT);
                 sample_ccm_getCcmAttr_V2(ctx);
                 break;
-            case 'n':
+            case 'b':
+                sample_ccm_setCcmAttr_V2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
+                sample_ccm_getCcmAttr_V2(ctx);
+                usleep(40*1000);
+                sample_ccm_getCcmAttr_V2(ctx);
+                break;
+            case 'c':
+                sample_ccm_setModeManual_V2(ctx, RK_AIQ_UAPI_MODE_DEFAULT);
+                sample_ccm_getMode_V2(ctx);
+                break;
+            case 'd':
+                sample_ccm_setModeManual_V2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
+                sample_ccm_getMode_V2(ctx);
+                usleep(40*1000);
+                sample_ccm_getMode_V2(ctx);
+                break;
+            case 'e':
+                sample_ccm_setModeAuto_V2(ctx, RK_AIQ_UAPI_MODE_DEFAULT);
+                sample_ccm_getMode_V2(ctx);
+                break;
+            case 'f':
+                sample_ccm_setModeAuto_V2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
+                sample_ccm_getMode_V2(ctx);
+                usleep(40*1000);
+                sample_ccm_getMode_V2(ctx);
+                break;
+            case 'g':
+                sample_ccm_setMCcm_V2(ctx, RK_AIQ_UAPI_MODE_DEFAULT);
+                sample_ccm_getCcmAttr_V2(ctx);
+                break;
+            case 'i':
+                sample_ccm_setMCcm_V2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
+                sample_ccm_getCcmAttr_V2(ctx);
+                usleep(40*1000);
+                sample_ccm_getCcmAttr_V2(ctx);
+                break;
+            case 'j':
+                sample_ccm_setACcm_V2(ctx, RK_AIQ_UAPI_MODE_DEFAULT);
+                sample_ccm_getCcmAttr_V2(ctx);
+                break;
+            case 'k':
+                sample_ccm_setACcm_V2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
+                sample_ccm_getCcmAttr_V2(ctx);
+                usleep(40*1000);
+                sample_ccm_getCcmAttr_V2(ctx);
+                break;
+            case 'l':
                 sample_query_ccm_info_V2(ctx);
                 break;
             default:

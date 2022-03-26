@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "rk_aiq_types_algo_agic_prvt.h"
+#include "algos/agic/rk_aiq_types_algo_agic_prvt.h"
 
 #define INTERPOLATION(ratio, hi, lo)    (((ratio) * ((hi) - (lo)) + (lo) * (1 << 4) + (1 << 3)) >> 4)
 #define INTERPOLATION_F(ratioF, hi, lo) ((ratioF) * ((hi) - (lo)) + (lo))
 
-inline static void GicV2CalibToAttr(CamCalibDbV2Context_t* calib, rkaiq_gic_v2_api_attr_t* attr) {
-    CalibDbV2_Gic_V21_t* db =
-        (CalibDbV2_Gic_V21_t*)(CALIBDBV2_GET_MODULE_PTR(calib, agic_calib_v21));
+void GicV2CalibToAttr(CalibDbV2_Gic_V21_t* calib, rkaiq_gic_v2_api_attr_t* attr) {
+    CalibDbV2_Gic_V21_t* db = calib;
     Gic_setting_v21_t* settings = &db->GicTuningPara.GicData;
     XCAM_ASSERT(RKAIQ_GIC_MAX_ISO_CNT >= settings->ISO_len);
     attr->gic_en  = db->GicTuningPara.enable;
@@ -143,34 +142,38 @@ void GicV2SetManualParam(AgicConfigV21_t* selected,
 }
 
 void GicV2DumpReg(const rkaiq_gic_v2_hw_param_t* hw_param) {
-    LOG1_AGIC(
+#ifdef NDEBUG
+    (void)(hw_param);
+#endif
+    LOGV_AGIC(
         "GIC V2 reg values: \n"
-        " regmingradthrdark2 %d"
-        " regmingradthrdark1 %d"
-        " regminbusythre %d"
-        " regdarkthre %d"
-        " regmaxcorvboth %d"
-        " regdarktthrehi %d"
-        " regkgrad2dark %d"
-        " regkgrad1dark %d"
-        " regstrengthglobal_fix %d"
-        " regdarkthrestep %d"
-        " regkgrad2 %d"
-        " regkgrad1 %d"
-        " reggbthre %d"
-        " regmaxcorv %d"
-        " regmingradthr2 %d"
-        " regmingradthr1 %d"
-        " gr_ratio %d"
-        " noise_scale %d"
-        " noise_base %d"
-        " diff_clip %d",
+        " regmingradthrdark2 %d\n"
+        " regmingradthrdark1 %d\n"
+        " regminbusythre %d\n"
+        " regdarkthre %d\n"
+        " regmaxcorvboth %d\n"
+        " regdarktthrehi %d\n"
+        " regkgrad2dark %d\n"
+        " regkgrad1dark %d\n"
+        " regstrengthglobal_fix %d\n"
+        " regdarkthrestep %d\n"
+        " regkgrad2 %d\n"
+        " regkgrad1 %d\n"
+        " reggbthre %d\n"
+        " regmaxcorv %d\n"
+        " regmingradthr2 %d\n"
+        " regmingradthr1 %d\n"
+        " gr_ratio %d\n"
+        " noise_scale %d\n"
+        " noise_base %d\n"
+        " diff_clip %d\n",
         hw_param->regmingradthrdark2, hw_param->regmingradthrdark1, hw_param->regminbusythre,
         hw_param->regdarkthre, hw_param->regmaxcorvboth, hw_param->regdarktthrehi,
         hw_param->regkgrad2dark, hw_param->regkgrad1dark, hw_param->regstrengthglobal_fix,
         hw_param->regdarkthrestep, hw_param->regkgrad2, hw_param->regkgrad1, hw_param->reggbthre,
         hw_param->regmaxcorv, hw_param->regmingradthr2, hw_param->regmingradthr1,
         hw_param->gr_ratio, hw_param->noise_scale, hw_param->noise_base, hw_param->diff_clip);
+    for (int i = 0; i < 15; i++) LOGV_AGIC("sigma %d", hw_param->sigma_y[i]);
 }
 
 XCamReturn AgicInit(AgicContext_t* pAgicCtx, CamCalibDbV2Context_t* calib) {
@@ -179,7 +182,9 @@ XCamReturn AgicInit(AgicContext_t* pAgicCtx, CamCalibDbV2Context_t* calib) {
     memset(pAgicCtx, 0, sizeof(AgicContext_t));
     pAgicCtx->state = AGIC_STATE_INITIALIZED;
 
-    GicV2CalibToAttr(calib, &pAgicCtx->attr.v2);
+    CalibDbV2_Gic_V21_t* calibv2_agic_calib_V21 =
+        (CalibDbV2_Gic_V21_t*)(CALIBDBV2_GET_MODULE_PTR(calib, agic_calib_v21));
+    GicV2CalibToAttr(calibv2_agic_calib_V21, &pAgicCtx->attr.v2);
     pAgicCtx->attr.v2.op_mode = RKAIQ_GIC_API_OPMODE_AUTO;
     pAgicCtx->calib_changed   = true;
     pAgicCtx->state           = AGIC_STATE_RUNNING;
@@ -206,7 +211,10 @@ XCamReturn AgicStop(AgicContext_t* pAgicCtx) {
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn AgicPreProcess(AgicContext_t* pAgicCtx) { return XCAM_RETURN_NO_ERROR; }
+XCamReturn AgicPreProcess(AgicContext_t* pAgicCtx) {
+    (void)(pAgicCtx);
+    return XCAM_RETURN_NO_ERROR;
+}
 
 void AgicGetProcResultV21(AgicContext_t* pAgicCtx) {
     LOG1_AGIC("enter!");
@@ -333,7 +341,7 @@ void AgicProcessV21(AgicContext_t* pAgicCtx, int ISO) {
         if (noiseSigma < 0) {
             noiseSigma = 0;
         }
-        pAgicCtx->ConfigData.ConfigV20.sigma_y[i] = noiseSigma;
+        pAgicCtx->ConfigData.ConfigV21.sigma_y[i] = noiseSigma;
     }
 
     short mulBit = 0;
@@ -358,6 +366,8 @@ void AgicProcessV21(AgicContext_t* pAgicCtx, int ISO) {
 }
 
 XCamReturn AgicProcess(AgicContext_t* pAgicCtx, int ISO, int mode) {
+    (void)(mode);
+
     LOG1_AGIC("enter!");
 
     AgicProcessV21(pAgicCtx, ISO);

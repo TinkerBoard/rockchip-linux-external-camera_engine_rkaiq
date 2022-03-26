@@ -1,7 +1,7 @@
 #!/bin/bash
 # Run this from within a bash shell
 # x86_64 is for simulation do not enable RK platform
-export AIQ_BUILD_HOST_DIR=/data/project_codes/arm-rockchip830-linux-uclibcgnueabihf
+export AIQ_BUILD_HOST_DIR=/workspace/toolchains/arm-rockchip830-linux-uclibcgnueabihf
 export AIQ_BUILD_TOOLCHAIN_TRIPLE=arm-rockchip830-linux-uclibcgnueabihf
 export AIQ_BUILD_SYSROOT=sysroot
 export AIQ_BUILD_ARCH=arm
@@ -13,7 +13,7 @@ mkdir -p $OUTPUT
 pushd $OUTPUT
 
 cmake -G "Ninja" \
-    -DCMAKE_BUILD_TYPE=MinSizeRel \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DRKAIQ_TARGET_SOC=${RKAIQ_TARGET_SOC} \
     -DARCH=${AIQ_BUILD_ARCH} \
     -DRKPLATFORM=OFF \

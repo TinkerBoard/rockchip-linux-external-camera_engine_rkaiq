@@ -57,7 +57,7 @@ typedef struct CalibDbV2_Bayer2dnr_V23_CalibPara_s {
 typedef struct CalibDbV2_Bayer2dnr_V23_TuningPara_Setting_ISO_gain_s {
     // M4_ARRAY_DESC("lumapoint", "f32", M4_SIZE(1,16), M4_RANGE(0,256), "[16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,256]", M4_DIGIT(0), M4_DYNAMIC(0))
     float gain_lumapoint[16];
-    // M4_ARRAY_DESC("gain_adj", "f32", M4_SIZE(1,16), M4_RANGE(0,256), "[16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,256]", M4_DIGIT(2), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("gain_adj", "f32", M4_SIZE(1,16), M4_RANGE(0,4095), "[16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,256]", M4_DIGIT(2), M4_DYNAMIC(0))
     float gain_adj[16];
 
 } CalibDbV2_Bayer2dnr_V23_TuningPara_Setting_ISO_gain_t;
@@ -85,7 +85,7 @@ typedef struct CalibDbV2_Bayer2dnr_V23_TuningPara_Setting_ISO_s {
     // M4_BOOL_DESC("gain_bypass", "1")
     bool gain_bypass;
 
-    // M4_NUMBER_DESC("gain_scale", "f32", M4_RANGE(0, 1.0), "1.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("gain_scale", "f32", M4_RANGE(0, 16.0), "1.0", M4_DIGIT(2))
     float gain_scale;
 
     // M4_NUMBER_DESC("pix_diff", "s32", M4_RANGE(0, 16383), "16383", M4_DIGIT(0))

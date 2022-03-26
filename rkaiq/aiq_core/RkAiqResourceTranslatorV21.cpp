@@ -108,6 +108,7 @@ RkAiqResourceTranslatorV21::translateAwbStats (const SmartPtr<VideoBuffer> &from
     return ret;
 }
 
+#if RKAIQ_HAVE_DEHAZE_V11
 XCamReturn
 RkAiqResourceTranslatorV21::translateAdehazeStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAdehazeStatsProxy> &to)
 {
@@ -139,5 +140,6 @@ RkAiqResourceTranslatorV21::translateAdehazeStats (const SmartPtr<VideoBuffer> &
 
     return ret;
 }
+#endif
 
 } //namespace RkCam

@@ -37,16 +37,16 @@ class RkAiqAdehazeHandleInt : virtual public RkAiqHandle {
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     // TODO add algo specific methords, this is a sample
 #if RKAIQ_HAVE_DEHAZE_V10
-    XCamReturn setSwAttribV10(const adehaze_sw_V10_t* att);
-    XCamReturn getSwAttribV10(adehaze_sw_V10_t* att);
+    XCamReturn setSwAttribV10(const adehaze_sw_v10_t* att);
+    XCamReturn getSwAttribV10(adehaze_sw_v10_t* att);
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
-    XCamReturn setSwAttribV11(const adehaze_sw_V11_t* att);
-    XCamReturn getSwAttribV11(adehaze_sw_V11_t* att);
+    XCamReturn setSwAttribV11(const adehaze_sw_v11_t* att);
+    XCamReturn getSwAttribV11(adehaze_sw_v11_t* att);
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
-    XCamReturn setSwAttribV12(const adehaze_sw_V12_t* att);
-    XCamReturn getSwAttribV12(adehaze_sw_V12_t* att);
+    XCamReturn setSwAttribV12(const adehaze_sw_v12_t* att);
+    XCamReturn getSwAttribV12(adehaze_sw_v12_t* att);
 #endif
 
  protected:
@@ -56,16 +56,16 @@ class RkAiqAdehazeHandleInt : virtual public RkAiqHandle {
  private:
     // TODO
 #if RKAIQ_HAVE_DEHAZE_V10
-    adehaze_sw_V10_t mCurAttV10;
-    adehaze_sw_V10_t mNewAttV10;
+    adehaze_sw_v10_t mCurAttV10;
+    adehaze_sw_v10_t mNewAttV10;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
-    adehaze_sw_V11_t mCurAttV11;
-    adehaze_sw_V11_t mNewAttV11;
+    adehaze_sw_v11_t mCurAttV11;
+    adehaze_sw_v11_t mNewAttV11;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
-    adehaze_sw_V12_t mCurAttV12;
-    adehaze_sw_V12_t mNewAttV12;
+    adehaze_sw_v12_t mCurAttV12;
+    adehaze_sw_v12_t mNewAttV12;
 #endif
 
  private:

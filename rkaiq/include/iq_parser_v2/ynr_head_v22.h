@@ -113,9 +113,9 @@ typedef struct CalibDbV2_YnrV22_TuningPara_Setting_ISO_s {
     float low_dist_adj;
     // M4_NUMBER_DESC("low_weight", "f32", M4_RANGE(0.0, 1.0), "0.5", M4_DIGIT(2))
     float low_weight;
-    // M4_NUMBER_DESC("low_filt1_strength", "s32", M4_RANGE(0.0, 1.0), "0.7", M4_DIGIT(0))
+    // M4_NUMBER_DESC("low_filt1_strength", "s32", M4_RANGE(0.0, 1.0), "0.7", M4_DIGIT(2))
     float low_filt1_strength;
-    // M4_NUMBER_DESC("low_filt2_strength", "s32", M4_RANGE(0.0, 1.0), "0.85", M4_DIGIT(0))
+    // M4_NUMBER_DESC("low_filt2_strength", "s32", M4_RANGE(0.0, 1.0), "0.85", M4_DIGIT(2))
     float low_filt2_strength;
     // M4_NUMBER_DESC("low_bi_weight", "f32", M4_RANGE(0.0, 1.0), "0.2", M4_DIGIT(2))
     float low_bi_weight;
@@ -127,24 +127,24 @@ typedef struct CalibDbV2_YnrV22_TuningPara_Setting_ISO_s {
 
     // M4_NUMBER_DESC("hi_center_weight", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
     float hi_center_weight;
-    // M4_NUMBER_DESC("hi_weight_offset", "f32", M4_RANGE(0.0, 1.0), "0.05", M4_DIGIT(0))
+    // M4_NUMBER_DESC("hi_weight_offset", "f32", M4_RANGE(0.0, 1.0), "0.05", M4_DIGIT(2))
     float hi_weight_offset;
     // M4_NUMBER_DESC("hi_min_sigma", "f32", M4_RANGE(0.0, 1.0), "0.0068", M4_DIGIT(4))
     float hi_min_sigma;
     // M4_NUMBER_DESC("hi_nr_weight", "f32", M4_RANGE(0.0, 1.0), "0.78", M4_DIGIT(2))
     float hi_nr_weight;
 
-    // M4_NUMBER_DESC("hi_filter_coeff1_1", "s32", M4_RANGE(0.0, 15.0), "7", M4_DIGIT(0))
+    // M4_NUMBER_DESC("hi_filter_coeff1_1", "s32", M4_RANGE(0, 15), "7", M4_DIGIT(0))
     int hi_filter_coeff1_1;
-    // M4_NUMBER_DESC("hi_filter_coeff1_2", "s32", M4_RANGE(0.0, 15.0), "6", M4_DIGIT(0))
+    // M4_NUMBER_DESC("hi_filter_coeff1_2", "s32", M4_RANGE(0, 15), "6", M4_DIGIT(0))
     int hi_filter_coeff1_2;
-    // M4_NUMBER_DESC("hi_filter_coeff1_3", "sf32", M4_RANGE(0.0, 15.0), "3", M4_DIGIT(0))
+    // M4_NUMBER_DESC("hi_filter_coeff1_3", "s32", M4_RANGE(0, 15), "3", M4_DIGIT(0))
     int hi_filter_coeff1_3;
-    // M4_NUMBER_DESC("hi_filter_coeff2_1", "s32", M4_RANGE(0.0, 15.0), "6", M4_DIGIT(0))
+    // M4_NUMBER_DESC("hi_filter_coeff2_1", "s32", M4_RANGE(0, 15), "6", M4_DIGIT(0))
     int hi_filter_coeff2_1;
-    // M4_NUMBER_DESC("hi_filter_coeff2_2", "s32", M4_RANGE(0.0, 15.0), "5", M4_DIGIT(0))
+    // M4_NUMBER_DESC("hi_filter_coeff2_2", "s32", M4_RANGE(0, 15), "5", M4_DIGIT(0))
     int hi_filter_coeff2_2;
-    // M4_NUMBER_DESC("hi_filter_coeff2_3", "s32", M4_RANGE(0.0, 15.0), "3", M4_DIGIT(0))
+    // M4_NUMBER_DESC("hi_filter_coeff2_3", "s32", M4_RANGE(0, 15), "3", M4_DIGIT(0))
     int hi_filter_coeff2_3;
 
     // M4_ARRAY_DESC("rnr_strength", "f32", M4_SIZE(1,17), M4_RANGE(0,16), "1.0", M4_DIGIT(3), M4_DYNAMIC(0))

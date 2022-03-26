@@ -446,6 +446,7 @@ XCamReturn RkAiqAfHandleInt::processing() {
 
     if ((!xAfStats || !xAfStats->af_stats_valid) && !sharedCom->init) {
         LOGW("no af stats, ignore!");
+        mProcResShared.release();
         return XCAM_RETURN_BYPASS;
     }
 
@@ -531,6 +532,10 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+
+    if (!mProcResShared.ptr())
+        return XCAM_RETURN_NO_ERROR;
+
     RkAiqAlgoProcResAf* af_com                  = &mProcResShared->result;
 
 #if RKAIQ_HAVE_AF_V31

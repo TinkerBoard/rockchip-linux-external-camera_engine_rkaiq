@@ -59,8 +59,10 @@ public:
                                           SmartPtr<RkAiqAwbStatsProxy> &to);
     virtual XCamReturn translateAfStats (const SmartPtr<VideoBuffer> &from,
                                          SmartPtr<RkAiqAfStatsProxy> &to);
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
     virtual XCamReturn translateAdehazeStats (const SmartPtr<VideoBuffer> &from,
             SmartPtr<RkAiqAdehazeStatsProxy> &to);
+#endif
 
     XCamReturn translateMultiIspStats(const SmartPtr<VideoBuffer>& from,
                                       SmartPtr<RkAiqIspStatsIntProxy>& to) {

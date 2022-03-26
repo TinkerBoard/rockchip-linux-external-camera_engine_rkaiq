@@ -109,10 +109,10 @@ typedef struct _RkAiqAlgoProcAe {
 
 typedef struct _RkAiqAlgoProcResAe {
     RkAiqAlgoResCom res_com;
-    rk_aiq_exposure_params_t cur_ae_exp;
     rk_aiq_exposure_params_t new_ae_exp;
     rk_aiq_isp_aec_meas_t ae_meas;
     rk_aiq_isp_hist_meas_t hist_meas;
+    RKAiqExpI2cParam_t exp_i2c_params;
     AecProcResult_t      ae_proc_res_rk;
 } RkAiqAlgoProcResAe;
 
@@ -1028,6 +1028,11 @@ typedef struct _RkAiqAlgoProcResAldch {
     RkAiqAlgoResCom res_com;
     ldch_process_result_t ldch_result;
 } RkAiqAlgoProcResAldch;
+
+typedef struct _RkAiqAlgoProcResAldchV21 {
+    RkAiqAlgoResCom res_com;
+    ldch_v21_process_result_t ldch_result;
+} RkAiqAlgoProcResAldchV21;
 
 typedef struct _RkAiqAlgoPostAldch {
     RkAiqAlgoCom com;

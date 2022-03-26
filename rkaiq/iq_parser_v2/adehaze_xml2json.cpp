@@ -20,8 +20,8 @@
 void convertDehazeCalib2CalibV2(CamCalibDbContext_t *calibv1, CamCalibDbV2Context_t *calibv2) {
 
     //len
-    CalibDbV2_dehaze_V10_t* calibv2_adehaze_calib_V20 =
-        (CalibDbV2_dehaze_V10_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, adehaze_calib));
+    CalibDbV2_dehaze_v10_t* calibv2_adehaze_calib_V20 =
+        (CalibDbV2_dehaze_v10_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, adehaze_calib));
     if (calibv2_adehaze_calib_V20) {
         calibv2_adehaze_calib_V20->DehazeTuningPara.dehaze_setting.DehazeData.ISO_len = 9;
         calibv2_adehaze_calib_V20->DehazeTuningPara.dehaze_setting.DehazeData.dc_min_th_len = calibv2_adehaze_calib_V20->DehazeTuningPara.dehaze_setting.DehazeData.ISO_len;
@@ -57,8 +57,8 @@ void convertDehazeCalib2CalibV2(CamCalibDbContext_t *calibv1, CamCalibDbV2Contex
         calibv2_adehaze_calib_V20->DehazeTuningPara.hist_setting.HistData.cfg_gratio_len = calibv2_adehaze_calib_V20->DehazeTuningPara.hist_setting.HistData.ISO_len;
     }
 
-    CalibDbV2_dehaze_V11_t* calibv2_adehaze_calib_V21 =
-        (CalibDbV2_dehaze_V11_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, adehaze_calib));
+    CalibDbV2_dehaze_v11_t* calibv2_adehaze_calib_V21 =
+        (CalibDbV2_dehaze_v11_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, adehaze_calib));
     if (calibv2_adehaze_calib_V21) {
         calibv2_adehaze_calib_V21->DehazeTuningPara.dehaze_setting.DehazeData.EnvLv_len = 9;
         calibv2_adehaze_calib_V21->DehazeTuningPara.dehaze_setting.DehazeData.dc_min_th_len = calibv2_adehaze_calib_V21->DehazeTuningPara.dehaze_setting.DehazeData.EnvLv_len;

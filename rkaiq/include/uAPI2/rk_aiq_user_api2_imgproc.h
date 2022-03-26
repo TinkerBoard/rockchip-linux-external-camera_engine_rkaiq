@@ -55,6 +55,7 @@
 #include "rk_aiq_user_api2_aynr_v3.h"
 #include "rk_aiq_user_api_common.h"
 #include "rk_aiq_user_api2_again_v2.h"
+#include "rk_aiq_user_api2_aldch_v21.h"
 RKAIQ_BEGIN_DECLARE
 /*
 **********************************************************
@@ -725,7 +726,6 @@ XCamReturn rk_aiq_uapi2_getCCMMode(const rk_aiq_sys_ctx_t* ctx, opMode_t* mode);
 *****************************
 */
 XCamReturn rk_aiq_uapi2_setMCcCoef(const rk_aiq_sys_ctx_t* ctx, rk_aiq_ccm_matrix_t* mccm);
-XCamReturn rk_aiq_uapi2_setMCcCoef_V2(const rk_aiq_sys_ctx_t* ctx, rk_aiq_ccm_matrix_t* mccm);
 XCamReturn rk_aiq_uapi2_getMCcCoef(const rk_aiq_sys_ctx_t* ctx, rk_aiq_ccm_matrix_t* mccm);
 
 /*

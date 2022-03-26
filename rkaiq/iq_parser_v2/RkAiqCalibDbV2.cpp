@@ -552,13 +552,15 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"adpcc_calib", RK_AIQ_ALGO_TYPE_ADPCC},
         {"amerge_calib_V10", RK_AIQ_ALGO_TYPE_AMERGE},
         {"amerge_calib_V11", RK_AIQ_ALGO_TYPE_AMERGE},
+        {"amerge_calib_V12", RK_AIQ_ALGO_TYPE_AMERGE},
         {"atmo_calib", RK_AIQ_ALGO_TYPE_ATMO},
         {"anr_calib", RK_AIQ_ALGO_TYPE_ANR},
         {"lsc_v2", RK_AIQ_ALGO_TYPE_ALSC},
         {"agic_calib_v20", RK_AIQ_ALGO_TYPE_AGIC},
         {"agic_calib_v21", RK_AIQ_ALGO_TYPE_AGIC},
-        {"adebayer_calib", RK_AIQ_ALGO_TYPE_ADEBAYER},
+        {"debayer_v2", RK_AIQ_ALGO_TYPE_ADEBAYER},
         {"debayer", RK_AIQ_ALGO_TYPE_ADEBAYER},
+        {"ccm_calib", RK_AIQ_ALGO_TYPE_ACCM},
         {"ccm_calib_v2", RK_AIQ_ALGO_TYPE_ACCM},
         {"agamma_calib_V10", RK_AIQ_ALGO_TYPE_AGAMMA},
         {"agamma_calib_V11", RK_AIQ_ALGO_TYPE_AGAMMA},
@@ -578,6 +580,7 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"asd_calib", RK_AIQ_ALGO_TYPE_ASD},
         {"adrc_calib_V10", RK_AIQ_ALGO_TYPE_ADRC},
         {"adrc_calib_V11", RK_AIQ_ALGO_TYPE_ADRC},
+        {"adrc_calib_V12", RK_AIQ_ALGO_TYPE_ADRC},
         {"adegamma_calib", RK_AIQ_ALGO_TYPE_ADEGAMMA},
         {"cac_v03", RK_AIQ_ALGO_TYPE_ACAC},
         {"cac_v10", RK_AIQ_ALGO_TYPE_ACAC},
@@ -609,6 +612,18 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"ynr_v3", RK_AIQ_ALGO_TYPE_AYNR},
         {"cnr_v2", RK_AIQ_ALGO_TYPE_ACNR},
         {"sharp_v4", RK_AIQ_ALGO_TYPE_ASHARP},
+		{"gain_v2", RK_AIQ_ALGO_TYPE_AGAIN},
+
+        // rv1106 blc nr & sharp
+        {"ablcV32_calib", RK_AIQ_ALGO_TYPE_ABLC},
+        {"bayer2dnr_v23", RK_AIQ_ALGO_TYPE_ARAWNR},
+        {"bayertnr_v23", RK_AIQ_ALGO_TYPE_AMFNR},
+        {"ynr_v22", RK_AIQ_ALGO_TYPE_AYNR},
+        {"cnr_v30", RK_AIQ_ALGO_TYPE_ACNR},
+        {"sharp_v33", RK_AIQ_ALGO_TYPE_ASHARP},
+        
+
+
     };
 
     auto it = table.find(std::string(str));
@@ -1162,11 +1177,15 @@ int RkAiqCalibDbV2::CamCalibDbFreeAwbV32Ctx(CalibDbV2_Wb_Para_V32_t* awb)
 #endif
 
 #if RKAIQ_HAVE_GAMMA_V10
-int RkAiqCalibDbV2::CamCalibDbFreeGammaCtx(CalibDbV2_gamma_V10_t* gamma) { return 0; }
+int RkAiqCalibDbV2::CamCalibDbFreeGammaCtx(CalibDbV2_gamma_V10_t* gamma) {
+    return 0;
+}
 #endif
 
 #if RKAIQ_HAVE_GAMMA_V11
-int RkAiqCalibDbV2::CamCalibDbFreeGammaV2Ctx(CalibDbV2_gamma_V11_t* gamma) { return 0; }
+int RkAiqCalibDbV2::CamCalibDbFreeGammaV2Ctx(CalibDbV2_gamma_V11_t* gamma) {
+    return 0;
+}
 #endif
 
 #if RKAIQ_HAVE_BLC_V1
@@ -1298,14 +1317,13 @@ int RkAiqCalibDbV2::CamCalibDbFreeGicV21Ctx(CalibDbV2_Gic_V21_t* gic)
 #endif
 
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
-int RkAiqCalibDbV2::CamCalibDbFreeDehazeV11Ctx(CalibDbV2_dehaze_V11_t* dehaze) {
+int RkAiqCalibDbV2::CamCalibDbFreeDehazeV11Ctx(CalibDbV2_dehaze_v11_t* dehaze) {
     CalibDbDehazeV11_t* DehazeTuningPara = &dehaze->DehazeTuningPara;
 
     Dehaze_Setting_V11_t* dehaze_setting = &DehazeTuningPara->dehaze_setting;
     DehazeDataV11_t* DehazeData          = &dehaze_setting->DehazeData;
 
-    if (DehazeData->EnvLv)
-        calib_free(DehazeData->EnvLv);
+    if (DehazeData->CtrlData) calib_free(DehazeData->CtrlData);
     if (DehazeData->dc_min_th)
         calib_free(DehazeData->dc_min_th);
     if (DehazeData->dc_max_th)
@@ -1352,8 +1370,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeDehazeV11Ctx(CalibDbV2_dehaze_V11_t* dehaze) {
     Enhance_Setting_V11_t* enhance_setting = &DehazeTuningPara->enhance_setting;
     EnhanceDataV11_t* EnhanceData          = &enhance_setting->EnhanceData;
 
-    if (EnhanceData->EnvLv)
-        calib_free(EnhanceData->EnvLv);
+    if (EnhanceData->CtrlData) calib_free(EnhanceData->CtrlData);
     if (EnhanceData->enhance_value)
         calib_free(EnhanceData->enhance_value);
     if (EnhanceData->enhance_chroma)
@@ -1361,8 +1378,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeDehazeV11Ctx(CalibDbV2_dehaze_V11_t* dehaze) {
 
     Hist_setting_V11_t* hist_setting = &DehazeTuningPara->hist_setting;
     HistDataV11_t* HistData          = &hist_setting->HistData;
-    if (HistData->EnvLv)
-        calib_free(HistData->EnvLv);
+    if (HistData->CtrlData) calib_free(HistData->CtrlData);
     if (HistData->hist_gratio)
         calib_free(HistData->hist_gratio);
     if (HistData->hist_th_off)
@@ -1381,14 +1397,13 @@ int RkAiqCalibDbV2::CamCalibDbFreeDehazeV11Ctx(CalibDbV2_dehaze_V11_t* dehaze) {
 #endif
 
 #if RKAIQ_HAVE_DEHAZE_V12
-int RkAiqCalibDbV2::CamCalibDbFreeDehazeV12Ctx(CalibDbV2_dehaze_V12_t* dehaze) {
+int RkAiqCalibDbV2::CamCalibDbFreeDehazeV12Ctx(CalibDbV2_dehaze_v12_t* dehaze) {
     CalibDbDehazeV12_t* DehazeTuningPara = &dehaze->DehazeTuningPara;
 
     Dehaze_Setting_V11_t* dehaze_setting = &DehazeTuningPara->dehaze_setting;
     DehazeDataV11_t* DehazeData          = &dehaze_setting->DehazeData;
 
-    if (DehazeData->EnvLv)
-        calib_free(DehazeData->EnvLv);
+    if (DehazeData->CtrlData) calib_free(DehazeData->CtrlData);
     if (DehazeData->dc_min_th)
         calib_free(DehazeData->dc_min_th);
     if (DehazeData->dc_max_th)
@@ -1435,8 +1450,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeDehazeV12Ctx(CalibDbV2_dehaze_V12_t* dehaze) {
     Enhance_Setting_V12_t* enhance_setting = &DehazeTuningPara->enhance_setting;
     EnhanceDataV11_t* EnhanceData          = &enhance_setting->EnhanceData;
 
-    if (EnhanceData->EnvLv)
-        calib_free(EnhanceData->EnvLv);
+    if (EnhanceData->CtrlData) calib_free(EnhanceData->CtrlData);
     if (EnhanceData->enhance_value)
         calib_free(EnhanceData->enhance_value);
     if (EnhanceData->enhance_chroma)
@@ -1444,8 +1458,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeDehazeV12Ctx(CalibDbV2_dehaze_V12_t* dehaze) {
 
     Hist_setting_V11_t* hist_setting = &DehazeTuningPara->hist_setting;
     HistDataV11_t* HistData          = &hist_setting->HistData;
-    if (HistData->EnvLv)
-        calib_free(HistData->EnvLv);
+    if (HistData->CtrlData) calib_free(HistData->CtrlData);
     if (HistData->hist_gratio)
         calib_free(HistData->hist_gratio);
     if (HistData->hist_th_off)
@@ -1739,7 +1752,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeLumaDetectCtx(CalibDbV2_LUMA_DETECT_t* lumaDet
     return 0;
 }
 
-#if RKAIQ_HAVE_LDCH_V10
+#if (RKAIQ_HAVE_LDCH_V10 || RKAIQ_HAVE_LDCH_V21)
 int RkAiqCalibDbV2::CamCalibDbFreeLdchCtx(CalibDbV2_LDCH_t* ldch)
 {
     return 0;
@@ -2667,13 +2680,13 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
 #endif
 
 #if RKAIQ_HAVE_DEHAZE_V12
-    CalibDbV2_dehaze_V12_t* adehaze_calib_v12 =
-        (CalibDbV2_dehaze_V12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adehaze_calib_v12));
+    CalibDbV2_dehaze_v12_t* adehaze_calib_v12 =
+        (CalibDbV2_dehaze_v12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adehaze_calib_v12));
     if (adehaze_calib_v12) CamCalibDbFreeDehazeV12Ctx(adehaze_calib_v12);
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
-    CalibDbV2_dehaze_V11_t* adehaze_calib_v11 =
-        (CalibDbV2_dehaze_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adehaze_calib_v11));
+    CalibDbV2_dehaze_v11_t* adehaze_calib_v11 =
+        (CalibDbV2_dehaze_v11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adehaze_calib_v11));
     if (adehaze_calib_v11) CamCalibDbFreeDehazeV11Ctx(adehaze_calib_v11);
 #endif
 
@@ -2745,7 +2758,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
         (CalibDbV2_LUMA_DETECT_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, lumaDetect));
     if (lumaDetect) CamCalibDbFreeLumaDetectCtx(lumaDetect);
 
-#if RKAIQ_HAVE_LDCH_V10
+#if (RKAIQ_HAVE_LDCH_V10 || RKAIQ_HAVE_LDCH_V21)
     CalibDbV2_LDCH_t* aldch = (CalibDbV2_LDCH_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, aldch));
     if (aldch) CamCalibDbFreeLdchCtx(aldch);
 #endif

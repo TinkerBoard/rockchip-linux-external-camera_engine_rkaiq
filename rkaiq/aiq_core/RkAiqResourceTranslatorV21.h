@@ -33,8 +33,10 @@ public:
 
     virtual XCamReturn translateAwbStats (const SmartPtr<VideoBuffer> &from,
                                   SmartPtr<RkAiqAwbStatsProxy> &to);
+#if RKAIQ_HAVE_DEHAZE_V11
     virtual XCamReturn translateAdehazeStats (const SmartPtr<VideoBuffer> &from,
                                       SmartPtr<RkAiqAdehazeStatsProxy> &to);
+#endif
 
     XCamReturn translateOrbStats (const SmartPtr<VideoBuffer> &from,
                                   SmartPtr<RkAiqOrbStatsProxy> &to) {

@@ -207,7 +207,7 @@ void stManuGetDehazeParamsV12(mDehazeAttrV12_t* pStManu, RkAiqAdehazeProcResult_
         ClipValueV12(pStManu->dehaze_setting.DehazeData.dc_weitcur, 0, 8);
     pProcRes->ProcResV12.stab_fnum      = ClipValueV12(pStManu->dehaze_setting.stab_fnum, 5, 0);
     pProcRes->ProcResV12.iir_sigma      = ClipValueV12(pStManu->dehaze_setting.sigma, 8, 0);
-    pProcRes->ProcResV12.iir_wt_sigma   = ClipValueV12(pStManu->dehaze_setting.wt_sigma 8, 3);
+    pProcRes->ProcResV12.iir_wt_sigma   = ClipValueV12(pStManu->dehaze_setting.wt_sigma, 8, 3);
     pProcRes->ProcResV12.iir_air_sigma  = ClipValueV12(pStManu->dehaze_setting.air_sigma, 8, 0);
     pProcRes->ProcResV12.iir_tmax_sigma = ClipValueV12(pStManu->dehaze_setting.tmax_sigma, 0, 10);
     pProcRes->ProcResV12.iir_pre_wet    = ClipValueV12(pStManu->dehaze_setting.pre_wet, 0, 4);
@@ -252,7 +252,7 @@ void stManuGetEnhanceParamsV12(mDehazeAttrV12_t* pStManu, RkAiqAdehazeProcResult
     pProcRes->ProcResV12.color_deviate_en = pStManu->enhance_setting.color_deviate_en;
     pProcRes->ProcResV12.enh_luma_en      = pStManu->enhance_setting.enh_luma_en;
     for (int i = 0; i < DHAZ_V12_ENH_LUMA_NUM; i++)
-        pProcRes->ProcResV12.enh_luma[i] = (int)(pStManu->enhance_setting.enh_luma[i]);
+        pProcRes->ProcResV12.enh_luma[i] = ClipValueV12(pStManu->enhance_setting.enh_luma[i], 4, 6);
 
     if (pProcRes->ProcResV12.dc_en && pProcRes->ProcResV12.enhance_en) {
         LOGD_ADEHAZE("%s color_deviate_en:%d enh_luma_en:%d\n", __func__,
@@ -260,6 +260,14 @@ void stManuGetEnhanceParamsV12(mDehazeAttrV12_t* pStManu, RkAiqAdehazeProcResult
         LOGD_ADEHAZE("%s enhance_value:%f enhance_chroma:%f\n", __func__,
                      pStManu->enhance_setting.EnhanceData.enhance_value / 1024.0,
                      pStManu->enhance_setting.EnhanceData.enhance_chroma / 1024.0);
+        if (pProcRes->ProcResV12.enh_luma_en) {
+            LOGD_ADEHAZE(
+                "%s enh_luma[0~7]:%f %f %f %f %f %f %f %f\n", __func__,
+                pProcRes->ProcResV12.enh_luma[0] / 64.0, pProcRes->ProcResV12.enh_luma[1] / 64.0,
+                pProcRes->ProcResV12.enh_luma[2] / 64.0, pProcRes->ProcResV12.enh_luma[3] / 64.0,
+                pProcRes->ProcResV12.enh_luma[4] / 64.0, pProcRes->ProcResV12.enh_luma[5] / 64.0,
+                pProcRes->ProcResV12.enh_luma[6] / 64.0, pProcRes->ProcResV12.enh_luma[7] / 64.0);
+        }
         LOGD_ADEHAZE("%s enhance_value_reg:0x%x enhance_chroma_reg:0x%x\n", __func__,
                      pProcRes->ProcResV12.enhance_value, pProcRes->ProcResV12.enhance_chroma);
     }
@@ -276,12 +284,14 @@ void stManuGetHistParamsV12(mDehazeAttrV12_t* pStManu, RkAiqAdehazeProcResult_t*
     pProcRes->ProcResV12.hpara_en =
         pProcRes->ProcResV12.dc_en ? pProcRes->ProcResV12.hpara_en : FUNCTION_ENABLE;
 
-    pProcRes->ProcResV12.hist_gratio = ClipValueV12(pStManu->hist_setting.hist_gratio, 0, 8);
-    pProcRes->ProcResV12.hist_th_off = ClipValueV12(pStManu->hist_setting.hist_th_off, 8, 0);
-    pProcRes->ProcResV12.hist_k      = ClipValueV12(pStManu->hist_setting.hist_k, 3, 2);
-    pProcRes->ProcResV12.hist_min    = ClipValueV12(pStManu->hist_setting.hist_min, 1, 8);
-    pProcRes->ProcResV12.cfg_gratio  = ClipValueV12(pStManu->hist_setting.cfg_gratio, 5, 8);
-    pProcRes->ProcResV12.hist_scale  = ClipValueV12(pStManu->hist_setting.hist_scale, 5, 8);
+    pProcRes->ProcResV12.hist_gratio =
+        ClipValueV12(pStManu->hist_setting.HistData.hist_gratio, 0, 8);
+    pProcRes->ProcResV12.hist_th_off =
+        ClipValueV12(pStManu->hist_setting.HistData.hist_th_off, 8, 0);
+    pProcRes->ProcResV12.hist_k     = ClipValueV12(pStManu->hist_setting.HistData.hist_k, 3, 2);
+    pProcRes->ProcResV12.hist_min   = ClipValueV12(pStManu->hist_setting.HistData.hist_min, 1, 8);
+    pProcRes->ProcResV12.cfg_gratio = ClipValueV12(pStManu->hist_setting.HistData.cfg_gratio, 5, 8);
+    pProcRes->ProcResV12.hist_scale = ClipValueV12(pStManu->hist_setting.HistData.hist_scale, 5, 8);
 
     if (pProcRes->ProcResV12.hist_en) {
         LOGD_ADEHAZE(
@@ -309,77 +319,88 @@ void GetDehazeParamsV12(CalibDbDehazeV12_t* pCalibV12, RkAiqAdehazeProcResult_t*
 
     pProcRes->ProcResV12.air_lc_en =
         pCalibV12->dehaze_setting.air_lc_en ? FUNCTION_ENABLE : FUNCTION_DISABLE;
-    pProcRes->ProcResV12.dc_min_th = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.dc_min_th,
-        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
-    pProcRes->ProcResV12.dc_max_th = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.dc_max_th,
-        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
-    pProcRes->ProcResV12.yhist_th = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.yhist_th,
-        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
+    pProcRes->ProcResV12.dc_min_th =
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
+                              pCalibV12->dehaze_setting.DehazeData.dc_min_th, CtrlValue, 8, 0,
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
+    pProcRes->ProcResV12.dc_max_th =
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
+                              pCalibV12->dehaze_setting.DehazeData.dc_max_th, CtrlValue, 8, 0,
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
+    pProcRes->ProcResV12.yhist_th =
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
+                              pCalibV12->dehaze_setting.DehazeData.yhist_th, CtrlValue, 8, 0,
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
     pProcRes->ProcResV12.yblk_th =
-        LinearInterpV12(pCalibV12->dehaze_setting.DehazeData.EnvLv,
+        LinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
                         pCalibV12->dehaze_setting.DehazeData.yblk_th, CtrlValue,
-                        pCalibV12->dehaze_setting.DehazeData.EnvLv_len) *
+                        pCalibV12->dehaze_setting.DehazeData.CtrlData_len) *
         ((rawWidth + 15) / 16) * ((rawHeight + 15) / 16);
     pProcRes->ProcResV12.dark_th = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.dark_th,
-        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
-    pProcRes->ProcResV12.bright_min = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.bright_min,
-        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
-    pProcRes->ProcResV12.bright_max = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.bright_max,
-        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
+        pCalibV12->dehaze_setting.DehazeData.CtrlData, pCalibV12->dehaze_setting.DehazeData.dark_th,
+        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
+    pProcRes->ProcResV12.bright_min =
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
+                              pCalibV12->dehaze_setting.DehazeData.bright_min, CtrlValue, 8, 0,
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
+    pProcRes->ProcResV12.bright_max =
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
+                              pCalibV12->dehaze_setting.DehazeData.bright_max, CtrlValue, 8, 0,
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
     pProcRes->ProcResV12.wt_max = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.wt_max,
-        CtrlValue, 0, 8, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
+        pCalibV12->dehaze_setting.DehazeData.CtrlData, pCalibV12->dehaze_setting.DehazeData.wt_max,
+        CtrlValue, 0, 8, pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
     pProcRes->ProcResV12.air_min = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.air_min,
-        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
+        pCalibV12->dehaze_setting.DehazeData.CtrlData, pCalibV12->dehaze_setting.DehazeData.air_min,
+        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
     pProcRes->ProcResV12.air_max = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.air_max,
-        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
-    pProcRes->ProcResV12.tmax_base = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.tmax_base,
-        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
-    pProcRes->ProcResV12.tmax_off = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.tmax_off,
-        CtrlValue, 0, 10, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
-    pProcRes->ProcResV12.tmax_max = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.tmax_max,
-        CtrlValue, 0, 10, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
+        pCalibV12->dehaze_setting.DehazeData.CtrlData, pCalibV12->dehaze_setting.DehazeData.air_max,
+        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
+    pProcRes->ProcResV12.tmax_base =
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
+                              pCalibV12->dehaze_setting.DehazeData.tmax_base, CtrlValue, 8, 0,
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
+    pProcRes->ProcResV12.tmax_off =
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
+                              pCalibV12->dehaze_setting.DehazeData.tmax_off, CtrlValue, 0, 10,
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
+    pProcRes->ProcResV12.tmax_max =
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
+                              pCalibV12->dehaze_setting.DehazeData.tmax_max, CtrlValue, 0, 10,
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
     pProcRes->ProcResV12.cfg_wt = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.cfg_wt,
-        CtrlValue, 0, 8, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
+        pCalibV12->dehaze_setting.DehazeData.CtrlData, pCalibV12->dehaze_setting.DehazeData.cfg_wt,
+        CtrlValue, 0, 8, pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
     pProcRes->ProcResV12.cfg_air = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.cfg_air,
-        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
-    pProcRes->ProcResV12.cfg_tmax = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.cfg_tmax,
-        CtrlValue, 0, 10, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
+        pCalibV12->dehaze_setting.DehazeData.CtrlData, pCalibV12->dehaze_setting.DehazeData.cfg_air,
+        CtrlValue, 8, 0, pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
+    pProcRes->ProcResV12.cfg_tmax =
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
+                              pCalibV12->dehaze_setting.DehazeData.cfg_tmax, CtrlValue, 0, 10,
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
     pProcRes->ProcResV12.range_sima =
-        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.EnvLv,
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
                               pCalibV12->dehaze_setting.DehazeData.range_sigma, CtrlValue, 0, 9,
-                              pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
     pProcRes->ProcResV12.space_sigma_cur =
-        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.EnvLv,
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
                               pCalibV12->dehaze_setting.DehazeData.space_sigma_cur, CtrlValue, 0, 8,
-                              pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
     pProcRes->ProcResV12.space_sigma_pre =
-        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.EnvLv,
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
                               pCalibV12->dehaze_setting.DehazeData.space_sigma_pre, CtrlValue, 0, 8,
-                              pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
-    pProcRes->ProcResV12.bf_weight = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.bf_weight,
-        CtrlValue, 0, 8, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
-    pProcRes->ProcResV12.dc_weitcur = DehazeLinearInterpV12(
-        pCalibV12->dehaze_setting.DehazeData.EnvLv, pCalibV12->dehaze_setting.DehazeData.dc_weitcur,
-        CtrlValue, 0, 8, pCalibV12->dehaze_setting.DehazeData.EnvLv_len);
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
+    pProcRes->ProcResV12.bf_weight =
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
+                              pCalibV12->dehaze_setting.DehazeData.bf_weight, CtrlValue, 0, 8,
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
+    pProcRes->ProcResV12.dc_weitcur =
+        DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
+                              pCalibV12->dehaze_setting.DehazeData.dc_weitcur, CtrlValue, 0, 8,
+                              pCalibV12->dehaze_setting.DehazeData.CtrlData_len);
     pProcRes->ProcResV12.stab_fnum      = ClipValueV12(pCalibV12->dehaze_setting.stab_fnum, 5, 0);
     pProcRes->ProcResV12.iir_sigma      = ClipValueV12(pCalibV12->dehaze_setting.sigma, 8, 0);
-    pProcRes->ProcResV12.iir_wt_sigma   = ClipValueV12(pCalibV12->dehaze_setting.wt_sigma 8, 3);
+    pProcRes->ProcResV12.iir_wt_sigma   = ClipValueV12(pCalibV12->dehaze_setting.wt_sigma, 8, 3);
     pProcRes->ProcResV12.iir_air_sigma  = ClipValueV12(pCalibV12->dehaze_setting.air_sigma, 8, 0);
     pProcRes->ProcResV12.iir_tmax_sigma = ClipValueV12(pCalibV12->dehaze_setting.tmax_sigma, 0, 10);
     pProcRes->ProcResV12.iir_pre_wet    = ClipValueV12(pCalibV12->dehaze_setting.pre_wet, 0, 4);
@@ -389,7 +410,7 @@ void GetDehazeParamsV12(CalibDbDehazeV12_t* pCalibV12, RkAiqAdehazeProcResult_t*
 
     if (pProcRes->ProcResV12.dc_en && !(pProcRes->ProcResV12.enhance_en)) {
         if (pProcRes->ProcResV12.cfg_alpha == 255) {
-            LOGD_ADEHAZE("%s cfg_alpha:1 EnvLv:%f cfg_air:%f cfg_tmax:%f cfg_wt:%f\n", __func__,
+            LOGD_ADEHAZE("%s cfg_alpha:1 CtrlValue:%f cfg_air:%f cfg_tmax:%f cfg_wt:%f\n", __func__,
                          CtrlValue, pProcRes->ProcResV12.cfg_air / 1.0,
                          pProcRes->ProcResV12.cfg_tmax / 1023.0,
                          pProcRes->ProcResV12.cfg_wt / 255.0);
@@ -397,10 +418,11 @@ void GetDehazeParamsV12(CalibDbDehazeV12_t* pCalibV12, RkAiqAdehazeProcResult_t*
                          __func__, pProcRes->ProcResV12.cfg_air, pProcRes->ProcResV12.cfg_tmax,
                          pProcRes->ProcResV12.cfg_wt);
         } else if (pProcRes->ProcResV12.cfg_alpha == 0) {
-            LOGD_ADEHAZE("%s cfg_alpha:0 EnvLv:%f air_max:%f air_min:%f tmax_base:%f wt_max:%f\n",
-                         __func__, CtrlValue, pProcRes->ProcResV12.air_max / 1.0,
-                         pProcRes->ProcResV12.air_min / 1.0, pProcRes->ProcResV12.tmax_base / 1.0,
-                         pProcRes->ProcResV12.wt_max / 255.0);
+            LOGD_ADEHAZE(
+                "%s cfg_alpha:0 CtrlValue:%f air_max:%f air_min:%f tmax_base:%f wt_max:%f\n",
+                __func__, CtrlValue, pProcRes->ProcResV12.air_max / 1.0,
+                pProcRes->ProcResV12.air_min / 1.0, pProcRes->ProcResV12.tmax_base / 1.0,
+                pProcRes->ProcResV12.wt_max / 255.0);
             LOGD_ADEHAZE(
                 "%s cfg_alpha_reg:0x0 air_max:0x%x air_min:0x%x tmax_base:0x%x wt_max:0x%x\n",
                 __func__, pProcRes->ProcResV12.air_max, pProcRes->ProcResV12.air_min,
@@ -416,13 +438,13 @@ void GetEnhanceParamsV12(CalibDbDehazeV12_t* pCalibV12, RkAiqAdehazeProcResult_t
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
 
     pProcRes->ProcResV12.enhance_value =
-        DehazeLinearInterpV12(pCalibV12->enhance_setting.EnhanceData.EnvLv,
+        DehazeLinearInterpV12(pCalibV12->enhance_setting.EnhanceData.CtrlData,
                               pCalibV12->enhance_setting.EnhanceData.enhance_value, CtrlValue, 4,
-                              10, pCalibV12->enhance_setting.EnhanceData.EnvLv_len);
+                              10, pCalibV12->enhance_setting.EnhanceData.CtrlData_len);
     pProcRes->ProcResV12.enhance_chroma =
-        DehazeLinearInterpV12(pCalibV12->enhance_setting.EnhanceData.EnvLv,
+        DehazeLinearInterpV12(pCalibV12->enhance_setting.EnhanceData.CtrlData,
                               pCalibV12->enhance_setting.EnhanceData.enhance_chroma, CtrlValue, 4,
-                              10, pCalibV12->enhance_setting.EnhanceData.EnvLv_len);
+                              10, pCalibV12->enhance_setting.EnhanceData.CtrlData_len);
 
     for (int i = 0; i < DHAZ_V12_ENHANCE_CRUVE_NUM; i++)
         pProcRes->ProcResV12.enh_curve[i] = (int)(pCalibV12->enhance_setting.enhance_curve[i]);
@@ -433,14 +455,23 @@ void GetEnhanceParamsV12(CalibDbDehazeV12_t* pCalibV12, RkAiqAdehazeProcResult_t
     pProcRes->ProcResV12.enh_luma_en =
         pCalibV12->enhance_setting.enh_luma_en ? FUNCTION_ENABLE : FUNCTION_DISABLE;
     for (int i = 0; i < DHAZ_V12_ENH_LUMA_NUM; i++)
-        pProcRes->ProcResV12.enh_luma[i] = (int)(pCalibV12->enhance_setting.enh_luma[i]);
+        pProcRes->ProcResV12.enh_luma[i] =
+            ClipValueV12(pCalibV12->enhance_setting.enh_luma[i], 4, 6);
 
     if (pProcRes->ProcResV12.dc_en && pProcRes->ProcResV12.enhance_en) {
         LOGD_ADEHAZE("%s color_deviate_en:%d enh_luma_en:%d\n", __func__,
                      pProcRes->ProcResV12.color_deviate_en, pProcRes->ProcResV12.enh_luma_en);
-        LOGD_ADEHAZE("%s EnvLv:%f enhance_value:%f enhance_chroma:%f\n", __func__, CtrlValue,
+        LOGD_ADEHAZE("%s CtrlValue:%f enhance_value:%f enhance_chroma:%f\n", __func__, CtrlValue,
                      pProcRes->ProcResV12.enhance_value / 1024.0,
                      pProcRes->ProcResV12.enhance_chroma / 1024.0);
+        if (pProcRes->ProcResV12.enh_luma_en) {
+            LOGD_ADEHAZE(
+                "%s enh_luma[0~7]:%f %f %f %f %f %f %f %f\n", __func__,
+                pProcRes->ProcResV12.enh_luma[0] / 64.0, pProcRes->ProcResV12.enh_luma[1] / 64.0,
+                pProcRes->ProcResV12.enh_luma[2] / 64.0, pProcRes->ProcResV12.enh_luma[3] / 64.0,
+                pProcRes->ProcResV12.enh_luma[4] / 64.0, pProcRes->ProcResV12.enh_luma[5] / 64.0,
+                pProcRes->ProcResV12.enh_luma[6] / 64.0, pProcRes->ProcResV12.enh_luma[7] / 64.0);
+        }
         LOGD_ADEHAZE("%s enhance_value_reg:0x%x enhance_chroma_reg:0x%x\n", __func__,
                      pProcRes->ProcResV12.enhance_value, pProcRes->ProcResV12.enhance_chroma);
     }
@@ -460,27 +491,27 @@ void GetHistParamsV12(CalibDbDehazeV12_t* pCalibV12, RkAiqAdehazeProcResult_t* p
                                         : FUNCTION_ENABLE;  //  dc en 关闭，hpara必需开
 
     pProcRes->ProcResV12.hist_gratio = DehazeLinearInterpV12(
-        pCalibV12->hist_setting.HistData.EnvLv, pCalibV12->hist_setting.HistData.hist_gratio,
-        CtrlValue, 0, 8, pCalibV12->hist_setting.HistData.EnvLv_len);
+        pCalibV12->hist_setting.HistData.CtrlData, pCalibV12->hist_setting.HistData.hist_gratio,
+        CtrlValue, 0, 8, pCalibV12->hist_setting.HistData.CtrlData_len);
     pProcRes->ProcResV12.hist_th_off = DehazeLinearInterpV12(
-        pCalibV12->hist_setting.HistData.EnvLv, pCalibV12->hist_setting.HistData.hist_th_off,
-        CtrlValue, 8, 0, pCalibV12->hist_setting.HistData.EnvLv_len);
+        pCalibV12->hist_setting.HistData.CtrlData, pCalibV12->hist_setting.HistData.hist_th_off,
+        CtrlValue, 8, 0, pCalibV12->hist_setting.HistData.CtrlData_len);
     pProcRes->ProcResV12.hist_k = DehazeLinearInterpV12(
-        pCalibV12->hist_setting.HistData.EnvLv, pCalibV12->hist_setting.HistData.hist_k, CtrlValue,
-        3, 2, pCalibV12->hist_setting.HistData.EnvLv_len);
+        pCalibV12->hist_setting.HistData.CtrlData, pCalibV12->hist_setting.HistData.hist_k,
+        CtrlValue, 3, 2, pCalibV12->hist_setting.HistData.CtrlData_len);
     pProcRes->ProcResV12.hist_min = DehazeLinearInterpV12(
-        pCalibV12->hist_setting.HistData.EnvLv, pCalibV12->hist_setting.HistData.hist_min,
-        CtrlValue, 1, 8, pCalibV12->hist_setting.HistData.EnvLv_len);
+        pCalibV12->hist_setting.HistData.CtrlData, pCalibV12->hist_setting.HistData.hist_min,
+        CtrlValue, 1, 8, pCalibV12->hist_setting.HistData.CtrlData_len);
     pProcRes->ProcResV12.cfg_gratio = DehazeLinearInterpV12(
-        pCalibV12->hist_setting.HistData.EnvLv, pCalibV12->hist_setting.HistData.cfg_gratio,
-        CtrlValue, 5, 8, pCalibV12->hist_setting.HistData.EnvLv_len);
+        pCalibV12->hist_setting.HistData.CtrlData, pCalibV12->hist_setting.HistData.cfg_gratio,
+        CtrlValue, 5, 8, pCalibV12->hist_setting.HistData.CtrlData_len);
     pProcRes->ProcResV12.hist_scale = DehazeLinearInterpV12(
-        pCalibV12->hist_setting.HistData.EnvLv, pCalibV12->hist_setting.HistData.hist_scale,
-        CtrlValue, 5, 8, pCalibV12->hist_setting.HistData.EnvLv_len);
+        pCalibV12->hist_setting.HistData.CtrlData, pCalibV12->hist_setting.HistData.hist_scale,
+        CtrlValue, 5, 8, pCalibV12->hist_setting.HistData.CtrlData_len);
 
     if (pProcRes->ProcResV12.hist_en) {
         LOGD_ADEHAZE(
-            "%s cfg_alpha:%f EnvLv:%f hist_para_en:%d hist_gratio:%f hist_th_off:%f hist_k:%f "
+            "%s cfg_alpha:%f CtrlValue:%f hist_para_en:%d hist_gratio:%f hist_th_off:%f hist_k:%f "
             "hist_min:%f hist_scale:%f cfg_gratio:%f\n",
             __func__, pProcRes->ProcResV12.cfg_alpha / 255.0, CtrlValue,
             pProcRes->ProcResV12.hpara_en, pProcRes->ProcResV12.hist_gratio / 255.0,
@@ -524,7 +555,7 @@ void GetDehazeHistDuoISPSettingV12(RkAiqAdehazeProcResult_t* pProcRes,
 }
 
 XCamReturn GetDehazeLocalGainSettingV12(RkAiqAdehazeProcResult_t* pProcRes,
-                                        CalibDbV2_YnrV3_CalibPara_t* pYnrCalib, float ISO,
+                                        CalibDbV2_YnrV22_CalibPara_t* pYnrCalib, float ISO,
                                         YnrSnrMode_t SnrMode) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -624,37 +655,80 @@ XCamReturn GetDehazeLocalGainSettingV12(RkAiqAdehazeProcResult_t* pProcRes,
     return ret;
 }
 
+XCamReturn GetManuDehazeLocalGainSettingV12(RkAiqAdehazeProcResult_t* pProcRes,
+                                            mDehazeAttrV12_t* pstManu) {
+    LOG1_ADEHAZE("ENTER: %s \n", __func__);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    // get noiseSigma
+    float* noiseSigma = (float*)calloc(DHAZ_V12_SIGMA_LUT_NUM, sizeof(float));
+    if (NULL == noiseSigma) return XCAM_RETURN_ERROR_MEM;
+
+    for (int i = 0; i < DHAZ_V12_SIGMA_LUT_NUM; i++) {
+        float ave1, ave2, ave3, ave4;
+        if (i == (DHAZ_V12_SIGMA_LUT_NUM - 1))
+            ave1 = (float)YNR_ISO_CURVE_SECT_VALUE1;
+        else
+            ave1 = (float)(i * YNR_ISO_CURVE_SECT_VALUE);
+
+        ave2 = ave1 * ave1;
+        ave3 = ave2 * ave1;
+        ave4 = ave3 * ave1;
+
+        noiseSigma[i] = pstManu->sigma_curve[0] * ave4 + pstManu->sigma_curve[1] * ave3 +
+                        pstManu->sigma_curve[2] * ave2 + pstManu->sigma_curve[3] * ave1 +
+                        pstManu->sigma_curve[4];
+    }
+
+    // get proc res
+    // get sigma_idx
+    for (int i = 0; i < DHAZ_V12_SIGMA_IDX_NUM; i++)
+        pProcRes->ProcResV12.sigma_idx[i] = (i + 1) * YNR_CURVE_STEP;
+
+    // get sigma_lut
+    int tmp = 0;
+    for (int i = 0; i < DHAZ_V12_SIGMA_LUT_NUM; i++) {
+        tmp                               = LIMIT_VALUE(noiseSigma[i], BIT_10_MAX, BIT_MIN);
+        pProcRes->ProcResV12.sigma_lut[i] = tmp;
+    }
+
+    free(noiseSigma);
+#if 0
+			LOGE_ADEHAZE("%s(%d) dehaze stManual sigma_curve(0~4): 0x%f 0x%f 0x%f 0x%f 0x%f\n", __func__, __LINE__, pstManu->sigma_curve[0], pstManu->sigma_curve[1],
+                         pstManu->sigma_curve[2], pstManu->sigma_curve[3], pstManu->sigma_curve[4]);
+            LOGE_ADEHAZE("%s(%d) dehaze local gain IDX(0~5): 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", __func__, __LINE__, pProcRes->ProcResV12.sigma_idx[0], pProcRes->ProcResV12.sigma_idx[1],
+                         pProcRes->ProcResV12.sigma_idx[2], pProcRes->ProcResV12.sigma_idx[3], pProcRes->ProcResV12.sigma_idx[4], pProcRes->ProcResV12.sigma_idx[5]);
+            LOGE_ADEHAZE("%s(%d) dehaze local gain LUT(0~5): 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", __func__, __LINE__, pProcRes->ProcResV12.sigma_lut[0], pProcRes->ProcResV12.sigma_lut[1],
+                         pProcRes->ProcResV12.sigma_lut[2], pProcRes->ProcResV12.sigma_lut[3], pProcRes->ProcResV12.sigma_lut[4], pProcRes->ProcResV12.sigma_lut[5]);
+#endif
+
+    LOG1_ADEHAZE("EIXT: %s \n", __func__);
+    return ret;
+}
+
 void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData) {
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
     LOGV_ADEHAZE("%s: Adehaze RO data from register:\n", __FUNCTION__);
 
-    pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_adp_air_base =
-        ROData->dehaze_stats_v11_duo.dhaz_adp_air_base;
-    pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_adp_wt = ROData->dehaze_stats_v11_duo.dhaz_adp_wt;
-    pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_adp_gratio =
-        ROData->dehaze_stats_v11_duo.dhaz_adp_gratio;
-    pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_adp_tmax =
-        ROData->dehaze_stats_v11_duo.dhaz_adp_tmax;
-    pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_pic_sumh_left =
-        ROData->dehaze_stats_v11_duo.dhaz_pic_sumh_left;
-    pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_pic_sumh_right =
-        ROData->dehaze_stats_v11_duo.dhaz_pic_sumh_right;
+    pAdehazeCtx->stats.dehaze_stats_v12.dhaz_adp_air_base =
+        ROData->dehaze_stats_v12.dhaz_adp_air_base;
+    pAdehazeCtx->stats.dehaze_stats_v12.dhaz_adp_wt     = ROData->dehaze_stats_v12.dhaz_adp_wt;
+    pAdehazeCtx->stats.dehaze_stats_v12.dhaz_adp_gratio = ROData->dehaze_stats_v12.dhaz_adp_gratio;
+    pAdehazeCtx->stats.dehaze_stats_v12.dhaz_adp_tmax   = ROData->dehaze_stats_v12.dhaz_adp_tmax;
+    pAdehazeCtx->stats.dehaze_stats_v12.dhaz_pic_sumh   = ROData->dehaze_stats_v12.dhaz_pic_sumh;
     for (int i = 0; i < DHAZ_V12_HIST_WR_NUM; i++)
-        pAdehazeCtx->stats.dehaze_stats_v11_duo.h_rgb_iir[i] =
-            ROData->dehaze_stats_v11_duo.h_rgb_iir[i];
+        pAdehazeCtx->stats.dehaze_stats_v12.h_rgb_iir[i] = ROData->dehaze_stats_v12.h_rgb_iir[i];
 
     LOGV_ADEHAZE(
         "%s:  dhaz_adp_air_base:%d dhaz_adp_wt:%d dhaz_adp_gratio:%d dhaz_adp_tmax:%d "
-        "dhaz_pic_sumh_left:%d dhaz_pic_sumh_right:%d\n",
-        __FUNCTION__, pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_adp_air_base,
-        pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_adp_wt,
-        pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_adp_gratio,
-        pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_adp_tmax,
-        pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_pic_sumh_left,
-        pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_pic_sumh_right);
+        "dhaz_pic_sumh:%d \n",
+        __FUNCTION__, pAdehazeCtx->stats.dehaze_stats_v12.dhaz_adp_air_base,
+        pAdehazeCtx->stats.dehaze_stats_v12.dhaz_adp_wt,
+        pAdehazeCtx->stats.dehaze_stats_v12.dhaz_adp_gratio,
+        pAdehazeCtx->stats.dehaze_stats_v12.dhaz_adp_tmax,
+        pAdehazeCtx->stats.dehaze_stats_v12.dhaz_pic_sumh);
     for (int i = 0; i < DHAZ_V12_HIST_WR_NUM; i++)
         LOGV_ADEHAZE("%s:  h_rgb_iir[%d]:%d:\n", __FUNCTION__, i,
-                     pAdehazeCtx->stats.dehaze_stats_v11_duo.h_rgb_iir[i]);
+                     pAdehazeCtx->stats.dehaze_stats_v12.h_rgb_iir[i]);
 
     // get other stats from stats
     for (int i = 0; i < 225; i++) {
@@ -744,21 +818,20 @@ XCamReturn AdehazeInit(AdehazeHandle_t** pAdehazeCtx, CamCalibDbV2Context_t* pCa
     XCamReturn ret          = XCAM_RETURN_NO_ERROR;
     AdehazeHandle_t* handle = (AdehazeHandle_t*)calloc(1, sizeof(AdehazeHandle_t));
 
-    CalibDbV2_dehaze_V12_t* calibv2_adehaze_calib_V12 =
-        (CalibDbV2_dehaze_V12_t*)(CALIBDBV2_GET_MODULE_PTR(pCalib, adehaze_calib));
+    CalibDbV2_dehaze_v12_t* calibv2_adehaze_calib_V12 =
+        (CalibDbV2_dehaze_v12_t*)(CALIBDBV2_GET_MODULE_PTR(pCalib, adehaze_calib));
     memcpy(&handle->CalibV12.DehazeTuningPara, &calibv2_adehaze_calib_V12->DehazeTuningPara,
            sizeof(CalibDbDehazeV12_t));  // load iq
     memcpy(&handle->AdehazeAtrrV12.stAuto, calibv2_adehaze_calib_V12,
-           sizeof(CalibDbV2_dehaze_V12_t));  // set defsult stAuto
+           sizeof(CalibDbV2_dehaze_v12_t));  // set defsult stAuto
 
-    // set when ynr is done
-    /*
-    //dehaze local gain
-    CalibDbV2_YnrV3_t*  calibv2_Ynr =
-        (CalibDbV2_YnrV3_t *)(CALIBDBV2_GET_MODULE_PTR(pCalib, ynr_v3));
-    memcpy(&handle->CalibV12.YnrCalibPara, &calibv2_Ynr->CalibPara,
-    sizeof(CalibDbV2_YnrV3_CalibPara_t));
-*/
+    // dehaze local gain
+    CalibDbV2_YnrV22_t* ynr_v22 =
+        (CalibDbV2_YnrV22_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalib, ynr_v22));
+    if (ynr_v22)
+        memcpy(&handle->CalibV12.YnrCalibPara, &ynr_v22->CalibPara,
+               sizeof(CalibDbV2_YnrV22_CalibPara_t));
+
     handle->PreDataV12.EnvLv   = ENVLVMIN;
     handle->PreDataV12.ApiMode = DEHAZE_API_AUTO;
 
@@ -871,6 +944,9 @@ XCamReturn AdehazeProcess(AdehazeHandle_t* pAdehazeCtx) {
     if (pAdehazeCtx->AdehazeAtrrV12.mode == DEHAZE_API_AUTO) {
         LOGD_ADEHAZE(" %s: Adehaze Api stAuto!!!\n", __func__);
         float CtrlValue = pAdehazeCtx->CurrDataV12.EnvLv;
+        if (pAdehazeCtx->CurrDataV12.CtrlDataType == CTRLDATATYPE_ISO)
+            CtrlValue = pAdehazeCtx->CurrDataV12.ISO;
+
         // cfg setting
         pAdehazeCtx->ProcRes.ProcResV12.cfg_alpha =
             LIMIT_VALUE(SHIFT8BIT(pAdehazeCtx->AdehazeAtrrV12.stAuto.DehazeTuningPara.cfg_alpha),
@@ -892,6 +968,11 @@ XCamReturn AdehazeProcess(AdehazeHandle_t* pAdehazeCtx) {
         // hist setting
         GetHistParamsV12(&pAdehazeCtx->AdehazeAtrrV12.stAuto.DehazeTuningPara,
                          &pAdehazeCtx->ProcRes, CtrlValue);
+
+        // get local gain setting
+        ret = GetDehazeLocalGainSettingV12(
+            &pAdehazeCtx->ProcRes, &pAdehazeCtx->CalibV12.YnrCalibPara,
+            pAdehazeCtx->CurrDataV12.ISO, pAdehazeCtx->CurrDataV12.SnrMode);
     } else if (pAdehazeCtx->AdehazeAtrrV12.mode == DEHAZE_API_MANUAL) {
         LOGD_ADEHAZE(" %s: Adehaze Api stManual!!!\n", __func__);
         // cfg setting
@@ -910,18 +991,16 @@ XCamReturn AdehazeProcess(AdehazeHandle_t* pAdehazeCtx) {
 
         // hist setting
         stManuGetHistParamsV12(&pAdehazeCtx->AdehazeAtrrV12.stManual, &pAdehazeCtx->ProcRes);
+
+        // get local gain setting
+        ret = GetManuDehazeLocalGainSettingV12(&pAdehazeCtx->ProcRes,
+                                               &pAdehazeCtx->AdehazeAtrrV12.stManual);
     } else
         LOGE_ADEHAZE("%s:Wrong Adehaze API mode!!! \n", __func__);
 
     // get Duo cam setting
     GetDehazeHistDuoISPSettingV12(&pAdehazeCtx->ProcRes, &pAdehazeCtx->stats,
                                   pAdehazeCtx->is_multi_isp_mode, pAdehazeCtx->FrameID);
-
-    // set when ynr is done
-    // get local gain setting
-    // ret = GetDehazeLocalGainSettingV12(&pAdehazeCtx->ProcRes,
-    // &pAdehazeCtx->CalibV12.YnrCalibPara, pAdehazeCtx->CurrDataV12.ISO,
-    // pAdehazeCtx->CurrDataV12.SnrMode);
 
     // store pre data
     pAdehazeCtx->PreDataV12.EnvLv = pAdehazeCtx->CurrDataV12.EnvLv;
@@ -941,21 +1020,34 @@ bool AdehazeByPassProcessing(AdehazeHandle_t* pAdehazeCtx) {
     bool ret   = false;
     float diff = 0.0;
 
+    pAdehazeCtx->CurrDataV12.CtrlDataType =
+        pAdehazeCtx->AdehazeAtrrV12.stAuto.DehazeTuningPara.CtrlDataType;
+
     if (pAdehazeCtx->FrameID <= 2) pAdehazeCtx->byPassProc = false;
     if (pAdehazeCtx->AdehazeAtrrV12.mode > DEHAZE_API_AUTO)
         pAdehazeCtx->byPassProc = false;
     else if (pAdehazeCtx->AdehazeAtrrV12.mode != pAdehazeCtx->PreDataV12.ApiMode)
         pAdehazeCtx->byPassProc = false;
     else {
-        diff = pAdehazeCtx->PreDataV12.EnvLv - pAdehazeCtx->CurrDataV12.EnvLv;
-        if (pAdehazeCtx->PreDataV12.EnvLv == ENVLVMIN) {
-            diff = pAdehazeCtx->CurrDataV12.EnvLv;
-            if (diff == 0.0)
-                pAdehazeCtx->byPassProc = true;
-            else
-                pAdehazeCtx->byPassProc = false;
-        } else {
-            diff /= pAdehazeCtx->PreDataV12.EnvLv;
+        if (pAdehazeCtx->CurrDataV12.CtrlDataType == CTRLDATATYPE_ENVLV) {
+            diff = pAdehazeCtx->PreDataV12.EnvLv - pAdehazeCtx->CurrDataV12.EnvLv;
+            if (pAdehazeCtx->PreDataV12.EnvLv == ENVLVMIN) {
+                diff = pAdehazeCtx->CurrDataV12.EnvLv;
+                if (diff == 0.0)
+                    pAdehazeCtx->byPassProc = true;
+                else
+                    pAdehazeCtx->byPassProc = false;
+            } else {
+                diff /= pAdehazeCtx->PreDataV12.EnvLv;
+                if (diff >= pAdehazeCtx->CalibV12.DehazeTuningPara.ByPassThr ||
+                    diff <= (0 - pAdehazeCtx->CalibV12.DehazeTuningPara.ByPassThr))
+                    pAdehazeCtx->byPassProc = false;
+                else
+                    pAdehazeCtx->byPassProc = true;
+            }
+        } else if (pAdehazeCtx->CurrDataV12.CtrlDataType == CTRLDATATYPE_ISO) {
+            diff = pAdehazeCtx->PreDataV12.ISO - pAdehazeCtx->CurrDataV12.ISO;
+            diff /= pAdehazeCtx->PreDataV12.ISO;
             if (diff >= pAdehazeCtx->CalibV12.DehazeTuningPara.ByPassThr ||
                 diff <= (0 - pAdehazeCtx->CalibV12.DehazeTuningPara.ByPassThr))
                 pAdehazeCtx->byPassProc = false;
@@ -966,8 +1058,9 @@ bool AdehazeByPassProcessing(AdehazeHandle_t* pAdehazeCtx) {
 
     ret = pAdehazeCtx->byPassProc;
 
-    LOGD_ADEHAZE("%s:FrameID:%d byPassProc:%d ISO:%f\n", __func__, pAdehazeCtx->FrameID, ret,
-                 pAdehazeCtx->CurrDataV12.ISO);
+    LOGD_ADEHAZE("%s:FrameID:%d CtrlDataType:%d EnvLv:%f ISO:%f byPassProc:%d\n", __func__,
+                 pAdehazeCtx->FrameID, pAdehazeCtx->CurrDataV12.CtrlDataType,
+                 pAdehazeCtx->CurrDataV12.EnvLv, pAdehazeCtx->CurrDataV12.ISO, ret);
 
     LOG1_ADEHAZE("EXIT: %s \n", __func__);
     return ret;

@@ -57,6 +57,7 @@ rkaiq/algos/anr/linux/
 rkaiq/algos/aorb/linux/
 rkaiq/algos/arawnr2/linux/
 rkaiq/algos/aeis/linux/
+rkaiq/algos/ablcV32/linux/
 rkaiq/algos_camgroup/ae/*.cpp
 rkaiq/algos_camgroup/awb/*.cpp
 rkaiq/algos/ae/*.cpp
@@ -69,3 +70,4 @@ rkaiq/algos/ae/*.h
 rkaiq/algos/af/*.h
 rkaiq/algos/awb/*.h
 rkaiq/algos/asd/*.h
+rkaiq/output/

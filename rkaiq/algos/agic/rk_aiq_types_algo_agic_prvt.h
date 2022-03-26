@@ -16,12 +16,11 @@
 #ifndef __RKAIQ_TYPES_ALGO_AGIC_PRVT_H__
 #define __RKAIQ_TYPES_ALGO_AGIC_PRVT_H__
 
-#include "RkAiqCalibDbTypes.h"
-#include "RkAiqCalibDbTypesV2.h"
-#include "RkAiqCalibDbV2Helper.h"
-#include "base/xcam_common.h"
-#include "rk_aiq_types_algo_agic_int.h"
-#include "xcam_log.h"
+#include "algos/agic/rk_aiq_types_algo_agic_int.h"
+#include "iq_parser_v2/RkAiqCalibDbTypesV2.h"
+#include "iq_parser_v2/RkAiqCalibDbV2Helper.h"
+#include "xcore/base/xcam_common.h"
+#include "xcore/base/xcam_log.h"
 
 #define RKAIQ_GIC_BITS (12)
 
@@ -76,5 +75,7 @@ XCamReturn AgicReConfig(AgicContext_t* pAgicCtx, AgicConfig_t* pAgicConfig);
 XCamReturn AgicPreProcess(AgicContext_t* pAgicCtx);
 XCamReturn AgicProcess(AgicContext_t* pAgicCtx, int ISO, int mode);
 XCamReturn AgicGetProcResult(AgicContext_t* pAgicCtx);
+void GicV1CalibToAttr(CalibDbV2_Gic_V20_t* calib, rkaiq_gic_v1_api_attr_t* attr);
+void GicV2CalibToAttr(CalibDbV2_Gic_V21_t* calib, rkaiq_gic_v2_api_attr_t* attr);
 
 #endif  //__RKAIQ_TYPES_ALGO_AGIC_PRVT_H__

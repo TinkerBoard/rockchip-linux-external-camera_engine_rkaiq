@@ -76,6 +76,8 @@ private:
     void convertAiqCcmToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     const rk_aiq_ccm_cfg_v2_t& ccm);
 #endif
+    void convertAiqAldchToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
+                                      const rk_aiq_isp_ldch_v21_t& ldch_cfg);
 };
 
 }  // namespace RkCam

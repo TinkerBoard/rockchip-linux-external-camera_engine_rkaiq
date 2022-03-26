@@ -178,8 +178,12 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             pAdrcCtx->AeResult.LongFrmMode = pAEProcRes->ae_proc_res_rk.LongFrmMode;
         }
         else {
-            pAdrcCtx->AeResult.LongFrmMode = false;
-            LOGW_ATMO("%s: Ae Proc result is null!!!\n", __FUNCTION__);
+            if (!(pAdrcCtx->frameCnt))
+                return XCAM_RETURN_NO_ERROR;
+            else {
+                pAdrcCtx->AeResult.LongFrmMode = false;
+                LOGW_ATMO("%s: Ae Proc result is null!!!\n", __FUNCTION__);
+            }
         }
 
         //get ae pre res and proc
@@ -190,11 +194,15 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             bypass = AdrcByPassProcessing(pAdrcCtx, pAEPreRes->ae_pre_res_rk);
         }
         else {
-            AecPreResult_t AecHdrPreResult;
-            memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
-            bypass = AdrcByPassProcessing(pAdrcCtx, AecHdrPreResult);
-            bypass = false;
-            LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
+            if (!(pAdrcCtx->frameCnt))
+                return XCAM_RETURN_NO_ERROR;
+            else {
+                AecPreResult_t AecHdrPreResult;
+                memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
+                bypass = AdrcByPassProcessing(pAdrcCtx, AecHdrPreResult);
+                bypass = false;
+                LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
+            }
         }
 
         // get eff expo data
@@ -279,44 +287,56 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                 pAdrcParams->com.u.proc.curExp->HdrExp[1].exp_real_params.analog_gain *
                 pAdrcParams->com.u.proc.curExp->HdrExp[1].exp_real_params.digital_gain * ISOMIN;
         }
-        LOGV_ATMO("%s: nextFrame: sexp: %f-%f, mexp: %f-%f, lexp: %f-%f\n", __FUNCTION__,
-                  pAdrcParams->com.u.proc.nxtExp->HdrExp[0].exp_real_params.analog_gain,
-                  pAdrcParams->com.u.proc.nxtExp->HdrExp[0].exp_real_params.integration_time,
-                  pAdrcParams->com.u.proc.nxtExp->HdrExp[1].exp_real_params.analog_gain,
-                  pAdrcParams->com.u.proc.nxtExp->HdrExp[1].exp_real_params.integration_time,
-                  pAdrcParams->com.u.proc.nxtExp->HdrExp[2].exp_real_params.analog_gain,
-                  pAdrcParams->com.u.proc.nxtExp->HdrExp[2].exp_real_params.integration_time);
-        LOGV_ATMO("%s: CurrFrame: sexp: %f-%f, mexp: %f-%f, lexp: %f-%f\n", __FUNCTION__,
-                  pAdrcParams->com.u.proc.curExp->HdrExp[0].exp_real_params.analog_gain,
-                  pAdrcParams->com.u.proc.curExp->HdrExp[0].exp_real_params.integration_time,
-                  pAdrcParams->com.u.proc.curExp->HdrExp[1].exp_real_params.analog_gain,
-                  pAdrcParams->com.u.proc.curExp->HdrExp[1].exp_real_params.integration_time,
-                  pAdrcParams->com.u.proc.curExp->HdrExp[2].exp_real_params.analog_gain,
-                  pAdrcParams->com.u.proc.curExp->HdrExp[2].exp_real_params.integration_time);
+        if (pAdrcCtx->FrameNumber == HDR_2X_NUM || pAdrcCtx->FrameNumber == HDR_2X_NUM) {
+            LOGV_ATMO("%s: nextFrame: sexp: %f-%f, mexp: %f-%f, lexp: %f-%f\n", __FUNCTION__,
+                      pAdrcParams->com.u.proc.nxtExp->HdrExp[0].exp_real_params.analog_gain,
+                      pAdrcParams->com.u.proc.nxtExp->HdrExp[0].exp_real_params.integration_time,
+                      pAdrcParams->com.u.proc.nxtExp->HdrExp[1].exp_real_params.analog_gain,
+                      pAdrcParams->com.u.proc.nxtExp->HdrExp[1].exp_real_params.integration_time,
+                      pAdrcParams->com.u.proc.nxtExp->HdrExp[2].exp_real_params.analog_gain,
+                      pAdrcParams->com.u.proc.nxtExp->HdrExp[2].exp_real_params.integration_time);
+            LOGV_ATMO("%s: CurrFrame: sexp: %f-%f, mexp: %f-%f, lexp: %f-%f\n", __FUNCTION__,
+                      pAdrcParams->com.u.proc.curExp->HdrExp[0].exp_real_params.analog_gain,
+                      pAdrcParams->com.u.proc.curExp->HdrExp[0].exp_real_params.integration_time,
+                      pAdrcParams->com.u.proc.curExp->HdrExp[1].exp_real_params.analog_gain,
+                      pAdrcParams->com.u.proc.curExp->HdrExp[1].exp_real_params.integration_time,
+                      pAdrcParams->com.u.proc.curExp->HdrExp[2].exp_real_params.analog_gain,
+                      pAdrcParams->com.u.proc.curExp->HdrExp[2].exp_real_params.integration_time);
+        } else if (pAdrcCtx->FrameNumber == LINEAR_NUM) {
+            LOGV_ATMO("%s: nextFrame: exp: %f-%f CurrFrame: exp: %f-%f\n", __FUNCTION__,
+                      pAdrcParams->com.u.proc.nxtExp->LinearExp.exp_real_params.analog_gain,
+                      pAdrcParams->com.u.proc.nxtExp->LinearExp.exp_real_params.integration_time,
+                      pAdrcParams->com.u.proc.curExp->LinearExp.exp_real_params.analog_gain,
+                      pAdrcParams->com.u.proc.curExp->LinearExp.exp_real_params.integration_time);
+        }
         if (pAdrcCtx->AeResult.Next.SExpo > 0) {
             pAdrcCtx->AeResult.Next.L2S_Ratio =
                 pAdrcCtx->AeResult.Next.LExpo / pAdrcCtx->AeResult.Next.SExpo;
             pAdrcCtx->AeResult.Next.M2S_Ratio =
                 pAdrcCtx->AeResult.Next.MExpo / pAdrcCtx->AeResult.Next.SExpo;
         } else
-            LOGE_ATMO("%s: Next Short frame for drc expo sync is ERROR!!!\n", __FUNCTION__);
+            LOGE_ATMO("%s: Next Short frame for drc expo sync is %f!!!\n", __FUNCTION__,
+                      pAdrcCtx->AeResult.Next.SExpo);
         if (pAdrcCtx->AeResult.Next.MExpo > 0)
             pAdrcCtx->AeResult.Next.L2M_Ratio =
                 pAdrcCtx->AeResult.Next.LExpo / pAdrcCtx->AeResult.Next.MExpo;
         else
-            LOGE_ATMO("%s: Next Midlle frame for drc expo sync is ERROR!!!\n", __FUNCTION__);
+            LOGE_ATMO("%s: Next Midlle frame for drc expo sync is %f!!!\n", __FUNCTION__,
+                      pAdrcCtx->AeResult.Next.MExpo);
         if (pAdrcCtx->AeResult.Curr.SExpo > 0) {
             pAdrcCtx->AeResult.Curr.L2S_Ratio =
                 pAdrcCtx->AeResult.Curr.LExpo / pAdrcCtx->AeResult.Curr.SExpo;
             pAdrcCtx->AeResult.Curr.M2S_Ratio =
                 pAdrcCtx->AeResult.Curr.MExpo / pAdrcCtx->AeResult.Curr.SExpo;
         } else
-            LOGE_ATMO("%s: Curr Short frame for drc expo sync is ERROR!!!\n", __FUNCTION__);
+            LOGE_ATMO("%s: Curr Short frame for drc expo sync is %f!!!\n", __FUNCTION__,
+                      pAdrcCtx->AeResult.Curr.SExpo);
         if (pAdrcCtx->AeResult.Curr.MExpo > 0)
             pAdrcCtx->AeResult.Curr.L2M_Ratio =
                 pAdrcCtx->AeResult.Curr.LExpo / pAdrcCtx->AeResult.Curr.MExpo;
         else
-            LOGE_ATMO("%s: Curr Midlle frame for drc expo sync is ERROR!!!\n", __FUNCTION__);
+            LOGE_ATMO("%s: Curr Midlle frame for drc expo sync is %f!!!\n", __FUNCTION__,
+                      pAdrcCtx->AeResult.Curr.MExpo);
         //clip for long frame mode
         if (pAdrcCtx->AeResult.LongFrmMode) {
             pAdrcCtx->AeResult.Next.L2S_Ratio = 1.0;

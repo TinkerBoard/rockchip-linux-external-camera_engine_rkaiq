@@ -38,7 +38,7 @@ SensorHw::SensorHw(const char* name)
     _gain_delay = 0;
     _time_delay = 0;
     _gain_delayed = false;
-    _frame_sequence = 0;
+    _frame_sequence = -1;
     _dcg_gain_mode_delay = 0;
     _dcg_gain_mode_delayed = false;
     _expParamsPool = new RkAiqExpParamsPool("SensorLocalExpParams", SensorHw::DEFAULT_POOL_SIZE);
@@ -577,18 +577,18 @@ SensorHw::setI2cDAta(pending_split_exps_t* exps) {
     regs.preg_addr_bytes = (__u64)(exps->i2c_exp_res.AddrByteNum);
     regs.preg_value_bytes = (__u64)(exps->i2c_exp_res.ValueByteNum);
 
-    LOG1_CAMHW_SUBM(SENSOR_SUBM,"set sensor reg array num %d ------", exps->i2c_exp_res.nNumRegs);
+    LOG1_CAMHW_SUBM(SENSOR_SUBM, "set sensor reg array num %d ------", exps->i2c_exp_res.nNumRegs);
     if (exps->i2c_exp_res.nNumRegs <= 0)
         return XCAM_RETURN_NO_ERROR;
 
     for (uint32_t i = 0; i < regs.num_regs; i++) {
-        LOG1_CAMHW_SUBM(SENSOR_SUBM,"reg:(0x%04x,%d,0x%04x,%d)",
+        LOG1_CAMHW_SUBM(SENSOR_SUBM, "reg:(0x%04x,%d,0x%04x,%d)",
                         exps->i2c_exp_res.RegAddr[i], exps->i2c_exp_res.AddrByteNum[i],
                         exps->i2c_exp_res.RegValue[i], exps->i2c_exp_res.ValueByteNum[i]);
     }
 
     if (io_control(RKMODULE_SET_REGISTER, &regs) < 0) {
-        LOGE_CAMHW_SUBM(SENSOR_SUBM,"failed to set i2c regs !");
+        LOGE_CAMHW_SUBM(SENSOR_SUBM, "failed to set i2c regs !");
         return XCAM_RETURN_ERROR_IOCTL;
     }
 
@@ -606,7 +606,7 @@ SensorHw::setExposureParams(SmartPtr<RkAiqExpParamsProxy>& expPar)
         if (exp->algo_id == 0) {
             if (exp->exp_tbl_size > 0) {
                 int lastIdx = exp->exp_tbl_size - 1;
-				exp->aecExpInfo = exp->exp_tbl[lastIdx];
+                exp->aecExpInfo = exp->exp_tbl[lastIdx];
                 /*exp->aecExpInfo.LinearExp = exp->exp_tbl[lastIdx].LinearExp;
                 exp->aecExpInfo.HdrExp[0] = exp->exp_tbl[lastIdx].HdrExp[0];
                 exp->aecExpInfo.HdrExp[1] = exp->exp_tbl[lastIdx].HdrExp[1];
@@ -615,7 +615,7 @@ SensorHw::setExposureParams(SmartPtr<RkAiqExpParamsProxy>& expPar)
                 exp->aecExpInfo.CISFeature.SNR = exp->exp_tbl[lastIdx].CISFeature.SNR;*/
             }
         }
-        if (!exp->aecExpInfo.exp_i2c_params.bValid) {
+        if (!exp->exp_i2c_params.bValid) {
             _is_i2c_exp = false;
             if (_working_mode == RK_AIQ_WORKING_MODE_NORMAL)
                 setLinearSensorExposure(&exp->aecExpInfo);
@@ -626,12 +626,12 @@ SensorHw::setExposureParams(SmartPtr<RkAiqExpParamsProxy>& expPar)
             _is_i2c_exp = true;
             pending_split_exps_t new_exps;
             memset(&new_exps, 0, sizeof(pending_split_exps_t));
-            new_exps.i2c_exp_res.nNumRegs = exp->aecExpInfo.exp_i2c_params.nNumRegs;
-            for (uint32_t i = 0; i < exp->aecExpInfo.exp_i2c_params.nNumRegs; i++) {
-                new_exps.i2c_exp_res.RegAddr[i] = exp->aecExpInfo.exp_i2c_params.RegAddr[i];
-                new_exps.i2c_exp_res.RegValue[i] = exp->aecExpInfo.exp_i2c_params.RegValue[i];				
-                new_exps.i2c_exp_res.AddrByteNum[i] = exp->aecExpInfo.exp_i2c_params.AddrByteNum[i];
-                new_exps.i2c_exp_res.ValueByteNum[i] = exp->aecExpInfo.exp_i2c_params.ValueByteNum[i];
+            new_exps.i2c_exp_res.nNumRegs = exp->exp_i2c_params.nNumRegs;
+            for (uint32_t i = 0; i < exp->exp_i2c_params.nNumRegs; i++) {
+                new_exps.i2c_exp_res.RegAddr[i] = exp->exp_i2c_params.RegAddr[i];
+                new_exps.i2c_exp_res.RegValue[i] = exp->exp_i2c_params.RegValue[i];
+                new_exps.i2c_exp_res.AddrByteNum[i] = exp->exp_i2c_params.AddrByteNum[i];
+                new_exps.i2c_exp_res.ValueByteNum[i] = exp->exp_i2c_params.ValueByteNum[i];
             }
             setI2cDAta(&new_exps);
         }
@@ -651,10 +651,10 @@ SensorHw::setExposureParams(SmartPtr<RkAiqExpParamsProxy>& expPar)
                 /* when new exp-table comes, remove elem until meet the first one of last exp-table */
                 if (!_exp_list.empty()) {
                     _exp_list.erase(std::remove_if(
-                        _exp_list.begin(), _exp_list.end(),
-                        [](const std::pair<SmartPtr<RkAiqExpParamsProxy>, bool>& p) {
-                            return !p.second;
-                        }), _exp_list.end());
+                                        _exp_list.begin(), _exp_list.end(),
+                    [](const std::pair<SmartPtr<RkAiqExpParamsProxy>, bool>& p) {
+                        return !p.second;
+                    }), _exp_list.end());
                 }
 
                 SmartPtr<RKAiqAecExpInfoWrapper_t> tmp;
@@ -674,7 +674,7 @@ SensorHw::setExposureParams(SmartPtr<RkAiqExpParamsProxy>& expPar)
                     tmp->aecExpInfo.HdrExp[2] = tmp->exp_tbl[i].HdrExp[2];
                     tmp->aecExpInfo.frame_length_lines = tmp->exp_tbl[i].frame_length_lines;
                     tmp->aecExpInfo.CISFeature.SNR = tmp->exp_tbl[i].CISFeature.SNR;
-                    tmp->aecExpInfo.exp_i2c_params = tmp->exp_tbl[i].exp_i2c_params;
+                    //tmp->exp_i2c_params = tmp->exp_tbl[i].exp_i2c_params;
 
                     /* set a flag when it's fisrt elem of exp-table*/
                     _exp_list.push_back(std::make_pair(expParamsProxy, (i == 0 ? true : false)));
@@ -773,7 +773,7 @@ SensorHw::getEffectiveExpParams(SmartPtr<RkAiqExpParamsProxy>& expParams, uint32
                                 expParams->data()->aecExpInfo.HdrExp[0].exp_sensor_params.coarse_integration_time);
             }
         } else {
-            LOGE_CAMHW_SUBM(SENSOR_SUBM, "%s: expParams is invalid!",__FUNCTION__);
+            LOGE_CAMHW_SUBM(SENSOR_SUBM, "%s: expParams is invalid!", __FUNCTION__);
         }
         ret = XCAM_RETURN_BYPASS;
     } else {
@@ -795,7 +795,7 @@ SensorHw::getEffectiveExpParams(SmartPtr<RkAiqExpParamsProxy>& expParams, uint32
                                 expParams->data()->aecExpInfo.HdrExp[0].exp_sensor_params.coarse_integration_time);
             }
         } else {
-            LOGE_CAMHW_SUBM(SENSOR_SUBM, "%s: expParams is invalid!",__FUNCTION__);
+            LOGE_CAMHW_SUBM(SENSOR_SUBM, "%s: expParams is invalid!", __FUNCTION__);
         }
         ret = XCAM_RETURN_NO_ERROR;
     }
@@ -852,9 +852,9 @@ SensorHw::split_locked(SmartPtr<RkAiqExpParamsProxy>& exp_param, uint32_t sof_id
     ENTER_CAMHW_FUNCTION();
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    uint32_t dst_id = 0,max_dst_id = 0;
+    uint32_t dst_id = 0, max_dst_id = 0;
     // custom mode
-    RKAiqExpI2cParam_t* i2c_param =  &exp_param->data()->aecExpInfo.exp_i2c_params;
+    RKAiqExpI2cParam_t* i2c_param =  &exp_param->data()->exp_i2c_params;
     if (i2c_param->bValid) {
         unsigned int num_regs = i2c_param->nNumRegs;
         LOG1_CAMHW_SUBM(SENSOR_SUBM, "i2c_exp_res num_regs %d!", num_regs);
@@ -870,7 +870,7 @@ SensorHw::split_locked(SmartPtr<RkAiqExpParamsProxy>& exp_param, uint32_t sof_id
                 new_exps.is_rk_exp_res = false;
                 new_exps.i2c_exp_res.RegAddr[0] = i2c_param->RegAddr[i];
                 new_exps.i2c_exp_res.RegValue[0] = i2c_param->RegValue[i];
-				new_exps.i2c_exp_res.AddrByteNum[0] = i2c_param->AddrByteNum[i];
+                new_exps.i2c_exp_res.AddrByteNum[0] = i2c_param->AddrByteNum[i];
                 new_exps.i2c_exp_res.ValueByteNum[0] = i2c_param->ValueByteNum[i];
                 new_exps.i2c_exp_res.nNumRegs = 1;
                 _pending_spilt_map[dst_id] = new_exps;
@@ -883,7 +883,7 @@ SensorHw::split_locked(SmartPtr<RkAiqExpParamsProxy>& exp_param, uint32_t sof_id
                 }
                 tmp->i2c_exp_res.RegAddr[num_regs] = i2c_param->RegAddr[i];
                 tmp->i2c_exp_res.RegValue[num_regs] = i2c_param->RegValue[i];
-				tmp->i2c_exp_res.AddrByteNum[num_regs] = i2c_param->AddrByteNum[i];
+                tmp->i2c_exp_res.AddrByteNum[num_regs] = i2c_param->AddrByteNum[i];
                 tmp->i2c_exp_res.ValueByteNum[num_regs] = i2c_param->ValueByteNum[i];
                 tmp->i2c_exp_res.nNumRegs++;
             }
@@ -935,14 +935,14 @@ SensorHw::split_locked(SmartPtr<RkAiqExpParamsProxy>& exp_param, uint32_t sof_id
             if (_working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
                 if (update_exp.type == RK_EXP_UPDATE_TIME) {
                     p_new_exps->rk_exp_res.sensor_params[0].coarse_integration_time =
-                            exp_info->LinearExp.exp_sensor_params.coarse_integration_time;
+                        exp_info->LinearExp.exp_sensor_params.coarse_integration_time;
                     p_new_exps->rk_exp_res.sensor_params[0].fine_integration_time =
-                            exp_info->LinearExp.exp_sensor_params.fine_integration_time;
+                        exp_info->LinearExp.exp_sensor_params.fine_integration_time;
                 } else if (update_exp.type == RK_EXP_UPDATE_GAIN) {
                     p_new_exps->rk_exp_res.sensor_params[0].analog_gain_code_global =
-                            exp_info->LinearExp.exp_sensor_params.analog_gain_code_global;
+                        exp_info->LinearExp.exp_sensor_params.analog_gain_code_global;
                     p_new_exps->rk_exp_res.sensor_params[0].digital_gain_global =
-                            exp_info->LinearExp.exp_sensor_params.digital_gain_global;
+                        exp_info->LinearExp.exp_sensor_params.digital_gain_global;
                 } else if (update_exp.type == RK_EXP_UPDATE_DCG) {
                     p_new_exps->rk_exp_res.dcg_mode[0] =
                         exp_info->LinearExp.exp_real_params.dcg_mode;
@@ -953,34 +953,34 @@ SensorHw::split_locked(SmartPtr<RkAiqExpParamsProxy>& exp_param, uint32_t sof_id
             } else {
                 if (update_exp.type == RK_EXP_UPDATE_TIME) {
                     p_new_exps->rk_exp_res.sensor_params[0].coarse_integration_time =
-                            exp_info->HdrExp[0].exp_sensor_params.coarse_integration_time;
+                        exp_info->HdrExp[0].exp_sensor_params.coarse_integration_time;
                     p_new_exps->rk_exp_res.sensor_params[0].fine_integration_time =
-                            exp_info->HdrExp[0].exp_sensor_params.fine_integration_time;
+                        exp_info->HdrExp[0].exp_sensor_params.fine_integration_time;
 
                     p_new_exps->rk_exp_res.sensor_params[1].coarse_integration_time =
-                            exp_info->HdrExp[1].exp_sensor_params.coarse_integration_time;
+                        exp_info->HdrExp[1].exp_sensor_params.coarse_integration_time;
                     p_new_exps->rk_exp_res.sensor_params[1].fine_integration_time =
-                            exp_info->HdrExp[1].exp_sensor_params.fine_integration_time;
+                        exp_info->HdrExp[1].exp_sensor_params.fine_integration_time;
 
                     p_new_exps->rk_exp_res.sensor_params[2].coarse_integration_time =
-                            exp_info->HdrExp[2].exp_sensor_params.coarse_integration_time;
+                        exp_info->HdrExp[2].exp_sensor_params.coarse_integration_time;
                     p_new_exps->rk_exp_res.sensor_params[2].fine_integration_time =
-                            exp_info->HdrExp[2].exp_sensor_params.fine_integration_time;
+                        exp_info->HdrExp[2].exp_sensor_params.fine_integration_time;
                 } else if (update_exp.type == RK_EXP_UPDATE_GAIN) {
                     p_new_exps->rk_exp_res.sensor_params[0].analog_gain_code_global =
-                            exp_info->HdrExp[0].exp_sensor_params.analog_gain_code_global;
+                        exp_info->HdrExp[0].exp_sensor_params.analog_gain_code_global;
                     p_new_exps->rk_exp_res.sensor_params[0].digital_gain_global =
-                            exp_info->HdrExp[0].exp_sensor_params.digital_gain_global;
+                        exp_info->HdrExp[0].exp_sensor_params.digital_gain_global;
 
                     p_new_exps->rk_exp_res.sensor_params[1].analog_gain_code_global =
-                            exp_info->HdrExp[1].exp_sensor_params.analog_gain_code_global;
+                        exp_info->HdrExp[1].exp_sensor_params.analog_gain_code_global;
                     p_new_exps->rk_exp_res.sensor_params[1].digital_gain_global =
-                            exp_info->HdrExp[1].exp_sensor_params.digital_gain_global;
+                        exp_info->HdrExp[1].exp_sensor_params.digital_gain_global;
 
                     p_new_exps->rk_exp_res.sensor_params[2].analog_gain_code_global =
-                            exp_info->HdrExp[2].exp_sensor_params.analog_gain_code_global;
+                        exp_info->HdrExp[2].exp_sensor_params.analog_gain_code_global;
                     p_new_exps->rk_exp_res.sensor_params[2].digital_gain_global =
-                            exp_info->HdrExp[2].exp_sensor_params.digital_gain_global;
+                        exp_info->HdrExp[2].exp_sensor_params.digital_gain_global;
                 } else if (update_exp.type == RK_EXP_UPDATE_DCG) {
                     p_new_exps->rk_exp_res.dcg_mode[0] =
                         exp_info->HdrExp[0].exp_real_params.dcg_mode;
@@ -1018,7 +1018,7 @@ SensorHw::handle_sof(int64_t time, uint32_t frameid)
     }
 
     _mutex.lock();
-    if (frameid - _frame_sequence > 1)
+    if (_frame_sequence != (uint32_t)(-1) && frameid - _frame_sequence > 1)
         LOGE_CAMHW_SUBM(SENSOR_SUBM, "!!!!frame losed,last frameid:%u,current farmeid:%u!!!!\n", _frame_sequence, frameid);
 
     _frame_sequence = frameid;
@@ -1151,7 +1151,7 @@ SensorHw::handle_sof_internal(int64_t time, uint32_t frameid)
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     _mutex.lock();
-    if (frameid - _frame_sequence > 1)
+    if (_frame_sequence != (uint32_t)(-1) && (frameid - _frame_sequence > 1))
         LOGE_CAMHW_SUBM(SENSOR_SUBM, "!!!!frame losed,last frameid:%u,current farmeid:%u!!!!\n", _frame_sequence, frameid);
 
     _frame_sequence = frameid;
@@ -1279,11 +1279,11 @@ XCamReturn
 SensorHw::set_sync_mode(uint32_t mode)
 {
     if (io_control(RKMODULE_SET_SYNC_MODE, &mode) < 0) {
-        LOGE_CAMHW_SUBM(SENSOR_SUBM,"failed to set sync mode %d", mode);
+        LOGE_CAMHW_SUBM(SENSOR_SUBM, "failed to set sync mode %d", mode);
         //return XCAM_RETURN_ERROR_IOCTL;
     }
 
-    LOGI_CAMHW_SUBM(SENSOR_SUBM,"set sync mode %d", mode);
+    LOGI_CAMHW_SUBM(SENSOR_SUBM, "set sync mode %d", mode);
 
     return XCAM_RETURN_NO_ERROR;
 }
@@ -1309,7 +1309,7 @@ SensorHw::set_working_mode(int mode)
     }
     hdr_cfg.hdr_mode = hdr_mode;
     if (io_control(RKMODULE_SET_HDR_CFG, &hdr_cfg) < 0) {
-        LOGE_CAMHW_SUBM(SENSOR_SUBM,"failed to set hdr mode %d", hdr_mode);
+        LOGE_CAMHW_SUBM(SENSOR_SUBM, "failed to set hdr mode %d", hdr_mode);
         //return XCAM_RETURN_ERROR_IOCTL;
     }
 
@@ -1425,8 +1425,8 @@ SensorHw::set_exp_delay_info(int time_delay, int gain_delay, int hcg_lcg_mode_de
     }
 
     if (_dcg_gain_mode_delay > 0 &&
-        _dcg_gain_mode_delay != time_delay &&
-        _dcg_gain_mode_delay != _gain_delay) {
+            _dcg_gain_mode_delay != time_delay &&
+            _dcg_gain_mode_delay != _gain_delay) {
         _dcg_gain_mode_delayed = true;
     }  else {
         if (_dcg_gain_mode_delay == time_delay)
@@ -1460,7 +1460,7 @@ SensorHw::stop()
     _delayed_gain_list.clear();
     _delayed_dcg_gain_mode_list.clear();
     _pending_spilt_map.clear();
-    _frame_sequence = 0;
+    _frame_sequence = -1;
     _first = true;
     set_sync_mode(NO_SYNC_MODE);
     V4l2SubDevice::stop();

@@ -912,6 +912,7 @@ XCamReturn rk_aiq_uapi_setCrSuppsn(const rk_aiq_sys_ctx_t* ctx, unsigned int lev
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     IMGPROC_FUNC_ENTER
+#if RKAIQ_HAVE_CCM_V1
     rk_aiq_ccm_attrib_t ccm;
     rk_aiq_user_api_accm_GetAttrib(ctx, &ccm);
     for(int i = 0; i < RK_AIQ_ACCM_COLOR_GAIN_NUM; i++) {
@@ -919,6 +920,15 @@ XCamReturn rk_aiq_uapi_setCrSuppsn(const rk_aiq_sys_ctx_t* ctx, unsigned int lev
         ccm.stAuto.color_inhibition.level[i] = level;
     }
     ret = rk_aiq_user_api_accm_SetAttrib(ctx, &ccm);
+#elif RKAIQ_HAVE_CCM_V2
+    rk_aiq_ccm_v2_attrib_t ccm;
+    rk_aiq_user_api_accm_v2_GetAttrib(ctx, &ccm);
+    for(int i = 0; i < RK_AIQ_ACCM_COLOR_GAIN_NUM; i++) {
+        ccm.stAuto.color_inhibition.sensorGain[i] = 2.0f;
+        ccm.stAuto.color_inhibition.level[i] = level;
+    }
+    ret = rk_aiq_user_api_accm_v2_SetAttrib(ctx, &ccm);
+#endif
     RKAIQ_IMGPROC_CHECK_RET(ret, "setCrSuppsn failed!");
     IMGPROC_FUNC_EXIT
     return ret;
@@ -2453,7 +2463,7 @@ XCamReturn rk_aiq_uapi_setLdchEn(const rk_aiq_sys_ctx_t* ctx, bool en)
     ret = rk_aiq_user_api_aldch_GetAttrib(ctx, &ldchAttr);
     RKAIQ_IMGPROC_CHECK_RET(ret, "get ldch attrib failed!");
     ldchAttr.en = en;
-    ret = rk_aiq_user_api_aldch_SetAttrib(ctx, ldchAttr);
+    ret = rk_aiq_user_api_aldch_SetAttrib(ctx, &ldchAttr);
     IMGPROC_FUNC_EXIT
     return ret;
 }
@@ -2470,7 +2480,7 @@ XCamReturn rk_aiq_uapi_setLdchCorrectLevel(const rk_aiq_sys_ctx_t* ctx, int corr
     ret = rk_aiq_user_api_aldch_GetAttrib(ctx, &ldchAttr);
     RKAIQ_IMGPROC_CHECK_RET(ret, "get ldch attrib failed!");
     ldchAttr.correct_level = correctLevel;
-    ret = rk_aiq_user_api_aldch_SetAttrib(ctx, ldchAttr);
+    ret = rk_aiq_user_api_aldch_SetAttrib(ctx, &ldchAttr);
     IMGPROC_FUNC_EXIT
     return ret;
 }

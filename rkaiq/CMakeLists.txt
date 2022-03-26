@@ -420,6 +420,11 @@ if (RKAIQ_HAVE_LDCH_V10)
     list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAldchHandle.cpp)
 endif()
 
+if (RKAIQ_HAVE_LDCH_V21)
+    add_compile_options(-DRKAIQ_HAVE_LDCH_V21=1)
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAldchHandle.cpp)
+endif()
+
 if (RKAIQ_HAVE_FEC_V10)
     add_compile_options(-DRKAIQ_HAVE_FEC_V10=1)
     list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAfecHandle.cpp)
@@ -624,7 +629,7 @@ if (RKAIQ_ENABLE_CAMGROUP)
         )
 endif()
 
-if(GENMESH_ONLINE AND (RKAIQ_HAVE_LDCH_V10 OR RKAIQ_HAVE_FEC_V10))
+if(GENMESH_ONLINE AND (RKAIQ_HAVE_LDCH_V10 OR RKAIQ_HAVE_LDCH_V21 OR RKAIQ_HAVE_FEC_V10))
     set(GENMESH_LIBS genMeshLib)
     if(ARCH STREQUAL "aarch64")
         set(GENMESH_LIBS_DIR
@@ -976,7 +981,7 @@ target_link_libraries(rkaiq
     )
 endif()
 
-if (RKAIQ_HAVE_LDCH_V10)
+if (RKAIQ_HAVE_LDCH_V10 OR RKAIQ_HAVE_LDCH_V21)
 target_link_libraries(rkaiq
     PRIVATE
     rkaiq_aldch

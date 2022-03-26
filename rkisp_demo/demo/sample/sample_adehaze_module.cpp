@@ -62,9 +62,9 @@ XCamReturn sample_adehaze_module(const void *arg)
     int key = -1;
     CLEAR();
 
-    // adehaze_sw_V10_t attr_v10;
-    adehaze_sw_V11_t attr_v11;
-    adehaze_sw_V12_t attr_v12;
+    // adehaze_sw_v10_t attr_v10;
+    adehaze_sw_v11_t attr_v11;
+    adehaze_sw_v12_t attr_v12;
 
     const demo_context_t *demo_ctx = (demo_context_t *)arg;
     const rk_aiq_sys_ctx_t* ctx ;
@@ -153,6 +153,12 @@ XCamReturn sample_adehaze_module(const void *arg)
             attr_v11.stManual.hist_setting.HistData.hist_min    = 0.015;
             attr_v11.stManual.hist_setting.HistData.hist_scale  = 0.09;
             attr_v11.stManual.hist_setting.HistData.cfg_gratio  = 2;
+
+            attr_v11.stManual.sigma_curve[0] = -7.80229e-013;
+            attr_v11.stManual.sigma_curve[1] = -7.80229e-013;
+            attr_v11.stManual.sigma_curve[2] = -2.20431e-005;
+            attr_v11.stManual.sigma_curve[3] = 0.0298751;
+            attr_v11.stManual.sigma_curve[4] = 10.9382;
             rk_aiq_user_api2_adehaze_v11_setSwAttrib(ctx, &attr_v11);
             break;
         }
@@ -163,7 +169,7 @@ XCamReturn sample_adehaze_module(const void *arg)
             attr_v11.sync.sync_mode                                     = RK_AIQ_UAPI_MODE_ASYNC;
             attr_v11.sync.done                                          = false;
             attr_v11.mode                                               = DEHAZE_API_MANUAL;
-            attr_v11.stManual.Enable                                    = false;
+            attr_v11.stManual.Enable                                    = true;
             attr_v11.stManual.cfg_alpha                                 = 0.0;
             attr_v11.stManual.dehaze_setting.en                         = false;
             attr_v11.stManual.dehaze_setting.air_lc_en                  = true;
@@ -224,6 +230,12 @@ XCamReturn sample_adehaze_module(const void *arg)
             attr_v11.stManual.hist_setting.HistData.hist_min    = 0.015;
             attr_v11.stManual.hist_setting.HistData.hist_scale  = 0.09;
             attr_v11.stManual.hist_setting.HistData.cfg_gratio  = 2;
+
+            attr_v11.stManual.sigma_curve[0] = -7.80229e-013;
+            attr_v11.stManual.sigma_curve[1] = -7.80229e-013;
+            attr_v11.stManual.sigma_curve[2] = -2.20431e-005;
+            attr_v11.stManual.sigma_curve[3] = 0.0298751;
+            attr_v11.stManual.sigma_curve[4] = 18.7607;
             rk_aiq_user_api2_adehaze_v11_setSwAttrib(ctx, &attr_v11);
             break;
         }
@@ -237,6 +249,8 @@ XCamReturn sample_adehaze_module(const void *arg)
             printf("\t MDehazeStrth: %d MEnhanceStrth:%d MEnhanceChromeStrth:%d\n\n",
                    attr_v11.Info.MDehazeStrth, attr_v11.Info.MEnhanceStrth,
                    attr_v11.Info.MEnhanceChromeStrth);
+            printf("\t sigma_curve[3]:%f sigma_curve[4]:%f\n\n", attr_v11.stManual.sigma_curve[3],
+                   attr_v11.stManual.sigma_curve[4]);
             break;
         }
         case '3': {
@@ -326,6 +340,12 @@ XCamReturn sample_adehaze_module(const void *arg)
             attr_v12.stManual.hist_setting.HistData.hist_min    = 0.015;
             attr_v12.stManual.hist_setting.HistData.hist_scale  = 0.09;
             attr_v12.stManual.hist_setting.HistData.cfg_gratio  = 2;
+
+            attr_v12.stManual.sigma_curve[0] = -7.80229e-013;
+            attr_v12.stManual.sigma_curve[1] = -7.80229e-013;
+            attr_v12.stManual.sigma_curve[2] = -2.20431e-005;
+            attr_v12.stManual.sigma_curve[3] = 0.0298751;
+            attr_v12.stManual.sigma_curve[4] = 10.9382;
             rk_aiq_user_api2_adehaze_v12_setSwAttrib(ctx, &attr_v12);
             break;
         }
@@ -416,6 +436,12 @@ XCamReturn sample_adehaze_module(const void *arg)
             attr_v12.stManual.hist_setting.HistData.hist_min    = 0.015;
             attr_v12.stManual.hist_setting.HistData.hist_scale  = 0.09;
             attr_v12.stManual.hist_setting.HistData.cfg_gratio  = 2;
+
+            attr_v12.stManual.sigma_curve[0] = -7.80229e-013;
+            attr_v12.stManual.sigma_curve[1] = -7.80229e-013;
+            attr_v12.stManual.sigma_curve[2] = -2.20431e-005;
+            attr_v12.stManual.sigma_curve[3] = 0.0298751;
+            attr_v12.stManual.sigma_curve[4] = 18.7607;
             rk_aiq_user_api2_adehaze_v12_setSwAttrib(ctx, &attr_v12);
             break;
         }
@@ -429,6 +455,8 @@ XCamReturn sample_adehaze_module(const void *arg)
             printf("\t MDehazeStrth: %d MEnhanceStrth:%d MEnhanceChromeStrth:%d\n\n",
                    attr_v12.Info.MDehazeStrth, attr_v12.Info.MEnhanceStrth,
                    attr_v12.Info.MEnhanceChromeStrth);
+            printf("\t sigma_curve[3]:%f sigma_curve[4]:%f\n\n", attr_v12.stManual.sigma_curve[3],
+                   attr_v12.stManual.sigma_curve[4]);
             break;
         }
         case '6': {

@@ -93,30 +93,30 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
     if (!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB)) {
         LOGD_ADEHAZE("%s: Adehaze Reload Para!\n", __FUNCTION__);
 #if RKAIQ_HAVE_DEHAZE_V10
-        CalibDbV2_dehaze_V10_t* calibv2_adehaze_calib_V10 =
-            (CalibDbV2_dehaze_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        CalibDbV2_dehaze_v10_t* calibv2_adehaze_calib_V10 =
+            (CalibDbV2_dehaze_v10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
         if (calibv2_adehaze_calib_V10) {
             memcpy(&pAdehazeHandle->CalibV10, calibv2_adehaze_calib_V10,
-                   sizeof(CalibDbV2_dehaze_V10_t));
+                   sizeof(CalibDbV2_dehaze_v10_t));
             // memcpy(&pAdehazeHandle->AdehazeAtrrV10., calibv2_adehaze_calib_V10,
-            // sizeof(CalibDbV2_dehaze_V10_t));
+            // sizeof(CalibDbV2_dehaze_v10_t));
         }
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11
-        CalibDbV2_dehaze_V11_t* calibv2_adehaze_calib_V11 =
-            (CalibDbV2_dehaze_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        CalibDbV2_dehaze_v11_t* calibv2_adehaze_calib_V11 =
+            (CalibDbV2_dehaze_v11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
         if (calibv2_adehaze_calib_V11)
             memcpy(&pAdehazeHandle->AdehazeAtrrV11.stAuto, calibv2_adehaze_calib_V11,
-                   sizeof(CalibDbV2_dehaze_V11_t));
+                   sizeof(CalibDbV2_dehaze_v11_t));
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
-        CalibDbV2_dehaze_V11_t* calibv2_adehaze_calib_V11_duo =
-            (CalibDbV2_dehaze_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        CalibDbV2_dehaze_v11_t* calibv2_adehaze_calib_V11_duo =
+            (CalibDbV2_dehaze_v11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
         if (calibv2_adehaze_calib_V11_duo) {
             memcpy(&pAdehazeHandle->CalibV11duo.DehazeTuningPara,
                    &calibv2_adehaze_calib_V11_duo->DehazeTuningPara, sizeof(CalibDbDehazeV11_t));
             memcpy(&pAdehazeHandle->AdehazeAtrrV11duo.stAuto, calibv2_adehaze_calib_V11_duo,
-                   sizeof(CalibDbV2_dehaze_V11_t));
+                   sizeof(CalibDbV2_dehaze_v11_t));
         }
 
         // dehaze local gain
@@ -127,24 +127,21 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
                    sizeof(CalibDbV2_YnrV3_CalibPara_t));
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
-        CalibDbV2_dehaze_V12_t* calibv2_adehaze_calib_V12 =
-            (CalibDbV2_dehaze_V12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        CalibDbV2_dehaze_v12_t* calibv2_adehaze_calib_V12 =
+            (CalibDbV2_dehaze_v12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
         if (calibv2_adehaze_calib_V12) {
             memcpy(&pAdehazeHandle->CalibV12.DehazeTuningPara,
                    &calibv2_adehaze_calib_V12->DehazeTuningPara, sizeof(CalibDbDehazeV12_t));
             memcpy(&pAdehazeHandle->AdehazeAtrrV12.stAuto, calibv2_adehaze_calib_V12,
-                   sizeof(CalibDbV2_dehaze_V12_t));
+                   sizeof(CalibDbV2_dehaze_v12_t));
         }
 
-        // set when ynr is done
-        /*
-        //dehaze local gain
-        CalibDbV2_YnrV3_t*  calibv2_Ynr =
-            (CalibDbV2_YnrV3_t *)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ynr_v3));
-        if (calibv2_Ynr)
-            memcpy(&pAdehazeHandle->CalibV12.YnrCalibPara, &calibv2_Ynr->CalibPara,
-        sizeof(CalibDbV2_YnrV3_CalibPara_t));
-*/
+        // dehaze local gain
+        CalibDbV2_YnrV22_t* ynr_v22 =
+            (CalibDbV2_YnrV22_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ynr_v22));
+        if (ynr_v22)
+            memcpy(&pAdehazeHandle->CalibV12.YnrCalibPara, &ynr_v22->CalibPara,
+                   sizeof(CalibDbV2_YnrV22_CalibPara_t));
 #endif
     }
 
@@ -176,7 +173,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
 
     AdehazeGetCurrData(pAdehazeHandle, pProcPara);
 
-#if RKAIQ_HAVE_DEHAZE_V11_DUO || RKAIQ_HAVE_DEHAZE_V12
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
     // get ynr snr mode
     if (pProcPara->com.u.proc.curExp->CISFeature.SNR == 0)
         pAdehazeHandle->CurrDataV11duo.SnrMode = YNRSNRMODE_LSNR;
@@ -186,6 +183,18 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
         LOGI_ADEHAZE("%s(%d) Adehaze Get Wrong Snr Mode!!!, Using LSNR Params \n", __func__,
                      __LINE__);
         pAdehazeHandle->CurrDataV11duo.SnrMode = YNRSNRMODE_LSNR;
+    }
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+    // get ynr snr mode
+    if (pProcPara->com.u.proc.curExp->CISFeature.SNR == 0)
+        pAdehazeHandle->CurrDataV12.SnrMode = YNRSNRMODE_LSNR;
+    else if (pProcPara->com.u.proc.curExp->CISFeature.SNR == 1)
+        pAdehazeHandle->CurrDataV12.SnrMode = YNRSNRMODE_HSNR;
+    else {
+        LOGI_ADEHAZE("%s(%d) Adehaze Get Wrong Snr Mode!!!, Using LSNR Params \n", __func__,
+                     __LINE__);
+        pAdehazeHandle->CurrDataV12.SnrMode = YNRSNRMODE_LSNR;
     }
 #endif
 

@@ -48,6 +48,7 @@
 #define ISP32_MODULE_CAC		ISP3X_MODULE_CAC
 #define ISP32_MODULE_CSM		ISP3X_MODULE_CSM
 #define ISP32_MODULE_CGC		ISP3X_MODULE_CGC
+#define ISP32_MODULE_VSM		BIT_ULL(45)
 
 /* Measurement types */
 #define ISP32_STAT_RAWAWB		ISP3X_STAT_RAWAWB
@@ -62,6 +63,7 @@
 #define ISP32_STAT_RAWHST3		ISP3X_STAT_RAWHST3
 #define ISP32_STAT_BLS			ISP3X_STAT_BLS
 #define ISP32_STAT_DHAZ			ISP3X_STAT_DHAZ
+#define ISP32_STAT_VSM			BIT(18)
 
 #define ISP32_MESH_BUF_NUM		ISP3X_MESH_BUF_NUM
 
@@ -525,55 +527,55 @@ struct isp32_cnr_cfg {
 } __attribute__ ((packed));
 
 struct isp32_sharp_cfg {
-    /* SHARP_EN */
-    u8 bypass;
-    u8 center_mode;
-    u8 exgain_bypass;
-    u8 radius_ds_mode;
-    u8 noiseclip_mode;
-    /* SHARP_RATIO */
-    u8 sharp_ratio;
-    u8 bf_ratio;
-    u8 gaus_ratio;
-    u8 pbf_ratio;
-    /* SHARP_LUMA_DX */
-    u8 luma_dx[ISP32_SHARP_X_NUM];
-    /* SHARP_SIGMA_SHIFT */
-    u8 bf_sigma_shift;
-    u8 pbf_sigma_shift;
-    /* SHARP_PBF_COEF */
-    u8 pbf_coef2;
-    u8 pbf_coef1;
-    u8 pbf_coef0;
-    /* SHARP_BF_COEF */
-    u8 bf_coef2;
-    u8 bf_coef1;
-    u8 bf_coef0;
-    /* SHARP_GAUS_COEF */
-    u8 gaus_coef[ISP32_SHARP_GAUS_COEF_NUM];
-    /* SHARP_GAIN */
-    u8 global_gain_alpha;
-    u8 local_gainscale;
-    /* SHARP_GAIN_DIS_STRENGTH */
-    u8 strength[ISP32_SHARP_STRENGTH_NUM];
-    /* SHARP_TEXTURE */
-    u8 enhance_bit;
-    /* SHARP_PBF_SIGMA_INV */
-    u16 pbf_sigma_inv[ISP32_SHARP_Y_NUM];
-    /* SHARP_BF_SIGMA_INV */
-    u16 bf_sigma_inv[ISP32_SHARP_Y_NUM];
-    /* SHARP_CLIP_HF */
-    u16 clip_hf[ISP32_SHARP_Y_NUM];
-    /* SHARP_GAIN */
-    u16 global_gain;
-    /* SHARP_GAIN_ADJUST */
-    u16 gain_adj[ISP32_SHARP_GAIN_ADJ_NUM];
-    /* SHARP_CENTER */
-    u16 center_wid;
-    u16 center_het;
-    /* SHARP_TEXTURE */
-    u16 noise_sigma;
-    u16 noise_strength;
+	/* SHARP_EN */
+	u8 bypass;
+	u8 center_mode;
+	u8 exgain_bypass;
+	u8 radius_ds_mode;
+	u8 noiseclip_mode;
+	/* SHARP_RATIO */
+	u8 sharp_ratio;
+	u8 bf_ratio;
+	u8 gaus_ratio;
+	u8 pbf_ratio;
+	/* SHARP_LUMA_DX */
+	u8 luma_dx[ISP32_SHARP_X_NUM];
+	/* SHARP_SIGMA_SHIFT */
+	u8 bf_sigma_shift;
+	u8 pbf_sigma_shift;
+	/* SHARP_PBF_COEF */
+	u8 pbf_coef2;
+	u8 pbf_coef1;
+	u8 pbf_coef0;
+	/* SHARP_BF_COEF */
+	u8 bf_coef2;
+	u8 bf_coef1;
+	u8 bf_coef0;
+	/* SHARP_GAUS_COEF */
+	u8 gaus_coef[ISP32_SHARP_GAUS_COEF_NUM];
+	/* SHARP_GAIN */
+	u8 global_gain_alpha;
+	u8 local_gainscale;
+	/* SHARP_GAIN_DIS_STRENGTH */
+	u8 strength[ISP32_SHARP_STRENGTH_NUM];
+	/* SHARP_TEXTURE */
+	u8 enhance_bit;
+	/* SHARP_PBF_SIGMA_INV */
+	u16 pbf_sigma_inv[ISP32_SHARP_Y_NUM];
+	/* SHARP_BF_SIGMA_INV */
+	u16 bf_sigma_inv[ISP32_SHARP_Y_NUM];
+	/* SHARP_CLIP_HF */
+	u16 clip_hf[ISP32_SHARP_Y_NUM];
+	/* SHARP_GAIN */
+	u16 global_gain;
+	/* SHARP_GAIN_ADJUST */
+	u16 gain_adj[ISP32_SHARP_GAIN_ADJ_NUM];
+	/* SHARP_CENTER */
+	u16 center_wid;
+	u16 center_het;
+	/* SHARP_TEXTURE */
+	u16 noise_sigma;
+	u16 noise_strength;
 } __attribute__ ((packed));
 
 struct isp32_dhaz_cfg {
@@ -1225,32 +1227,42 @@ struct isp32_cac_cfg {
 	s32 buf_fd;
 } __attribute__ ((packed));
 
+struct isp32_vsm_cfg {
+	u8 h_segments;
+	u8 v_segments;
+	u16 h_offs;
+	u16 v_offs;
+	u16 h_size;
+	u16 v_size;
+} __attribute__ ((packed));
+
 struct isp32_isp_other_cfg {
-    struct isp32_bls_cfg bls_cfg;
-    struct isp2x_dpcc_cfg dpcc_cfg;
-    struct isp3x_lsc_cfg lsc_cfg;
-    struct isp32_awb_gain_cfg awb_gain_cfg;
-    struct isp21_gic_cfg gic_cfg;
-    struct isp32_debayer_cfg debayer_cfg;
-    struct isp32_ccm_cfg ccm_cfg;
-    struct isp3x_gammaout_cfg gammaout_cfg;
-    struct isp2x_cproc_cfg cproc_cfg;
-    struct isp2x_ie_cfg ie_cfg;
-    struct isp2x_sdg_cfg sdg_cfg;
-    struct isp32_drc_cfg drc_cfg;
-    struct isp32_hdrmge_cfg hdrmge_cfg;
-    struct isp32_dhaz_cfg dhaz_cfg;
-    struct isp2x_3dlut_cfg isp3dlut_cfg;
-    struct isp32_ldch_cfg ldch_cfg;
-    struct isp32_baynr_cfg baynr_cfg;
-    struct isp32_bay3d_cfg bay3d_cfg;
-    struct isp32_ynr_cfg ynr_cfg;
-    struct isp32_cnr_cfg cnr_cfg;
-    struct isp32_sharp_cfg sharp_cfg;
-    struct isp32_cac_cfg cac_cfg;
-    struct isp3x_gain_cfg gain_cfg;
-    struct isp21_csm_cfg csm_cfg;
-    struct isp21_cgc_cfg cgc_cfg;
+	struct isp32_bls_cfg bls_cfg;
+	struct isp2x_dpcc_cfg dpcc_cfg;
+	struct isp3x_lsc_cfg lsc_cfg;
+	struct isp32_awb_gain_cfg awb_gain_cfg;
+	struct isp21_gic_cfg gic_cfg;
+	struct isp32_debayer_cfg debayer_cfg;
+	struct isp32_ccm_cfg ccm_cfg;
+	struct isp3x_gammaout_cfg gammaout_cfg;
+	struct isp2x_cproc_cfg cproc_cfg;
+	struct isp2x_ie_cfg ie_cfg;
+	struct isp2x_sdg_cfg sdg_cfg;
+	struct isp32_drc_cfg drc_cfg;
+	struct isp32_hdrmge_cfg hdrmge_cfg;
+	struct isp32_dhaz_cfg dhaz_cfg;
+	struct isp2x_3dlut_cfg isp3dlut_cfg;
+	struct isp32_ldch_cfg ldch_cfg;
+	struct isp32_baynr_cfg baynr_cfg;
+	struct isp32_bay3d_cfg bay3d_cfg;
+	struct isp32_ynr_cfg ynr_cfg;
+	struct isp32_cnr_cfg cnr_cfg;
+	struct isp32_sharp_cfg sharp_cfg;
+	struct isp32_cac_cfg cac_cfg;
+	struct isp3x_gain_cfg gain_cfg;
+	struct isp21_csm_cfg csm_cfg;
+	struct isp21_cgc_cfg cgc_cfg;
+	struct isp32_vsm_cfg vsm_cfg;
 } __attribute__ ((packed));
 
 struct isp32_isp_meas_cfg {
@@ -1294,7 +1306,7 @@ struct isp32_rawaf_stat {
 	u32 afm_sum_b;
 	u32 afm_lum_b;
 	u32 highlit_cnt_winb;
-	u32 reserved[21];
+	u32 reserved[20];
 } __attribute__ ((packed));
 
 struct isp32_rawawb_ramdata {
@@ -1331,6 +1343,11 @@ struct isp32_rawawb_meas_stat {
 	struct isp32_rawawb_sum_exc sum_exc[ISP32_RAWAWB_EXCL_STAT_NUM];
 } __attribute__ ((packed));
 
+struct isp32_vsm_stat {
+	u16 delta_h;
+	u16 delta_v;
+} __attribute__ ((packed));
+
 struct isp32_isp_params_cfg {
 	u64 module_en_update;
 	u64 module_ens;
@@ -1356,6 +1373,7 @@ struct isp32_stat {
 	struct isp2x_rawhistbig_stat rawhist2;	//offset 0x1800
 	struct isp32_rawaf_stat rawaf;		//offset 0x1c00
 	struct isp3x_dhaz_stat dhaz;
+	struct isp32_vsm_stat vsm;
 	struct isp32_rawawb_meas_stat rawawb;	//offset 0x2b00
 } __attribute__ ((packed));
 

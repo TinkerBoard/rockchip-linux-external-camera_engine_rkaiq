@@ -234,6 +234,9 @@ typedef struct CalibDb_Aec_WinScaleV2_t {
 } CalibDb_Aec_WinScaleV2_t;
 
 typedef struct CalibDb_AeEnvLvCalibV2_s {
+    // M4_BOOL_DESC("Enable", "0")
+    bool         Enable;
+
     // M4_NUMBER_DESC("CalibFNumber", "f32", M4_RANGE(0,256), "1.6", M4_DIGIT(2),M4_HIDE(0))
     float        CalibFNumber;
 

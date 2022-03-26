@@ -69,12 +69,14 @@ typedef struct AdehazeExpInfo_s {
 
 typedef struct AdehazeAePreResV10_s {
     float ISO;
+    CtrlDataType_t CtrlDataType;
     dehaze_api_mode_t ApiMode;
 } AdehazeAePreResV10_t;
 
 typedef struct AdehazeAePreResV11_s {
     float EnvLv;
     float ISO;
+    CtrlDataType_t CtrlDataType;
     YnrSnrMode_t SnrMode;
     dehaze_api_mode_t ApiMode;
 } AdehazeAePreResV11_t;
@@ -86,29 +88,29 @@ typedef struct CalibDbV2_dehaze_V11_duo_prvt_s {
 
 typedef struct CalibDbV2_dehaze_V12_prvt_s {
     CalibDbDehazeV12_t DehazeTuningPara;
-    CalibDbV2_YnrV3_CalibPara_t  YnrCalibPara;
+    CalibDbV2_YnrV22_CalibPara_t YnrCalibPara;
 } CalibDbV2_dehaze_V12_prvt_t;
 
 typedef struct AdehazeHandle_s {
 #if RKAIQ_HAVE_DEHAZE_V10
-    adehaze_sw_V10_t AdehazeAtrrV10;
-    CalibDbV2_dehaze_V10_t CalibV10;
+    adehaze_sw_v10_t AdehazeAtrrV10;
+    CalibDbV2_dehaze_v10_t CalibV10;
     AdehazeAePreResV10_t CurrDataV10;
     AdehazeAePreResV10_t PreDataV10;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11
-    adehaze_sw_V11_t AdehazeAtrrV11;
+    adehaze_sw_v11_t AdehazeAtrrV11;
     AdehazeAePreResV11_t CurrDataV11;
     AdehazeAePreResV11_t PreDataV11;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
-    adehaze_sw_V11_t AdehazeAtrrV11duo;
+    adehaze_sw_v11_t AdehazeAtrrV11duo;
     CalibDbV2_dehaze_V11_duo_prvt_t CalibV11duo;
     AdehazeAePreResV11_t CurrDataV11duo;
     AdehazeAePreResV11_t PreDataV11duo;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
-    adehaze_sw_V12_t AdehazeAtrrV12;
+    adehaze_sw_v12_t AdehazeAtrrV12;
     CalibDbV2_dehaze_V12_prvt_t CalibV12;
     AdehazeAePreResV11_t CurrDataV12;
     AdehazeAePreResV11_t PreDataV12;

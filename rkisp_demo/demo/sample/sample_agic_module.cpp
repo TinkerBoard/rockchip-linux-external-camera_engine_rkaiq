@@ -55,7 +55,7 @@ static int sample_gic_setgicAttr(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_s
     attr.sync.sync_mode = sync;
     attr.op_mode        = RKAIQ_GIC_API_OPMODE_MANUAL;
     attr.gic_en         = 0;
-    attr.manual_param.globalStrength = 5;
+    attr.manual_param.globalStrength = 0.5;
 
     ret = rk_aiq_user_api2_agic_v2_SetAttrib(ctx, &attr);
     RKAIQ_SAMPLE_CHECK_RET(ret, "set GIC Attr failed!");

@@ -49,7 +49,7 @@ XCamReturn sample_aldch_en(const rk_aiq_sys_ctx_t* ctx, bool en)
     ret = rk_aiq_user_api2_aldch_GetAttrib(ctx, &ldchAttr);
     RKAIQ_SAMPLE_CHECK_RET(ret, "get ldch attrib failed!");
     ldchAttr.en = en;
-    ret = rk_aiq_user_api2_aldch_SetAttrib(ctx, ldchAttr);
+    ret = rk_aiq_user_api2_aldch_SetAttrib(ctx, &ldchAttr);
     return ret;
 }
 
@@ -66,7 +66,7 @@ XCamReturn sample_aldch_setCorrectLevel(const rk_aiq_sys_ctx_t* ctx, int correct
     RKAIQ_SAMPLE_CHECK_RET(ret, "get ldch attrib failed!");
     ldchAttr.sync.sync_mode = sync;
     ldchAttr.correct_level = correctLevel;
-    ret = rk_aiq_user_api2_aldch_SetAttrib(ctx, ldchAttr);
+    ret = rk_aiq_user_api2_aldch_SetAttrib(ctx, &ldchAttr);
     ret = rk_aiq_user_api2_aldch_GetAttrib(ctx, &ldchAttr);
     RKAIQ_SAMPLE_CHECK_RET(ret, "get ldch attrib failed!");
 

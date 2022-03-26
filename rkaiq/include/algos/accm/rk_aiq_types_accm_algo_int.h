@@ -38,7 +38,7 @@ typedef struct accm_sw_info_s {
     bool ccmConverged;
 } accm_sw_info_t;
 
-typedef struct rk_aiq_ccm_mccm_attrib_v1_s {
+typedef struct rk_aiq_ccm_mccm_attrib_s {
     // M4_ARRAY_DESC("ccMatrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1,0,0,0,1,0,0,0,1]", M4_DIGIT(4), M4_DYNAMIC(0))
     float  ccMatrix[9];
     // M4_ARRAY_DESC("ccOffsets", "f32", M4_SIZE(1,3), M4_RANGE(-4095,4095), "0", M4_DIGIT(1), M4_DYNAMIC(0))
@@ -47,7 +47,7 @@ typedef struct rk_aiq_ccm_mccm_attrib_v1_s {
     float  y_alpha_curve[CCM_CURVE_DOT_NUM];
     // M4_NUMBER_DESC("bound pos bit", "f32", M4_RANGE(4, 10), "8", M4_DIGIT(0))
     float low_bound_pos_bit;
-} rk_aiq_ccm_mccm_attrib_v1_t;
+} rk_aiq_ccm_mccm_attrib_t;
 
 typedef struct rk_aiq_ccm_mccm_attrib_v2_s {
     // M4_ARRAY_DESC("ccMatrix", "f32", M4_SIZE(3,3), M4_RANGE(-8,7.992), "[1,0,0,0,1,0,0,0,1]", M4_DIGIT(4), M4_DYNAMIC(0))
@@ -100,17 +100,19 @@ typedef struct rk_aiq_ccm_attrib_s {
     // M4_ENUM_DESC("mode", "rk_aiq_ccm_op_mode_t", "RK_AIQ_CCM_MODE_AUTO");
     rk_aiq_ccm_op_mode_t mode;
     // M4_STRUCT_DESC("stManual", "normal_ui_style")
-    union {
-        rk_aiq_ccm_mccm_attrib_v1_t stManual;
-        rk_aiq_ccm_mccm_attrib_v2_t stManual_v2;
-    };
+    rk_aiq_ccm_mccm_attrib_t stManual;
     rk_aiq_ccm_accm_attrib_t stAuto;
-    // to do whm
-    union {
-        CalibDbV2_Ccm_Para_V2_t stTool;
-        CalibDbV2_Ccm_Para_V32_t stTool_v2;
-    };
 } rk_aiq_ccm_attrib_t;
+
+typedef struct rk_aiq_ccm_v2_attrib_s {
+    rk_aiq_uapi_sync_t sync;
+    bool byPass;
+    // M4_ENUM_DESC("mode", "rk_aiq_ccm_op_mode_t", "RK_AIQ_CCM_MODE_AUTO");
+    rk_aiq_ccm_op_mode_t mode;
+    // M4_STRUCT_DESC("stManual", "normal_ui_style")
+    rk_aiq_ccm_mccm_attrib_v2_t stManual;
+    rk_aiq_ccm_accm_attrib_t stAuto;
+} rk_aiq_ccm_v2_attrib_t;
 
 typedef struct rk_aiq_ccm_querry_info_s {
     bool ccm_en;

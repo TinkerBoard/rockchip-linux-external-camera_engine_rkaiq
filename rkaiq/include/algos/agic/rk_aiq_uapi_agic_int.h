@@ -16,9 +16,9 @@
 #ifndef _RK_AIQ_UAPI_AGIC_INT_H_
 #define _RK_AIQ_UAPI_AGIC_INT_H_
 
-#include "base/xcam_common.h"
-#include "rk_aiq_algo_des.h"
-#include "rk_aiq_types_algo_agic_int.h"
+#include "algos/agic/rk_aiq_types_algo_agic_int.h"
+#include "algos/rk_aiq_algo_des.h"
+#include "xcore/base/xcam_common.h"
 
 XCamReturn rk_aiq_uapi_agic_v1_SetAttrib(RkAiqAlgoContext* ctx, const rkaiq_gic_v1_api_attr_t* attr,
                                          bool need_sync);

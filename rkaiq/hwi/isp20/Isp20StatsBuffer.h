@@ -73,7 +73,7 @@ public:
     virtual uint8_t *map () {return NULL;}
     virtual bool unmap () {return false;}
     int64_t _timestamp;
-    int _frameid;
+    uint32_t _frameid;
 };
 
 class SofEventBuffer

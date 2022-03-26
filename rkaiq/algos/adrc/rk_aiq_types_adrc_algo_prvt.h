@@ -44,6 +44,7 @@
 #define IIRFRAMEMIN     (0)
 #define INTMIN                  (0)
 #define INT8BITMAX     (255)
+#define INT13BITMAX             (8191)
 #define INT14BITMAX     (16383)
 #define INT16BITMAX             (65535)
 #define SW_DRC_OFFSET_POW2_FIX (8)
@@ -56,6 +57,10 @@
 #define GAS_T_MIN               (0)
 #define GAS_L_MAX               (64)
 #define GAS_L_MIN               (0)
+#define GAS_L0_DEFAULT          (24)
+#define GAS_L1_DEFAULT          (10)
+#define GAS_L2_DEFAULT          (10)
+#define GAS_L3_DEFAULT          (5)
 
 #define ISP_RAW_BIT (12)
 #define MFHDR_LOG_Q_BITS (11)

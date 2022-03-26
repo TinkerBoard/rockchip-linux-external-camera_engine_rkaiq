@@ -16,7 +16,7 @@
 #define RAWHIST_BIN_N_MAX   256
 #define SIHIST_BIN_N_MAX    32
 
-#define MAX_AEC_EFFECT_FNUM 10
+#define MAX_AEC_EFFECT_FNUM 5
 
 typedef enum _RAWAE_WND_NUM {
     RAWAE_WND_1X1 = 0,
@@ -354,7 +354,7 @@ typedef struct RKAiqAecExpInfo_s {
     // M4_NUMBER_DESC("LineLengthPixels(hts)", "u16", M4_RANGE(0,65535), "0", M4_DIGIT(0))
     uint16_t line_length_pixels;
 
-    // M4_NUMBER_DESC("FrameLengthLines(vts)", "u32", M4_RANGE(0,4294967296), "0", M4_DIGIT(0))
+    // M4_NUMBER_DESC("FrameLengthLines(vts)", "u32", M4_RANGE(0,65535), "0", M4_DIGIT(0))
     uint32_t frame_length_lines;
 
     // M4_NUMBER_DESC("PixelClockFreqMhz", "f32", M4_RANGE(0,65535), "0", M4_DIGIT(2))
@@ -362,9 +362,6 @@ typedef struct RKAiqAecExpInfo_s {
 
     // M4_STRUCT_DESC("CISFeature_t", "normal_ui_style",M4_HIDE(1))
     CISFeature_t CISFeature;
-
-    // M4_STRUCT_DESC("I2cPara", "normal_ui_style",M4_HIDE(1))
-    RKAiqExpI2cParam_t exp_i2c_params;
 } RKAiqAecExpInfo_t;
 
 /*****************************************************************************/

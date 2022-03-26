@@ -76,7 +76,7 @@ typedef struct CamCalibDbV2ContextIsp21_s {
     // M4_STRUCT_DESC("agic_calib_v21", "normal_ui_style")
     CalibDbV2_Gic_V21_t agic_calib_v21;
     // M4_STRUCT_DESC("adehaze_calib_v11", "normal_ui_style")
-    CalibDbV2_dehaze_V11_t adehaze_calib_v11;
+    CalibDbV2_dehaze_v11_t adehaze_calib_v11;
     // M4_STRUCT_DESC("adpcc_calib", "normal_ui_style")
     CalibDbV2_Dpcc_t adpcc_calib;
     // M4_STRUCT_DESC("amerge_calib", "normal_ui_style")

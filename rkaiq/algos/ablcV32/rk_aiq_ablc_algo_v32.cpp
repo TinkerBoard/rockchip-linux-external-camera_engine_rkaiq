@@ -404,7 +404,7 @@ AblcResult_V32_t AblcV32Release(AblcContext_V32_t* pAblcCtx) {
 }
 
 AblcResult_V32_t AblcV32Process(AblcContext_V32_t* pAblcCtx, AblcExpInfo_V32_t* pExpInfo) {
-    LOGE_ABLC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOGD_ABLC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
     AblcResult_V32_t ret = ABLC_V32_RET_SUCCESS;
     float tmp;
 
@@ -424,22 +424,37 @@ AblcResult_V32_t AblcV32Process(AblcContext_V32_t* pAblcCtx, AblcExpInfo_V32_t* 
         LOGD_ABLC("%s:(%d) Ablc auto !!! \n", __FUNCTION__, __LINE__);
         ret = Ablc_Select_Params_By_ISO_V32(&pAblcCtx->stBlc0Params, &pAblcCtx->stBlc0Select,
                                             pExpInfo);
-        pAblcCtx->ProcRes.enable = pAblcCtx->stBlc0Select.enable;
-        pAblcCtx->ProcRes.blc_r  = pAblcCtx->stBlc0Select.blc_r;
-        pAblcCtx->ProcRes.blc_gr = pAblcCtx->stBlc0Select.blc_gr;
-        pAblcCtx->ProcRes.blc_gb = pAblcCtx->stBlc0Select.blc_gb;
-        pAblcCtx->ProcRes.blc_b  = pAblcCtx->stBlc0Select.blc_b;
+        if (pAblcCtx->stBlc0Select.enable) {
 
-        if (pAblcCtx->stBlc1Params.enable) {
-            ret = Ablc_Select_Params_By_ISO_V32(&pAblcCtx->stBlc1Params, &pAblcCtx->stBlc1Select,
-                                                pExpInfo);
+            pAblcCtx->ProcRes.enable = pAblcCtx->stBlc0Select.enable;
+            pAblcCtx->ProcRes.blc_r  = pAblcCtx->stBlc0Select.blc_r;
+            pAblcCtx->ProcRes.blc_gr = pAblcCtx->stBlc0Select.blc_gr;
+            pAblcCtx->ProcRes.blc_gb = pAblcCtx->stBlc0Select.blc_gb;
+            pAblcCtx->ProcRes.blc_b  = pAblcCtx->stBlc0Select.blc_b;
+        } else {
+            pAblcCtx->ProcRes.enable = false;
+            pAblcCtx->ProcRes.blc_r  = 0;
+            pAblcCtx->ProcRes.blc_gr = 0;
+            pAblcCtx->ProcRes.blc_gb = 0;
+            pAblcCtx->ProcRes.blc_b  = 0;
         }
-        pAblcCtx->stBlc1Select.enable = pAblcCtx->stBlc1Params.enable;
-        pAblcCtx->ProcRes.blc1_enable = pAblcCtx->stBlc1Select.enable;
-        pAblcCtx->ProcRes.blc1_r      = pAblcCtx->stBlc1Select.blc_r;
-        pAblcCtx->ProcRes.blc1_gr     = pAblcCtx->stBlc1Select.blc_gr;
-        pAblcCtx->ProcRes.blc1_gb     = pAblcCtx->stBlc1Select.blc_gb;
-        pAblcCtx->ProcRes.blc1_b      = pAblcCtx->stBlc1Select.blc_b;
+
+        ret = Ablc_Select_Params_By_ISO_V32(&pAblcCtx->stBlc1Params, &pAblcCtx->stBlc1Select,
+                                                pExpInfo);
+        if (pAblcCtx->stBlc1Select.enable) {
+
+            pAblcCtx->ProcRes.blc1_enable = pAblcCtx->stBlc1Select.enable;
+            pAblcCtx->ProcRes.blc1_r      = pAblcCtx->stBlc1Select.blc_r;
+            pAblcCtx->ProcRes.blc1_gr     = pAblcCtx->stBlc1Select.blc_gr;
+            pAblcCtx->ProcRes.blc1_gb     = pAblcCtx->stBlc1Select.blc_gb;
+            pAblcCtx->ProcRes.blc1_b      = pAblcCtx->stBlc1Select.blc_b;
+        } else {
+            pAblcCtx->ProcRes.blc1_enable = false;
+            pAblcCtx->ProcRes.blc1_r      = 0;
+            pAblcCtx->ProcRes.blc1_gr     = 0;
+            pAblcCtx->ProcRes.blc1_gb     = 0;
+            pAblcCtx->ProcRes.blc1_b      = 0;
+        }
 
         ret = Ablc_Select_OBParams_By_ISO_V32(&pAblcCtx->stBlcOBParams,
                                                 &pAblcCtx->stBlcOBSelect, pExpInfo);

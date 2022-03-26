@@ -656,6 +656,7 @@ XCamReturn RkAiqAwbHandleInt::processing() {
     if (!sharedCom->init) {
         if (shared->awbStatsBuf == nullptr) {
             LOGE("no awb stats, ignore!");
+            mProcResShared.release();
             return XCAM_RETURN_BYPASS;
         }
     }
@@ -719,6 +720,10 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
+
+    if (!mProcResShared.ptr())
+        return XCAM_RETURN_NO_ERROR;
+
     RkAiqAlgoProcResAwb* awb_com                = &mProcResShared->result;
 
     if (!awb_com) {

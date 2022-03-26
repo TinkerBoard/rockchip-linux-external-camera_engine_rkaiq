@@ -79,7 +79,7 @@ typedef struct CamCalibDbV2ContextIsp20_s {
     // M4_STRUCT_DESC("agic_calib_v20", "normal_ui_style")
     CalibDbV2_Gic_V20_t agic_calib_v20;
     // M4_STRUCT_DESC("adehaze_calib", "normal_ui_style")
-    CalibDbV2_dehaze_V10_t adehaze_calib_v10;
+    CalibDbV2_dehaze_v10_t adehaze_calib_v10;
     // M4_STRUCT_DESC("adpcc_calib", "normal_ui_style")
     CalibDbV2_Dpcc_t adpcc_calib;
     // M4_STRUCT_DESC("amerge_calib", "normal_ui_style")

@@ -26,7 +26,7 @@ RKAIQ_BEGIN_DECLARE
 
 #if RKAIQ_HAVE_LDCH_V10
 XCamReturn
-rk_aiq_user_api_aldch_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ldch_attrib_t attr)
+rk_aiq_user_api_aldch_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_ldch_attrib_t* attr)
 {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ALDCH);
@@ -110,7 +110,7 @@ rk_aiq_user_api_aldch_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ldch_att
 }
 #else
 XCamReturn
-rk_aiq_user_api_aldch_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ldch_attrib_t attr)
+rk_aiq_user_api_aldch_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_ldch_attrib_t* attr)
 {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }

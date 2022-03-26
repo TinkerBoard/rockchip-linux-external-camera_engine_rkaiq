@@ -423,12 +423,12 @@ XCamReturn sample_adebayer_module (const void *arg)
             printf("set manual params from json with MANUAL mode in sync, ISO: 6400\n");
             break;
         case 'a':
-            sample_adebayer_setManualAtrrib_v2(ctx, 50);
-            printf("set manual params from json with MANUAL mode in sync, ISO: 50\n");
+            sample_adebayer_setManualAtrrib_v2(ctx, 900);
+            printf("set manual params from json with MANUAL mode in sync, ISO: 900\n");
             break;
         case 'b':
-            sample_adebayer_setManualAtrrib_v2(ctx, 6400);
-            printf("set manual params from json with MANUAL mode in sync, ISO: 6400\n");
+            sample_adebayer_setManualAtrrib_v2(ctx, 2800);
+            printf("set manual params from json with MANUAL mode in sync, ISO: 2800\n");
             break;
         case 'c':
             // TODO:

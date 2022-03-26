@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "rk_aiq_uapi_agic_int.h"
+#include "algos/agic/rk_aiq_uapi_agic_int.h"
 
-#include "rk_aiq_types_algo_agic_prvt.h"
+#include "algos/agic/rk_aiq_types_algo_agic_prvt.h"
 
 XCamReturn rk_aiq_uapi_agic_v1_SetAttrib(RkAiqAlgoContext* ctx, const rkaiq_gic_v1_api_attr_t* attr,
                                          bool need_sync) {
+    (void)(need_sync);
+
     if (ctx == NULL) {
         LOGE_AGIC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
         return XCAM_RETURN_ERROR_PARAM;
@@ -57,6 +59,8 @@ XCamReturn rk_aiq_uapi_agic_v1_GetAttrib(RkAiqAlgoContext* ctx, rkaiq_gic_v1_api
 
 XCamReturn rk_aiq_uapi_agic_v2_SetAttrib(RkAiqAlgoContext* ctx, const rkaiq_gic_v2_api_attr_t* attr,
                                          bool need_sync) {
+    (void)(need_sync);
+
     if (ctx == NULL) {
         LOGE_AGIC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
         return XCAM_RETURN_ERROR_PARAM;

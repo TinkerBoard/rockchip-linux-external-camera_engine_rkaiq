@@ -88,12 +88,22 @@ int getDehazeAttrib(rk_aiq_sys_ctx_t* ctx, char* data) {
 */
 int setCcmAttrib(rk_aiq_sys_ctx_t* ctx, char* data)
 {
+#if RKAIQ_HAVE_CCM_V1
     return rk_aiq_user_api_accm_SetAttrib(ctx, (rk_aiq_ccm_attrib_t*) data);
+#endif
+#if RKAIQ_HAVE_CCM_V2
+    return rk_aiq_user_api_accm_v2_SetAttrib(ctx, (rk_aiq_ccm_v2_attrib_t*) data);
+#endif
 }
 
 int getCcmAttrib(rk_aiq_sys_ctx_t* ctx, char* data)
 {
+#if RKAIQ_HAVE_CCM_V1
     return rk_aiq_user_api_accm_GetAttrib(ctx, (rk_aiq_ccm_attrib_t *)data);
+#endif
+#if RKAIQ_HAVE_CCM_V2
+    return rk_aiq_user_api_accm_v2_GetAttrib(ctx, (rk_aiq_ccm_v2_attrib_t *)data);
+#endif
 }
 
 int queryCCMInfo(rk_aiq_sys_ctx_t* ctx, char* data)

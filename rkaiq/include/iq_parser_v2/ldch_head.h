@@ -26,13 +26,13 @@ RKAIQ_BEGIN_DECLARE
 
 typedef struct CalibDbV2_Ldch_Param_s {
 	// M4_BOOL_DESC("ldch_en", "0");
-    unsigned char ldch_en;
+    bool ldch_en;
 	// M4_STRING_DESC("meshfile", M4_SIZE(1,1), M4_RANGE(0, 256), "default_meshfile", M4_DYNAMIC(0))
     char meshfile[256];
-	// M4_NUMBER_DESC("correct_level", "u32", M4_RANGE(0,255), "255", M4_DIGIT(0))
-    int correct_level;
-	// M4_NUMBER_DESC("correct_level_max", "u32", M4_RANGE(0,255), "255", M4_DIGIT(0))
-    int correct_level_max;
+	// M4_NUMBER_DESC("correct_level", "u8", M4_RANGE(0,255), "255", M4_DIGIT(0))
+    unsigned char correct_level;
+	// M4_NUMBER_DESC("correct_level_max", "u8", M4_RANGE(0,255), "255", M4_DIGIT(0))
+    unsigned char correct_level_max;
 	// M4_ARRAY_DESC("light_center", "f64", M4_SIZE(1,2), M4_RANGE(-10000000000000000,10000000000000000), "0", M4_DIGIT(8), M4_DYNAMIC(0))
     double light_center[2]; // light center
 	// M4_ARRAY_DESC("coefficient", "f64", M4_SIZE(1,4), M4_RANGE(-10000000000000000,10000000000000000), "0", M4_DIGIT(8), M4_DYNAMIC(0))

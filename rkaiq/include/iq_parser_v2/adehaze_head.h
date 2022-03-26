@@ -29,10 +29,15 @@ RKAIQ_BEGIN_DECLARE
 #define DHAZ_V11_SIGMA_LUT_NUM                  17
 
 // dehaze v10
+typedef enum CtrlDataType_e {
+    CTRLDATATYPE_ENVLV   = 0,
+    CTRLDATATYPE_ISO     = 1,
+} CtrlDataType_t;
+
 typedef struct DehazeData_s {
-    // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* ISO;
-    int ISO_len;
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
+    float* CtrlData;
+    int CtrlData_len;
     // M4_ARRAY_DESC("dc_min_th", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "64",M4_DIGIT(4), M4_DYNAMIC(1))
     float* dc_min_th;
     int dc_min_th_len;
@@ -113,11 +118,10 @@ typedef struct Dehaze_Setting_V10_s {
 } Dehaze_Setting_V10_t;
 
 typedef struct EnhanceData_s {
-    // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* ISO;
-    int ISO_len;
-    // M4_ARRAY_DESC("enhance_value", "f32", M4_SIZE(1,100), M4_RANGE(1,16), "1",M4_DIGIT(4),
-    // M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
+    float* CtrlData;
+    int CtrlData_len;
+    // M4_ARRAY_DESC("enhance_value", "f32", M4_SIZE(1,100), M4_RANGE(1,16), "1",M4_DIGIT(4), M4_DYNAMIC(1))
     float* enhance_value;
     int enhance_value_len;
 } EnhanceData_t;
@@ -130,9 +134,9 @@ typedef struct Enhance_Setting_V10_s {
 } Enhance_Setting_V10_t;
 
 typedef struct HistData_s {
-    // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* ISO;
-    int ISO_len;
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
+    float* CtrlData;
+    int CtrlData_len;
     // M4_ARRAY_DESC("hist_gratio", "f32", M4_SIZE(1,100), M4_RANGE(0,32), "2",M4_DIGIT(4), M4_DYNAMIC(1))
     float* hist_gratio;
     int hist_gratio_len;
@@ -167,6 +171,8 @@ typedef struct Hist_setting_V10_s {
 typedef struct CalibDbDehazeV10_s {
     // M4_BOOL_DESC("Enable", "1")
     bool Enable;
+    // M4_ENUM_DESC("CtrlDataType", "CtrlDataType_t", "CTRLDATATYPE_ENVLV")
+    CtrlDataType_t CtrlDataType;
     // M4_NUMBER_DESC("cfg_alpha", "f32", M4_RANGE(0,1), "1", M4_DIGIT(4))
     float cfg_alpha;
     // M4_NUMBER_DESC("ByPassThr", "f32", M4_RANGE(0,1), "0", M4_DIGIT(4))
@@ -179,16 +185,16 @@ typedef struct CalibDbDehazeV10_s {
     Hist_setting_V10_t hist_setting;
 } CalibDbDehazeV10_t;
 
-typedef struct CalibDbV2_dehaze_V10_s {
+typedef struct CalibDbV2_dehaze_v10_s {
     // M4_STRUCT_DESC("DehazeTuningPara", "normal_ui_style")
     CalibDbDehazeV10_t DehazeTuningPara;
-} CalibDbV2_dehaze_V10_t;
+} CalibDbV2_dehaze_v10_t;
 
 // dehaze v11
 typedef struct DehazeDataV11_s {
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* EnvLv;
-    int EnvLv_len;
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "0",M4_DIGIT(4), M4_DYNAMIC(1))
+    float* CtrlData;
+    int CtrlData_len;
     // M4_ARRAY_DESC("dc_min_th", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "64",M4_DIGIT(4), M4_DYNAMIC(1))
     float* dc_min_th;
     int dc_min_th_len;
@@ -276,15 +282,13 @@ typedef struct Dehaze_Setting_V11_s {
 } Dehaze_Setting_V11_t;
 
 typedef struct EnhanceDataV11_s {
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* EnvLv;
-    int EnvLv_len;
-    // M4_ARRAY_DESC("enhance_value", "f32", M4_SIZE(1,100), M4_RANGE(1,16), "1",M4_DIGIT(4),
-    // M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "0",M4_DIGIT(4), M4_DYNAMIC(1))
+    float* CtrlData;
+    int CtrlData_len;
+    // M4_ARRAY_DESC("enhance_value", "f32", M4_SIZE(1,100), M4_RANGE(1,16), "1",M4_DIGIT(4), M4_DYNAMIC(1))
     float* enhance_value;
     int enhance_value_len;
-    // M4_ARRAY_DESC("enhance_chroma", "f32", M4_SIZE(1,100), M4_RANGE(1,16), "1",M4_DIGIT(4),
-    // M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("enhance_chroma", "f32", M4_SIZE(1,100), M4_RANGE(1,16), "1",M4_DIGIT(4), M4_DYNAMIC(1))
     float* enhance_chroma;
     int enhance_chroma_len;
 } EnhanceDataV11_t;
@@ -299,9 +303,9 @@ typedef struct Enhance_Setting_V11_s {
 } Enhance_Setting_V11_t;
 
 typedef struct HistDataV11_s {
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* EnvLv;
-    int EnvLv_len;
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "0",M4_DIGIT(4), M4_DYNAMIC(1))
+    float* CtrlData;
+    int CtrlData_len;
     // M4_ARRAY_DESC("hist_gratio", "f32", M4_SIZE(1,100), M4_RANGE(0,32), "2",M4_DIGIT(4), M4_DYNAMIC(1))
     float* hist_gratio;
     int hist_gratio_len;
@@ -334,6 +338,8 @@ typedef struct Hist_setting_V11_s {
 typedef struct CalibDbDehazeV11_s {
     // M4_BOOL_DESC("en", "1")
     bool Enable;
+    // M4_ENUM_DESC("CtrlDataType", "CtrlDataType_t", "CTRLDATATYPE_ENVLV")
+    CtrlDataType_t CtrlDataType;
     // M4_NUMBER_DESC("cfg_alpha", "f32", M4_RANGE(0,1), "1", M4_DIGIT(4))
     float cfg_alpha;
     // M4_NUMBER_DESC("ByPassThr", "f32", M4_RANGE(0,1), "0", M4_DIGIT(4))
@@ -346,10 +352,10 @@ typedef struct CalibDbDehazeV11_s {
     Hist_setting_V11_t hist_setting;
 } CalibDbDehazeV11_t;
 
-typedef struct CalibDbV2_dehaze_V11_s {
+typedef struct CalibDbV2_dehaze_v11_s {
     // M4_STRUCT_DESC("DehazeTuningPara", "normal_ui_style")
     CalibDbDehazeV11_t DehazeTuningPara;
-} CalibDbV2_dehaze_V11_t;
+} CalibDbV2_dehaze_v11_t;
 
 // dehaze v12
 typedef struct Enhance_Setting_V12_s {
@@ -361,7 +367,7 @@ typedef struct Enhance_Setting_V12_s {
     bool enh_luma_en;
     // M4_ARRAY_DESC("enhance_curve", "f32", M4_SIZE(1,17),  M4_RANGE(0, 1024), "[0,64,128,192,256,320,384,448,512,576,640,704,768,832,896,960,1023]", M4_DIGIT(0), M4_DYNAMIC(0))
     float enhance_curve[CALIBDB_ADEHAZE_ENHANCE_CURVE_KNOTS_NUM];
-    // M4_ARRAY_DESC("enh_luma", "f32", M4_SIZE(1,17),  M4_RANGE(0, 1024), "[0,64,128,192,256,320,384,448,512,576,640,704,768,832,896,960,1023]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("enh_luma", "f32", M4_SIZE(1,17),  M4_RANGE(0, 16), "[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]", M4_DIGIT(2), M4_DYNAMIC(0))
     float enh_luma[CALIBDB_ADEHAZE_ENHANCE_CURVE_KNOTS_NUM];
     // M4_ARRAY_TABLE_DESC("EnhanceData", "array_table_ui", "none")
     EnhanceDataV11_t EnhanceData;
@@ -370,6 +376,8 @@ typedef struct Enhance_Setting_V12_s {
 typedef struct CalibDbDehazeV12_s {
     // M4_BOOL_DESC("en", "1")
     bool Enable;
+    // M4_ENUM_DESC("CtrlDataType", "CtrlDataType_t", "CTRLDATATYPE_ENVLV")
+    CtrlDataType_t CtrlDataType;
     // M4_NUMBER_DESC("cfg_alpha", "f32", M4_RANGE(0,1), "1", M4_DIGIT(4))
     float cfg_alpha;
     // M4_NUMBER_DESC("ByPassThr", "f32", M4_RANGE(0,1), "0", M4_DIGIT(4))
@@ -382,10 +390,10 @@ typedef struct CalibDbDehazeV12_s {
     Hist_setting_V11_t hist_setting;
 } CalibDbDehazeV12_t;
 
-typedef struct CalibDbV2_dehaze_V12_s {
+typedef struct CalibDbV2_dehaze_v12_s {
     // M4_STRUCT_DESC("DehazeTuningPara", "normal_ui_style")
     CalibDbDehazeV12_t DehazeTuningPara;
-} CalibDbV2_dehaze_V12_t;
+} CalibDbV2_dehaze_v12_t;
 
 RKAIQ_END_DECLARE
 

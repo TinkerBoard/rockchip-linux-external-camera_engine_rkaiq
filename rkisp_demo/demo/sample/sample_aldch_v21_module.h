@@ -1,7 +1,5 @@
 /*
- * rk_aiq_algo_adehaze_itf.h
- *
- *  Copyright (c) 2019 Rockchip Corporation
+ *  Copyright (c) 2021 Rockchip Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +15,10 @@
  *
  */
 
-#ifndef _RK_AIQ_ALGO_ADHAZ_ITF_H_
-#define _RK_AIQ_ALGO_ADHAZ_ITF_H_
+#ifndef _SAMPLE_ALDCH_V21_MODULE_H_
+#define _SAMPLE_ALDCH_V21_MODULE_H_
 
-#include "rk_aiq_algo_des.h"
+void sample_print_aldch_v21_info(const void *arg);
+XCamReturn sample_aldch_v21_module (const void *arg);
 
-#define RKISP_ALGO_ADHAZ_VERSION     "v0.0.9"
-#define RKISP_ALGO_ADHAZ_VENDOR      "Rockchip"
-#define RKISP_ALGO_ADHAZ_DESCRIPTION "Rockchip Adhaz algo for ISP2.0"
-
-XCAM_BEGIN_DECLARE
-
-extern RkAiqAlgoDescription g_RkIspAlgoDescAdhaz;
-
-RKAIQ_END_DECLARE
-
-
-#endif //_RK_AIQ_ALGO_AWB_ITF_H_
+#endif

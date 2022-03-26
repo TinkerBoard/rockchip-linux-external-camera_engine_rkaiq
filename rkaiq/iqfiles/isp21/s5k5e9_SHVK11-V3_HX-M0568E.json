@@ -974,6 +974,7 @@
 						"adehaze_calib_v11":	{
 							"DehazeTuningPara":	{
 								"Enable":	1,
+								"CtrlDataType": "CTRLDATATYPE_ENVLV",
 								"cfg_alpha":	0,
 								"ByPassThr":	0,
 								"dehaze_setting":	{
@@ -986,8 +987,8 @@
 									"tmax_sigma":	0.01,
 									"pre_wet":	0.01,
 									"DehazeData":	{
-										"EnvLv":	[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 0.9, 1],
-										"EnvLv_len":	9,
+										"CtrlData":	[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 0.9, 1],
+										"CtrlData_len":	9,
 										"dc_min_th":	[64, 64, 64, 64, 64, 64, 64, 64, 64],
 										"dc_min_th_len":	9,
 										"dc_max_th":	[192, 192, 192, 192, 192, 192, 192, 192, 192],
@@ -1036,8 +1037,8 @@
 									"en":	1,
 									"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 									"EnhanceData":	{
-										"EnvLv":	[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 0.9, 1],
-										"EnvLv_len":	9,
+										"CtrlData":	[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 0.9, 1],
+										"CtrlData_len":	9,
 										"enhance_value":	[1.2, 1.2, 1.2, 1.1, 1, 1, 1.1, 1.1, 1],
 										"enhance_value_len":	9,
 										"enhance_chroma":	[1, 1, 1, 1, 1, 1, 1.1, 1.1, 1],
@@ -1048,8 +1049,8 @@
 									"en":	0,
 									"hist_para_en":	1,
 									"HistData":	{
-										"EnvLv":	[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 0.9, 1],
-										"EnvLv_len":	9,
+										"CtrlData":	[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 0.9, 1],
+										"CtrlData_len":	9,
 										"hist_gratio":	[2, 2, 2, 2, 2, 2, 2, 2, 2],
 										"hist_gratio_len":	9,
 										"hist_th_off":	[64, 64, 64, 64, 64, 64, 64, 64, 64],

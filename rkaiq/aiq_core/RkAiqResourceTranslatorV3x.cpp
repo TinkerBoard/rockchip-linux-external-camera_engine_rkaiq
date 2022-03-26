@@ -1304,7 +1304,7 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                 default:
                     s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
                     float hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
-                    tmp = (i - hist_bls1) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
+                    tmp = (i - hist_bls1 > 0) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
                     break;
                 }
                 if(tmp > ISP3X_HIST_BIN_N_MAX - 1)
@@ -1373,7 +1373,7 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                 default:
                     s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
                     float hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
-                    tmp = (i - hist_bls1) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
+                    tmp = (i - hist_bls1 > 0) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
                     break;
                 }
                 if(tmp > ISP3X_HIST_BIN_N_MAX - 1)
@@ -1442,7 +1442,7 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                 default:
                     s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
                     float hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
-                    tmp = (i - hist_bls1) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
+                    tmp = (i - hist_bls1 > 0) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
                     break;
                 }
                 if(tmp > ISP3X_HIST_BIN_N_MAX - 1)
@@ -1503,7 +1503,7 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                     default:
                         s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
                         float hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
-                        tmp = (i - hist_bls1) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
+                        tmp = (i - hist_bls1 > 0) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
                         break;
                     }
                     if(tmp > ISP3X_HIST_BIN_N_MAX - 1)
@@ -2363,6 +2363,7 @@ RkAiqResourceTranslatorV3x::translateAfStats (const SmartPtr<VideoBuffer> &from,
     return ret;
 }
 
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
 XCamReturn
 RkAiqResourceTranslatorV3x::translateAdehazeStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAdehazeStatsProxy> &to)
 {
@@ -2402,5 +2403,6 @@ RkAiqResourceTranslatorV3x::translateAdehazeStats (const SmartPtr<VideoBuffer> &
 
     return ret;
 }
+#endif
 
 } //namespace RkCam

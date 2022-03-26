@@ -79,6 +79,30 @@ static XCamReturn destroy_context(RkAiqAlgoContext* context) {
 static XCamReturn prepare(RkAiqAlgoCom* params) {
     auto* adaptor        = static_cast<CacAlgoAdaptor*>(params->ctx->handle);
     RkAiqAlgoConfigAcac* config = (RkAiqAlgoConfigAcac*)params;
+    auto* calibv2 = config->com.u.prepare.calibv2;
+
+    if (!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB)) {
+        auto* cfg = adaptor->GetConfig();
+        const_cast<AlgoCtxInstanceCfg*>(cfg)->calibv2 = calibv2;
+        LOGD_ACAC("Re-config");
+#if RKAIQ_HAVE_CAC_V03
+        auto* calib_cac =
+            (CalibDbV2_Cac_V03_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, cac_v03));
+        if (calib_cac) {
+            adaptor->Config(cfg, calib_cac);
+        }
+#elif RKAIQ_HAVE_CAC_V10
+        auto* calib_cac = (CalibDbV2_Cac_V10_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, cac_v10));
+        if (calib_cac) {
+            adaptor->Config(cfg, calib_cac);
+        }
+#elif RKAIQ_HAVE_CAC_V11
+        auto* calib_cac = (CalibDbV2_Cac_V11_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, cac_v11));
+        if (calib_cac) {
+            adaptor->Config(cfg, calib_cac);
+        }
+#endif
+    }
 
     return adaptor->Prepare(config);
 }

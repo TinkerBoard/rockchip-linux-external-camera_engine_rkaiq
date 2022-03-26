@@ -222,24 +222,42 @@ public:
     explicit RkAiqCamGroupAccmHandleInt(RkAiqAlgoDesComm* des,
                                         RkAiqCamGroupManager* camGroupMg)
         : RkAiqCamgroupHandle(des, camGroupMg) {
+#if RKAIQ_HAVE_CCM_V1
         memset(&mCurAtt, 0, sizeof(rk_aiq_ccm_attrib_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_ccm_attrib_t));
+#endif
+#if RKAIQ_HAVE_CCM_V2
+        memset(&mCurAttV2, 0, sizeof(rk_aiq_ccm_v2_attrib_t));
+        memset(&mNewAttV2, 0, sizeof(rk_aiq_ccm_v2_attrib_t));
+#endif
     };
     virtual ~RkAiqCamGroupAccmHandleInt() {
         RkAiqCamgroupHandle::deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);
     // TODO add algo specific methords, this is a sample
+#if RKAIQ_HAVE_CCM_V1
     XCamReturn setAttrib(const rk_aiq_ccm_attrib_t* att);
     XCamReturn getAttrib(rk_aiq_ccm_attrib_t *att);
+#endif
+#if RKAIQ_HAVE_CCM_V2
+    XCamReturn setAttribV2(const rk_aiq_ccm_v2_attrib_t* att);
+    XCamReturn getAttribV2(rk_aiq_ccm_v2_attrib_t *att);
+#endif
     XCamReturn queryCcmInfo(rk_aiq_ccm_querry_info_t* ccm_querry_info);
 
 protected:
 
 private:
     // TODO
+#if RKAIQ_HAVE_CCM_V1
     rk_aiq_ccm_attrib_t mCurAtt;
     rk_aiq_ccm_attrib_t mNewAtt;
+#endif
+#if RKAIQ_HAVE_CCM_V2
+    rk_aiq_ccm_v2_attrib_t mCurAttV2;
+    rk_aiq_ccm_v2_attrib_t mNewAttV2;
+#endif
 };
 
 // a3dlut
@@ -425,46 +443,46 @@ class RkAiqCamGroupAdehazeHandleInt : virtual public RkAiqCamgroupHandle {
     explicit RkAiqCamGroupAdehazeHandleInt(RkAiqAlgoDesComm* des, RkAiqCamGroupManager* camGroupMg)
         : RkAiqCamgroupHandle(des, camGroupMg) {
 #if RKAIQ_HAVE_DEHAZE_V10
-        memset(&mCurAttV10, 0, sizeof(adehaze_sw_V10_t));
-        memset(&mNewAttV10, 0, sizeof(adehaze_sw_V10_t));
+        memset(&mCurAttV10, 0, sizeof(adehaze_sw_v10_t));
+        memset(&mNewAttV10, 0, sizeof(adehaze_sw_v10_t));
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
-        memset(&mCurAttV11, 0, sizeof(adehaze_sw_V11_t));
-        memset(&mNewAttV11, 0, sizeof(adehaze_sw_V11_t));
+        memset(&mCurAttV11, 0, sizeof(adehaze_sw_v11_t));
+        memset(&mNewAttV11, 0, sizeof(adehaze_sw_v11_t));
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
-        memset(&mCurAttV12, 0, sizeof(adehaze_sw_V12_t));
-        memset(&mNewAttV12, 0, sizeof(adehaze_sw_V12_t));
+        memset(&mCurAttV12, 0, sizeof(adehaze_sw_v12_t));
+        memset(&mNewAttV12, 0, sizeof(adehaze_sw_v12_t));
 #endif
     };
     virtual ~RkAiqCamGroupAdehazeHandleInt() { RkAiqCamgroupHandle::deInit(); };
     virtual XCamReturn updateConfig(bool needSync);
 #if RKAIQ_HAVE_DEHAZE_V10
-    XCamReturn setAttribV10(const adehaze_sw_V10_t* att);
-    XCamReturn getAttribV10(adehaze_sw_V10_t* att);
+    XCamReturn setAttribV10(const adehaze_sw_v10_t* att);
+    XCamReturn getAttribV10(adehaze_sw_v10_t* att);
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
-    XCamReturn setAttribV11(const adehaze_sw_V11_t* att);
-    XCamReturn getAttribV11(adehaze_sw_V11_t* att);
+    XCamReturn setAttribV11(const adehaze_sw_v11_t* att);
+    XCamReturn getAttribV11(adehaze_sw_v11_t* att);
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
-    XCamReturn setAttribV12(const adehaze_sw_V12_t* att);
-    XCamReturn getAttribV12(adehaze_sw_V12_t* att);
+    XCamReturn setAttribV12(const adehaze_sw_v12_t* att);
+    XCamReturn getAttribV12(adehaze_sw_v12_t* att);
 #endif
 protected:
 private:
 // TODO
 #if RKAIQ_HAVE_DEHAZE_V10
-    adehaze_sw_V10_t mCurAttV10;
-    adehaze_sw_V10_t mNewAttV10;
+    adehaze_sw_v10_t mCurAttV10;
+    adehaze_sw_v10_t mNewAttV10;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
-    adehaze_sw_V11_t mCurAttV11;
-    adehaze_sw_V11_t mNewAttV11;
+    adehaze_sw_v11_t mCurAttV11;
+    adehaze_sw_v11_t mNewAttV11;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
-    adehaze_sw_V12_t mCurAttV12;
-    adehaze_sw_V12_t mNewAttV12;
+    adehaze_sw_v12_t mCurAttV12;
+    adehaze_sw_v12_t mNewAttV12;
 #endif
 };
 

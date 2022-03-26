@@ -139,7 +139,7 @@ typedef rk_aiq_isp_params_t<rk_aiq_isp_baynr_v32_t>           rk_aiq_isp_baynr_p
 typedef rk_aiq_isp_params_t<rk_aiq_isp_cac_v32_t>             rk_aiq_isp_cac_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_debayer_v32_t>         rk_aiq_isp_debayer_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_ccm_cfg_v2_t>              rk_aiq_isp_ccm_params_v32_t;
-typedef rk_aiq_isp_params_t<rk_aiq_isp_ldch_v32_t>            rk_aiq_isp_ldch_params_v32_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_ldch_v21_t>            rk_aiq_isp_ldch_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_ynr_v32_t>             rk_aiq_isp_ynr_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_cnr_v32_t>             rk_aiq_isp_cnr_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_sharp_v32_t>           rk_aiq_isp_sharp_params_v32_t;

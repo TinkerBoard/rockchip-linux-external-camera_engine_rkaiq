@@ -309,7 +309,7 @@ prepare(RkAiqAlgoCom* params)
     ldchCtx->share_mem_ops = rkaiqAldchConfig->mem_ops_ptr;
 
     bool config_calib = !!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB);
-    if (config_calib && ldchCtx->genLdchMeshInit) {
+    if (config_calib) {
         updateCalibConfig(params);
         return XCAM_RETURN_NO_ERROR;
     }

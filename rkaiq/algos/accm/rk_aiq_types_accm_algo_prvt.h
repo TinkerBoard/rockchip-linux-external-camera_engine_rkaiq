@@ -61,27 +61,26 @@ typedef struct prob_node_s {
     float prob;
 } prob_node_t;
 
-typedef struct AccmFullParam_s {
-    union {
-        const CalibDbV2_Ccm_Para_V2_t* ccm_v1;
-        const CalibDbV2_Ccm_Para_V32_t* ccm_v2;
-    };
-} AccmFullParam_t;
 
 typedef struct accm_context_s {
-    AccmFullParam_t calibV2Ccm;  // json para
+#if RKAIQ_HAVE_CCM_V1
+    const CalibDbV2_Ccm_Para_V2_t* ccm_v1;
+    rk_aiq_ccm_cfg_t ccmHwConf;
+    rk_aiq_ccm_attrib_t mCurAtt;
+    rk_aiq_ccm_attrib_t mNewAtt;
+#endif
+#if RKAIQ_HAVE_CCM_V2
+    const CalibDbV2_Ccm_Para_V32_t* ccm_v2;
+    rk_aiq_ccm_cfg_v2_t ccmHwConf_v2;
+    rk_aiq_ccm_v2_attrib_t mCurAttV2;
+    rk_aiq_ccm_v2_attrib_t mNewAttV2;
+#endif
     const CalibDbV2_Ccm_Ccm_Matrix_Para_t *pCcmMatrixAll[CCM_ILLUMINATION_MAX][CCM_PROFILES_NUM_MAX];// reorder para //to do, change to pointer
     accm_sw_info_t accmSwInfo;
     accm_rest_t accmRest;
-    union {
-        rk_aiq_ccm_cfg_t ccmHwConf;        // hw para
-        rk_aiq_ccm_cfg_v2_t ccmHwConf_v2;  // hw para
-    };
-
     unsigned int count;
+    CalibDbV2_Ccm_Tuning_Para_t ccm_tune;
     //ctrl & api
-    rk_aiq_ccm_attrib_t mCurAtt;
-    rk_aiq_ccm_attrib_t mNewAtt;
     bool updateAtt;
     bool update;
     bool calib_update;

@@ -36,8 +36,8 @@ typedef enum dehaze_api_mode_s {
     DEHAZE_API_MANUAL = 1, /**< run manual mode*/
 } dehaze_api_mode_t;
 
-typedef struct adehaze_sw_V10_s {
-} adehaze_sw_V10_t;
+typedef struct adehaze_sw_v10_s {
+} adehaze_sw_v10_t;
 
 // dehaze v11
 typedef struct mDehazeDataV11_s {
@@ -64,7 +64,7 @@ typedef struct mDehazeDataV11_s {
     float space_sigma_cur;
 } mDehazeDataV11_t;
 
-typedef struct mDehaze_Setting_V11_s {
+typedef struct mDehaze_setting_v11_s {
     bool en;
     bool air_lc_en;
     float stab_fnum;
@@ -74,18 +74,18 @@ typedef struct mDehaze_Setting_V11_s {
     float tmax_sigma;
     float pre_wet;
     mDehazeDataV11_t DehazeData;
-} mDehaze_Setting_V11_t;
+} mDehaze_setting_v11_t;
 
 typedef struct mEnhanceDataV11_s {
     float enhance_value;
     float enhance_chroma;
 } mEnhanceDataV11_t;
 
-typedef struct mEnhance_Setting_V11_s {
+typedef struct mEnhance_setting_v11_s {
     bool en;
     float enhance_curve[CALIBDB_ADEHAZE_ENHANCE_CURVE_KNOTS_NUM];
     mEnhanceDataV11_t EnhanceData;
-} mEnhance_Setting_V11_t;
+} mEnhance_setting_v11_t;
 
 typedef struct mHistDataV11_s {
     float hist_gratio;
@@ -96,18 +96,19 @@ typedef struct mHistDataV11_s {
     float cfg_gratio;
 } mHistDataV11_t;
 
-typedef struct mHist_setting_V11_s {
+typedef struct mHist_setting_v11_s {
     bool en;
     bool hist_para_en;
     mHistDataV11_t HistData;
-} mHist_setting_V11_t;
+} mHist_setting_v11_t;
 
 typedef struct mDehazeAttrV11_s {
     bool Enable;
     float cfg_alpha;
-    mDehaze_Setting_V11_t dehaze_setting;
-    mEnhance_Setting_V11_t enhance_setting;
-    mHist_setting_V11_t hist_setting;
+    mDehaze_setting_v11_t dehaze_setting;
+    mEnhance_setting_v11_t enhance_setting;
+    mHist_setting_v11_t hist_setting;
+    double sigma_curve[5];
 } mDehazeAttrV11_t;
 
 typedef struct mDehazeAttrInfoV11_s {
@@ -118,40 +119,41 @@ typedef struct mDehazeAttrInfoV11_s {
     unsigned int MEnhanceChromeStrth;
 } mDehazeAttrInfoV11_t;
 
-typedef struct adehaze_sw_V11_s {
+typedef struct adehaze_sw_v11_s {
     rk_aiq_uapi_sync_t sync;
 
     dehaze_api_mode_t mode;
-    CalibDbV2_dehaze_V11_t stAuto;
+    CalibDbV2_dehaze_v11_t stAuto;
     mDehazeAttrV11_t stManual;
     mDehazeAttrInfoV11_t Info;
-} adehaze_sw_V11_t;
+} adehaze_sw_v11_t;
 
 // dehaze v12
-typedef struct mEnhance_Setting_V12_s {
+typedef struct mEnhance_setting_v12_s {
     bool en;
     bool color_deviate_en;
     bool enh_luma_en;
     float enhance_curve[CALIBDB_ADEHAZE_ENHANCE_CURVE_KNOTS_NUM];
     float enh_luma[CALIBDB_ADEHAZE_ENHANCE_CURVE_KNOTS_NUM];
     mEnhanceDataV11_t EnhanceData;
-} mEnhance_Setting_V12_t;
+} mEnhance_setting_v12_t;
 
 typedef struct mDehazeAttrV12_s {
     bool Enable;
     float cfg_alpha;
-    mDehaze_Setting_V11_t dehaze_setting;
-    mEnhance_Setting_V12_t enhance_setting;
-    mHist_setting_V11_t hist_setting;
+    mDehaze_setting_v11_t dehaze_setting;
+    mEnhance_setting_v12_t enhance_setting;
+    mHist_setting_v11_t hist_setting;
+    double sigma_curve[5];
 } mDehazeAttrV12_t;
 
-typedef struct adehaze_sw_V12_s {
+typedef struct adehaze_sw_v12_s {
     rk_aiq_uapi_sync_t sync;
 
     dehaze_api_mode_t mode;
-    CalibDbV2_dehaze_V12_t stAuto;
+    CalibDbV2_dehaze_v12_t stAuto;
     mDehazeAttrV12_t stManual;
     mDehazeAttrInfoV11_t Info;
-} adehaze_sw_V12_t;
+} adehaze_sw_v12_t;
 
 #endif

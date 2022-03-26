@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "agic/rk_aiq_algo_agic_itf.h"
+#include "algos/agic/rk_aiq_algo_agic_itf.h"
 
-#include "agic/rk_aiq_types_algo_agic_prvt.h"
-#include "rk_aiq_algo_types.h"
+#include "algos/agic/rk_aiq_types_algo_agic_prvt.h"
+#include "algos/rk_aiq_algo_types.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -61,11 +61,13 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
             CalibDbV2_Gic_V20_t* calibv2_agic_calib_V20 =
                 (CalibDbV2_Gic_V20_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, agic_calib_v20));
             pAgicCtx->full_param.gic_v20 = calibv2_agic_calib_V20;
+            GicV1CalibToAttr(calibv2_agic_calib_V20, &pAgicCtx->attr.v1);
 #endif
 #if RKAIQ_HAVE_GIC_V2
             CalibDbV2_Gic_V21_t* calibv2_agic_calib_V21 =
                 (CalibDbV2_Gic_V21_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, agic_calib_v21));
             pAgicCtx->full_param.gic_v21 = calibv2_agic_calib_V21;
+            GicV2CalibToAttr(calibv2_agic_calib_V21, &pAgicCtx->attr.v2);
 #endif
 
         pAgicCtx->calib_changed = true;
@@ -120,6 +122,9 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
 }
 
 static XCamReturn post_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
+    (void)(inparams);
+    (void)(outparams);
+
     return XCAM_RETURN_NO_ERROR;
 }
 

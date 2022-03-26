@@ -438,11 +438,9 @@ XCamReturn Damping
     return ( result );
 }
 
-void Saturationadjust(float fScale, accm_handle_t hAccm )
+void Saturationadjust(float fScale, float flevel1, float *pccMatrixA)
 {
-    float *pccMatrixA;
     float  Matrix_tmp[9];
-    float flevel1 = hAccm->accmRest.color_saturation_level;
     if (fScale < DIVMIN) {
         if(fabs((flevel1-50))>DIVMIN){
             LOGW_ACCM("fSclae is  %f, so saturation adjust bypass\n", fScale);
@@ -450,7 +448,6 @@ void Saturationadjust(float fScale, accm_handle_t hAccm )
      } else {
         flevel1 = (flevel1 - 50) / 50 + 1;
         LOGV_ACCM("Satura: %f \n", flevel1);
-        pccMatrixA = hAccm->accmRest.undampedCcmMatrix;
         memcpy(&Matrix_tmp, pccMatrixA, sizeof(Matrix_tmp));
         float *pccMatrixB;
         pccMatrixB = Matrix_tmp;
@@ -808,6 +805,44 @@ bool JudgeCcmRes3aConverge
     }
 
     return (gain_upd || wbgain_upd);
+}
+
+/**************************************************
+  * ReloadCCMCalibV2
+  *      config ccm_tune used new CalibV2 json para
+***************************************************/
+
+XCamReturn ReloadCCMCalibV2(accm_handle_t hAccm, const CalibDbV2_Ccm_Tuning_Para_t* TuningPara)
+{
+    CalibDbV2_Ccm_Tuning_Para_t *stCcm = &hAccm->ccm_tune;
+    if (stCcm == NULL){
+        LOGE_ACCM("%s: ccm_tune is NULL !!!", __FUNCTION__);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+    bool clearillu = 0;
+    if (TuningPara->aCcmCof_len != stCcm->aCcmCof_len)
+        clearillu = 1;
+    else {
+        int findillu = 0;
+        for (int i = 0; i < stCcm->aCcmCof_len; i++){
+            for (int j = 0; j < stCcm->aCcmCof_len; j++){
+                if (strcmp(stCcm->aCcmCof[i].name, TuningPara->aCcmCof[i].name) == 0){
+                    findillu = 1;
+                    if (0 != memcmp(stCcm->aCcmCof[i].awbGain, TuningPara->aCcmCof[i].awbGain, 2*sizeof(float))){
+                        clearillu = 1;
+                        LOGI_ACCM( "%s: awbGain in aCcmCof has been changed. \n", TuningPara->aCcmCof[i].name);
+                        break;
+                    }
+                }
+            }
+            if (findillu == 0) clearillu = 1;
+            if (clearillu == 1) break;
+        }
+    }
+    if (clearillu == 1)
+        ClearList(&hAccm->accmRest.dominateIlluList);
+    hAccm->ccm_tune = *TuningPara;
+    return (XCAM_RETURN_NO_ERROR);
 }
 
 

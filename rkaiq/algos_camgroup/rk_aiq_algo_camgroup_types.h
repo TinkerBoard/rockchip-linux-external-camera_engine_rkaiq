@@ -32,6 +32,7 @@ typedef struct rk_aiq_singlecam_3a_result_s {
     struct {
         RKAiqAecExpInfo_t* exp_tbl;
         int* exp_tbl_size;
+        RKAiqExpI2cParam_t* exp_i2c_params;
         rk_aiq_ae_meas_params_t* _aeMeasParams;
         rk_aiq_hist_meas_params_t* _aeHistMeasParams;
         XCamVideoBuffer* _aecStats;
@@ -57,8 +58,8 @@ typedef struct rk_aiq_singlecam_3a_result_s {
     rk_aiq_lut3d_cfg_t* _lut3dCfg;
     RkAiqAdehazeProcResult_t* _adehazeConfig;
     AgammaProcRes_t* _agammaConfig;
-	RkAiqAdrcProcResult_t* _adrcConfig;
-	RkAiqAmergeProcResult_t* _amergeConfig;
+    RkAiqAdrcProcResult_t* _adrcConfig;
+    RkAiqAmergeProcResult_t* _amergeConfig;
     rk_aiq_isp_blc_v21_t * _blcConfig;
     struct {
         union {

@@ -280,7 +280,7 @@ RkAiqCamGroupManager::setSingleCamStatusReady(rk_aiq_singlecam_result_status_t* 
         }
         // init params is reprocessed in func prepare
         if (mState == CAMGROUP_MANAGER_STARTED) {
-            LOGD_CAMGROUP("send frameId:%d ",gc_result->_frameId);
+            LOGD_CAMGROUP("send frameId:%d ", gc_result->_frameId);
             mCamGroupReprocTh->sendFrame(gc_result);
         }
     } else {
@@ -875,6 +875,7 @@ RkAiqCamGroupManager::reProcess(rk_aiq_groupcam_result_t* gc_res)
             if ((aiqParams->mExposureParams.ptr())) {
                 scam_3a_res->aec.exp_tbl = aiqParams->mExposureParams->data()->exp_tbl;
                 scam_3a_res->aec.exp_tbl_size = &aiqParams->mExposureParams->data()->exp_tbl_size;
+                scam_3a_res->aec.exp_i2c_params = &aiqParams->mExposureParams->data()->exp_i2c_params;
             } else {
                 LOGW_CAMGROUP("camId:%d, framId:%d, exp is null", i, gc_res->_frameId);
                 // frame 1,2 exp may be null now

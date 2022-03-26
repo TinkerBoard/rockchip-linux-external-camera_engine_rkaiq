@@ -421,7 +421,16 @@ void AmergeTuningProcessing(AmergeContext_t* pAmergeCtx) {
                 pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.MDCurve
                     .MoveCoef_len);
 
-            // get Current merge each channel
+            pAmergeCtx->CurrData.CtrlData.MergeOEDamp =
+                pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.OECurve_damp;
+            pAmergeCtx->CurrData.CtrlData.MergeMDDampLM =
+                pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.MDCurveLM_damp;
+            pAmergeCtx->CurrData.CtrlData.MergeMDDampMS =
+                pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.MDCurveMS_damp;
+
+            // merge v12 add, get Current merge each channel
+            pAmergeCtx->CurrData.HandleData.Merge_v12.EnableEachChn =
+                pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.EnableEachChn;
             pAmergeCtx->CurrData.HandleData.Merge_v12.EachChnCurve_smooth = GetCurrPara(
                 pAmergeCtx->CurrData.CtrlData.EnvLv,
                 pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.EachChnCurve.EnvLv,
@@ -434,15 +443,6 @@ void AmergeTuningProcessing(AmergeContext_t* pAmergeCtx) {
                 pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.EachChnCurve.Offset,
                 pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.EachChnCurve
                     .EnvLv_len);
-
-            pAmergeCtx->CurrData.HandleData.Merge_v12.EnableEachChn =
-                pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.EnableEachChn;
-            pAmergeCtx->CurrData.CtrlData.MergeOEDamp =
-                pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.OECurve_damp;
-            pAmergeCtx->CurrData.CtrlData.MergeMDDampLM =
-                pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.MDCurveLM_damp;
-            pAmergeCtx->CurrData.CtrlData.MergeMDDampMS =
-                pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.LongFrmModeData.MDCurveMS_damp;
         } else if (pAmergeCtx->mergeAttrV12.stAuto.MergeTuningPara.BaseFrm == BASEFRAME_SHORT) {
             // get Current merge OECurve
             pAmergeCtx->CurrData.HandleData.Merge_v12.OECurve_smooth = GetCurrPara(
@@ -602,27 +602,58 @@ void AmergeExpoProcessing(AmergeContext_t* pAmergeCtx, MergeExpoData_t* pExpoDat
         SW_HDRMGE_GAIN_FIX;  // ratio between middle and long
 
     LOGV_AMERGE(
-        "%s: sw_hdrmge_mode:%d sw_hdrmge_ms_dif_0p8:%d sw_hdrmge_lm_dif_0p9:%d "
-        "sw_hdrmge_ms_dif_0p15:%d sw_hdrmge_lm_dif_0p15:%d\n",
-        __FUNCTION__, pAmergeCtx->ProcRes.Merge_v12.mode, pAmergeCtx->ProcRes.Merge_v12.ms_dif_0p8,
-        pAmergeCtx->ProcRes.Merge_v12.lm_dif_0p9, pAmergeCtx->ProcRes.Merge_v12.ms_dif_0p15,
-        pAmergeCtx->ProcRes.Merge_v12.lm_dif_0p15);
-    LOGV_AMERGE(
         "%s: nextRatioLS:%f sw_hdrmge_gain0:%d sw_hdrmge_gain0_inv:%d nextRatioLM:%f "
         "sw_hdrmge_gain1:%d sw_hdrmge_gain1_inv:%d sw_hdrmge_gain2:%d\n",
         __FUNCTION__, pExpoData->nextRatioLS, pAmergeCtx->ProcRes.Merge_v12.gain0,
         pAmergeCtx->ProcRes.Merge_v12.gain0_inv, pExpoData->nextRatioLM,
         pAmergeCtx->ProcRes.Merge_v12.gain1, pAmergeCtx->ProcRes.Merge_v12.gain1_inv,
         pAmergeCtx->ProcRes.Merge_v12.gain2);
-    LOGV_AMERGE("%s: each_raw_gain0:%d each_raw_gain1:%d\n", __FUNCTION__,
-                pAmergeCtx->ProcRes.Merge_v12.each_raw_gain0,
-                pAmergeCtx->ProcRes.Merge_v12.each_raw_gain1);
-    LOGV_AMERGE("%s: sw_hdrmge_ms_thd0:%d sw_hdrmge_ms_thd1:%d sw_hdrmge_ms_scl:%d\n", __FUNCTION__,
-                pAmergeCtx->ProcRes.Merge_v12.ms_thd0, pAmergeCtx->ProcRes.Merge_v12.ms_thd1,
-                pAmergeCtx->ProcRes.Merge_v12.ms_scl);
-    LOGV_AMERGE("%s: sw_hdrmge_lm_thd0:%d sw_hdrmge_lm_thd1:%d sw_hdrmge_lm_scl:%d\n", __FUNCTION__,
-                pAmergeCtx->ProcRes.Merge_v12.lm_thd0, pAmergeCtx->ProcRes.Merge_v12.lm_thd1,
-                pAmergeCtx->ProcRes.Merge_v12.lm_scl);
+    LOGV_AMERGE("%s: sw_hdrmge_mode:%d s_base:%d each_raw_en:%d\n", __FUNCTION__,
+                pAmergeCtx->ProcRes.Merge_v12.mode, pAmergeCtx->ProcRes.Merge_v12.s_base,
+                pAmergeCtx->ProcRes.Merge_v12.each_raw_en);
+    if (!(pAmergeCtx->ProcRes.Merge_v12.s_base)) {
+        LOGV_AMERGE(
+            "%s: sw_hdrmge_mode:%d sw_hdrmge_ms_dif_0p8:%d sw_hdrmge_lm_dif_0p9:%d "
+            "sw_hdrmge_ms_dif_0p15:%d sw_hdrmge_lm_dif_0p15:%d\n",
+            __FUNCTION__, pAmergeCtx->ProcRes.Merge_v12.ms_dif_0p8,
+            pAmergeCtx->ProcRes.Merge_v12.lm_dif_0p9, pAmergeCtx->ProcRes.Merge_v12.ms_dif_0p15,
+            pAmergeCtx->ProcRes.Merge_v12.lm_dif_0p15);
+
+        if (pAmergeCtx->ProcRes.Merge_v12.each_raw_en) {
+            LOGV_AMERGE("%s: each_raw_gain0:%d each_raw_gain1:%d\n", __FUNCTION__,
+                        pAmergeCtx->ProcRes.Merge_v12.each_raw_gain0,
+                        pAmergeCtx->ProcRes.Merge_v12.each_raw_gain1);
+            LOGV_AMERGE(
+                "%s: sw_hdrmge_l_raw0: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                __FUNCTION__, pAmergeCtx->ProcRes.Merge_v12.l0_y[0],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw0[1], pAmergeCtx->ProcRes.Merge_v12.l_raw0[2],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw0[3], pAmergeCtx->ProcRes.Merge_v12.l_raw0[4],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw0[5], pAmergeCtx->ProcRes.Merge_v12.l_raw0[6],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw0[7], pAmergeCtx->ProcRes.Merge_v12.l_raw0[8],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw0[9], pAmergeCtx->ProcRes.Merge_v12.l_raw0[10],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw0[11], pAmergeCtx->ProcRes.Merge_v12.l_raw0[12],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw0[13], pAmergeCtx->ProcRes.Merge_v12.l_raw0[14],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw0[15], pAmergeCtx->ProcRes.Merge_v12.l_raw0[16]);
+            LOGV_AMERGE(
+                "%s: sw_hdrmge_l_raw1: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                __FUNCTION__, pAmergeCtx->ProcRes.Merge_v12.l1_y[0],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw1[1], pAmergeCtx->ProcRes.Merge_v12.l_raw1[2],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw1[3], pAmergeCtx->ProcRes.Merge_v12.l_raw1[4],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw1[5], pAmergeCtx->ProcRes.Merge_v12.l_raw1[6],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw1[7], pAmergeCtx->ProcRes.Merge_v12.l_raw1[8],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw1[9], pAmergeCtx->ProcRes.Merge_v12.l_raw1[10],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw1[11], pAmergeCtx->ProcRes.Merge_v12.l_raw1[12],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw1[13], pAmergeCtx->ProcRes.Merge_v12.l_raw1[14],
+                pAmergeCtx->ProcRes.Merge_v12.l_raw1[15], pAmergeCtx->ProcRes.Merge_v12.l_raw1[16]);
+        }
+    } else {
+        LOGV_AMERGE("%s: sw_hdrmge_ms_thd0:%d sw_hdrmge_ms_thd1:%d sw_hdrmge_ms_scl:%d\n",
+                    __FUNCTION__, pAmergeCtx->ProcRes.Merge_v12.ms_thd0,
+                    pAmergeCtx->ProcRes.Merge_v12.ms_thd1, pAmergeCtx->ProcRes.Merge_v12.ms_scl);
+        LOGV_AMERGE("%s: sw_hdrmge_lm_thd0:%d sw_hdrmge_lm_thd1:%d sw_hdrmge_lm_scl:%d\n",
+                    __FUNCTION__, pAmergeCtx->ProcRes.Merge_v12.lm_thd0,
+                    pAmergeCtx->ProcRes.Merge_v12.lm_thd1, pAmergeCtx->ProcRes.Merge_v12.lm_scl);
+    }
     LOGV_AMERGE("%s: sw_hdrmge_e_y: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
                 __FUNCTION__, pAmergeCtx->ProcRes.Merge_v12.e_y[0],
                 pAmergeCtx->ProcRes.Merge_v12.e_y[1], pAmergeCtx->ProcRes.Merge_v12.e_y[2],

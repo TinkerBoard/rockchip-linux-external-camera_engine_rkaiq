@@ -154,7 +154,7 @@ void CalibrateDrcGainYV11(DrcProcRes_t* para, float DraGain, float alpha) {
  *set default Config data
  *****************************************************************************/
 void SetDefaultValueV11(AdrcContext_t* pAdrcCtx) {
-    LOGI_ATMO("%s:enter!\n", __FUNCTION__);
+    LOG1_ATMO("%s:enter!\n", __FUNCTION__);
 
     // initial checks
     DCT_ASSERT(pAdrcCtx != NULL);

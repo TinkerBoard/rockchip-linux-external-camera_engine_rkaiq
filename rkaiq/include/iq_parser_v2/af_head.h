@@ -303,11 +303,11 @@ typedef struct CalibDbV2_Af_ZoomFocusTbl_s {
     // M4_ARRAY_DESC("zoom code", "s16", M4_SIZE(1,5000), M4_RANGE(-32768,32767), "0", M4_DIGIT(0), M4_DYNAMIC(1), M4_HIDE(1))
     short *zoomcode;
     int zoomcode_len;
-    // M4_STRUCT_LIST_DESC("focus code", M4_SIZE_DYNAMIC, "normal_ui_style", M4_HIDE(1))
+    // M4_STRUCT_LIST_DESC("focus code", M4_SIZE_DYNAMIC, "normal_ui_style", "0", M4_HIDE(1))
     CalibDbV2_Af_FocusCode_t *focuscode;
     int focuscode_len;
 
-    // M4_ARRAY_DESC("zoom search table", "s32", M4_SIZE(1,100), M4_RANGE(-32768,32767), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("zoom search table", "s32", M4_SIZE(1,32), M4_RANGE(-32768,32767), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     int *ZoomSearchTbl;
     // M4_NUMBER_DESC("zoom search table number", "u32", M4_RANGE(0, 100), "0", M4_DIGIT(0))
     int ZoomSearchTbl_len;
@@ -315,7 +315,7 @@ typedef struct CalibDbV2_Af_ZoomFocusTbl_s {
     int ZoomSearchRefCurveIdx;
     // M4_NUMBER_DESC("zoom search margin", "u32", M4_RANGE(0, 100000), "0", M4_DIGIT(0))
     int FocusSearchMargin;
-    // M4_ARRAY_DESC("zoom search plus range", "u32", M4_SIZE(1,100), M4_RANGE(0,32767), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("zoom search plus range", "u32", M4_SIZE(1,32), M4_RANGE(0,32767), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     int *FocusSearchPlusRange;
     int FocusSearchPlusRange_len;
     // M4_NUMBER_DESC("focus stage1 step", "u32", M4_RANGE(0, 100), "0", M4_DIGIT(0))
@@ -487,7 +487,7 @@ typedef struct CalibDbV2_AfV30_MeasCfg_s {
 } CalibDbV2_AfV30_MeasCfg_t;
 
 typedef struct CalibDbV2_AfV30_IsoMeasCfg_s {
-    // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(0), M4_DYNAMIC(1), "index2")
+    // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(0), "index2", "0", M4_DYNAMIC(1))
     float iso;
     // M4_NUMBER_DESC("meas table index", "u32", M4_RANGE(0, 100), "0", M4_DIGIT(0))
     int idx;
@@ -496,7 +496,7 @@ typedef struct CalibDbV2_AfV30_IsoMeasCfg_s {
 } CalibDbV2_AfV30_IsoMeasCfg_t;
 
 typedef struct CalibDbV2_AfV30_ZoomMeas_s {
-    // M4_NUMBER_MARK_DESC("zoom index", "u32", M4_RANGE(0, 100000), "0", M4_DIGIT(0), M4_DYNAMIC(1), "index1")
+    // M4_NUMBER_MARK_DESC("zoom index", "u32", M4_RANGE(0, 100000), "0", M4_DIGIT(0), "index1", "0", M4_DYNAMIC(1))
     int zoom_idx;
     // M4_STRUCT_LIST_DESC("meas iso config", M4_SIZE_DYNAMIC, "double_index_list")
     CalibDbV2_AfV30_IsoMeasCfg_t *measiso;
@@ -570,7 +570,7 @@ typedef struct CalibDbV2_AfV31_MeasCfg_s {
     unsigned short afmThres;
     // M4_ARRAY_MARK_DESC("Gamma Curve", "u16", M4_SIZE(1,17),  M4_RANGE(0, 1023), "[0,45,108,179,245,344,409,459,500,567,622,676,759,833,896,962,1023]", M4_DIGIT(0), M4_DYNAMIC(0), "curve_table")
     unsigned short gammaY[17];
-    // M4_ARRAY_DESC("gaus coe", "s16", M4_SIZE(1,9), M4_RANGE(-128, 127), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("gaus coe", "s16", M4_SIZE(3,3), M4_RANGE(-128, 127), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     short gaus_coe[9];
     // M4_ENUM_DESC("downscale mode", "CalibDbV2_AF_DNSCL_MODE_t", "CalibDbV2_AF_DNSCL_DISABLE")
     CalibDbV2_AF_DNSCL_MODE_t dnscl_mode;
@@ -634,7 +634,7 @@ typedef struct CalibDbV2_AfV31_MeasCfg_s {
     unsigned short v_fv_thresh;
     // M4_NUMBER_DESC("horizontal fv thresh", "u16", M4_RANGE(0, 4095), "0", M4_DIGIT(0))
     unsigned short h_fv_thresh;
-    // M4_NUMBER_DESC("highlight thresh", "u16", M4_RANGE(0, 4095), "0", M4_DIGIT(0))
+    // M4_NUMBER_DESC("highlight thresh", "u16", M4_RANGE(0, 1023), "0", M4_DIGIT(0))
     unsigned short highlit_thresh;
     // M4_NUMBER_DESC("vertical fv ratio", "f32", M4_RANGE(0, 1), "0.5", M4_DIGIT(3))
     float v_fv_ratio;

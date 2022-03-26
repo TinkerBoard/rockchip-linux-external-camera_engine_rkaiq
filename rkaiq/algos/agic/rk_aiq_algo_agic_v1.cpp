@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "rk_aiq_types_algo_agic_prvt.h"
+#include "algos/agic/rk_aiq_types_algo_agic_prvt.h"
 
 #define INTERPOLATION(ratio, hi, lo)    (((ratio) * ((hi) - (lo)) + (lo) * (1 << 4) + (1 << 3)) >> 4)
 #define INTERPOLATION_F(ratioF, hi, lo) ((ratioF) * ((hi) - (lo)) + (lo))
 
-inline static void GicV1CalibToAttr(CamCalibDbV2Context_t* calib, rkaiq_gic_v1_api_attr_t* attr) {
-    CalibDbV2_Gic_V20_t* db =
-        (CalibDbV2_Gic_V20_t*)(CALIBDBV2_GET_MODULE_PTR(calib, agic_calib_v20));
+void GicV1CalibToAttr(CalibDbV2_Gic_V20_t* calib, rkaiq_gic_v1_api_attr_t* attr) {
+    CalibDbV2_Gic_V20_t* db = calib;
     Gic_setting_v20_t* settings = &db->GicTuningPara.GicData;
     XCAM_ASSERT(RKAIQ_GIC_MAX_ISO_CNT >= settings->ISO_len);
     attr->gic_en       = db->GicTuningPara.enable;
@@ -157,6 +156,9 @@ void GicV1SetManualParam(AgicConfigV20_t* selected,
 }
 
 void GicV1DumpReg(const rkaiq_gic_v1_hw_param_t* hw_param) {
+#ifdef NDEBUG
+    (void)(hw_param);
+#endif
     LOG1_AGIC(
         " GIC V1 reg values: "
         " regmingradthrdark2 %d"
@@ -204,7 +206,9 @@ XCamReturn AgicInit(AgicContext_t* pAgicCtx, CamCalibDbV2Context_t* calib) {
     memset(pAgicCtx, 0, sizeof(AgicContext_t));
     pAgicCtx->state = AGIC_STATE_INITIALIZED;
 
-    GicV1CalibToAttr(calib, &pAgicCtx->attr.v1);
+    CalibDbV2_Gic_V20_t* calibv2_agic_calib_V20 =
+        (CalibDbV2_Gic_V20_t*)(CALIBDBV2_GET_MODULE_PTR(calib, agic_calib_v20));
+    GicV1CalibToAttr(calibv2_agic_calib_V20, &pAgicCtx->attr.v1);
     pAgicCtx->attr.v1.op_mode = RKAIQ_GIC_API_OPMODE_AUTO;
 
     pAgicCtx->calib_changed = true;
@@ -401,6 +405,8 @@ void AgicProcessV20(AgicContext_t* pAgicCtx, int ISO) {
 }
 
 XCamReturn AgicProcess(AgicContext_t* pAgicCtx, int ISO, int mode) {
+    (void)(mode);
+
     LOG1_AGIC("enter!");
 
     AgicProcessV20(pAgicCtx, ISO);

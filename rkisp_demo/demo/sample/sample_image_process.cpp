@@ -40,6 +40,7 @@
 #include "sample_ablc_module.h"
 #include "sample_agic_module.h"
 #include "sample_aldch_module.h"
+#include "sample_aldch_v21_module.h"
 #include "sample_adebayer_module.h"
 #include "sample_alsc_module.h"
 #include "sample_acp_module.h"
@@ -87,6 +88,8 @@ static struct module_sample_info module_samples[] = {
     MODULE_INFO(RK_ISP_CGC, sample_cgc_module, sample_print_cgc_info),
     MODULE_INFO(RK_ISP_CAC, sample_cac_module, sample_print_cac_info),
     MODULE_INFO(RK_ISP_AGAIN, sample_again_module, sample_print_again_info),
+    MODULE_INFO(RK_ISP_ACCM_V2, sample_accm_v2_module, sample_print_accm_v2_info),
+    MODULE_INFO(RK_ISP_ALDCH_V21, sample_aldch_v21_module, sample_print_aldch_v21_info),
 };
 
 static void sample_usage()
@@ -118,8 +121,10 @@ static void sample_usage()
     printf("\t l) AIE:        module test sample.\n");
     printf("\t m) CGC:        module test sample.\n");
     printf("\t n) CAC:        module test sample.\n");
-    printf("\t n) AGAIN:      module test sample.\n");
+    printf("\t o) AGAIN:      module test sample.\n");
     printf("\t p) AWBV32:     module test sample.\n");
+    printf("\t r) CCMV2:      module test sample.\n");
+    printf("\t s) ALDCHV32:  module test sample.\n");
     printf("\n");
     printf("\t please press the key: ");
 
@@ -303,6 +308,18 @@ XCamReturn sample_main (const void *arg)
     }
     case 'p': {
         struct module_sample_info *info = &module_samples[RK_ISP_AWB32];
+        info->debug (nullptr);
+        info->func (arg);
+        break;
+    }
+    case 'r': {
+        struct module_sample_info *info = &module_samples[RK_ISP_ACCM_V2];
+        info->debug (nullptr);
+        info->func (arg);
+        break;
+    }
+    case 's': {
+        struct module_sample_info *info = &module_samples[RK_ISP_ALDCH_V21];
         info->debug (nullptr);
         info->func (arg);
         break;

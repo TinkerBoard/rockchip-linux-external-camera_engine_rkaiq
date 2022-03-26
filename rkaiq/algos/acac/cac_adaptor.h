@@ -69,6 +69,8 @@ class CacAlgoAdaptor {
 
     void OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcResAcac* output);
 
+    const AlgoCtxInstanceCfg* GetConfig() { return ctx_config_; }
+
  private:
     bool enable_  = false;
     bool started_ = false;
@@ -77,6 +79,7 @@ class CacAlgoAdaptor {
     std::unique_ptr<LutBufferManager> lut_manger_;
     std::vector<std::unique_ptr<LutBuffer>> current_lut_ = {};
 
+    const AlgoCtxInstanceCfg* ctx_config_ = nullptr;
     const RkAiqAlgoConfigAcac* config_ = nullptr;
 #if RKAIQ_HAVE_CAC_V03
     const CalibDbV2_Cac_V03_t* calib_ = nullptr;

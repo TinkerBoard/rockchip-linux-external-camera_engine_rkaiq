@@ -49,8 +49,10 @@ public:
                                          SmartPtr<RkAiqOrbStatsProxy>& to);
     virtual XCamReturn translateAtmoStats(const SmartPtr<VideoBuffer>& from,
                                           SmartPtr<RkAiqAtmoStatsProxy>& to);
+#if RKAIQ_HAVE_DEHAZE_V10
     virtual XCamReturn translateAdehazeStats(const SmartPtr<VideoBuffer>& from,
                                              SmartPtr<RkAiqAdehazeStatsProxy>& to);
+#endif
     virtual XCamReturn translatePdafStats(const SmartPtr<VideoBuffer>& from,
                                           SmartPtr<RkAiqPdafStatsProxy>& to, bool sns_mirror);
 

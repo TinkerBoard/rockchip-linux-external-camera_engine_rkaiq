@@ -201,7 +201,6 @@ static void set_af_manual_meascfg(const rk_aiq_sys_ctx_t* ctx)
         attr.manual_meascfg_v31.rawaf_sel = 0; // normal = 0; hdr = 1
         attr.manual_meascfg_v31.accu_8bit_mode = 1;
         attr.manual_meascfg_v31.ae_mode = 1;
-        attr.manual_meascfg_v31.sobel_sel = 1;
         attr.manual_meascfg_v31.v_dnscl_mode = 1;
 
         attr.manual_meascfg_v31.window_num = 2;
@@ -403,12 +402,6 @@ static void print_af_stats(rk_aiq_isp_stats_t *stats_ref)
     } else if (stats_ref->af_hw_ver == RKAIQ_AF_HW_V30 || stats_ref->af_hw_ver == RKAIQ_AF_HW_V31) {
         // rk3588 & rk1106
         sof_time = stats_ref->af_stats_v3x.sof_tim / 1000000LL;
-        printf("sof_tim %ld, winb: fv %d, luma %d, highlit_cnt %d\n",
-               sof_time,
-               stats_ref->af_stats_v3x.wndb_sharpness,
-               stats_ref->af_stats_v3x.wndb_luma,
-               stats_ref->af_stats_v3x.winb_highlit_cnt);
-
         printf("wnda_fv_h1\n");
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {

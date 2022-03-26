@@ -158,7 +158,7 @@ void CalibrateDrcGainYV12(DrcProcRes_t* para, float DraGain, bool obEnable, floa
  *set default Config data
  *****************************************************************************/
 void SetDefaultValueV12(AdrcContext_t* pAdrcCtx) {
-    LOGI_ATMO("%s:enter!\n", __FUNCTION__);
+    LOG1_ATMO("%s:enter!\n", __FUNCTION__);
 
     // initial checks
     DCT_ASSERT(pAdrcCtx != NULL);
@@ -454,10 +454,29 @@ void AdrcGetTuningProcResV12(RkAiqAdrcProcResult_t* pAdrcProcRes, CurrData_t* pC
     // drc v12 add
     pAdrcProcRes->DrcProcRes.Drc_v12.gas_t =
         (int)(SHIFT11BIT(pCurrData->HandleData.Drc_v12.gas_t) + 0.5);
+    pAdrcProcRes->DrcProcRes.Drc_v12.gas_t =
+        LIMIT_VALUE(pAdrcProcRes->DrcProcRes.Drc_v12.gas_t, INT13BITMAX, INTMIN);
     pAdrcProcRes->DrcProcRes.Drc_v12.gas_l0 = pCurrData->HandleData.Drc_v12.gas_l0;
     pAdrcProcRes->DrcProcRes.Drc_v12.gas_l1 = pCurrData->HandleData.Drc_v12.gas_l1;
     pAdrcProcRes->DrcProcRes.Drc_v12.gas_l2 = pCurrData->HandleData.Drc_v12.gas_l2;
     pAdrcProcRes->DrcProcRes.Drc_v12.gas_l3 = pCurrData->HandleData.Drc_v12.gas_l3;
+    if (pAdrcProcRes->DrcProcRes.Drc_v12.gas_l0 == GAS_L_MAX) {
+        LOGE_ATMO("%s: gas_l0 equals %d, use default value\n", __FUNCTION__, GAS_L_MAX);
+        pAdrcProcRes->DrcProcRes.Drc_v12.gas_l0 = GAS_L0_DEFAULT;
+        pAdrcProcRes->DrcProcRes.Drc_v12.gas_l1 = GAS_L1_DEFAULT;
+        pAdrcProcRes->DrcProcRes.Drc_v12.gas_l2 = GAS_L2_DEFAULT;
+        pAdrcProcRes->DrcProcRes.Drc_v12.gas_l3 = GAS_L3_DEFAULT;
+    }
+    if ((pAdrcProcRes->DrcProcRes.Drc_v12.gas_l0 + 2 * pAdrcProcRes->DrcProcRes.Drc_v12.gas_l1 +
+         pAdrcProcRes->DrcProcRes.Drc_v12.gas_l2 + 2 * pAdrcProcRes->DrcProcRes.Drc_v12.gas_l3) !=
+        GAS_L_MAX) {
+        LOGE_ATMO("%s: gas_l0 + gas_l1 + gas_l2 + gas_l3 DO NOT equal %d, use default value\n",
+                  __FUNCTION__, GAS_L_MAX);
+        pAdrcProcRes->DrcProcRes.Drc_v12.gas_l0 = GAS_L0_DEFAULT;
+        pAdrcProcRes->DrcProcRes.Drc_v12.gas_l1 = GAS_L1_DEFAULT;
+        pAdrcProcRes->DrcProcRes.Drc_v12.gas_l2 = GAS_L2_DEFAULT;
+        pAdrcProcRes->DrcProcRes.Drc_v12.gas_l3 = GAS_L3_DEFAULT;
+    }
 
     // Long Frame mode
     pAdrcProcRes->LongFrameMode = LongFrmMode;
@@ -724,7 +743,7 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoWeit,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv_len);
-        pAdrcCtx->CurrData.HandleData.Drc_v12.LocalAutoWeit = DrcGetCurrParaV12(
+        pAdrcCtx->CurrData.HandleData.Drc_v12.MotionStr = DrcGetCurrParaV12(
             pAdrcCtx->CurrData.MotionCoef,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.MotionData.MotionCoef,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.MotionData.MotionStr,
@@ -1016,6 +1035,12 @@ void AdrcExpoParaProcessing(AdrcContext_t* pAdrcCtx) {
     LOGV_ATMO("%s: sw_drc_min_ogain:%d sw_drc_iir_weight:%d\n", __FUNCTION__,
               pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v12.min_ogain,
               pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v12.iir_weight);
+    LOGV_ATMO("%s: gas_t:%d gas_l0:%d gas_l1:%d gas_l2:%d gas_l3:%d\n", __FUNCTION__,
+              pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v12.gas_t,
+              pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v12.gas_l0,
+              pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v12.gas_l1,
+              pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v12.gas_l2,
+              pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v12.gas_l3);
     LOGV_ATMO("%s: sw_drc_gain_y: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
               __FUNCTION__, pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v12.gain_y[0],
               pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v12.gain_y[1],

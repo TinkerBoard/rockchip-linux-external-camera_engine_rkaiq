@@ -1506,7 +1506,9 @@ RkAiqCore::analyze(const SmartPtr<VideoBuffer> &buffer)
         handleAecStats(buffer, aecStat);
         handleAwbStats(buffer, awbStat);
         handleAfStats(buffer, afStat);
+#if RKAIQ_HAVE_TMO_V1
         handleAtmoStats(buffer, tmoStat);
+#endif
         handleAdehazeStats(buffer, dehazeStat);
         handleIspStats(buffer, aecStat, awbStat, afStat, tmoStat, dehazeStat);
         cacheIspStatsToList(aecStat, awbStat, afStat);
@@ -2541,13 +2543,13 @@ RkAiqCore::getGroupId(RkAiqAlgoType_t type)
 }
 
 XCamReturn
-RkAiqCore::getGroupSharedParams(int32_t groupId, RkAiqAlgosGroupShared_t* &shared)
+RkAiqCore::getGroupSharedParams(uint64_t groupId, RkAiqAlgosGroupShared_t* &shared)
 {
     auto mapIter = mAlogsGroupSharedParamsMap.find(groupId);
     if (mapIter != mAlogsGroupSharedParamsMap.end()) {
         shared = mapIter->second;
     } else {
-        LOGW_ANALYZER("don't find the group shared params of group(0x%x)", groupId);
+        LOGW_ANALYZER("don't find the group shared params of group(0x%llx)", groupId);
         return XCAM_RETURN_ERROR_FAILED;
     }
 

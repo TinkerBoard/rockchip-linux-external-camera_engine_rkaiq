@@ -376,10 +376,12 @@
  * - Add support isp32 api for merge/drc/dehaze
  * - Fix blc sychronization issue
  * - Fix a few build error
+ * v4.0x8.7
+ * - Fix some bug during ip verify
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x8.6"
-#define RK_AIQ_RELEASE_DATE "2022-03-18 Bringup"
+#define RK_AIQ_VERSION_REAL_V "v4.0x8.7"
+#define RK_AIQ_RELEASE_DATE "2022-03-26 ISP Verify Release 1"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

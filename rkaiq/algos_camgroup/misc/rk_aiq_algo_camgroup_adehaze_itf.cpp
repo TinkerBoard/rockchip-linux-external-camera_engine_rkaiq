@@ -92,30 +92,30 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
     if (!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB)) {
         LOGD_ADEHAZE("%s: Adehaze Reload Para!\n", __FUNCTION__);
 #if RKAIQ_HAVE_DEHAZE_V10
-        CalibDbV2_dehaze_V10_t* calibv2_adehaze_calib_V10 =
-            (CalibDbV2_dehaze_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        CalibDbV2_dehaze_v10_t* calibv2_adehaze_calib_V10 =
+            (CalibDbV2_dehaze_v10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
         if (calibv2_adehaze_calib_V10)
             memcpy(&pAdehazeGrpHandle->CalibV10, calibv2_adehaze_calib_V10,
-                   sizeof(CalibDbV2_dehaze_V10_t));
+                   sizeof(CalibDbV2_dehaze_v10_t));
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11
-        CalibDbV2_dehaze_V11_t* calibv2_adehaze_calib_V11 =
-            (CalibDbV2_dehaze_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        CalibDbV2_dehaze_v11_t* calibv2_adehaze_calib_V11 =
+            (CalibDbV2_dehaze_v11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
         if (calibv2_adehaze_calib_V11) {
             memcpy(&pAdehazeGrpHandle->CalibV11, calibv2_adehaze_calib_V11,
-                   sizeof(CalibDbV2_dehaze_V11_t));
+                   sizeof(CalibDbV2_dehaze_v11_t));
             memcpy(&pAdehazeGrpHandle->AdehazeAtrrV11.stAuto, calibv2_adehaze_calib_V11,
-                   sizeof(CalibDbV2_dehaze_V11_t));
+                   sizeof(CalibDbV2_dehaze_v11_t));
         }
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
-        CalibDbV2_dehaze_V11_t* calibv2_adehaze_calib_V11_duo =
-            (CalibDbV2_dehaze_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        CalibDbV2_dehaze_v11_t* calibv2_adehaze_calib_V11_duo =
+            (CalibDbV2_dehaze_v11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
         if (calibv2_adehaze_calib_V11_duo) {
             memcpy(&pAdehazeGrpHandle->CalibV11duo.DehazeTuningPara,
                    &calibv2_adehaze_calib_V11_duo->DehazeTuningPara, sizeof(CalibDbDehazeV11_t));
             memcpy(&pAdehazeGrpHandle->AdehazeAtrrV11duo.stAuto, calibv2_adehaze_calib_V11_duo,
-                   sizeof(CalibDbV2_dehaze_V11_t));
+                   sizeof(CalibDbV2_dehaze_v11_t));
         }
 
         // dehaze local gain
@@ -126,21 +126,20 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
                    sizeof(CalibDbV2_YnrV3_CalibPara_t));
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
-        CalibDbV2_dehaze_V12_t* calibv2_adehaze_calib_V12 =
-            (CalibDbV2_dehaze_V12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
+        CalibDbV2_dehaze_v12_t* calibv2_adehaze_calib_V12 =
+            (CalibDbV2_dehaze_v12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adehaze_calib));
         if (calibv2_adehaze_calib_V12) {
             memcpy(&pAdehazeGrpHandle->CalibV12.DehazeTuningPara,
                    &calibv2_adehaze_calib_V12->DehazeTuningPara, sizeof(CalibDbDehazeV12_t));
             memcpy(&pAdehazeGrpHandle->AdehazeAtrrV12.stAuto, calibv2_adehaze_calib_V12,
-                   sizeof(CalibDbV2_dehaze_V12_t));
+                   sizeof(CalibDbV2_dehaze_v12_t));
         }
 
-        // dehaze local gain
-        CalibDbV2_YnrV3_t* calibv2_Ynr =
-            (CalibDbV2_YnrV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ynr_v3));
-        if (calibv2_Ynr)
-            memcpy(&pAdehazeGrpHandle->CalibV12.YnrCalibPara, &calibv2_Ynr->CalibPara,
-                   sizeof(CalibDbV2_YnrV3_CalibPara_t));
+        CalibDbV2_YnrV22_t* ynr_v22 =
+            (CalibDbV2_YnrV22_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ynr_v22));
+        if (ynr_v22)
+            memcpy(&pAdehazeGrpHandle->CalibV12.YnrCalibPara, &ynr_v22->CalibPara,
+                   sizeof(CalibDbV2_YnrV22_CalibPara_t));
 #endif
     }
 

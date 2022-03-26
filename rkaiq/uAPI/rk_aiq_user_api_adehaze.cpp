@@ -26,7 +26,7 @@ RKAIQ_BEGIN_DECLARE
 
 /*
 void
-DehazeTransferSetToolData(CalibDbV2_dehaze_V10_t* DehazeV2, CalibDbDehaze_t *DehazeV1)
+DehazeTransferSetToolData(CalibDbV2_dehaze_v10_t* DehazeV2, CalibDbDehaze_t *DehazeV1)
 {
     //len
     DehazeV2->DehazeTuningPara.dehaze_setting.DehazeData.ISO_len = 9;
@@ -184,7 +184,7 @@ DehazeV1->hist_setting[0].cfg_gratio[i];
 }
 
 void
-DehazeTransferGetToolData(CalibDbV2_dehaze_V10_t* DehazeV2, CalibDbDehaze_t *DehazeV1)
+DehazeTransferGetToolData(CalibDbV2_dehaze_v10_t* DehazeV2, CalibDbDehaze_t *DehazeV1)
 {
 
     DehazeV1->en = DehazeV2->DehazeTuningPara.Enable ? 1 : 0;

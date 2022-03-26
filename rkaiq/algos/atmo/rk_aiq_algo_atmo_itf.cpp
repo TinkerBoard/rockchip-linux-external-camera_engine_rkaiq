@@ -113,7 +113,7 @@ static XCamReturn AtmoPrepare(RkAiqAlgoCom* params)
     pAtmoCtx->CurrAeResult.AecDelayframe = MAX(aec->CommCtrl.AecDelayFrmNum.BlackDelay,
                                            aec->CommCtrl.AecDelayFrmNum.WhiteDelay);
 
-    LOGI_ATMO("%s:AecDelayframe:%d\n", __FUNCTION__, pAtmoCtx->CurrAeResult.AecDelayframe);
+    LOG1_ATMO("%s:AecDelayframe:%d\n", __FUNCTION__, pAtmoCtx->CurrAeResult.AecDelayframe);
 
     LOG1_ATMO("%s:Exit!\n", __FUNCTION__);
     return(XCAM_RETURN_NO_ERROR);

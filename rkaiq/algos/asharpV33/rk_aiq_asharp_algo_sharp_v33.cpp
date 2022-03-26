@@ -111,6 +111,7 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(RK_SHARP_Params_V33_t* pParam
     pSelect->enable = pParams->enable;
 
     pSelect->center_mode    = pParams->center_mode;
+    pSelect->kernel_sigma_enable = pParams->kernel_sigma_enable;
 
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
         pSelect->sharpParamsSelectISO.luma_point[i] =

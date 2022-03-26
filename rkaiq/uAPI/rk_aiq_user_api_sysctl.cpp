@@ -799,6 +799,7 @@ camgroupAlgoHandle(const rk_aiq_sys_ctx_t* ctx, const int algo_type)
 #include "rk_aiq_user_api_asd.cpp"
 #include "rk_aiq_user_api_aldch.cpp"
 #include "rk_aiq_user_api2_aldch.cpp"
+#include "rk_aiq_user_api2_aldch_v21.cpp"
 #include "rk_aiq_user_api_acp.cpp"
 #include "rk_aiq_user_api2_acp.cpp"
 #include "rk_aiq_user_api_aie.cpp"

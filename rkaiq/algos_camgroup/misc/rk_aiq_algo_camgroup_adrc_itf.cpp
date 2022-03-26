@@ -164,8 +164,12 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             pAdrcGrpCtx->AeResult.LongFrmMode = pAEProcRes->ae_proc_res_rk.LongFrmMode;
         }
         else {
-            pAdrcGrpCtx->AeResult.LongFrmMode = false;
-            LOGW_ATMO("%s: Ae Proc result is null!!!\n", __FUNCTION__);
+            if (!(pAdrcGrpCtx->frameCnt))
+                return XCAM_RETURN_NO_ERROR;
+            else {
+                pAdrcGrpCtx->AeResult.LongFrmMode = false;
+                LOGW_ATMO("%s: Ae Proc result is null!!!\n", __FUNCTION__);
+            }
         }
 
         //get ae pre res and proc
@@ -176,11 +180,15 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             bypass = AdrcByPassProcessing(pAdrcGrpCtx, pAEPreRes->ae_pre_res_rk);
         }
         else {
-            AecPreResult_t AecHdrPreResult;
-            memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
-            bypass = AdrcByPassProcessing(pAdrcGrpCtx, AecHdrPreResult);
-            bypass = false;
-            LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
+            if (!(pAdrcGrpCtx->frameCnt))
+                return XCAM_RETURN_NO_ERROR;
+            else {
+                AecPreResult_t AecHdrPreResult;
+                memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
+                bypass = AdrcByPassProcessing(pAdrcGrpCtx, AecHdrPreResult);
+                bypass = false;
+                LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
+            }
         }
 
         // get eff expo
@@ -265,13 +273,33 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                                                  .exp_real_params.digital_gain *
                                              ISOMIN;
         }
-        LOGV_ATMO("%s: nextFrame: sexp: %f-%f, mexp: %f-%f, lexp: %f-%f\n", __FUNCTION__,
-                  pAdrcGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[0].exp_real_params.analog_gain,
-                  pAdrcGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[0].exp_real_params.integration_time,
-                  pAdrcGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[1].exp_real_params.analog_gain,
-                  pAdrcGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[1].exp_real_params.integration_time,
-                  pAdrcGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[2].exp_real_params.analog_gain,
-                  pAdrcGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[2].exp_real_params.integration_time);
+        if (pAdrcGrpCtx->FrameNumber == HDR_2X_NUM || pAdrcGrpCtx->FrameNumber == HDR_2X_NUM) {
+            LOGV_ATMO("%s: nextFrame: sexp: %f-%f, mexp: %f-%f, lexp: %f-%f\n", __FUNCTION__,
+                      pAdrcGrpParams->camgroupParmasArray[0]
+                          ->aec._effAecExpInfo.HdrExp[0]
+                          .exp_real_params.analog_gain,
+                      pAdrcGrpParams->camgroupParmasArray[0]
+                          ->aec._effAecExpInfo.HdrExp[0]
+                          .exp_real_params.integration_time,
+                      pAdrcGrpParams->camgroupParmasArray[0]
+                          ->aec._effAecExpInfo.HdrExp[1]
+                          .exp_real_params.analog_gain,
+                      pAdrcGrpParams->camgroupParmasArray[0]
+                          ->aec._effAecExpInfo.HdrExp[1]
+                          .exp_real_params.integration_time,
+                      pAdrcGrpParams->camgroupParmasArray[0]
+                          ->aec._effAecExpInfo.HdrExp[2]
+                          .exp_real_params.analog_gain,
+                      pAdrcGrpParams->camgroupParmasArray[0]
+                          ->aec._effAecExpInfo.HdrExp[2]
+                          .exp_real_params.integration_time);
+        } else if (pAdrcGrpCtx->FrameNumber == LINEAR_NUM) {
+            LOGV_ATMO("%s: nextFrame: exp: %f-%f\n", __FUNCTION__,
+                      pAdrcGrpParams->camgroupParmasArray[0]
+                          ->aec._effAecExpInfo.LinearExp.exp_real_params.analog_gain,
+                      pAdrcGrpParams->camgroupParmasArray[0]
+                          ->aec._effAecExpInfo.LinearExp.exp_real_params.integration_time);
+        }
         if (pAdrcGrpCtx->AeResult.Next.SExpo > 0) {
             pAdrcGrpCtx->AeResult.Next.L2S_Ratio =
                 pAdrcGrpCtx->AeResult.Next.LExpo / pAdrcGrpCtx->AeResult.Next.SExpo;

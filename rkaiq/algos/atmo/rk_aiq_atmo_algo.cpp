@@ -119,7 +119,7 @@ void AtmoConfig
 (
     AtmoHandle_t           pAtmoCtx
 ) {
-    LOGI_ATMO( "%s:enter!\n", __FUNCTION__);
+    LOG1_ATMO("%s:enter!\n", __FUNCTION__);
 
     // initial checks
     DCT_ASSERT(pAtmoCtx != NULL);

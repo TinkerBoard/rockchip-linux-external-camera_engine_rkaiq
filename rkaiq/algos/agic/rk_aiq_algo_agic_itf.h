@@ -20,7 +20,7 @@
 #ifndef _RK_AIQ_ALGO_AGIC_ITF_H_
 #define _RK_AIQ_ALGO_AGIC_ITF_H_
 
-#include "rk_aiq_algo_des.h"
+#include "algos/rk_aiq_algo_des.h"
 
 #define RKISP_ALGO_AGIC_VERSION     "v0.0.1"
 #define RKISP_ALGO_AGIC_VENDOR      "Rockchip"

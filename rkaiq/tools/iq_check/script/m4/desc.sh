@@ -24,7 +24,7 @@ handle_struct() {
 }
 
 handle_struct_list() {
-	echo -n @desc: alias=\"$1\", type=\"struct_list\", size=\"$2\", ui_module=\"${3:-normal_ui_style}\", ro=\"${4:-0}\"
+	echo -n @desc: alias=\"$1\", type=\"struct_list\", size=\"$2\", ui_module=\"${3:-normal_ui_style}\", ro=\"${4:-0}\", hide=\"${5:-0}\"
 }
 
 handle_number() {
@@ -44,7 +44,7 @@ handle_string_mark() {
 }
 
 handle_number_mark() {
-	echo -n @desc: alias=\"$1\", type=\"$2\", range=\"$3\", default=\"$4\", digit=\"$5\", ui_module_param=\"${6:-normal_ui_style}\", ro=\"${7:-0}\"
+	echo -n @desc: alias=\"$1\", type=\"$2\", range=\"$3\", default=\"$4\", digit=\"$5\", ui_module_param=\"${6:-normal_ui_style}\", ro=\"${7:-0}\", dynamic=\"${8:-0}\"
 }
 
 handle_array_table() {

@@ -89,8 +89,6 @@ Again_result_V2_t Again_Init_V2(Again_Context_V2_t **ppAgainCtx, CamCalibDbV2Con
     pAgainCtx->stExpInfo.snr_mode = 1;
     pAgainCtx->eParamMode = AGAINV2_PARAM_MODE_NORMAL;
     Again_ConfigSettingParam_V2(pAgainCtx, pAgainCtx->eParamMode, pAgainCtx->stExpInfo.snr_mode);
-
-
 #endif
 
 

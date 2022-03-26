@@ -275,6 +275,10 @@ Abayer2dnr_result_V23_t bayer2dnr_fix_transfer_V23(RK_Bayer2dnr_Params_V23_Selec
     pFix->gauss_en = pSelect->gauss_guide;
     pFix->log_bypass = 0;
     pFix->bayer_en = pSelect->enable;
+    if(pExpInfo->bayertnr_en) {
+        pFix->bayer_en = 1;
+    }
+
 
 
     // ISP_BAYNR_3A00_DGAIN0-2

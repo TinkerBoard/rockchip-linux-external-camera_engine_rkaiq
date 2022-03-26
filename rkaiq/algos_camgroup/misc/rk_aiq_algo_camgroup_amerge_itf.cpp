@@ -155,10 +155,14 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
             AmergeGetSensorInfo(pAmergeGrpCtx, pAEProcRes->ae_proc_res_rk);
         }
         else {
-            AecProcResult_t AeProcResult;
-            memset(&AeProcResult, 0x0, sizeof(AecProcResult_t));
-            LOGE_AMERGE("%s: Ae Proc result is null!!!\n", __FUNCTION__);
-            AmergeGetSensorInfo(pAmergeGrpCtx, AeProcResult);
+            if (!(pAmergeGrpCtx->frameCnt))
+                return XCAM_RETURN_NO_ERROR;
+            else {
+                AecProcResult_t AeProcResult;
+                memset(&AeProcResult, 0x0, sizeof(AecProcResult_t));
+                LOGE_AMERGE("%s: Ae Proc result is null!!!\n", __FUNCTION__);
+                AmergeGetSensorInfo(pAmergeGrpCtx, AeProcResult);
+            }
         }
 
         //get ae pre res and proc
@@ -169,11 +173,15 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
             bypass = AmergeByPassProcessing(pAmergeGrpCtx, pAEPreRes->ae_pre_res_rk);
         }
         else {
-            AecPreResult_t AecHdrPreResult;
-            memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
-            bypass = AmergeByPassProcessing(pAmergeGrpCtx, AecHdrPreResult);
-            bypass = false;
-            LOGE_AMERGE("%s: ae Pre result is null!!!\n", __FUNCTION__);
+            if (!(pAmergeGrpCtx->frameCnt))
+                return XCAM_RETURN_NO_ERROR;
+            else {
+                AecPreResult_t AecHdrPreResult;
+                memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
+                bypass = AmergeByPassProcessing(pAmergeGrpCtx, AecHdrPreResult);
+                bypass = false;
+                LOGE_AMERGE("%s: ae Pre result is null!!!\n", __FUNCTION__);
+            }
         }
 
         //merge tuning para process

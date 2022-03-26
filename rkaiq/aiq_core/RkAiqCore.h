@@ -425,7 +425,7 @@ public:
 
     void post_message (SmartPtr<XCamMessage> &msg);
     int32_t getGroupId(RkAiqAlgoType_t type);
-    XCamReturn getGroupSharedParams(int32_t groupId, RkAiqAlgosGroupShared_t* &shared);
+    XCamReturn getGroupSharedParams(uint64_t groupId, RkAiqAlgosGroupShared_t* &shared);
     uint64_t getCustomEnAlgosMask() {
         return mCustomEnAlgosMask;
     }

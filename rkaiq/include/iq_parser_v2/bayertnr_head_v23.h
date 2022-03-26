@@ -95,11 +95,11 @@ typedef struct CalibDbV2_BayerTnr_V23_TuningPara_Setting_ISO_s {
 
     // M4_BOOL_DESC("wgt_use_mode", "0")
     bool wgt_use_mode;
-    // M4_BOOL_DESC("wgt_use_mode", "1")
+    // M4_BOOL_DESC("wgt_mge_mode", "1")
     bool wgt_mge_mode;
-    // M4_BOOL_DESC("wgt_use_mode", "0")
+    // M4_BOOL_DESC("hi_guass", "0")
     bool hi_guass;
-    // M4_BOOL_DESC("wgt_use_mode", "0")
+    // M4_BOOL_DESC("kl_guass", "0")
     bool kl_guass;
 
     // M4_BOOL_DESC("global_pk_en", "1")

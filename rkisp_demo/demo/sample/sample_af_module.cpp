@@ -396,7 +396,6 @@ void sample_set_af_manual_meascfg(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_
         attr.manual_meascfg_v31.rawaf_sel = 0; // normal = 0; hdr = 1
         attr.manual_meascfg_v31.accu_8bit_mode = 1;
         attr.manual_meascfg_v31.ae_mode = 1;
-        attr.manual_meascfg_v31.sobel_sel = 1;
         attr.manual_meascfg_v31.v_dnscl_mode = 1;
 
         attr.manual_meascfg_v31.window_num = 2;

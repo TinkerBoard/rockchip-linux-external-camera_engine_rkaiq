@@ -587,6 +587,10 @@ AdebayerGetProcResult
     float log2e                 = 0.8493;
     pAdebayerCtx->config.bf_sgm = (int)((1 << RK_DEBAYER_V2_FIX_BIT_INV_BF_SIGMA) * log2e / (pAdebayerCtx->select_param_v2.debayer_bf_sgm * scale));
 
+    LOGD_ADEBAYER("FIX 2 REG: max_ratio=%d,hf_offset=%d,gain_offset=%d,loghf_offset=%d,loggd_offset=%d",
+                  pAdebayerCtx->config.max_ratio, pAdebayerCtx->config.hf_offset,  pAdebayerCtx->config.gain_offset,
+                  pAdebayerCtx->config.loghf_offset, pAdebayerCtx->config.loggd_offset);
+
     LOGD_ADEBAYER("FIX 2 REG: alpha_scale=%d,edge_scale=%d,ce_sgm=%d,exp_shift=%d,wgtslope=%d,wet_clip=%d,wet_ghost=%d,bf_sgm=%d",
                   pAdebayerCtx->config.alpha_scale, pAdebayerCtx->config.edge_scale, pAdebayerCtx->config.ce_sgm,
                   pAdebayerCtx->config.exp_shift, pAdebayerCtx->config.wgtslope,  pAdebayerCtx->config.wet_clip,

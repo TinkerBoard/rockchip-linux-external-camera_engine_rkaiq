@@ -1223,7 +1223,7 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_LSC_PARAM:
     {
-#ifndef ISP_HW_V30
+#ifndef RKAIQ_HAVE_LSC_V2
         SmartPtr<RkAiqIspLscParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspLscParamsProxy>();
         if (params.ptr())
             convertAiqLscToIsp20Params(isp_cfg, params->data()->result);
