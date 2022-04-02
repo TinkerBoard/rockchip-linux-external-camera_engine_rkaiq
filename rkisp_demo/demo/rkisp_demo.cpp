@@ -2214,6 +2214,9 @@ static void rkisp_routine(demo_context_t *ctx)
             if (ret != XCAM_RETURN_NO_ERROR)
                 ERR("%s:rk_aiq_uapi2_sysctl_prepare failed: %d\n", get_sensor_name(ctx), ret);
             else {
+                ret = rk_aiq_uapi2_setMirrorFlip(ctx->aiq_ctx, false, false, 3);
+                // Ignore failure
+
                 if (ctx->isOrp) {
                     rk_aiq_uapi2_sysctl_registRkRawCb(ctx->aiq_ctx, release_buffer);
                 }

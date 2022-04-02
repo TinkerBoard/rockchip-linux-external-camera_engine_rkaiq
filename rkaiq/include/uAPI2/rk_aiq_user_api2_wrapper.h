@@ -59,5 +59,8 @@ int rk_aiq_uapi_get_awb_stat(const rk_aiq_sys_ctx_t* sys_ctx,
 
 int rk_aiq_uapi_get_ae_hwstats(const rk_aiq_sys_ctx_t* sys_ctx,
                                uapi_ae_hwstats_t* ae_hwstats);
-
+int rk_aiq_uapi_get_awbV32_stat(const rk_aiq_sys_ctx_t* sys_ctx,
+                               rk_tool_isp_awb_stats_v32_t* awb_stat);
+int rk_aiq_uapi_get_awbV21_stat(const rk_aiq_sys_ctx_t* sys_ctx,
+                               rk_tool_awb_stat_res2_v201_t* awb_stat);
 #endif /*__RK_AIQ_USER_API2_WRAPPER_H__*/

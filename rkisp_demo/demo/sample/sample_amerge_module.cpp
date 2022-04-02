@@ -74,8 +74,11 @@ XCamReturn sample_amerge_module(const void *arg)
     CLEAR();
 
     mergeAttrV10_t attr_v10;
+    memset(&attr_v10, 0x0, sizeof(mergeAttrV10_t));
     mergeAttrV11_t attr_v11;
+    memset(&attr_v11, 0x0, sizeof(mergeAttrV11_t));
     mergeAttrV12_t attr_v12;
+    memset(&attr_v12, 0x0, sizeof(mergeAttrV12_t));
     const demo_context_t *demo_ctx = (demo_context_t *)arg;
     const rk_aiq_sys_ctx_t* ctx ;
     if (demo_ctx->camGroup) {
@@ -350,25 +353,26 @@ XCamReturn sample_amerge_module(const void *arg)
                 printf("\t sync = %d, done = %d\n", attr_v12.sync.sync_mode, attr_v12.sync.done);
                 printf("\t attr_v12.mode:%d Envlv:%f MoveCoef:%f\n\n", attr_v12.opMode,
                        attr_v12.CtlInfo.Envlv, attr_v12.CtlInfo.MoveCoef);
-                printf("\t BaseFrm:%d \n\n", attr_v12.stManual.BaseFrm);
-                printf("\t LongFrmModeData OECurve Smooth:%f Offset:%f\n\n",
+                printf("\t stManual BaseFrm:%d \n\n", attr_v12.stManual.BaseFrm);
+                printf("\t stManual LongFrmModeData OECurve Smooth:%f Offset:%f\n\n",
                        attr_v12.stManual.LongFrmModeData.OECurve.Smooth,
                        attr_v12.stManual.LongFrmModeData.OECurve.Offset);
                 printf(
-                    "\t LongFrmModeData MDCurve LM_smooth:%f LM_offset:%f MS_smooth%f "
+                    "\t stManual LongFrmModeData MDCurve LM_smooth:%f LM_offset:%f MS_smooth%f "
                     "MS_offset:%f\n\n",
                     attr_v12.stManual.LongFrmModeData.MDCurve.LM_smooth,
                     attr_v12.stManual.LongFrmModeData.MDCurve.LM_offset,
                     attr_v12.stManual.LongFrmModeData.MDCurve.MS_smooth,
                     attr_v12.stManual.LongFrmModeData.MDCurve.MS_offset);
-                printf("\t LongFrmModeData EnableEachChn:%d EachChnCurve Smooth:%f Offset%f ",
-                       attr_v12.stManual.LongFrmModeData.EnableEachChn,
-                       attr_v12.stManual.LongFrmModeData.EachChnCurve.Smooth,
-                       attr_v12.stManual.LongFrmModeData.EachChnCurve.Offset);
-                printf("\t ShortFrmModeData OECurve Smooth:%f Offset:%f\n\n",
+                printf(
+                    "\t stManual LongFrmModeData EnableEachChn:%d EachChnCurve Smooth:%f Offset%f ",
+                    attr_v12.stManual.LongFrmModeData.EnableEachChn,
+                    attr_v12.stManual.LongFrmModeData.EachChnCurve.Smooth,
+                    attr_v12.stManual.LongFrmModeData.EachChnCurve.Offset);
+                printf("\t stManual ShortFrmModeData OECurve Smooth:%f Offset:%f\n\n",
                        attr_v12.stManual.ShortFrmModeData.OECurve.Smooth,
                        attr_v12.stManual.ShortFrmModeData.OECurve.Offset);
-                printf("\t ShortFrmModeData MDCurve Coef:%f ms_thd0:%f lm_thd0%f\n\n",
+                printf("\t stManual ShortFrmModeData MDCurve Coef:%f ms_thd0:%f lm_thd0%f\n\n",
                        attr_v12.stManual.ShortFrmModeData.MDCurve.Coef,
                        attr_v12.stManual.ShortFrmModeData.MDCurve.ms_thd0,
                        attr_v12.stManual.ShortFrmModeData.MDCurve.lm_thd0);

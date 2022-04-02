@@ -178,12 +178,16 @@ protected:
     void convertAiqA3dlutToIsp20Params(T& isp_cfg,
                                        const rk_aiq_lut3d_cfg_t& lut3d_cfg);
 #endif
+#if RKAIQ_HAVE_ACP_V10
     template<class T>
     void convertAiqCpToIsp20Params(T& isp_cfg,
                                    const rk_aiq_acp_params_t& lut3d_cfg);
+#endif
+#if RKAIQ_HAVE_AIE_V10
     template<class T>
     void convertAiqIeToIsp20Params(T& isp_cfg,
                                    const rk_aiq_isp_ie_t& ie_cfg);
+#endif
     template<class T>
     void convertAiqRawnrToIsp20Params(T& isp_cfg,
                                       rk_aiq_isp_rawnr_t& rawnr);

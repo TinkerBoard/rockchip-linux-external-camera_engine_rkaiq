@@ -118,7 +118,7 @@ static calibdb_ctx_member_offset_info_t info_CamCalibDbV2ContextIsp30_t[] = {
     {"amerge_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(amerge_calib_V11)},
     {"adrc_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(adrc_calib_V11)},
     {"agamma_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(agamma_calib_V11)},
-    {"adehaze_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(adehaze_calib_V11)},
+    {"adehaze_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(adehaze_calib_v11)},
     {"lsc_v2", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(lsc_v2)},
     {"ynr_v3", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(ynr_v3)},
     {"cnr_v2", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(cnr_v2)},

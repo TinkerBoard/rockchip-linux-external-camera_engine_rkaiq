@@ -17,7 +17,7 @@ XCAM_BEGIN_DECLARE
 
 Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(RK_Bayertnr_Params_V23_t *pParams, RK_Bayertnr_Params_V23_Select_t *pSelect, Abayertnr_ExpInfo_V23_t *pExpInfo);
 
-Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t* pSelect, RK_Bayertnr_Fix_V23_t *pFix, float fStrength, Abayertnr_ExpInfo_V23_t *pExpInfo);
+Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t* pSelect, RK_Bayertnr_Fix_V23_t *pFix, rk_aiq_bayertnr_strength_v23_t* pStrength, Abayertnr_ExpInfo_V23_t *pExpInfo);
 
 Abayertnr_result_V23_t bayertnr_fix_printf_V23(RK_Bayertnr_Fix_V23_t * pFix);
 

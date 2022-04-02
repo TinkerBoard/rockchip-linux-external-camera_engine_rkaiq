@@ -9,6 +9,7 @@ static void set_af_manual_meascfg(const rk_aiq_sys_ctx_t* ctx)
 
     rk_aiq_user_api2_af_GetAttrib(ctx, &attr);
     attr.AfMode = RKAIQ_AF_MODE_FIXED;
+    printf("AfHwVer %d\n", attr.AfHwVer);
     if (attr.AfHwVer == RKAIQ_AF_HW_V20) {
         // rv1126/rv1109 rk356x
         memset(&attr.manual_meascfg, 0, sizeof(attr.manual_meascfg));
@@ -50,7 +51,7 @@ static void set_af_manual_meascfg(const rk_aiq_sys_ctx_t* ctx)
         attr.manual_meascfg.sp_meas.ldg_kh = (255-8)*256/15;
         attr.manual_meascfg.sp_meas.highlight_th = 245;
         attr.manual_meascfg.sp_meas.highlight2_th = 200;
-    } else if (attr.AfHwVer == RKAIQ_AF_HW_V30 || attr.AfHwVer == RKAIQ_AF_HW_V31) {
+    } else if (attr.AfHwVer == RKAIQ_AF_HW_V30) {
         // rk3588
         memset(&attr.manual_meascfg_v30, 0, sizeof(attr.manual_meascfg_v30));
         attr.manual_meascfg_v30.af_en = 1;
@@ -206,8 +207,8 @@ static void set_af_manual_meascfg(const rk_aiq_sys_ctx_t* ctx)
         attr.manual_meascfg_v31.window_num = 2;
         attr.manual_meascfg_v31.wina_h_offs = 2;
         attr.manual_meascfg_v31.wina_v_offs = 2;
-        attr.manual_meascfg_v31.wina_h_size = 2580;
-        attr.manual_meascfg_v31.wina_v_size = 1935;
+        attr.manual_meascfg_v31.wina_h_size = 2550;
+        attr.manual_meascfg_v31.wina_v_size = 1425;
 
         attr.manual_meascfg_v31.winb_h_offs = 500;
         attr.manual_meascfg_v31.winb_v_offs = 600;

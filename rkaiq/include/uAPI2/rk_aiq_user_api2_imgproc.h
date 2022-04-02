@@ -56,6 +56,8 @@
 #include "rk_aiq_user_api_common.h"
 #include "rk_aiq_user_api2_again_v2.h"
 #include "rk_aiq_user_api2_aldch_v21.h"
+#include "rk_aiq_user_api2_ablc_v32.h"
+
 RKAIQ_BEGIN_DECLARE
 /*
 **********************************************************
@@ -874,6 +876,105 @@ XCamReturn rk_aiq_uapi2_setFecCorrectLevel(const rk_aiq_sys_ctx_t* ctx, int corr
 */
 XCamReturn rk_aiq_uapi2_setFecCorrectMode(const rk_aiq_sys_ctx_t* ctx,
         const fec_correct_mode_t mode);
+
+/*
+*****************************
+*
+* Desc: Set Sensor output HFLIP and VFLIP
+* Argument:
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setMirrorFlip(const rk_aiq_sys_ctx_t* ctx, bool mirror, bool flip,
+                                      int skip_frm_cnt);
+
+/*
+*****************************
+*
+* Desc: Get Sensor output HFLIP and VFLIP
+* Argument:
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_getMirrorFlip(const rk_aiq_sys_ctx_t* ctx, bool* mirror, bool* flip);
+
+/*
+**********************************************************
+* Color Process
+**********************************************************
+*/
+
+/*
+*****************************
+*
+* Desc: Adjust image contrast level
+* Argument:
+*    level: contrast level, [0, 255]
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setContrast(const rk_aiq_sys_ctx_t* ctx, unsigned int level);
+
+XCamReturn rk_aiq_uapi2_getContrast(const rk_aiq_sys_ctx_t* ctx, unsigned int *level);
+
+/*
+*****************************
+*
+* Desc: Adjust image brightness level
+* Argument:
+*    level: brightness level, [0, 255]
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setBrightness(const rk_aiq_sys_ctx_t* ctx, unsigned int level);
+
+XCamReturn rk_aiq_uapi2_getBrightness(const rk_aiq_sys_ctx_t* ctx, unsigned int *level);
+
+/*
+*****************************
+*
+* Desc: Adjust image saturation level
+* Argument:
+*    level: saturation level, [0, 255]
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setSaturation(const rk_aiq_sys_ctx_t* ctx, unsigned int level);
+
+XCamReturn rk_aiq_uapi2_getSaturation(const rk_aiq_sys_ctx_t* ctx, unsigned int* level);
+
+/*
+*****************************
+*
+* Desc: Adjust image hue level
+* Argument:
+*    level: hue level, [0, 255]
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setHue(const rk_aiq_sys_ctx_t* ctx, unsigned int level);
+
+XCamReturn rk_aiq_uapi2_getHue(const rk_aiq_sys_ctx_t* ctx, unsigned int* level);
+
+/*
+**********************************************************
+* Image Effect
+**********************************************************
+*/
+
+/*
+*****************************
+*
+* Desc: Set Color Mode
+* Argument:
+*    mode:
+*        [0  NONE
+*         1  BW
+*         2  NEGATIVE
+*         3  SEPIA
+*         4  EMBOSS
+*         5  SKETCH
+*         6  SHARPEN]
+* Note: rv1106 only support {0,1}
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setColorMode(const rk_aiq_sys_ctx_t* ctx, unsigned int mode);
+
+XCamReturn rk_aiq_uapi2_getColorMode(const rk_aiq_sys_ctx_t* ctx, unsigned int *mode);
 RKAIQ_END_DECLARE
 
 #endif

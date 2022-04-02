@@ -237,7 +237,7 @@ XCamReturn RkAiqAdehazeHandleInt::updateConfig(bool needSync) {
         updateAtt = false;
         sendSignal(mCurAttV11.sync.sync_mode);
 #endif
-#if RKAIQ_HAVE_DEHAZE_V10
+#if RKAIQ_HAVE_DEHAZE_V12
         mCurAttV12 = mNewAttV12;
         rk_aiq_uapi_adehaze_v12_SetAttrib(mAlgoCtx, &mCurAttV12, false);
         updateAtt = false;

@@ -46,7 +46,7 @@ XCamReturn RkAiqAfHandleInt::updateConfig(bool needSync) {
     XCamReturn ret                              = XCAM_RETURN_NO_ERROR;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
-    if (sharedCom->snsDes.lens_des.focus_support) {
+    {
         if (needSync) mCfgMutex.lock();
         // if something changed
         if (updateAtt) {
@@ -66,7 +66,7 @@ XCamReturn RkAiqAfHandleInt::setAttrib(rk_aiq_af_attrib_t* att) {
     XCamReturn ret                              = XCAM_RETURN_NO_ERROR;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
-    if (sharedCom->snsDes.lens_des.focus_support) {
+    {
         mCfgMutex.lock();
 
         // check if there is different between att & mCurAtt(sync)/mNewAtt(async)

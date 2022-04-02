@@ -61,7 +61,8 @@ Abayer2dnr_result_V23_t Abayer2dnr_Init_V23(Abayer2dnr_Context_V23_t **ppAbayern
     memset(pAbayernrCtx, 0x00, sizeof(Abayer2dnr_Context_V23_t));
 
     //gain state init
-    pAbayernrCtx->fRawnr_SF_Strength = 1.0;
+    pAbayernrCtx->stStrength.strength_enable = true;
+    pAbayernrCtx->stStrength.percent = 1.0;
 
     pAbayernrCtx->eState = ABAYER2DNR_V23_STATE_INITIALIZED;
     *ppAbayernrCtx = pAbayernrCtx;
@@ -233,19 +234,17 @@ Abayer2dnr_result_V23_t Abayer2dnr_GetProcResult_V23(Abayer2dnr_Context_V23_t *p
     }
 
     if(pAbayernrCtx->eMode == ABAYER2DNR_V23_OP_MODE_AUTO) {
-
         pAbayernrResult->st2DSelect = pAbayernrCtx->stAuto.st2DSelect;
     } else if(pAbayernrCtx->eMode == ABAYER2DNR_V23_OP_MODE_MANUAL) {
         pAbayernrResult->st2DSelect = pAbayernrCtx->stManual.st2DSelect;
-        pAbayernrCtx->fRawnr_SF_Strength = 1.0;
     }
 
     //transfer to reg value
-    bayer2dnr_fix_transfer_V23(&pAbayernrResult->st2DSelect, &pAbayernrResult->st2DFix, pAbayernrCtx->fRawnr_SF_Strength, &pAbayernrCtx->stExpInfo);
+    bayer2dnr_fix_transfer_V23(&pAbayernrResult->st2DSelect, &pAbayernrResult->st2DFix, &pAbayernrCtx->stStrength, &pAbayernrCtx->stExpInfo);
 
     if(pAbayernrCtx->eMode == ABAYER2DNR_V23_OP_MODE_REG_MANUAL) {
         pAbayernrResult->st2DFix = pAbayernrCtx->stManual.st2Dfix;
-        pAbayernrCtx->fRawnr_SF_Strength = 1.0;
+        pAbayernrCtx->stStrength.percent = 1.0;
     }
 
     LOGD_ANR("%s:%d xml:local:%d mode:%d  reg: local gain:%d  mfnr gain:%d mode:%d\n",

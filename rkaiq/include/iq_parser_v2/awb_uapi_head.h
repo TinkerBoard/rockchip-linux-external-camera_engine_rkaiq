@@ -43,6 +43,7 @@ typedef struct __uapi_wb_gain_t {
 
 
 #define RK_TOOL_AWB_MAX_WHITEREGIONS_NUM 7
+#define RK_TOOL_AWB_MAX_WHITEREGIONS_NUM_V32 4
 #define RK_TOOL_AWB_MAX_WHITEREGIONS_NUM2 14
 #define RK_TOOL_AWB_STAT_WP_RANGE_NUM_V201 4
 #define RK_TOOL_AWB_WP_HIST_BIN_NUM 8
@@ -52,22 +53,22 @@ typedef struct __uapi_wb_gain_t {
 
 //typedef struct stat3a_lightType_s
 typedef struct rk_tool_awb_stat_wp_res_v201_s {
-    // M4_NUMBER_DESC("WpNo", "s64", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
+    // M4_NUMBER_DESC("WpNo", "u32", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
     long long WpNo;
-    // M4_NUMBER_DESC("RgainValue", "s64", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
+    // M4_NUMBER_DESC("RgainValue", "u32", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
     long long RgainValue;
-    // M4_NUMBER_DESC("BgainValue", "s64", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
+    // M4_NUMBER_DESC("BgainValue", "u32", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
     long long BgainValue;
 } rk_tool_awb_stat_wp_res_v201_t;
 
 typedef struct rk_tool_awb_stat_blk_res_v201_s {
-    // M4_NUMBER_DESC("WpNo", "s64", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
+    // M4_NUMBER_DESC("WpNo", "u32", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
     long long WpNo;
-    // M4_NUMBER_DESC("Rvalue", "s64", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
+    // M4_NUMBER_DESC("Rvalue", "u32", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
     long long Rvalue;
-    // M4_NUMBER_DESC("Gvalue", "s64", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
+    // M4_NUMBER_DESC("Gvalue", "u32", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
     long long Gvalue;
-    // M4_NUMBER_DESC("Bvalue", "s64", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
+    // M4_NUMBER_DESC("Bvalue", "u32", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
     long long Bvalue;
 } rk_tool_awb_stat_blk_res_v201_t;
 
@@ -76,12 +77,23 @@ typedef struct rk_tool_awb_stat_wp_res_light_v201_s {
     rk_tool_awb_stat_wp_res_v201_t xYType[RK_TOOL_AWB_XY_TYPE_MAX_V201];
 } rk_tool_awb_stat_wp_res_light_v201_t;
 
+typedef struct rk_tool_awb_stat_res2_v201_s {
+    // M4_STRUCT_LIST_DESC("light", M4_SIZE(1,7), "normal_ui_style")
+    rk_tool_awb_stat_wp_res_light_v201_t light[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM];
+    //method2
+    // M4_STRUCT_LIST_DESC("blockResult", M4_SIZE(1,225), "normal_ui_style")
+    rk_tool_awb_stat_blk_res_v201_t   blockResult[RK_TOOL_AWB_GRID_NUM_TOTAL];
+    // M4_ARRAY_DESC("WpNoHist", "u32", M4_SIZE(1,8), M4_RANGE(0,4294967295), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    unsigned int WpNoHist[RK_TOOL_AWB_WP_HIST_BIN_NUM];
+} rk_tool_awb_stat_res2_v201_t;
+
+
 typedef struct rk_tool_awb_stat_res2_v30_s {
-    // M4_STRUCT_LIST_DESC("light", M4_SIZE(1,2), "normal_ui_style")
+    // M4_STRUCT_LIST_DESC("light", M4_SIZE(1,7), "normal_ui_style")
     rk_tool_awb_stat_wp_res_light_v201_t light[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM];
     // M4_ARRAY_DESC("WpNo2", "s32", M4_SIZE(1,8), M4_RANGE(-2147483648,2147483647), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     int WpNo2[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM];
-    // M4_STRUCT_LIST_DESC("blockResult", M4_SIZE(1,255), "normal_ui_style")
+    // M4_STRUCT_LIST_DESC("blockResult", M4_SIZE(1,225), "normal_ui_style")
     rk_tool_awb_stat_blk_res_v201_t   blockResult[RK_TOOL_AWB_GRID_NUM_TOTAL];
     // M4_STRUCT_LIST_DESC("multiwindowLightResult", M4_SIZE(1,4), "normal_ui_style")
     rk_tool_awb_stat_wp_res_light_v201_t multiwindowLightResult[4];
@@ -90,6 +102,20 @@ typedef struct rk_tool_awb_stat_res2_v30_s {
     // M4_ARRAY_DESC("WpNoHist", "u32", M4_SIZE(1,8), M4_RANGE(0,4294967295), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned int WpNoHist[RK_TOOL_AWB_WP_HIST_BIN_NUM];
 } rk_tool_awb_stat_res2_v30_t;
+
+typedef struct rk_tool_isp_awb_stats_v32_s {
+    // M4_STRUCT_LIST_DESC("light", M4_SIZE(1,4), "normal_ui_style")
+    rk_tool_awb_stat_wp_res_light_v201_t light[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM_V32];
+    // M4_ARRAY_DESC("WpNo2", "s32", M4_SIZE(1,8), M4_RANGE(-2147483648,2147483647), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    int WpNo2[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM_V32];
+    // M4_STRUCT_LIST_DESC("blockResult", M4_SIZE(1,225), "normal_ui_style")
+    rk_tool_awb_stat_blk_res_v201_t   blockResult[RK_TOOL_AWB_GRID_NUM_TOTAL];
+    // M4_STRUCT_LIST_DESC("multiwindowLightResult", M4_SIZE(1,4), "normal_ui_style")
+    rk_tool_awb_stat_wp_res_v201_t excWpRangeResult[RK_TOOL_AWB_STAT_WP_RANGE_NUM_V201];
+    // M4_ARRAY_DESC("WpNoHist", "u32", M4_SIZE(1,8), M4_RANGE(0,4294967295), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    unsigned int WpNoHist[RK_TOOL_AWB_WP_HIST_BIN_NUM];
+} rk_tool_isp_awb_stats_v32_t;
+
 
 typedef struct rk_tool_awb_measure_wp_res_fl_s {
     // M4_ARRAY_DESC("WpNo", "u32", M4_SIZE(1,1), M4_RANGE(0,4294967295), "0", M4_DIGIT(0), M4_DYNAMIC(0))
@@ -303,19 +329,49 @@ typedef struct rk_tool_awb_strategy_result_s {
     int  algMethod;
 } rk_tool_awb_strategy_result_t;
 
-typedef struct __uapi_wb_log_info_t {
+typedef struct __uapi_wbV21_log_info_t {
+    // M4_STRUCT_DESC("awb_stat", "normal_ui_style")
+    rk_tool_awb_stat_res2_v201_t awb_stat;
+    // M4_STRUCT_DESC("awb_stat_algo", "normal_ui_style")
+    rk_tool_awb_stat_res_full_t awb_stat_algo;
+    // M4_STRUCT_DESC("awb_strategy_result", "normal_ui_style")
+    rk_tool_awb_strategy_result_t awb_strategy_result;
+} uapi_wbV21_log_info_t;
+
+typedef struct __uapi_wbV21_log_t {
+    // M4_STRUCT_DESC("uapi_wb_log_info_t", "normal_ui_style")
+    uapi_wbV21_log_info_t info;
+} uapi_wbV21_log_t;
+
+typedef struct __uapi_wbV30_log_info_t {
     // M4_STRUCT_DESC("awb_stat", "normal_ui_style")
     rk_tool_awb_stat_res2_v30_t awb_stat;
     // M4_STRUCT_DESC("awb_stat_algo", "normal_ui_style")
     rk_tool_awb_stat_res_full_t awb_stat_algo;
     // M4_STRUCT_DESC("awb_strategy_result", "normal_ui_style")
     rk_tool_awb_strategy_result_t awb_strategy_result;
-} uapi_wb_log_info_t;
+} uapi_wbV30_log_info_t;
 
-typedef struct __uapi_wb_log_t {
+typedef struct __uapi_wbV30_log_t {
     // M4_STRUCT_DESC("uapi_wb_log_info_t", "normal_ui_style")
-    uapi_wb_log_info_t info;
-} uapi_wb_log_t;
+    uapi_wbV30_log_info_t info;
+} uapi_wbV30_log_t;
+
+typedef struct __uapi_wbV32_log_info_t {
+    // M4_STRUCT_DESC("awb_stat", "normal_ui_style")
+    rk_tool_isp_awb_stats_v32_t awb_stat;
+    // M4_STRUCT_DESC("awb_stat_algo", "normal_ui_style")
+    rk_tool_awb_stat_res_full_t awb_stat_algo;
+    // M4_STRUCT_DESC("awb_strategy_result", "normal_ui_style")
+    rk_tool_awb_strategy_result_t awb_strategy_result;
+} uapi_wbV32_log_info_t;
+
+typedef struct __uapi_wbV32_log_t {
+    // M4_STRUCT_DESC("uapi_wb_log_info_t", "normal_ui_style")
+    uapi_wbV32_log_info_t info;
+} uapi_wbV32_log_t;
+
+
 
 #ifdef __cplusplus
 }

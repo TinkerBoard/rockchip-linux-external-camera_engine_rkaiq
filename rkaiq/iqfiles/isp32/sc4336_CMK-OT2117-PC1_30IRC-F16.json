@@ -175,7 +175,7 @@
 									"Mode":	"AECV2_ANTIFLICKER_AUTO_MODE"
 								},
 								"AecEnvLvCalib":	{
-									"Enable": 0,
+									"Enable":	0,
 									"CalibFNumber":	1.6,
 									"CurveCoeff":	[0.02859, 0.5972]
 								},
@@ -454,7 +454,7 @@
 										"B_Channel_len":	13
 									}
 								},
-								"lscBypassEnable":	1,
+								"lscBypassEnable":	0,
 								"uvDetectionEnable":	1,
 								"xyDetectionEnable":	1,
 								"yuvDetectionEnable":	1,
@@ -493,6 +493,16 @@
 								"extraWpRange":	[{
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_XY",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
+										"region":	[-1045, -930, 70, 6],
+										"weightInculde":	0.5
+									}, {
+										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
+										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
+										"region":	[0, 0, 0, 0],
+										"weightInculde":	0
+									}, {
+										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
+										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
 										"weightInculde":	0
 									}, {
@@ -507,23 +517,13 @@
 										"weightInculde":	0
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_XY",
-										"mode":	"CALIB_AWB_EXTTRA_LIGHT_SOURCES_MODE",
-										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
+										"region":	[-132, -28, 79, 2],
+										"weightInculde":	0.4
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
-										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
-									}, {
-										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
-										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
-										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
-									}, {
-										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
-										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
-										"region":	[0, 0, 0, 0],
+										"region":	[237, 245, 262, 257],
 										"weightInculde":	0
 									}],
 								"wpDiffLumaWeight":	{
@@ -579,7 +579,7 @@
 										},
 										"rtYuvRegion":	{
 											"thcurve_u":	[50, 54, 70, 78, 110, 142],
-											"thcure_th":	[0.2, 0.2, 0.2, 0.76, 1, 4],
+											"thcure_th":	[0.4, 0.5, 0.5, 0.76, 1, 4],
 											"lineVector":	[10, 147.813, 112, 180.438, 86.9375, 114.375],
 											"disP1P2":	15
 										},
@@ -602,7 +602,7 @@
 										},
 										"rtYuvRegion":	{
 											"thcurve_u":	[50, 54, 70, 78, 110, 142],
-											"thcure_th":	[0.2, 0.2, 0.2, 0.76, 1, 4],
+											"thcure_th":	[0.4, 0.5, 0.5, 0.76, 1, 4],
 											"lineVector":	[10, 144.313, 113.25, 187.375, 108.563, 107.25],
 											"disP1P2":	15
 										},
@@ -625,7 +625,7 @@
 										},
 										"rtYuvRegion":	{
 											"thcurve_u":	[50, 54, 70, 78, 110, 142],
-											"thcure_th":	[0.2, 0.2, 0.2, 0.76, 1, 4],
+											"thcure_th":	[0.4, 0.5, 0.5, 0.76, 1, 4],
 											"lineVector":	[10, 143.313, 112.125, 188.813, 115.063, 114.375],
 											"disP1P2":	15
 										},
@@ -648,7 +648,7 @@
 										},
 										"rtYuvRegion":	{
 											"thcurve_u":	[50, 54, 70, 78, 110, 142],
-											"thcure_th":	[0.2, 0.2, 0.2, 0.76, 1, 4],
+											"thcure_th":	[0.4, 0.5, 0.5, 0.76, 1, 4],
 											"lineVector":	[10, 141.5, 112.25, 190.438, 127.375, 114.063],
 											"disP1P2":	15
 										},
@@ -671,7 +671,7 @@
 										},
 										"rtYuvRegion":	{
 											"thcurve_u":	[50, 54, 70, 78, 110, 142],
-											"thcure_th":	[0.2, 0.2, 0.2, 0.76, 1, 4],
+											"thcure_th":	[0.4, 0.5, 0.5, 0.76, 1, 4],
 											"lineVector":	[10, 140.875, 111.875, 190.75, 131.75, 116.813],
 											"disP1P2":	15
 										},
@@ -694,7 +694,7 @@
 										},
 										"rtYuvRegion":	{
 											"thcurve_u":	[50, 54, 70, 78, 110, 142],
-											"thcure_th":	[0.2, 0.2, 0.2, 0.76, 1, 4],
+											"thcure_th":	[0.4, 0.5, 0.5, 0.76, 1, 4],
 											"lineVector":	[10, 150.313, 111.313, 173.875, 73.75, 118.438],
 											"disP1P2":	15
 										},
@@ -717,7 +717,7 @@
 										},
 										"rtYuvRegion":	{
 											"thcurve_u":	[50, 54, 70, 78, 110, 142],
-											"thcure_th":	[0.2, 0.2, 0.2, 0.76, 1, 4],
+											"thcure_th":	[0.4, 0.5, 0.5, 0.76, 1, 4],
 											"lineVector":	[10, 145.188, 112.5, 186, 102.938, 112.125],
 											"disP1P2":	15
 										},
@@ -1311,31 +1311,20 @@
 									"EnableEachChn":	0,
 									"OECurve":	{
 										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-										"EnvLv_len":	13,
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
-										"Smooth_len":	13,
-										"Offset":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210],
-										"Offset_len":	13
+										"Offset":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210]
 									},
 									"MDCurve":	{
 										"MoveCoef":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-										"MoveCoef_len":	13,
 										"LM_smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
-										"LM_smooth_len":	13,
 										"LM_offset":	[0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38],
-										"LM_offset_len":	13,
 										"MS_smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
-										"MS_smooth_len":	13,
-										"MS_offset":	[0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38],
-										"MS_offset_len":	13
+										"MS_offset":	[0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38]
 									},
 									"EachChnCurve":	{
 										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-										"EnvLv_len":	13,
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
-										"Smooth_len":	13,
-										"Offset":	[0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38],
-										"Offset_len":	13
+										"Offset":	[0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38]
 									},
 									"OECurve_damp":	0.3,
 									"MDCurveLM_damp":	0.3,
@@ -1344,21 +1333,14 @@
 								"ShortFrmModeData":	{
 									"OECurve":	{
 										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-										"EnvLv_len":	13,
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
-										"Smooth_len":	13,
-										"Offset":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210],
-										"Offset_len":	13
+										"Offset":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210]
 									},
 									"MDCurve":	{
 										"MoveCoef":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-										"MoveCoef_len":	13,
 										"Coef":	[0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
-										"Coef_len":	13,
 										"ms_thd0":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-										"ms_thd0_len":	13,
-										"lm_thd0":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-										"lm_thd0_len":	13
+										"lm_thd0":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 									},
 									"OECurve_damp":	0,
 									"MDCurve_damp":	0
@@ -1370,22 +1352,15 @@
 								"Enable":	0,
 								"DrcGain":	{
 									"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-									"EnvLv_len":	13,
 									"DrcGain":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-									"DrcGain_len":	13,
 									"Alpha":	[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
-									"Alpha_len":	13,
-									"Clip":	[16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
-									"Clip_len":	13
+									"Clip":	[16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
 								},
 								"HiLight":	{
 									"HiLightData":	{
 										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-										"EnvLv_len":	13,
 										"Strength":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-										"Strength_len":	13,
-										"gas_t":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-										"gas_t_len":	13
+										"gas_t":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 									},
 									"gas_l0":	24,
 									"gas_l1":	10,
@@ -1395,23 +1370,15 @@
 								"LocalSetting":	{
 									"LocalData":	{
 										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-										"EnvLv_len":	13,
 										"LocalWeit":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"LocalWeit_len":	13,
 										"LocalAutoEnable":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"LocalAutoEnable_len":	13,
 										"LocalAutoWeit":	[0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477],
-										"LocalAutoWeit_len":	13,
 										"GlobalContrast":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-										"GlobalContrast_len":	13,
-										"LoLitContrast":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-										"LoLitContrast_len":	13
+										"LoLitContrast":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 									},
 									"MotionData":	{
 										"MotionCoef":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-										"MotionCoef_len":	13,
-										"MotionStr":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-										"MotionStr_len":	13
+										"MotionStr":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 									},
 									"curPixWeit":	0.376471,
 									"preFrameWeit":	0.8,
@@ -1457,50 +1424,28 @@
 									"tmax_sigma":	0.01,
 									"pre_wet":	0.01,
 									"DehazeData":	{
-										"CtrlData":	[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 0.9, 1],
-										"CtrlData_len":	9,
-										"dc_min_th":	[64, 64, 64, 64, 64, 64, 64, 64, 64],
-										"dc_min_th_len":	9,
-										"dc_max_th":	[192, 192, 192, 192, 192, 192, 192, 192, 192],
-										"dc_max_th_len":	9,
-										"yhist_th":	[249, 249, 249, 249, 249, 249, 249, 249, 249],
-										"yhist_th_len":	9,
-										"yblk_th":	[0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002],
-										"yblk_th_len":	9,
-										"dark_th":	[250, 250, 250, 250, 250, 250, 250, 250, 250],
-										"dark_th_len":	9,
-										"bright_min":	[180, 180, 180, 180, 180, 180, 180, 180, 180],
-										"bright_min_len":	9,
-										"bright_max":	[240, 240, 240, 240, 240, 240, 240, 240, 240],
-										"bright_max_len":	9,
-										"wt_max":	[0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9],
-										"wt_max_len":	9,
-										"air_min":	[200, 200, 200, 200, 200, 200, 200, 200, 200],
-										"air_min_len":	9,
-										"air_max":	[250, 250, 250, 250, 250, 250, 250, 250, 250],
-										"air_max_len":	9,
-										"tmax_base":	[125, 125, 125, 125, 125, 125, 125, 125, 125],
-										"tmax_base_len":	9,
-										"tmax_off":	[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-										"tmax_off_len":	9,
-										"tmax_max":	[0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8],
-										"tmax_max_len":	9,
-										"cfg_wt":	[0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8],
-										"cfg_wt_len":	9,
-										"cfg_air":	[210, 210, 210, 210, 210, 210, 210, 210, 210],
-										"cfg_air_len":	9,
-										"cfg_tmax":	[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
-										"cfg_tmax_len":	9,
-										"dc_weitcur":	[0, 0, 0, 0, 0, 0, 0, 0, 0],
-										"dc_weitcur_len":	9,
-										"bf_weight":	[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-										"bf_weight_len":	9,
-										"range_sigma":	[0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14],
-										"range_sigma_len":	9,
-										"space_sigma_pre":	[0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14],
-										"space_sigma_pre_len":	9,
-										"space_sigma_cur":	[0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14],
-										"space_sigma_cur_len":	9
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"dc_min_th":	[64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64],
+										"dc_max_th":	[192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192],
+										"yhist_th":	[249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249],
+										"yblk_th":	[0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002],
+										"dark_th":	[250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250],
+										"bright_min":	[180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180],
+										"bright_max":	[240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240],
+										"wt_max":	[0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9],
+										"air_min":	[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200],
+										"air_max":	[250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250],
+										"tmax_base":	[125, 125, 125, 125, 125, 125, 125, 125, 125, 125, 125, 125, 125],
+										"tmax_off":	[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+										"tmax_max":	[0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8],
+										"cfg_wt":	[0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8],
+										"cfg_air":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210],
+										"cfg_tmax":	[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
+										"dc_weitcur":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+										"bf_weight":	[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+										"range_sigma":	[0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14],
+										"space_sigma_pre":	[0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14],
+										"space_sigma_cur":	[0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14]
 									}
 								},
 								"enhance_setting":	{
@@ -1510,32 +1455,22 @@
 									"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 									"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 									"EnhanceData":	{
-										"CtrlData":	[0, 0.002, 0.005, 0.01, 0.05, 0.1, 0.3, 0.5, 1],
-										"CtrlData_len":	9,
-										"enhance_value":	[1.25, 1.25, 1.25, 1.2, 1.2, 1.2, 1.1, 1.1, 1],
-										"enhance_value_len":	9,
-										"enhance_chroma":	[1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_chroma_len":	9
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"enhance_value":	[1.25, 1.25, 1.2, 1.2, 1.2, 1.15, 1.1, 1.1, 1.1, 1.1, 1.05, 1.05, 1],
+										"enhance_chroma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 									}
 								},
 								"hist_setting":	{
 									"en":	0,
 									"hist_para_en":	1,
 									"HistData":	{
-										"CtrlData":	[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 0.9, 1],
-										"CtrlData_len":	9,
-										"hist_gratio":	[2, 2, 2, 2, 2, 2, 2, 2, 2],
-										"hist_gratio_len":	9,
-										"hist_th_off":	[64, 64, 64, 64, 64, 64, 64, 64, 64],
-										"hist_th_off_len":	9,
-										"hist_k":	[2, 2, 2, 2, 2, 2, 2, 2, 2],
-										"hist_k_len":	9,
-										"hist_min":	[0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015],
-										"hist_min_len":	9,
-										"hist_scale":	[0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09],
-										"hist_scale_len":	9,
-										"cfg_gratio":	[2, 2, 2, 2, 2, 2, 2, 2, 2],
-										"cfg_gratio_len":	9
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"hist_gratio":	[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+										"hist_th_off":	[64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64],
+										"hist_k":	[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+										"hist_min":	[0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015],
+										"hist_scale":	[0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09],
+										"cfg_gratio":	[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 									}
 								}
 							}
@@ -3012,7 +2947,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1.8,
 												"hi_filter_rat0":	0.1,
@@ -3037,7 +2972,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3050,7 +2985,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0.2,
@@ -3075,7 +3010,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	1
@@ -3088,7 +3023,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1.8,
 												"hi_filter_rat0":	0.1,
@@ -3113,7 +3048,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	0.4,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3126,7 +3061,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	0.5,
 												"hi_filter_strength":	0.8,
 												"hi_filter_rat0":	0.7,
@@ -3151,7 +3086,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	0.2,
 												"lo_filter_thed0":	40,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	1
@@ -3164,7 +3099,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	0.5,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0.8,
@@ -3189,7 +3124,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	0.4,
 												"lo_filter_thed0":	10,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	1
@@ -3202,7 +3137,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	0.7,
 												"hi_filter_strength":	1.2,
 												"hi_filter_rat0":	0.5,
@@ -3227,7 +3162,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	0.3,
 												"lo_filter_thed0":	40,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	1
@@ -3240,7 +3175,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	0.7,
 												"hi_filter_strength":	1.3,
 												"hi_filter_rat0":	0,
@@ -3265,7 +3200,7 @@
 												"lo_clipwgt":	0.016,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	20,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	1
@@ -3278,7 +3213,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	0.75,
 												"hi_filter_strength":	1.7,
 												"hi_filter_rat0":	1,
@@ -3303,7 +3238,7 @@
 												"lo_clipwgt":	0.016,
 												"lo_filter_rat0":	0.5,
 												"lo_filter_thed0":	2,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	1
@@ -3316,7 +3251,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	0.7,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0.2,
@@ -3341,7 +3276,7 @@
 												"lo_clipwgt":	0.02,
 												"lo_filter_rat0":	0.45,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	1
@@ -3354,7 +3289,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	0.7,
 												"hi_filter_strength":	2.5,
 												"hi_filter_rat0":	0.4,
@@ -3379,7 +3314,7 @@
 												"lo_clipwgt":	0.01,
 												"lo_filter_rat0":	0.7,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	1
@@ -3392,7 +3327,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3417,7 +3352,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3430,7 +3365,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3455,7 +3390,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3468,7 +3403,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3493,7 +3428,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3511,7 +3446,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3536,7 +3471,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3549,7 +3484,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3574,7 +3509,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3587,7 +3522,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3612,7 +3547,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3625,7 +3560,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3650,7 +3585,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3663,7 +3598,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3688,7 +3623,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3701,7 +3636,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1.5,
 												"hi_filter_rat0":	0,
@@ -3726,7 +3661,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3739,7 +3674,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1.5,
 												"hi_filter_rat0":	0,
@@ -3764,7 +3699,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3777,7 +3712,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	8.2,
 												"hi_filter_strength":	1.6,
 												"hi_filter_rat0":	0,
@@ -3802,7 +3737,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3815,7 +3750,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3840,7 +3775,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3853,7 +3788,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3878,7 +3813,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3891,7 +3826,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3916,7 +3851,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3929,7 +3864,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3954,7 +3889,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -3967,7 +3902,7 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
+												"trans_en":	1,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3992,7 +3927,7 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
+												"thumbds_h":	4,
 												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
@@ -5290,7 +5225,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	100,
 												"down_scale_x":	4,
@@ -5318,7 +5253,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	200,
 												"down_scale_x":	4,
@@ -5346,7 +5281,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	400,
 												"down_scale_x":	4,
@@ -5374,7 +5309,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	800,
 												"down_scale_x":	4,
@@ -5402,7 +5337,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	1600,
 												"down_scale_x":	4,
@@ -5430,7 +5365,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	3200,
 												"down_scale_x":	4,
@@ -5458,7 +5393,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	6400,
 												"down_scale_x":	8,
@@ -5486,7 +5421,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	12800,
 												"down_scale_x":	8,
@@ -5514,7 +5449,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	25600,
 												"down_scale_x":	8,
@@ -5542,7 +5477,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	51200,
 												"down_scale_x":	8,
@@ -5570,7 +5505,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	102400,
 												"down_scale_x":	4,
@@ -5598,7 +5533,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	204800,
 												"down_scale_x":	4,
@@ -5626,7 +5561,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}],
 										"Tuning_ISO_len":	13
 									}, {
@@ -5659,7 +5594,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	100,
 												"down_scale_x":	4,
@@ -5687,7 +5622,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	200,
 												"down_scale_x":	4,
@@ -5715,7 +5650,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	400,
 												"down_scale_x":	4,
@@ -5743,7 +5678,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	800,
 												"down_scale_x":	4,
@@ -5771,7 +5706,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	1600,
 												"down_scale_x":	4,
@@ -5799,7 +5734,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	3200,
 												"down_scale_x":	4,
@@ -5827,7 +5762,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	6400,
 												"down_scale_x":	8,
@@ -5855,7 +5790,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	12800,
 												"down_scale_x":	8,
@@ -5883,7 +5818,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	25600,
 												"down_scale_x":	8,
@@ -5911,7 +5846,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	51200,
 												"down_scale_x":	8,
@@ -5939,7 +5874,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	102400,
 												"down_scale_x":	4,
@@ -5967,7 +5902,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	204800,
 												"down_scale_x":	4,
@@ -5995,7 +5930,7 @@
 												"global_gain_alpha_thumb":	0,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
-												"gaus_coeff":	[36, 24, 16, 6, 4, 1]
+												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}],
 										"Tuning_ISO_len":	13
 									}],
@@ -6035,8 +5970,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[8, 12, 16, 16, 24, 20, 16, 16],
-													"hf_clip":	[128, 256, 384, 512, 512, 256, 128, 64],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[128, 256, 384, 512, 512, 256, 128, 64]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6073,8 +6007,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[12, 16, 20, 24, 28, 24, 20, 20],
-													"hf_clip":	[128, 256, 384, 512, 512, 256, 128, 64],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[128, 256, 384, 512, 512, 256, 128, 64]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6111,8 +6044,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[24, 32, 40, 48, 56, 48, 48, 40],
-													"hf_clip":	[64, 96, 384, 512, 512, 512, 128, 64],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[64, 96, 384, 512, 512, 512, 128, 64]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6149,8 +6081,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 40, 48, 56, 70, 56, 48, 40],
-													"hf_clip":	[80, 90, 120, 140, 160, 160, 128, 160],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[80, 90, 120, 140, 160, 160, 128, 160]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6187,8 +6118,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[40, 48, 56, 64, 80, 64, 56, 48],
-													"hf_clip":	[100, 384, 384, 512, 512, 512, 384, 160],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[100, 384, 384, 512, 512, 512, 384, 160]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6225,8 +6155,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[56, 56, 64, 80, 80, 80, 64, 56],
-													"hf_clip":	[384, 384, 512, 512, 512, 512, 384, 160],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[384, 384, 512, 512, 512, 512, 384, 160]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6263,8 +6192,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[384, 384, 512, 512, 512, 512, 384, 160],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[384, 384, 512, 512, 512, 512, 384, 160]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6301,8 +6229,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[80, 100, 100, 120, 120, 120, 100, 100],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[80, 100, 100, 120, 120, 120, 100, 100]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6339,8 +6266,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[60, 80, 80, 120, 120, 120, 100, 100],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[60, 80, 80, 120, 120, 120, 100, 100]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6377,8 +6303,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[60, 80, 80, 120, 120, 120, 100, 100],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[60, 80, 80, 120, 120, 120, 100, 100]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6415,8 +6340,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[60, 80, 80, 120, 120, 120, 100, 100],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[60, 80, 80, 120, 120, 120, 100, 100]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6453,8 +6377,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[96, 128, 160, 192, 224, 192, 160, 0],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[96, 128, 160, 192, 224, 192, 160, 0]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6491,8 +6414,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[96, 128, 160, 192, 224, 192, 160, 0],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[96, 128, 160, 192, 224, 192, 160, 0]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6534,8 +6456,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[8, 12, 16, 16, 24, 20, 16, 16],
-													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6572,8 +6493,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[12, 16, 20, 24, 28, 24, 20, 20],
-													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6610,8 +6530,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[24, 32, 40, 48, 56, 48, 48, 40],
-													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6648,8 +6567,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[32, 40, 48, 56, 64, 56, 48, 40],
-													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6686,8 +6604,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[40, 48, 56, 64, 80, 64, 56, 48],
-													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6724,8 +6641,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6762,8 +6678,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[180, 180, 180, 180, 180, 180, 180, 180]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6800,8 +6715,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[150, 150, 150, 150, 150, 150, 150, 150],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[150, 150, 150, 150, 150, 150, 150, 150]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6838,8 +6752,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[120, 120, 120, 120, 120, 120, 120, 120],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[120, 120, 120, 120, 120, 120, 120, 120]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6876,8 +6789,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[100, 100, 100, 100, 100, 100, 100, 100],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[100, 100, 100, 100, 100, 100, 100, 100]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6914,8 +6826,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[100, 100, 100, 100, 100, 100, 100, 100],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[100, 100, 100, 100, 100, 100, 100, 100]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6952,8 +6863,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[96, 128, 160, 192, 224, 192, 160, 0],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[96, 128, 160, 192, 224, 192, 160, 0]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -6990,8 +6900,7 @@
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[48, 56, 64, 80, 96, 80, 64, 56],
-													"hf_clip":	[96, 128, 160, 192, 224, 192, 160, 0],
-													"local_sharp_strength":	[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]
+													"hf_clip":	[96, 128, 160, 192, 224, 192, 160, 0]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],

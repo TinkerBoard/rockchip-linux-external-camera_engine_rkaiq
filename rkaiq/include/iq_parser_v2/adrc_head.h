@@ -1,63 +1,54 @@
 #define ADRC_Y_NUM             17
+#define ADRC_ENVLV_STEP_MAX 13
+
 
 // drc v10
 typedef struct AdrcGain_s {
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(3), M4_DYNAMIC(1))
-    float*            EnvLv;
-    int EnvLv_len;
-    // M4_ARRAY_DESC("DrcGain", "f32", M4_SIZE(1,100), M4_RANGE(1,8), "4",M4_DIGIT(2), M4_DYNAMIC(1))
-    float*            DrcGain; //sw_drc_gain
-    int DrcGain_len;
-    // M4_ARRAY_DESC("Alpha", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0.2",M4_DIGIT(2), M4_DYNAMIC(1))
-    float*            Alpha;
-    int Alpha_len;
-    // M4_ARRAY_DESC("Clip", "f32", M4_SIZE(1,100), M4_RANGE(0,64), "16",M4_DIGIT(2), M4_DYNAMIC(1))
-    float*            Clip;  //sw_drc_position, step: 1/255
-    int Clip_len;
+    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float EnvLv[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("DrcGain", "f32", M4_SIZE(1,13), M4_RANGE(1,8), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float DrcGain[ADRC_ENVLV_STEP_MAX]; 
+    // M4_ARRAY_DESC("Alpha", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float Alpha[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("Clip", "f32", M4_SIZE(1,13), M4_RANGE(0,64), "[16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float Clip[ADRC_ENVLV_STEP_MAX];  
 } AdrcGain_t;
 
 typedef struct HighLight_s {
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(3), M4_DYNAMIC(1))
-    float*            EnvLv;
-    int EnvLv_len;
-    // M4_ARRAY_DESC("Strength", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "1",M4_DIGIT(2), M4_DYNAMIC(1))
-    float*            Strength;  //sw_drc_weig_maxl,  range[0,1], step 1/16
-    int Strength_len;
+    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float EnvLv[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("Strength", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float Strength[ADRC_ENVLV_STEP_MAX]; 
 } HighLight_t;
 
-typedef struct LocalData_s
-{
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(2), M4_DYNAMIC(1))
-    float*            EnvLv;
-    int EnvLv_len;
-    // M4_ARRAY_DESC("LocalWeit", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "1",M4_DIGIT(2), M4_DYNAMIC(1))
-    float*            LocalWeit;  //sw_drc_weig_bilat, range[0 , 1], step: 1/16
-    int LocalWeit_len;
-    // M4_ARRAY_DESC("GlobalContrast", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(3), M4_DYNAMIC(1))
-    float*            GlobalContrast; //sw_drc_lpdetail_ratio, setp 1/4096
-    int GlobalContrast_len;
-    // M4_ARRAY_DESC("LoLitContrast", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(3), M4_DYNAMIC(1))
-    float*            LoLitContrast; //sw_drc_hpdetail_ratio, setp 1/4096
-    int LoLitContrast_len;
+typedef struct LocalData_s{
+    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float EnvLv[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("LocalWeit", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float LocalWeit[ADRC_ENVLV_STEP_MAX];  
+    // M4_ARRAY_DESC("GlobalContrast", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float GlobalContrast[ADRC_ENVLV_STEP_MAX]; 
+    // M4_ARRAY_DESC("LoLitContrast", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float LoLitContrast[ADRC_ENVLV_STEP_MAX];
 } LocalData_t;
 
 typedef struct local_s {
     // M4_ARRAY_TABLE_DESC("LocalTMOData", "array_table_ui", "none")
     LocalData_t LocalTMOData;
     // M4_NUMBER_DESC("curPixWeit", "f32", M4_RANGE(0,1), "0.37", M4_DIGIT(3))
-    float curPixWeit; //sw_drc_weicur_pix,  range[0,1],step: 1/255
+    float curPixWeit; 
     // M4_NUMBER_DESC("preFrameWeit", "f32", M4_RANGE(0,1), "1.0", M4_DIGIT(3))
-    float preFrameWeit;//sw_adrc_weipre_frame ,range[0,1],step: 1/255
+    float preFrameWeit;
     // M4_NUMBER_DESC("Range_force_sgm", "f32", M4_RANGE(0,1), "0.0", M4_DIGIT(4))
-    float Range_force_sgm; //sw_drc_force_sgm_inv0 ,range[0,1], step 1/8191
+    float Range_force_sgm; 
     // M4_NUMBER_DESC("Range_sgm_cur", "f32", M4_RANGE(0,1), "0.125", M4_DIGIT(4))
-    float Range_sgm_cur; //sw_drc_range_sgm_inv1, range[0,1], step 1/8191
+    float Range_sgm_cur; 
     // M4_NUMBER_DESC("Range_sgm_pre", "f32", M4_RANGE(0,1), "0.125", M4_DIGIT(4))
-    float Range_sgm_pre; //sw_drc_range_sgm_inv0,range[0,1], step 1/8191
+    float Range_sgm_pre; 
     // M4_NUMBER_DESC("Space_sgm_cur", "u16", M4_RANGE(0,4095), "4068", M4_DIGIT(0))
-    int Space_sgm_cur; //sw_drc_space_sgm_inv1
+    int Space_sgm_cur; 
     // M4_NUMBER_DESC("Space_sgm_pre", "u16", M4_RANGE(0,4095), "3968", M4_DIGIT(0))
-    int Space_sgm_pre; //sw_drc_space_sgm_inv0
+    int Space_sgm_pre; 
 } local_t;
 
 typedef enum CompressMode_e {
@@ -94,7 +85,7 @@ typedef struct CalibDbV2_Adrc_V10_s {
     // M4_NUMBER_DESC("IIR_frame", "u8", M4_RANGE(1,1000), "16", M4_DIGIT(0))
     int IIR_frame; 
     // M4_NUMBER_DESC("Tolerance", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3))
-    float                  Tolerance;
+    float Tolerance;
     // M4_NUMBER_DESC("damp", "f32", M4_RANGE(0,1), "0.9", M4_DIGIT(3))
     float damp;
 } CalibDbV2_Adrc_V10_t;
@@ -105,26 +96,19 @@ typedef struct CalibDbV2_drc_V10_s {
 } CalibDbV2_drc_V10_t;
 
 // drc v11
-typedef struct LocalDataV2_s
-{
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(2), M4_DYNAMIC(1))
-    float*            EnvLv;
-    int EnvLv_len;
-    // M4_ARRAY_DESC("LocalWeit", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "1",M4_DIGIT(2), M4_DYNAMIC(1))
-    float*            LocalWeit;  
-    int LocalWeit_len;
-    // M4_ARRAY_DESC("LocalAutoEnable", "u8", M4_SIZE(1,100), M4_RANGE(0,1), "1",M4_DIGIT(0), M4_DYNAMIC(1))
-    int*            LocalAutoEnable;  
-    int LocalAutoEnable_len;
-    // M4_ARRAY_DESC("LocalAutoWeit", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0.037477",M4_DIGIT(5), M4_DYNAMIC(1))
-    float*            LocalAutoWeit;  
-    int LocalAutoWeit_len;
-    // M4_ARRAY_DESC("GlobalContrast", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(3), M4_DYNAMIC(1))
-    float*            GlobalContrast; 
-    int GlobalContrast_len;
-    // M4_ARRAY_DESC("LoLitContrast", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(3), M4_DYNAMIC(1))
-    float*            LoLitContrast; 
-    int LoLitContrast_len;
+typedef struct LocalDataV2_s{
+    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float EnvLv[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("LocalWeit", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float LocalWeit[ADRC_ENVLV_STEP_MAX];  
+    // M4_ARRAY_DESC("LocalAutoEnable", "u8", M4_SIZE(1,13), M4_RANGE(0,1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(0), M4_DYNAMIC(0), 0)
+    int LocalAutoEnable[ADRC_ENVLV_STEP_MAX];  
+    // M4_ARRAY_DESC("LocalAutoWeit[ADRC_ENVLV_STEP_MAX]", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477]",M4_DIGIT(5), M4_DYNAMIC(0), 0)
+    float LocalAutoWeit[ADRC_ENVLV_STEP_MAX];  
+    // M4_ARRAY_DESC("GlobalContrast", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float GlobalContrast[ADRC_ENVLV_STEP_MAX]; 
+    // M4_ARRAY_DESC("LoLitContrast", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float LoLitContrast[ADRC_ENVLV_STEP_MAX]; 
 } LocalDataV2_t;
 
 typedef struct localV11_s {
@@ -180,12 +164,10 @@ typedef struct CalibDbV2_drc_V11_s {
 
 // drc v12
 typedef struct MotionData_s {
-    // M4_ARRAY_DESC("MotionCoef", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(2), M4_DYNAMIC(1))
-    float* MotionCoef;
-    int MotionCoef_len;
-    // M4_ARRAY_DESC("MotionStr", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(3), M4_DYNAMIC(1))
-    float* MotionStr;  
-    int MotionStr_len;
+    // M4_ARRAY_DESC("MotionCoef", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float MotionCoef[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("MotionStr", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float MotionStr[ADRC_ENVLV_STEP_MAX];  
 } MotionData_t;
 
 typedef struct localV12_s {
@@ -210,15 +192,12 @@ typedef struct localV12_s {
 } localV12_t;
 
 typedef struct HighLightDataV12_s {
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0",M4_DIGIT(3), M4_DYNAMIC(1))
-    float* EnvLv;
-    int EnvLv_len;
-    // M4_ARRAY_DESC("Strength", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "1",M4_DIGIT(2), M4_DYNAMIC(1))
-    float* Strength;  
-    int Strength_len;
-    // M4_ARRAY_DESC("gas_t", "f32", M4_SIZE(1,100), M4_RANGE(0,2), "0",M4_DIGIT(3), M4_DYNAMIC(1))
-    float* gas_t;  
-    int gas_t_len;
+    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float EnvLv[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("Strength", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float Strength[ADRC_ENVLV_STEP_MAX];  
+    // M4_ARRAY_DESC("gas_t", "f32", M4_SIZE(1,13), M4_RANGE(0,2), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float gas_t[ADRC_ENVLV_STEP_MAX];  
 } HighLightDataV12_t;
 
 typedef struct HighLightV12_s {

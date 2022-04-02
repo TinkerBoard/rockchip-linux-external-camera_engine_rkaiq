@@ -556,9 +556,11 @@ static int sample_awb_setWbGainAdjust(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_m
     printf("set AWbGainAdjust\n\n");
     //free
     for(int i = 0; i < attr.lutAll_len; i++) {
+        //printf("free attr->lutAll[%d].cri_lut_out= %p\n",i,attr.lutAll[i].cri_lut_out);
         safe_free(attr.lutAll[i].cri_lut_out);
         safe_free(attr.lutAll[i].ct_lut_out);
     }
+    //printf(" free attr->lutAll= %p\n",attr.lutAll);
     safe_free(attr.lutAll);
     return 0;
 }
@@ -574,9 +576,11 @@ static int sample_awb_getWbGainAdjust(const rk_aiq_sys_ctx_t* ctx)
     printf("\t enable = %s\n", (attr.enable ? "true" : "false"));
     //free
     for(int i = 0; i < attr.lutAll_len; i++) {
+        //printf("free attr->lutAll[%d].cri_lut_out= %p\n",i,attr.lutAll[i].cri_lut_out);
         safe_free(attr.lutAll[i].cri_lut_out);
         safe_free(attr.lutAll[i].ct_lut_out);
     }
+    //printf(" free attr->lutAll= %p\n",attr.lutAll);
     safe_free(attr.lutAll);
     return 0;
 }
@@ -658,9 +662,9 @@ static int sample_awb_printflog(const rk_aiq_sys_ctx_t* ctx)
     //for(int i=0;i<100;i++)
     {
         memset(&awb_measure_result,0,sizeof(awb_measure_result));
-        rk_aiq_user_api2_awbV30_getAlgoSta(ctx, &awb_measure_result);
+        rk_aiq_user_api2_awb_getAlgoSta(ctx, &awb_measure_result);
         memset(&strategy_result,0,sizeof(strategy_result));
-        rk_aiq_user_api2_awbV30_getStrategyResult(ctx, &strategy_result);
+        rk_aiq_user_api2_awb_getStrategyResult(ctx, &strategy_result);
         printf("------------%d---------------\n",strategy_result.count);
         printf("Global CCT:%f,CCRI:%f,valid:%d\n",strategy_result.cctGloabl.CCT,strategy_result.cctGloabl.CCRI,
             strategy_result.cctGloabl.valid);
@@ -796,7 +800,7 @@ static int sample_awb_getStrategyResult(const rk_aiq_sys_ctx_t* ctx)
 {
     rk_tool_awb_strategy_result_t attr;
     memset(&attr,0,sizeof(attr));
-    rk_aiq_user_api2_awbV30_getStrategyResult(ctx, &attr);
+    rk_aiq_user_api2_awb_getStrategyResult(ctx, &attr);
     return 0;
 }
 

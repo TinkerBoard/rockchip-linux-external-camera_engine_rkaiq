@@ -44,7 +44,7 @@ AcnrV30_result_t cnr_select_params_by_ISO_V30(RK_CNR_Params_V30_t *pParams, RK_C
 
     iso = pExpInfo->arIso[pExpInfo->hdr_mode];
 
-    //确定iso等级
+    //确锟斤拷iso锟饺硷拷
     //rkuvnriso@50 100 200 400 800 1600 3200  6400 12800
     //      isogain: 1  2   4   8   16  32   64    128  256
     //     isoindex: 0  1   2   3   4   5    6     7    8
@@ -175,7 +175,7 @@ AcnrV30_result_t cnr_select_params_by_ISO_V30(RK_CNR_Params_V30_t *pParams, RK_C
 }
 
 
-AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CNR_Fix_V30_t *pFix, AcnrV30_ExpInfo_t *pExpInfo, float fStrength)
+AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CNR_Fix_V30_t *pFix, AcnrV30_ExpInfo_t *pExpInfo, rk_aiq_cnr_strength_v30_t* pStrength)
 {
     LOGI_ANR("%s:(%d) enter \n", __FUNCTION__, __LINE__);
 
@@ -198,9 +198,21 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
         return ACNRV30_RET_NULL_POINTER;
     }
 
+    if(pStrength == NULL) {
+        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ACNRV30_RET_NULL_POINTER;
+    }
+
+    float fStrength = 1.0;
+
+    if(pStrength->strength_enable) {
+        fStrength = pStrength->percent;
+    }
     if(fStrength <= 0.0) {
         fStrength = 0.000001;
     }
+
+    LOGD_ANR("strength_enable:%d fStrength: %f \n", pStrength->strength_enable, fStrength);
 
     // CNR_CTRL
     pFix->bf3x3_wgt0_sel = pSelect->bf_wgt0_sel;
@@ -233,7 +245,7 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
     int log2e = (int)(0.8493f * (1 << (RKCNR_V30_log2e + RKCNR_V30_SIGMA_FIX_BIT)));
     int rkcnr_chroma_filter_uv_gain =
         ROUND_F((1 << RKCNR_V30_uvgain) * pSelect->chroma_filter_uv_gain);
-    int thumbBFilterSigma = ROUND_F(pSelect->thumb_sigma * scale);
+    int thumbBFilterSigma = ROUND_F(pSelect->thumb_sigma * scale * fStrength);
     LOGD_ANR("scale:%d thumbBFilterSigma:%d\n", log2e, thumbBFilterSigma);
     thumbBFilterSigma = (int)(0.8493f * (1 << RKCNR_V30_FIX_BIT_INV_SIGMA) / thumbBFilterSigma);
     tmp = thumbBFilterSigma * ((1 << RKCNR_V30_uvgain) - rkcnr_chroma_filter_uv_gain * 2);
@@ -247,7 +259,7 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
 
     /* CNR_THUMB_BF_RATIO */
     uint16_t thumb_bf_ratio;
-    tmp = ROUND_F((1 << RKCNR_V30_FIX_BIT_BF_RATIO) * pSelect->thumb_bf_ratio);
+    tmp = ROUND_F((1 << RKCNR_V30_FIX_BIT_BF_RATIO) * pSelect->thumb_bf_ratio * fStrength);
     pFix->thumb_bf_ratio = CLIP(tmp, 0, 0x7ff);
 
     /* CNR_LBF_WEITD */
@@ -260,7 +272,7 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
     tmp = ROUND_F((1 << RKCNR_V30_FIX_BIT_SLOPE) * pSelect->wgt_slope);
     pFix->wgt_slope = CLIP(tmp, 0, 0x3ff);
 
-    tmp = ROUND_F(1.2011 * (1 << RKCNR_V30_FIX_BIT_INV_SIGMA) / (pSelect->chroma_filter_strength * scale));
+    tmp = ROUND_F(1.2011 * (1 << RKCNR_V30_FIX_BIT_INV_SIGMA) / (pSelect->chroma_filter_strength * scale * fStrength));
     int tmptmp = tmp * pFix->wgt_slope;
     int shiftBit = Math_LOG2(tmptmp) - RKCNR_V30_FIX_BIT_INT_TO_FLOAT;
     LOGD_ANR("tmp:%d tmptmp:%d shiftBit:%d\n", tmp, tmptmp, shiftBit);
@@ -286,7 +298,7 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
 
     /* CNR_GAUS_COE */
     for(int i = 0; i < 6; i++) {
-        tmp = pSelect->gaus_coeff[i];
+        tmp = pSelect->gaus_coeff[5 - i];
         pFix->gaus_coe[i] = CLIP(tmp, 0, 0x7f);
     }
 
@@ -301,9 +313,9 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
     /* CNR_BF_PARA1 */
     tmp = ROUND_F((1 << RKCNR_V30_uvgain) * pSelect->bf_uvgain);
     pFix->uv_gain = CLIP(tmp, 0, 0x7f);
-    tmp = (int)(log2e / (pSelect->bf_sigmaR * scale));
+    tmp = (int)(log2e / (pSelect->bf_sigmaR * scale * fStrength));
     pFix->sigma_r = CLIP(tmp, 0, 0x3ff);
-    tmp = ROUND_F((1 << RKCNR_V30_bfRatio) * pSelect->bf_ratio);
+    tmp = ROUND_F((1 << RKCNR_V30_bfRatio) * pSelect->bf_ratio / fStrength);
     pFix->bf_ratio = CLIP(tmp, 0, 0xff);
 
     /* CNR_BF_PARA2 */

@@ -37,7 +37,7 @@ typedef struct Asharp_Context_V33_s {
 
     struct list_head* list_sharp_v33;
 
-    float fSharp_Strength;
+    rk_aiq_sharp_strength_v33_t stStrength;
 
     bool isIQParaUpdate;
     bool isGrayMode;

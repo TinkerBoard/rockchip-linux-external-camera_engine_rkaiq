@@ -100,7 +100,7 @@ RkAiqCoreEvtsThread::loop()
 
 // notice that some pool shared items may be cached by other
 // modules(e.g. CamHwIsp20), so here should consider the cached number
-uint16_t RkAiqCore::DEFAULT_POOL_SIZE = 15;
+uint16_t RkAiqCore::DEFAULT_POOL_SIZE = 4;
 
 RkAiqCore::RkAiqCore(int isp_hw_ver)
     : mRkAiqCoreTh(new RkAiqCoreThread(this))
@@ -109,9 +109,9 @@ RkAiqCore::RkAiqCore(int isp_hw_ver)
     , mState(RK_AIQ_CORE_STATE_INVALID)
     , mCb(NULL)
     , mIsSingleThread(false)
-    , mAiqParamsPool(new RkAiqFullParamsPool("RkAiqFullParams", 32))
-    , mAiqCpslParamsPool(new RkAiqCpslParamsPool("RkAiqCpslParamsPool", 4))
-    , mAiqStatsPool(new RkAiqStatsPool("RkAiqStatsPool", RkAiqCore::DEFAULT_POOL_SIZE))
+    , mAiqParamsPool(new RkAiqFullParamsPool("RkAiqFullParams", RkAiqCore::DEFAULT_POOL_SIZE * 6))
+    , mAiqCpslParamsPool(new RkAiqCpslParamsPool("RkAiqCpslParamsPool", RkAiqCore::DEFAULT_POOL_SIZE))
+    , mAiqStatsPool(nullptr)
     , mAiqSofInfoWrapperPool(new RkAiqSofInfoWrapperPool("RkAiqSofPoolWrapper", RkAiqCore::DEFAULT_POOL_SIZE))
     , mAiqIspStatsIntPool(new RkAiqIspStatsIntPool("RkAiqIspStatsIntPool", RkAiqCore::DEFAULT_POOL_SIZE))
     , mAiqAecStatsPool(nullptr)
@@ -146,18 +146,36 @@ RkAiqCore::RkAiqCore(int isp_hw_ver)
     mAlgosDesArray = g_default_3a_des;
 
     if (mIspHwVer == 0) {
+#ifdef ISP_HW_V20
         mHasPp = true;
         mTranslator = new RkAiqResourceTranslator();
+#else
+        XCAM_ASSERT(0);
+#endif
     } else if (mIspHwVer == 1) {
+#ifdef ISP_HW_V21
         mHasPp = false;
         mTranslator = new RkAiqResourceTranslatorV21();
+#else
+        XCAM_ASSERT(0);
+#endif
     } else if (mIspHwVer == 3) {
+#ifdef ISP_HW_V30
+        mHasPp = false;
         mHasPp = false;
         mTranslator = new RkAiqResourceTranslatorV3x();
+#else
+        XCAM_ASSERT(0);
+#endif
     } else if (mIspHwVer == 4) {
+#ifdef ISP_HW_V32
+        mHasPp = false;
         mHasPp = false;
         mTranslator = new RkAiqResourceTranslatorV32();
         mIsSingleThread = true;
+#else
+        XCAM_ASSERT(0);
+#endif
     }
     EXIT_ANALYZER_FUNCTION();
 }
@@ -182,20 +200,15 @@ void RkAiqCore::initCpsl()
         (CalibDbV2_Cpsl_t*)(CALIBDBV2_GET_MODULE_PTR((void*)aiqCalib, cpsl));
     CalibDbV2_Cpsl_Param_t* calibv2_cpsl_calib = &calibv2_cpsl_db->param;
     // TODO: something from calib
+    LOGD_ASD("init cpsl enable %d num %d", calibv2_cpsl_calib->enable, mCpslCap.modes_num);
     if (mCpslCap.modes_num > 0 && calibv2_cpsl_calib->enable) {
-        if (calibv2_cpsl_calib->mode == 0) {
-            cfg->mode = RK_AIQ_OP_MODE_AUTO;
-        } else if (calibv2_cpsl_calib->mode == 1) {
-            cfg->mode = RK_AIQ_OP_MODE_MANUAL;
-        } else {
-            cfg->mode = RK_AIQ_OP_MODE_INVALID;
-        }
+        cfg->mode = calibv2_cpsl_calib->mode;
 
-        if (calibv2_cpsl_calib->light_src == 0) {
+        if (calibv2_cpsl_calib->light_src == 1) {
             cfg->lght_src = RK_AIQ_CPSLS_LED;
-        } else if (calibv2_cpsl_calib->light_src == 1) {
-            cfg->lght_src = RK_AIQ_CPSLS_IR;
         } else if (calibv2_cpsl_calib->light_src == 2) {
+            cfg->lght_src = RK_AIQ_CPSLS_IR;
+        } else if (calibv2_cpsl_calib->light_src == 3) {
             cfg->lght_src = RK_AIQ_CPSLS_MIX;
         } else {
             cfg->lght_src = RK_AIQ_CPSLS_INVALID;
@@ -204,18 +217,18 @@ void RkAiqCore::initCpsl()
         if (cfg->mode == RK_AIQ_OP_MODE_AUTO) {
             cfg->u.a.sensitivity = calibv2_cpsl_calib->auto_adjust_sens;
             cfg->u.a.sw_interval = calibv2_cpsl_calib->auto_sw_interval;
-            LOGI_ANALYZER("mode sensitivity %f, interval time %d s\n",
+            LOGD_ASD("mode sensitivity %f, interval time %d s\n",
                           cfg->u.a.sensitivity, cfg->u.a.sw_interval);
         } else {
             cfg->u.m.on = calibv2_cpsl_calib->manual_on;
             cfg->u.m.strength_ir = calibv2_cpsl_calib->manual_strength;
             cfg->u.m.strength_led = calibv2_cpsl_calib->manual_strength;
-            LOGI_ANALYZER("on %d, strength_led %f, strength_ir %f \n",
+            LOGD_ASD("on %d, strength_led %f, strength_ir %f \n",
                           cfg->u.m.on, cfg->u.m.strength_led, cfg->u.m.strength_ir);
         }
     } else {
         cfg->mode = RK_AIQ_OP_MODE_INVALID;
-        LOGI_ANALYZER("not support light compensation \n");
+        LOGD_ASD("not support light compensation \n");
     }
 }
 
@@ -1140,6 +1153,9 @@ RkAiqCore::setReqAlgoResMask(int algoType, bool req)
     case RK_AIQ_ALGO_TYPE_ACGC:
         tmp |= (uint64_t)1 << RESULT_TYPE_CGC_PARAM;
         break;
+    case RK_AIQ_ALGO_TYPE_ASD:
+        tmp |= (uint64_t)1 << RESULT_TYPE_CPSL_PARAM;
+        break;
     default:
         break;
     }
@@ -1402,7 +1418,7 @@ RkAiqCore::cacheIspStatsToList(SmartPtr<RkAiqAecStatsProxy>& aecStat,
 {
     SmartLock locker (ispStatsListMutex);
     SmartPtr<RkAiqStatsProxy> stats = NULL;
-    if (mAiqStatsPool->has_free_items()) {
+    if (mAiqStatsPool.ptr() && mAiqStatsPool->has_free_items()) {
         stats = mAiqStatsPool->get_item();
     } else {
         if(mAiqStatsCachedList.empty()) {
@@ -1422,6 +1438,9 @@ RkAiqCore::cacheIspStatsToList(SmartPtr<RkAiqAecStatsProxy>& aecStat,
 XCamReturn RkAiqCore::get3AStatsFromCachedList(rk_aiq_isp_stats_t **stats, int timeout_ms)
 {
     SmartLock locker (ispStatsListMutex);
+    if (!mAiqStatsPool.ptr())
+        mAiqStatsPool = new RkAiqStatsPool("RkAiqStatsPool", 2);
+
     int code = 0;
     while (mState != RK_AIQ_CORE_STATE_STOPED &&
             mAiqStatsCachedList.empty() &&
@@ -1469,6 +1488,9 @@ void RkAiqCore::release3AStatsRef(rk_aiq_isp_stats_t *stats)
 XCamReturn RkAiqCore::get3AStatsFromCachedList(rk_aiq_isp_stats_t &stats)
 {
     SmartLock locker (ispStatsListMutex);
+    if (!mAiqStatsPool.ptr())
+        mAiqStatsPool = new RkAiqStatsPool("RkAiqStatsPool", 2);
+
     if(!mAiqStatsCachedList.empty()) {
         SmartPtr<RkAiqStatsProxy> stats_proxy = mAiqStatsCachedList.front();
         mAiqStatsCachedList.pop_front();
@@ -1766,7 +1788,7 @@ RkAiqCore::setCpsLtCfg(rk_aiq_cpsl_cfg_t &cfg)
 {
     ENTER_ANALYZER_FUNCTION();
     if (mState < RK_AIQ_CORE_STATE_INITED) {
-        LOGE_ANALYZER("should call afer init");
+        LOGE_ASD("should call afer init");
         return XCAM_RETURN_ERROR_FAILED;
     }
 
@@ -1803,7 +1825,7 @@ RkAiqCore::setCpsLtCfg(rk_aiq_cpsl_cfg_t &cfg)
     }
 
     mAlogsComSharedParams.cpslCfg = cfg;
-    LOGD("set cpsl: mode %d", cfg.mode);
+    LOGD_ASD("set cpsl: mode %d", cfg.mode);
     EXIT_ANALYZER_FUNCTION();
 
     return XCAM_RETURN_NO_ERROR;
@@ -1880,7 +1902,7 @@ RkAiqCore::queryCpsLtCap(rk_aiq_cpsl_cap_t &cap)
     cap.sensitivity.max = 100;
     cap.sensitivity.step = 1;
 
-    LOGI("cpsl cap: light_src_num %d, led_step %f, ir_step %f",
+    LOGD_ASD("cpsl cap: light_src_num %d, led_step %f, ir_step %f",
          cap.lght_src_num, cap.strength_led.step, cap.strength_ir.step);
 
     EXIT_ANALYZER_FUNCTION();
@@ -2223,7 +2245,7 @@ void RkAiqCore::newAiqParamsPool()
                 if (!mAiqAecStatsPool.ptr())
                     mAiqAecStatsPool = new RkAiqAecStatsPool("RkAiqAecStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqExpParamsPool =
-                    new RkAiqExpParamsPool("RkAiqExpParams", MAX_AEC_EFFECT_FNUM * 4);
+                    new RkAiqExpParamsPool("RkAiqExpParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIrisParamsPool = new RkAiqIrisParamsPool("RkAiqIrisParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIspAecParamsPool =
                     new RkAiqIspAecParamsPool("RkAiqIspAecParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2279,7 +2301,7 @@ void RkAiqCore::newAiqParamsPool()
                 break;
             case RK_AIQ_ALGO_TYPE_ATMO:
                 if (!mAiqAtmoStatsPool.ptr())
-                    mAiqAtmoStatsPool = new RkAiqAtmoStatsPool("RkAiqAtmoStatsPool", 10);
+                    mAiqAtmoStatsPool = new RkAiqAtmoStatsPool("RkAiqAtmoStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIspTmoParamsPool =
                     new RkAiqIspTmoParamsPool("RkAiqIspTmoParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;

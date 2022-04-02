@@ -263,10 +263,8 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
         pAmergeGrpCtx->PrevData.CtrlData.ApiMode = pAmergeGrpCtx->mergeAttrV12.opMode;
 #endif
         pAmergeGrpCtx->ProcRes.update = !bypass;
-        pAmergeGrpCtx->ProcRes.LongFrameMode = pAmergeGrpCtx->SensorInfo.LongFrmMode;
         for(int i = 0; i < pAmergeGrpProcRes->arraySize; i++) {
             pAmergeGrpProcRes->camgroupParmasArray[i]->_amergeConfig->update = pAmergeGrpCtx->ProcRes.update;
-            pAmergeGrpProcRes->camgroupParmasArray[i]->_amergeConfig->LongFrameMode = pAmergeGrpCtx->ProcRes.LongFrameMode;
 #if RKAIQ_HAVE_MERGE_V10
             memcpy(&pAmergeGrpProcRes->camgroupParmasArray[i]->_amergeConfig->Merge_v10,
                    &pAmergeGrpCtx->ProcRes.Merge_v10, sizeof(MgeProcResV10_t));

@@ -676,6 +676,11 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
         aiqParams->mFocusParams->setType(RESULT_TYPE_FOCUS_PARAM);
         results_list.push_back(aiqParams->mFocusParams);
     }
+
+    if (aiqParams->mCpslParams.ptr()) {
+        aiqParams->mCpslParams->setType(RESULT_TYPE_CPSL_PARAM);
+        results_list.push_back(aiqParams->mCpslParams);
+    }
 #define APPLY_ANALYZER_RESULT(lc, BC) \
     if (aiqParams->m##lc##Params.ptr()) { \
         aiqParams->m##lc##Params->setType(RESULT_TYPE_##BC##_PARAM); \

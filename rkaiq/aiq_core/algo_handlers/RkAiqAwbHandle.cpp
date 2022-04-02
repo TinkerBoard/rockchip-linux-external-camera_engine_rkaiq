@@ -52,7 +52,10 @@ XCamReturn RkAiqAwbHandleInt::updateConfig(bool needSync) {
         sendSignal();
     }
     if (updateWbV20Attr) {
+        rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjustBK = mCurWbV20Attr.stAuto.wbGainAdjust;
         mCurWbV20Attr   = mNewWbV20Attr;
+        mCurWbV20Attr.stAuto.wbGainAdjust = wbGainAdjustBK;
+        mallocAndCopyWbGainAdjustAttrib(&mCurWbV20Attr.stAuto.wbGainAdjust,&mNewWbV20Attr.stAuto.wbGainAdjust);
         rk_aiq_uapiV2_awbV20_SetAttrib(mAlgoCtx, mCurWbV20Attr, false);
         updateWbV20Attr = false;
         sendSignal();
@@ -70,13 +73,16 @@ XCamReturn RkAiqAwbHandleInt::updateConfig(bool needSync) {
         sendSignal(mCurWbMwbAttr.sync.sync_mode);
     }
     if (updateWbAwbAttr) {
+        rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjustBK = mCurWbAwbAttr.wbGainAdjust;
         mCurWbAwbAttr   = mNewWbAwbAttr;
+        mCurWbAwbAttr.wbGainAdjust = wbGainAdjustBK;
+        mallocAndCopyWbGainAdjustAttrib(&mCurWbAwbAttr.wbGainAdjust,&mNewWbAwbAttr.wbGainAdjust);
         rk_aiq_uapiV2_awbV20_SetAwbAttrib(mAlgoCtx, mCurWbAwbAttr, false);
         updateWbAwbAttr = false;
         sendSignal();
     }
     if (updateWbAwbWbGainAdjustAttr) {
-        mCurWbAwbWbGainAdjustAttr   = mNewWbAwbWbGainAdjustAttr;
+        mallocAndCopyWbGainAdjustAttrib(&mCurWbAwbWbGainAdjustAttr,&mNewWbAwbWbGainAdjustAttr);
         rk_aiq_uapiV2_awb_SetAwbGainAdjust(mAlgoCtx, mCurWbAwbWbGainAdjustAttr, false);
         updateWbAwbWbGainAdjustAttr = false;
         sendSignal(mCurWbAwbWbGainAdjustAttr.sync.sync_mode);
@@ -212,7 +218,10 @@ XCamReturn RkAiqAwbHandleInt::setWbV20Attrib(rk_aiq_uapiV2_wbV20_attrib_t att) {
 
     // if something changed
     if (0 != memcmp(&mCurWbV20Attr, &att, sizeof(rk_aiq_uapiV2_wbV20_attrib_t))) {
+        rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjustBK = mNewWbV20Attr.stAuto.wbGainAdjust;
         mNewWbV20Attr   = att;
+        mNewWbV20Attr.stAuto.wbGainAdjust = wbGainAdjustBK;
+        mallocAndCopyWbGainAdjustAttrib(&mNewWbV20Attr.stAuto.wbGainAdjust,&att.stAuto.wbGainAdjust);
         updateWbV20Attr = true;
         waitSignal();
     }
@@ -359,7 +368,10 @@ XCamReturn RkAiqAwbHandleInt::setAwbV20Attrib(rk_aiq_uapiV2_wbV20_awb_attrib_t a
 
     // if something changed
     if (0 != memcmp(&mCurWbAwbAttr, &att, sizeof(rk_aiq_uapiV2_wbV20_awb_attrib_t))) {
+        rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjustBK = mNewWbAwbAttr.wbGainAdjust;
         mNewWbAwbAttr   = att;
+        mNewWbAwbAttr.wbGainAdjust = wbGainAdjustBK;
+        mallocAndCopyWbGainAdjustAttrib(&mNewWbAwbAttr.wbGainAdjust,&att.wbGainAdjust);
         updateWbAwbAttr = true;
         waitSignal();
     }
@@ -381,6 +393,100 @@ XCamReturn RkAiqAwbHandleInt::getAwbV20Attrib(rk_aiq_uapiV2_wbV20_awb_attrib_t* 
     return ret;
 }
 
+XCamReturn RkAiqAwbHandleInt::mallocAndCopyWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wbGainAdjust_t* dst, 
+    const rk_aiq_uapiV2_wb_awb_wbGainAdjust_t *src)
+{
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    //free
+    for(int i = 0; i < dst->lutAll_len; i++) {
+        int srcNum2 = src->lutAll[i].ct_grid_num * src->lutAll[i].cri_grid_num;
+        int dstNum2 = dst->lutAll[i].ct_grid_num * dst->lutAll[i].cri_grid_num;
+        if(dst->lutAll[i].cri_lut_out && dstNum2 < srcNum2){
+            //LOGE_AWB("free dst->lutAll[%d].cri_lut_out= %p",i,dst->lutAll[i].cri_lut_out);
+            free(dst->lutAll[i].cri_lut_out);
+            dst->lutAll[i].cri_lut_out = NULL;
+        }
+        if(dst->lutAll[i].ct_lut_out && dstNum2 < srcNum2){
+            free(dst->lutAll[i].ct_lut_out);
+            dst->lutAll[i].ct_lut_out = NULL;
+        }
+    }
+    if (dst->lutAll && dst->lutAll_len < src->lutAll_len) {
+        //LOGE_AWB(" free dst->lutAll= %p",dst->lutAll);
+        free(dst->lutAll);
+        dst->lutAll = NULL;
+    }
+    //malloc
+    if (!dst->lutAll){
+        dst->lutAll = (rk_aiq_uapiV2_wb_awb_wbGainAdjustLut_t*)malloc(sizeof(rk_aiq_uapiV2_wb_awb_wbGainAdjustLut_t)*src->lutAll_len);
+        //LOGE_AWB("malloc dst->lutAll= %p",dst->lutAll);
+        memset(dst->lutAll,0,sizeof(rk_aiq_uapiV2_wb_awb_wbGainAdjustLut_t)*src->lutAll_len);
+        for(int i = 0; i < src->lutAll_len; i++) {
+            int num2 = src->lutAll[i].ct_grid_num * src->lutAll[i].cri_grid_num;
+            if (!dst->lutAll[i].cri_lut_out){
+                dst->lutAll[i].cri_lut_out = (float*)malloc(sizeof(float) * num2);
+                memset(dst->lutAll[i].cri_lut_out,0,sizeof(float) * num2);
+
+            }
+            if (!dst->lutAll[i].ct_lut_out){
+                dst->lutAll[i].ct_lut_out = (float*)malloc(sizeof(float) * num2);
+                memset( dst->lutAll[i].ct_lut_out,0,sizeof(float) * num2);
+            }
+            //LOGE_AWB("malloc  dst->lutAll[%d].cri_lut_out= %p",i,dst->lutAll[i].cri_lut_out);
+        }
+    }
+    //copy
+    dst->enable = src->enable;
+    dst->lutAll_len = src->lutAll_len;
+    dst->sync = src->sync;
+    for(int i = 0; i < src->lutAll_len; i++) {
+        dst->lutAll[i].ct_grid_num = src->lutAll[i].ct_grid_num;
+        dst->lutAll[i].cri_grid_num = src->lutAll[i].cri_grid_num;
+        dst->lutAll[i].ct_in_range[0] = src->lutAll[i].ct_in_range[0];
+        dst->lutAll[i].ct_in_range[1] = src->lutAll[i].ct_in_range[1];
+        dst->lutAll[i].cri_in_range[0] = src->lutAll[i].cri_in_range[0];
+        dst->lutAll[i].cri_in_range[1] = src->lutAll[i].cri_in_range[1];
+        dst->lutAll[i].lumaValue = src->lutAll[i].lumaValue;
+        int num2 = dst->lutAll[i].ct_grid_num * dst->lutAll[i].cri_grid_num;
+        memcpy(dst->lutAll[i].cri_lut_out, src->lutAll[i].cri_lut_out,
+               sizeof(dst->lutAll[i].cri_lut_out[0])*num2);
+        memcpy(dst->lutAll[i].ct_lut_out, src->lutAll[i].ct_lut_out,
+               sizeof(dst->lutAll[i].ct_lut_out[0])*num2);
+    }
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqAwbHandleInt::freeWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wbGainAdjust_t* dst)
+{
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    //free
+    for(int i = 0; i < dst->lutAll_len; i++) {
+        //LOGE_AWB("free dst->lutAll[%d].cri_lut_out= %p",i,dst->lutAll[i].cri_lut_out);
+        if(dst->lutAll[i].cri_lut_out ){
+            free(dst->lutAll[i].cri_lut_out);
+            dst->lutAll[i].cri_lut_out = NULL;
+        }
+        if(dst->lutAll[i].ct_lut_out){
+            free(dst->lutAll[i].ct_lut_out);
+            dst->lutAll[i].ct_lut_out = NULL;
+        }
+    }
+    if (dst->lutAll) {
+        //LOGE_AWB(" free dst->lutAll= %p",dst->lutAll);
+        free(dst->lutAll);
+        dst->lutAll = NULL;
+    }
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+
 XCamReturn RkAiqAwbHandleInt::setWbAwbWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wbGainAdjust_t att) {
     ENTER_ANALYZER_FUNCTION();
 
@@ -401,7 +507,7 @@ XCamReturn RkAiqAwbHandleInt::setWbAwbWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wb
 
     // if something changed
     if (isChanged) {
-        mNewWbAwbWbGainAdjustAttr   = att;
+        mallocAndCopyWbGainAdjustAttrib(&mNewWbAwbWbGainAdjustAttr,&att);
         updateWbAwbWbGainAdjustAttr = true;
         waitSignal(att.sync.sync_mode);
     }
@@ -424,14 +530,16 @@ XCamReturn RkAiqAwbHandleInt::getWbAwbWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wb
         mCfgMutex.unlock();
     } else {
         if (updateWbAwbWbGainAdjustAttr) {
-            memcpy(att, &mNewWbAwbWbGainAdjustAttr, sizeof(mNewWbAwbWbGainAdjustAttr));
+            mallocAndCopyWbGainAdjustAttrib(att,&mNewWbAwbWbGainAdjustAttr);
             att->sync.done = false;
         } else {
             rk_aiq_uapiV2_awb_GetAwbGainAdjust(mAlgoCtx, att);
             att->sync.sync_mode = mNewWbAwbWbGainAdjustAttr.sync.sync_mode;
             att->sync.done      = true;
         }
+
     }
+
 
     EXIT_ANALYZER_FUNCTION();
     return ret;

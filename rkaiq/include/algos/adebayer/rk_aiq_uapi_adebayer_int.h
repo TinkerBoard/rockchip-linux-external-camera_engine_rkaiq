@@ -15,24 +15,30 @@ typedef struct adebayer_attrib_auto_s {
     uint8_t     high_freq_thresh;
 } adebayer_attrib_auto_t;
 
+typedef AdebayerSeletedParamV1_t adebayer_attrib_manual_t;
+
 typedef struct adebayer_attrib_s {
     rk_aiq_uapi_sync_t          sync;
     rk_aiq_debayer_op_mode_t    mode;
 
     uint8_t                     enable;
-    AdebayerSeletedParamV1_t    stManual;
+    adebayer_attrib_manual_t    stManual;
     adebayer_attrib_auto_t      stAuto;
 
 } adebayer_attrib_t;
+
+typedef AdebayerSeletedParamV2_t adebayer_attrib_v2_manual_t;
+typedef CalibDbV2_Debayer_Tuning_t adebayer_attrib_v2_auto_t;
 
 typedef struct adebayer_v2_attrib_s {
     rk_aiq_uapi_sync_t          sync;
     rk_aiq_debayer_op_mode_t    mode;
 
-    AdebayerSeletedParamV2_t    stManual;
-    CalibDbV2_Debayer_Tuning_t  stAuto;
+    adebayer_attrib_v2_manual_t    stManual;
+    adebayer_attrib_v2_auto_t      stAuto;
 
 } adebayer_v2_attrib_t;
+
 
 // need_sync means the implementation should consider
 // the thread synchronization

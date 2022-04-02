@@ -622,7 +622,7 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"ynr_v22", RK_AIQ_ALGO_TYPE_AYNR},
         {"cnr_v30", RK_AIQ_ALGO_TYPE_ACNR},
         {"sharp_v33", RK_AIQ_ALGO_TYPE_ASHARP},
-        
+        {"wb_v32", RK_AIQ_ALGO_TYPE_AWB},
 
 
     };
@@ -1400,86 +1400,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeDehazeV11Ctx(CalibDbV2_dehaze_v11_t* dehaze) {
 }
 #endif
 
-#if RKAIQ_HAVE_DEHAZE_V12
-int RkAiqCalibDbV2::CamCalibDbFreeDehazeV12Ctx(CalibDbV2_dehaze_v12_t* dehaze) {
-    CalibDbDehazeV12_t* DehazeTuningPara = &dehaze->DehazeTuningPara;
-
-    Dehaze_Setting_V11_t* dehaze_setting = &DehazeTuningPara->dehaze_setting;
-    DehazeDataV11_t* DehazeData          = &dehaze_setting->DehazeData;
-
-    if (DehazeData->CtrlData) calib_free(DehazeData->CtrlData);
-    if (DehazeData->dc_min_th)
-        calib_free(DehazeData->dc_min_th);
-    if (DehazeData->dc_max_th)
-        calib_free(DehazeData->dc_max_th);
-    if (DehazeData->yhist_th)
-        calib_free(DehazeData->yhist_th);
-    if (DehazeData->yblk_th)
-        calib_free(DehazeData->yblk_th);
-    if (DehazeData->dark_th)
-        calib_free(DehazeData->dark_th);
-    if (DehazeData->bright_min)
-        calib_free(DehazeData->bright_min);
-    if (DehazeData->bright_max)
-        calib_free(DehazeData->bright_max);
-    if (DehazeData->wt_max)
-        calib_free(DehazeData->wt_max);
-    if (DehazeData->air_min)
-        calib_free(DehazeData->air_min);
-    if (DehazeData->air_max)
-        calib_free(DehazeData->air_max);
-    if (DehazeData->tmax_base)
-        calib_free(DehazeData->tmax_base);
-    if (DehazeData->tmax_off)
-        calib_free(DehazeData->tmax_off);
-    if (DehazeData->tmax_max)
-        calib_free(DehazeData->tmax_max);
-    if (DehazeData->cfg_wt)
-        calib_free(DehazeData->cfg_wt);
-    if (DehazeData->cfg_air)
-        calib_free(DehazeData->cfg_air);
-    if (DehazeData->cfg_tmax)
-        calib_free(DehazeData->cfg_tmax);
-    if (DehazeData->dc_weitcur)
-        calib_free(DehazeData->dc_weitcur);
-    if (DehazeData->bf_weight)
-        calib_free(DehazeData->bf_weight);
-    if (DehazeData->range_sigma)
-        calib_free(DehazeData->range_sigma);
-    if (DehazeData->space_sigma_pre)
-        calib_free(DehazeData->space_sigma_pre);
-    if (DehazeData->space_sigma_cur)
-        calib_free(DehazeData->space_sigma_cur);
-
-    Enhance_Setting_V12_t* enhance_setting = &DehazeTuningPara->enhance_setting;
-    EnhanceDataV11_t* EnhanceData          = &enhance_setting->EnhanceData;
-
-    if (EnhanceData->CtrlData) calib_free(EnhanceData->CtrlData);
-    if (EnhanceData->enhance_value)
-        calib_free(EnhanceData->enhance_value);
-    if (EnhanceData->enhance_chroma)
-        calib_free(EnhanceData->enhance_chroma);
-
-    Hist_setting_V11_t* hist_setting = &DehazeTuningPara->hist_setting;
-    HistDataV11_t* HistData          = &hist_setting->HistData;
-    if (HistData->CtrlData) calib_free(HistData->CtrlData);
-    if (HistData->hist_gratio)
-        calib_free(HistData->hist_gratio);
-    if (HistData->hist_th_off)
-        calib_free(HistData->hist_th_off);
-    if (HistData->hist_k)
-        calib_free(HistData->hist_k);
-    if (HistData->hist_min)
-        calib_free(HistData->hist_min);
-    if (HistData->hist_scale)
-        calib_free(HistData->hist_scale);
-    if (HistData->cfg_gratio)
-        calib_free(HistData->cfg_gratio);
-
-    return 0;
-}
-#endif
-
 int RkAiqCalibDbV2::CamCalibDbFreeDpccCtx(CalibDbV2_Dpcc_t* dpcc)
 {
     CalibDbDpccV20_t* DpccTuningPara = &dpcc->DpccTuningPara;
@@ -1507,181 +1427,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeDpccCtx(CalibDbV2_Dpcc_t* dpcc)
     return 0;
 }
 
-#if RKAIQ_HAVE_MERGE_V10
-int RkAiqCalibDbV2::CamCalibDbFreeMergeCtx(CalibDbV2_merge_V10_t* merge) {
-    MergeV10_t* MergeTuningPara = &merge->MergeTuningPara;
-    MergeOECurveV10_t* OECurve  = &MergeTuningPara->OECurve;
-    if (OECurve->EnvLv)
-        calib_free(OECurve->EnvLv);
-    if (OECurve->Smooth)
-        calib_free(OECurve->Smooth);
-    if (OECurve->Offset)
-        calib_free(OECurve->Offset);
-
-    MergeMDCurveV10_t* MDCurve = &MergeTuningPara->MDCurve;
-    if (MDCurve->MoveCoef)
-        calib_free(MDCurve->MoveCoef);
-    if (MDCurve->LM_smooth)
-        calib_free(MDCurve->LM_smooth);
-    if (MDCurve->LM_offset)
-        calib_free(MDCurve->LM_offset);
-    if (MDCurve->MS_smooth)
-        calib_free(MDCurve->MS_smooth);
-    if (MDCurve->MS_offset)
-        calib_free(MDCurve->MS_offset);
-
-    return 0;
-}
-#endif
-
-#if RKAIQ_HAVE_MERGE_V11
-int RkAiqCalibDbV2::CamCalibDbFreeMergeV2Ctx(CalibDbV2_merge_V11_t* merge) {
-    MergeV11_t* MergeTuningPara    = &merge->MergeTuningPara;
-    MergeOECurveV10_t* OECurveLong = &MergeTuningPara->LongFrmModeData.OECurve;
-    if (OECurveLong->EnvLv)
-        calib_free(OECurveLong->EnvLv);
-    if (OECurveLong->Smooth)
-        calib_free(OECurveLong->Smooth);
-    if (OECurveLong->Offset)
-        calib_free(OECurveLong->Offset);
-
-    MergeMDCurveV10_t* MDCurveLong = &MergeTuningPara->LongFrmModeData.MDCurve;
-    if (MDCurveLong->MoveCoef)
-        calib_free(MDCurveLong->MoveCoef);
-    if (MDCurveLong->LM_smooth)
-        calib_free(MDCurveLong->LM_smooth);
-    if (MDCurveLong->LM_offset)
-        calib_free(MDCurveLong->LM_offset);
-    if (MDCurveLong->MS_smooth)
-        calib_free(MDCurveLong->MS_smooth);
-    if (MDCurveLong->MS_offset)
-        calib_free(MDCurveLong->MS_offset);
-
-    MergeOECurveV10_t* OECurveShort = &MergeTuningPara->ShortFrmModeData.OECurve;
-    if (OECurveShort->EnvLv)
-        calib_free(OECurveShort->EnvLv);
-    if (OECurveShort->Smooth)
-        calib_free(OECurveShort->Smooth);
-    if (OECurveShort->Offset)
-        calib_free(OECurveShort->Offset);
-
-    MergeMDCurveV11Short_t* MDCurveShort = &MergeTuningPara->ShortFrmModeData.MDCurve;
-    if (MDCurveShort->MoveCoef)
-        calib_free(MDCurveShort->MoveCoef);
-    if (MDCurveShort->Coef)
-        calib_free(MDCurveShort->Coef);
-    if (MDCurveShort->ms_thd0)
-        calib_free(MDCurveShort->ms_thd0);
-    if (MDCurveShort->lm_thd0)
-        calib_free(MDCurveShort->lm_thd0);
-
-    return 0;
-}
-#endif
-
-#if RKAIQ_HAVE_DRC_V10
-int RkAiqCalibDbV2::CamCalibDbFreeDrcV10Ctx(CalibDbV2_drc_V10_t* drc) {
-    CalibDbV2_Adrc_V10_t* DrcTuningPara = &drc->DrcTuningPara;
-    AdrcGain_t* DrcGain = &DrcTuningPara->DrcGain;
-    if (DrcGain->EnvLv)
-        calib_free(DrcGain->EnvLv);
-    if (DrcGain->DrcGain)
-        calib_free(DrcGain->DrcGain);
-    if (DrcGain->Alpha)
-        calib_free(DrcGain->Alpha);
-    if (DrcGain->Clip)
-        calib_free(DrcGain->Clip);
-
-    HighLight_t* HiLight = &DrcTuningPara->HiLight;
-    if (HiLight->EnvLv)
-        calib_free(HiLight->EnvLv);
-    if (HiLight->Strength)
-        calib_free(HiLight->Strength);
-
-    local_t* LocalTMOSetting = &DrcTuningPara->LocalTMOSetting;
-    LocalData_t* LocalTMOData = &LocalTMOSetting->LocalTMOData;
-    if (LocalTMOData->EnvLv)
-        calib_free(LocalTMOData->EnvLv);
-    if (LocalTMOData->LocalWeit)
-        calib_free(LocalTMOData->LocalWeit);
-    if (LocalTMOData->GlobalContrast)
-        calib_free(LocalTMOData->GlobalContrast);
-    if (LocalTMOData->LoLitContrast)
-        calib_free(LocalTMOData->LoLitContrast);
-
-    return 0;
-}
-#endif
-
-#if RKAIQ_HAVE_DRC_V11
-int RkAiqCalibDbV2::CamCalibDbFreeDrcV11Ctx(CalibDbV2_drc_V11_t* drc) {
-    CalibDbV2_Adrc_V11_t* DrcTuningPara = &drc->DrcTuningPara;
-    AdrcGain_t* DrcGain = &DrcTuningPara->DrcGain;
-    if (DrcGain->EnvLv)
-        calib_free(DrcGain->EnvLv);
-    if (DrcGain->DrcGain)
-        calib_free(DrcGain->DrcGain);
-    if (DrcGain->Alpha)
-        calib_free(DrcGain->Alpha);
-    if (DrcGain->Clip)
-        calib_free(DrcGain->Clip);
-
-    HighLight_t* HiLight = &DrcTuningPara->HiLight;
-    if (HiLight->EnvLv)
-        calib_free(HiLight->EnvLv);
-    if (HiLight->Strength)
-        calib_free(HiLight->Strength);
-
-    localV11_t* LocalSetting = &DrcTuningPara->LocalSetting;
-    LocalDataV2_t* LocalData = &LocalSetting->LocalData;
-    if (LocalData->EnvLv)
-        calib_free(LocalData->EnvLv);
-    if (LocalData->LocalWeit)
-        calib_free(LocalData->LocalWeit);
-    if (LocalData->LocalAutoEnable)
-        calib_free(LocalData->LocalAutoEnable);
-    if (LocalData->LocalAutoWeit)
-        calib_free(LocalData->LocalAutoWeit);
-    if (LocalData->GlobalContrast)
-        calib_free(LocalData->GlobalContrast);
-    if (LocalData->LoLitContrast)
-        calib_free(LocalData->LoLitContrast);
-
-    return 0;
-}
-#endif
-
-#if RKAIQ_HAVE_DRC_V12
-int RkAiqCalibDbV2::CamCalibDbFreeDrcV12Ctx(CalibDbV2_drc_V12_t* drc) {
-    CalibDbV2_Adrc_V12_t* DrcTuningPara = &drc->DrcTuningPara;
-    AdrcGain_t* DrcGain                 = &DrcTuningPara->DrcGain;
-    if (DrcGain->EnvLv) calib_free(DrcGain->EnvLv);
-    if (DrcGain->DrcGain) calib_free(DrcGain->DrcGain);
-    if (DrcGain->Alpha) calib_free(DrcGain->Alpha);
-    if (DrcGain->Clip) calib_free(DrcGain->Clip);
-
-    HighLightV12_t* HiLight = &DrcTuningPara->HiLight;
-    if (HiLight->HiLightData.EnvLv) calib_free(HiLight->HiLightData.EnvLv);
-    if (HiLight->HiLightData.Strength) calib_free(HiLight->HiLightData.Strength);
-    if (HiLight->HiLightData.gas_t) calib_free(HiLight->HiLightData.gas_t);
-
-    localV12_t* LocalSetting = &DrcTuningPara->LocalSetting;
-    LocalDataV2_t* LocalData = &LocalSetting->LocalData;
-    if (LocalData->EnvLv) calib_free(LocalData->EnvLv);
-    if (LocalData->LocalWeit) calib_free(LocalData->LocalWeit);
-    if (LocalData->LocalAutoEnable) calib_free(LocalData->LocalAutoEnable);
-    if (LocalData->LocalAutoWeit) calib_free(LocalData->LocalAutoWeit);
-    if (LocalData->GlobalContrast) calib_free(LocalData->GlobalContrast);
-    if (LocalData->LoLitContrast) calib_free(LocalData->LoLitContrast);
-
-    MotionData_t* MotionData = &LocalSetting->MotionData;
-    if (MotionData->MotionCoef) calib_free(MotionData->MotionCoef);
-    if (MotionData->MotionStr) calib_free(MotionData->MotionStr);
-
-    return 0;
-}
-#endif
-
 int RkAiqCalibDbV2::CamCalibDbFreeCpslCtx(CalibDbV2_Cpsl_t* cpsl)
 {
     return 0;
@@ -1708,16 +1453,18 @@ int RkAiqCalibDbV2::CamCalibDbFreeDebayerV2Ctx(CalibDbV2_Debayer_v2_t* debayer_v
     return 0;
 }
 #endif
-
+#if RKAIQ_HAVE_ACP_V10
 int RkAiqCalibDbV2::CamCalibDbFreeCprocCtx(CalibDbV2_Cproc_t* cproc)
 {
     return 0;
 }
-
+#endif
+#if RKAIQ_HAVE_AIE_V10
 int RkAiqCalibDbV2::CamCalibDbFreeIeCtx(CalibDbV2_IE_t* ie)
 {
     return 0;
 }
+#endif
 
 int RkAiqCalibDbV2::CamCalibDbFreeLscCtx(CalibDbV2_LSC_t* lsc)
 {
@@ -2681,11 +2428,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeInternal(CamCalibDbV2Context_t* ctx) {
         CamCalibDbFreeGicV21Ctx(agic_calib_v21);
 #endif
 
-#if RKAIQ_HAVE_DEHAZE_V12
-    CalibDbV2_dehaze_v12_t* adehaze_calib_v12 =
-        (CalibDbV2_dehaze_v12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adehaze_calib_v12));
-    if (adehaze_calib_v12) CamCalibDbFreeDehazeV12Ctx(adehaze_calib_v12);
-#endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
     CalibDbV2_dehaze_v11_t* adehaze_calib_v11 =
         (CalibDbV2_dehaze_v11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adehaze_calib_v11));
@@ -2696,31 +2438,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeInternal(CamCalibDbV2Context_t* ctx) {
         (CalibDbV2_Dpcc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adpcc_calib));
     if (adpcc_calib)
         CamCalibDbFreeDpccCtx(adpcc_calib);
-
-    CalibDbV2_merge_V10_t* amerge_calib =
-        (CalibDbV2_merge_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, amerge_calib));
-    if (amerge_calib) {
-#if RKAIQ_HAVE_MERGE_V11
-        CamCalibDbFreeMergeV2Ctx((CalibDbV2_merge_V11_t*)amerge_calib);
-#endif
-#if RKAIQ_HAVE_MERGE_V10
-        CamCalibDbFreeMergeCtx(amerge_calib);
-#endif
-    }
-
-    CalibDbV2_drc_V10_t* adrc_calib =
-        (CalibDbV2_drc_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adrc_calib));
-    if (adrc_calib) {
-#if RKAIQ_HAVE_DRC_V12
-        CamCalibDbFreeDrcV12Ctx((CalibDbV2_drc_V12_t*)adrc_calib);
-#endif
-#if RKAIQ_HAVE_DRC_V11
-        CamCalibDbFreeDrcV11Ctx((CalibDbV2_drc_V11_t*)adrc_calib);
-#endif
-#if RKAIQ_HAVE_DRC_V10
-        CamCalibDbFreeDrcV10Ctx(adrc_calib);
-#endif
-    }
 
     CalibDbV2_Cpsl_t* cpsl = (CalibDbV2_Cpsl_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cpsl));
     if (cpsl) CamCalibDbFreeCpslCtx(cpsl);
@@ -2953,11 +2670,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
         CamCalibDbFreeGicV21Ctx(agic_calib_v21);
 #endif
 
-#if RKAIQ_HAVE_DEHAZE_V12
-    CalibDbV2_dehaze_v12_t* adehaze_calib_v12 =
-        (CalibDbV2_dehaze_v12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adehaze_calib_v12));
-    if (adehaze_calib_v12) CamCalibDbFreeDehazeV12Ctx(adehaze_calib_v12);
-#endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
     CalibDbV2_dehaze_v11_t* adehaze_calib_v11 =
         (CalibDbV2_dehaze_v11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adehaze_calib_v11));
@@ -2968,31 +2680,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
         (CalibDbV2_Dpcc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adpcc_calib));
     if (adpcc_calib)
         CamCalibDbFreeDpccCtx(adpcc_calib);
-
-    CalibDbV2_merge_V10_t* amerge_calib =
-        (CalibDbV2_merge_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, amerge_calib));
-    if (amerge_calib) {
-#if RKAIQ_HAVE_MERGE_V11
-        CamCalibDbFreeMergeV2Ctx((CalibDbV2_merge_V11_t*)amerge_calib);
-#endif
-#if RKAIQ_HAVE_MERGE_V10
-        CamCalibDbFreeMergeCtx(amerge_calib);
-#endif
-    }
-
-    CalibDbV2_drc_V10_t* adrc_calib =
-        (CalibDbV2_drc_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adrc_calib));
-    if (adrc_calib) {
-#if RKAIQ_HAVE_DRC_V12
-        CamCalibDbFreeDrcV12Ctx((CalibDbV2_drc_V12_t*)adrc_calib);
-#endif
-#if RKAIQ_HAVE_DRC_V11
-        CamCalibDbFreeDrcV11Ctx((CalibDbV2_drc_V11_t*)adrc_calib);
-#endif
-#if RKAIQ_HAVE_DRC_V10
-        CamCalibDbFreeDrcV10Ctx(adrc_calib);
-#endif
-    }
 
     CalibDbV2_Cpsl_t* cpsl = (CalibDbV2_Cpsl_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cpsl));
     if (cpsl) CamCalibDbFreeCpslCtx(cpsl);
@@ -3014,12 +2701,14 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
         (CalibDbV2_Debayer_v2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, debayer));
     if (debayer) CamCalibDbFreeDebayerV2Ctx(debayer);
 #endif
-
+#if RKAIQ_HAVE_ACP_V10
     CalibDbV2_Cproc_t* cproc = (CalibDbV2_Cproc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cproc));
     if (cproc) CamCalibDbFreeCprocCtx(cproc);
-
+#endif
+#if RKAIQ_HAVE_AIE_V10
     CalibDbV2_IE_t* ie = (CalibDbV2_IE_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, ie));
     if (ie) CamCalibDbFreeIeCtx(ie);
+#endif
 
     CalibDbV2_LSC_t* lsc_v2 = (CalibDbV2_LSC_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, lsc_v2));
     if (lsc_v2) CamCalibDbFreeLscCtx(lsc_v2);

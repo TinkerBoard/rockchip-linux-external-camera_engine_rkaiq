@@ -70,7 +70,7 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
 
     if (!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB)) {
         CalibDbV2_Blc_V32_t* calibv2_ablc_calib = (CalibDbV2_Blc_V32_t*)(CALIBDBV2_GET_MODULE_PTR(
-            (void*)(pCfgParam->com.u.prepare.calibv2), ablcV32_calib));
+                    (void*)(pCfgParam->com.u.prepare.calibv2), ablcV32_calib));
 
         LOGE_ABLC("%s: Ablc Reload Para!\n", __FUNCTION__);
         memcpy(&pAblcCtx->stBlcCalib, calibv2_ablc_calib, sizeof(pAblcCtx->stBlcCalib));
@@ -172,7 +172,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
 
     delta_iso = abs(stExpInfo.arIso[stExpInfo.hdr_mode] -
                     pAblcCtx->stExpInfo.arIso[pAblcCtx->stExpInfo.hdr_mode]);
-    if (delta_iso > ABLC_RECALCULATE_DELTE_ISO) {
+    if (delta_iso > ABLC_V32_RECALCULATE_DELTE_ISO) {
         pAblcCtx->isReCalculate |= 1;
     }
 
@@ -202,15 +202,15 @@ static XCamReturn post_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* ou
 
 RkAiqAlgoDescription g_RkIspAlgoDescAblcV32 = {
     .common =
-        {
-            .version         = RKISP_ALGO_ABLC_V32_VERSION,
-            .vendor          = RKISP_ALGO_ABLC_V32_VENDOR,
-            .description     = RKISP_ALGO_ABLC_V32_DESCRIPTION,
-            .type            = RK_AIQ_ALGO_TYPE_ABLC,
-            .id              = 0,
-            .create_context  = create_context,
-            .destroy_context = destroy_context,
-        },
+    {
+        .version         = RKISP_ALGO_ABLC_V32_VERSION,
+        .vendor          = RKISP_ALGO_ABLC_V32_VENDOR,
+        .description     = RKISP_ALGO_ABLC_V32_DESCRIPTION,
+        .type            = RK_AIQ_ALGO_TYPE_ABLC,
+        .id              = 0,
+        .create_context  = create_context,
+        .destroy_context = destroy_context,
+    },
     .prepare      = prepare,
     .pre_process  = pre_process,
     .processing   = processing,

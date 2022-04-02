@@ -32,7 +32,7 @@ Asharp_result_V33_t Asharp_Start_V33(Asharp_Context_V33_t* pAsharpCtx) {
     }
 
     if ((ASHARP_V33_STATE_RUNNING == pAsharpCtx->eState) ||
-        (ASHARP_V33_STATE_LOCKED == pAsharpCtx->eState)) {
+            (ASHARP_V33_STATE_LOCKED == pAsharpCtx->eState)) {
         return (ASHARP_V33_RET_FAILURE);
     }
 
@@ -75,7 +75,8 @@ Asharp_result_V33_t Asharp_Init_V33(Asharp_Context_V33_t** ppAsharpCtx, void* pC
     memset(pAsharpCtx, 0x00, sizeof(Asharp_Context_V33_t));
 
     // gain state init
-    pAsharpCtx->fSharp_Strength = 1.0;
+    pAsharpCtx->stStrength.strength_enable = true;
+    pAsharpCtx->stStrength.percent = 1.0;
 
     pAsharpCtx->eState = ASHARP_V33_STATE_INITIALIZED;
     *ppAsharpCtx       = pAsharpCtx;
@@ -127,7 +128,7 @@ Asharp_result_V33_t Asharp_Release_V33(Asharp_Context_V33_t* pAsharpCtx) {
 
     // check state
     if ((ASHARP_V33_STATE_RUNNING == pAsharpCtx->eState) ||
-        (ASHARP_V33_STATE_LOCKED == pAsharpCtx->eState)) {
+            (ASHARP_V33_STATE_LOCKED == pAsharpCtx->eState)) {
         return (ASHARP_V33_RET_BUSY);
     }
 
@@ -229,7 +230,7 @@ Asharp_result_V33_t Asharp_Process_V33(Asharp_Context_V33_t* pAsharpCtx,
 
 #if ASHARP_USE_XML_FILE_V33
         if (pExpInfo->snr_mode != pAsharpCtx->stExpInfo.snr_mode ||
-            pAsharpCtx->eParamMode != mode) {
+                pAsharpCtx->eParamMode != mode) {
             LOGD_ASHARP("param mode:%d snr_mode:%d\n", mode, pExpInfo->snr_mode);
             pAsharpCtx->eParamMode = mode;
             Asharp_ConfigSettingParam_V33(pAsharpCtx, pAsharpCtx->eParamMode, pExpInfo->snr_mode);
@@ -254,7 +255,7 @@ Asharp_result_V33_t Asharp_Process_V33(Asharp_Context_V33_t* pAsharpCtx,
 
 // anr get result
 Asharp_result_V33_t Asharp_GetProcResult_V33(Asharp_Context_V33_t* pAsharpCtx,
-                                             Asharp_ProcResult_V33_t* pAsharpResult) {
+        Asharp_ProcResult_V33_t* pAsharpResult) {
     LOGI_ASHARP("%s(%d): enter!\n", __FUNCTION__, __LINE__);
 
     if (pAsharpCtx == NULL) {
@@ -270,16 +271,14 @@ Asharp_result_V33_t Asharp_GetProcResult_V33(Asharp_Context_V33_t* pAsharpCtx,
     if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_AUTO) {
         pAsharpResult->stSelect = pAsharpCtx->stAuto.stSelect;
     } else if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_MANUAL) {
-        // TODO
         pAsharpResult->stSelect     = pAsharpCtx->stManual.stSelect;
-        pAsharpCtx->fSharp_Strength = 1.0;
     }
 
     // transfer to reg value
-    sharp_fix_transfer_V33(&pAsharpResult->stSelect, &pAsharpResult->stFix, pAsharpCtx->fSharp_Strength, &pAsharpCtx->stExpInfo);
+    sharp_fix_transfer_V33(&pAsharpResult->stSelect, &pAsharpResult->stFix, &pAsharpCtx->stStrength, &pAsharpCtx->stExpInfo);
     if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_REG_MANUAL) {
         pAsharpResult->stFix        = pAsharpCtx->stManual.stFix;
-        pAsharpCtx->fSharp_Strength = 1.0;
+        pAsharpCtx->stStrength.percent = 1.0;
     }
 
     LOGI_ASHARP("%s(%d): exit!\n", __FUNCTION__, __LINE__);
@@ -287,7 +286,7 @@ Asharp_result_V33_t Asharp_GetProcResult_V33(Asharp_Context_V33_t* pAsharpCtx,
 }
 
 Asharp_result_V33_t Asharp_ConfigSettingParam_V33(Asharp_Context_V33_t* pAsharpCtx,
-                                                  Asharp_ParamMode_V33_t eParamMode, int snr_mode) {
+        Asharp_ParamMode_V33_t eParamMode, int snr_mode) {
     char snr_name[CALIBDB_NR_SHARP_NAME_LENGTH];
     char param_mode_name[CALIBDB_MAX_MODE_NAME_LENGTH];
     memset(param_mode_name, 0x00, sizeof(param_mode_name));
@@ -329,8 +328,8 @@ Asharp_result_V33_t Asharp_ConfigSettingParam_V33(Asharp_Context_V33_t* pAsharpC
 }
 
 Asharp_result_V33_t Asharp_ParamModeProcess_V33(Asharp_Context_V33_t* pAsharpCtx,
-                                                Asharp_ExpInfo_V33_t* pExpInfo,
-                                                Asharp_ParamMode_V33_t* mode) {
+        Asharp_ExpInfo_V33_t* pExpInfo,
+        Asharp_ParamMode_V33_t* mode) {
     Asharp_result_V33_t res = ASHARP_V33_RET_SUCCESS;
     *mode                   = pAsharpCtx->eParamMode;
 

@@ -34,6 +34,7 @@ extern RkAiqAlgoDescription g_RkIspAlgoDescamgroupAgamma;
 extern RkAiqAlgoDescription g_RkIspAlgoDescCamgroupAdrc;
 extern RkAiqAlgoDescription g_RkIspAlgoDescCamgroupAmerge;
 extern RkAiqAlgoDescription g_RkIspAlgoDescCamgroupAblc;
+extern RkAiqAlgoDescription g_RkIspAlgoDescCamgroupAblcV32;
 
 XCAM_END_DECLARE
 

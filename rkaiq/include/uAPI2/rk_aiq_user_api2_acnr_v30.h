@@ -15,26 +15,26 @@
  *
  */
 
-#ifndef _RK_AIQ_USER_API2_ACNRV2_H_
-#define _RK_AIQ_USER_API2_ACNRV2_H_
+#ifndef _RK_AIQ_USER_API2_ACNRV30_H_
+#define _RK_AIQ_USER_API2_ACNRV30_H_
 
-#include "acnr2/rk_aiq_uapi_acnr_int_v2.h"
+#include "acnrV30/rk_aiq_uapi_acnr_int_v30.h"
 
 typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 
 RKAIQ_BEGIN_DECLARE
 
 XCamReturn
-rk_aiq_user_api2_acnrV2_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_cnr_attrib_v2_t* attr);
+rk_aiq_user_api2_acnrV30_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_cnr_attrib_v30_t* attr);
 
 XCamReturn
-rk_aiq_user_api2_acnrV2_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_cnr_attrib_v2_t* attr);
+rk_aiq_user_api2_acnrV30_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_cnr_attrib_v30_t* attr);
 
 XCamReturn
-rk_aiq_user_api2_acnrV2_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_cnr_strength_v2_t *pStrength);
+rk_aiq_user_api2_acnrV30_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_cnr_strength_v30_t *pStrength);
 
 XCamReturn
-rk_aiq_user_api2_acnrV2_GetStrength(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_cnr_strength_v2_t *pStrength);
+rk_aiq_user_api2_acnrV30_GetStrength(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_cnr_strength_v30_t *pStrength);
 
 
 RKAIQ_END_DECLARE

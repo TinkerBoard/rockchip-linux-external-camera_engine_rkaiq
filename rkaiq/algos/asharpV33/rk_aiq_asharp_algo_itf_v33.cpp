@@ -81,7 +81,7 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
     if (!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB)) {
 #if (ASHARP_USE_JSON_FILE_V33)
         CalibDbV2_SharpV33_t* calibv2_sharp = (CalibDbV2_SharpV33_t*)(CALIBDBV2_GET_MODULE_PTR(
-            pCfgParam->com.u.prepare.calibv2, sharp_v33));
+                pCfgParam->com.u.prepare.calibv2, sharp_v33));
         pAsharpCtx->sharp_v33               = *calibv2_sharp;
 #endif
         pAsharpCtx->isIQParaUpdate = true;
@@ -189,42 +189,49 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
             stExpInfo.hdr_mode = 0;
             if (curExp->LinearExp.exp_real_params.analog_gain < 1.0) {
                 stExpInfo.arAGain[0] = 1.0;
-                LOGW_ANR("leanr mode again is wrong, use 1.0 instead\n");
+                LOGW_ASHARP("leanr mode again is wrong, use 1.0 instead\n");
             } else {
                 stExpInfo.arAGain[0] = curExp->LinearExp.exp_real_params.analog_gain;
             }
             if (curExp->LinearExp.exp_real_params.digital_gain < 1.0) {
                 stExpInfo.arDGain[0] = 1.0;
-                LOGW_ANR("leanr mode dgain is wrong, use 1.0 instead\n");
+                LOGW_ASHARP("leanr mode dgain is wrong, use 1.0 instead\n");
             } else {
                 stExpInfo.arDGain[0] = curExp->LinearExp.exp_real_params.digital_gain;
             }
             stExpInfo.arTime[0] = curExp->LinearExp.exp_real_params.integration_time;
             stExpInfo.arIso[0]  = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * 50;
+            LOGD_ASHARP("new snr mode:%d old:%d  gain:%f iso:%d time:%f\n",
+                        stExpInfo.snr_mode,
+                        pAsharpCtx->stExpInfo.snr_mode,
+                        stExpInfo.arDGain[0],
+                        stExpInfo.arIso[0],
+                        stExpInfo.arTime[0]
+                       );
         } else {
             for (int i = 0; i < 3; i++) {
                 if (curExp->HdrExp[i].exp_real_params.analog_gain < 1.0) {
                     stExpInfo.arAGain[i] = 1.0;
-                    LOGW_ANR("hdr mode again is wrong, use 1.0 instead\n");
+                    LOGW_ASHARP("hdr mode again is wrong, use 1.0 instead\n");
                 } else {
                     stExpInfo.arAGain[i] = curExp->HdrExp[i].exp_real_params.analog_gain;
                 }
                 if (curExp->HdrExp[i].exp_real_params.digital_gain < 1.0) {
                     stExpInfo.arDGain[i] = 1.0;
                 } else {
-                    LOGW_ANR("hdr mode dgain is wrong, use 1.0 instead\n");
+                    LOGW_ASHARP("hdr mode dgain is wrong, use 1.0 instead\n");
                     stExpInfo.arDGain[i] = curExp->HdrExp[i].exp_real_params.digital_gain;
                 }
                 stExpInfo.arTime[i] = curExp->HdrExp[i].exp_real_params.integration_time;
                 stExpInfo.arIso[i]  = stExpInfo.arAGain[i] * stExpInfo.arDGain[i] * 50;
 
-                LOGD_ANR("%s:%d index:%d again:%f dgain:%f time:%f iso:%d hdr_mode:%d\n",
-                         __FUNCTION__, __LINE__, i, stExpInfo.arAGain[i], stExpInfo.arDGain[i],
-                         stExpInfo.arTime[i], stExpInfo.arIso[i], stExpInfo.hdr_mode);
+                LOGD_ASHARP("%s:%d index:%d again:%f dgain:%f time:%f iso:%d hdr_mode:%d\n",
+                            __FUNCTION__, __LINE__, i, stExpInfo.arAGain[i], stExpInfo.arDGain[i],
+                            stExpInfo.arTime[i], stExpInfo.arIso[i], stExpInfo.hdr_mode);
             }
         }
     } else {
-        LOGE_ANR("%s:%d curExp is NULL, so use default instead \n", __FUNCTION__, __LINE__);
+        LOGE_ASHARP("%s:%d curExp is NULL, so use default instead \n", __FUNCTION__, __LINE__);
     }
 
     DeltaIso =
@@ -243,7 +250,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
         Asharp_GetProcResult_V33(pAsharpCtx, &pAsharpProcResParams->stAsharpProcResult);
         pAsharpProcResParams->stAsharpProcResult.isNeedUpdate = true;
 
-        LOGD_ANR("recalculate: %d delta_iso:%d \n ", pAsharpCtx->isReCalculate, DeltaIso);
+        LOGD_ASHARP("recalculate: %d delta_iso:%d \n ", pAsharpCtx->isReCalculate, DeltaIso);
     } else {
         pAsharpProcResParams->stAsharpProcResult.isNeedUpdate = false;
     }
@@ -265,15 +272,15 @@ static XCamReturn post_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* ou
 
 RkAiqAlgoDescription g_RkIspAlgoDescAsharpV33 = {
     .common =
-        {
-            .version         = RKISP_ALGO_ASHARP_VERSION_V33,
-            .vendor          = RKISP_ALGO_ASHARP_VENDOR_V33,
-            .description     = RKISP_ALGO_ASHARP_DESCRIPTION_V33,
-            .type            = RK_AIQ_ALGO_TYPE_ASHARP,
-            .id              = 0,
-            .create_context  = create_context,
-            .destroy_context = destroy_context,
-        },
+    {
+        .version         = RKISP_ALGO_ASHARP_VERSION_V33,
+        .vendor          = RKISP_ALGO_ASHARP_VENDOR_V33,
+        .description     = RKISP_ALGO_ASHARP_DESCRIPTION_V33,
+        .type            = RK_AIQ_ALGO_TYPE_ASHARP,
+        .id              = 0,
+        .create_context  = create_context,
+        .destroy_context = destroy_context,
+    },
     .prepare      = prepare,
     .pre_process  = pre_process,
     .processing   = processing,

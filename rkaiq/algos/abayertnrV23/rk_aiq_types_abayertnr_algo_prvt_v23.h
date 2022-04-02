@@ -78,7 +78,7 @@ typedef struct Abayertnr_Context_V23_s {
 
     // struct list_head* list_bayernr_v23;
 
-    float fStrength;
+    rk_aiq_bayertnr_strength_v23_t stStrength;
 
     bool isIQParaUpdate;
     bool isGrayMode;

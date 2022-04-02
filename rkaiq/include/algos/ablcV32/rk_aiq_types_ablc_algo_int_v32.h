@@ -19,7 +19,7 @@
 #include "ablcV32/rk_aiq_types_ablc_algo_v32.h"
 #include "ablc_head_V32.h"
 
-#define ABLC_RECALCULATE_DELTE_ISO (10)
+#define ABLC_V32_RECALCULATE_DELTE_ISO (10)
 
 typedef enum AblcResult_V32_e {
     ABLC_V32_RET_SUCCESS          = 0,  // this has to be 0, if clauses rely on it

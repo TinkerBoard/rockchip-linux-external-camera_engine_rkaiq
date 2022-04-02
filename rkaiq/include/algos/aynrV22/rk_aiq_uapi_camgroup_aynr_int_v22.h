@@ -15,7 +15,7 @@
 
 XCamReturn
 rk_aiq_uapi_camgroup_aynrV22_SetAttrib(RkAiqAlgoContext *ctx,
-                                       rk_aiq_ynr_attrib_v22_t *attr,
+                                       const rk_aiq_ynr_attrib_v22_t *attr,
                                        bool need_sync);
 
 XCamReturn
@@ -24,11 +24,11 @@ rk_aiq_uapi_camgroup_aynrV22_GetAttrib(const RkAiqAlgoContext *ctx,
 
 XCamReturn
 rk_aiq_uapi_camgroup_aynrV22_SetLumaSFStrength(const RkAiqAlgoContext *ctx,
-        float fPercent);
+        const rk_aiq_ynr_strength_v22_t* pStrength);
 
 XCamReturn
 rk_aiq_uapi_camgroup_aynrV22_GetLumaSFStrength(const RkAiqAlgoContext *ctx,
-        float *pPercent);
+        rk_aiq_ynr_strength_v22_t* pStrength);
 
 
 

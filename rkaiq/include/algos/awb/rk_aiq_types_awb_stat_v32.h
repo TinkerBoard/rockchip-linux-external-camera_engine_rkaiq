@@ -116,8 +116,6 @@ typedef struct rk_aiq_awb_stat_res_v32_s {
     int WpNo2[RK_AIQ_AWB_MAX_WHITEREGIONS_NUM_V32];
     //method2
     rk_aiq_awb_stat_blk_res_v201_t   blockResult[RK_AIQ_AWB_GRID_NUM_TOTAL];
-    //window in pixel domain
-    rk_aiq_awb_stat_wp_res_light_v201_t multiwindowLightResult[RK_AIQ_AWB_MAX_WHITEREGIONS_NUM_V32];
     //window in xy or uv domain
     rk_aiq_awb_stat_wp_res_v201_t excWpRangeResult[RK_AIQ_AWB_STAT_WP_RANGE_NUM_V201];
     //wpno histogram

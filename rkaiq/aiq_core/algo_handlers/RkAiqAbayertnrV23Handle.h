@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef _RK_AIQ_BAYERTNR_HANDLE_INT_H_
-#define _RK_AIQ_BAYERTNR_HANDLE_INT_H_
+#ifndef _RK_AIQ_BAYERTNR_V23_HANDLE_INT_H_
+#define _RK_AIQ_BAYERTNR_V23_HANDLE_INT_H_
 
 #include "RkAiqHandle.h"
 #include "abayertnrV23/rk_aiq_uapi_abayertnr_int_v23.h"
@@ -48,9 +48,9 @@ public:
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     // TODO add algo specific methords, this is a sample
-    XCamReturn setAttrib(rk_aiq_bayertnr_attrib_v23_t* att);
+    XCamReturn setAttrib(const rk_aiq_bayertnr_attrib_v23_t* att);
     XCamReturn getAttrib(rk_aiq_bayertnr_attrib_v23_t* att);
-    XCamReturn setStrength(rk_aiq_bayertnr_strength_v23_t* pStrength);
+    XCamReturn setStrength(const rk_aiq_bayertnr_strength_v23_t* pStrength);
     XCamReturn getStrength(rk_aiq_bayertnr_strength_v23_t* pStrength);
 
 protected:

@@ -56,7 +56,15 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
         updateWbAwbWbGainOffsetAttr = false;
         updateWbAwbMultiWindowAttr  = false;
     };
-    virtual ~RkAiqAwbHandleInt() { RkAiqHandle::deInit(); };
+    virtual ~RkAiqAwbHandleInt() {
+            freeWbGainAdjustAttrib(&mNewWbAwbWbGainAdjustAttr);
+            freeWbGainAdjustAttrib(&mCurWbAwbWbGainAdjustAttr);
+            freeWbGainAdjustAttrib(&mCurWbV20Attr.stAuto.wbGainAdjust);
+            freeWbGainAdjustAttrib(&mNewWbV20Attr.stAuto.wbGainAdjust);
+            freeWbGainAdjustAttrib(&mCurWbAwbAttr.wbGainAdjust);
+            freeWbGainAdjustAttrib(&mNewWbAwbAttr.wbGainAdjust);
+            RkAiqHandle::deInit();
+        };
     virtual XCamReturn updateConfig(bool needSync);
     virtual XCamReturn prepare();
     virtual XCamReturn preProcess();
@@ -86,7 +94,8 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
     XCamReturn getWbAwbMultiWindowAttrib(rk_aiq_uapiV2_wb_awb_mulWindow_t* att);
     XCamReturn getAlgoStat(rk_tool_awb_stat_res_full_t *awb_stat_algo);
     XCamReturn getStrategyResult(rk_tool_awb_strategy_result_t *awb_strategy_result);
-
+    XCamReturn mallocAndCopyWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wbGainAdjust_t* dst,const rk_aiq_uapiV2_wb_awb_wbGainAdjust_t *src);
+    XCamReturn freeWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wbGainAdjust_t* dst);
  protected:
     virtual void init();
     virtual void deInit() { RkAiqHandle::deInit(); };

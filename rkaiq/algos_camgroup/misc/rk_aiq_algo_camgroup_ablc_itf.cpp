@@ -176,7 +176,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
 
     for (int i = 0; i < procResParaGroup->arraySize; i++) {
-        procResParaGroup->camgroupParmasArray[i]->_blcConfig->v0 = pAblcCtx->ProcRes;
+        procResParaGroup->camgroupParmasArray[i]->ablc._blcConfig->v0 = pAblcCtx->ProcRes;
     }
 
     pAblcCtx->isReCalculate = 0;

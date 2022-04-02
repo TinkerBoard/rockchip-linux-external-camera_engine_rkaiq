@@ -260,9 +260,7 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
         pAmergeCtx->PrevData.CtrlData.ApiMode = pAmergeCtx->mergeAttrV12.opMode;
 #endif
         pAmergeCtx->ProcRes.update = !bypass;
-        pAmergeCtx->ProcRes.LongFrameMode = pAmergeCtx->SensorInfo.LongFrmMode;
         pAmergeProcRes->AmergeProcRes.update = pAmergeCtx->ProcRes.update;
-        pAmergeProcRes->AmergeProcRes.LongFrameMode = pAmergeCtx->ProcRes.LongFrameMode;
 #if RKAIQ_HAVE_MERGE_V10
         memcpy(&pAmergeProcRes->AmergeProcRes.Merge_v10, &pAmergeCtx->ProcRes.Merge_v10,
                sizeof(MgeProcResV10_t));

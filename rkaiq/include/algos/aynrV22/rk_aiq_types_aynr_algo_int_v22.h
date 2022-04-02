@@ -226,6 +226,7 @@ typedef struct rk_aiq_ynr_strength_v22_s {
     rk_aiq_uapi_sync_t sync;
 
     float percent;
+    bool strength_enable;
 } rk_aiq_ynr_strength_v22_t;
 
 

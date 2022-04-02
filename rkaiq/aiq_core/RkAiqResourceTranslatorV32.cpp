@@ -451,6 +451,7 @@ XCamReturn RkAiqResourceTranslatorV32::translateAwbStats(const SmartPtr<VideoBuf
         LOGE("fail to get ispParams ,ignore\n");
         return XCAM_RETURN_BYPASS;
     }
+    memset(&statsInt->awb_stats_v32,0,sizeof(statsInt->awb_stats_v32));
     statsInt->awb_stats_v32.awb_cfg_effect_v32.blkMeasureMode = ispParams.awb_cfg_v32.blkMeasureMode;
     statsInt->awb_stats_v32.awb_cfg_effect_v32.lightNum = ispParams.awb_cfg_v32.lightNum;
     statsInt->awb_stats_v32.awb_cfg_effect_v32.groupIllIndxCurrent = ispParams.awb_cfg_v32.groupIllIndxCurrent;

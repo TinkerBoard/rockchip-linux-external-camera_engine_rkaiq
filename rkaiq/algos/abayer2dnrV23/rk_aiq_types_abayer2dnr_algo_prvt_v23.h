@@ -76,7 +76,7 @@ typedef struct Abayer2dnr_Context_V23_s {
     Abayer2dnr_Auto_Attr_V23_t stAuto;
     Abayer2dnr_Manual_Attr_V23_t stManual;
 
-    float fRawnr_SF_Strength;
+    rk_aiq_bayer2dnr_strength_v23_t stStrength;
 
     bool isIQParaUpdate;
     bool isGrayMode;

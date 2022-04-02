@@ -32,14 +32,14 @@
 // the case of need_sync == false; need_sync is for future usage.
 
 XCamReturn rk_aiq_uapi_camgroup_asharpV33_SetAttrib(RkAiqAlgoContext* ctx,
-                                                    const rk_aiq_sharp_attrib_v33_t* attr,
-                                                    bool need_sync);
+        const rk_aiq_sharp_attrib_v33_t* attr,
+        bool need_sync);
 
 XCamReturn rk_aiq_uapi_camgroup_asharpV33_GetAttrib(const RkAiqAlgoContext* ctx,
-                                                    rk_aiq_sharp_attrib_v33_t* attr);
+        rk_aiq_sharp_attrib_v33_t* attr);
 
-XCamReturn rk_aiq_uapi_camgroup_asharpV33_SetStrength(const RkAiqAlgoContext* ctx, float fPercent);
+XCamReturn rk_aiq_uapi_camgroup_asharpV33_SetStrength(const RkAiqAlgoContext* ctx, const rk_aiq_sharp_strength_v33_t* pStrength);
 
-XCamReturn rk_aiq_uapi_camgroup_asharpV33_GetStrength(const RkAiqAlgoContext* ctx, float* pPercent);
+XCamReturn rk_aiq_uapi_camgroup_asharpV33_GetStrength(const RkAiqAlgoContext* ctx, rk_aiq_sharp_strength_v33_t* pStrength);
 
 #endif

@@ -1552,7 +1552,7 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
     }
     break;
     case RESULT_TYPE_LSC_PARAM: {
-#if RKAIQ_HAVE_LSC_V2
+#if RKAIQ_HAVE_LSC_V3
         SmartPtr<RkAiqIspLscParamsProxy> params =
             result.dynamic_cast_ptr<RkAiqIspLscParamsProxy>();
         if (params.ptr()) convertAiqLscToIsp20Params(isp_cfg, params->data()->result);
@@ -1646,7 +1646,7 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
 #endif
     }
     break;
-#if 0
+#if RKAIQ_HAVE_DPCC_V1
     case RESULT_TYPE_DPCC_PARAM: {
         SmartPtr<RkAiqIspDpccParamsProxy> params =
             result.dynamic_cast_ptr<RkAiqIspDpccParamsProxy>();
@@ -1710,20 +1710,22 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
 #endif
     }
     break;
-#if 0
     case RESULT_TYPE_CP_PARAM: {
+#if RKAIQ_HAVE_ACP_V10
         SmartPtr<RkAiqIspCpParamsProxy> params =
             result.dynamic_cast_ptr<RkAiqIspCpParamsProxy>();
         if (params.ptr()) convertAiqCpToIsp20Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_IE_PARAM: {
+#if RKAIQ_HAVE_AIE_V10
         SmartPtr<RkAiqIspIeParamsProxy> params =
             result.dynamic_cast_ptr<RkAiqIspIeParamsProxy>();
         if (params.ptr()) convertAiqIeToIsp20Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
-#endif
     case RESULT_TYPE_LDCH_PARAM:
     {
         SmartPtr<RkAiqIspLdchParamsProxyV32> params = result.dynamic_cast_ptr<RkAiqIspLdchParamsProxyV32>();

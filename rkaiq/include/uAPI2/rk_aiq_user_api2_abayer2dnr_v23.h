@@ -25,13 +25,13 @@ typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 RKAIQ_BEGIN_DECLARE
 
 XCamReturn
-rk_aiq_user_api2_abayer2dnrV23_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_bayer2dnr_attrib_v23_t* attr);
+rk_aiq_user_api2_abayer2dnrV23_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_bayer2dnr_attrib_v23_t* attr);
 
 XCamReturn
 rk_aiq_user_api2_abayer2dnrV23_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_bayer2dnr_attrib_v23_t* attr);
 
 XCamReturn
-rk_aiq_user_api2_abayer2dnrV23_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_bayer2dnr_strength_v23_t *pStrength);
+rk_aiq_user_api2_abayer2dnrV23_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_bayer2dnr_strength_v23_t *pStrength);
 
 XCamReturn
 rk_aiq_user_api2_abayer2dnrV23_GetStrength(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_bayer2dnr_strength_v23_t *pStrength);

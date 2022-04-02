@@ -41,7 +41,9 @@
 #include "algo_handlers/RkAiqAcnrHandle.h"
 #include "algo_handlers/RkAiqAcnrV1Handle.h"
 #include "algo_handlers/RkAiqAcnrV2Handle.h"
+#if RKAIQ_HAVE_ACP_V10
 #include "algo_handlers/RkAiqAcpHandle.h"
+#endif
 #if RKAIQ_HAVE_CSM_V1
 #include "algo_handlers/RkAiqAcsmHandle.h"
 #endif
@@ -75,9 +77,11 @@
 #if RKAIQ_HAVE_GIC_V1 || RKAIQ_HAVE_GIC_V2
 #include "algo_handlers/RkAiqAgicHandle.h"
 #endif
+#if RKAIQ_HAVE_AIE_V10
 #include "algo_handlers/RkAiqAieHandle.h"
+#endif
 #include "algo_handlers/RkAiqAldchHandle.h"
-#if RKAIQ_HAVE_LSC_V1 || RKAIQ_HAVE_LSC_V2
+#if RKAIQ_HAVE_LSC_V1 || RKAIQ_HAVE_LSC_V2 || RKAIQ_HAVE_LSC_V3
 #include "algo_handlers/RkAiqAlscHandle.h"
 #endif
 #include "algo_handlers/RkAiqAmdHandle.h"
@@ -111,5 +115,26 @@
 #include "algo_handlers/RkAiqAynrV2Handle.h"
 #endif
 #include "algo_handlers/RkAiqAynrV3Handle.h"
+
+
+#if RKAIQ_HAVE_YNR_V22
+#include "algo_handlers/RkAiqAynrV22Handle.h"
+#endif
+#if RKAIQ_HAVE_CNR_V30
+#include "algo_handlers/RkAiqAcnrV30Handle.h"
+#endif
+#if RKAIQ_HAVE_SHARP_V33
+#include "algo_handlers/RkAiqAsharpV33Handle.h"
+#endif
+#if RKAIQ_HAVE_BAYER2DNR_V23
+#include "algo_handlers/RkAiqAbayer2dnrV23Handle.h"
+#endif
+#if RKAIQ_HAVE_BAYERTNR_V23
+#include "algo_handlers/RkAiqAbayertnrV23Handle.h"
+#endif
+#if RKAIQ_HAVE_BLC_V32
+#include "algo_handlers/RkAiqAblcV32Handle.h"
+#endif
+
 
 #endif

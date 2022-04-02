@@ -31,6 +31,11 @@ static void sample_acp_usage()
     printf("\t 8) ACP:         Set hue          & Sync.\n");
     printf("\t 9) ACP:         Get acp attrib   & Async.\n");
     printf("\t a) ACP:         Get acp attrib   & Sync.\n");
+    printf("  ImgProc API: \n");
+    printf("\t b) ACP:         Set Contrast.\n");
+    printf("\t c) ACP:         Set Brightness.\n");
+    printf("\t d) ACP:         Set Saturation.\n");
+    printf("\t e) ACP:         Set Hue.\n");
     printf("\n");
     printf("\t h) ACP:         help.\n");
     printf("\t q) ACP:         return to main sample screen.\n");
@@ -54,6 +59,61 @@ void sample_print_acp_info(const void *arg)
 ******************************
 */
 
+static int sample_set_acp_contrast(const rk_aiq_sys_ctx_t* ctx, uint8_t level)
+{
+    rk_aiq_uapi2_setContrast(ctx, level);
+    return 0;
+}
+
+static int sample_get_acp_contrast(const rk_aiq_sys_ctx_t* ctx)
+{
+    unsigned int level;
+    rk_aiq_uapi2_getContrast(ctx, &level);
+    printf("Get ACP Contrast : %d \n", level);
+    return 0;
+}
+
+static int sample_set_acp_brightness(const rk_aiq_sys_ctx_t* ctx, uint8_t level)
+{
+    rk_aiq_uapi2_setBrightness(ctx, level);
+    return 0;
+}
+
+static int sample_get_acp_brightness(const rk_aiq_sys_ctx_t* ctx)
+{
+    unsigned int level;
+    rk_aiq_uapi2_getBrightness(ctx, &level);
+    printf("Get ACP Brightness : %d \n", level);
+    return 0;
+}
+
+static int sample_set_acp_saturation(const rk_aiq_sys_ctx_t* ctx, uint8_t level)
+{
+    rk_aiq_uapi2_setSaturation(ctx, level);
+    return 0;
+}
+
+static int sample_get_acp_saturation(const rk_aiq_sys_ctx_t* ctx)
+{
+    unsigned int level;
+    rk_aiq_uapi2_getSaturation(ctx, &level);
+    printf("Get ACP Saturation : %d \n", level);
+    return 0;
+}
+
+static int sample_set_acp_hue(const rk_aiq_sys_ctx_t* ctx, uint8_t level)
+{
+    rk_aiq_uapi2_setHue(ctx, level);
+    return 0;
+}
+
+static int sample_get_acp_hue(const rk_aiq_sys_ctx_t* ctx)
+{
+    unsigned int level;
+    rk_aiq_uapi2_getHue(ctx, &level);
+    printf("Get ACP Hue : %d \n", level);
+    return 0;
+}
 
 /*
 ******************************
@@ -77,7 +137,7 @@ static int sample_acp_set_brightness(const rk_aiq_sys_ctx_t* ctx, uint8_t bright
   attr.brightness       = brightness;
 
   //set
-  ret = rk_aiq_user_api2_acp_SetAttrib(ctx, attr);
+  ret = rk_aiq_user_api2_acp_SetAttrib(ctx, &attr);
   RKAIQ_SAMPLE_CHECK_RET(ret, "set acp Attr failed!");
   printf("set acp brightness: %d, done: %d\n\n", brightness, attr.sync.done);
 
@@ -98,7 +158,7 @@ static int sample_acp_set_contrast(const rk_aiq_sys_ctx_t* ctx, uint8_t contrast
   attr.contrast         = contrast;
 
   //set
-  ret = rk_aiq_user_api2_acp_SetAttrib(ctx, attr);
+  ret = rk_aiq_user_api2_acp_SetAttrib(ctx, &attr);
   RKAIQ_SAMPLE_CHECK_RET(ret, "set acp Attr failed!");
   printf("set acp contrast: %d, done: %d\n\n", contrast, attr.sync.done);
 
@@ -119,7 +179,7 @@ static int sample_acp_set_saturation(const rk_aiq_sys_ctx_t* ctx, uint8_t satura
   attr.saturation       = saturation;
 
   //set
-  ret = rk_aiq_user_api2_acp_SetAttrib(ctx, attr);
+  ret = rk_aiq_user_api2_acp_SetAttrib(ctx, &attr);
   RKAIQ_SAMPLE_CHECK_RET(ret, "set acp Attr failed!");
   printf("set acp saturation: %d, done: %d\n\n", saturation, attr.sync.done);
 
@@ -140,7 +200,7 @@ static int sample_acp_set_hue(const rk_aiq_sys_ctx_t* ctx, uint8_t hue,
   attr.hue              = hue;
 
   //set
-  ret = rk_aiq_user_api2_acp_SetAttrib(ctx, attr);
+  ret = rk_aiq_user_api2_acp_SetAttrib(ctx, &attr);
   RKAIQ_SAMPLE_CHECK_RET(ret, "set acp Attr failed!");
   printf("set acp hue: %d, done: %d\n\n", hue, attr.sync.done);
 
@@ -286,6 +346,48 @@ XCamReturn sample_acp_module(const void *arg)
                 break;
             case 'a':
                 sample_acp_get_attrib(ctx, RK_AIQ_UAPI_MODE_SYNC);
+                break;
+            case 'b':
+                printf("test acp contrast iteratively ...\n");
+                for (int i = 0; i < 255; i++) {
+                    sample_set_acp_contrast(ctx, i);
+                    usleep(10 * 1000);
+                }
+                printf("end of the test\n\n");
+
+                sample_set_acp_contrast(ctx, default_attr.contrast);
+                break;
+            case 'c':
+                printf("test acp brightness iteratively ...\n");
+                for (int i = 0; i < 255; i++) {
+                    sample_set_acp_brightness(ctx, i);
+                    usleep(10 * 1000);
+                }
+                printf("end of the test\n\n");
+
+                sample_set_acp_brightness(ctx, default_attr.brightness);
+                break;
+            case 'd':
+                printf("test acp saturation iteratively ...\n");
+                for (int i = 0; i < 255; i++) {
+                    sample_set_acp_saturation(ctx, i);
+                    usleep(10 * 1000);
+                }
+                printf("end of the test\n\n");
+
+                sample_set_acp_saturation(ctx, default_attr.saturation);
+                break;
+            case 'e':
+                printf("test acp hue iteratively ...\n");
+                for (int i = 0; i < 255; i++) {
+                    sample_set_acp_hue(ctx, i);
+                    usleep(10 * 1000);
+                }
+                printf("end of the test\n\n");
+
+                sample_set_acp_hue(ctx, default_attr.hue);
+                break;
+            default:
                 break;
         }
     } while (key != 'q' && key != 'Q');

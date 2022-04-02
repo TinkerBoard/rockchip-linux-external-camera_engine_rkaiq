@@ -84,7 +84,13 @@ __RKAIQUAPI_CALLER(drcAttrV11_t);
 __RKAIQUAPI_CALLER(drcAttrV12_t);
 #endif
 __RKAIQUAPI_CALLER(uapi_ae_hwstats_t);
+#if ISP_HW_V21
+__RKAIQUAPI_CALLER(rk_aiq_awb_stat_res2_v201_t);
+#elif ISP_HW_V30
 __RKAIQUAPI_CALLER(rk_tool_awb_stat_res2_v30_t);
+#elif ISP_HW_V32
+__RKAIQUAPI_CALLER(rk_tool_isp_awb_stats_v32_t);
+#endif
 __RKAIQUAPI_CALLER(rk_tool_awb_stat_res_full_t);
 __RKAIQUAPI_CALLER(rk_tool_awb_strategy_result_t);
 
@@ -132,13 +138,21 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
                          rk_aiq_user_api2_get_scene),
     __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/ae_hwstats", uapi_ae_hwstats_t, NULL,
                          rk_aiq_uapi_get_ae_hwstats),
+#if ISP_HW_V21
+    __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_stat", rk_aiq_awb_stat_res2_v201_t,
+                         NULL, rk_aiq_uapi_get_awbV21_stat),
+#elif ISP_HW_V30
     __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_stat", rk_tool_awb_stat_res2_v30_t,
                          NULL, rk_aiq_uapi_get_awb_stat),
+#elif ISP_HW_V32
+    __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_stat", rk_tool_isp_awb_stats_v32_t,
+                         NULL, rk_aiq_uapi_get_awbV32_stat),
+#endif
     __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_stat_algo",
-                         rk_tool_awb_stat_res_full_t, NULL, rk_aiq_user_api2_awbV30_getAlgoSta),
+                         rk_tool_awb_stat_res_full_t, NULL, rk_aiq_user_api2_awb_getAlgoSta),
     __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_strategy_result",
                          rk_tool_awb_strategy_result_t, NULL,
-                         rk_aiq_user_api2_awbV30_getStrategyResult),
+                         rk_aiq_user_api2_awb_getStrategyResult),
 };
 /***********************END OF CUSTOM AREA**************************/
 

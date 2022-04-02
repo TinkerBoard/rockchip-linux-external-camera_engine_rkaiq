@@ -2,12 +2,12 @@
 #include "acnrV30/rk_aiq_types_acnr_algo_prvt_v30.h"
 
 #if 1
-#define ACNRV30_CHROMA_SF_STRENGTH_MAX_PERCENT (100.0)
+#define ACNRV30_CHROMA_SF_STRENGTH_SLOPE_FACTOR (5.0)
 
 
 XCamReturn
 rk_aiq_uapi_acnrV30_SetAttrib(RkAiqAlgoContext *ctx,
-                              rk_aiq_cnr_attrib_v30_t *attr,
+                              const rk_aiq_cnr_attrib_v30_t *attr,
                               bool need_sync)
 {
 
@@ -44,22 +44,26 @@ rk_aiq_uapi_acnrV30_GetAttrib(const RkAiqAlgoContext *ctx,
 
 XCamReturn
 rk_aiq_uapi_acnrV30_SetChromaSFStrength(const RkAiqAlgoContext *ctx,
-                                        float fPercent)
+                                        const rk_aiq_cnr_strength_v30_t* pStrength)
 {
     Acnr_Context_V30_t* pCtx = (Acnr_Context_V30_t*)ctx;
 
     float fStrength = 1.0f;
-    float fMax = ACNRV30_CHROMA_SF_STRENGTH_MAX_PERCENT;
+    float fslope = ACNRV30_CHROMA_SF_STRENGTH_SLOPE_FACTOR;
+    float fPercent = 0.5f;
+
+    fPercent = pStrength->percent;
 
     if(fPercent <= 0.5) {
         fStrength =  fPercent / 0.5;
     } else {
         if(fPercent >= 0.999999)
             fPercent = 0.999999;
-        fStrength = 0.5 / (1.0 - fPercent);
+        fStrength = 0.5 * fslope / (1.0 - fPercent) - fslope  + 1;
     }
 
-    pCtx->fCnr_SF_Strength = fStrength;
+    pCtx->stStrength = *pStrength;
+    pCtx->stStrength.percent = fStrength;
     pCtx->isReCalculate |= 1;
 
     return XCAM_RETURN_NO_ERROR;
@@ -68,27 +72,30 @@ rk_aiq_uapi_acnrV30_SetChromaSFStrength(const RkAiqAlgoContext *ctx,
 
 XCamReturn
 rk_aiq_uapi_acnrV30_GetChromaSFStrength(const RkAiqAlgoContext *ctx,
-                                        float *pPercent)
+                                        rk_aiq_cnr_strength_v30_t* pStrength)
 {
     Acnr_Context_V30_t* pCtx = (Acnr_Context_V30_t*)ctx;
 
     float fStrength = 1.0f;
-    float fMax = ACNRV30_CHROMA_SF_STRENGTH_MAX_PERCENT;
+    float fslope = ACNRV30_CHROMA_SF_STRENGTH_SLOPE_FACTOR;
+    float fPercent = 0.5;
 
-    fStrength = pCtx->fCnr_SF_Strength;
+    fStrength = pCtx->stStrength.percent;
 
 
     if(fStrength <= 1) {
-        *pPercent = fStrength * 0.5;
+        fPercent = fStrength * 0.5;
     } else {
         float tmp = 1.0;
-        tmp = 1 - 0.5 / fStrength;
+        tmp = 1 - 0.5 * fslope / (fStrength + fslope - 1);
         if(abs(tmp - 0.999999) < 0.000001) {
             tmp = 1.0;
         }
-        *pPercent = tmp;
+        fPercent = tmp;
     }
 
+    *pStrength = pCtx->stStrength;
+    pStrength->percent = fPercent;
 
     return XCAM_RETURN_NO_ERROR;
 }

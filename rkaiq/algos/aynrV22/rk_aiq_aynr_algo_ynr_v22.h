@@ -16,7 +16,7 @@ XCAM_BEGIN_DECLARE
 
 Aynr_result_V22_t ynr_select_params_by_ISO_V22(RK_YNR_Params_V22_t *pParams, RK_YNR_Params_V22_Select_t *pSelect, Aynr_ExpInfo_V22_t *pExpInfo);
 
-Aynr_result_V22_t ynr_fix_transfer_V22(RK_YNR_Params_V22_Select_t* pSelect, RK_YNR_Fix_V22_t *pFix, float fStrength, Aynr_ExpInfo_V22_t *pExpInfo);
+Aynr_result_V22_t ynr_fix_transfer_V22(RK_YNR_Params_V22_Select_t* pSelect, RK_YNR_Fix_V22_t *pFix, rk_aiq_ynr_strength_v22_t* pStrength, Aynr_ExpInfo_V22_t *pExpInfo);
 
 Aynr_result_V22_t ynr_fix_printf_V22(RK_YNR_Fix_V22_t * pFix);
 

@@ -23,7 +23,9 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
-XCamReturn  rk_aiq_user_api_aie_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, aie_attrib_t attr)
+#if RKAIQ_HAVE_AIE_V10
+XCamReturn  rk_aiq_user_api_aie_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                        const aie_attrib_t* attr)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     CHECK_USER_API_ENABLE2(sys_ctx);
@@ -40,7 +42,8 @@ XCamReturn  rk_aiq_user_api_aie_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, aie_a
     return (ret);
 }
 
-XCamReturn  rk_aiq_user_api_aie_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, aie_attrib_t *attr)
+XCamReturn  rk_aiq_user_api_aie_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                        aie_attrib_t *attr)
 {
     RKAIQ_API_SMART_LOCK(sys_ctx);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -55,6 +58,22 @@ XCamReturn  rk_aiq_user_api_aie_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, aie_a
     return (ret);
 
 }
+#else
+XCamReturn  rk_aiq_user_api_aie_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                        const aie_attrib_t* attr)
+{
+
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn  rk_aiq_user_api_aie_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                        aie_attrib_t *attr)
+{
+
+    return XCAM_RETURN_ERROR_UNKNOWN;
+
+}
+#endif
 
 RKAIQ_END_DECLARE
 

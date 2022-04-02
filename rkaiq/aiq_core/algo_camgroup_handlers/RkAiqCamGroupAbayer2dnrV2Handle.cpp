@@ -18,6 +18,7 @@
 #include "abayer2dnr2/rk_aiq_uapi_camgroup_abayer2dnr_int_v2.h"
 
 namespace RkCam {
+#if RKAIQ_HAVE_BAYER2DNR_V2
 
 XCamReturn RkAiqCamGroupAbayer2dnrV2HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
@@ -62,7 +63,7 @@ XCamReturn RkAiqCamGroupAbayer2dnrV2HandleInt::setAttrib(rk_aiq_bayer2dnr_attrib
     // called by RkAiqCore
     bool isChanged = false;
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
-        memcmp(&mNewAtt, att, sizeof(*att)))
+            memcmp(&mNewAtt, att, sizeof(*att)))
         isChanged = true;
     else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
              memcmp(&mCurAtt, att, sizeof(*att)))
@@ -153,4 +154,5 @@ XCamReturn RkAiqCamGroupAbayer2dnrV2HandleInt::getStrength(rk_aiq_bayer2dnr_stre
 }
 #endif
 
+#endif
 }  // namespace RkCam

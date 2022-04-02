@@ -29,7 +29,7 @@ XCamReturn RkAiqAieHandleInt::updateConfig(bool needSync) {
     // if something changed
     if (updateAtt) {
         mCurAtt   = mNewAtt;
-        rk_aiq_uapi_aie_SetAttrib(mAlgoCtx, mCurAtt, false);
+        rk_aiq_uapi_aie_SetAttrib(mAlgoCtx, &mCurAtt, false);
         sendSignal(mCurAtt.sync.sync_mode);
         updateAtt = false;
     }
@@ -39,7 +39,7 @@ XCamReturn RkAiqAieHandleInt::updateConfig(bool needSync) {
     return ret;
 }
 
-XCamReturn RkAiqAieHandleInt::setAttrib(aie_attrib_t att) {
+XCamReturn RkAiqAieHandleInt::setAttrib(const aie_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -49,18 +49,18 @@ XCamReturn RkAiqAieHandleInt::setAttrib(aie_attrib_t att) {
     // the new params will be effective later when updateConfig
     // called by RkAiqCore
     bool isChanged = false;
-    if (att.sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
-        memcmp(&mNewAtt, &att, sizeof(att)))
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
+        memcmp(&mNewAtt, att, sizeof(*att)))
         isChanged = true;
-    else if (att.sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
-             memcmp(&mCurAtt, &att, sizeof(att)))
+    else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
+             memcmp(&mCurAtt, att, sizeof(*att)))
         isChanged = true;
 
     // if something changed
     if (isChanged) {
-        mNewAtt   = att;
+        mNewAtt   = *att;
         updateAtt = true;
-        waitSignal(att.sync.sync_mode);
+        waitSignal(att->sync.sync_mode);
     }
 
     mCfgMutex.unlock();

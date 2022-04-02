@@ -32,8 +32,6 @@ typedef struct CalibDbV2_SharpV33_TuningPara_Setting_ISO_Luma_s {
     float luma_sigma[8];
     // M4_ARRAY_DESC("hf_clip", "s32", M4_SIZE(1,8), M4_RANGE(0,1023), "[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t hf_clip[8];
-    // M4_ARRAY_DESC("local_sharp_strength", "s32", M4_SIZE(1,8), M4_RANGE(0,1023), "[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]", M4_DIGIT(1), M4_DYNAMIC(0))
-    int local_sharp_strength[8];
 } CalibDbV2_SharpV33_TuningPara_Setting_ISO_Luma_t;
 
 typedef struct CalibDbV2_SharpV33_TuningPara_Setting_ISO_kernel_s {
@@ -52,7 +50,7 @@ typedef struct CalibDbV2_SharpV33_TuningPara_Setting_ISO_kernel_sigma_s {
     float hfBilateralFilter_sigma;
     // M4_NUMBER_MARK_DESC("GaussianFilter_sigma", "f32", M4_RANGE(0.0, 100.0), "1.0", M4_DIGIT(2))
     float GaussianFilter_sigma;
-    // M4_NUMBER_MARK_DESC("GaussianFilter_radius", "u8", M4_RANGE(0, 2), "2", M4_DIGIT(0))
+    // M4_NUMBER_MARK_DESC("GaussianFilter_radius", "u8", M4_RANGE(1, 2), "2", M4_DIGIT(0))
     uint8_t GaussianFilter_radius;
 
 } CalibDbV2_SharpV33_TuningPara_Setting_ISO_kernel_sigma_t;
@@ -62,7 +60,7 @@ typedef struct CalibDbV2_SharpV33_TuningPara_Setting_ISO_s {
     float iso;
     // M4_BOOL_DESC("exgain_bypass", "0")
     bool exgain_bypass;
-    // M4_NUMBER_DESC("pbf_gain", "f32", M4_RANGE(0.0, 2.0), "0.5", M4_DIGIT(2))
+    // M4_NUMBER_DESC("pbf_gain", "f32", M4_RANGE(0.0, 4.0), "0.5", M4_DIGIT(2))
     float pbf_gain;
     // M4_NUMBER_DESC("pbf_ratio", "f32", M4_RANGE(0.0, 1.0), "0.5", M4_DIGIT(2))
     float pbf_ratio;
@@ -70,33 +68,33 @@ typedef struct CalibDbV2_SharpV33_TuningPara_Setting_ISO_s {
     float pbf_add;
     // M4_NUMBER_DESC("gaus_ratio", "f32", M4_RANGE(0.0, 1.0), "0.0", M4_DIGIT(2))
     float gaus_ratio;
-    // M4_NUMBER_DESC("sharp_ratio", "f32", M4_RANGE(0.0, 32.0), "0.5", M4_DIGIT(2))
+    // M4_NUMBER_DESC("sharp_ratio", "f32", M4_RANGE(0.0, 31.275), "0.5", M4_DIGIT(2))
     float sharp_ratio;
-    // M4_NUMBER_DESC("bf_gain", "f32", M4_RANGE(0.0, 2.0), "0.5", M4_DIGIT(2))
+    // M4_NUMBER_DESC("bf_gain", "f32", M4_RANGE(0.0, 4.0), "0.5", M4_DIGIT(2))
     float bf_gain;
     // M4_NUMBER_DESC("bf_ratio", "f32", M4_RANGE(0.0, 1.0), "0.5", M4_DIGIT(2))
     float bf_ratio;
     // M4_NUMBER_DESC("bf_add", "f32", M4_RANGE(0.0, 1023.0), "0.0", M4_DIGIT(2))
     float bf_add;
-    // M4_NUMBER_DESC("global_gain", "f32", M4_RANGE(0.0, 1023.0), "1.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("global_gain", "f32", M4_RANGE(0.0, 63.0), "1.0", M4_DIGIT(2))
     float global_gain;
-    // M4_NUMBER_DESC("global_gain_alpha", "f32", M4_RANGE(0.0, 1023.0), "0.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("global_gain_alpha", "f32", M4_RANGE(0.0, 1.0), "0.0", M4_DIGIT(2))
     float global_gain_alpha;
-    // M4_NUMBER_DESC("local_gainscale", "f32", M4_RANGE(0.0, 1023.0), "0.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("local_gainscale", "f32", M4_RANGE(0.0, 1.0), "0.0", M4_DIGIT(2))
     float local_gainscale;
-    // M4_NUMBER_DESC("global_hf_clip_pos", "u16", M4_RANGE(0, 1023), "0", M4_DIGIT(0))
-    uint16_t global_hf_clip_pos;
-    // M4_NUMBER_DESC("noiseclip_strength", "u16", M4_RANGE(0, 1023), "1", M4_DIGIT(1))
+    // M4_NUMBER_DESC("global_hf_clip_pos", "u8", M4_RANGE(0, 2), "0", M4_DIGIT(0))
+    uint8_t global_hf_clip_pos;
+    // M4_NUMBER_DESC("noiseclip_strength", "u16", M4_RANGE(0, 10), "1", M4_DIGIT(1))
     uint16_t noiseclip_strength;
-    // M4_NUMBER_DESC("enhance_bit", "u8", M4_RANGE(0, 15), "3", M4_DIGIT(0))
+    // M4_NUMBER_DESC("enhance_bit", "u8", M4_RANGE(0, 9), "3", M4_DIGIT(0))
     uint8_t enhance_bit;
     // M4_BOOL_DESC("noiseclip_mode","0")
     bool noiseclip_mode;
     // M4_NUMBER_DESC("noise_sigma_clip", "u16", M4_RANGE(0, 1023), "1023", M4_DIGIT(0))
     uint16_t noise_sigma_clip;
-    // M4_ARRAY_DESC("gain_adj_sharp_strength", "f32", M4_SIZE(1,14), M4_RANGE(0,16), "[2.0]", M4_DIGIT(3), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("gain_adj_sharp_strength", "f32", M4_SIZE(1,14), M4_RANGE(0.0,31.275), "[1.0]", M4_DIGIT(3), M4_DYNAMIC(0))
     float gain_adj_sharp_strength[14];
-    // M4_ARRAY_DESC("dis_adj_sharp_strength", "f32", M4_SIZE(1,22), M4_RANGE(0,128), "[1.0]", M4_DIGIT(1), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("dis_adj_sharp_strength", "f32", M4_SIZE(1,22), M4_RANGE(0.0,1.0), "[1.0]", M4_DIGIT(1), M4_DYNAMIC(0))
     float dis_adj_sharp_strength[22];
     // M4_ARRAY_TABLE_DESC("lumaPara", "array_table_ui", "none")
     CalibDbV2_SharpV33_TuningPara_Setting_ISO_Luma_t luma_para;

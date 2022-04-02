@@ -17,7 +17,7 @@
 #include "abayertnr2/rk_aiq_uapi_camgroup_abayertnr_int_v2.h"
 
 namespace RkCam {
-
+#if RKAIQ_HAVE_BAYERTNR_V2
 XCamReturn RkAiqCamGroupAbayertnrV2HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
@@ -145,5 +145,5 @@ XCamReturn RkAiqCamGroupAbayertnrV2HandleInt::getStrength(rk_aiq_bayertnr_streng
 }
 #endif
 
-
+#endif
 }

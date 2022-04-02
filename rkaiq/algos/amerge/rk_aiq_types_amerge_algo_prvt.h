@@ -81,6 +81,7 @@ typedef enum FrameNumber_e {
 #define MDCURVESMOOTHMIN     (20)
 #define MDCURVEOFFSETMAX     (100)
 #define MDCURVEOFFSETMIN     (26)
+#define EACHOECURVESMOOTHMAX        (50)
 #define DAMPMAX     (1.0)
 #define DAMPMIN     (0.0)
 #define TOLERANCEMAX     (20.0)

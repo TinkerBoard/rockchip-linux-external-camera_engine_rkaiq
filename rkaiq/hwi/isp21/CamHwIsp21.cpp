@@ -269,6 +269,9 @@ CamHwIsp21::gen_full_isp_params(const struct isp21_isp_params_cfg* update_params
             case Rk_ISP2x_CGC_ID:
                 CHECK_UPDATE_PARAMS(full_params->others.cgc_cfg, update_params->others.cgc_cfg);
                 break;
+            case RK_ISP2X_IE_ID:
+                CHECK_UPDATE_PARAMS(full_params->others.ie_cfg, update_params->others.ie_cfg);
+                break;
             default:
                 break;
             }

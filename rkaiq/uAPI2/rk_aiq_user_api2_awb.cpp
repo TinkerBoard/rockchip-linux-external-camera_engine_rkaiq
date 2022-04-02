@@ -802,52 +802,8 @@ rk_aiq_user_api2_awb_GetMultiWindowAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_ai
 
 
 XCamReturn
-rk_aiq_user_api2_awbV30_getAlgoStat(const rk_aiq_sys_ctx_t* sys_ctx, rk_tool_awb_stat_res_full_t *attr)
+rk_aiq_user_api2_awb_getStrategyResult(const rk_aiq_sys_ctx_t* sys_ctx, rk_tool_awb_strategy_result_t *attr)
 {
-#if RKAIQ_HAVE_AWB_V21
-
-    RKAIQ_API_SMART_LOCK(sys_ctx);
-
-    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
-#ifdef RKAIQ_ENABLE_CAMGROUP
-    RkAiqCamGroupAwbHandleInt* algo_handle =
-        camgroupAlgoHandle<RkAiqCamGroupAwbHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
-
-    if (algo_handle) {
-        return algo_handle->getAlgoStat((rk_tool_awb_stat_res_full_t*)attr);
-    } else {
-        const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
-        for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
-            if (!camCtx)
-                continue;
-
-            RkAiqAwbV21HandleInt* singleCam_algo_handle =
-                algoHandle<RkAiqAwbV21HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
-            if (singleCam_algo_handle)
-                return singleCam_algo_handle->getAlgoStat((rk_tool_awb_stat_res_full_t*)attr);
-        }
-    }
-#else
-    return XCAM_RETURN_ERROR_FAILED;
-#endif
-    } else {
-        RkAiqAwbV21HandleInt* algo_handle =
-            algoHandle<RkAiqAwbV21HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
-
-        if (algo_handle) {
-            return algo_handle->getAlgoStat((rk_tool_awb_stat_res_full_t*)attr);
-        }
-    }
-    return XCAM_RETURN_NO_ERROR;
-#else
-    return XCAM_RETURN_ERROR_UNKNOWN;
-#endif
-}
-
-XCamReturn
-rk_aiq_user_api2_awbV30_getStrategyResult(const rk_aiq_sys_ctx_t* sys_ctx, rk_tool_awb_strategy_result_t *attr)
-{
-#if RKAIQ_HAVE_AWB_V21
 
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
@@ -864,8 +820,8 @@ rk_aiq_user_api2_awbV30_getStrategyResult(const rk_aiq_sys_ctx_t* sys_ctx, rk_to
             if (!camCtx)
                 continue;
 
-            RkAiqAwbV21HandleInt* singleCam_algo_handle =
-                algoHandle<RkAiqAwbV21HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
+            RkAiqAwbHandleInt* singleCam_algo_handle =
+                algoHandle<RkAiqAwbHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
             if (singleCam_algo_handle)
                 return singleCam_algo_handle->getStrategyResult((rk_tool_awb_strategy_result_t*)attr);
         }
@@ -874,23 +830,19 @@ rk_aiq_user_api2_awbV30_getStrategyResult(const rk_aiq_sys_ctx_t* sys_ctx, rk_to
     return XCAM_RETURN_ERROR_FAILED;
 #endif
     } else {
-        RkAiqAwbV21HandleInt* algo_handle =
-            algoHandle<RkAiqAwbV21HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
+        RkAiqAwbHandleInt* algo_handle =
+            algoHandle<RkAiqAwbHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
 
         if (algo_handle) {
             return algo_handle->getStrategyResult((rk_tool_awb_strategy_result_t*)attr);
         }
     }
     return XCAM_RETURN_NO_ERROR;
-#else
-    return XCAM_RETURN_ERROR_UNKNOWN;
-#endif
 }
 
 XCamReturn
-rk_aiq_user_api2_awbV30_getAlgoSta(const rk_aiq_sys_ctx_t* sys_ctx, rk_tool_awb_stat_res_full_t *attr)
+rk_aiq_user_api2_awb_getAlgoSta(const rk_aiq_sys_ctx_t* sys_ctx, rk_tool_awb_stat_res_full_t *attr)
 {
-#if RKAIQ_HAVE_AWB_V21
 
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
@@ -907,8 +859,8 @@ rk_aiq_user_api2_awbV30_getAlgoSta(const rk_aiq_sys_ctx_t* sys_ctx, rk_tool_awb_
             if (!camCtx)
                 continue;
 
-            RkAiqAwbV21HandleInt* singleCam_algo_handle =
-                algoHandle<RkAiqAwbV21HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
+            RkAiqAwbHandleInt* singleCam_algo_handle =
+                algoHandle<RkAiqAwbHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
             if (singleCam_algo_handle)
                 return singleCam_algo_handle->getAlgoStat((rk_tool_awb_stat_res_full_t*)attr);
         }
@@ -917,17 +869,14 @@ rk_aiq_user_api2_awbV30_getAlgoSta(const rk_aiq_sys_ctx_t* sys_ctx, rk_tool_awb_
     return XCAM_RETURN_ERROR_FAILED;
 #endif
     } else {
-        RkAiqAwbV21HandleInt* algo_handle =
-            algoHandle<RkAiqAwbV21HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
+        RkAiqAwbHandleInt* algo_handle =
+            algoHandle<RkAiqAwbHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
 
         if (algo_handle) {
             return algo_handle->getAlgoStat((rk_tool_awb_stat_res_full_t*)attr);
         }
     }
     return XCAM_RETURN_NO_ERROR;
-#else
-    return XCAM_RETURN_ERROR_UNKNOWN;
-#endif
 }
 
 XCamReturn

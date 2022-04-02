@@ -40,7 +40,7 @@ typedef struct Aynr_Context_V22_s {
 
     //struct list_head* list_ynr_v22;
 
-    float fYnr_SF_Strength;
+    rk_aiq_ynr_strength_v22_t stStrength;
 
     bool isIQParaUpdate;
     bool isGrayMode;

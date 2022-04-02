@@ -101,10 +101,11 @@ XCamReturn rk_aiq_uapi_adehaze_v12_GetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v
     AdehazeHandle_t* AdehazeHandle = (AdehazeHandle_t*)ctx;
 
     attr->mode = AdehazeHandle->AdehazeAtrrV12.mode;
+    attr->Info = AdehazeHandle->AdehazeAtrrV12.Info;
     memcpy(&attr->stManual, &AdehazeHandle->AdehazeAtrrV12.stManual, sizeof(mDehazeAttrV12_t));
     memcpy(&attr->stAuto, &AdehazeHandle->AdehazeAtrrV12.stAuto, sizeof(CalibDbV2_dehaze_v10_t));
-    memcpy(&attr->Info, &AdehazeHandle->AdehazeAtrrV12.Info, sizeof(mDehazeAttrInfoV11_t));
 
     return ret;
 }
+
 #endif

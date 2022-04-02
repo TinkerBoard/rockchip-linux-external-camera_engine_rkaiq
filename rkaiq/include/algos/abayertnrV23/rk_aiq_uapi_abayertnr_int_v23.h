@@ -15,7 +15,7 @@
 
 XCamReturn
 rk_aiq_uapi_abayertnrV23_SetAttrib(RkAiqAlgoContext *ctx,
-                                   rk_aiq_bayertnr_attrib_v23_t *attr,
+                                   const rk_aiq_bayertnr_attrib_v23_t *attr,
                                    bool need_sync);
 
 XCamReturn
@@ -25,11 +25,11 @@ rk_aiq_uapi_abayertnrV23_GetAttrib(const RkAiqAlgoContext *ctx,
 
 XCamReturn
 rk_aiq_uapi_abayertnrV23_SetStrength(const RkAiqAlgoContext *ctx,
-                                     float fPercent);
+                                     const rk_aiq_bayertnr_strength_v23_t* pStrength);
 
 XCamReturn
 rk_aiq_uapi_abayertnrV23_GetStrength(const RkAiqAlgoContext *ctx,
-                                     float *pPercent);
+                                     rk_aiq_bayertnr_strength_v23_t* pStrength);
 
 
 

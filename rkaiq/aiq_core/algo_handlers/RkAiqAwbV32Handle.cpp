@@ -28,7 +28,10 @@ XCamReturn RkAiqAwbV32HandleInt::updateConfig(bool needSync) {
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateWbV32Attr) {
+        rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjustBK = mCurWbV32Attr.stAuto.wbGainAdjust;
         mCurWbV32Attr   = mNewWbV32Attr;
+        mCurWbV32Attr.stAuto.wbGainAdjust = wbGainAdjustBK;
+        mallocAndCopyWbGainAdjustAttrib(&mCurWbV32Attr.stAuto.wbGainAdjust,&mNewWbV32Attr.stAuto.wbGainAdjust);
         rk_aiq_uapiV2_awbV32_SetAttrib(mAlgoCtx, mCurWbV32Attr, false);
         updateWbV32Attr = false;
         sendSignal(mCurWbV32Attr.sync.sync_mode);
@@ -45,14 +48,8 @@ XCamReturn RkAiqAwbV32HandleInt::updateConfig(bool needSync) {
         updateWbMwbAttr = false;
         sendSignal(mCurWbMwbAttr.sync.sync_mode);
     }
-    if (updateWbAwbAttr) {
-        mCurWbAwbAttr   = mNewWbAwbAttr;
-        rk_aiq_uapiV2_awbV20_SetAwbAttrib(mAlgoCtx, mCurWbAwbAttr, false);
-        updateWbAwbAttr = false;
-        sendSignal();
-    }
     if (updateWbAwbWbGainAdjustAttr) {
-        mCurWbAwbWbGainAdjustAttr   = mNewWbAwbWbGainAdjustAttr;
+        mallocAndCopyWbGainAdjustAttrib(&mCurWbAwbWbGainAdjustAttr,&mNewWbAwbWbGainAdjustAttr);
         rk_aiq_uapiV2_awb_SetAwbGainAdjust(mAlgoCtx, mCurWbAwbWbGainAdjustAttr, false);
         updateWbAwbWbGainAdjustAttr = false;
         sendSignal(mCurWbAwbWbGainAdjustAttr.sync.sync_mode);
@@ -150,7 +147,10 @@ XCamReturn RkAiqAwbV32HandleInt::setWbV32Attrib(rk_aiq_uapiV2_wbV32_attrib_t att
 
     // if something changed
     if (isChanged) {
+        rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjustBK = mNewWbV32Attr.stAuto.wbGainAdjust;
         mNewWbV32Attr = att;
+        mNewWbV32Attr.stAuto.wbGainAdjust = wbGainAdjustBK;
+        mallocAndCopyWbGainAdjustAttrib(&mNewWbV32Attr.stAuto.wbGainAdjust,&att.stAuto.wbGainAdjust);
         updateWbV32Attr = true;
         waitSignal(att.sync.sync_mode);
     }
@@ -173,7 +173,10 @@ XCamReturn RkAiqAwbV32HandleInt::getWbV32Attrib(rk_aiq_uapiV2_wbV32_attrib_t* at
         mCfgMutex.unlock();
     } else {
         if (updateWbV32Attr) {
+            rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjustBK = att->stAuto.wbGainAdjust;
             memcpy(att, &mNewWbV32Attr, sizeof(mNewWbV32Attr));
+            att->stAuto.wbGainAdjust = wbGainAdjustBK;
+            mallocAndCopyWbGainAdjustAttrib(&att->stAuto.wbGainAdjust,&mNewWbV32Attr.stAuto.wbGainAdjust);
             att->sync.done = false;
         } else {
             rk_aiq_uapiV2_awbV32_GetAttrib(mAlgoCtx, att);

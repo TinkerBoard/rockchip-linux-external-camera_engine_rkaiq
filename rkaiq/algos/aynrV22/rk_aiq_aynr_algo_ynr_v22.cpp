@@ -185,7 +185,7 @@ Aynr_result_V22_t ynr_select_params_by_ISO_V22(RK_YNR_Params_V22_t *pParams, RK_
     return res;
 }
 
-Aynr_result_V22_t ynr_fix_transfer_V22(RK_YNR_Params_V22_Select_t* pSelect, RK_YNR_Fix_V22_t *pFix, float fStrength, Aynr_ExpInfo_V22_t *pExpInfo)
+Aynr_result_V22_t ynr_fix_transfer_V22(RK_YNR_Params_V22_Select_t* pSelect, RK_YNR_Fix_V22_t *pFix, rk_aiq_ynr_strength_v22_t* pStrength, Aynr_ExpInfo_V22_t *pExpInfo)
 {
     LOGI_ANR("%s:(%d) enter \n", __FUNCTION__, __LINE__);
 
@@ -208,13 +208,25 @@ Aynr_result_V22_t ynr_fix_transfer_V22(RK_YNR_Params_V22_Select_t* pSelect, RK_Y
         return AYNRV22_RET_NULL_POINTER;
     }
 
-    LOGD_ANR("%s:%d strength:%f raw:width:%d height:%d\n",
-             __FUNCTION__, __LINE__,
-             fStrength, pExpInfo->rawHeight, pExpInfo->rawWidth);
+    if(pStrength == NULL) {
+        LOGE_ASHARP("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return AYNRV22_RET_NULL_POINTER;
+    }
 
+    float fStrength = 1.0;
+
+    if(pStrength->strength_enable) {
+        fStrength = pStrength->percent;
+    }
     if(fStrength <= 0.0) {
         fStrength = 0.000001;
     }
+
+    LOGD_ANR("strength_enable:%d fStrength: %f \n", pStrength->strength_enable, fStrength);
+
+    LOGD_ANR("%s:%d strength:%f raw:width:%d height:%d\n",
+             __FUNCTION__, __LINE__,
+             fStrength, pExpInfo->rawHeight, pExpInfo->rawWidth);
 
     // YNR_2700_GLOBAL_CTRL (0x0000)
     pFix->rnr_en = 1;
@@ -404,7 +416,7 @@ Aynr_result_V22_t ynr_fix_transfer_V22(RK_YNR_Params_V22_Select_t* pSelect, RK_Y
     pFix->nlm_min_sigma = CLIP(tmp, 0, 0x7ff);
     tmp = (int)(pSelect->hi_gain_alpha * (1 << 4));
     pFix->nlm_hi_gain_alpha = CLIP(tmp, 0, 0x1f);
-    tmp = (int)(pSelect->hi_bf_scale * (1 << 6));
+    tmp = (int)(pSelect->hi_bf_scale * fStrength * (1 << 6));
     pFix->nlm_hi_bf_scale = CLIP(tmp, 0, 0x3ff);
 
     // YNR_NLM_COE  (0x00f4)
@@ -422,14 +434,14 @@ Aynr_result_V22_t ynr_fix_transfer_V22(RK_YNR_Params_V22_Select_t* pSelect, RK_Y
     pFix->nlm_coe_5 = CLIP(tmp, 0, 0xf);
 
     //YNR_NLM_WEIGHT (0x00f8)
-    tmp = (int)(pSelect->hi_center_weight * (1 << 10));
+    tmp = (int)(pSelect->hi_center_weight / fStrength * (1 << 10));
     pFix->nlm_center_weight = CLIP(tmp, 0, 0x3ffff);
     tmp = (int)(pSelect->hi_weight_offset * (1 << 10));
     pFix->nlm_weight_offset = CLIP(tmp, 0, 0x3ff);
 
     // YNR_NLM_NR_WEIGHT (0x00fc)
-    tmp = (int)(pSelect->hi_nr_weight * (1 << 10));
-    pFix->nlm_nr_weight = CLIP(tmp, 0, 0x7ff);
+    tmp = (int)(pSelect->hi_nr_weight * fStrength * (1 << 10));
+    pFix->nlm_nr_weight = CLIP(tmp, 0, 0x400);
 
     ynr_fix_printf_V22(pFix);
     return res;

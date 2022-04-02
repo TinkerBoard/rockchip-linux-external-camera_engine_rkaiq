@@ -193,7 +193,7 @@ XCamReturn rk_aiq_user_api2_adehaze_v11_getSwAttrib(const rk_aiq_sys_ctx_t* sys_
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 #endif
-#if RRKAIQ_HAVE_DEHAZE_V12
+#if RKAIQ_HAVE_DEHAZE_V12
 XCamReturn rk_aiq_user_api2_adehaze_v12_setSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                     const adehaze_sw_v12_t* attr) {
     CHECK_USER_API_ENABLE2(sys_ctx);

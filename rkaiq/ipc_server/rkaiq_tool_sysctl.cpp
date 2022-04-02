@@ -132,7 +132,7 @@ int queryWBInfo(rk_aiq_sys_ctx_t* ctx, char* data)
 
 int setAcpAttrib(rk_aiq_sys_ctx_t* ctx, char* data)
 {
-    return  rk_aiq_user_api_acp_SetAttrib(ctx, *(acp_attrib_t*) data);
+    return  rk_aiq_user_api_acp_SetAttrib(ctx, (acp_attrib_t*) data);
 }
 
 int getAcpAttrib(rk_aiq_sys_ctx_t* ctx, char* data)

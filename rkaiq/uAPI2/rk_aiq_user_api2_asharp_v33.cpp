@@ -29,7 +29,7 @@ RKAIQ_BEGIN_DECLARE
 #if RKAIQ_HAVE_SHARP_V33
 
 XCamReturn rk_aiq_user_api2_asharpV33_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                const rk_aiq_sharp_attrib_v33_t* attr) {
+        const rk_aiq_sharp_attrib_v33_t* attr) {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ASHARP);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -69,7 +69,7 @@ XCamReturn rk_aiq_user_api2_asharpV33_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
 }
 
 XCamReturn rk_aiq_user_api2_asharpV33_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                rk_aiq_sharp_attrib_v33_t* attr) {
+        rk_aiq_sharp_attrib_v33_t* attr) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
@@ -107,7 +107,7 @@ XCamReturn rk_aiq_user_api2_asharpV33_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
 }
 
 XCamReturn rk_aiq_user_api2_asharpV33_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                  const rk_aiq_sharp_strength_v33_t* pStrength) {
+        const rk_aiq_sharp_strength_v33_t* pStrength) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
@@ -146,7 +146,7 @@ XCamReturn rk_aiq_user_api2_asharpV33_SetStrength(const rk_aiq_sys_ctx_t* sys_ct
 }
 
 XCamReturn rk_aiq_user_api2_asharpV33_GetStrength(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                  rk_aiq_sharp_strength_v33_t* pStrength) {
+        rk_aiq_sharp_strength_v33_t* pStrength) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     RKAIQ_API_SMART_LOCK(sys_ctx);
 
@@ -187,22 +187,22 @@ XCamReturn rk_aiq_user_api2_asharpV33_GetStrength(const rk_aiq_sys_ctx_t* sys_ct
 #else  // RKAIQ_HAVE_SHARP_V33
 
 XCamReturn rk_aiq_user_api2_asharpV33_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                rk_aiq_sharp_attrib_v33_t* attr) {
+        const rk_aiq_sharp_attrib_v33_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
 XCamReturn rk_aiq_user_api2_asharpV33_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                rk_aiq_sharp_attrib_v33_t* attr) {
+        rk_aiq_sharp_attrib_v33_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
 XCamReturn rk_aiq_user_api2_asharpV33_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                  rk_aiq_sharp_strength_v33_t* pStrength) {
+        const rk_aiq_sharp_strength_v33_t* pStrength) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
 XCamReturn rk_aiq_user_api2_asharpV33_GetStrength(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                  rk_aiq_sharp_strength_v33_t* pStrength) {
+        rk_aiq_sharp_strength_v33_t* pStrength) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 

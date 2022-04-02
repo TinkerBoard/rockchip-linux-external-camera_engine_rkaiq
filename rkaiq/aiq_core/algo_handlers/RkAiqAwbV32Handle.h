@@ -38,23 +38,8 @@ class RkAiqAwbV32HandleInt : public RkAiqAwbHandleInt {
         updateWbV32Attr = false;
     };
     virtual ~RkAiqAwbV32HandleInt() {
-        // free wbGainAdjust.lutAll from rk_aiq_uapiV2_awb_GetAwbGainAdjust in
-        // rk_aiq_uapiv2_awb_int.cpp
-        for (int i = 0; i < mNewWbV32Attr.stAuto.wbGainAdjust.lutAll_len; i++) {
-            if (mNewWbV32Attr.stAuto.wbGainAdjust.lutAll[i].cri_lut_out) {
-                free(mNewWbV32Attr.stAuto.wbGainAdjust.lutAll[i].cri_lut_out);
-                mNewWbV32Attr.stAuto.wbGainAdjust.lutAll[i].cri_lut_out = NULL;
-            }
-            if (mNewWbV32Attr.stAuto.wbGainAdjust.lutAll[i].ct_lut_out) {
-                free(mNewWbV32Attr.stAuto.wbGainAdjust.lutAll[i].ct_lut_out);
-                mNewWbV32Attr.stAuto.wbGainAdjust.lutAll[i].ct_lut_out = NULL;
-            }
-        }
-        if (mNewWbV32Attr.stAuto.wbGainAdjust.lutAll) {
-            free(mNewWbV32Attr.stAuto.wbGainAdjust.lutAll);
-            mNewWbV32Attr.stAuto.wbGainAdjust.lutAll = NULL;
-        }
-
+        freeWbGainAdjustAttrib(&mNewWbV32Attr.stAuto.wbGainAdjust);
+        freeWbGainAdjustAttrib(&mCurWbV32Attr.stAuto.wbGainAdjust);
         RkAiqAwbHandleInt::deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);

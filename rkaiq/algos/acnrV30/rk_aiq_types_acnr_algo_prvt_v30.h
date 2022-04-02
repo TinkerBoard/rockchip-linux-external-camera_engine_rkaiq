@@ -40,7 +40,7 @@ typedef struct Acnr_Context_V30_s {
 
     // struct list_head* list_cnr_v30;
 
-    float fCnr_SF_Strength;
+    rk_aiq_cnr_strength_v30_t stStrength;
 
     bool isIQParaUpdate;
     bool isGrayMode;

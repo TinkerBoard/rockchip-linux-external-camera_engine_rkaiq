@@ -1,7 +1,8 @@
 #!/bin/bash
 # Run this from within a bash shell
 # x86_64 is for simulation do not enable RK platform
-export AIQ_BUILD_HOST_DIR=/workspace/toolchains/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf
+export PATH=/home/camera/camera/rk3566_sdk/prebuilts/clang/host/linux-x86/clang-r383902b1/bin:$PATH
+export AIQ_BUILD_HOST_DIR=/data/project_codes/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf
 export AIQ_BUILD_TOOLCHAIN_TRIPLE=arm-linux-gnueabihf
 export AIQ_BUILD_SYSROOT=libc
 export AIQ_BUILD_ARCH=arm

@@ -48,9 +48,9 @@ public:
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     // TODO add algo specific methords, this is a sample
-    XCamReturn setAttrib(rk_aiq_ynr_attrib_v22_t* att);
+    XCamReturn setAttrib(const rk_aiq_ynr_attrib_v22_t* att);
     XCamReturn getAttrib(rk_aiq_ynr_attrib_v22_t* att);
-    XCamReturn setStrength(rk_aiq_ynr_strength_v22_t* pStrength);
+    XCamReturn setStrength(const rk_aiq_ynr_strength_v22_t* pStrength);
     XCamReturn getStrength(rk_aiq_ynr_strength_v22_t* pStrength);
 
 protected:

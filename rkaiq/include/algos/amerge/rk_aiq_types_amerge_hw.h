@@ -97,7 +97,6 @@ typedef struct MgeProcResV12_s {
 
 typedef struct RkAiqAmergeProcResult_s {
     bool update;
-    bool LongFrameMode;
 #if RKAIQ_HAVE_MERGE_V10
     MgeProcResV10_t Merge_v10;
 #endif

@@ -59,7 +59,7 @@ XCamReturn RkAiqAblcHandleInt::updateConfig(bool needSync) {
     return ret;
 }
 
-XCamReturn RkAiqAblcHandleInt::setAttrib(rk_aiq_blc_attrib_t* att) {
+XCamReturn RkAiqAblcHandleInt::setAttrib(const rk_aiq_blc_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();

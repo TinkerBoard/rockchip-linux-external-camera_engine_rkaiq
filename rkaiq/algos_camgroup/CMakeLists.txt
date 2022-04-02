@@ -95,6 +95,7 @@ set (MISC_SRC
 	misc/rk_aiq_algo_camgroup_amerge_itf.cpp
 	misc/rk_aiq_algo_camgroup_adrc_itf.cpp
 	misc/rk_aiq_algo_camgroup_ablc_itf.cpp
+	misc/rk_aiq_algo_camgroup_ablc_itf_v32.cpp
 	aynr3/rk_aiq_algo_camgroup_aynr_itf_v3.cpp
 	acnr2/rk_aiq_algo_camgroup_acnr_itf_v2.cpp
 	asharp4/rk_aiq_algo_camgroup_asharp_itf_v4.cpp

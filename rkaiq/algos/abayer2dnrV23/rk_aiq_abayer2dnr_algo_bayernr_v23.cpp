@@ -207,7 +207,7 @@ float bayer2dnr_wgt_sig_tab_V23(int index, int len, int* exp_x, float*exp_y)
 }
 
 
-Abayer2dnr_result_V23_t bayer2dnr_fix_transfer_V23(RK_Bayer2dnr_Params_V23_Select_t* pSelect, RK_Bayer2dnr_Fix_V23_t *pFix, float fStrength, Abayer2dnr_ExpInfo_V23_t *pExpInfo)
+Abayer2dnr_result_V23_t bayer2dnr_fix_transfer_V23(RK_Bayer2dnr_Params_V23_Select_t* pSelect, RK_Bayer2dnr_Fix_V23_t *pFix, rk_aiq_bayer2dnr_strength_v23_t* pStrength, Abayer2dnr_ExpInfo_V23_t *pExpInfo)
 {
     //--------------------------- v23 params ----------------------------//
     float frameiso[3];
@@ -236,9 +236,21 @@ Abayer2dnr_result_V23_t bayer2dnr_fix_transfer_V23(RK_Bayer2dnr_Params_V23_Selec
         return ABAYER2DNR_V23_RET_NULL_POINTER;
     }
 
+    if(pStrength == NULL) {
+        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ABAYER2DNR_V23_RET_NULL_POINTER;
+    }
+
+    float fStrength = 1.0;
+
+    if (pStrength->strength_enable)
+        fStrength = pStrength->percent;
+
     if(fStrength <= 0.0f) {
         fStrength = 0.000001;
     }
+
+    LOGD_ANR("strength_enable:%d fStrength: %f \n", pStrength->strength_enable, fStrength);
 
     // hdr gain
     int framenum = pExpInfo->hdr_mode + 1;
@@ -266,7 +278,7 @@ Abayer2dnr_result_V23_t bayer2dnr_fix_transfer_V23(RK_Bayer2dnr_Params_V23_Selec
     }
 
     //ISP_BAYNR_3A00_CTRL
-    if(pExpInfo->bayertnr_en) {
+    if(pExpInfo->bayertnr_en && !pSelect->gain_bypass) {
         pFix->bay3d_gain_en = 1;
     } else {
         pFix->bay3d_gain_en = 0;
@@ -400,7 +412,7 @@ Abayer2dnr_result_V23_t bayer2dnr_fix_transfer_V23(RK_Bayer2dnr_Params_V23_Selec
     for (i = 0; i < 16; i++) {
         tmp             = pSelect->gain_lumapoint[i];
         pFix->gain_x[i] = CLIP(tmp, 0, 0xff);
-        tmp             = pSelect->gain_adj[i] * pSelect->gain_scale;
+        tmp             = pSelect->gain_adj[i] * pSelect->gain_scale * fStrength ;
         pFix->gain_y[i] = CLIP(tmp, 0, 0xfff);
     }
     bayer2dnr_fix_printf_V23(pFix);

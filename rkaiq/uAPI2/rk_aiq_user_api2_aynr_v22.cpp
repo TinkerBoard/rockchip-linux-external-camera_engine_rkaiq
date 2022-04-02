@@ -27,7 +27,7 @@ RKAIQ_BEGIN_DECLARE
 #if RKAIQ_HAVE_YNR_V22
 
 XCamReturn
-rk_aiq_user_api2_aynrV22_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ynr_attrib_v22_t* attr)
+rk_aiq_user_api2_aynrV22_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_ynr_attrib_v22_t* attr)
 {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AYNR);
@@ -112,7 +112,7 @@ rk_aiq_user_api2_aynrV22_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ynr_a
 }
 
 XCamReturn
-rk_aiq_user_api2_aynrV22_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ynr_strength_v22_t* pStrength)
+rk_aiq_user_api2_aynrV22_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_ynr_strength_v22_t* pStrength)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     RKAIQ_API_SMART_LOCK(sys_ctx);
@@ -201,7 +201,7 @@ rk_aiq_user_api2_aynrV22_GetStrength(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ynr
 }
 #else
 XCamReturn
-rk_aiq_user_api2_aynrV22_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ynr_attrib_v22_t* attr) {
+rk_aiq_user_api2_aynrV22_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_ynr_attrib_v22_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
@@ -211,7 +211,7 @@ rk_aiq_user_api2_aynrV22_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ynr_a
 }
 
 XCamReturn
-rk_aiq_user_api2_aynrV22_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ynr_strength_v22_t* pStrength) {
+rk_aiq_user_api2_aynrV22_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_ynr_strength_v22_t* pStrength) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 

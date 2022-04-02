@@ -67,6 +67,7 @@ XCamReturn rk_aiq_uapi_amerge_v11_GetAttrib(RkAiqAlgoContext* ctx, mergeAttrV11_
     AmergeContext_t* pAmergeCtx = (AmergeContext_t*)ctx;
 
     attr->opMode = pAmergeCtx->mergeAttrV11.opMode;
+    memcpy(&attr->stAuto, &pAmergeCtx->mergeAttrV11.stAuto, sizeof(CalibDbV2_merge_V11_t));
     memcpy(&attr->stManual, &pAmergeCtx->mergeAttrV11.stManual, sizeof(mMergeAttrV11_t));
     memcpy(&attr->CtlInfo, &pAmergeCtx->mergeAttrV11.CtlInfo, sizeof(MergeCurrCtlData_t));
 
@@ -103,6 +104,7 @@ XCamReturn rk_aiq_uapi_amerge_v12_GetAttrib(RkAiqAlgoContext* ctx, mergeAttrV12_
     AmergeContext_t* pAmergeCtx = (AmergeContext_t*)ctx;
 
     attr->opMode = pAmergeCtx->mergeAttrV12.opMode;
+    memcpy(&attr->stAuto, &pAmergeCtx->mergeAttrV12.stAuto, sizeof(CalibDbV2_merge_V12_t));
     memcpy(&attr->stManual, &pAmergeCtx->mergeAttrV12.stManual, sizeof(mMergeAttrV12_t));
     memcpy(&attr->CtlInfo, &pAmergeCtx->mergeAttrV12.CtlInfo, sizeof(MergeCurrCtlData_t));
 

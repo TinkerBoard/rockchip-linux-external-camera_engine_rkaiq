@@ -55,7 +55,7 @@ XCamReturn RkAiqAblcV32HandleInt::updateConfig(bool needSync) {
     return ret;
 }
 
-XCamReturn RkAiqAblcV32HandleInt::setAttrib(rk_aiq_blc_attrib_V32_t* att) {
+XCamReturn RkAiqAblcV32HandleInt::setAttrib(const rk_aiq_blc_attrib_V32_t* att) {
     ENTER_ANALYZER_FUNCTION();
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
@@ -245,7 +245,7 @@ XCamReturn RkAiqAblcV32HandleInt::postProcess() {
 }
 
 XCamReturn RkAiqAblcV32HandleInt::genIspResult(RkAiqFullParams* params,
-                                               RkAiqFullParams* cur_params) {
+        RkAiqFullParams* cur_params) {
     ENTER_ANALYZER_FUNCTION();
 
     LOGD_ANALYZER("handle get result!!\n");

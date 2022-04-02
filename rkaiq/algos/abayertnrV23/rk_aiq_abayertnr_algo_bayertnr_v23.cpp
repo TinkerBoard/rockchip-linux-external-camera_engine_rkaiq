@@ -253,27 +253,48 @@ unsigned short bayertnr_get_trans_V23(int tmpfix)
     return fx;
 }
 
-Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t* pSelect, RK_Bayertnr_Fix_V23_t *pFix, float fStrength, Abayertnr_ExpInfo_V23_t *pExpInfo)
+Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t* pSelect, RK_Bayertnr_Fix_V23_t *pFix, rk_aiq_bayertnr_strength_v23_t* pStrength, Abayertnr_ExpInfo_V23_t *pExpInfo)
 {
     int i = 0;
     int tmp;
+
+    if(pSelect == NULL) {
+        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ABAYERTNRV23_RET_NULL_POINTER;
+    }
+
+    if(pFix == NULL) {
+        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ABAYERTNRV23_RET_NULL_POINTER;
+    }
+
+    if(pExpInfo == NULL) {
+        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ABAYERTNRV23_RET_NULL_POINTER;
+    }
+
+    if(pStrength == NULL) {
+        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ABAYERTNRV23_RET_NULL_POINTER;
+    }
+
+    float fStrength = 1.0;
+
+    if(pStrength->strength_enable)
+        fStrength = pStrength->percent;
 
     if(fStrength <= 0.0f) {
         fStrength = 0.000001;
     }
 
-    // pSelect->lo_enable = 0;
+    LOGD_ANR("strength_enable:%d fStrength: %f \n", pStrength->strength_enable, fStrength);
+
+    pSelect->lo_enable = 1;
 
     // BAY3D_BAY3D_CTRL 0x2c00
     pFix->soft_st = 0;
     pFix->soft_mode = 0;
-    if(pExpInfo->hdr_mode == 0 && pExpInfo->blc_ob_predgain == 0.0f) {
-        pFix->bwsaving_en = pSelect->trans_en != 0;
-    } else {
-        pFix->bwsaving_en = 0;
-    }
-    pFix->loswitch_protect = 0;
-    LOGD_ANR("bwsaving:%d trans_en:%d\n", pFix->bwsaving_en, pSelect->trans_en );
+    pFix->bwsaving_en = pSelect->trans_en != 0;
     pFix->loswitch_protect = 0;
     pFix->glbpk_en = pSelect->global_pk_en;
     pFix->logaus3_bypass_en = !pSelect->lo_gslum_en;
@@ -288,6 +309,7 @@ Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t
     pFix->bypass_en = !pSelect->enable;;
     pFix->bay3d_en = pSelect->enable;
 
+
     // BAY3D_BAY3D_KALRATIO 0x2c04
     tmp = (int)(pSelect->soft_threshold_ratio * (1 << 10) );
     pFix->softwgt = CLIP(tmp, 0, 0x3ff);
@@ -300,7 +322,7 @@ Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t
 
 
     // BAY3D_BAY3D_CTRL1 0x2c0c
-    pFix->hiwgt_opt_en = pSelect->lo_enable && pSelect->wgt_mge_mode;
+    pFix->hiwgt_opt_en = pSelect->wgt_mge_mode;
     pFix->hichncor_en = (pSelect->hi_filter_filt_avg == 0) ? (pSelect->lo_enable == 0) : (pSelect->hi_filter_filt_avg > 1);
     pFix->bwopt_gain_dis = 0;
     pFix->lo4x8_en = 1;
@@ -335,7 +357,7 @@ Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t
         pFix->higaus5x5_en = 1;
     else if(tmp == 4)
         pFix->higaus5x5_en = 0;
-    pFix->wgtmix_opt_en = 0;
+    pFix->wgtmix_opt_en = pSelect->wgt_use_mode != 0;
 
     // BAY3D_BAY3D_WGTLMT 0x2c10
     tmp = (int)(((float)1 - pSelect->lo_clipwgt) * (1 << FIXTNRWGT));

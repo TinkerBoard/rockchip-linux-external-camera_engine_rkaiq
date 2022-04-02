@@ -61,7 +61,8 @@ AcnrV30_result_t Acnr_Init_V30(Acnr_Context_V30_t **ppAcnrCtx, void *pCalibDb)
     memset(pAcnrCtx, 0x00, sizeof(Acnr_Context_V30_t));
 
     //gain state init
-    pAcnrCtx->fCnr_SF_Strength = 1.0;
+    pAcnrCtx->stStrength.strength_enable = true;
+    pAcnrCtx->stStrength.percent = 1.0;
 
     pAcnrCtx->eState = ACNRV30_STATE_INITIALIZED;
     *ppAcnrCtx = pAcnrCtx;
@@ -260,15 +261,14 @@ AcnrV30_result_t Acnr_GetProcResult_V30(Acnr_Context_V30_t *pAcnrCtx, Acnr_ProcR
         pAcnrResult->stSelect = pAcnrCtx->stAuto.stSelect;
     } else if(pAcnrCtx->eMode == ACNRV30_OP_MODE_MANUAL) {
         pAcnrResult->stSelect = pAcnrCtx->stManual.stSelect;
-        pAcnrCtx->fCnr_SF_Strength = 1.0;
     }
 
     //transfer to reg value
-    cnr_fix_transfer_V30(&pAcnrResult->stSelect, &pAcnrResult->stFix,  &pAcnrCtx->stExpInfo, pAcnrCtx->fCnr_SF_Strength);
+    cnr_fix_transfer_V30(&pAcnrResult->stSelect, &pAcnrResult->stFix,  &pAcnrCtx->stExpInfo, &pAcnrCtx->stStrength);
 
     if(pAcnrCtx->eMode == ACNRV30_OP_MODE_REG_MANUAL) {
         pAcnrResult->stFix = pAcnrCtx->stManual.stFix;
-        pAcnrCtx->fCnr_SF_Strength = 1.0;
+        pAcnrCtx->stStrength.percent = 1.0;
     }
 
     LOGI_ANR("%s(%d): exit!\n", __FUNCTION__, __LINE__);

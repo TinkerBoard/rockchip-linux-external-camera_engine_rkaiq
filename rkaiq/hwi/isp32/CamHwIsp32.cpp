@@ -201,6 +201,9 @@ void CamHwIsp32::gen_full_isp_params(const struct isp32_isp_params_cfg* update_p
                 case Rk_ISP2x_CGC_ID:
                     CHECK_UPDATE_PARAMS(full_params->others.cgc_cfg, update_params->others.cgc_cfg);
                     break;
+                case RK_ISP2X_IE_ID:
+                    CHECK_UPDATE_PARAMS(full_params->others.ie_cfg, update_params->others.ie_cfg);
+                    break;
                 default:
                     break;
             }

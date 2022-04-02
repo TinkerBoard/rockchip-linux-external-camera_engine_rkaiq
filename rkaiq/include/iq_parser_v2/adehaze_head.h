@@ -27,6 +27,8 @@ RKAIQ_BEGIN_DECLARE
 #define CALIBDB_ADEHAZE_ENHANCE_CURVE_KNOTS_NUM 17
 #define DHAZ_V11_SIGMA_IDX_NUM                  15
 #define DHAZ_V11_SIGMA_LUT_NUM                  17
+#define DHAZ_CTRL_DATA_STEP_MAX                 13
+
 
 // dehaze v10
 typedef enum CtrlDataType_e {
@@ -192,72 +194,50 @@ typedef struct CalibDbV2_dehaze_v10_s {
 
 // dehaze v11
 typedef struct DehazeDataV11_s {
-    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* CtrlData;
-    int CtrlData_len;
-    // M4_ARRAY_DESC("dc_min_th", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "64",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* dc_min_th;
-    int dc_min_th_len;
-    // M4_ARRAY_DESC("dc_max_th", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "192",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* dc_max_th;
-    int dc_max_th_len;
-    // M4_ARRAY_DESC("yhist_th", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "249",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* yhist_th;
-    int yhist_th_len;
-    // M4_ARRAY_DESC("yblk_th", "f32", M4_SIZE(1,100), M4_RANGE(0,512), "0.002",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* yblk_th;
-    int yblk_th_len;
-    // M4_ARRAY_DESC("dark_th", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "250",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* dark_th;
-    int dark_th_len;
-    // M4_ARRAY_DESC("bright_min", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "180",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* bright_min;
-    int bright_min_len;
-    // M4_ARRAY_DESC("bright_max", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "240",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* bright_max;
-    int bright_max_len;
-    // M4_ARRAY_DESC("wt_max", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0.9",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* wt_max;
-    int wt_max_len;
-    // M4_ARRAY_DESC("air_min", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "200",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* air_min;
-    int air_min_len;
-    // M4_ARRAY_DESC("air_max", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "250",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* air_max;
-    int air_max_len;
-    // M4_ARRAY_DESC("tmax_base", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "125",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* tmax_base;
-    int tmax_base_len;
-    // M4_ARRAY_DESC("tmax_off", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0.1",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* tmax_off;
-    int tmax_off_len;
-    // M4_ARRAY_DESC("tmax_max", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0.8",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* tmax_max;
-    int tmax_max_len;
-    // M4_ARRAY_DESC("cfg_wt", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0.8",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* cfg_wt;
-    int cfg_wt_len;
-    // M4_ARRAY_DESC("cfg_air", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "210",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* cfg_air;
-    int cfg_air_len;
-    // M4_ARRAY_DESC("cfg_tmax", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0.2",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* cfg_tmax;
-    int cfg_tmax_len;
-    // M4_ARRAY_DESC("dc_weitcur", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "1",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* dc_weitcur;
-    int dc_weitcur_len;
-    // M4_ARRAY_DESC("bf_weight", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0.5",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* bf_weight;
-    int bf_weight_len;
-    // M4_ARRAY_DESC("range_sigma", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0.04",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* range_sigma;
-    int range_sigma_len;
-    // M4_ARRAY_DESC("space_sigma_pre", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0.4",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* space_sigma_pre;
-    int space_sigma_pre_len;
-    // M4_ARRAY_DESC("space_sigma_cur", "f32", M4_SIZE(1,100), M4_RANGE(0,1), "0.8",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* space_sigma_cur;
-    int space_sigma_cur_len;
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,13), M4_RANGE(0,10000000), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float CtrlData[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("dc_min_th", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "[64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float dc_min_th[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("dc_max_th", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "[192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float dc_max_th[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("yhist_th", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "[249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float yhist_th[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("yblk_th", "f32", M4_SIZE(1,13), M4_RANGE(0,512), "[0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float yblk_th[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("dark_th", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "[250, 250, 250, 250, 250, 250, 250, 250, 250 250, 250, 250, 250]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float dark_th[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("bright_min", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "[180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float bright_min[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("bright_max", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "[240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float bright_max[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("wt_max", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float wt_max[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("air_min", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float air_min[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("air_max", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "[250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float air_max[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("tmax_base", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "[125, 125, 125, 125, 125, 125, 125, 125, 125, 125, 125, 125, 125]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float tmax_base[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("tmax_off", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float tmax_off[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("tmax_max", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float tmax_max[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("cfg_wt", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float cfg_wt[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("cfg_air", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float cfg_air[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("cfg_tmax", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float cfg_tmax[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("dc_weitcur", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float dc_weitcur[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("bf_weight", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float bf_weight[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("range_sigma", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float range_sigma[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("space_sigma_pre", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float space_sigma_pre[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("space_sigma_cur", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float space_sigma_cur[DHAZ_CTRL_DATA_STEP_MAX];
 } DehazeDataV11_t;
 
 typedef struct Dehaze_Setting_V11_s {
@@ -282,15 +262,12 @@ typedef struct Dehaze_Setting_V11_s {
 } Dehaze_Setting_V11_t;
 
 typedef struct EnhanceDataV11_s {
-    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* CtrlData;
-    int CtrlData_len;
-    // M4_ARRAY_DESC("enhance_value", "f32", M4_SIZE(1,100), M4_RANGE(1,16), "1",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* enhance_value;
-    int enhance_value_len;
-    // M4_ARRAY_DESC("enhance_chroma", "f32", M4_SIZE(1,100), M4_RANGE(1,16), "1",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* enhance_chroma;
-    int enhance_chroma_len;
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,13), M4_RANGE(0,10000000), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float CtrlData[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("enhance_value", "f32", M4_SIZE(1,13), M4_RANGE(1,16), "[1,1,1,1,1,1,1,1,1,1,1,1,1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float enhance_value[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("enhance_chroma", "f32", M4_SIZE(1,13), M4_RANGE(1,16), "[1,1,1,1,1,1,1,1,1,1,1,1,1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float enhance_chroma[DHAZ_CTRL_DATA_STEP_MAX];
 } EnhanceDataV11_t;
 
 typedef struct Enhance_Setting_V11_s {
@@ -303,27 +280,20 @@ typedef struct Enhance_Setting_V11_s {
 } Enhance_Setting_V11_t;
 
 typedef struct HistDataV11_s {
-    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* CtrlData;
-    int CtrlData_len;
-    // M4_ARRAY_DESC("hist_gratio", "f32", M4_SIZE(1,100), M4_RANGE(0,32), "2",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* hist_gratio;
-    int hist_gratio_len;
-    // M4_ARRAY_DESC("hist_th_off", "f32", M4_SIZE(1,100), M4_RANGE(0,255), "64",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* hist_th_off;
-    int hist_th_off_len;
-    // M4_ARRAY_DESC("hist_k", "f32", M4_SIZE(1,100), M4_RANGE(0,8), "2",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* hist_k;
-    int hist_k_len;
-    // M4_ARRAY_DESC("hist_min", "f32", M4_SIZE(1,100), M4_RANGE(0,2), "0.016",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* hist_min;
-    int hist_min_len;
-    // M4_ARRAY_DESC("hist_scale", "f32", M4_SIZE(1,100), M4_RANGE(0,32), "0.09",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* hist_scale;
-    int hist_scale_len;
-    // M4_ARRAY_DESC("cfg_gratio", "f32", M4_SIZE(1,100), M4_RANGE(0,32), "2",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* cfg_gratio;
-    int cfg_gratio_len;
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,13), M4_RANGE(0,10000000), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float CtrlData[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("hist_gratio", "f32", M4_SIZE(1,13), M4_RANGE(0,32), "[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float hist_gratio[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("hist_th_off", "f32", M4_SIZE(1,13), M4_RANGE(0,255), "[64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float hist_th_off[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("hist_k", "f32", M4_SIZE(1,13), M4_RANGE(0,8), "[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float hist_k[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("hist_min", "f32", M4_SIZE(1,13), M4_RANGE(0,2), "[0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float hist_min[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("hist_scale", "f32", M4_SIZE(1,13), M4_RANGE(0,32), "[0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float hist_scale[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("cfg_gratio", "f32", M4_SIZE(1,13), M4_RANGE(0,32), "[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float cfg_gratio[DHAZ_CTRL_DATA_STEP_MAX];
 } HistDataV11_t;
 
 typedef struct Hist_setting_V11_s {

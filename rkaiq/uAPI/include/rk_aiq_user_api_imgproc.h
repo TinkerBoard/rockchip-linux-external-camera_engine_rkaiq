@@ -45,6 +45,13 @@
 #include "rk_aiq_user_api_asharp_v4.h"
 #include "rk_aiq_user_api_abayer2dnr_v2.h"
 #include "rk_aiq_user_api_abayertnr_v2.h"
+#include "rk_aiq_user_api_again_v2.h"
+
+#include "rk_aiq_user_api_aynr_v22.h"
+#include "rk_aiq_user_api_acnr_v30.h"
+#include "rk_aiq_user_api_asharp_v33.h"
+#include "rk_aiq_user_api_abayer2dnr_v23.h"
+#include "rk_aiq_user_api_abayertnr_v23.h"
 
 
 

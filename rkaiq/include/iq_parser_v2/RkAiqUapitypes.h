@@ -78,12 +78,29 @@ typedef struct __aiq_sysctl_desc {
     work_mode_t work_mode;
 } RkaiqSysCtl_t;
 
+#if ISP_HW_V21
 typedef struct __aiq_measure_info {
     // M4_STRUCT_DESC("ae_hwstats", "normal_ui_style")
     uapi_ae_hwstats_t ae_hwstats;
     // M4_STRUCT_DESC("wb_log", "normal_ui_style")
-    uapi_wb_log_t wb_log;
+    uapi_wbV21_log_t wb_log;
 } aiq_measure_info_t;
+#elif ISP_HW_V30
+typedef struct __aiq_measure_info {
+    // M4_STRUCT_DESC("ae_hwstats", "normal_ui_style")
+    uapi_ae_hwstats_t ae_hwstats;
+    // M4_STRUCT_DESC("wb_log", "normal_ui_style")
+    uapi_wbV30_log_t wb_log;
+} aiq_measure_info_t;
+
+#elif ISP_HW_V32
+typedef struct __aiq_measure_info {
+    // M4_STRUCT_DESC("ae_hwstats", "normal_ui_style")
+    uapi_ae_hwstats_t ae_hwstats;
+    // M4_STRUCT_DESC("wb_log", "normal_ui_style")
+    uapi_wbV32_log_t wb_log;
+} aiq_measure_info_t;
+#endif
 
 typedef struct __aiq_uapi_t {
     // M4_STRUCT_DESC("ae_uapi", "normal_ui_style")

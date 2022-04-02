@@ -122,9 +122,9 @@ typedef struct RK_SHARP_V33_Select_ISO_s {
     float bf_ratio;
     int global_clip_pos;
 
-    float kernel_pre_bila_filter[RK_SHARP_V33_PBF_DIAM * RK_SHARP_V33_PBF_DIAM];
-    float kernel_range_filter[RK_SHARP_V33_RF_DIAM * RK_SHARP_V33_RF_DIAM];
-    float kernel_bila_filter[RK_SHARP_V33_BF_DIAM * RK_SHARP_V33_BF_DIAM];
+    float prefilter_coeff[RK_SHARP_V33_PBF_DIAM * RK_SHARP_V33_PBF_DIAM];
+    float GaussianFilter_coeff[RK_SHARP_V33_RF_DIAM * RK_SHARP_V33_RF_DIAM];
+    float hfBilateralFilter_coeff[RK_SHARP_V33_BF_DIAM * RK_SHARP_V33_BF_DIAM];
 
     float global_gain;
     float global_gain_alpha;
@@ -192,7 +192,6 @@ typedef struct Asharp_Auto_Attr_V33_s {
 } Asharp_Auto_Attr_V33_t;
 
 typedef struct Asharp_ProcResult_V33_s {
-    int sharpEn;
 
     // for sw simultaion
     RK_SHARP_Params_V33_Select_t stSelect;
@@ -221,7 +220,9 @@ typedef struct rk_aiq_sharp_attrib_v33_s {
 
 typedef struct rk_aiq_sharp_strength_v33_s {
     rk_aiq_uapi_sync_t sync;
+
     float percent;
+    bool strength_enable;
 } rk_aiq_sharp_strength_v33_t;
 
 #endif

@@ -97,7 +97,16 @@ prepare
 
     //reconfig
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
-        AdebayerInit(pAdebayerCtx, pCfgParam->com.u.prepare.calib, pCfgParam->com.u.prepare.calibv2);
+
+#if RKAIQ_HAVE_DEBAYER_V1
+        result = AdebayerFullParamsInit(pAdebayerCtx, pCfgParam->com.u.prepare.calib, pCfgParam->com.u.prepare.calibv2);
+#endif
+
+#if RKAIQ_HAVE_DEBAYER_V2
+        result = AdebayerCalibConfig(pAdebayerCtx, pCfgParam->com.u.prepare.calibv2);
+#endif
+
+        pAdebayerCtx->config.updatecfg = true;
     }
 
     AdebayerStart(pAdebayerCtx);
@@ -164,6 +173,7 @@ processing
         }
 
         if (pAdebayerCtx->is_reconfig) {
+            LOGD_ADEBAYER("%s: is_reconfig = true \n", __FUNCTION__);
             pAdebayerCtx->config.updatecfg = true;
             pAdebayerCtx->is_reconfig = false;
         }

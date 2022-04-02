@@ -83,6 +83,10 @@
 #cmakedefine01 RKAIQ_HAVE_SHARP_V33
 #cmakedefine01 RKAIQ_HAVE_LSC_V1
 #cmakedefine01 RKAIQ_HAVE_LSC_V2
+#cmakedefine01 RKAIQ_HAVE_LSC_V3
 #cmakedefine01 RKAIQ_HAVE_LDCH_V21
+#cmakedefine01 RKAIQ_HAVE_DPCC_V1
+#cmakedefine01 RKAIQ_HAVE_ACP_V10
+#cmakedefine01 RKAIQ_HAVE_AIE_V10
 
 #endif /* RKAIQ_CONFIG_H */

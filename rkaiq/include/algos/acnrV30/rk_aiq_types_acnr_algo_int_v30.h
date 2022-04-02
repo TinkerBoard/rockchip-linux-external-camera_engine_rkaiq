@@ -60,7 +60,7 @@
 // global alpha fix bit
 #define     RKCNR_V30_FIX_BIT_GLOBAL_ALPHA      10
 // div sum wgt fix bit
-#define     RKCNR_V30_FIX_BIT_DIV_SUM_WGT       22// 
+#define     RKCNR_V30_FIX_BIT_DIV_SUM_WGT       22//
 #define     RKCNR_V30_FIX_BIT_DIST_SCALE        7
 //////////////////////////////////////////////////////////////////////////
 // params
@@ -231,6 +231,7 @@ typedef struct rk_aiq_cnr_attrib_v30_s {
 typedef struct rk_aiq_cnr_strength_v30_s {
     rk_aiq_uapi_sync_t sync;
     float percent;
+    bool strength_enable;
 } rk_aiq_cnr_strength_v30_t;
 
 

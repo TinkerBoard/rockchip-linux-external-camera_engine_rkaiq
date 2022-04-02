@@ -18,6 +18,7 @@
 #include "aynr3/rk_aiq_uapi_camgroup_aynr_int_v3.h"
 
 namespace RkCam {
+#if RKAIQ_HAVE_YNR_V3
 
 XCamReturn RkAiqCamGroupAynrV3HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
@@ -62,7 +63,7 @@ XCamReturn RkAiqCamGroupAynrV3HandleInt::setAttrib(rk_aiq_ynr_attrib_v3_t* att) 
     // called by RkAiqCore
     bool isChanged = false;
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
-        memcmp(&mNewAtt, att, sizeof(*att)))
+            memcmp(&mNewAtt, att, sizeof(*att)))
         isChanged = true;
     else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
              memcmp(&mCurAtt, att, sizeof(*att)))
@@ -119,7 +120,7 @@ XCamReturn RkAiqCamGroupAynrV3HandleInt::setStrength(rk_aiq_ynr_strength_v3_t *p
 
     bool isChanged = false;
     if (pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
-        memcmp(&mNewStrength, pStrength, sizeof(*pStrength)))
+            memcmp(&mNewStrength, pStrength, sizeof(*pStrength)))
         isChanged = true;
     else if (pStrength->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
              memcmp(&mCurStrength, pStrength, sizeof(*pStrength)))
@@ -161,4 +162,5 @@ XCamReturn RkAiqCamGroupAynrV3HandleInt::getStrength(rk_aiq_ynr_strength_v3_t *p
 }
 #endif
 
+#endif
 }  // namespace RkCam

@@ -52,7 +52,7 @@ XCamReturn RkAiqAcnrV30HandleInt::updateConfig(bool needSync) {
 
     if (updateStrength) {
         mCurStrength   = mNewStrength;
-        rk_aiq_uapi_acnrV30_SetChromaSFStrength(mAlgoCtx, mCurStrength.percent);
+        rk_aiq_uapi_acnrV30_SetChromaSFStrength(mAlgoCtx, &mCurStrength);
         sendSignal(mCurStrength.sync.sync_mode);
         updateStrength = false;
     }
@@ -63,7 +63,7 @@ XCamReturn RkAiqAcnrV30HandleInt::updateConfig(bool needSync) {
     return ret;
 }
 
-XCamReturn RkAiqAcnrV30HandleInt::setAttrib(rk_aiq_cnr_attrib_v30_t* att) {
+XCamReturn RkAiqAcnrV30HandleInt::setAttrib(const rk_aiq_cnr_attrib_v30_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -111,7 +111,7 @@ XCamReturn RkAiqAcnrV30HandleInt::getAttrib(rk_aiq_cnr_attrib_v30_t* att) {
     return ret;
 }
 
-XCamReturn RkAiqAcnrV30HandleInt::setStrength(rk_aiq_cnr_strength_v30_t *pStrength) {
+XCamReturn RkAiqAcnrV30HandleInt::setStrength(const rk_aiq_cnr_strength_v30_t *pStrength) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -139,15 +139,15 @@ XCamReturn RkAiqAcnrV30HandleInt::getStrength(rk_aiq_cnr_strength_v30_t *pStreng
 
     if(pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
-        rk_aiq_uapi_acnrV30_GetChromaSFStrength(mAlgoCtx, &pStrength->percent);
+        rk_aiq_uapi_acnrV30_GetChromaSFStrength(mAlgoCtx, pStrength);
         pStrength->sync.done = true;
         mCfgMutex.unlock();
     } else {
         if(updateStrength) {
-            pStrength->percent = mNewStrength.percent;
+            *pStrength = mNewStrength;
             pStrength->sync.done = false;
         } else {
-            rk_aiq_uapi_acnrV30_GetChromaSFStrength(mAlgoCtx, &pStrength->percent);
+            rk_aiq_uapi_acnrV30_GetChromaSFStrength(mAlgoCtx, pStrength);
             pStrength->sync.done = true;
         }
     }

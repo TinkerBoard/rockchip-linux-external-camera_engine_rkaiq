@@ -35,6 +35,16 @@
 #include "alsc/rk_aiq_uapi_alsc_int.h"
 #include "adpcc/rk_aiq_uapi_adpcc_int.h"
 
+#include "abayertnr2/rk_aiq_uapi_abayertnr_int_v2.h"
+#include "asharp4/rk_aiq_uapi_asharp_int_v4.h"
+
+#include "ablcV32/rk_aiq_uapi_ablc_int_v32.h"
+#include "aynrV22/rk_aiq_uapi_aynr_int_v22.h"
+#include "acnrV30/rk_aiq_uapi_acnr_int_v30.h"
+#include "abayer2dnrV23/rk_aiq_uapi_abayer2dnr_int_v23.h"
+#include "abayertnrV23/rk_aiq_uapi_abayertnr_int_v23.h"
+#include "asharpV33/rk_aiq_uapi_asharp_int_v33.h"
+
 namespace RkCam {
 // ae
 class RkAiqCamGroupAeHandleInt:
@@ -439,7 +449,7 @@ private:
 
 // adehaze
 class RkAiqCamGroupAdehazeHandleInt : virtual public RkAiqCamgroupHandle {
- public:
+public:
     explicit RkAiqCamGroupAdehazeHandleInt(RkAiqAlgoDesComm* des, RkAiqCamGroupManager* camGroupMg)
         : RkAiqCamgroupHandle(des, camGroupMg) {
 #if RKAIQ_HAVE_DEHAZE_V10
@@ -455,7 +465,9 @@ class RkAiqCamGroupAdehazeHandleInt : virtual public RkAiqCamgroupHandle {
         memset(&mNewAttV12, 0, sizeof(adehaze_sw_v12_t));
 #endif
     };
-    virtual ~RkAiqCamGroupAdehazeHandleInt() { RkAiqCamgroupHandle::deInit(); };
+    virtual ~RkAiqCamGroupAdehazeHandleInt() {
+        RkAiqCamgroupHandle::deInit();
+    };
     virtual XCamReturn updateConfig(bool needSync);
 #if RKAIQ_HAVE_DEHAZE_V10
     XCamReturn setAttribV10(const adehaze_sw_v10_t* att);
@@ -487,6 +499,8 @@ private:
 };
 
 // aynr
+#if RKAIQ_HAVE_YNR_V3
+
 class RkAiqCamGroupAynrV3HandleInt:
     public RkAiqCamgroupHandle {
 public:
@@ -521,8 +535,11 @@ private:
     rk_aiq_ynr_strength_v3_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
 };
+#endif
 
 // acnr v2
+#if RKAIQ_HAVE_CNR_V2
+
 class RkAiqCamGroupAcnrV2HandleInt:
     virtual public RkAiqCamgroupHandle {
 public:
@@ -556,9 +573,11 @@ private:
     rk_aiq_cnr_strength_v2_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
 };
-
+#endif
 
 // aynr v2
+#if RKAIQ_HAVE_BAYER2DNR_V2
+
 class RkAiqCamGroupAbayer2dnrV2HandleInt:
     virtual public RkAiqCamgroupHandle {
 public:
@@ -593,9 +612,11 @@ private:
     rk_aiq_bayer2dnr_strength_v2_t mNewStrength;
     mutable std::atomic<bool>  updateStrength;
 };
-
+#endif
 
 // ablc
+#if RKAIQ_HAVE_BLC_V1
+
 class RkAiqCamGroupAblcHandleInt:
     public RkAiqCamgroupHandle {
 public:
@@ -611,7 +632,7 @@ public:
         RkAiqCamgroupHandle::deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);
-    XCamReturn setAttrib(rk_aiq_blc_attrib_t *att);
+    XCamReturn setAttrib(const rk_aiq_blc_attrib_t *att);
     XCamReturn getAttrib(rk_aiq_blc_attrib_t *att);
 protected:
 
@@ -620,8 +641,11 @@ private:
     rk_aiq_blc_attrib_t mCurAtt;
     rk_aiq_blc_attrib_t mNewAtt;
 };
+#endif
 
 // asharp
+#if RKAIQ_HAVE_SHARP_V4
+
 class RkAiqCamGroupAsharpV4HandleInt:
     public RkAiqCamgroupHandle {
 public:
@@ -656,6 +680,9 @@ private:
     rk_aiq_sharp_strength_v4_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
 };
+#endif
+
+#if RKAIQ_HAVE_BAYERTNR_V2
 
 class RkAiqCamGroupAbayertnrV2HandleInt:
     public RkAiqCamgroupHandle {
@@ -692,6 +719,7 @@ private:
     rk_aiq_bayertnr_strength_v2_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
 };
+#endif
 
 // aldch
 class RkAiqCamGroupAldchHandleInt:
@@ -707,7 +735,7 @@ public:
     };
     virtual XCamReturn updateConfig(bool needSync);
     // TODO add algo specific methords, this is a sample
-    XCamReturn setAttrib(rk_aiq_ldch_attrib_t att);
+    XCamReturn setAttrib(const rk_aiq_ldch_attrib_t* att);
     XCamReturn getAttrib(rk_aiq_ldch_attrib_t *att);
 
 protected:
@@ -791,6 +819,8 @@ private:
     rk_aiq_dpcc_attrib_V20_t mNewAtt;
 };
 
+#if RKAIQ_HAVE_GAIN_V2
+
 class RkAiqCamGroupAgainV2HandleInt:
     virtual public RkAiqCamgroupHandle {
 public:
@@ -815,6 +845,233 @@ private:
     rk_aiq_gain_attrib_v2_t mNewAtt;
 
 };
+#endif
+
+
+// aynr
+#if RKAIQ_HAVE_YNR_V22
+
+class RkAiqCamGroupAynrV22HandleInt:
+    public RkAiqCamgroupHandle {
+public:
+    explicit RkAiqCamGroupAynrV22HandleInt(RkAiqAlgoDesComm* des,
+                                           RkAiqCamGroupManager* camGroupMg)
+        : RkAiqCamgroupHandle(des, camGroupMg) {
+        updateAtt = false;
+        updateStrength = false;
+        memset(&mCurStrength, 0x00, sizeof(mCurStrength));
+        mCurStrength.percent = 1.0;
+        memset(&mNewStrength, 0x00, sizeof(mNewStrength));
+        mNewStrength.percent = 1.0;
+        memset(&mCurAtt, 0x00, sizeof(mCurAtt));
+        memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+    };
+    virtual ~RkAiqCamGroupAynrV22HandleInt() {
+        RkAiqCamgroupHandle::deInit();
+    };
+    virtual XCamReturn updateConfig(bool needSync);
+    XCamReturn setAttrib(const rk_aiq_ynr_attrib_v22_t *att);
+    XCamReturn getAttrib(rk_aiq_ynr_attrib_v22_t *att);
+    XCamReturn setStrength(const rk_aiq_ynr_strength_v22_t *pStrength);
+    XCamReturn getStrength(rk_aiq_ynr_strength_v22_t *pStrength);
+
+protected:
+
+private:
+
+    rk_aiq_ynr_attrib_v22_t mCurAtt;
+    rk_aiq_ynr_attrib_v22_t mNewAtt;
+    rk_aiq_ynr_strength_v22_t mCurStrength;
+    rk_aiq_ynr_strength_v22_t mNewStrength;
+    mutable std::atomic<bool> updateStrength;
+};
+#endif
+
+// acnr v2
+#if RKAIQ_HAVE_CNR_V30
+
+class RkAiqCamGroupAcnrV30HandleInt:
+    virtual public RkAiqCamgroupHandle {
+public:
+    explicit RkAiqCamGroupAcnrV30HandleInt(RkAiqAlgoDesComm* des,
+                                           RkAiqCamGroupManager* camGroupMg)
+        : RkAiqCamgroupHandle(des, camGroupMg) {
+        updateStrength = false;
+        updateAtt = false;
+        memset(&mCurStrength, 0x00, sizeof(mCurStrength));
+        mCurStrength.percent = 1.0;
+        memset(&mNewStrength, 0x00, sizeof(mNewStrength));
+        mNewStrength.percent = 1.0;
+        memset(&mCurAtt, 0x00, sizeof(mCurAtt));
+        memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+    };
+    virtual ~RkAiqCamGroupAcnrV30HandleInt() {
+        RkAiqCamgroupHandle::deInit();
+    };
+    virtual XCamReturn updateConfig(bool needSync);
+    XCamReturn setAttrib(const rk_aiq_cnr_attrib_v30_t *att);
+    XCamReturn getAttrib(rk_aiq_cnr_attrib_v30_t *att);
+    XCamReturn setStrength(const rk_aiq_cnr_strength_v30_t *pStrength);
+    XCamReturn getStrength(rk_aiq_cnr_strength_v30_t *pStrength);
+protected:
+
+private:
+    // TODO
+    rk_aiq_cnr_attrib_v30_t mCurAtt;
+    rk_aiq_cnr_attrib_v30_t mNewAtt;
+    rk_aiq_cnr_strength_v30_t mCurStrength;
+    rk_aiq_cnr_strength_v30_t mNewStrength;
+    mutable std::atomic<bool> updateStrength;
+};
+#endif
+
+
+// aynr v2
+#if RKAIQ_HAVE_BAYER2DNR_V23
+
+class RkAiqCamGroupAbayer2dnrV23HandleInt:
+    virtual public RkAiqCamgroupHandle {
+public:
+    explicit RkAiqCamGroupAbayer2dnrV23HandleInt(RkAiqAlgoDesComm* des,
+            RkAiqCamGroupManager* camGroupMg)
+        : RkAiqCamgroupHandle(des, camGroupMg) {
+        updateStrength = false;
+        updateAtt = false;
+        memset(&mCurStrength, 0x00, sizeof(mCurStrength));
+        memset(&mNewStrength, 0x00, sizeof(mNewStrength));
+        mCurStrength.percent = 1.0;
+        mNewStrength.percent = 1.0;
+        memset(&mCurAtt, 0x00, sizeof(mCurAtt));
+        memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+
+    };
+    virtual ~RkAiqCamGroupAbayer2dnrV23HandleInt() {
+        RkAiqCamgroupHandle::deInit();
+    };
+    virtual XCamReturn updateConfig(bool needSync);
+    XCamReturn setAttrib(const rk_aiq_bayer2dnr_attrib_v23_t *att);
+    XCamReturn getAttrib(rk_aiq_bayer2dnr_attrib_v23_t *att);
+    XCamReturn setStrength(const rk_aiq_bayer2dnr_strength_v23_t *pStrength);
+    XCamReturn getStrength(rk_aiq_bayer2dnr_strength_v23_t *pStrength);
+protected:
+
+private:
+    // TODO
+    rk_aiq_bayer2dnr_attrib_v23_t mCurAtt;
+    rk_aiq_bayer2dnr_attrib_v23_t mNewAtt;
+    rk_aiq_bayer2dnr_strength_v23_t mCurStrength;
+    rk_aiq_bayer2dnr_strength_v23_t mNewStrength;
+    mutable std::atomic<bool>  updateStrength;
+};
+#endif
+
+
+// ablc
+#if RKAIQ_HAVE_BLC_V32
+
+class RkAiqCamGroupAblcV32HandleInt:
+    public RkAiqCamgroupHandle {
+public:
+    explicit RkAiqCamGroupAblcV32HandleInt(RkAiqAlgoDesComm* des,
+                                           RkAiqCamGroupManager* camGroupMg)
+        : RkAiqCamgroupHandle(des, camGroupMg) {
+        updateAtt = false;
+        memset(&mCurAtt, 0x00, sizeof(mCurAtt));
+        memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+
+    };
+    virtual ~RkAiqCamGroupAblcV32HandleInt() {
+        RkAiqCamgroupHandle::deInit();
+    };
+    virtual XCamReturn updateConfig(bool needSync);
+    XCamReturn setAttrib(const rk_aiq_blc_attrib_V32_t *att);
+    XCamReturn getAttrib(rk_aiq_blc_attrib_V32_t *att);
+protected:
+
+private:
+
+    rk_aiq_blc_attrib_V32_t mCurAtt;
+    rk_aiq_blc_attrib_V32_t mNewAtt;
+};
+#endif
+
+#if RKAIQ_HAVE_BAYERTNR_V23
+
+class RkAiqCamGroupAbayertnrV23HandleInt:
+    public RkAiqCamgroupHandle {
+public:
+    explicit RkAiqCamGroupAbayertnrV23HandleInt(RkAiqAlgoDesComm* des,
+            RkAiqCamGroupManager* camGroupMg)
+        : RkAiqCamgroupHandle(des, camGroupMg) {
+        updateAtt      = false;
+        updateStrength = false;
+        memset(&mCurStrength, 0x00, sizeof(mCurStrength));
+        mCurStrength.percent = 1.0;
+        memset(&mNewStrength, 0x00, sizeof(mNewStrength));
+        mNewStrength.percent = 1.0;
+        memset(&mCurAtt, 0x00, sizeof(mCurAtt));
+        memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+    };
+    virtual ~RkAiqCamGroupAbayertnrV23HandleInt() {
+        RkAiqCamgroupHandle::deInit();
+    };
+    virtual XCamReturn updateConfig(bool needSync);
+    // TODO add algo specific methords, this is a sample
+    XCamReturn setAttrib(const rk_aiq_bayertnr_attrib_v23_t *att);
+    XCamReturn getAttrib(rk_aiq_bayertnr_attrib_v23_t *att);
+    XCamReturn setStrength(const rk_aiq_bayertnr_strength_v23_t *pStrength);
+    XCamReturn getStrength(rk_aiq_bayertnr_strength_v23_t *pStrength);
+
+protected:
+
+private:
+
+    rk_aiq_bayertnr_attrib_v23_t mCurAtt;
+    rk_aiq_bayertnr_attrib_v23_t mNewAtt;
+    rk_aiq_bayertnr_strength_v23_t mCurStrength;
+    rk_aiq_bayertnr_strength_v23_t mNewStrength;
+    mutable std::atomic<bool> updateStrength;
+};
+#endif
+
+// asharp
+#if RKAIQ_HAVE_SHARP_V33
+
+class RkAiqCamGroupAsharpV33HandleInt:
+    public RkAiqCamgroupHandle {
+public:
+    explicit RkAiqCamGroupAsharpV33HandleInt(RkAiqAlgoDesComm* des, RkAiqCamGroupManager* camGroupMg)
+        : RkAiqCamgroupHandle(des, camGroupMg) {
+        updateAtt      = false;
+        updateStrength = false;
+        memset(&mCurStrength, 0x00, sizeof(mCurStrength));
+        mCurStrength.percent = 1.0;
+        memset(&mNewStrength, 0x00, sizeof(mNewStrength));
+        mNewStrength.percent = 1.0;
+        memset(&mCurAtt, 0x00, sizeof(mCurAtt));
+        memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+    };
+    virtual ~RkAiqCamGroupAsharpV33HandleInt() {
+        RkAiqCamgroupHandle::deInit();
+    };
+    virtual XCamReturn updateConfig(bool needSync);
+    // TODO add algo specific methords, this is a sample
+    XCamReturn setAttrib(const rk_aiq_sharp_attrib_v33_t *att);
+    XCamReturn getAttrib(rk_aiq_sharp_attrib_v33_t *att);
+    XCamReturn setStrength(const rk_aiq_sharp_strength_v33_t *pStrength);
+    XCamReturn getStrength(rk_aiq_sharp_strength_v33_t *pStrength);
+
+protected:
+
+private:
+
+    rk_aiq_sharp_attrib_v33_t mCurAtt;
+    rk_aiq_sharp_attrib_v33_t mNewAtt;
+    rk_aiq_sharp_strength_v33_t mCurStrength;
+    rk_aiq_sharp_strength_v33_t mNewStrength;
+    mutable std::atomic<bool> updateStrength;
+};
+#endif
 }
 
 #endif

@@ -8,7 +8,7 @@
 #define MAX(a,b)             ((a) >= (b) ? (a):(b))
 #endif
 
-static int
+XCamReturn
 AdebayerFullParamsInit
 (
     AdebayerContext_t *pAdebayerCtx,
@@ -67,7 +67,7 @@ AdebayerFullParamsInit
         LOGE_ADEBAYER("%s(%d): calibDb are all null!\n", __FUNCTION__, __LINE__);
     }
 
-    return 0;
+    return XCAM_RETURN_NO_ERROR;
 }
 
 XCamReturn

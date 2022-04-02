@@ -36,14 +36,23 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
 
     ctx->calib = cfg->calib;
     ctx->calibv2 = cfg->calibv2;
+#if RKAIQ_HAVE_AIE_V10
     if (ctx->calib) {
         CalibDb_IE_t *calib_ie =
             (CalibDb_IE_t*)(CALIBDB_GET_MODULE_PTR(ctx->calib, ie));
-        ctx->params.mode = (rk_aiq_ie_effect_t)calib_ie->mode;
+        if (calib_ie->enable) {
+            ctx->params.mode = (rk_aiq_ie_effect_t)calib_ie->mode;
+        } else {
+            ctx->params.mode = RK_AIQ_IE_EFFECT_NONE;
+        }
     } else if (ctx->calibv2) {
         CalibDbV2_IE_t* calibv2_ie =
                 (CalibDbV2_IE_t*)(CALIBDBV2_GET_MODULE_PTR(ctx->calibv2, ie));
-        ctx->params.mode = (rk_aiq_ie_effect_t)calibv2_ie->param.mode;
+        if (calibv2_ie->param.enable) {
+            ctx->params.mode = (rk_aiq_ie_effect_t)calibv2_ie->param.mode;
+        } else {
+            ctx->params.mode = RK_AIQ_IE_EFFECT_NONE;
+        }
     }
 
     // default value
@@ -78,7 +87,7 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
     ctx->sharp_params.mode_coeffs[8] = 0xc;//-1
     ctx->sharp_params.sharp_factor = 8.0;
     ctx->sharp_params.sharp_thres = 128;
-
+#endif
     *context = ctx;
 
     return XCAM_RETURN_NO_ERROR;
@@ -100,15 +109,25 @@ prepare(RkAiqAlgoCom* params)
         RkAiqAlgoContext *ctx = params->ctx;
         ctx->calib = confPara->com.u.prepare.calib;
         ctx->calibv2 = confPara->com.u.prepare.calibv2;
+#if RKAIQ_HAVE_AIE_V10
         if (ctx->calib) {
             CalibDb_IE_t *calib_ie =
                 (CalibDb_IE_t*)(CALIBDB_GET_MODULE_PTR(ctx->calib, ie));
-            ctx->params.mode = (rk_aiq_ie_effect_t)calib_ie->mode;
+            if (calib_ie->enable) {
+                ctx->params.mode = (rk_aiq_ie_effect_t)calib_ie->mode;
+            } else {
+                ctx->params.mode = RK_AIQ_IE_EFFECT_NONE;
+            }
         } else if (ctx->calibv2) {
             CalibDbV2_IE_t* calibv2_ie =
                 (CalibDbV2_IE_t*)(CALIBDBV2_GET_MODULE_PTR(ctx->calibv2, ie));
-            ctx->params.mode = (rk_aiq_ie_effect_t)calibv2_ie->param.mode;
+            if (calibv2_ie->param.enable) {
+                ctx->params.mode = (rk_aiq_ie_effect_t)calibv2_ie->param.mode;
+            } else {
+                ctx->params.mode = RK_AIQ_IE_EFFECT_NONE;
+            }
         }
+#endif
     }
 
     return XCAM_RETURN_NO_ERROR;
@@ -120,6 +139,7 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     RkAiqAlgoContext *ctx = inparams->ctx;
     RkAiqAlgoPreAie* pAiePreParams = (RkAiqAlgoPreAie*)inparams;
     // force gray_mode by aiq framework
+#if RKAIQ_HAVE_AIE_V10
     if (pAiePreParams->com.u.proc.gray_mode &&
         ctx->params.mode !=  RK_AIQ_IE_EFFECT_BW) {
         ctx->last_params = ctx->params;
@@ -131,7 +151,7 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         if (ctx->skip_frame && --ctx->skip_frame == 0)
             ctx->params = ctx->last_params;
     }
-
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -145,6 +165,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     res->params_com = ctx->params;
 
     rk_aiq_aie_params_int_t* int_params = NULL;
+#if RKAIQ_HAVE_AIE_V10
     switch (ctx->params.mode)
     {
     case RK_AIQ_IE_EFFECT_EMBOSS :
@@ -159,7 +180,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     default:
         break;
     }
-
+#endif
     if (int_params)
         res->params = *int_params;
 

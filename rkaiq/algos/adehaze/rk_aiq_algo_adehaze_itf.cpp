@@ -171,7 +171,14 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
 
     LOGD_ADEHAZE("/*************************Adehaze Start******************/ \n");
 
-    AdehazeGetCurrData(pAdehazeHandle, pProcPara);
+    ret = AdehazeGetCurrData(pAdehazeHandle, pProcPara);
+    if (ret == XCAM_RETURN_ERROR_PARAM) {
+        if (pAdehazeHandle->FrameID <= 2)
+            return XCAM_RETURN_NO_ERROR;
+        else {
+            LOGE_ADEHAZE("%s:PreResBuf is NULL!\n", __FUNCTION__);
+        }
+    }
 
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
     // get ynr snr mode

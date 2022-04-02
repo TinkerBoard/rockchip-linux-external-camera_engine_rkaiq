@@ -528,10 +528,10 @@ void AdehazeGetEnvLvISO(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoPreResAe* pAePreR
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);
 }
 
-void AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx, RKAiqAecExpInfo_t* pAeEffExpo,
-                             XCamVideoBuffer* pAePreRes) {
+XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx, RKAiqAecExpInfo_t* pAeEffExpo,
+                                   XCamVideoBuffer* pAePreRes) {
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
-
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
     int iso = 50;
     AdehazeExpInfo_t stExpInfo;
     memset(&stExpInfo, 0x00, sizeof(AdehazeExpInfo_t));
@@ -573,18 +573,19 @@ void AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx, RKAiqAecExpInfo_t* pA
             }
         }
     } else {
-        LOGE_ADEHAZE("%s:%d pAEPreRes is NULL, so use default instead \n", __FUNCTION__, __LINE__);
+        ret = XCAM_RETURN_ERROR_PARAM;
     }
 
     iso                          = stExpInfo.arIso[stExpInfo.hdr_mode];
     pAdehazeCtx->CurrDataV10.ISO = (float)iso;
 
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);
+    return ret;
 }
 
-void AdehazeGetCurrData(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoProcAdhaz* pProcPara) {
+XCamReturn AdehazeGetCurrData(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoProcAdhaz* pProcPara) {
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
-
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
     int iso = 50;
     AdehazeExpInfo_t stExpInfo;
     memset(&stExpInfo, 0x00, sizeof(AdehazeExpInfo_t));
@@ -633,13 +634,14 @@ void AdehazeGetCurrData(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoProcAdhaz* pProcP
             }
         }
     } else {
-        LOGE_ADEHAZE("%s:%d pAEPreRes is NULL, so use default instead \n", __FUNCTION__, __LINE__);
+        ret = XCAM_RETURN_ERROR_PARAM;
     }
 
     iso                          = stExpInfo.arIso[stExpInfo.hdr_mode];
     pAdehazeCtx->CurrDataV10.ISO = (float)iso;
 
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);
+    return ret;
 }
 
 XCamReturn AdehazeInit(AdehazeHandle_t** pAdehazeCtx, CamCalibDbV2Context_t* pCalib) {

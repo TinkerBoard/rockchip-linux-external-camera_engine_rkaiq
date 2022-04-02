@@ -157,12 +157,18 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
 
     LOGD_ADEHAZE("/*************************Adehaze Group Start******************/ \n");
 
-    AdehazeGetCurrDataGroup(pAdehazeGrpHandle,
-                            &pGrpProcPara->camgroupParmasArray[0]->aec._effAecExpInfo,
-                            pGrpProcPara->camgroupParmasArray[0]->aec._aePreRes);
-
-#if RKAIQ_HAVE_DEHAZE_V11_DUO || RKAIQ_HAVE_DEHAZE_V12
+    ret = AdehazeGetCurrDataGroup(pAdehazeGrpHandle,
+                                  &pGrpProcPara->camgroupParmasArray[0]->aec._effAecExpInfo,
+                                  pGrpProcPara->camgroupParmasArray[0]->aec._aePreRes);
+    if (ret == XCAM_RETURN_ERROR_PARAM) {
+        if (pAdehazeGrpHandle->FrameID <= 2)
+            return XCAM_RETURN_NO_ERROR;
+        else {
+            LOGE_ADEHAZE("%s:PreResBuf is NULL!\n", __FUNCTION__);
+        }
+    }
     // get ynr snr mode
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
     if (pGrpProcPara->gcom.com.u.proc.curExp->CISFeature.SNR == 0)
         pAdehazeGrpHandle->CurrDataV11duo.SnrMode = YNRSNRMODE_LSNR;
     else if (pGrpProcPara->gcom.com.u.proc.curExp->CISFeature.SNR == 1)
@@ -171,6 +177,17 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
         LOGI_ADEHAZE("%s(%d) Adehaze Get Wrong Snr Mode!!!, Using LSNR Params \n", __func__,
                      __LINE__);
         pAdehazeGrpHandle->CurrDataV11duo.SnrMode = YNRSNRMODE_LSNR;
+    }
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+    if (pGrpProcPara->gcom.com.u.proc.curExp->CISFeature.SNR == 0)
+        pAdehazeGrpHandle->CurrDataV12.SnrMode = YNRSNRMODE_LSNR;
+    else if (pGrpProcPara->gcom.com.u.proc.curExp->CISFeature.SNR == 1)
+        pAdehazeGrpHandle->CurrDataV12.SnrMode = YNRSNRMODE_HSNR;
+    else {
+        LOGI_ADEHAZE("%s(%d) Adehaze Get Wrong Snr Mode!!!, Using LSNR Params \n", __func__,
+                     __LINE__);
+        pAdehazeGrpHandle->CurrDataV12.SnrMode = YNRSNRMODE_LSNR;
     }
 #endif
 

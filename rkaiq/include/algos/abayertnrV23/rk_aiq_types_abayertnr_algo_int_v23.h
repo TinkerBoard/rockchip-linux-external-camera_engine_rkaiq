@@ -157,7 +157,6 @@ typedef struct RK_Bayertnr_Params_V23_s
 
 typedef struct Abayertnr_Manual_Attr_V23_s
 {
-    int bayernr3DEn;
     RK_Bayertnr_Params_V23_Select_t st3DSelect;
 
     RK_Bayertnr_Fix_V23_t st3DFix;
@@ -165,9 +164,6 @@ typedef struct Abayertnr_Manual_Attr_V23_s
 
 typedef struct Abayertnr_Auto_Attr_V23_s
 {
-    //all ISO params and select param
-    int bayernr3DEn;
-
     RK_Bayertnr_Params_V23_t st3DParams;
     RK_Bayertnr_Params_V23_Select_t st3DSelect;
 
@@ -203,6 +199,7 @@ typedef struct rk_aiq_bayertnr_attrib_v23_s {
 typedef struct rk_aiq_bayertnr_strength_v23_s {
     rk_aiq_uapi_sync_t sync;
     float percent;
+    bool strength_enable;
 } rk_aiq_bayertnr_strength_v23_t;
 
 

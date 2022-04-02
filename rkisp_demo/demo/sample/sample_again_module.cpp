@@ -37,6 +37,84 @@ void sample_print_again_info(const void *arg)
     printf ("enter AGAIN modult test!\n");
 }
 
+XCamReturn sample_again_getAttr_v2 (const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync_mode)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_gain_attrib_v2_t gainV2_attr;
+    gainV2_attr.sync.sync_mode = sync_mode;
+    ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &gainV2_attr);
+    printf("get again v2 attri ret:%d done:%d\n\n", ret, gainV2_attr.sync.done);
+
+    return ret;
+}
+
+XCamReturn sample_again_setAuto_v2 (const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync_mode)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_gain_attrib_v2_t gainV2_attr;
+    gainV2_attr.sync.sync_mode = sync_mode;
+    ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &gainV2_attr);
+    gainV2_attr.sync.sync_mode = sync_mode;
+    gainV2_attr.eMode = AGAINV2_OP_MODE_AUTO;
+    gainV2_attr.stAuto.stParams.hdrgain_ctrl_enable = 1;
+    for(int i = 0; i < RK_GAIN_V2_MAX_ISO_NUM; i++) {
+        gainV2_attr.stAuto.stParams.iso[i] = 50 * pow(2, i);
+
+        gainV2_attr.stAuto.stParams.iso_params[i].hdr_gain_scale_s = 1.0;
+        gainV2_attr.stAuto.stParams.iso_params[i].hdr_gain_scale_m = 1.0;
+    }
+
+    ret = rk_aiq_user_api2_againV2_SetAttrib(ctx, &gainV2_attr);
+    printf("set again attri auto ret:%d \n\n", ret);
+
+    rk_aiq_gain_attrib_v2_t get_gainV2_attr;
+    get_gainV2_attr.sync.sync_mode = sync_mode;
+    ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &get_gainV2_attr);
+    printf("get again v2 attri ret:%d done:%d\n\n", ret, get_gainV2_attr.sync.done);
+    return ret;
+}
+
+XCamReturn sample_again_setManual_v2 (const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync_mode)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_gain_attrib_v2_t gainV2_attr;
+    gainV2_attr.sync.sync_mode = sync_mode;
+    ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &gainV2_attr);
+    gainV2_attr.sync.sync_mode = sync_mode;
+    gainV2_attr.eMode = AGAINV2_OP_MODE_MANUAL;
+    gainV2_attr.stManual.stSelect.hdrgain_ctrl_enable = 1;
+
+    gainV2_attr.stManual.stSelect.hdr_gain_scale_s = 1.0;
+    gainV2_attr.stManual.stSelect.hdr_gain_scale_m = 1.0;
+
+    ret = rk_aiq_user_api2_againV2_SetAttrib(ctx, &gainV2_attr);
+    printf("set gain v2 attri manual ret:%d \n\n", ret);
+
+    rk_aiq_gain_attrib_v2_t get_gainV2_attr;
+    get_gainV2_attr.sync.sync_mode = sync_mode;
+    ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &get_gainV2_attr);
+    printf("get again v2 attri ret:%d done:%d\n\n", ret, get_gainV2_attr.sync.done);
+
+    return ret;
+}
+
+XCamReturn sample_again_setDefault_v2 (const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync_mode, rk_aiq_gain_attrib_v2_t& default_gainV2_attr)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    default_gainV2_attr.sync.sync_mode = sync_mode;
+    ret = rk_aiq_user_api2_againV2_SetAttrib(ctx, &default_gainV2_attr);
+    printf("Set again v2 set default attri ret:%d \n\n", ret);
+
+    rk_aiq_gain_attrib_v2_t get_gainV2_attr;
+    get_gainV2_attr.sync.sync_mode = sync_mode;
+    ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &get_gainV2_attr);
+    printf("get again v2 attri ret:%d done:%d\n\n", ret, get_gainV2_attr.sync.done);
+
+    return ret;
+}
 
 XCamReturn sample_again_module (const void *arg)
 {
@@ -73,135 +151,43 @@ XCamReturn sample_again_module (const void *arg)
 
         switch (key) {
         case '0':
-            if (CHECK_ISP_HW_V30()) {
-                rk_aiq_gain_attrib_v2_t gainV2_attr;
-                gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &gainV2_attr);
-                printf("get again v2 attri ret:%d done:%d\n\n", ret, gainV2_attr.sync.done);
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+                sample_again_getAttr_v2(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
             break;
         case '1':
-            if (CHECK_ISP_HW_V30()) {
-                rk_aiq_gain_attrib_v2_t gainV2_attr;
-                gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &gainV2_attr);
-                gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
-                gainV2_attr.eMode = AGAINV2_OP_MODE_AUTO;
-                gainV2_attr.stAuto.stParams.hdrgain_ctrl_enable = 1;
-                for(int i = 0; i < RK_GAIN_V2_MAX_ISO_NUM; i++) {
-                    gainV2_attr.stAuto.stParams.iso[i] = 50 * pow(2, i);
-
-                    gainV2_attr.stAuto.stParams.iso_params[i].hdr_gain_scale_s = 1.0;
-                    gainV2_attr.stAuto.stParams.iso_params[i].hdr_gain_scale_m = 1.0;
-                }
-
-                ret = rk_aiq_user_api2_againV2_SetAttrib(ctx, &gainV2_attr);
-                printf("set again attri auto ret:%d \n\n", ret);
-
-                rk_aiq_gain_attrib_v2_t get_gainV2_attr;
-                get_gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &get_gainV2_attr);
-                printf("get again v2 attri ret:%d done:%d\n\n", ret, get_gainV2_attr.sync.done);
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+                sample_again_setAuto_v2(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
             break;
         case '2':
-            if (CHECK_ISP_HW_V30()) {
-                rk_aiq_gain_attrib_v2_t gainV2_attr;
-                gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &gainV2_attr);
-                gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
-                gainV2_attr.eMode = AGAINV2_OP_MODE_MANUAL;
-                gainV2_attr.stManual.stSelect.hdrgain_ctrl_enable = 1;
-
-                gainV2_attr.stManual.stSelect.hdr_gain_scale_s = 1.0;
-                gainV2_attr.stManual.stSelect.hdr_gain_scale_m = 1.0;
-
-                ret = rk_aiq_user_api2_againV2_SetAttrib(ctx, &gainV2_attr);
-                printf("set gain v2 attri manual ret:%d \n\n", ret);
-
-                rk_aiq_gain_attrib_v2_t get_gainV2_attr;
-                get_gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &get_gainV2_attr);
-                printf("get again v2 attri ret:%d done:%d\n\n", ret, get_gainV2_attr.sync.done);
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+                sample_again_setManual_v2(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
-
             break;
         case '3':
-            if (CHECK_ISP_HW_V30()) {
-                default_gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
-                ret = rk_aiq_user_api2_againV2_SetAttrib(ctx, &default_gainV2_attr);
-                printf("Set again v2 set default attri ret:%d \n\n", ret);
-
-                rk_aiq_gain_attrib_v2_t get_gainV2_attr;
-                get_gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &get_gainV2_attr);
-                printf("get again v2 attri ret:%d done:%d\n\n", ret, get_gainV2_attr.sync.done);
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+                sample_again_setDefault_v2(ctx, RK_AIQ_UAPI_MODE_SYNC, default_gainV2_attr);
             }
             break;
         case '4':
-            if (CHECK_ISP_HW_V30()) {
-                rk_aiq_gain_attrib_v2_t gainV2_attr;
-                gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &gainV2_attr);
-                printf("get again v2 attri ret:%d done:%d\n\n", ret, gainV2_attr.sync.done);
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+                sample_again_getAttr_v2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
             break;
         case '5':
-            if (CHECK_ISP_HW_V30()) {
-                rk_aiq_gain_attrib_v2_t gainV2_attr;
-                gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &gainV2_attr);
-                gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-                gainV2_attr.eMode = AGAINV2_OP_MODE_AUTO;
-                gainV2_attr.stAuto.stParams.hdrgain_ctrl_enable = 1;
-                for(int i = 0; i < RK_GAIN_V2_MAX_ISO_NUM; i++) {
-                    gainV2_attr.stAuto.stParams.iso[i] = 50 * pow(2, i);
-
-                    gainV2_attr.stAuto.stParams.iso_params[i].hdr_gain_scale_s = 1.0;
-                    gainV2_attr.stAuto.stParams.iso_params[i].hdr_gain_scale_m = 1.0;
-
-                }
-
-                ret = rk_aiq_user_api2_againV2_SetAttrib(ctx, &gainV2_attr);
-                printf("set again attri auto ret:%d \n\n", ret);
-
-                rk_aiq_gain_attrib_v2_t get_gainV2_attr;
-                get_gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &get_gainV2_attr);
-                printf("get again v2 attri ret:%d done:%d\n\n", ret, get_gainV2_attr.sync.done);
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+                sample_again_setAuto_v2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
             break;
         case '6':
-            if (CHECK_ISP_HW_V30()) {
-                rk_aiq_gain_attrib_v2_t gainV2_attr;
-                gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &gainV2_attr);
-                gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-                gainV2_attr.eMode = AGAINV2_OP_MODE_MANUAL;
-                gainV2_attr.stManual.stSelect.hdrgain_ctrl_enable = 1;
-
-                gainV2_attr.stManual.stSelect.hdr_gain_scale_s = 1.0;
-                gainV2_attr.stManual.stSelect.hdr_gain_scale_m = 1.0;
-                ret = rk_aiq_user_api2_againV2_SetAttrib(ctx, &gainV2_attr);
-                printf("set gain v2 attri manual ret:%d \n\n", ret);
-
-                rk_aiq_gain_attrib_v2_t get_gainV2_attr;
-                get_gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &get_gainV2_attr);
-                printf("get again v2 attri ret:%d done:%d\n\n", ret, get_gainV2_attr.sync.done);
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+                sample_again_setManual_v2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
-
             break;
         case '7':
-            if (CHECK_ISP_HW_V30()) {
-                default_gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-                ret = rk_aiq_user_api2_againV2_SetAttrib(ctx, &default_gainV2_attr);
-                printf("Set again v2 set default attri ret:%d \n\n", ret);
-
-                rk_aiq_gain_attrib_v2_t get_gainV2_attr;
-                get_gainV2_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_ASYNC;
-                ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &get_gainV2_attr);
-                printf("get again v2 attri ret:%d done:%d\n\n", ret, get_gainV2_attr.sync.done);
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+                sample_again_setDefault_v2(ctx, RK_AIQ_UAPI_MODE_ASYNC, default_gainV2_attr);
             }
             break;
         default:

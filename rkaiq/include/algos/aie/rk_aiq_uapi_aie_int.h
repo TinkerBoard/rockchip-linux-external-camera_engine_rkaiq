@@ -18,19 +18,11 @@ typedef struct aie_attrib_s {
 // sync should be done in inner. now we just need implement
 // the case of need_sync == false; need_sync is for future usage.
 
-XCamReturn
-rk_aiq_uapi_aie_SetAttrib
-(
-    RkAiqAlgoContext* ctx,
-    aie_attrib_t attr,
-    bool need_sync
-);
+XCamReturn rk_aiq_uapi_aie_SetAttrib(RkAiqAlgoContext* ctx,
+                                    const aie_attrib_t* attr,
+                                    bool need_sync);
 
-XCamReturn
-rk_aiq_uapi_aie_GetAttrib
-(
-    RkAiqAlgoContext*  ctx,
-    aie_attrib_t* attr
-);
+XCamReturn rk_aiq_uapi_aie_GetAttrib(RkAiqAlgoContext*  ctx,
+                                    aie_attrib_t* attr);
 
 #endif//_RK_AIQ_UAPI_aie_INT_H_

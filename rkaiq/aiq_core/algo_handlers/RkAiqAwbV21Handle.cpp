@@ -34,7 +34,10 @@ XCamReturn RkAiqAwbV21HandleInt::updateConfig(bool needSync) {
         sendSignal();
     }
     if (updateWbV21Attr) {
-        mCurWbV21Attr   = mNewWbV21Attr;
+        rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjustBK = mCurWbV21Attr.stAuto.wbGainAdjust;
+        mCurWbV21Attr = mNewWbV21Attr;
+        mCurWbV21Attr.stAuto.wbGainAdjust = wbGainAdjustBK;
+        mallocAndCopyWbGainAdjustAttrib(&mCurWbV21Attr.stAuto.wbGainAdjust,&mNewWbV21Attr.stAuto.wbGainAdjust);
         rk_aiq_uapiV2_awbV21_SetAttrib(mAlgoCtx, mCurWbV21Attr, false);
         updateWbV21Attr = false;
         sendSignal(mCurWbV21Attr.sync.sync_mode);
@@ -52,13 +55,16 @@ XCamReturn RkAiqAwbV21HandleInt::updateConfig(bool needSync) {
         sendSignal(mCurWbMwbAttr.sync.sync_mode);
     }
     if (updateWbAwbAttr) {
+        rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjustBK = mCurWbAwbAttr.wbGainAdjust;
         mCurWbAwbAttr   = mNewWbAwbAttr;
+        mCurWbAwbAttr.wbGainAdjust = wbGainAdjustBK;
+        mallocAndCopyWbGainAdjustAttrib(&mCurWbAwbAttr.wbGainAdjust,&mNewWbAwbAttr.wbGainAdjust);
         rk_aiq_uapiV2_awbV20_SetAwbAttrib(mAlgoCtx, mCurWbAwbAttr, false);
         updateWbAwbAttr = false;
         sendSignal();
     }
     if (updateWbAwbWbGainAdjustAttr) {
-        mCurWbAwbWbGainAdjustAttr   = mNewWbAwbWbGainAdjustAttr;
+        mallocAndCopyWbGainAdjustAttrib(&mCurWbAwbWbGainAdjustAttr,&mNewWbAwbWbGainAdjustAttr);
         rk_aiq_uapiV2_awb_SetAwbGainAdjust(mAlgoCtx, mCurWbAwbWbGainAdjustAttr, false);
         updateWbAwbWbGainAdjustAttr = false;
         sendSignal(mCurWbAwbWbGainAdjustAttr.sync.sync_mode);
@@ -101,7 +107,10 @@ XCamReturn RkAiqAwbV21HandleInt::setWbV21Attrib(rk_aiq_uapiV2_wbV21_attrib_t att
 
     // if something changed
     if (isChanged) {
+        rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjustBK = mNewWbV21Attr.stAuto.wbGainAdjust;
         mNewWbV21Attr = att;
+        mNewWbV21Attr.stAuto.wbGainAdjust = wbGainAdjustBK;
+        mallocAndCopyWbGainAdjustAttrib(&mNewWbV21Attr.stAuto.wbGainAdjust,&att.stAuto.wbGainAdjust);
         updateWbV21Attr = true;
         waitSignal(att.sync.sync_mode);
     }
@@ -124,7 +133,10 @@ XCamReturn RkAiqAwbV21HandleInt::getWbV21Attrib(rk_aiq_uapiV2_wbV21_attrib_t* at
         mCfgMutex.unlock();
     } else {
         if (updateWbV21Attr) {
+            rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjustBK = att->stAuto.wbGainAdjust;
             memcpy(att, &mNewWbV21Attr, sizeof(mNewWbV21Attr));
+            att->stAuto.wbGainAdjust = wbGainAdjustBK;
+            mallocAndCopyWbGainAdjustAttrib(&att->stAuto.wbGainAdjust,&mNewWbV21Attr.stAuto.wbGainAdjust);
             att->sync.done = false;
         } else {
             rk_aiq_uapiV2_awbV21_GetAttrib(mAlgoCtx, att);

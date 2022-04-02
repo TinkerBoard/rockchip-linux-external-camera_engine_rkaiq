@@ -26,14 +26,16 @@ namespace RkCam {
 #if RKAIQ_HAVE_BLC_V32
 
 class RkAiqAblcV32HandleInt : virtual public RkAiqHandle {
- public:
+public:
     explicit RkAiqAblcV32HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
         memset(&mCurAtt, 0, sizeof(mCurAtt));
         memset(&mNewAtt, 0, sizeof(mCurAtt));
         updateAtt = false;
     };
-    virtual ~RkAiqAblcV32HandleInt() { RkAiqHandle::deInit(); };
+    virtual ~RkAiqAblcV32HandleInt() {
+        RkAiqHandle::deInit();
+    };
     virtual XCamReturn updateConfig(bool needSync);
     virtual XCamReturn prepare();
     virtual XCamReturn preProcess();
@@ -41,21 +43,23 @@ class RkAiqAblcV32HandleInt : virtual public RkAiqHandle {
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     // TODO add algo specific methords, this is a sample
-    XCamReturn setAttrib(rk_aiq_blc_attrib_V32_t* att);
+    XCamReturn setAttrib(const rk_aiq_blc_attrib_V32_t* att);
     XCamReturn getAttrib(rk_aiq_blc_attrib_V32_t* att);
     XCamReturn getProcRes(AblcProc_V32_t* ProcRes);
 
- protected:
+protected:
     virtual void init();
-    virtual void deInit() { RkAiqHandle::deInit(); };
+    virtual void deInit() {
+        RkAiqHandle::deInit();
+    };
     SmartPtr<RkAiqAlgoProcResAblcV32IntShared> mProcResShared;
 
- private:
+private:
     // TODO
     rk_aiq_blc_attrib_V32_t mCurAtt;
     rk_aiq_blc_attrib_V32_t mNewAtt;
 
- private:
+private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAblcV32HandleInt);
 };
 

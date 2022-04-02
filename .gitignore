@@ -71,3 +71,4 @@ rkaiq/algos/af/*.h
 rkaiq/algos/awb/*.h
 rkaiq/algos/asd/*.h
 rkaiq/output/
+rkisp_demo/deps

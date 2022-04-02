@@ -62,17 +62,17 @@ prepare(RkAiqAlgoCom* params)
 
     RkAiqAlgoCamGroupPrepare *para = (RkAiqAlgoCamGroupPrepare *)params;
     hAccm->accmSwInfo.prepare_type = params->u.prepare.conf_type;
-   if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )){
+    if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
 #if RKAIQ_HAVE_CCM_V1
-       hAccm->ccm_v1 = (CalibDbV2_Ccm_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR(
-           (CamCalibDbV2Context_t*)(para->s_calibv2), ccm_calib));
+        hAccm->ccm_v1 = (CalibDbV2_Ccm_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR(
+                            (CamCalibDbV2Context_t*)(para->s_calibv2), ccm_calib));
 #endif
 
 #if RKAIQ_HAVE_CCM_V2
-       hAccm->ccm_v2 = (CalibDbV2_Ccm_Para_V32_t*)(CALIBDBV2_GET_MODULE_PTR(
-           (CamCalibDbV2Context_t*)(para->s_calibv2), ccm_calib_v2));
+        hAccm->ccm_v2 = (CalibDbV2_Ccm_Para_V32_t*)(CALIBDBV2_GET_MODULE_PTR(
+                            (CamCalibDbV2Context_t*)(para->s_calibv2), ccm_calib_v2));
 #endif
-   }
+    }
     AccmPrepare((accm_handle_t)(params->ctx->accm_para));
 
     LOG1_ACCM( "%s: (exit)\n", __FUNCTION__);
@@ -124,23 +124,23 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         RKAiqAecExpInfo_t* pCurExp = &scam_3a_res->aec._effAecExpInfo;
         if((rk_aiq_working_mode_t)procParaGroup->working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
             hAccm->accmSwInfo.sensorGain = pCurExp->LinearExp.exp_real_params.analog_gain
-                    * pCurExp->LinearExp.exp_real_params.digital_gain
-                    * pCurExp->LinearExp.exp_real_params.isp_dgain;
+                                           * pCurExp->LinearExp.exp_real_params.digital_gain
+                                           * pCurExp->LinearExp.exp_real_params.isp_dgain;
         } else if((rk_aiq_working_mode_t)procParaGroup->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2
                   && (rk_aiq_working_mode_t)procParaGroup->working_mode < RK_AIQ_WORKING_MODE_ISP_HDR3)  {
             LOGD_ACCM("sensor gain choose from second hdr frame for accm");
             hAccm->accmSwInfo.sensorGain = pCurExp->HdrExp[1].exp_real_params.analog_gain
-                    * pCurExp->HdrExp[1].exp_real_params.digital_gain
-                    * pCurExp->HdrExp[1].exp_real_params.isp_dgain;
+                                           * pCurExp->HdrExp[1].exp_real_params.digital_gain
+                                           * pCurExp->HdrExp[1].exp_real_params.isp_dgain;
         } else if((rk_aiq_working_mode_t)procParaGroup->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR2
                   && (rk_aiq_working_mode_t)procParaGroup->working_mode >= RK_AIQ_WORKING_MODE_ISP_HDR3)  {
             LOGD_ACCM("sensor gain choose from third hdr frame for accm");
             hAccm->accmSwInfo.sensorGain = pCurExp->HdrExp[2].exp_real_params.analog_gain
-                    * pCurExp->HdrExp[2].exp_real_params.digital_gain
-                    * pCurExp->HdrExp[2].exp_real_params.isp_dgain;
+                                           * pCurExp->HdrExp[2].exp_real_params.digital_gain
+                                           * pCurExp->HdrExp[2].exp_real_params.isp_dgain;
         } else {
             LOGW_ACCM("working_mode (%d) is invaild ,fail to get sensor gain form AE module,use default value ",
-                 procParaGroup->working_mode);
+                      procParaGroup->working_mode);
         }
     } else {
         LOGW_ACCM("fail to get sensor gain form AE module,use default value ");
@@ -152,7 +152,11 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     AccmConfig(hAccm);
 
     for (int i = 0; i < procResParaGroup->arraySize; i++) {
-        *(procResParaGroup->camgroupParmasArray[i]->_ccmCfg) = hAccm->ccmHwConf;
+#ifdef ISP_HW_V32
+        *(procResParaGroup->camgroupParmasArray[i]->accm._ccmCfg_v2) = hAccm->ccmHwConf_v2;
+#else
+        *(procResParaGroup->camgroupParmasArray[i]->accm._ccmCfg) = hAccm->ccmHwConf;
+#endif
     }
 
     LOG1_ACCM( "%s: (exit)\n", __FUNCTION__);

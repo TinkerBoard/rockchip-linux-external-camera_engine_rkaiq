@@ -8,7 +8,7 @@
 #define MAX(a,b)             ((a) >= (b) ? (a):(b))
 #endif
 
-static XCamReturn
+XCamReturn
 AdebayerCalibConfig
 (
     AdebayerContext_t *pAdebayerCtx,
@@ -65,7 +65,6 @@ AdebayerCalibConfig
             pAdebayerCtx->full_param_v2.g_interp.debayer_max_ratio[i] = debayer->param.g_interp.debayer_max_ratio[i];
 
             //g_drctwgt
-
 
             pAdebayerCtx->full_param_v2.g_drctwgt.iso[i] = debayer->param.g_drctwgt.iso[i];
 
@@ -441,28 +440,6 @@ AdebayerProcess
         pAdebayerCtx->select_param_v2.c_guid_gaus_coe[0] = pAdebayerCtx->full_param_v2.c_guid_gaus_coe[0];
         pAdebayerCtx->select_param_v2.c_guid_gaus_coe[1] = pAdebayerCtx->full_param_v2.c_guid_gaus_coe[1];
         pAdebayerCtx->select_param_v2.c_guid_gaus_coe[2] = pAdebayerCtx->full_param_v2.c_guid_gaus_coe[2];
-
-        LOGD_ADEBAYER("filter1=%d %d %d %d", pAdebayerCtx->select_param_v2.lowfreq_filter1[0],
-                      pAdebayerCtx->select_param_v2.lowfreq_filter1[1],
-                      pAdebayerCtx->select_param_v2.lowfreq_filter1[2],
-                      pAdebayerCtx->select_param_v2.lowfreq_filter1[3]);
-
-        LOGD_ADEBAYER("filter2=%d %d %d %d", pAdebayerCtx->select_param_v2.highfreq_filter2[0],
-                      pAdebayerCtx->select_param_v2.highfreq_filter2[1],
-                      pAdebayerCtx->select_param_v2.highfreq_filter2[2],
-                      pAdebayerCtx->select_param_v2.highfreq_filter2[3]);
-
-        LOGD_ADEBAYER("alpha_gaus_coe=%d %d %d", pAdebayerCtx->select_param_v2.c_alpha_gaus_coe[0],
-                      pAdebayerCtx->select_param_v2.c_alpha_gaus_coe[1],
-                      pAdebayerCtx->select_param_v2.c_alpha_gaus_coe[2]);
-
-        LOGD_ADEBAYER("ce_gaus_coe=%d %d %d", pAdebayerCtx->select_param_v2.c_ce_gaus_coe[0],
-                      pAdebayerCtx->select_param_v2.c_ce_gaus_coe[1],
-                      pAdebayerCtx->select_param_v2.c_ce_gaus_coe[2]);
-
-        LOGD_ADEBAYER("guid_gaus_coe=%d %d %d", pAdebayerCtx->select_param_v2.c_guid_gaus_coe[0],
-                      pAdebayerCtx->select_param_v2.c_guid_gaus_coe[1],
-                      pAdebayerCtx->select_param_v2.c_guid_gaus_coe[2]);
 
         // TODO: copy params from json, and select params according to ISO
 

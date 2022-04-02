@@ -23,7 +23,7 @@
 #include "xcam_mutex.h"
 
 namespace RkCam {
-
+#if RKAIQ_HAVE_AIE_V10
 class RkAiqAieHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAieHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
@@ -35,7 +35,7 @@ class RkAiqAieHandleInt : virtual public RkAiqHandle {
     virtual XCamReturn processing();
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
-    XCamReturn setAttrib(aie_attrib_t att);
+    XCamReturn setAttrib(const aie_attrib_t* att);
     XCamReturn getAttrib(aie_attrib_t* att);
 
  protected:
@@ -49,7 +49,7 @@ class RkAiqAieHandleInt : virtual public RkAiqHandle {
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAieHandleInt);
 };
-
+#endif
 }  // namespace RkCam
 
 #endif

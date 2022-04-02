@@ -18,6 +18,7 @@
 #include "asharp4/rk_aiq_uapi_camgroup_asharp_int_v4.h"
 
 namespace RkCam {
+#if RKAIQ_HAVE_SHARP_V4
 
 XCamReturn RkAiqCamGroupAsharpV4HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
@@ -60,7 +61,7 @@ XCamReturn RkAiqCamGroupAsharpV4HandleInt::setAttrib(rk_aiq_sharp_attrib_v4_t* a
     // called by RkAiqCore
     bool isChanged = false;
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
-        memcmp(&mNewAtt, att, sizeof(*att)))
+            memcmp(&mNewAtt, att, sizeof(*att)))
         isChanged = true;
     else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
              memcmp(&mCurAtt, att, sizeof(*att)))
@@ -116,7 +117,7 @@ XCamReturn RkAiqCamGroupAsharpV4HandleInt::setStrength(rk_aiq_sharp_strength_v4_
 
     bool isChanged = false;
     if (pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
-        memcmp(&mNewStrength, pStrength, sizeof(*pStrength)))
+            memcmp(&mNewStrength, pStrength, sizeof(*pStrength)))
         isChanged = true;
     else if (pStrength->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
              memcmp(&mCurStrength, pStrength, sizeof(*pStrength)))
@@ -158,5 +159,5 @@ XCamReturn RkAiqCamGroupAsharpV4HandleInt::getStrength(rk_aiq_sharp_strength_v4_
 }
 #endif
 
-
+#endif
 }  // namespace RkCam

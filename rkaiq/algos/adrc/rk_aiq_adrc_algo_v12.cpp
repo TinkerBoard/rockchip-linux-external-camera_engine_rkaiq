@@ -629,7 +629,7 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
     // para setting
     if (pAdrcCtx->drcAttrV12.opMode == DRC_OPMODE_AUTO) {
         // get Drc gain
-        for (int i = 0; i < pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv_len; i++) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv[i] =
                 LIMIT_VALUE(pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv[i],
                             NORMALIZE_MAX, NORMALIZE_MIN);
@@ -644,20 +644,16 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
         }
         pAdrcCtx->CurrData.HandleData.Drc_v12.DrcGain = DrcGetCurrParaV12(
             pAdrcCtx->CurrData.EnvLv, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.DrcGain,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv_len);
+            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.DrcGain, ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.Alpha = DrcGetCurrParaV12(
             pAdrcCtx->CurrData.EnvLv, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.Alpha,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv_len);
+            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.Alpha, ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.Clip = DrcGetCurrParaV12(
             pAdrcCtx->CurrData.EnvLv, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.Clip,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv_len);
+            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.Clip, ADRC_ENVLV_STEP_MAX);
 
         // get hi lit
-        for (int i = 0; i < pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv_len;
-             i++) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv[i] =
                 LIMIT_VALUE(pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv[i],
                             NORMALIZE_MAX, NORMALIZE_MIN);
@@ -672,16 +668,15 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
             pAdrcCtx->CurrData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.Strength,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv_len);
-        pAdrcCtx->CurrData.HandleData.Drc_v12.gas_t = DrcGetCurrParaV12(
-            pAdrcCtx->CurrData.EnvLv,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.gas_t,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv_len);
+            ADRC_ENVLV_STEP_MAX);
+        pAdrcCtx->CurrData.HandleData.Drc_v12.gas_t =
+            DrcGetCurrParaV12(pAdrcCtx->CurrData.EnvLv,
+                              pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv,
+                              pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.gas_t,
+                              ADRC_ENVLV_STEP_MAX);
 
         // get local
-        for (int i = 0;
-             i < pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv_len; i++) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv[i] = LIMIT_VALUE(
                 pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv[i],
                 NORMALIZE_MAX, NORMALIZE_MIN);
@@ -706,9 +701,7 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
                 pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoWeit[i],
                 NORMALIZE_MAX, NORMALIZE_MIN);
         }
-        for (int i = 0;
-             i < pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.MotionData.MotionCoef_len;
-             i++) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.MotionData.MotionCoef[i] =
                 LIMIT_VALUE(
                     pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.MotionData.MotionCoef[i],
@@ -722,32 +715,32 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
             pAdrcCtx->CurrData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalWeit,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv_len);
+            ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.GlobalContrast = DrcGetCurrParaV12(
             pAdrcCtx->CurrData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.GlobalContrast,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv_len);
+            ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.LoLitContrast = DrcGetCurrParaV12(
             pAdrcCtx->CurrData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LoLitContrast,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv_len);
+            ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.LocalAutoEnable = DrcGetCurrParaV12Int(
             pAdrcCtx->CurrData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoEnable,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv_len);
+            ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.LocalAutoWeit = DrcGetCurrParaV12(
             pAdrcCtx->CurrData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoWeit,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv_len);
+            ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.MotionStr = DrcGetCurrParaV12(
             pAdrcCtx->CurrData.MotionCoef,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.MotionData.MotionCoef,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.MotionData.MotionStr,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.MotionData.MotionCoef_len);
+            ADRC_ENVLV_STEP_MAX);
 
         // compress
         pAdrcCtx->CurrData.HandleData.Drc_v12.Mode =

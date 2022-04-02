@@ -61,7 +61,8 @@ Abayertnr_result_V23_t Abayertnr_Init_V23(Abayertnr_Context_V23_t **ppAbayertnrC
     memset(pAbayertnrCtx, 0x00, sizeof(Abayertnr_Context_V23_t));
 
     //gain state init
-    pAbayertnrCtx->fStrength = 1.0;
+    pAbayertnrCtx->stStrength.strength_enable = true;
+    pAbayertnrCtx->stStrength.percent = 1.0;
 
     pAbayertnrCtx->eState = ABAYERTNRV23_STATE_INITIALIZED;
     *ppAbayertnrCtx = pAbayertnrCtx;
@@ -246,14 +247,14 @@ Abayertnr_result_V23_t Abayertnr_GetProcResult_V23(Abayertnr_Context_V23_t *pAba
     } else if(pAbayertnrCtx->eMode == ABAYERTNRV23_OP_MODE_MANUAL) {
         //TODO
         pAbayertnrResult->st3DSelect = pAbayertnrCtx->stManual.st3DSelect;
-        pAbayertnrCtx->fStrength = 1.0;
     }
 
     //transfer to reg value
-    bayertnr_fix_transfer_V23(&pAbayertnrResult->st3DSelect, &pAbayertnrResult->st3DFix, pAbayertnrCtx->fStrength, &pAbayertnrCtx->stExpInfo);
+    bayertnr_fix_transfer_V23(&pAbayertnrResult->st3DSelect, &pAbayertnrResult->st3DFix, &pAbayertnrCtx->stStrength, &pAbayertnrCtx->stExpInfo);
 
     if(pAbayertnrCtx->eMode == ABAYERTNRV23_OP_MODE_REG_MANUAL) {
         pAbayertnrResult->st3DFix = pAbayertnrCtx->stManual.st3DFix;
+        pAbayertnrCtx->stStrength.percent = 1.0;
     }
 
     LOGD_ANR("%s:%d abayertnr eMode:%d bypass:%d iso:%d fstrength:%f\n",
@@ -261,7 +262,7 @@ Abayertnr_result_V23_t Abayertnr_GetProcResult_V23(Abayertnr_Context_V23_t *pAba
              pAbayertnrCtx->eMode,
              pAbayertnrResult->st3DFix.bypass_en,
              pAbayertnrCtx->stExpInfo.arIso[pAbayertnrCtx->stExpInfo.hdr_mode],
-             pAbayertnrCtx->fStrength);
+             pAbayertnrCtx->stStrength.percent);
 
     LOGI_ANR("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ABAYERTNRV23_RET_SUCCESS;

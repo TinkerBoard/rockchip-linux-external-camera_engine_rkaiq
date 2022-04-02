@@ -62,10 +62,6 @@ XCamReturn sample_adehaze_module(const void *arg)
     int key = -1;
     CLEAR();
 
-    // adehaze_sw_v10_t attr_v10;
-    adehaze_sw_v11_t attr_v11;
-    adehaze_sw_v12_t attr_v12;
-
     const demo_context_t *demo_ctx = (demo_context_t *)arg;
     const rk_aiq_sys_ctx_t* ctx ;
     if (demo_ctx->camGroup) {
@@ -82,6 +78,10 @@ XCamReturn sample_adehaze_module(const void *arg)
             key = getchar();
         printf ("\n");
 
+        adehaze_sw_v11_t attr_v11;
+        memset(&attr_v11, 0, sizeof(adehaze_sw_v11_t));
+        adehaze_sw_v12_t attr_v12;
+        memset(&attr_v12, 0, sizeof(adehaze_sw_v12_t));
 
         switch (key)
         {

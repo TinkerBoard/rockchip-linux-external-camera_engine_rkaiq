@@ -50,7 +50,7 @@ XCamReturn RkAiqAsharpV33HandleInt::updateConfig(bool needsync) {
 
     if (updateStrength) {
         mCurStrength = mNewStrength;
-        rk_aiq_uapi_asharpV33_SetStrength(mAlgoCtx, mCurStrength.percent);
+        rk_aiq_uapi_asharpV33_SetStrength(mAlgoCtx, &mCurStrength);
         sendSignal(mCurStrength.sync.sync_mode);
         updateStrength = false;
     }
@@ -64,6 +64,8 @@ XCamReturn RkAiqAsharpV33HandleInt::updateConfig(bool needsync) {
 XCamReturn RkAiqAsharpV33HandleInt::setAttrib(const rk_aiq_sharp_attrib_v33_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
+    XCAM_ASSERT(att != nullptr);
+
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
@@ -73,7 +75,16 @@ XCamReturn RkAiqAsharpV33HandleInt::setAttrib(const rk_aiq_sharp_attrib_v33_t* a
     // called by RkAiqCore
 
     // if something changed
-    if (0 != memcmp(&mCurAtt, att, sizeof(rk_aiq_sharp_attrib_v33_t))) {
+    bool isChanged = false;
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
+            memcmp(&mNewAtt, att, sizeof(*att)))
+        isChanged = true;
+    else if (att->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
+             memcmp(&mCurAtt, att, sizeof(*att)))
+        isChanged = true;
+
+    // if something changed
+    if (isChanged) {
         mNewAtt   = *att;
         updateAtt = true;
         waitSignal(att->sync.sync_mode);
@@ -116,11 +127,9 @@ XCamReturn RkAiqAsharpV33HandleInt::setStrength(const rk_aiq_sharp_strength_v33_
     mCfgMutex.lock();
 
     bool isChanged = false;
-    if (pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC &&
-        memcmp(&mNewStrength, pStrength, sizeof(*pStrength)))
+    if (pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && memcmp(&mNewStrength, pStrength, sizeof(*pStrength)))
         isChanged = true;
-    else if (pStrength->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC &&
-             memcmp(&mCurStrength, pStrength, sizeof(*pStrength)))
+    else if (pStrength->sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && memcmp(&mCurStrength, pStrength, sizeof(*pStrength)))
         isChanged = true;
 
     if (isChanged) {
@@ -141,15 +150,15 @@ XCamReturn RkAiqAsharpV33HandleInt::getStrength(rk_aiq_sharp_strength_v33_t* pSt
 
     if (pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
-        rk_aiq_uapi_asharpV33_GetStrength(mAlgoCtx, &pStrength->percent);
+        rk_aiq_uapi_asharpV33_GetStrength(mAlgoCtx, pStrength);
         pStrength->sync.done = true;
         mCfgMutex.unlock();
     } else {
         if (updateStrength) {
-            pStrength->percent   = mNewStrength.percent;
+            *pStrength   = mNewStrength;
             pStrength->sync.done = false;
         } else {
-            rk_aiq_uapi_asharpV33_GetStrength(mAlgoCtx, &pStrength->percent);
+            rk_aiq_uapi_asharpV33_GetStrength(mAlgoCtx, pStrength);
             pStrength->sync.done = true;
         }
     }
@@ -168,8 +177,8 @@ XCamReturn RkAiqAsharpV33HandleInt::prepare() {
     RkAiqAlgoConfigAsharpV33* asharp_config_int = (RkAiqAlgoConfigAsharpV33*)mConfig;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
-    asharp_config_int->stAsharpConfig.rawWidth = sharedCom->snsDes.isp_acq_height;
-    asharp_config_int->stAsharpConfig.rawWidth = sharedCom->snsDes.isp_acq_height;
+    asharp_config_int->stAsharpConfig.rawWidth = sharedCom->snsDes.isp_acq_width;
+    asharp_config_int->stAsharpConfig.rawHeight = sharedCom->snsDes.isp_acq_height;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->prepare(mConfig);
@@ -255,7 +264,7 @@ XCamReturn RkAiqAsharpV33HandleInt::postProcess() {
 }
 
 XCamReturn RkAiqAsharpV33HandleInt::genIspResult(RkAiqFullParams* params,
-                                                 RkAiqFullParams* cur_params) {
+        RkAiqFullParams* cur_params) {
     ENTER_ANALYZER_FUNCTION();
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =

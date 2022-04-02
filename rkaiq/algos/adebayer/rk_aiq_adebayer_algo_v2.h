@@ -46,6 +46,8 @@
 
 XCamReturn AdebayerInit(AdebayerContext_t *ppAdebayerCtx, CamCalibDbContext_t *pCalibDb, CamCalibDbV2Context_t *pCalibDbV2);
 
+XCamReturn AdebayerCalibConfig(AdebayerContext_t *pAdebayerCtx, CamCalibDbV2Context_t *pCalibDbV2);
+
 XCamReturn AdebayerRelease(AdebayerContext_t *pAdebayerCtx);
 
 XCamReturn AdebayerStart(AdebayerContext_t *pAdebayerCtx);

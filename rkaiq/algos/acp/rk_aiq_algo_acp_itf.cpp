@@ -36,6 +36,7 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
     ctx->acpCtx.calib = cfg->calib;
     ctx->acpCtx.calibv2 = cfg->calibv2;
     rk_aiq_acp_params_t* params = &ctx->acpCtx.params;
+#if RKAIQ_HAVE_ACP_V10
     if (ctx->acpCtx.calib) {
         CalibDb_cProc_t *cproc =
             (CalibDb_cProc_t*)(CALIBDB_GET_MODULE_PTR(ctx->acpCtx.calib, cProc));
@@ -53,7 +54,7 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
         params->saturation = cproc->saturation;
         params->contrast = cproc->contrast;
     }
- 
+#endif
     *context = ctx;
 
     return XCAM_RETURN_NO_ERROR;
@@ -73,24 +74,26 @@ prepare(RkAiqAlgoCom* params)
     RkAiqAlgoConfigAcp* pCfgParam = (RkAiqAlgoConfigAcp*)params;
 
 	if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )){
+#if RKAIQ_HAVE_ACP_V10
         if (pCfgParam->com.u.prepare.calib) {
             CalibDb_cProc_t *cproc =
                 (CalibDb_cProc_t*)(CALIBDB_GET_MODULE_PTR(pCfgParam->com.u.prepare.calib, cProc));
-                acp_params->enable = cproc->enable;
-                acp_params->brightness = cproc->brightness;
-                acp_params->hue = cproc->hue;
-                acp_params->saturation = cproc->saturation;
-                acp_params->contrast = cproc->contrast;
+            acp_params->enable = cproc->enable;
+            acp_params->brightness = cproc->brightness;
+            acp_params->hue = cproc->hue;
+            acp_params->saturation = cproc->saturation;
+            acp_params->contrast = cproc->contrast;
         } else if (pCfgParam->com.u.prepare.calibv2) {
-                CalibDbV2_Cproc_t* cproc =
-                    (CalibDbV2_Cproc_t*)(CALIBDBV2_GET_MODULE_PTR(pCfgParam->com.u.prepare.calibv2, cproc));
+            CalibDbV2_Cproc_t* cproc =
+                (CalibDbV2_Cproc_t*)(CALIBDBV2_GET_MODULE_PTR(pCfgParam->com.u.prepare.calibv2, cproc));
 
-                acp_params->enable = cproc->param.enable;
-                acp_params->brightness = cproc->param.brightness;
-                acp_params->hue = cproc->param.hue;
-                acp_params->saturation = cproc->param.saturation;
-                acp_params->contrast = cproc->param.contrast;
+            acp_params->enable = cproc->param.enable;
+            acp_params->brightness = cproc->param.brightness;
+            acp_params->hue = cproc->param.hue;
+            acp_params->saturation = cproc->param.saturation;
+            acp_params->contrast = cproc->param.contrast;
         }
+#endif
     }
 
     return XCAM_RETURN_NO_ERROR;

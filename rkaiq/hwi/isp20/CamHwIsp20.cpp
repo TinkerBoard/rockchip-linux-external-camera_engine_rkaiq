@@ -1501,8 +1501,16 @@ CamHwIsp20::poll_buffer_ready (SmartPtr<VideoBuffer> &buf)
 {
     if (buf->_buf_type == ISP_POLL_3A_STATS) {
         // stats is comming, means that next params should be ready
-        if (mNoReadBack)
+        if (mNoReadBack) {
             mParamsAssembler->forceReady(buf->get_sequence() + 1);
+            // set all ready params to drv
+            while (_state == CAM_HW_STATE_STARTED &&
+                    mParamsAssembler->ready()) {
+                if (setIspConfig() != XCAM_RETURN_NO_ERROR)
+                    break;
+            }
+
+        }
     }
     return CamHwBase::poll_buffer_ready(buf);
 }
@@ -2363,7 +2371,7 @@ CamHwIsp20::prepare(uint32_t width, uint32_t height, int mode, int t_delay, int 
     }
 
     _isp_stream_status = ISP_STREAM_STATUS_INVALID;
-    if (/*mIsGroupMode*/true) {
+    if (/*mIsGroupMode*/!mNoReadBack) {
         mIspStremEvtTh = new RkStreamEventPollThread("StreamEvt",
                 new V4l2Device (s_info->isp_info->input_params_path),
                 this);
@@ -3314,6 +3322,9 @@ CamHwIsp20::gen_full_isp_params(const struct isp2x_isp_params_cfg* update_params
                 break;
             case RK_ISP2X_SDG_ID:
                 CHECK_UPDATE_PARAMS(full_params->others.sdg_cfg, update_params->others.sdg_cfg);
+                break;
+            case RK_ISP2X_IE_ID:
+                CHECK_UPDATE_PARAMS(full_params->others.ie_cfg, update_params->others.ie_cfg);
                 break;
             default:
                 break;

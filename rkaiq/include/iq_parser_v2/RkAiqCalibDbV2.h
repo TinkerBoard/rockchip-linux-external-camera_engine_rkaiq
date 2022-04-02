@@ -127,9 +127,6 @@ private:
 #endif
     static int CamCalibDbFreeDehazeV20Ctx(CalibDbV2_dehaze_v10_t* dehaze);
     static int CamCalibDbFreeDpccCtx(CalibDbV2_Dpcc_t* dpcc);
-#if RKAIQ_HAVE_MERGE_V10
-    static int CamCalibDbFreeMergeCtx(CalibDbV2_merge_V10_t* merge);
-#endif
     static int CamCalibDbFreeTmoCtx(CalibDbV2_tmo_t* tmo);
     static int CamCalibDbFreeCpslCtx(CalibDbV2_Cpsl_t* cpsl);
 #if RKAIQ_HAVE_ORB_V1
@@ -155,8 +152,12 @@ private:
 #if RKAIQ_HAVE_DEBAYER_V1
     static int CamCalibDbFreeDebayerCtx(CalibDbV2_Debayer_t* debayer_v1);
 #endif
+#if RKAIQ_HAVE_ACP_V10
     static int CamCalibDbFreeCprocCtx(CalibDbV2_Cproc_t* cproc);
+#endif
+#if RKAIQ_HAVE_AIE_V10
     static int CamCalibDbFreeIeCtx(CalibDbV2_IE_t* ie);
+#endif
     static int CamCalibDbFreeLscCtx(CalibDbV2_LSC_t* lsc);
 #if RKAIQ_HAVE_EIS_V1
     static int CamCalibDbFreeEisCtx(CalibDbV2_Eis_t* eis);
@@ -190,9 +191,6 @@ private:
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
     static int CamCalibDbFreeDehazeV11Ctx(CalibDbV2_dehaze_v11_t* dehaze);
 #endif
-#if RKAIQ_HAVE_DRC_V10
-    static int CamCalibDbFreeDrcV10Ctx(CalibDbV2_drc_V10_t* drc);
-#endif
 #if RKAIQ_HAVE_BAYERNR_V2
     static int CamCalibDbFreeBayerNrV2Ctx(CalibDbV2_BayerNrV2_t* bayernr_v1);
 #endif
@@ -212,12 +210,6 @@ private:
     //isp30
 #if RKAIQ_HAVE_GAMMA_V11
     static int CamCalibDbFreeGammaV2Ctx(CalibDbV2_gamma_V11_t* gamma);
-#endif
-#if RKAIQ_HAVE_DRC_V11
-    static int CamCalibDbFreeDrcV11Ctx(CalibDbV2_drc_V11_t* drc);
-#endif
-#if RKAIQ_HAVE_MERGE_V11
-    static int CamCalibDbFreeMergeV2Ctx(CalibDbV2_merge_V11_t* merge);
 #endif
 #if RKAIQ_HAVE_CAC_V03
     static int CamCalibDbFreeCacV03Ctx(CalibDbV2_Cac_V03_t* cac_calib);
@@ -256,12 +248,6 @@ private:
 #endif
 #if RKAIQ_HAVE_DEBAYER_V2
     static int CamCalibDbFreeDebayerV2Ctx(CalibDbV2_Debayer_v2_t * debayer_v2);
-#endif
-#if RKAIQ_HAVE_DEHAZE_V12
-    static int CamCalibDbFreeDehazeV12Ctx(CalibDbV2_dehaze_v12_t* dehaze);
-#endif
-#if RKAIQ_HAVE_DRC_V12
-    static int CamCalibDbFreeDrcV12Ctx(CalibDbV2_drc_V12_t* drc);
 #endif
 #if RKAIQ_HAVE_CCM_V2
     static int CamCalibDbFreeCcmV2Ctx(CalibDbV2_Ccm_Para_V32_t* ccm);

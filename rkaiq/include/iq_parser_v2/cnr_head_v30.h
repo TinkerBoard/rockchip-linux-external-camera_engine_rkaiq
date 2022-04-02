@@ -62,8 +62,8 @@ typedef struct CalibDbV2_CNRV30_TuningPara_Setting_ISO_s {
     float bf_ratio;
     // M4_NUMBER_DESC("hbf_wgt_clip", "f32", M4_RANGE(0.0, 1.0), "0.0078", M4_DIGIT(4))
     float hbf_wgt_clip;
-    // M4_NUMBER_DESC("bf_wgt0_sel", "s32", M4_RANGE(0, 1), "0", M4_DIGIT(0))
-    int bf_wgt0_sel;
+    // M4_BOOL_DESC("bf_wgt0_sel", "0")
+    bool bf_wgt0_sel;
     // M4_NUMBER_DESC("global_alpha", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
     float global_alpha;
 
@@ -76,7 +76,7 @@ typedef struct CalibDbV2_CNRV30_TuningPara_Setting_ISO_s {
     float global_gain;
     // M4_NUMBER_DESC("global_gain_alpha", "f32", M4_RANGE(0.0, 1.0), "0.0", M4_DIGIT(2))
     float global_gain_alpha;
-    // M4_NUMBER_DESC("local_gain_scale", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("local_gain_scale", "f32", M4_RANGE(0.0625, 1.0), "1.0", M4_DIGIT(2))
     float local_gain_scale;
     // M4_NUMBER_DESC("global_gain_thumb", "f32", M4_RANGE(0.0, 4.0), "1.0", M4_DIGIT(2))
     float global_gain_thumb;

@@ -146,7 +146,7 @@ XCamReturn sample_adebayer_setHighFreqThresh_v1(const rk_aiq_sys_ctx_t* ctx, __u
 
 /* debayer json params from os04a10_DH3588AVS6_default.json*/
 XCamReturn
-sample_adebayer_translate_params_v1(AdebayerSeletedParamV1_t& stManual, int32_t ISO)
+sample_adebayer_translate_params_v1(adebayer_attrib_manual_t& stManual, int32_t ISO)
 {
     int8_t filter1_coe[5] = {2, -6, 0, 6, -2};
     int8_t filter2_coe[5] = {2, -4, 4, -4, 2};
@@ -341,6 +341,32 @@ XCamReturn sample_adebayer_setManualAtrrib_v2(const rk_aiq_sys_ctx_t* ctx, int32
     return ret;
 }
 
+XCamReturn sample_adebayer_setAutoAtrrib_v2(const rk_aiq_sys_ctx_t* ctx)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    if (ctx == NULL) {
+        ret = XCAM_RETURN_ERROR_PARAM;
+        RKAIQ_SAMPLE_CHECK_RET(ret, "param error!");
+    }
+
+    adebayer_v2_attrib_t attr;
+    ret = rk_aiq_user_api2_adebayer_v2_GetAttrib(ctx, &attr);
+    RKAIQ_SAMPLE_CHECK_RET(ret, "get debayer v2 attrib failed!");
+    attr.mode = RK_AIQ_DEBAYER_MODE_AUTO;
+
+    attr.stAuto.c_filter.debayer_cfilter_en[0] = false;
+    attr.stAuto.c_filter.debayer_cfilter_en[1] = false;
+    attr.stAuto.c_filter.debayer_cfilter_en[2] = false;
+
+    rk_aiq_user_api2_adebayer_v2_SetAttrib(ctx, attr);
+
+    printf ("mode: %d, sync_mode: %d, done: %d\n", attr.mode, attr.sync.sync_mode, attr.sync.done);
+
+    return ret;
+}
+
+
+
 XCamReturn sample_adebayer_module (const void *arg)
 {
     int key = -1;
@@ -432,8 +458,8 @@ XCamReturn sample_adebayer_module (const void *arg)
             break;
         case 'c':
             // TODO:
-            //sample_adebayer_setManualAtrrib_v2(ctx, 6400);
-            //printf("set manual params from json with MANUAL mode in sync, ISO: 6400\n");
+            sample_adebayer_setAutoAtrrib_v2(ctx);
+            printf("set manual params from json with Auto mode in sync,set cfilter off\n");
             break;
         default:
             break;

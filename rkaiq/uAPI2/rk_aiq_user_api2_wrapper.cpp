@@ -150,3 +150,25 @@ int rk_aiq_uapi_get_awb_stat(const rk_aiq_sys_ctx_t* sys_ctx, rk_tool_awb_stat_r
 
     return 0;
 }
+int rk_aiq_uapi_get_awbV21_stat(const rk_aiq_sys_ctx_t* sys_ctx, rk_tool_awb_stat_res2_v201_t* awb_stat)
+{
+    rk_aiq_isp_stats_t isp_stats;
+    rk_aiq_uapi_sysctl_get3AStats(sys_ctx, &isp_stats);
+
+    memcpy(awb_stat, &isp_stats.awb_stats_v21, sizeof(rk_aiq_awb_stat_res2_v201_t));
+
+    return 0;
+}
+int rk_aiq_uapi_get_awbV32_stat(const rk_aiq_sys_ctx_t* sys_ctx, rk_tool_isp_awb_stats_v32_t* awb_stat)
+{
+    rk_aiq_isp_stats_t isp_stats;
+    rk_aiq_uapi_sysctl_get3AStats(sys_ctx, &isp_stats);
+    memcpy(awb_stat->light, isp_stats.awb_stats_v32.light, sizeof(awb_stat->light));
+    memcpy(awb_stat->blockResult, isp_stats.awb_stats_v32.blockResult, sizeof(awb_stat->blockResult));
+    memcpy(awb_stat->WpNo2, isp_stats.awb_stats_v32.WpNo2, sizeof(awb_stat->WpNo2));
+    memcpy(awb_stat->WpNoHist, isp_stats.awb_stats_v32.WpNoHist, sizeof(awb_stat->WpNoHist));
+    memcpy(awb_stat->excWpRangeResult, isp_stats.awb_stats_v32.excWpRangeResult, sizeof(awb_stat->excWpRangeResult));
+
+   return 0;
+}
+

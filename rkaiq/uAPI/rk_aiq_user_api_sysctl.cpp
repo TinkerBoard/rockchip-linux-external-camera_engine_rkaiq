@@ -274,26 +274,58 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
     if (strstr(sns_ent_name, "FakeCamera") || ctx->_use_fakecam) {
         //ctx->_camHw = new FakeCamHwIsp20();
         if (s_info->isp_hw_ver == 4)
+#ifdef ISP_HW_V20
             ctx->_camHw = new FakeCamHwIsp20 ();
+#else
+            XCAM_ASSERT(0);
+#endif
         else if (s_info->isp_hw_ver == 5)
+#ifdef ISP_HW_V21
             ctx->_camHw = new FakeCamHwIsp21 ();
+#else
+            XCAM_ASSERT(0);
+#endif
         else if (s_info->isp_hw_ver == 6)
+#ifdef ISP_HW_V30
             ctx->_camHw = new FakeCamHwIsp3x ();
+#else
+            XCAM_ASSERT(0);
+#endif
         else if (s_info->isp_hw_ver == 7)
+#ifdef ISP_HW_V32
             ctx->_camHw = new FakeCamHwIsp32 ();
+#else
+            XCAM_ASSERT(0);
+#endif
         else {
             LOGE("do not support this isp hw version %d !", s_info->isp_hw_ver);
             goto error;
         }
     } else {
         if (s_info->isp_hw_ver == 4)
+#ifdef ISP_HW_V20
             ctx->_camHw = new CamHwIsp20();
+#else
+            XCAM_ASSERT(0);
+#endif
         else if (s_info->isp_hw_ver == 5)
+#ifdef ISP_HW_V21
             ctx->_camHw = new CamHwIsp21();
+#else
+            XCAM_ASSERT(0);
+#endif
         else if (s_info->isp_hw_ver == 6)
+#ifdef ISP_HW_V30
             ctx->_camHw = new CamHwIsp3x();
+#else
+            XCAM_ASSERT(0);
+#endif
         else if (s_info->isp_hw_ver == 7)
+#ifdef ISP_HW_V32
             ctx->_camHw = new CamHwIsp32();
+#else
+            XCAM_ASSERT(0);
+#endif
         else {
             LOGE("do not support this isp hw version %d !", s_info->isp_hw_ver);
             goto error;
@@ -841,6 +873,20 @@ camgroupAlgoHandle(const rk_aiq_sys_ctx_t* ctx, const int algo_type)
 #include "uAPI2/rk_aiq_user_api2_acac.cpp"
 #include "uAPI2/rk_aiq_user_api2_again_v2.cpp"
 #include "rk_aiq_user_api_again_v2.cpp"
+
+#include "uAPI2/rk_aiq_user_api2_abayer2dnr_v23.cpp"
+#include "rk_aiq_user_api_abayer2dnr_v23.cpp"
+#include "uAPI2/rk_aiq_user_api2_abayertnr_v23.cpp"
+#include "rk_aiq_user_api_abayertnr_v23.cpp"
+#include "uAPI2/rk_aiq_user_api2_aynr_v22.cpp"
+#include "rk_aiq_user_api_aynr_v22.cpp"
+#include "uAPI2/rk_aiq_user_api2_acnr_v30.cpp"
+#include "rk_aiq_user_api_acnr_v30.cpp"
+#include "uAPI2/rk_aiq_user_api2_asharp_v33.cpp"
+#include "rk_aiq_user_api_asharp_v33.cpp"
+#include "uAPI2/rk_aiq_user_api2_ablc_v32.cpp"
+
+
 
 #define RK_AIQ_ALGO_TYPE_MODULES (RK_AIQ_ALGO_TYPE_MAX + 1)
 

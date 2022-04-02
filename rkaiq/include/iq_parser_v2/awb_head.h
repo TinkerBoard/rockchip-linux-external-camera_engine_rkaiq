@@ -384,10 +384,10 @@ typedef struct CalibDbV2_Awb_Cct_Lut_Cfg_Lv_s {
   float ct_in_range[2];//min,max, equal distance sapmle
   // M4_ARRAY_DESC("cri_in_range", "f32", M4_SIZE(1,2), M4_RANGE(-2,2), "0", M4_DIGIT(4), M4_DYNAMIC(0))
   float cri_in_range[2];//min,max
-  // M4_ARRAY_DESC("ct_lut_out", "f32", M4_SIZE(9,7), M4_RANGE(0,10000), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+  // M4_ARRAY_DESC("ct_lut_out", "f32", M4_SIZE(9,7), M4_RANGE(0,10000), "0", M4_DIGIT(0), M4_DYNAMIC(1))
   float *ct_lut_out;
   int ct_lut_out_len;
-  // M4_ARRAY_DESC("cri_lut_out", "f32", M4_SIZE(9,7), M4_RANGE(-2,2), "0", M4_DIGIT(4), M4_DYNAMIC(0))
+  // M4_ARRAY_DESC("cri_lut_out", "f32", M4_SIZE(9,7), M4_RANGE(-2,2), "0", M4_DIGIT(4), M4_DYNAMIC(1))
   float *cri_lut_out;
   int cri_lut_out_len;
 } CalibDbV2_Awb_Cct_Lut_Cfg_Lv_t;

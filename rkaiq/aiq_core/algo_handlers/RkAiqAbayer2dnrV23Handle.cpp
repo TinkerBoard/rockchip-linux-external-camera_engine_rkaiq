@@ -51,7 +51,7 @@ XCamReturn RkAiqAbayer2dnrV23HandleInt::updateConfig(bool needSync) {
 
     if (updateStrength) {
         mCurStrength   = mNewStrength;
-        rk_aiq_uapi_abayer2dnrV23_SetStrength(mAlgoCtx, mCurStrength.percent);
+        rk_aiq_uapi_abayer2dnrV23_SetStrength(mAlgoCtx, &mCurStrength);
         sendSignal(mCurStrength.sync.sync_mode);
         updateStrength = false;
     }
@@ -62,7 +62,7 @@ XCamReturn RkAiqAbayer2dnrV23HandleInt::updateConfig(bool needSync) {
     return ret;
 }
 
-XCamReturn RkAiqAbayer2dnrV23HandleInt::setAttrib(rk_aiq_bayer2dnr_attrib_v23_t* att) {
+XCamReturn RkAiqAbayer2dnrV23HandleInt::setAttrib(const rk_aiq_bayer2dnr_attrib_v23_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -114,7 +114,7 @@ XCamReturn RkAiqAbayer2dnrV23HandleInt::getAttrib(rk_aiq_bayer2dnr_attrib_v23_t*
 }
 
 
-XCamReturn RkAiqAbayer2dnrV23HandleInt::setStrength(rk_aiq_bayer2dnr_strength_v23_t *pStrength) {
+XCamReturn RkAiqAbayer2dnrV23HandleInt::setStrength(const rk_aiq_bayer2dnr_strength_v23_t *pStrength) {
     ENTER_ANALYZER_FUNCTION();
 
 
@@ -126,7 +126,6 @@ XCamReturn RkAiqAbayer2dnrV23HandleInt::setStrength(rk_aiq_bayer2dnr_strength_v2
         updateStrength = true;
         waitSignal(pStrength->sync.sync_mode);
     }
-
 
     mCfgMutex.unlock();
     EXIT_ANALYZER_FUNCTION();
@@ -140,7 +139,7 @@ XCamReturn RkAiqAbayer2dnrV23HandleInt::getStrength(rk_aiq_bayer2dnr_strength_v2
 
     if(pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
-        rk_aiq_uapi_abayer2dnrV23_GetStrength(mAlgoCtx, &pStrength->percent);
+        rk_aiq_uapi_abayer2dnrV23_GetStrength(mAlgoCtx, pStrength);
         pStrength->sync.done = true;
         mCfgMutex.unlock();
     } else {
@@ -148,7 +147,7 @@ XCamReturn RkAiqAbayer2dnrV23HandleInt::getStrength(rk_aiq_bayer2dnr_strength_v2
             pStrength->percent = mNewStrength.percent;
             pStrength->sync.done = false;
         } else {
-            rk_aiq_uapi_abayer2dnrV23_GetStrength(mAlgoCtx, &pStrength->percent);
+            rk_aiq_uapi_abayer2dnrV23_GetStrength(mAlgoCtx, pStrength);
             pStrength->sync.done = true;
         }
     }

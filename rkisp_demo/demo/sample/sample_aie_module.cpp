@@ -20,6 +20,9 @@
 static void sample_aie_usage()
 {
     printf("Usage : \n");
+    printf("  ImgProc API: \n");
+    printf("\t a) AIE:         Set effect mode.\n");
+    printf("\t b) AIE:         Get effect mode.\n");
     printf("  Module API: \n");
     printf("\t 1) AIE:         Set effect mode  & Async .\n");
     printf("\t 2) AIE:         Set effect mode  & Sync .\n");
@@ -43,20 +46,11 @@ void sample_print_aie_info(const void *arg)
 /*
 ******************************
 *
-* ImgProc level API Sample Func
-*
-******************************
-*/
-
-
-/*
-******************************
-*
 * Module level API Sample Func
 *
 ******************************
 */
-
+//rv1106 only support {0,1}
 static int sample_aie_set_mode(const rk_aiq_sys_ctx_t* ctx, int mode,
                               rk_aiq_uapi_mode_sync_e sync)
 {
@@ -71,7 +65,7 @@ static int sample_aie_set_mode(const rk_aiq_sys_ctx_t* ctx, int mode,
   attr.mode              = (rk_aiq_ie_effect_t)mode;
 
   //set
-  ret = rk_aiq_user_api2_aie_SetAttrib(ctx, attr);
+  ret = rk_aiq_user_api2_aie_SetAttrib(ctx, &attr);
   RKAIQ_SAMPLE_CHECK_RET(ret, "set aie Attr failed!");
   printf("set aie mode: %d, done: %d\n\n", mode, attr.sync.done);
 
@@ -89,6 +83,53 @@ static int sample_aie_get_attrib(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_s
   printf("\t get aie mode: %d, done: %d\n", attr.mode, attr.sync.done);
 
   return 0;
+}
+
+/*
+******************************
+*
+* ImgProc level API Sample Func
+*
+******************************
+*/
+// rv1106 only support {0,1}
+static int sample_aie_set_effect_mode(const rk_aiq_sys_ctx_t* ctx, uint8_t mode)
+{
+    rk_aiq_uapi2_setColorMode(ctx, mode);
+    return 0;
+}
+
+static int sample_aie_get_effect_mode(const rk_aiq_sys_ctx_t* ctx)
+{
+    unsigned int mode;
+    rk_aiq_uapi2_getColorMode(ctx, &mode);
+    switch (mode)
+    {
+    case 0:
+        printf("Get AIE Mode is: NONE \n");
+        break;
+    case 1:
+        printf("Get AIE Mode is: Black White \n");
+        break;
+    case 2:
+        printf("Get AIE Mode is: NEGATIVE \n");
+        break;
+    case 3:
+        printf("Get AIE Mode is: SEPIA \n");
+        break;
+    case 4:
+        printf("Get AIE Mode is: EMBOSS \n");
+        break;
+    case 5:
+        printf("Get AIE Mode is: SKETCH \n");
+        break;
+    case 6:
+        printf("Get AIE Mode is: SHARPEN \n");
+        break;
+    default:
+        break;
+    }
+    return 0;
 }
 
 
@@ -149,11 +190,25 @@ XCamReturn sample_aie_module(const void *arg)
 
                 sample_aie_set_mode(ctx, default_attr.mode, RK_AIQ_UAPI_MODE_SYNC);
                 break;
-            case '9':
+            case '3':
                 sample_aie_get_attrib(ctx, RK_AIQ_UAPI_MODE_ASYNC);
                 break;
-            case 'a':
+            case '4':
                 sample_aie_get_attrib(ctx, RK_AIQ_UAPI_MODE_SYNC);
+                break;
+            case 'a':
+                printf("test aie effect mode iteratively...\n");
+                for (int i = 0; i < 7; i++) {
+                    sample_aie_set_effect_mode(ctx, i);
+                    usleep(10 * 1000);
+                }
+                printf("end of the test\n\n");
+                sample_aie_set_effect_mode(ctx, default_attr.mode);
+                break;
+            case 'b':
+                sample_aie_get_effect_mode(ctx);
+                break;
+            default:
                 break;
         }
     } while (key != 'q' && key != 'Q');
