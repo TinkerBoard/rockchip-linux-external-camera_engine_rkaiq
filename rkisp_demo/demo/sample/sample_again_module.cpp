@@ -138,8 +138,10 @@ XCamReturn sample_again_module (const void *arg)
     }
 
     rk_aiq_gain_attrib_v2_t default_gainV2_attr;
-    ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &default_gainV2_attr);
-    printf("get again v2 default attri ret:%d \n\n", ret);
+    if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+        ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &default_gainV2_attr);
+        printf("get again v2 default attri ret:%d \n\n", ret);
+    }
 
     do {
         sample_again_usage ();

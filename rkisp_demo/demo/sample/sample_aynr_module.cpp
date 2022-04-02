@@ -999,7 +999,7 @@ XCamReturn sample_aynr_module (const void *arg)
     }
 
     rk_aiq_ynr_attrib_v22_t default_ynrV22_attr;
-    if (CHECK_ISP_HW_V30()) {
+    if (CHECK_ISP_HW_V32()) {
         rk_aiq_user_api2_aynrV22_GetAttrib(ctx, &default_ynrV22_attr);
     }
 

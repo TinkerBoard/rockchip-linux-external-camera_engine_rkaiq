@@ -684,7 +684,7 @@ XCamReturn sample_acnr_module (const void *arg)
     }
 
     rk_aiq_cnr_attrib_v30_t default_cnrV30_attr;
-    if (CHECK_ISP_HW_V30()) {
+    if (CHECK_ISP_HW_V32()) {
         ret = rk_aiq_user_api2_acnrV30_GetAttrib(ctx, &default_cnrV30_attr);
         printf("get acnr v2 default attri ret:%d \n\n", ret);
     }
