@@ -59,6 +59,7 @@ CamHwIsp3x::gen_full_isp_params(const struct isp3x_isp_params_cfg* update_params
                                 uint64_t* module_en_update_partial,
                                 uint64_t* module_cfg_update_partial)
 {
+#ifdef ISP_HW_V30
     XCAM_ASSERT (update_params);
     XCAM_ASSERT (full_params);
     int i = 0;
@@ -214,6 +215,7 @@ CamHwIsp3x::gen_full_isp_params(const struct isp3x_isp_params_cfg* update_params
         }
     }
     EXIT_CAMHW_FUNCTION();
+#endif
 }
 
 XCamReturn
@@ -221,6 +223,7 @@ CamHwIsp3x::setIspConfig()
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef ISP_HW_V30
     ENTER_CAMHW_FUNCTION();
 
     SmartPtr<V4l2Buffer> v4l2buf;
@@ -389,12 +392,14 @@ CamHwIsp3x::setIspConfig()
         }
 #endif
 
+#if defined(RKAIQ_HAVE_MULTIISP)
         if (isMultiIsp) {
             mParamsSplitter->SplitIspParams(&_full_active_isp3x_params, isp_params);
             Isp3xParams::fixedAwbOveflowToIsp3xParams((void*)isp_params, mIsMultiIspMode);
             memcpy(&((isp_params + 1)->others.cac_cfg), &update_params[1].others.cac_cfg,
                    sizeof(struct isp3x_cac_cfg));
         }
+#endif
 
         {
             SmartLock locker(_isp_params_cfg_mutex);
@@ -435,6 +440,7 @@ CamHwIsp3x::setIspConfig()
         return XCAM_RETURN_BYPASS;
 
     EXIT_CAMHW_FUNCTION();
+#endif
     return ret;
 }
 

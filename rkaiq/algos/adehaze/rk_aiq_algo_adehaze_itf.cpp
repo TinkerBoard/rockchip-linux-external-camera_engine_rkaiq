@@ -141,24 +141,12 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
             (CalibDbV2_YnrV22_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ynr_v22));
         if (ynr_v22)
             memcpy(&pAdehazeHandle->CalibV12.YnrCalibPara, &ynr_v22->CalibPara,
-                   sizeof(CalibDbV2_YnrV22_CalibPara_t));
+                   sizeof(ynr_v22->CalibPara));
 #endif
     }
 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;
-}
-
-static XCamReturn pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
-    LOG1_ADEHAZE("ENTER: %s \n", __func__);
-
-    AdehazeHandle_t* pAdehazeHandle = (AdehazeHandle_t*)inparams->ctx;
-    RkAiqAlgoPreAdhaz* config       = (RkAiqAlgoPreAdhaz*)inparams;
-
-    AdehazeGetStats(pAdehazeHandle, &config->stats);
-
-    LOG1_ADEHAZE("EIXT: %s \n", __func__);
-    return XCAM_RETURN_NO_ERROR;
 }
 
 static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
@@ -170,6 +158,8 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     pAdehazeHandle->FrameID         = inparams->frame_id;
 
     LOGD_ADEHAZE("/*************************Adehaze Start******************/ \n");
+
+    AdehazeGetStats(pAdehazeHandle, &pProcPara->stats);
 
     ret = AdehazeGetCurrData(pAdehazeHandle, pProcPara);
     if (ret == XCAM_RETURN_ERROR_PARAM) {
@@ -208,7 +198,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     // process
     if (!(AdehazeByPassProcessing(pAdehazeHandle))) ret = AdehazeProcess(pAdehazeHandle);
 
-        // proc res
+    // proc res
 #if RKAIQ_HAVE_DEHAZE_V10
     pAdehazeHandle->ProcRes.ProcResV10.enable = true;
     pAdehazeHandle->ProcRes.ProcResV10.update = !(pAdehazeHandle->byPassProc);
@@ -239,19 +229,19 @@ static XCamReturn post_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* ou
 
 RkAiqAlgoDescription g_RkIspAlgoDescAdhaz = {
     .common =
-        {
-            .version         = RKISP_ALGO_ADHAZ_VERSION,
-            .vendor          = RKISP_ALGO_ADHAZ_VENDOR,
-            .description     = RKISP_ALGO_ADHAZ_DESCRIPTION,
-            .type            = RK_AIQ_ALGO_TYPE_ADHAZ,
-            .id              = 0,
-            .create_context  = create_context,
-            .destroy_context = destroy_context,
-        },
+    {
+        .version         = RKISP_ALGO_ADHAZ_VERSION,
+        .vendor          = RKISP_ALGO_ADHAZ_VENDOR,
+        .description     = RKISP_ALGO_ADHAZ_DESCRIPTION,
+        .type            = RK_AIQ_ALGO_TYPE_ADHAZ,
+        .id              = 0,
+        .create_context  = create_context,
+        .destroy_context = destroy_context,
+    },
     .prepare      = prepare,
-    .pre_process  = pre_process,
+    .pre_process  = NULL,
     .processing   = processing,
-    .post_process = post_process,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

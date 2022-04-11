@@ -213,10 +213,10 @@ void AtmoGetAeResult
 
     //get Ae Pre Result
     pAtmoCtx->CurrAeResult.GlobalEnvLv = AecHdrPreResult.GlobalEnvLv[AecHdrPreResult.NormalIndex];
-    pAtmoCtx->CurrAeResult.M2S_Ratio = AecHdrPreResult.M2S_ExpRatio;
-    pAtmoCtx->CurrAeResult.M2S_Ratio = pAtmoCtx->CurrAeResult.M2S_Ratio < 1 ? 1 : pAtmoCtx->CurrAeResult.M2S_Ratio;
-    pAtmoCtx->CurrAeResult.L2M_Ratio = AecHdrPreResult.L2M_ExpRatio;
-    pAtmoCtx->CurrAeResult.L2M_Ratio = pAtmoCtx->CurrAeResult.L2M_Ratio < 1 ? 1 : pAtmoCtx->CurrAeResult.L2M_Ratio;
+    //pAtmoCtx->CurrAeResult.M2S_Ratio = AecHdrPreResult.M2S_ExpRatio;
+    //pAtmoCtx->CurrAeResult.M2S_Ratio = pAtmoCtx->CurrAeResult.M2S_Ratio < 1 ? 1 : pAtmoCtx->CurrAeResult.M2S_Ratio;
+    //pAtmoCtx->CurrAeResult.L2M_Ratio = AecHdrPreResult.L2M_ExpRatio;
+    //pAtmoCtx->CurrAeResult.L2M_Ratio = pAtmoCtx->CurrAeResult.L2M_Ratio < 1 ? 1 : pAtmoCtx->CurrAeResult.L2M_Ratio;
     pAtmoCtx->CurrAeResult.DynamicRange = AecHdrPreResult.DynamicRange;
     pAtmoCtx->CurrAeResult.OEPdf = AecHdrPreResult.OverExpROIPdf[1];
     pAtmoCtx->CurrAeResult.DarkPdf = AecHdrPreResult.LowLightROIPdf[1];

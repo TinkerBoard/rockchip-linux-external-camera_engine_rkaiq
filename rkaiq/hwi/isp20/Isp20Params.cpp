@@ -650,6 +650,7 @@ Isp20Params::convertAiqHistToIsp20Params
      */
 }
 
+#if RKAIQ_HAVE_AWB_V20
 template<class T>
 void
 Isp20Params::convertAiqAwbToIsp20Params(T& isp_cfg,
@@ -1097,7 +1098,7 @@ Isp20Params::convertAiqAwbToIsp20Params(T& isp_cfg,
     awb_cfg_v200->sw_rawawb_store_wp_flag_ls_idx1   =     awb_meas.storeWpFlagIllu[1];
     awb_cfg_v200->sw_rawawb_store_wp_flag_ls_idx2   =     awb_meas.storeWpFlagIllu[2];
 }
-
+#endif
 #if RKAIQ_HAVE_MERGE_V10
 template<class T>
 void Isp20Params::convertAiqMergeToIsp20Params(T& isp_cfg,
@@ -1257,6 +1258,7 @@ void Isp20Params::convertAiqTmoToIsp20Params(T& isp_cfg,
 #endif
 }
 
+#if RKAIQ_HAVE_AF_V20
 template<class T>
 void
 Isp20Params::convertAiqAfToIsp20Params(T& isp_cfg,
@@ -1297,7 +1299,7 @@ Isp20Params::convertAiqAfToIsp20Params(T& isp_cfg,
     isp_cfg.meas.rawaf.win[1].h_size = af_data.winb_h_size;
     isp_cfg.meas.rawaf.win[1].v_size = af_data.winb_v_size;
 }
-
+#endif
 
 #define ISP2X_WBGAIN_FIXSCALE_BIT  8
 #define ISP2X_BLC_BIT_MAX 12
@@ -1940,6 +1942,8 @@ void Isp20Params::convertAiqA3dlutToIsp20Params(T& isp_cfg,
 }
 #endif
 
+
+#if RKAIQ_HAVE_ANR_V1
 template<class T>
 void Isp20Params::convertAiqRawnrToIsp20Params(T& isp_cfg,
         rk_aiq_isp_rawnr_t& rawnr)
@@ -2558,6 +2562,7 @@ void Isp20Params::convertAiqSharpenToIsp20Params(T &pp_cfg,
     pSharpCfg->h_ratio = pSharpV1->h_ratio;
 #endif
 }
+#endif
 
 template<class T>
 void
@@ -3881,9 +3886,11 @@ bool Isp20Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_AWB_PARAM:
     {
+#if RKAIQ_HAVE_AWB_V20
         SmartPtr<RkAiqIspAwbParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspAwbParamsProxy>();
         if (params.ptr())
             convertAiqAwbToIsp20Params(isp_cfg, params->data()->result, true);
+#endif
     }
     break;
     case RESULT_TYPE_AWBGAIN_PARAM:
@@ -3901,9 +3908,11 @@ bool Isp20Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_AF_PARAM:
     {
+#if RKAIQ_HAVE_AF_V20
         SmartPtr<RkAiqIspAfParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspAfParamsProxy>();
         if (params.ptr())
             convertAiqAfToIsp20Params(isp_cfg, params->data()->result, true);
+#endif
     }
     break;
     case RESULT_TYPE_DPCC_PARAM:
@@ -3958,9 +3967,11 @@ bool Isp20Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_RAWNR_PARAM:
     {
+#if RKAIQ_HAVE_ANR_V1
         SmartPtr<RkAiqIspRawnrParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspRawnrParamsProxy>();
         if (params.ptr())
             convertAiqRawnrToIsp20Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_GIC_PARAM:
@@ -4124,22 +4135,28 @@ XCamReturn Isp20Params::merge_results<struct rkispp_params_nrcfg>(cam3aResultLis
                 sharpen = cam3a_result.dynamic_cast_ptr<RkAiqIspSharpenParamsProxy>();
             else if (cam3a_result->getType() == RESULT_TYPE_EDGEFLT_PARAM)
                 edgeflt = cam3a_result.dynamic_cast_ptr<RkAiqIspEdgefltParamsProxy>();
+#if RKAIQ_HAVE_ANR_V1
             if (sharpen.ptr() && edgeflt.ptr())
                 convertAiqSharpenToIsp20Params(pp_cfg, sharpen->data()->result, edgeflt->data()->result);
 
             iter = results.erase (iter);
+#endif
             continue;
         }
         if (cam3a_result->getType() == RESULT_TYPE_UVNR_PARAM) {
             SmartPtr<RkAiqIspUvnrParamsProxy> uvnr = cam3a_result.dynamic_cast_ptr<RkAiqIspUvnrParamsProxy>();
+#if RKAIQ_HAVE_ANR_V1
             convertAiqUvnrToIsp20Params(pp_cfg, uvnr->data()->result);
             iter = results.erase (iter);
+#endif
             continue;
         }
         if (cam3a_result->getType() == RESULT_TYPE_YNR_PARAM) {
             SmartPtr<RkAiqIspYnrParamsProxy> ynr = cam3a_result.dynamic_cast_ptr<RkAiqIspYnrParamsProxy>();
+#if RKAIQ_HAVE_ANR_V1
             convertAiqYnrToIsp20Params(pp_cfg, ynr->data()->result);
             iter = results.erase (iter);
+#endif
             continue;
         }
         if (cam3a_result->getType() == RESULT_TYPE_ORB_PARAM) {
@@ -4163,8 +4180,10 @@ XCamReturn Isp20Params::get_tnr_cfg_params(cam3aResultList &results, struct rkis
     if (cam3a_result.ptr()) {
         SmartPtr<RkAiqIspTnrParamsProxy> tnr = nullptr;
         tnr = cam3a_result.dynamic_cast_ptr<RkAiqIspTnrParamsProxy>();
+#if RKAIQ_HAVE_ANR_V1
         if (tnr.ptr())
             convertAiqTnrToIsp20Params(tnr_cfg, tnr->data()->result);
+#endif
     }
     return XCAM_RETURN_NO_ERROR;
 }

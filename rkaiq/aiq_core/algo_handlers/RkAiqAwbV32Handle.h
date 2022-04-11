@@ -47,6 +47,7 @@ class RkAiqAwbV32HandleInt : public RkAiqAwbHandleInt {
     XCamReturn getWbV32Attrib(rk_aiq_uapiV2_wbV32_attrib_t* att);
     XCamReturn setWbV32AwbMultiWindowAttrib(rk_aiq_uapiV2_wbV32_awb_mulWindow_t att);
     XCamReturn getWbV32AwbMultiWindowAttrib(rk_aiq_uapiV2_wbV32_awb_mulWindow_t* att);
+    XCamReturn writeAwbIn(rk_aiq_uapiV2_awb_wrtIn_attr_t att);
 
  protected:
  private:
@@ -57,7 +58,9 @@ class RkAiqAwbV32HandleInt : public RkAiqAwbHandleInt {
     rk_aiq_uapiV2_wbV32_awb_mulWindow_t mCurWbV32AwbMultiWindowAttr;
     rk_aiq_uapiV2_wbV32_awb_mulWindow_t mNewWbV32AwbMultiWindowAttr;
     mutable std::atomic<bool> updateWbV32AwbMultiWindowAttr;
-
+    rk_aiq_uapiV2_awb_wrtIn_attr_t mCurWriteAwbInputAttr;
+    rk_aiq_uapiV2_awb_wrtIn_attr_t mNewWriteAwbInputAttr;
+    bool updateWriteAwbInputAttr;
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAwbV32HandleInt);
 };

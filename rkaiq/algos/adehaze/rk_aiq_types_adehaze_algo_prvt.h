@@ -88,7 +88,7 @@ typedef struct CalibDbV2_dehaze_V11_duo_prvt_s {
 
 typedef struct CalibDbV2_dehaze_V12_prvt_s {
     CalibDbDehazeV12_t DehazeTuningPara;
-    CalibDbV2_YnrV22_CalibPara_t YnrCalibPara;
+    CalibDbV2_YnrV22_Calib_t YnrCalibPara;
 } CalibDbV2_dehaze_V12_prvt_t;
 
 typedef struct AdehazeHandle_s {

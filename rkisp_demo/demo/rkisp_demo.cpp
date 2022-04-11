@@ -28,7 +28,8 @@
 
 
 #include "ae_algo_demo/third_party_ae_algo.h"
-#include "awb_algo_demo/third_party_awb_algo.h"
+//#include "awb_algo_demo/third_party_awb_algo.h"  //for rk3588
+#include "awb_algo_demo/third_party_awbV32_algo.h" //for rv1106
 #include "af_algo_demo/third_party_af_algo.h"
 
 #ifndef ARCH_FPGA
@@ -59,7 +60,7 @@
 #define IQFILE_PATH_MAX_LEN 256
 // #define CUSTOM_AE_DEMO_TEST
 // #define CUSTOM_GROUP_AE_DEMO_TEST
-// #define CUSTOM_AWB_DEMO_TEST
+//#define CUSTOM_AWB_DEMO_TEST
 // #define TEST_MEMS_SENSOR_INTF
 // #define CUSTOM_AF_DEMO_TEST
 // #define CUSTOM_GROUP_AWB_DEMO_TEST
@@ -2225,7 +2226,9 @@ static void rkisp_routine(demo_context_t *ctx)
                 init_device(ctx);
                 if (ctx->pponeframe)
                     init_device_pp_oneframe(ctx);
-                start_capturing(ctx);
+                if (ctx->ctl_type == TEST_CTL_TYPE_DEFAULT) {
+                    start_capturing(ctx);
+                }
                 if (ctx->pponeframe)
                     start_capturing_pp_oneframe(ctx);
                 printf("%s:-------- stream on mipi tx/rx -------------\n", get_sensor_name(ctx));
@@ -2233,9 +2236,11 @@ static void rkisp_routine(demo_context_t *ctx)
                 if (ctx->ctl_type != TEST_CTL_TYPE_DEFAULT) {
 restart:
                     static int test_ctl_cnts = 0;
-                    ctx->frame_count = 60;
+                    ctx->frame_count = 10;
+                    start_capturing(ctx);
                     while ((ctx->frame_count-- > 0))
                         read_frame(ctx);
+                    stop_capturing(ctx);
                     printf("+++++++ TEST SYSCTL COUNTS %d ++++++++++++ \n", test_ctl_cnts++);
                     printf("aiq stop .....\n");
                     rk_aiq_uapi2_sysctl_stop(ctx->aiq_ctx, false);
@@ -2254,6 +2259,7 @@ restart:
                     }
                     printf("aiq start .....\n");
                     ret = rk_aiq_uapi2_sysctl_start(ctx->aiq_ctx );
+                    printf("aiq restart .....\n");
                     goto restart;
                 }
             }

@@ -26,12 +26,8 @@ void RkAiqAdehazeHandleInt::init() {
 
     RkAiqHandle::deInit();
     mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAdhaz());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAdhaz());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAdhaz());
     mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAdhaz());
     mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAdhaz());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAdhaz());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAdhaz());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -53,9 +49,6 @@ XCamReturn RkAiqAdehazeHandleInt::prepare() {
 
     adhaz_config_int->working_mode      = sharedCom->working_mode;
     adhaz_config_int->is_multi_isp_mode = sharedCom->is_multi_isp_mode;
-    // adhaz_config_int->rawHeight = sharedCom->snsDes.isp_acq_height;
-    // adhaz_config_int->rawWidth = sharedCom->snsDes.isp_acq_width;
-    // adhaz_config_int->working_mode = sharedCom->working_mode;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->prepare(mConfig);
@@ -69,7 +62,7 @@ XCamReturn RkAiqAdehazeHandleInt::preProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPreAdhaz* adhaz_pre_int            = (RkAiqAlgoPreAdhaz*)mPreInParam;
     RkAiqAlgoPreResAdhaz* adhaz_pre_res_int     = (RkAiqAlgoPreResAdhaz*)mPreOutParam;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
@@ -88,13 +81,11 @@ XCamReturn RkAiqAdehazeHandleInt::preProcess() {
     }
 
     if (!xIspStats || !xIspStats->adehaze_stats_valid || !sharedCom->init) {
-        LOG1("no adehaze stats, ignore!");
-        // TODO: keep last result ?
-        //
-        //
-        // return XCAM_RETURN_BYPASS;
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+        LOGE("no adehaze stats, ignore!");
+        return XCAM_RETURN_BYPASS;
+#endif
     } else {
-        // dehaze stats
 #if RKAIQ_HAVE_DEHAZE_V10
         memcpy(&adhaz_pre_int->stats.dehaze_stats_v10,
                &xIspStats->AdehazeStatsProxy->data()->adehaze_stats.dehaze_stats_v10,
@@ -110,35 +101,11 @@ XCamReturn RkAiqAdehazeHandleInt::preProcess() {
                &xIspStats->AdehazeStatsProxy->data()->adehaze_stats.dehaze_stats_v11_duo,
                sizeof(dehaze_stats_v11_duo_t));
 #endif
-
-        // other stats
-        memcpy(adhaz_pre_int->stats.other_stats.tmo_luma,
-               xIspStats->AecStatsProxy->data()->aec_stats.ae_data.extra.rawae_big.channelg_xy,
-               sizeof(adhaz_pre_int->stats.other_stats.tmo_luma));
-
-        if (sharedCom->working_mode == RK_AIQ_ISP_HDR_MODE_3_FRAME_HDR ||
-            sharedCom->working_mode == RK_AIQ_ISP_HDR_MODE_3_LINE_HDR) {
-            memcpy(adhaz_pre_int->stats.other_stats.short_luma,
-                   xIspStats->AecStatsProxy->data()->aec_stats.ae_data.chn[0].rawae_big.channelg_xy,
-                   sizeof(adhaz_pre_int->stats.other_stats.short_luma));
-            memcpy(
-                adhaz_pre_int->stats.other_stats.middle_luma,
-                xIspStats->AecStatsProxy->data()->aec_stats.ae_data.chn[1].rawae_lite.channelg_xy,
-                sizeof(adhaz_pre_int->stats.other_stats.middle_luma));
-            memcpy(adhaz_pre_int->stats.other_stats.long_luma,
-                   xIspStats->AecStatsProxy->data()->aec_stats.ae_data.chn[2].rawae_big.channelg_xy,
-                   sizeof(adhaz_pre_int->stats.other_stats.long_luma));
-        } else if (sharedCom->working_mode == RK_AIQ_ISP_HDR_MODE_2_FRAME_HDR ||
-                   sharedCom->working_mode == RK_AIQ_ISP_HDR_MODE_2_LINE_HDR) {
-            memcpy(adhaz_pre_int->stats.other_stats.short_luma,
-                   xIspStats->AecStatsProxy->data()->aec_stats.ae_data.chn[0].rawae_big.channelg_xy,
-                   sizeof(adhaz_pre_int->stats.other_stats.short_luma));
-            memcpy(adhaz_pre_int->stats.other_stats.long_luma,
-                   xIspStats->AecStatsProxy->data()->aec_stats.ae_data.chn[1].rawae_big.channelg_xy,
-                   sizeof(adhaz_pre_int->stats.other_stats.long_luma));
-        } else {
-            LOGD("Wrong working mode!!!");
-        }
+#if RKAIQ_HAVE_DEHAZE_V12
+        memcpy(&adhaz_pre_int->stats.dehaze_stats_v12,
+               &xIspStats->AdehazeStatsProxy->data()->adehaze_stats.dehaze_stats_v12,
+               sizeof(dehaze_stats_v12_t));
+#endif
     }
 
     ret = RkAiqHandle::preProcess();
@@ -154,6 +121,7 @@ XCamReturn RkAiqAdehazeHandleInt::preProcess() {
     RKAIQCORE_CHECK_RET(ret, "adhaz algo pre_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -168,6 +136,41 @@ XCamReturn RkAiqAdehazeHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    RkAiqIspStats* xIspStats = nullptr;
+    if (shared->ispStats) {
+        xIspStats = (RkAiqIspStats*)shared->ispStats->map(shared->ispStats);
+        if (!xIspStats) LOGE_ADEHAZE("isp stats is null");
+    } else {
+        LOGW_ADEHAZE("the xcamvideobuffer of isp stats is null");
+    }
+
+    if (!xIspStats || !xIspStats->adehaze_stats_valid || !sharedCom->init) {
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+        LOGE("no adehaze stats, ignore!");
+        return XCAM_RETURN_BYPASS;
+#endif
+    } else {
+#if RKAIQ_HAVE_DEHAZE_V10
+        memcpy(&adhaz_proc_int->stats.dehaze_stats_v10,
+               &xIspStats->AdehazeStatsProxy->data()->adehaze_stats.dehaze_stats_v10,
+               sizeof(dehaze_stats_v10_t));
+#endif
+#if RKAIQ_HAVE_DEHAZE_V11
+        memcpy(&adhaz_proc_int->stats.dehaze_stats_v11,
+               &xIspStats->AdehazeStatsProxy->data()->adehaze_stats.dehaze_stats_v11,
+               sizeof(dehaze_stats_v11_t));
+#endif
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+        memcpy(&adhaz_proc_int->stats.dehaze_stats_v11_duo,
+               &xIspStats->AdehazeStatsProxy->data()->adehaze_stats.dehaze_stats_v11_duo,
+               sizeof(dehaze_stats_v11_duo_t));
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+        memcpy(&adhaz_proc_int->stats.dehaze_stats_v12,
+               &xIspStats->AdehazeStatsProxy->data()->adehaze_stats.dehaze_stats_v12,
+               sizeof(dehaze_stats_v12_t));
+#endif
+    }
     adhaz_proc_int->rawHeight = sharedCom->snsDes.isp_acq_height;
     adhaz_proc_int->rawWidth  = sharedCom->snsDes.isp_acq_width;
 
@@ -197,6 +200,7 @@ XCamReturn RkAiqAdehazeHandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#if 0
 
     RkAiqAlgoPostAdhaz* adhaz_post_int        = (RkAiqAlgoPostAdhaz*)mPostInParam;
     RkAiqAlgoPostResAdhaz* adhaz_post_res_int = (RkAiqAlgoPostResAdhaz*)mPostOutParam;
@@ -215,6 +219,7 @@ XCamReturn RkAiqAdehazeHandleInt::postProcess() {
     RKAIQCORE_CHECK_RET(ret, "adhaz algo post_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return ret;
 }
 

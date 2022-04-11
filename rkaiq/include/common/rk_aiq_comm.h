@@ -448,21 +448,21 @@ typedef enum {
 } rk_aiq_isp_hdr_mode_t;
 
 typedef enum {
-    RK_AIQ_SENSOR_HDR_LINE_MODE_DCG, // 2frame: share the same exptime, use dual conversion gain; 3frame: DCG+VS, VS frame use individual gain & time
-    RK_AIQ_SENSOR_HDR_LINE_MODE_STAGGER, // 2frame or 3frame
+    RKAIQ_SENSOR_HDR_MODE_DCG, // 2frame: share the same exptime, use dual conversion gain; 3frame: DCG+VS, VS frame use individual gain & time
+    RKAIQ_SENSOR_HDR_MODE_STAGGER, // 2frame or 3frame
 } rk_aiq_sensor_hdr_line_mode_t;
 
 #define RK_AIQ_HDR_GET_WORKING_MODE(mode) (mode & 0xF0)
 
 typedef enum {
-    RK_AIQ_ISPP_STATIC_TNR_WORKING_MODE_2TO1,
-    RK_AIQ_ISPP_STATIC_TNR_WORKING_MODE_3TO1,
-} rk_aiq_ispp_static_tnr_working_mode_t;
+    RKAIQ_ISPP_TNR_MODE_2TO1,
+    RKAIQ_ISPP_TNR_MODE_3TO1,
+} rkaiq_ispp_tnr_mode_t;
 
 typedef enum {
-    RK_AIQ_ISPP_STATIC_FEC_WORKING_MODE_STABLIZATION,
-    RK_AIQ_ISPP_STATIC_FEC_WORKING_MODE_FISHEYE,
-} rk_aiq_ispp_static_fec_working_mode_t;
+    RKAIQ_ISPP_FEC_MODE_STABLE,
+    RKAIQ_ISPP_FEC_MODE_FISHEYE,
+} rkaiq_ispp_fec_mode_t;
 
 typedef enum {
     RK_MODULE_INVAL = 0,

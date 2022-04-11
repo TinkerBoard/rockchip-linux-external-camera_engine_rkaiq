@@ -140,8 +140,8 @@ typedef struct rkaiq_gic_v2_param_selected_s {
     uint16_t k_grad2_dark;
     uint16_t min_grad_thr_dark1;
     uint16_t min_grad_thr_dark2;
-    float NoiseScale;
-    float NoiseBase;
+    int NoiseScale;
+    int NoiseBase;
     float noiseCurve_0;
     float noiseCurve_1;
     float globalStrength;
@@ -239,8 +239,8 @@ typedef struct AgicConfigV21_s {
     unsigned short regmingradthr2;
     unsigned short regmingradthr1;
     unsigned char gr_ratio;
-    float noise_scale;
-    float noise_base;
+    uint8_t noise_scale;
+    uint16_t noise_base;
     float noiseCurve_0;
     float noiseCurve_1;
     float sigma_y[15];

@@ -22,7 +22,6 @@
 XCamReturn AmergeStart(AmergeContext_t* pAmergeCtx);
 XCamReturn AmergeStop(AmergeContext_t* pAmergeCtx);
 void AmergeIQUpdate(AmergeContext_t* pAmergeCtx);
-void AmergeGetSensorInfo(AmergeContext_t* pAmergeCtx, AecProcResult_t AecHdrProcResult);
 void AmergeTuningProcessing(AmergeContext_t* pAmergeCtx);
 void AmergeExpoProcessing(AmergeContext_t* pAmergeCtx, MergeExpoData_t* pExpoData);
 bool AmergeByPassProcessing(AmergeContext_t* pAmergeCtx, AecPreResult_t AecHdrPreResult);

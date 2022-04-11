@@ -99,12 +99,8 @@ void RkAiqAieHandleInt::init() {
 
     RkAiqHandle::deInit();
     mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAie());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAie());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAie());
     mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAie());
     mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAie());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAie());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAie());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -133,7 +129,7 @@ XCamReturn RkAiqAieHandleInt::preProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPreAie* aie_pre_int        = (RkAiqAlgoPreAie*)mPreInParam;
     RkAiqAlgoPreResAie* aie_pre_res_int = (RkAiqAlgoPreResAie*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
@@ -150,6 +146,7 @@ XCamReturn RkAiqAieHandleInt::preProcess() {
     RKAIQCORE_CHECK_RET(ret, "aie algo pre_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -181,7 +178,7 @@ XCamReturn RkAiqAieHandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPostAie* aie_post_int        = (RkAiqAlgoPostAie*)mPostInParam;
     RkAiqAlgoPostResAie* aie_post_res_int = (RkAiqAlgoPostResAie*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
@@ -199,6 +196,7 @@ XCamReturn RkAiqAieHandleInt::postProcess() {
     RKAIQCORE_CHECK_RET(ret, "aie algo post_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return ret;
 }
 

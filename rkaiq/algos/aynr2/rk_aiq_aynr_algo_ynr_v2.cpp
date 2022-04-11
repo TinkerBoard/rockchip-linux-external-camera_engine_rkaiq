@@ -1,6 +1,8 @@
 
 #include "rk_aiq_aynr_algo_ynr_v2.h"
 
+#include "mathlib.h"
+
 RKAIQ_BEGIN_DECLARE
 
 

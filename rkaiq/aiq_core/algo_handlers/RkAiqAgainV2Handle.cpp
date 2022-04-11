@@ -26,12 +26,8 @@ void RkAiqAgainV2HandleInt::init() {
 
     RkAiqHandle::deInit();
     mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAgainV2());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAgainV2());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAgainV2());
     mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAgainV2());
     mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAgainV2());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAgainV2());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAgainV2());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -137,7 +133,7 @@ XCamReturn RkAiqAgainV2HandleInt::preProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPreAgainV2* again_pre_int        = (RkAiqAlgoPreAgainV2*)mPreInParam;
     RkAiqAlgoPreResAgainV2* again_pre_res_int = (RkAiqAlgoPreResAgainV2*)mPreOutParam;
 
@@ -155,6 +151,7 @@ XCamReturn RkAiqAgainV2HandleInt::preProcess() {
     RKAIQCORE_CHECK_RET(ret, "again algo pre_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -194,7 +191,7 @@ XCamReturn RkAiqAgainV2HandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPostAgainV2* again_post_int        = (RkAiqAlgoPostAgainV2*)mPostInParam;
     RkAiqAlgoPostResAgainV2* again_post_res_int = (RkAiqAlgoPostResAgainV2*)mPostOutParam;
 
@@ -213,6 +210,7 @@ XCamReturn RkAiqAgainV2HandleInt::postProcess() {
     RKAIQCORE_CHECK_RET(ret, "auvnr algo post_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return ret;
 }
 

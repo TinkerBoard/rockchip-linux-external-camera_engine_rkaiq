@@ -72,7 +72,7 @@
 		"CISHdrSet":	{
 			"hdr_en":	1,
 			"hdr_mode":	"RK_AIQ_ISP_HDR_MODE_2_LINE_HDR",
-			"line_mode":	"RK_AIQ_SENSOR_HDR_LINE_MODE_STAGGER"
+			"line_mode":	"RKAIQ_SENSOR_HDR_MODE_STAGGER"
 		},
 		"CISDcgSet":	{
 			"Linear":	{
@@ -205,7 +205,7 @@
 								"ToleranceIn":	10,
 								"ToleranceOut":	15,
 								"Evbias":	0,
-								"StrategyMode":	"AECV2_STRATEGY_MODE_LOWLIGHT_PRIOR",
+								"StrategyMode":	"AECV2_STRATEGY_MODE_LOWLIGHT",
 								"InitExp":	{
 									"InitTimeValue":	0.003,
 									"InitGainValue":	1,
@@ -268,7 +268,7 @@
 								"ToleranceIn":	10,
 								"ToleranceOut":	15,
 								"Evbias":	0,
-								"StrategyMode":	"AECV2_STRATEGY_MODE_LOWLIGHT_PRIOR",
+								"StrategyMode":	"AECV2_STRATEGY_MODE_LOWLIGHT",
 								"LumaDistTh":	10,
 								"InitExp":	{
 									"InitTimeValue":	[0.0005, 0.003, 0.003],
@@ -315,7 +315,7 @@
 									}
 								},
 								"LongFrmMode":	{
-									"mode":	"AECV2_HDR_LONGFRMMODE_NORMAL",
+									"mode":	"AECV2_HDR_LONGFRMMODE_DISABLE",
 									"SfrmMinLine":	2,
 									"LfrmModeExpTh":	0.62
 								},
@@ -460,7 +460,7 @@
 								"yuvDetectionEnable":	1,
 								"blkStatisticsEnable":	1,
 								"downScaleMode":	"CALIB_AWB_DS_8X8",
-								"blkMeasureMode":	"CALIB_AWB_BLK_STAT_MODE_ALL_V201",
+								"blkMeasureMode":	"CALIB_AWB_BLK_STAT_MODE_AL_V201",
 								"mainWindow":	{
 									"mode":	"CALIB_AWB_WINDOW_CFG_AUTO",
 									"window":	[0, 0, 1, 1]
@@ -507,7 +507,7 @@
 										"weightInculde":	0
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_XY",
-										"mode":	"CALIB_AWB_EXTTRA_LIGHT_SOURCES_MODE",
+										"mode":	"CALIB_AWB_ETR_LIGHT_SOUR_MODE",
 										"region":	[-1715, -1659, 34, -38],
 										"weightInculde":	0
 									}, {
@@ -1954,18 +1954,19 @@
 								}
 							}
 						},
-						"adrc_calib_V12":	{
+						"adrc_calib_v12":	{
 							"DrcTuningPara":	{
 								"Enable":	0,
+								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"DrcGain":	{
-									"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+									"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 									"DrcGain":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 									"Alpha":	[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
 									"Clip":	[16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
 								},
 								"HiLight":	{
 									"HiLightData":	{
-										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Strength":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 										"gas_t":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 									},
@@ -1976,7 +1977,7 @@
 								},
 								"LocalSetting":	{
 									"LocalData":	{
-										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"LocalWeit":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"LocalAutoEnable":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"LocalAutoWeit":	[0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477],
@@ -2010,7 +2011,7 @@
 						},
 						"af_v31":	{
 							"TuningPara":	{
-								"af_mode":	"CalibDbV2_AF_MODE_CONTINUOUS_PICTURE",
+								"af_mode":	"CalibDbV2_AFMODE_CONT_PICTURE",
 								"win_h_offs":	0,
 								"win_v_offs":	0,
 								"win_h_size":	0,
@@ -2030,11 +2031,11 @@
 								},
 								"contrast_af":	{
 									"enable":	1,
-									"Afss":	"CalibDbV2_CAM_AFM_FSS_ADAPTIVE_RANGE",
-									"FullDir":	"CalibDbV2_CAM_AFM_ADAPTIVE_SEARCH",
+									"Afss":	"CalibDbV2_AFSS_ADAPTIVE_RANGE",
+									"FullDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"FullRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"FullRangeTbl_len":	9,
-									"AdaptiveDir":	"CalibDbV2_CAM_AFM_ADAPTIVE_SEARCH",
+									"AdaptiveDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"AdaptRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"AdaptRangeTbl_len":	9,
 									"TrigThers":	[0.075],
@@ -2088,11 +2089,11 @@
 								},
 								"video_contrast_af":	{
 									"enable":	1,
-									"Afss":	"CalibDbV2_CAM_AFM_FSS_ADAPTIVE_RANGE",
-									"FullDir":	"CalibDbV2_CAM_AFM_ADAPTIVE_SEARCH",
+									"Afss":	"CalibDbV2_AFSS_ADAPTIVE_RANGE",
+									"FullDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"FullRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"FullRangeTbl_len":	9,
-									"AdaptiveDir":	"CalibDbV2_CAM_AFM_ADAPTIVE_SEARCH",
+									"AdaptiveDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"AdaptRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"AdaptRangeTbl_len":	9,
 									"TrigThers":	[0.15],
@@ -2291,7 +2292,7 @@
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
 										"gaus_coe":	[0, 64, 0, 0, 64, 0, 0, 0, 0],
-										"dnscl_mode":	"CalibDbV2_AF_DNSCL_VDNSCL_2",
+										"dnscl_mode":	"CalibDbV2_AF_DNSCL_1",
 										"v1fv_reliable":	0.2,
 										"v2fv_reliable":	0.2,
 										"v1_fir_sel":	1,
@@ -2331,7 +2332,7 @@
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
 										"gaus_coe":	[0, 64, 0, 0, 64, 0, 0, 0, 0],
-										"dnscl_mode":	"CalibDbV2_AF_DNSCL_VDNSCL_2",
+										"dnscl_mode":	"CalibDbV2_AF_DNSCL_1",
 										"v1fv_reliable":	0.2,
 										"v2fv_reliable":	0.2,
 										"v1_fir_sel":	1,
@@ -7740,7 +7741,7 @@
 								"ToleranceIn":	10,
 								"ToleranceOut":	15,
 								"Evbias":	0,
-								"StrategyMode":	"AECV2_STRATEGY_MODE_LOWLIGHT_PRIOR",
+								"StrategyMode":	"AECV2_STRATEGY_MODE_LOWLIGHT",
 								"InitExp":	{
 									"InitTimeValue":	0.003,
 									"InitGainValue":	1,
@@ -7803,7 +7804,7 @@
 								"ToleranceIn":	10,
 								"ToleranceOut":	15,
 								"Evbias":	0,
-								"StrategyMode":	"AECV2_STRATEGY_MODE_LOWLIGHT_PRIOR",
+								"StrategyMode":	"AECV2_STRATEGY_MODE_LOWLIGHT",
 								"LumaDistTh":	10,
 								"InitExp":	{
 									"InitTimeValue":	[0.0005, 0.003, 0.003],
@@ -7850,7 +7851,7 @@
 									}
 								},
 								"LongFrmMode":	{
-									"mode":	"AECV2_HDR_LONGFRMMODE_NORMAL",
+									"mode":	"AECV2_HDR_LONGFRMMODE_DISABLE",
 									"SfrmMinLine":	2,
 									"LfrmModeExpTh":	0.62
 								},
@@ -7995,7 +7996,7 @@
 								"yuvDetectionEnable":	1,
 								"blkStatisticsEnable":	1,
 								"downScaleMode":	"CALIB_AWB_DS_8X8",
-								"blkMeasureMode":	"CALIB_AWB_BLK_STAT_MODE_ALL_V201",
+								"blkMeasureMode":	"CALIB_AWB_BLK_STAT_MODE_AL_V201",
 								"mainWindow":	{
 									"mode":	"CALIB_AWB_WINDOW_CFG_AUTO",
 									"window":	[0, 0, 1, 1]
@@ -8042,7 +8043,7 @@
 										"weightInculde":	0
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_XY",
-										"mode":	"CALIB_AWB_EXTTRA_LIGHT_SOURCES_MODE",
+										"mode":	"CALIB_AWB_ETR_LIGHT_SOUR_MODE",
 										"region":	[-1715, -1659, 34, -38],
 										"weightInculde":	0
 									}, {
@@ -9489,18 +9490,19 @@
 								}
 							}
 						},
-						"adrc_calib_V12":	{
+						"adrc_calib_v12":	{
 							"DrcTuningPara":	{
 								"Enable":	0,
+								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"DrcGain":	{
-									"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+									"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 									"DrcGain":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 									"Alpha":	[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
 									"Clip":	[16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
 								},
 								"HiLight":	{
 									"HiLightData":	{
-										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Strength":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 										"gas_t":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 									},
@@ -9511,7 +9513,7 @@
 								},
 								"LocalSetting":	{
 									"LocalData":	{
-										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"LocalWeit":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"LocalAutoEnable":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"LocalAutoWeit":	[0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477],
@@ -9545,7 +9547,7 @@
 						},
 						"af_v31":	{
 							"TuningPara":	{
-								"af_mode":	"CalibDbV2_AF_MODE_CONTINUOUS_PICTURE",
+								"af_mode":	"CalibDbV2_AFMODE_CONT_PICTURE",
 								"win_h_offs":	0,
 								"win_v_offs":	0,
 								"win_h_size":	0,
@@ -9565,11 +9567,11 @@
 								},
 								"contrast_af":	{
 									"enable":	1,
-									"Afss":	"CalibDbV2_CAM_AFM_FSS_ADAPTIVE_RANGE",
-									"FullDir":	"CalibDbV2_CAM_AFM_ADAPTIVE_SEARCH",
+									"Afss":	"CalibDbV2_AFSS_ADAPTIVE_RANGE",
+									"FullDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"FullRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"FullRangeTbl_len":	9,
-									"AdaptiveDir":	"CalibDbV2_CAM_AFM_ADAPTIVE_SEARCH",
+									"AdaptiveDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"AdaptRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"AdaptRangeTbl_len":	9,
 									"TrigThers":	[0.075],
@@ -9623,11 +9625,11 @@
 								},
 								"video_contrast_af":	{
 									"enable":	1,
-									"Afss":	"CalibDbV2_CAM_AFM_FSS_ADAPTIVE_RANGE",
-									"FullDir":	"CalibDbV2_CAM_AFM_ADAPTIVE_SEARCH",
+									"Afss":	"CalibDbV2_AFSS_ADAPTIVE_RANGE",
+									"FullDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"FullRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"FullRangeTbl_len":	9,
-									"AdaptiveDir":	"CalibDbV2_CAM_AFM_ADAPTIVE_SEARCH",
+									"AdaptiveDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"AdaptRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"AdaptRangeTbl_len":	9,
 									"TrigThers":	[0.15],
@@ -9826,7 +9828,7 @@
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
 										"gaus_coe":	[0, 64, 0, 0, 64, 0, 0, 0, 0],
-										"dnscl_mode":	"CalibDbV2_AF_DNSCL_VDNSCL_2",
+										"dnscl_mode":	"CalibDbV2_AF_DNSCL_1",
 										"v1fv_reliable":	0.2,
 										"v2fv_reliable":	0.2,
 										"v1_fir_sel":	1,
@@ -9866,7 +9868,7 @@
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
 										"gaus_coe":	[0, 64, 0, 0, 64, 0, 0, 0, 0],
-										"dnscl_mode":	"CalibDbV2_AF_DNSCL_VDNSCL_2",
+										"dnscl_mode":	"CalibDbV2_AF_DNSCL_1",
 										"v1fv_reliable":	0.2,
 										"v2fv_reliable":	0.2,
 										"v1_fir_sel":	1,

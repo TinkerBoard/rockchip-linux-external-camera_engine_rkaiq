@@ -26,7 +26,11 @@
 #error "Please define supported ISP version!!!, eg: -DISP_HW_V21"
 #endif
 #else
+#ifdef COMPILE_TEMPLATE
+#include ".j2s_generated.h"
+#else
 #include "j2s_generated.h"
+#endif
 #endif
 
 //#define J2S_USING_CACH
@@ -143,6 +147,7 @@ void* j2s_read_file(const char* file, size_t* size)
 
 static char* j2s_cache_file(const char* file)
 {
+#ifdef J2S_USING_CACH
     char cache_file[256];
 
     if (getenv("J2S_NO_CACHE")) {
@@ -165,6 +170,9 @@ static char* j2s_cache_file(const char* file)
     }
 
     return strdup(cache_file);
+#else
+	return NULL;
+#endif
 }
 
 static int j2s_cache_file_valid(const char* cache_file)
@@ -278,6 +286,37 @@ void j2s_init(j2s_ctx* ctx)
 
     if (j2s_load_ctx_cache(ctx, cache_file) < 0) {
         _j2s_init(ctx);
+#if 0
+		FILE* fp = NULL;
+		size_t total = 0;
+		size_t wr_size = 0;
+		fp = fopen("j2s_code2bin.bin","wb+");
+
+		size_t data_size = 0;
+		data_size = sizeof(j2s_obj) * ctx->num_obj;
+		wr_size = fwrite(ctx->objs, data_size , 1, fp);
+		total += data_size;
+		printf("write objs size: %zu, expected: %zu\n", wr_size * data_size, data_size);
+
+		data_size = sizeof(j2s_struct) * ctx->num_struct;
+		wr_size = fwrite(ctx->structs, data_size , 1, fp);
+		total += data_size;
+		printf("write structs size: %zu, expected: %zu\n", wr_size * data_size, data_size);
+
+		data_size = sizeof(j2s_enum) * ctx->num_enum;
+		wr_size = fwrite(ctx->enums, data_size , 1, fp);
+		total += data_size;
+		printf("write enums size: %zu, expected: %zu\n", wr_size * data_size, data_size);
+
+		data_size = sizeof(j2s_enum_value) * ctx->num_enum_value;
+		wr_size = fwrite(ctx->enum_values, data_size , 1, fp);
+		total += data_size;
+		printf("write enum_valuses size: %zu, expected: %zu\n", wr_size * data_size, data_size);
+
+		printf("write total size: %zu\n", total);
+
+		fclose(fp);
+#endif
         j2s_save_ctx_cache(ctx, cache_file);
     }
 

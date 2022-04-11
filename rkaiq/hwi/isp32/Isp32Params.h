@@ -34,26 +34,41 @@ protected:
 private:
     XCAM_DEAD_COPY(Isp32Params);
 
+
+#if RKAIQ_HAVE_BAYER2DNR_V23
     void convertAiqRawnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                       rk_aiq_isp_baynr_v32_t& rawnr);
+#endif
+#if RKAIQ_HAVE_BAYERTNR_V23
     void convertAiqTnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_tnr_v32_t& tnr);
+#endif
+#if RKAIQ_HAVE_YNR_V22
     void convertAiqYnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-                                    rk_aiq_isp_ynr_v32_t& ynr);
+                                   rk_aiq_isp_ynr_v32_t& ynr);
+#endif
+#if RKAIQ_HAVE_CNR_V30
     void convertAiqUvnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                      rk_aiq_isp_cnr_v32_t& uvnr);
+#endif
    void convertAiqAwbGainToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
             const rk_aiq_wb_gain_v32_t& awb_gain,  bool awb_gain_update);
+#if RKAIQ_HAVE_AWB_V32
     void convertAiqAwbToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     const rk_aiq_isp_awb_meas_cfg_v32_t& awb_meas,
                                     bool awb_cfg_udpate);
+#endif
+#if RKAIQ_HAVE_SHARP_V33
     void convertAiqSharpenToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                         rk_aiq_isp_sharp_v32_t& sharp);
+#endif
     void convertAiqBlcToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_blc_v32_t& blc);
 
+#if RKAIQ_HAVE_AF_V31
     void convertAiqAfToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                    const rk_aiq_isp_af_v31_t& af_data, bool af_cfg_udpate);
+#endif
 #if RKAIQ_HAVE_CAC_V11
     void convertAiqCacToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     const rk_aiq_isp_cac_v32_t& cac_cfg);

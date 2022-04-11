@@ -50,6 +50,7 @@ class CamHwIsp20
     : public CamHwBase, virtual public Isp20Params, public V4l2Device
     , public isp_drv_share_mem_ops_t {
 public:
+    friend class RawStreamProcUnit;
     explicit CamHwIsp20();
     virtual ~CamHwIsp20();
 
@@ -110,7 +111,9 @@ public:
     XCamReturn get_sp_resolution(int &width, int &height, int &aligned_w, int &aligned_h) override;
     XCamReturn showOtpPdafData(struct rkmodule_pdaf_inf *otp_pdaf);
     XCamReturn showOtpAfData(struct rkmodule_af_inf *otp_af);
+#if RKAIQ_HAVE_PDAF
     bool get_pdaf_support() override;
+#endif
     virtual XCamReturn setIspStreamMode(rk_isp_stream_mode_t mode) override {
         if (mode == RK_ISP_STREAM_MODE_ONLNIE) {
             mNoReadBack = true;
@@ -130,8 +133,11 @@ public:
     void notify_isp_stream_status(bool on);
 private:
     using V4l2Device::start;
+
+#if defined(ISP_HW_V20)
     XCamReturn handlePpReslut(SmartPtr<cam3aResult> &result);
     XCamReturn setPpConfig(SmartPtr<cam3aResult> &result);
+#endif
     XCamReturn setExposureParams(SmartPtr<RkAiqExpParamsProxy>& expPar);
     XCamReturn setIrisParams(SmartPtr<RkAiqIrisParamsProxy>& irisPar, CalibDb_IrisTypeV2_t irisType);
     XCamReturn setHdrProcessCount(rk_aiq_luma_params_t luma_params) override;
@@ -189,9 +195,11 @@ protected:
     volatile bool _is_exit;
     bool _linked_to_isp;
     struct isp2x_isp_params_cfg _full_active_isp_params;
+#if defined(ISP_HW_V20)
     struct rkispp_params_cfg _full_active_ispp_params;
     uint32_t _ispp_module_init_ens;
     SmartPtr<V4l2SubDevice> _ispp_sd;
+#endif
     SmartPtr<V4l2SubDevice> _cif_csi2_sd;
     char sns_name[32];
     static std::map<std::string, SmartPtr<rk_aiq_static_info_t>> mCamHwInfos;
@@ -204,8 +212,10 @@ protected:
                              struct isp2x_isp_params_cfg* full_params,
                                 uint64_t* module_en_update_partial,
                                 uint64_t* module_cfg_update_partial);
+#if defined(ISP_HW_V20)
     void gen_full_ispp_params(const struct rkispp_params_cfg* update_params,
                               struct rkispp_params_cfg* full_params);
+#endif
     XCamReturn overrideExpRatioToAiqResults(const uint32_t frameId,
                 int module_id,
                 cam3aResultList &results,
@@ -214,12 +224,12 @@ protected:
     void dump_isp_config(struct isp2x_isp_params_cfg* isp_params,
                          SmartPtr<RkAiqIspParamsProxy> aiq_results,
                          SmartPtr<RkAiqIspParamsProxy> aiq_other_results);
-#endif
     void dumpRawnrFixValue(struct isp2x_rawnr_cfg * pRawnrCfg );
     void dumpTnrFixValue(struct rkispp_tnr_config  * pTnrCfg);
     void dumpUvnrFixValue(struct rkispp_nr_config  * pNrCfg);
     void dumpYnrFixValue(struct rkispp_nr_config  * pNrCfg);
     void dumpSharpFixValue(struct rkispp_sharp_config  * pSharpCfg);
+#endif
     XCamReturn setIrcutParams(bool on);
     XCamReturn setIsppSharpFbcRot(struct rkispp_sharp_config* shp_cfg);
     XCamReturn setupPipelineFmt();
@@ -230,7 +240,9 @@ protected:
                                    struct v4l2_subdev_format& sns_sd_fmt,
                                    __u32 sns_v4l_pix_fmt);
     XCamReturn setupHdrLink_vidcap(int hdr_mode, int cif_index, bool enable);
+#if defined(ISP_HW_V20)
     XCamReturn init_pp(rk_sensor_full_info_t *s_info);
+#endif
     virtual bool isOnlineByWorkingMode();
     enum mipi_stream_idx {
         MIPI_STREAM_IDX_0   = 1,
@@ -252,6 +264,7 @@ protected:
     rk_aiq_ldch_share_mem_info_t ldch_mem_info_array[2*ISP2X_MESH_BUF_NUM];
     rk_aiq_fec_share_mem_info_t fec_mem_info_array[FEC_MESH_BUF_NUM];
     rk_aiq_cac_share_mem_info_t cac_mem_info_array[2*ISP3X_MESH_BUF_NUM];
+    rk_aiq_dbg_share_mem_info_t dbg_mem_info_array[RKISP_INFO2DDR_BUF_MAX];
     typedef struct drv_share_mem_ctx_s {
         void* ops_ctx;
         void* mem_info;
@@ -260,6 +273,7 @@ protected:
     drv_share_mem_ctx_t _ldch_drv_mem_ctx;
     drv_share_mem_ctx_t _fec_drv_mem_ctx;
     drv_share_mem_ctx_t _cac_drv_mem_ctx;
+    drv_share_mem_ctx_t _dbg_drv_mem_ctx;
     Mutex _mem_mutex;
     rk_aiq_rect_t _crop_rect;
     uint32_t _ds_width;
@@ -269,15 +283,19 @@ protected:
     uint32_t _exp_delay;
     rk_aiq_lens_descriptor _lens_des;
     //ispp
+#if defined(ISP_HW_V20)
     SmartPtr<FecParamStream>    mFecParamStream;
     SmartPtr<NrStreamProcUnit>  mNrStreamProcUnit;
     SmartPtr<TnrStreamProcUnit> mTnrStreamProcUnit;
+#endif
     //isp
     SmartPtr<RKStream>          mLumaStream;
     SmartPtr<RKStatsStream>     mIspStatsStream;
     SmartPtr<RKStream>          mIspParamStream;
     SmartPtr<RKSofEventStream>  mIspSofStream;
+#if defined(RKAIQ_ENABLE_SPSTREAM)
     SmartPtr<SPStreamProcUnit> mSpStreamUnit;
+#endif
     SmartPtr<RkStreamEventPollThread> mIspStremEvtTh;
 
     SmartPtr<RawStreamCapUnit> mRawCapUnit;

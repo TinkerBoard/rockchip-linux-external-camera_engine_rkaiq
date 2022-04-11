@@ -16,17 +16,17 @@
 #ifndef _RK_AIQ_CUSTOM_AWB_HANDLE_H_
 #define _RK_AIQ_CUSTOM_AWB_HANDLE_H_
 
-#include "algo_handlers/RkAiqAwbV21Handle.h"
+#include "algo_handlers/RkAiqAwbHandle.h"
 
-#if RKAIQ_HAVE_AWB_V21
+#if RKAIQ_HAVE_AWB_V21 || RKAIQ_HAVE_AWB_V32
 namespace RkCam {
 
 // awb
 class RkAiqCustomAwbHandle:
-    public RkAiqAwbV21HandleInt {
+    public RkAiqAwbHandleInt {
 public:
     explicit RkAiqCustomAwbHandle(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
-        : RkAiqAwbV21HandleInt (des, aiqCore) {};
+        : RkAiqAwbHandleInt (des, aiqCore) {};
     virtual ~RkAiqCustomAwbHandle() {
     };
     virtual XCamReturn updateConfig(bool needSync);

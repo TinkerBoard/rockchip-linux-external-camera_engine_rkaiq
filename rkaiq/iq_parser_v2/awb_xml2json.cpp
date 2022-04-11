@@ -128,7 +128,7 @@ void convertCalib2calibV21(const CamCalibDbContext_t *calib,CamCalibDbV2Context_
     for(int i=0;i<autoParaV21->wpDiffLumaWeight.wpDiffWeightLvSet_len;i++){
         autoParaV21->wpDiffLumaWeight.wpDiffWeightLvSet[i].ratioSet_len = 3;
         autoParaV21->wpDiffLumaWeight.wpDiffWeightLvSet[i].ratioSet =
-            (CalibDbV2_Awb_Luma_Weight_Lv_Ratio_t*)malloc(sizeof(CalibDbV2_Awb_Luma_Weight_Lv_Ratio_t)*autoParaV21->wpDiffLumaWeight.wpDiffWeightLvSet[i].ratioSet_len);
+            (CalibDbV2_Awb_Lum_Wgt_Lv_Rto_t*)malloc(sizeof(CalibDbV2_Awb_Lum_Wgt_Lv_Rto_t)*autoParaV21->wpDiffLumaWeight.wpDiffWeightLvSet[i].ratioSet_len);
     }
     autoParaV21->limitRange.lumaValue = (float*)malloc(awb_calib_v21->limitRange.lumaNum *sizeof(float));
     autoParaV21->limitRange.maxB= (unsigned short*)malloc(awb_calib_v21->limitRange.lumaNum *sizeof(unsigned short));
@@ -166,7 +166,7 @@ void convertCalib2calibV21(const CamCalibDbContext_t *calib,CamCalibDbV2Context_
     }
     autoParaV21->blkStatisticsEnable = awb_calib_v21->blkStatisticsEnable;
     autoParaV21->downScaleMode = (CalibDbV2_Awb_Down_Scale_Mode_t)awb_calib_v21->dsMode;
-    autoParaV21->blkMeasureMode = (CalibDbV2_Awb_Blk_Stat_Mode_V21_t)awb_calib_v21->blkMeasureMode;
+    autoParaV21->blkMeasureMode = (CalibDbV2_Awb_Blk_Stat_V21_t)awb_calib_v21->blkMeasureMode;
     autoParaV21->mainWindow.mode = (CalibDb_Window_Mode_t)awb_calib_v21->measeureWindow.mode;
     float window[4] ={0,0,1,1};
     bool flag = false;
@@ -239,9 +239,9 @@ void convertCalib2calibV21(const CamCalibDbContext_t *calib,CamCalibDbV2Context_
     memcpy(autoParaV21->rgb2TcsPara.pseudoLuminanceWeight, awb_calib_v21->rgb2tcs_param.pseudoLuminanceWeight, sizeof(autoParaV21->rgb2TcsPara.pseudoLuminanceWeight));
     memcpy(autoParaV21->rgb2RotationYuvMat, awb_calib_v21->rgb2RYuv_matrix,sizeof(autoParaV21->rgb2RotationYuvMat));
     for(int i=0;i<CALD_AWB_EXCRANGE_NUM_MAX;i++){
-        autoParaV21->extraWpRange[i].domain = (CalibDbV2_Awb_Ext_Range_Domain_t)awb_calib_v21->excludeWpRange[i].domain;
+        autoParaV21->extraWpRange[i].domain = (CalibDbV2_Awb_Ext_Range_Dom_t)awb_calib_v21->excludeWpRange[i].domain;
         if(awb_calib_v21->excludeWpRange[i].mode != CALIB_AWB_EXCLUDE_WP_MODE
-            && awb_calib_v21->excludeWpRange[i].mode != CALIB_AWB_EXTTRA_LIGHT_SOURCES_MODE ){
+            && awb_calib_v21->excludeWpRange[i].mode != CALIB_AWB_ETR_LIGHT_SOUR_MODE ){
             autoParaV21->extraWpRange[i].mode = CALIB_AWB_EXCLUDE_WP_MODE;
         }else{
             autoParaV21->extraWpRange[i].mode = (CalibDbV2_Awb_Ext_Range_Mode_t)awb_calib_v21->excludeWpRange[i].mode;
@@ -546,7 +546,7 @@ void convertCalib2calibV20(const CamCalibDbContext_t *calib,CamCalibDbV2Context_
     }
     autoParaV20->yuvDetRef_u = awb_calib_v20->yuv3DRange_param[0].ref_u;
     autoParaV20->downScaleMode = (CalibDbV2_Awb_Down_Scale_Mode_t)awb_calib_v20->dsMode;
-    autoParaV20->blkMeasureMode = (CalibDbV2_Awb_Blk_Stat_Mode_V20_t)awb_calib_v20->blkMeasureMode;
+    autoParaV20->blkMeasureMode = (CalibDbV2_Awb_Blk_Stat_V20_t)awb_calib_v20->blkMeasureMode;
     autoParaV20->mainWindow.mode = (CalibDb_Window_Mode_t)awb_calib_v20->measeureWindow.mode;
     float window[4] ={0,0,1,1};
     memcpy(autoParaV20->mainWindow.window, window,sizeof(window));
@@ -624,9 +624,9 @@ void convertCalib2calibV20(const CamCalibDbContext_t *calib,CamCalibDbV2Context_
         }
     }
     for(int i=0;i<CALD_AWB_EXCRANGE_NUM_MAX;i++){
-        autoParaV20->extraWpRange[i].domain = (CalibDbV2_Awb_Ext_Range_Domain_t)awb_calib_v20->excludeWpRange[i].domain;
+        autoParaV20->extraWpRange[i].domain = (CalibDbV2_Awb_Ext_Range_Dom_t)awb_calib_v20->excludeWpRange[i].domain;
         if(awb_calib_v20->excludeWpRange[i].mode != CALIB_AWB_EXCLUDE_WP_MODE
-            && awb_calib_v20->excludeWpRange[i].mode != CALIB_AWB_EXTTRA_LIGHT_SOURCES_MODE ){
+            && awb_calib_v20->excludeWpRange[i].mode != CALIB_AWB_ETR_LIGHT_SOUR_MODE ){
             autoParaV20->extraWpRange[i].mode = CALIB_AWB_EXCLUDE_WP_MODE;
         }else{
             autoParaV20->extraWpRange[i].mode = (CalibDbV2_Awb_Ext_Range_Mode_t)awb_calib_v20->excludeWpRange[i].mode;

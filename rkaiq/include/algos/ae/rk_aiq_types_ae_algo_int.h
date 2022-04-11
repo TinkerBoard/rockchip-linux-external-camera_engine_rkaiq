@@ -463,29 +463,15 @@ typedef struct AeInstanceConfig_s {
  */
 /*****************************************************************************/
 typedef struct AecPreResult_s {
-    float MeanLuma[MAX_HDR_FRAMENUM];
-    float LowLightLuma[MAX_HDR_FRAMENUM];
     float LowLightROIPdf[MAX_HDR_FRAMENUM];
-    float HighLightLuma[MAX_HDR_FRAMENUM];
     float HighLightROIPdf[MAX_HDR_FRAMENUM];
+    float HighLightLuma[MAX_HDR_FRAMENUM];
     float OverExpROIPdf[MAX_HDR_FRAMENUM];
-    float NonOverExpLuma[MAX_HDR_FRAMENUM];
-    float NonOverExpPdf[MAX_HDR_FRAMENUM];
-
     float GlobalEnvLv[MAX_HDR_FRAMENUM];
-    float BlockEnvLv[ISP2_RAWAE_WINNUM_MAX];
-    float GlobalEnvLux;
-    float BlockEnvLux[ISP2_RAWAE_WINNUM_MAX];
+    float MeanLuma[MAX_HDR_FRAMENUM];
     float DynamicRange;
-
-    float L2M_ExpRatio;
-    float M2S_ExpRatio;
-
-    unsigned char NormalIndex;
-
     RkAiqExpParamComb_t LinearExp;
     RkAiqExpParamComb_t HdrExp[MAX_HDR_FRAMENUM];
-
     CamerIcHistBins_t AeRawHistBin[3];
 } AecPreResult_t;
 
@@ -498,19 +484,11 @@ typedef struct AecPreResult_s {
 /*****************************************************************************/
 typedef struct AecProcResult_s {
     bool                          IsConverged;
+    bool                          LongFrmMode;
+    float                         LumaDeviation;
+    float                         HdrLumaDeviation[MAX_HDR_FRAMENUM];
     int                           exp_set_cnt;
     RKAiqAecExpInfo_t             exp_set_tbl[MAX_AEC_EFFECT_FNUM + 1];
-
-    /***LinearAe results****/
-    float                         LumaDeviation;
-
-    /***Hdr results****/
-    bool                          LongFrmMode;
-    float                         HdrMaxGain[MAX_HDR_FRAMENUM];
-    float                         HdrMinGain[MAX_HDR_FRAMENUM];
-    float                         HdrMinIntegrationTime[MAX_HDR_FRAMENUM];
-    float                         HdrMaxIntegrationTime[MAX_HDR_FRAMENUM];
-    float                         HdrLumaDeviation[MAX_HDR_FRAMENUM];
 } AecProcResult_t;
 
 typedef struct AecPostResult_s {

@@ -104,7 +104,9 @@ uint16_t RkAiqCore::DEFAULT_POOL_SIZE = 4;
 
 RkAiqCore::RkAiqCore(int isp_hw_ver)
     : mRkAiqCoreTh(new RkAiqCoreThread(this))
+#if defined(ISP_HW_V20)
     , mRkAiqCorePpTh(new RkAiqCoreThread(this))
+#endif
     , mRkAiqCoreEvtsTh(new RkAiqCoreEvtsThread(this))
     , mState(RK_AIQ_CORE_STATE_INVALID)
     , mCb(NULL)
@@ -120,7 +122,9 @@ RkAiqCore::RkAiqCore(int isp_hw_ver)
     , mAiqAdehazeStatsPool(nullptr)
     , mAiqAfStatsPool(nullptr)
     , mAiqOrbStatsIntPool(nullptr)
+#if RKAIQ_HAVE_PDAF
     , mAiqPdafStatsPool(nullptr)
+#endif
     , mCustomEnAlgosMask(0xffffffffffffffff)
 {
     ENTER_ANALYZER_FUNCTION();
@@ -218,13 +222,13 @@ void RkAiqCore::initCpsl()
             cfg->u.a.sensitivity = calibv2_cpsl_calib->auto_adjust_sens;
             cfg->u.a.sw_interval = calibv2_cpsl_calib->auto_sw_interval;
             LOGD_ASD("mode sensitivity %f, interval time %d s\n",
-                          cfg->u.a.sensitivity, cfg->u.a.sw_interval);
+                     cfg->u.a.sensitivity, cfg->u.a.sw_interval);
         } else {
             cfg->u.m.on = calibv2_cpsl_calib->manual_on;
             cfg->u.m.strength_ir = calibv2_cpsl_calib->manual_strength;
             cfg->u.m.strength_led = calibv2_cpsl_calib->manual_strength;
             LOGD_ASD("on %d, strength_led %f, strength_ir %f \n",
-                          cfg->u.m.on, cfg->u.m.strength_led, cfg->u.m.strength_ir);
+                     cfg->u.m.on, cfg->u.m.strength_led, cfg->u.m.strength_ir);
         }
     } else {
         cfg->mode = RK_AIQ_OP_MODE_INVALID;
@@ -259,7 +263,9 @@ RkAiqCore::init(const char* sns_ent_name, const CamCalibDbContext_t* aiqCalib,
     initCpsl();
     newAiqParamsPool();
     newAiqGroupAnayzer();
+#if RKAIQ_HAVE_PDAF
     newPdafStatsPool();
+#endif
 
     mState = RK_AIQ_CORE_STATE_INITED;
     return XCAM_RETURN_NO_ERROR;
@@ -284,7 +290,9 @@ RkAiqCore::deInit()
         return XCAM_RETURN_ERROR_ANALYZER;
     }
 
+#if RKAIQ_HAVE_PDAF
     delPdafStatsPool();
+#endif
     mState = RK_AIQ_CORE_STATE_INVALID;
 
     EXIT_ANALYZER_FUNCTION();
@@ -305,13 +313,16 @@ RkAiqCore::start()
 
     mRkAiqCoreTh->triger_start();
     mRkAiqCoreTh->start();
+#if defined(ISP_HW_V20)
     if (mHasPp) {
         mRkAiqCorePpTh->triger_start();
         mRkAiqCorePpTh->start();
     }
+#endif
     mRkAiqCoreEvtsTh->triger_start();
     mRkAiqCoreEvtsTh->start();
 
+#if RKAIQ_HAVE_PDAF
     uint64_t deps = mRkAiqCoreGroupManager->getGrpDeps(RK_AIQ_CORE_ANALYZE_AF);
     if (get_pdaf_support()) {
         deps |= 1LL << XCAM_MESSAGE_PDAF_STATS_OK;
@@ -319,11 +330,14 @@ RkAiqCore::start()
         deps &= ~(1LL << XCAM_MESSAGE_PDAF_STATS_OK);
     }
     mRkAiqCoreGroupManager->setGrpDeps(RK_AIQ_CORE_ANALYZE_AF, deps);
+#endif
     mRkAiqCoreGroupManager->start();
 
+#if defined(RKAIQ_HAVE_THUMBNAILS)
     if (mThumbnailsService.ptr()) {
         mThumbnailsService->Start();
     }
+#endif
 
     mState = RK_AIQ_CORE_STATE_STARTED;
 
@@ -345,17 +359,21 @@ RkAiqCore::stop()
     mRkAiqCoreTh->triger_stop();
     mRkAiqCoreTh->stop();
 
+#if defined(ISP_HW_V20)
     if (mHasPp) {
         mRkAiqCorePpTh->triger_stop();
         mRkAiqCorePpTh->stop();
     }
+#endif
     mRkAiqCoreEvtsTh->triger_stop();
     mRkAiqCoreEvtsTh->stop();
 
     mRkAiqCoreGroupManager->stop();
+#if defined(RKAIQ_HAVE_THUMBNAILS)
     if (mThumbnailsService.ptr()) {
         mThumbnailsService->Stop();
     }
+#endif
 
     {
         SmartLock locker (ispStatsListMutex);
@@ -410,6 +428,7 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
     CalibDbV2_ColorAsGrey_t *colorAsGrey =
         (CalibDbV2_ColorAsGrey_t*)CALIBDBV2_GET_MODULE_PTR((void*)(mAlogsComSharedParams.calibv2), colorAsGrey);
 
+#if defined(RKAIQ_HAVE_THUMBNAILS)
     CalibDbV2_Thumbnails_t* thumbnails_config_db =
         (CalibDbV2_Thumbnails_t*)CALIBDBV2_GET_MODULE_PTR((void*)(mAlogsComSharedParams.calibv2), thumbnails);
     if (thumbnails_config_db) {
@@ -427,6 +446,11 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
             }
         }
     }
+#endif
+
+    mTranslator->setWorkingMode(mode);
+
+#if defined(RKAIQ_HAVE_MULTIISP)
 
     if (mHwInfo.is_multi_isp_mode) {
         XCAM_ASSERT((sensor_des->isp_acq_width % 32 == 0));// &&
@@ -452,8 +476,10 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
         mAlogsComSharedParams.is_multi_isp_mode = mHwInfo.is_multi_isp_mode;
         mAlogsComSharedParams.multi_isp_extended_pixels = extended_pixel;
     } else {
-        static_cast<RkAiqResourceTranslatorV3x*>(mTranslator.ptr())->SetMultiIspMode(false);
+        if (mIspHwVer == 3)
+            static_cast<RkAiqResourceTranslatorV3x*>(mTranslator.ptr())->SetMultiIspMode(false);
     }
+#endif
 
     if ((mAlogsComSharedParams.snsDes.sensor_pixelformat == V4L2_PIX_FMT_GREY) ||
             (mAlogsComSharedParams.snsDes.sensor_pixelformat == V4L2_PIX_FMT_Y10) ||
@@ -671,9 +697,11 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
         case RK_AIQ_ALGO_TYPE_AMERGE:
             NEW_PARAMS_BUFFER(Merge, merge);
             break;
+#if RKAIQ_HAVE_TMO_V1
         case RK_AIQ_ALGO_TYPE_ATMO:
             NEW_PARAMS_BUFFER(Tmo, tmo);
             break;
+#endif
 #endif
         case RK_AIQ_ALGO_TYPE_ALSC:
             NEW_PARAMS_BUFFER(Lsc, lsc);
@@ -788,13 +816,16 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
             NEW_PARAMS_BUFFER(Edgeflt, edgeflt);
 #endif
             break;
+#if RKAIQ_HAVE_ORB_V1
         case RK_AIQ_ALGO_TYPE_AORB:
             NEW_PARAMS_BUFFER(Orb, orb);
             break;
+#endif
         case RK_AIQ_ALGO_TYPE_AFEC:
         case RK_AIQ_ALGO_TYPE_AEIS:
             NEW_PARAMS_BUFFER(Fec, fec);
             break;
+#if defined(ISP_HW_V20)
         case RK_AIQ_ALGO_TYPE_ANR:
             NEW_PARAMS_BUFFER(Rawnr, rawnr);
             NEW_PARAMS_BUFFER(Tnr, tnr);
@@ -803,9 +834,12 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analy
             NEW_PARAMS_BUFFER(Gain, gain);
             NEW_PARAMS_BUFFER(Motion, motion);
             break;
+#endif
+#if RKAIQ_HAVE_AMD_V1
         case RK_AIQ_ALGO_TYPE_AMD:
             NEW_PARAMS_BUFFER(Md, md);
             break;
+#endif
         case RK_AIQ_ALGO_TYPE_AGAIN:
 #if defined(ISP_HW_V30) || defined(ISP_HW_V32)
             NEW_PARAMS_BUFFER_WITH_V(Gain, Gain, 3x);
@@ -1029,7 +1063,7 @@ RkAiqCore::addAlgo(RkAiqAlgoDesComm& algo)
     SmartPtr<RkAiqHandle> new_hdl;
     if (algo.type == RK_AIQ_ALGO_TYPE_AE)
         new_hdl = new RkAiqCustomAeHandle(&algo, this);
-#if RKAIQ_HAVE_AWB_V21
+#if RKAIQ_HAVE_AWB_V21 ||RKAIQ_HAVE_AWB_V32
     else if (algo.type == RK_AIQ_ALGO_TYPE_AWB)
         new_hdl = new RkAiqCustomAwbHandle(&algo, this);
 #endif
@@ -1351,7 +1385,7 @@ RkAiqCore::copyIspStats(SmartPtr<RkAiqAecStatsProxy>& aecStat,
             to->awb_stats_v32 = awbStat->data()->awb_stats_v32;
         }
 #endif
-    }else if (mIspHwVer == 3) {
+    } else if (mIspHwVer == 3) {
 #if ISP_HW_V30
         to->awb_hw_ver = 3;
         if (awbStat.ptr()) {
@@ -1525,6 +1559,8 @@ RkAiqCore::analyze(const SmartPtr<VideoBuffer> &buffer)
         SmartPtr<RkAiqAfStatsProxy> afStat = NULL;
         SmartPtr<RkAiqAtmoStatsProxy> tmoStat = NULL;
         SmartPtr<RkAiqAdehazeStatsProxy> dehazeStat = NULL;
+        if (mTranslator->getParams(buffer))
+            break;
         handleAecStats(buffer, aecStat);
         handleAwbStats(buffer, awbStat);
         handleAfStats(buffer, afStat);
@@ -1532,7 +1568,10 @@ RkAiqCore::analyze(const SmartPtr<VideoBuffer> &buffer)
         handleAtmoStats(buffer, tmoStat);
 #endif
         handleAdehazeStats(buffer, dehazeStat);
+#if defined(ISP_HW_V20)
         handleIspStats(buffer, aecStat, awbStat, afStat, tmoStat, dehazeStat);
+#endif
+        mTranslator->releaseParams();
         cacheIspStatsToList(aecStat, awbStat, afStat);
         break;
     }
@@ -1583,11 +1622,13 @@ RkAiqCore::analyze(const SmartPtr<VideoBuffer> &buffer)
         post_message(msg);
         break;
     }
+#if RKAIQ_HAVE_PDAF
     case ISP_POLL_PDAF_STATS:
     {
         handlePdafStats(buffer);
         break;
     }
+#endif
     case ISPP_POLL_TNR_STATS:
     case ISPP_POLL_FEC_PARAMS:
     case ISPP_POLL_TNR_PARAMS:
@@ -1903,7 +1944,7 @@ RkAiqCore::queryCpsLtCap(rk_aiq_cpsl_cap_t &cap)
     cap.sensitivity.step = 1;
 
     LOGD_ASD("cpsl cap: light_src_num %d, led_step %f, ir_step %f",
-         cap.lght_src_num, cap.strength_led.step, cap.strength_ir.step);
+             cap.lght_src_num, cap.strength_led.step, cap.strength_ir.step);
 
     EXIT_ANALYZER_FUNCTION();
 
@@ -2214,6 +2255,7 @@ XCamReturn RkAiqCore::groupAnalyze(uint64_t grpId, const RkAiqAlgosGroupShared_t
     return XCAM_RETURN_NO_ERROR;
 }
 
+#if defined(RKAIQ_HAVE_THUMBNAILS)
 XCamReturn
 RkAiqCore::thumbnailsGroupAnalyze(rkaiq_image_source_t &thumbnailsSrc)
 {
@@ -2226,6 +2268,7 @@ RkAiqCore::thumbnailsGroupAnalyze(rkaiq_image_source_t &thumbnailsSrc)
 
     return XCAM_RETURN_NO_ERROR;
 }
+#endif
 
 void RkAiqCore::newAiqParamsPool()
 {
@@ -2279,8 +2322,10 @@ void RkAiqCore::newAiqParamsPool()
             case RK_AIQ_ALGO_TYPE_AF:
                 if (!mAiqAfStatsPool.ptr())
                     mAiqAfStatsPool = new RkAiqAfStatsPool("RkAiqAfStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
+#if RKAIQ_HAVE_PDAF
                 if (!mAiqPdafStatsPool.ptr())
                     mAiqPdafStatsPool = new RkAiqPdafStatsPool("RkAiqPdafStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 mAiqFocusParamsPool = new RkAiqFocusParamsPool("RkAiqFocusParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #if defined(ISP_HW_V32)
                 mAiqIspAfV32ParamsPool =
@@ -2300,10 +2345,12 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspMergeParamsPool      = new RkAiqIspMergeParamsPool("RkAiqIspMergeParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
             case RK_AIQ_ALGO_TYPE_ATMO:
+#if defined(ISP_HW_V20)
                 if (!mAiqAtmoStatsPool.ptr())
                     mAiqAtmoStatsPool = new RkAiqAtmoStatsPool("RkAiqAtmoStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIspTmoParamsPool =
                     new RkAiqIspTmoParamsPool("RkAiqIspTmoParams", RkAiqCore::DEFAULT_POOL_SIZE);
+#endif
                 break;
             case RK_AIQ_ALGO_TYPE_ACCM:
 #if defined(ISP_HW_V32)
@@ -2435,6 +2482,7 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspEdgefltParamsPool    = new RkAiqIspEdgefltParamsPool("RkAiqIspEdgefltParams", RkAiqCore::DEFAULT_POOL_SIZE);
 #endif
                 break;
+#if RKAIQ_HAVE_ORB_V1
             case RK_AIQ_ALGO_TYPE_AORB:
                 if (!mAiqOrbStatsIntPool.ptr())
                     mAiqOrbStatsIntPool =
@@ -2442,6 +2490,7 @@ void RkAiqCore::newAiqParamsPool()
                 mAiqIspOrbParamsPool =
                     new RkAiqIspOrbParamsPool("RkAiqIspOrbParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 break;
+#endif
             case RK_AIQ_ALGO_TYPE_AFEC:
             case RK_AIQ_ALGO_TYPE_AEIS:
                 mAiqIspFecParamsPool        = new RkAiqIspFecParamsPool("RkAiqIspFecParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2462,6 +2511,7 @@ void RkAiqCore::newAiqParamsPool()
     }
 }
 
+#if RKAIQ_HAVE_PDAF
 void RkAiqCore::newPdafStatsPool() {
     if (!mAiqPdafStatsPool.ptr())
         return;
@@ -2526,7 +2576,9 @@ void RkAiqCore::delPdafStatsPool() {
         }
     }
 }
+#endif
 
+#if defined(RKAIQ_HAVE_THUMBNAILS)
 void RkAiqCore::onThumbnailsResult(const rkaiq_thumbnails_t& thumbnail) {
     LOGV_ANALYZER("Callback thumbnail : id:%d, type:%d, 1/%dx1/%d, %dx%d", thumbnail.frame_id,
                   thumbnail.config.stream_type, thumbnail.config.width_intfactor,
@@ -2551,6 +2603,7 @@ void RkAiqCore::onThumbnailsResult(const rkaiq_thumbnails_t& thumbnail) {
     thumbnail.buffer->unref(thumbnail.buffer);
 #endif
 }
+#endif
 
 int32_t
 RkAiqCore::getGroupId(RkAiqAlgoType_t type)
@@ -2693,6 +2746,7 @@ RkAiqCore::handleAfStats(const SmartPtr<VideoBuffer> &buffer, SmartPtr<RkAiqAfSt
     return XCAM_RETURN_NO_ERROR;
 }
 
+#if RKAIQ_HAVE_PDAF
 XCamReturn RkAiqCore::handlePdafStats(const SmartPtr<VideoBuffer>& buffer) {
     XCamReturn ret                          = XCAM_RETURN_NO_ERROR;
     SmartPtr<RkAiqPdafStatsProxy> pdafStats = NULL;
@@ -2716,6 +2770,7 @@ XCamReturn RkAiqCore::handlePdafStats(const SmartPtr<VideoBuffer>& buffer) {
 
     return XCAM_RETURN_NO_ERROR;
 }
+#endif
 
 XCamReturn RkAiqCore::handleAtmoStats(const SmartPtr<VideoBuffer>& buffer,
                                       SmartPtr<RkAiqAtmoStatsProxy>& tmoStat) {
@@ -2802,6 +2857,7 @@ XCamReturn RkAiqCore::set_sp_resolution(int &width, int &height, int &aligned_w,
     return XCAM_RETURN_NO_ERROR;
 }
 
+#if RKAIQ_HAVE_PDAF
 XCamReturn
 RkAiqCore::set_pdaf_support(bool support)
 {
@@ -2813,6 +2869,7 @@ bool RkAiqCore::get_pdaf_support()
 {
     return mPdafSupport;
 }
+#endif
 
 XCamReturn
 RkAiqCore::newAiqGroupAnayzer()

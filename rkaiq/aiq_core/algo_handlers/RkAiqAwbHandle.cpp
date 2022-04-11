@@ -29,12 +29,8 @@ void RkAiqAwbHandleInt::init() {
 
     RkAiqHandle::deInit();
     mConfig      = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAwb());
-    mPreInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPreAwb());
-    mPreOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAwb());
     mProcInParam = (RkAiqAlgoCom*)(new RkAiqAlgoProcAwb());
     // mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAwb());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAwb());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAwb());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -670,7 +666,7 @@ XCamReturn RkAiqAwbHandleInt::prepare() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     // TODO
     // awb_config_int->rawBit;
-
+    awb_config_int->mem_ops_ptr   = mAiqCore->mShareMemOps;
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->prepare(mConfig);
     RKAIQCORE_CHECK_RET(ret, "awb algo prepare failed");
@@ -683,7 +679,7 @@ XCamReturn RkAiqAwbHandleInt::preProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPreAwb* awb_pre_int        = (RkAiqAlgoPreAwb*)mPreInParam;
     RkAiqAlgoPreResAwb* awb_pre_res_int = (RkAiqAlgoPreResAwb*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
@@ -708,6 +704,7 @@ XCamReturn RkAiqAwbHandleInt::preProcess() {
     RKAIQCORE_CHECK_RET(ret, "awb algo pre_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return ret;
 }
 
@@ -793,7 +790,7 @@ XCamReturn RkAiqAwbHandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPostAwb* awb_post_int        = (RkAiqAlgoPostAwb*)mPostInParam;
     RkAiqAlgoPostResAwb* awb_post_res_int = (RkAiqAlgoPostResAwb*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
@@ -818,6 +815,7 @@ XCamReturn RkAiqAwbHandleInt::postProcess() {
     RKAIQCORE_CHECK_RET(ret, "awb algo post_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return ret;
 }
 

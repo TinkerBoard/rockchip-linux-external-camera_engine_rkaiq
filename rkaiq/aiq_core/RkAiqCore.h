@@ -303,8 +303,10 @@ public:
         return mAlogsComSharedParams.mCamPhyId;
     }
 
+#if RKAIQ_HAVE_PDAF
     XCamReturn set_pdaf_support(bool support);
     bool get_pdaf_support();
+#endif
 
 public:
     // following vars shared by all algo handlers
@@ -463,7 +465,9 @@ protected:
         RK_AIQ_CORE_STATE_STOPED,
     };
     SmartPtr<RkAiqCoreThread> mRkAiqCoreTh;
+#if defined(ISP_HW_V20)
     SmartPtr<RkAiqCoreThread> mRkAiqCorePpTh;
+#endif
     SmartPtr<RkAiqCoreEvtsThread> mRkAiqCoreEvtsTh;
     int mState;
     RkAiqAnalyzerCb* mCb;
@@ -592,7 +596,9 @@ protected:
     SmartPtr<RkAiqAdehazeStatsPool>             mAiqAdehazeStatsPool;
     SmartPtr<RkAiqAfStatsPool>                  mAiqAfStatsPool;
     SmartPtr<RkAiqOrbStatsPool>                 mAiqOrbStatsIntPool;
+#if RKAIQ_HAVE_PDAF
     SmartPtr<RkAiqPdafStatsPool>                mAiqPdafStatsPool;
+#endif
 
     const struct RkAiqAlgoDesCommExt* mAlgosDesArray;
     Mutex mApiMutex;
@@ -612,8 +618,10 @@ protected:
     XCamReturn groupAnalyze(uint64_t grpId, const RkAiqAlgosGroupShared_t* shared);
 
     virtual void newAiqParamsPool();
+#if RKAIQ_HAVE_PDAF
     void newPdafStatsPool();
     void delPdafStatsPool();
+#endif
     virtual XCamReturn getAiqParamsBuffer(RkAiqFullParams* aiqParams, enum rk_aiq_core_analyze_type_e type);
     virtual XCamReturn genIspParamsResult(RkAiqFullParams *aiqParams, enum rk_aiq_core_analyze_type_e type);
     //void getThumbCfgForStreams();
@@ -647,7 +655,9 @@ protected:
     uint64_t mAllReqAlgoResMask;
 
 private:
+#if defined(RKAIQ_HAVE_THUMBNAILS)
     SmartPtr<ThumbnailsService> mThumbnailsService;
+#endif
     int mSpWidth;
     int mSpHeight;
     int mSpAlignedWidth;

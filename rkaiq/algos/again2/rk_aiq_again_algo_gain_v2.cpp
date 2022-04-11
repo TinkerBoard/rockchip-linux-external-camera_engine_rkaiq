@@ -49,7 +49,7 @@ Again_result_V2_t gain_get_setting_by_name_json_V2(CalibDbV2_GainV2_t* pCalibdb,
 Again_result_V2_t gain_init_params_json_V2(RK_GAIN_Params_V2_t *pParams, CalibDbV2_GainV2_t* pCalibdb,  int tuning_idx)
 {
     Again_result_V2_t res = AGAINV2_RET_SUCCESS;
-    CalibDbV2_GainV2_TuningPara_Setting_ISO_t *pTuningIso = NULL;
+    CalibDbV2_GainV2_T_ISO_t *pTuningIso = NULL;
 
     LOGI_ANR("%s:(%d) oyyf bayerner xml config start\n", __FUNCTION__, __LINE__);
     if(pParams == NULL || pCalibdb == NULL) {

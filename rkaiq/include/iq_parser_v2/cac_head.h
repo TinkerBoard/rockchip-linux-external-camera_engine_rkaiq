@@ -42,7 +42,7 @@ typedef struct CalibDbV2_Cac_V03_SettingByIso_s {
     float GrayStrengthU;
     // M4_NUMBER_DESC("GrayStrengthV", "f32", M4_RANGE(0, 1.00), "0.0", M4_DIGIT(2), M4_HIDE(0))
     float GrayStrengthV;
-} CalibDbV2_Cac_V03_SettingByIso_t;
+} CalibV2_Cac_V03_SettingByIso_t;
 
 typedef struct CalibDbV2_Cac_V10_SettingByIso_s {
     // M4_NUMBER_MARK_DESC("iso", "u32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index1")
@@ -51,7 +51,7 @@ typedef struct CalibDbV2_Cac_V10_SettingByIso_s {
     bool bypass;
     // M4_ARRAY_DESC("strength_table", "f32", M4_SIZE(1,22), M4_RANGE(0.00, 1.00), "1.00", M4_DIGIT(2), M4_DYNAMIC(0))
     float strength_table[RKCAC_STRENGTH_TABLE_LEN];
-} CalibDbV2_Cac_V10_SettingByIso_t;
+} CalibV2_Cac_V10_SettingByIso_t;
 
 typedef struct CalibDbV2_Cac_V11_SettingByIso_s {
     // M4_NUMBER_MARK_DESC("iso", "u32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index1")
@@ -86,23 +86,23 @@ typedef struct CalibDbV2_Cac_V11_SettingByIso_s {
     uint32_t expo_adj_b;
     // M4_NUMBER_DESC("expo_adj_r", "u32", M4_RANGE(0,1048575), "0", M4_DIGIT(0),M4_HIDE(0))
     uint32_t expo_adj_r;
-} CalibDbV2_Cac_V11_SettingByIso_t;
+} CalibV2_Cac_V11_SettingByIso_t;
 
 typedef struct CalibDbV2_Cac_V03_TuningPara_s {
     // M4_STRUCT_LIST_DESC("SettingByIso", M4_SIZE(1,14), "normal_ui_style")
-    CalibDbV2_Cac_V03_SettingByIso_t* SettingByIso;
+    CalibV2_Cac_V03_SettingByIso_t* SettingByIso;
     int SettingByIso_len;
 } CalibDbV2_Cac_V03_TuningPara_t;
 
 typedef struct CalibDbV2_Cac_V10_TuningPara_s {
     // M4_STRUCT_LIST_DESC("SettingByIso", M4_SIZE(1,14), "normal_ui_style")
-    CalibDbV2_Cac_V10_SettingByIso_t* SettingByIso;
+    CalibV2_Cac_V10_SettingByIso_t* SettingByIso;
     int SettingByIso_len;
 } CalibDbV2_Cac_V10_TuningPara_t;
 
 typedef struct CalibDbV2_Cac_V11_TuningPara_s {
     // M4_STRUCT_LIST_DESC("SettingByIso", M4_SIZE(1,14), "normal_ui_style")
-    CalibDbV2_Cac_V11_SettingByIso_t* SettingByIso;
+    CalibV2_Cac_V11_SettingByIso_t* SettingByIso;
     int SettingByIso_len;
 } CalibDbV2_Cac_V11_TuningPara_t;
 

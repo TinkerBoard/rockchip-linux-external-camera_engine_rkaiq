@@ -54,12 +54,8 @@ void RkAiqAmdHandleInt::init() {
 
     RkAiqHandle::deInit();
     mConfig      = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAmd());
-    mPreInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPreAmd());
-    mPreOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAmd());
     mProcInParam = (RkAiqAlgoCom*)(new RkAiqAlgoProcAmd());
     // mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAmd());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAmd());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAmd());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -70,7 +66,7 @@ XCamReturn RkAiqAmdHandleInt::preProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPreAmd* amd_pre_int        = (RkAiqAlgoPreAmd*)mPreInParam;
     RkAiqAlgoPreResAmd* amd_pre_res_int = (RkAiqAlgoPreResAmd*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
@@ -87,6 +83,7 @@ XCamReturn RkAiqAmdHandleInt::preProcess() {
     RKAIQCORE_CHECK_RET(ret, "amd algo pre_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -139,7 +136,7 @@ XCamReturn RkAiqAmdHandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPostAmd* amd_post_int        = (RkAiqAlgoPostAmd*)mPostInParam;
     RkAiqAlgoPostResAmd* amd_post_res_int = (RkAiqAlgoPostResAmd*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
@@ -157,6 +154,7 @@ XCamReturn RkAiqAmdHandleInt::postProcess() {
     RKAIQCORE_CHECK_RET(ret, "amd algo post_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return ret;
 }
 

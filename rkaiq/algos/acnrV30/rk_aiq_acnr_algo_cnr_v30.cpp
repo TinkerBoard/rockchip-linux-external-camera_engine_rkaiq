@@ -469,7 +469,7 @@ AcnrV30_result_t cnr_get_setting_by_name_json_V30(CalibDbV2_CNRV30_t* pCalibdbV2
 AcnrV30_result_t cnr_init_params_json_V30(RK_CNR_Params_V30_t *pParams, CalibDbV2_CNRV30_t *pCalibdbV2, int tuning_idx)
 {
     AcnrV30_result_t res = ACNRV30_RET_SUCCESS;
-    CalibDbV2_CNRV30_TuningPara_Setting_ISO_t *pTuningISO = NULL;
+    CalibDbV2_CNRV30_T_ISO_t *pTuningISO = NULL;
 
     if(pParams == NULL || pCalibdbV2 == NULL) {
         LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);

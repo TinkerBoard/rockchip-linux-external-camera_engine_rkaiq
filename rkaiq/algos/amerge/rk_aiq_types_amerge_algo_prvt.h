@@ -182,18 +182,6 @@ typedef struct AmergePrevData_s {
     MergeHandleData_t HandleData;
 } AmergePrevData_t;
 
-typedef struct MergeCurrAeResult_s {
-    float MeanLuma[3];
-    float LfrmDarkLuma;
-    float LfrmDarkPdf;
-    float LfrmOverExpPdf;
-    float SfrmMaxLuma;
-    float SfrmMaxLumaPdf;
-    float GlobalEnvLv;
-    float Lv_fac;
-    float Contrast_fac;
-} MergeCurrAeResult_t;
-
 typedef struct MergeCurrCtrlData_s {
     float EnvLv;
     float MoveCoef;
@@ -209,40 +197,25 @@ typedef struct MergeCurrData_s {
 
 typedef struct SensorInfo_s {
     bool  LongFrmMode;
-    float HdrMinGain[MAX_HDR_FRAMENUM];
-    float HdrMaxGain[MAX_HDR_FRAMENUM];
-    float HdrMinIntegrationTime[MAX_HDR_FRAMENUM];
-    float HdrMaxIntegrationTime[MAX_HDR_FRAMENUM];
-
-    float MaxExpoL;
-    float MinExpoL;
-    float MaxExpoM;
-    float MinExpoM;
-    float MaxExpoS;
-    float MinExpoS;
 } SensorInfo_t;
 
 typedef struct AmergeContext_s {
+    bool SceneChange;
+    int frameCnt;
 #if RKAIQ_HAVE_MERGE_V10
     mergeAttrV10_t mergeAttrV10;
-    CalibDbV2_merge_V10_t CalibDBV10;
 #endif
 #if RKAIQ_HAVE_MERGE_V11
     mergeAttrV11_t mergeAttrV11;
-    CalibDbV2_merge_V11_t CalibDBV11;
 #endif
 #if RKAIQ_HAVE_MERGE_V12
     mergeAttrV12_t mergeAttrV12;
-    CalibDbV2_merge_V12_t CalibDBV12;
 #endif
     AmergeState_t state;
     AmergePrevData_t PrevData ;
     RkAiqAmergeProcResult_t ProcRes;
-    MergeCurrAeResult_t AeResult;
     MergeCurrData_t CurrData;
     SensorInfo_t SensorInfo;
-    bool SceneChange;
-    int frameCnt;
     FrameNumber_t FrameNumber;
 } AmergeContext_t;
 

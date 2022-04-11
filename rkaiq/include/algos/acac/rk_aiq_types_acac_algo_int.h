@@ -37,9 +37,9 @@ typedef enum rkaiq_cac_api_op_mode_e {
 
 typedef CalibDbV2_Cac_SettingPara_t rkaiq_cac_v10_persist_params_t;
 typedef CalibDbV2_Cac_SettingPara_t rkaiq_cac_v11_persist_params_t;
-typedef CalibDbV2_Cac_V03_SettingByIso_t rkaiq_cac_v03_param_selected_t;
-typedef CalibDbV2_Cac_V10_SettingByIso_t rkaiq_cac_v10_param_selected_t;
-typedef CalibDbV2_Cac_V11_SettingByIso_t rkaiq_cac_v11_param_selected_t;
+typedef CalibV2_Cac_V03_SettingByIso_t rkaiq_cac_v03_param_selected_t;
+typedef CalibV2_Cac_V10_SettingByIso_t rkaiq_cac_v10_param_selected_t;
+typedef CalibV2_Cac_V11_SettingByIso_t rkaiq_cac_v11_param_selected_t;
 
 typedef struct rkaiq_cac_v03_api_attr_s {
     rk_aiq_uapi_sync_t sync;

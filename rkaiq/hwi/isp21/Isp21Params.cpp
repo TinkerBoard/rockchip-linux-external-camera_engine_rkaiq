@@ -277,6 +277,7 @@ void Isp21Params::convertAiqCcmToIsp21Params(T& isp_cfg,
 }
 #endif
 
+#if RKAIQ_HAVE_AWB_V21
 void
 Isp21Params::convertAiqAwbToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                         const rk_aiq_awb_stat_cfg_v201_t& awb_meas,
@@ -651,7 +652,8 @@ Isp21Params::convertAiqAwbToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
 
     awb_cfg_v201->sw_rawawb_blk_rtdw_measure_en =  awb_meas.blk_rtdw_measure_en;
 }
-
+#endif
+#if RKAIQ_HAVE_BAYERNR_V2
 void
 Isp21Params::convertAiqRawnrToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
         rk_aiq_isp_baynr_v21_t& rawnr)
@@ -729,7 +731,8 @@ Isp21Params::convertAiqRawnrToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
     }
 
 }
-
+#endif
+#if RKAIQ_HAVE_CNR_V1
 void
 Isp21Params::convertAiqUvnrToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
         rk_aiq_isp_cnr_v21_t& uvnr)
@@ -778,7 +781,8 @@ Isp21Params::convertAiqUvnrToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
     pCfg->sw_cnr_lbf3_sigma = uvnr.cnr_lbf3_sigma;
 
 }
-
+#endif
+#if RKAIQ_HAVE_YNR_V2
 void
 Isp21Params::convertAiqYnrToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                         rk_aiq_isp_ynr_v21_t& ynr)
@@ -858,7 +862,8 @@ Isp21Params::convertAiqYnrToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
     LOGD_ANR("%s:%d: exit\n", __FUNCTION__, __LINE__);
 
 }
-
+#endif
+#if RKAIQ_HAVE_SHARP_V3
 void
 Isp21Params::convertAiqSharpenToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
         rk_aiq_isp_sharp_v21_t& sharp)
@@ -919,7 +924,7 @@ Isp21Params::convertAiqSharpenToIsp21Params(struct isp21_isp_params_cfg& isp_cfg
     LOGD_ASHARP("%s:%d: exit\n", __FUNCTION__, __LINE__);
 
 }
-
+#endif
 #if RKAIQ_HAVE_DRC_V10
 void
 Isp21Params::convertAiqDrcToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
@@ -1107,9 +1112,11 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_AWB_PARAM:
     {
+#if RKAIQ_HAVE_AWB_V21
         SmartPtr<RkAiqIspAwbParamsProxyV21> params = result.dynamic_cast_ptr<RkAiqIspAwbParamsProxyV21>();
         if (params.ptr())
             convertAiqAwbToIsp21Params(isp_cfg, params->data()->result, true);
+#endif
     }
     break;
     case RESULT_TYPE_CCM_PARAM:
@@ -1139,30 +1146,38 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_RAWNR_PARAM:
     {
+#if RKAIQ_HAVE_BAYERNR_V2
         SmartPtr<RkAiqIspBaynrParamsProxyV21> params = result.dynamic_cast_ptr<RkAiqIspBaynrParamsProxyV21>();
         if (params.ptr())
             convertAiqRawnrToIsp21Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_YNR_PARAM:
     {
+#if RKAIQ_HAVE_YNR_V2
         SmartPtr<RkAiqIspYnrParamsProxyV21> params = result.dynamic_cast_ptr<RkAiqIspYnrParamsProxyV21>();
         if (params.ptr())
             convertAiqYnrToIsp21Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_UVNR_PARAM:
     {
+#if RKAIQ_HAVE_CNR_V1
         SmartPtr<RkAiqIspCnrParamsProxyV21> params = result.dynamic_cast_ptr<RkAiqIspCnrParamsProxyV21>();
         if (params.ptr())
             convertAiqUvnrToIsp21Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_SHARPEN_PARAM:
     {
+#if RKAIQ_HAVE_SHARP_V3
         SmartPtr<RkAiqIspSharpenParamsProxyV21> params = result.dynamic_cast_ptr<RkAiqIspSharpenParamsProxyV21>();
         if (params.ptr())
             convertAiqSharpenToIsp21Params(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_DEHAZE_PARAM:
@@ -1199,9 +1214,11 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_AF_PARAM:
     {
+#if RKAIQ_HAVE_AF_V20
         SmartPtr<RkAiqIspAfParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspAfParamsProxy>();
         if (params.ptr())
             convertAiqAfToIsp20Params(isp_cfg, params->data()->result, true);
+#endif
     }
     break;
     case RESULT_TYPE_DPCC_PARAM:

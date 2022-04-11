@@ -132,7 +132,7 @@ prepare(RkAiqAlgoCom* params)
 
     return XCAM_RETURN_NO_ERROR;
 }
-
+#if 0
 static XCamReturn
 pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
@@ -154,7 +154,7 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #endif
     return XCAM_RETURN_NO_ERROR;
 }
-
+#endif
 static XCamReturn
 processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
@@ -166,6 +166,18 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
     rk_aiq_aie_params_int_t* int_params = NULL;
 #if RKAIQ_HAVE_AIE_V10
+    if (inparams->u.proc.gray_mode &&
+        ctx->params.mode !=  RK_AIQ_IE_EFFECT_BW) {
+        ctx->last_params = ctx->params;
+        ctx->params.mode = RK_AIQ_IE_EFFECT_BW;
+        ctx->skip_frame = 10;
+    } else if (!inparams->u.proc.gray_mode &&
+               ctx->params.mode == RK_AIQ_IE_EFFECT_BW) {
+        // force non gray_mode by aiq framework
+        if (ctx->skip_frame && --ctx->skip_frame == 0)
+            ctx->params = ctx->last_params;
+    }
+
     switch (ctx->params.mode)
     {
     case RK_AIQ_IE_EFFECT_EMBOSS :
@@ -204,9 +216,9 @@ RkAiqAlgoDescription g_RkIspAlgoDescAie = {
         .destroy_context = destroy_context,
     },
     .prepare = prepare,
-    .pre_process = pre_process,
+    .pre_process = NULL,
     .processing = processing,
-    .post_process = post_process,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

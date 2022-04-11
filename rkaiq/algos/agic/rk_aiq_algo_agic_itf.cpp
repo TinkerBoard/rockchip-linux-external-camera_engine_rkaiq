@@ -78,7 +78,7 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
     LOG1_AGIC("exit!");
     return XCAM_RETURN_NO_ERROR;
 }
-
+#if 0
 static XCamReturn pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
     LOG1_AGIC("enter!");
 
@@ -96,13 +96,20 @@ static XCamReturn pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* out
     LOG1_AGIC("exit!");
     return XCAM_RETURN_NO_ERROR;
 }
-
+#endif
 static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
     LOG1_AGIC("enter!");
     RkAiqAlgoProcAgic* pAgicProcParams       = (RkAiqAlgoProcAgic*)inparams;
     RkAiqAlgoProcResAgic* pAgicProcResParams = (RkAiqAlgoProcResAgic*)outparams;
     AgicContext_t* pAgicCtx                  = (AgicContext_t*)&inparams->ctx->agicCtx;
     int iso                                  = pAgicProcParams->iso;
+
+    if (inparams->u.proc.gray_mode)
+        pAgicCtx->Gic_Scene_mode = GIC_NIGHT;
+    else if (GIC_NORMAL == pAgicCtx->working_mode)
+        pAgicCtx->Gic_Scene_mode = GIC_NORMAL;
+    else
+        pAgicCtx->Gic_Scene_mode = GIC_HDR;
 
     pAgicCtx->raw_bits       = pAgicProcParams->raw_bits;
     pAgicCtx->Gic_Scene_mode = 0;
@@ -140,9 +147,9 @@ RkAiqAlgoDescription g_RkIspAlgoDescAgic = {
             .destroy_context = destroy_context,
         },
     .prepare      = prepare,
-    .pre_process  = pre_process,
+    .pre_process  = NULL,
     .processing   = processing,
-    .post_process = post_process,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

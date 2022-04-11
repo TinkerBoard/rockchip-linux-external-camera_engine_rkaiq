@@ -26,12 +26,8 @@ void RkAiqA3dlutHandleInt::init() {
 
     RkAiqHandle::deInit();
     mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigA3dlut());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreA3dlut());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResA3dlut());
     mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcA3dlut());
     mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResA3dlut());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostA3dlut());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResA3dlut());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -149,7 +145,7 @@ XCamReturn RkAiqA3dlutHandleInt::preProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     ret = RkAiqHandle::preProcess();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "a3dlut handle preProcess failed");
@@ -160,6 +156,7 @@ XCamReturn RkAiqA3dlutHandleInt::preProcess() {
     RKAIQCORE_CHECK_RET(ret, "a3dlut algo pre_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -242,6 +239,7 @@ XCamReturn RkAiqA3dlutHandleInt::postProcess() {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#if 0
     RkAiqAlgoPostA3dlut* a3dlut_post_int        = (RkAiqAlgoPostA3dlut*)mPostInParam;
     RkAiqAlgoPostResA3dlut* a3dlut_post_res_int = (RkAiqAlgoPostResA3dlut*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
@@ -258,6 +256,7 @@ XCamReturn RkAiqA3dlutHandleInt::postProcess() {
     RKAIQCORE_CHECK_RET(ret, "a3dlut algo post_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return ret;
 }
 

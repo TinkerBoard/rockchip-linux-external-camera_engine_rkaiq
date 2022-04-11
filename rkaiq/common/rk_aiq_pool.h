@@ -36,7 +36,10 @@ typedef struct RKAiqAecExpInfoWrapper_s : public XCam::BufferData {
     struct RKAiqAecExpInfoWrapper_s& operator=(const struct RKAiqAecExpInfoWrapper_s& set)
     {
         this->aecExpInfo = set.aecExpInfo;
-        this->exp_i2c_params = set.exp_i2c_params;
+        if (set.exp_i2c_params.bValid)
+            this->exp_i2c_params = set.exp_i2c_params;
+        else
+            this->exp_i2c_params.bValid = false;
         this->SensorDpccInfo = set.SensorDpccInfo;
         this->exp_tbl_size = set.exp_tbl_size;
         this->algo_id = set.algo_id;

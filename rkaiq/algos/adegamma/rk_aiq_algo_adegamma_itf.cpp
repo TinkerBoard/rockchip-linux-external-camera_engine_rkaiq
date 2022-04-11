@@ -74,19 +74,7 @@ prepare(RkAiqAlgoCom* params)
         LOGD_ADEGAMMA("%s: Adegamma Reload Para!!!\n", __FUNCTION__);
     }
 
-    LOG1_ADEGAMMA("EXIT: %s \n", __func__);
-    return ret;
-}
-
-static XCamReturn
-pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
-{
-    LOG1_ADEGAMMA("ENTER: %s \n", __func__);
-    RkAiqAlgoPreAdegamma* pAdegammaPreParams = (RkAiqAlgoPreAdegamma*)inparams;
-    AdegammaHandle_t * AdegammaHandle = (AdegammaHandle_t *)inparams->ctx;
-    rk_aiq_degamma_cfg_t *adegamma_config = &AdegammaHandle->adegamma_config;
-
-    if (pAdegammaPreParams->com.u.proc.gray_mode)
+	if (pCfgParam->com.u.proc.gray_mode)
         AdegammaHandle->Scene_mode = DEGAMMA_OUT_NIGHT;
     else if (DEGAMMA_OUT_NORMAL == AdegammaHandle->working_mode)
         AdegammaHandle->Scene_mode = DEGAMMA_OUT_NORMAL;
@@ -94,7 +82,7 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         AdegammaHandle->Scene_mode = DEGAMMA_OUT_HDR;
 
     LOG1_ADEGAMMA("EXIT: %s \n", __func__);
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 static XCamReturn
@@ -106,6 +94,13 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     AdegammaHandle_t * AdegammaHandle = (AdegammaHandle_t *)inparams->ctx;
     RkAiqAlgoProcResAdegamma* procResPara = (RkAiqAlgoProcResAdegamma*)outparams;
     AdegammaProcRes_t* AdegammaProcRes = (AdegammaProcRes_t*)&procResPara->adegamma_proc_res;
+
+    if (inparams->u.proc.gray_mode)
+        AdegammaHandle->Scene_mode = DEGAMMA_OUT_NIGHT;
+    else if (DEGAMMA_OUT_NORMAL == AdegammaHandle->working_mode)
+        AdegammaHandle->Scene_mode = DEGAMMA_OUT_NORMAL;
+    else
+        AdegammaHandle->Scene_mode = DEGAMMA_OUT_HDR;
 
     AdegammaProcessing(AdegammaHandle);
     //set proc res
@@ -135,9 +130,9 @@ RkAiqAlgoDescription g_RkIspAlgoDescAdegamma = {
         .destroy_context = destroy_context,
     },
     .prepare = prepare,
-    .pre_process = pre_process,
+    .pre_process = NULL,
     .processing = processing,
-    .post_process = post_process,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

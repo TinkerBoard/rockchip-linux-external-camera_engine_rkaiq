@@ -743,7 +743,7 @@ int media_device_add_entity(struct media_device *media,
 
 	entity->fd = -1;
 	entity->media = media;
-	strncpy(entity->devname, devnode, sizeof entity->devname);
+	strncpy(entity->devname, devnode, sizeof(entity->devname) - 1);
 	entity->devname[sizeof entity->devname - 1] = '\0';
 
 	entity->info.id = 0;

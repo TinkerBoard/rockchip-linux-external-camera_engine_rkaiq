@@ -22,7 +22,6 @@
 #include "rk_aiq_algo_types.h"
 #include "rk_aiq_types_adrc_algo_int.h"
 #include "rk_aiq_types_adrc_hw.h"
-#include "rk_aiq_types_adrc_stat_v200.h"
 #include "xcam_log.h"
 
 #define GAINMIN                 (1)
@@ -70,7 +69,6 @@
 #define VALIDBITS (DSTBITS - OFFSETBITS)
 #define DELTA_SCALEIN_FIX ((256 << MFHDR_LOG_Q_BITS) / VALIDBITS)
 
-
 typedef enum AdrcState_e {
     ADRC_STATE_INVALID       = 0,
     ADRC_STATE_INITIALIZED   = 1,
@@ -79,38 +77,6 @@ typedef enum AdrcState_e {
     ADRC_STATE_LOCKED        = 4,
     ADRC_STATE_MAX
 } AdrcState_t;
-
-typedef struct AdrcGainConfig_s {
-    int len;
-    float*            EnvLv;
-    float*            DrcGain;
-    float*            Alpha;
-    float*            Clip;
-} AdrcGainConfig_t;
-
-typedef struct HighLightConfig_s {
-    int len;
-    float*            EnvLv;
-    float*            Strength;
-} HighLightConfig_t;
-
-typedef struct LocalDataConfigV10_s {
-    int len;
-    float*            EnvLv;
-    float*            LocalWeit;
-    float*            GlobalContrast;
-    float*            LoLitContrast;
-} LocalDataConfigV10_t;
-
-typedef struct LocalDataConfigV11_s {
-    int len;
-    float*            EnvLv;
-    float*            LocalWeit;
-    int*            LocalAutoEnable;
-    float*            LocalAutoWeit;
-    float*            GlobalContrast;
-    float*            LoLitContrast;
-} LocalDataConfigV11_t;
 
 typedef struct DrcOhters_s {
     bool OutPutLongFrame;
@@ -235,15 +201,12 @@ typedef struct CurrData_s {
 typedef struct AdrcContext_s {
 #if RKAIQ_HAVE_DRC_V10
     drcAttrV10_t drcAttrV10;
-    CalibDbV2_drc_V10_t CalibDBV10;
 #endif
 #if RKAIQ_HAVE_DRC_V11
     drcAttrV11_t drcAttrV11;
-    CalibDbV2_drc_V11_t CalibDBV11;
 #endif
 #if RKAIQ_HAVE_DRC_V12
     drcAttrV12_t drcAttrV12;
-    CalibDbV2_drc_V12_t CalibDBV12;
     AblcProc_V32_t ablcV32_proc_res;
 #endif
     AdrcState_t state;
@@ -251,7 +214,6 @@ typedef struct AdrcContext_s {
     RkAiqAdrcProcResult_t AdrcProcRes;
     CurrAeResult_t AeResult;
     CurrData_t CurrData;
-    rkisp_adrc_stats_t CurrStatsData;
     int frameCnt;
     FrameNumber_t FrameNumber;
 } AdrcContext_t;

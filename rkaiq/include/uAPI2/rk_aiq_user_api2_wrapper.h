@@ -30,24 +30,6 @@ int rk_aiq_uapi2_setWBMode2(rk_aiq_sys_ctx_t *ctx, uapi_wb_mode_t *mode);
 
 int rk_aiq_uapi2_getWBMode2(rk_aiq_sys_ctx_t *ctx, uapi_wb_mode_t *mode);
 
-int rk_aiq_user_api2_amerge_V10_SetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
-                                           uapiMergeCurrCtlData_t* ctldata);
-
-int rk_aiq_user_api2_amerge_V10_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
-                                           uapiMergeCurrCtlData_t* ctldata);
-
-int rk_aiq_user_api2_amerge_V11_SetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
-                                           uapiMergeCurrCtlData_t* ctldata);
-
-int rk_aiq_user_api2_amerge_V11_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
-                                           uapiMergeCurrCtlData_t* ctldata);
-
-int rk_aiq_user_api2_amerge_V12_SetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
-                                           uapiMergeCurrCtlData_t* ctldata);
-
-int rk_aiq_user_api2_amerge_V12_GetAttrib2(const rk_aiq_sys_ctx_t* sys_ctx,
-                                           uapiMergeCurrCtlData_t* ctldata);
-
 int rk_aiq_user_api2_set_scene(const rk_aiq_sys_ctx_t *sys_ctx,
                                aiq_scene_t *scene);
 
@@ -63,4 +45,83 @@ int rk_aiq_uapi_get_awbV32_stat(const rk_aiq_sys_ctx_t* sys_ctx,
                                rk_tool_isp_awb_stats_v32_t* awb_stat);
 int rk_aiq_uapi_get_awbV21_stat(const rk_aiq_sys_ctx_t* sys_ctx,
                                rk_tool_awb_stat_res2_v201_t* awb_stat);
+
+XCamReturn rk_aiq_user_api2_amerge_v10_queryinfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 uapiMergeCurrCtlData_t* merge_info);
+
+XCamReturn rk_aiq_set_amerge_v10_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                             mMergeAttrV10_t* manual);
+
+XCamReturn rk_aiq_get_amerge_v10_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                             mMergeAttrV10_t* manual);
+
+XCamReturn rk_aiq_user_api2_amerge_v11_queryinfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 uapiMergeCurrCtlData_t* merge_info);
+
+XCamReturn rk_aiq_set_amerge_v11_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                             mMergeAttrV11_t* manual);
+
+XCamReturn rk_aiq_get_amerge_v11_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                             mMergeAttrV11_t* manual);
+
+XCamReturn rk_aiq_user_api2_amerge_v12_queryinfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 uapiMergeCurrCtlData_t* merge_info);
+
+XCamReturn rk_aiq_set_amerge_v12_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                             mMergeAttrV12_t* manual);
+
+XCamReturn rk_aiq_get_amerge_v12_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                             mMergeAttrV12_t* manual);
+
+XCamReturn rk_aiq_user_api2_adrc_v10_queryinfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               DrcInfoV10_t* drc_info);
+
+XCamReturn rk_aiq_set_adrc_v10_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx, mdrcAttr_V10_t* manual);
+
+XCamReturn rk_aiq_get_adrc_v10_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx, mdrcAttr_V10_t* manual);
+
+XCamReturn rk_aiq_user_api2_adrc_v11_queryinfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               DrcInfoV11_t* drc_info);
+
+XCamReturn rk_aiq_set_adrc_v11_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx, mdrcAttr_V11_t* manual);
+
+XCamReturn rk_aiq_get_adrc_v11_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx, mdrcAttr_V11_t* manual);
+
+XCamReturn rk_aiq_user_api2_adrc_v12_queryinfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                               DrcInfoV12_t* drc_info);
+
+XCamReturn rk_aiq_set_adrc_v12_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx, mdrcAttr_V12_t* manual);
+
+XCamReturn rk_aiq_get_adrc_v12_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx, mdrcAttr_V12_t* manual);
+
+XCamReturn rk_aiq_set_agamma_v10_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                             AgammaApiManualV10_t* manual);
+
+XCamReturn rk_aiq_get_agamma_v10_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                             AgammaApiManualV10_t* manual);
+
+XCamReturn rk_aiq_set_agamma_v11_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                             AgammaApiManualV11_t* manual);
+
+XCamReturn rk_aiq_get_agamma_v11_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                             AgammaApiManualV11_t* manual);
+
+XCamReturn rk_aiq_user_api2_adehaze_v11_queryinfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                  mDehazeAttrInfoV11_t* dehaze_info);
+
+XCamReturn rk_aiq_set_adehaze_v11_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                              mDehazeAttrV11_t* manual);
+
+XCamReturn rk_aiq_get_adehaze_v11_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                              mDehazeAttrV11_t* manual);
+
+XCamReturn rk_aiq_user_api2_adehaze_v12_queryinfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                  mDehazeAttrInfoV11_t* dehaze_info);
+
+XCamReturn rk_aiq_set_adehaze_v12_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                              mDehazeAttrV12_t* manual);
+
+XCamReturn rk_aiq_get_adehaze_v12_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                              mDehazeAttrV12_t* manual);
+
 #endif /*__RK_AIQ_USER_API2_WRAPPER_H__*/

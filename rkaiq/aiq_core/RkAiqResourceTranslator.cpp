@@ -75,6 +75,10 @@ RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, S
 #endif
     SmartPtr<RkAiqAecStats> statsInt = to->data();
 
+    if (getWorkingMode() == RK_AIQ_WORKING_MODE_ISP_HDR2) {
+        // Do something;
+    }
+
 #if defined(ISP_HW_V21)
     stats = (struct rkisp_isp21_stat_buffer *)(buf->get_v4l2_userptr());
 #else
@@ -601,6 +605,7 @@ RkAiqResourceTranslator::translateAfStats (const SmartPtr<VideoBuffer> &from, Sm
     return ret;
 }
 
+#if RKAIQ_HAVE_PDAF
 XCamReturn
 RkAiqResourceTranslator::translatePdafStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqPdafStatsProxy> &to, bool sns_mirror)
 {
@@ -643,22 +648,22 @@ RkAiqResourceTranslator::translatePdafStats (const SmartPtr<VideoBuffer> &from, 
 
     pdMean = 0;
     pixelperline = 2 * pdaf->pdWidth;
-    if (pdMirrorInCalib != sns_mirror) {
+    if (pdMirrorInCalib) {
         for (j = 0; j < pdaf->pdHeight; j++) {
-            for (i = 0; i < pixelperline; i+=2) {
+            for (i = 0; i < pixelperline; i += 2) {
                 pdMean += pdData[j * pixelperline + (pixelperline - 1 - i)];
                 *pdRData++ = pdData[j * pixelperline + (pixelperline - 1 - i)];
-                pdMean += pdData[j * pixelperline + (pixelperline - 1 - (i+1))];
-                *pdLData++ = pdData[j * pixelperline + (pixelperline - 1 - (i+1))];
+                pdMean += pdData[j * pixelperline + (pixelperline - 1 - (i + 1))];
+                *pdLData++ = pdData[j * pixelperline + (pixelperline - 1 - (i + 1))];
             }
         }
     } else {
         for (j = 0; j < pdaf->pdHeight; j++) {
-            for (i = 0; i < pixelperline; i+=2) {
+            for (i = 0; i < pixelperline; i += 2) {
                 pdMean += pdData[j * pixelperline + i];
                 *pdLData++ = pdData[j * pixelperline + i];
-                pdMean += pdData[j * pixelperline + (i+1)];
-                *pdRData++ = pdData[j * pixelperline + (i+1)];
+                pdMean += pdData[j * pixelperline + (i + 1)];
+                *pdRData++ = pdData[j * pixelperline + (i + 1)];
             }
         }
     }
@@ -689,6 +694,7 @@ RkAiqResourceTranslator::translatePdafStats (const SmartPtr<VideoBuffer> &from, 
 
     return ret;
 }
+#endif
 
 XCamReturn
 RkAiqResourceTranslator::translateOrbStats (const SmartPtr<VideoBuffer> &from,
@@ -711,6 +717,31 @@ RkAiqResourceTranslator::translateOrbStats (const SmartPtr<VideoBuffer> &from,
     to->set_sequence(stats->frame_id);
 
     return ret;
+}
+
+XCamReturn
+RkAiqResourceTranslator::getParams(const SmartPtr<VideoBuffer>& from)
+{
+    const SmartPtr<Isp20StatsBuffer> buf = from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    uint32_t frame_id = buf->get_sequence();
+
+    //TODO: check if needed
+    //memset(&ispParams, 0, sizeof(_expParams));
+
+    if (buf->getEffectiveExpParams(frame_id, _expParams) < 0)
+        LOGE("fail to get expParams");
+    if (buf->getEffectiveIspParams(frame_id, _ispParams) < 0) {
+        LOGE("fail to get ispParams ,ignore\n");
+        return XCAM_RETURN_BYPASS;
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+void
+RkAiqResourceTranslator::releaseParams()
+{
+    _expParams.release();
 }
 
 } //namespace RkCam

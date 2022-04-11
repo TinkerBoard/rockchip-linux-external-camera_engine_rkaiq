@@ -109,6 +109,12 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     AblcExpInfo_V32_t stExpInfo;
     memset(&stExpInfo, 0x00, sizeof(AblcExpInfo_V32_t));
 
+    if (pAblcCtx->isUpdateParam) {
+        AblcV32ParamsUpdate(pAblcCtx, &pAblcCtx->stBlcCalib);
+        pAblcCtx->isReCalculate |= 1;
+        pAblcCtx->isUpdateParam = false;
+    }
+
     stExpInfo.hdr_mode = 0;
     for (int i = 0; i < 3; i++) {
         stExpInfo.arIso[i]   = 50;
@@ -212,9 +218,9 @@ RkAiqAlgoDescription g_RkIspAlgoDescAblcV32 = {
         .destroy_context = destroy_context,
     },
     .prepare      = prepare,
-    .pre_process  = pre_process,
+    .pre_process  = NULL,
     .processing   = processing,
-    .post_process = post_process,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

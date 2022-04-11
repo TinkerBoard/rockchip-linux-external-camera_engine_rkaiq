@@ -39,25 +39,39 @@ protected:
 #endif
  private:
     XCAM_DEAD_COPY(Isp3xParams);
+#if RKAIQ_HAVE_AWB_V21
     void convertAiqAwbToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                     const rk_aiq_isp_awb_meas_cfg_v3x_t& awb_meas,
                                     bool awb_cfg_udpate);
+#endif
+#if RKAIQ_HAVE_BAYER2DNR_V2
     void convertAiqRawnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                       rk_aiq_isp_baynr_v3x_t& rawnr);
+#endif
+#if RKAIQ_HAVE_BAYERTNR_V2
     void convertAiqTnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_tnr_v3x_t& tnr);
+#endif
+#if RKAIQ_HAVE_CNR_V2
     void convertAiqUvnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                      rk_aiq_isp_cnr_v3x_t& uvnr);
+#endif
+#if RKAIQ_HAVE_YNR_V3
     void convertAiqYnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_ynr_v3x_t& ynr);
+#endif
+#if RKAIQ_HAVE_SHARP_V4
     void convertAiqSharpenToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                         rk_aiq_isp_sharp_v3x_t& sharp);
+#endif
 #if RKAIQ_HAVE_DRC_V11
     void convertAiqDrcToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_drc_v3x_t& adrc_data);
 #endif
+#if RKAIQ_HAVE_AF_V30
     void convertAiqAfToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                    const rk_aiq_isp_af_meas_v3x_t& af_data, bool af_cfg_udpate);
+#endif
 #if RKAIQ_HAVE_MERGE_V11
     void convertAiqMergeToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                       const rk_aiq_isp_merge_v3x_t& amerge_data);

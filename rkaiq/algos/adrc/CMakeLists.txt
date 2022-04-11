@@ -1,6 +1,11 @@
 set(ADRC_SRC
     rk_aiq_algo_adrc_itf.cpp
     rk_aiq_uapi_adrc_int.cpp
+    exp_data.c
+    math_err.c
+    math_errf.c
+    pow.c
+    pow_log_data.c
     )
 
 if (RKAIQ_HAVE_DRC_V10)

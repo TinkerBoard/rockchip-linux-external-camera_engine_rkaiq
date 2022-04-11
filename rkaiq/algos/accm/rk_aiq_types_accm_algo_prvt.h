@@ -39,8 +39,8 @@ typedef struct accm_rest_s {
     List dominateIlluList;//to record domain illuminant
     List problist;
     int dominateIlluProfileIdx;
-    const CalibDbV2_Ccm_Ccm_Matrix_Para_t *pCcmProfile1;
-    const CalibDbV2_Ccm_Ccm_Matrix_Para_t *pCcmProfile2;
+    const CalibDbV2_Ccm_Matrix_Para_t *pCcmProfile1;
+    const CalibDbV2_Ccm_Matrix_Para_t *pCcmProfile2;
     float undampedCcmMatrix[9];
     float dampedCcmMatrix[9];
     float undampedCcOffset[3];
@@ -75,7 +75,7 @@ typedef struct accm_context_s {
     rk_aiq_ccm_v2_attrib_t mCurAttV2;
     rk_aiq_ccm_v2_attrib_t mNewAttV2;
 #endif
-    const CalibDbV2_Ccm_Ccm_Matrix_Para_t *pCcmMatrixAll[CCM_ILLUMINATION_MAX][CCM_PROFILES_NUM_MAX];// reorder para //to do, change to pointer
+    const CalibDbV2_Ccm_Matrix_Para_t *pCcmMatrixAll[CCM_ILLUMINATION_MAX][CCM_PROFILES_NUM_MAX];// reorder para //to do, change to pointer
     accm_sw_info_t accmSwInfo;
     accm_rest_t accmRest;
     unsigned int count;

@@ -103,20 +103,18 @@ int8_t RkAiqAnalyzerGroup::getMsgDelayCnt(XCamMessageType &msg_id) {
     return 0;
 }
 
-XCamReturn RkAiqAnalyzerGroup::msgHandle(const SmartPtr<XCamMessage>& msg) {
-    if (!msg.ptr()) {
-        LOGW_ANALYZER_SUBM(ANALYZER_SUBM, "msg is nullptr!");
-        return XCAM_RETURN_ERROR_PARAM;
-    }
+bool RkAiqAnalyzerGroup::msgHandle(const SmartPtr<XCamMessage>& msg) {
     if (!((1ULL << msg->msg_id) & mDepsFlag)) {
-        return XCAM_RETURN_BYPASS;
+        return true;
     }
 
     uint32_t delayCnt = getMsgDelayCnt(msg->msg_id);
     uint32_t userId = msg->frame_id + delayCnt;
     GroupMessage& msgWrapper = mGroupMsgMap[userId];
+
     msgWrapper.msg_flags |= 1ULL << msg->msg_id;
     msgWrapper.msgList.push_back(msg);
+
     LOGD_ANALYZER_SUBM(ANALYZER_SUBM,
         "camId: %d, group(%s): id[%d] push msg(%s), msg delayCnt(%d), map size is %d",
          mAiqCore->mAlogsComSharedParams.mCamPhyId,
@@ -136,10 +134,10 @@ XCamReturn RkAiqAnalyzerGroup::msgHandle(const SmartPtr<XCamMessage>& msg) {
         LOGD_ANALYZER("%s, group %s erase frame(%d) msg map\n", __FUNCTION__, AnalyzerGroupType2Str[mGroupType], userId);
     } else {
         msgReduction(mGroupMsgMap);
-        return XCAM_RETURN_BYPASS;
+        return true;
     }
 
-    return XCAM_RETURN_NO_ERROR;
+    return true;
 }
 
 XCamReturn RkAiqAnalyzerGroup::stop() {
@@ -166,10 +164,7 @@ bool RkAiqAnalyzeGroupMsgHdlThread::loop() {
     }
 
     for (auto& grp : mHandlerGroups) {
-        XCamReturn ret = grp->msgHandle(msg);
-        if (ret == XCAM_RETURN_NO_ERROR || ret == XCAM_RETURN_ERROR_TIMEOUT ||
-            ret == XCAM_RETURN_BYPASS)
-            res = true;
+        res = grp->msgHandle(msg);
     }
 
     EXIT_ANALYZER_FUNCTION();
@@ -486,6 +481,7 @@ void RkAiqAnalyzeGroupManager::parseAlgoGroup(const struct RkAiqAlgoDesCommExt* 
         mGroupMap[deps_flag] = new RkAiqAnalyzerGroup(mAiqCore, group, deps_flag,
                                                       &algoDes[i].grpConds, mSingleThreadMode);
         if (mSingleThreadMode) mMsgThrd->add_group(mGroupMap[deps_flag].ptr());
+#if defined(RKAIQ_HAVE_THUMBNAILS)
         if (group == RK_AIQ_CORE_ANALYZE_THUMBNAILS) {
             mGroupMap[deps_flag]->setConcreteHandler(
                 std::bind(&RkAiqAnalyzeGroupManager::thumbnailsGroupMessageHandler, this,
@@ -495,6 +491,11 @@ void RkAiqAnalyzeGroupManager::parseAlgoGroup(const struct RkAiqAlgoDesCommExt* 
                 std::bind(&RkAiqAnalyzeGroupManager::groupMessageHandler, this,
                           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
         }
+#else
+        mGroupMap[deps_flag]->setConcreteHandler(
+            std::bind(&RkAiqAnalyzeGroupManager::groupMessageHandler, this, std::placeholders::_1,
+                      std::placeholders::_2, std::placeholders::_3));
+#endif
         LOGD_ANALYZER_SUBM(ANALYZER_SUBM, "Created group %" PRIx64 " for dep flags %" PRIx64"", (uint64_t)group, deps_flag);
     }
 }

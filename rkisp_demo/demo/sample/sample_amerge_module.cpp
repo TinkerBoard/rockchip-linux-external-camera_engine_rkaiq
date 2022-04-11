@@ -133,7 +133,7 @@ XCamReturn sample_amerge_module(const void *arg)
                 rk_aiq_user_api2_amerge_v10_GetAttrib(ctx, &attr_v10);
                 printf("\t sync = %d, done = %d\n", attr_v10.sync.sync_mode, attr_v10.sync.done);
                 printf("\t attr_v10.mode:%d Envlv:%f MoveCoef:%f\n\n", attr_v10.opMode,
-                       attr_v10.CtlInfo.Envlv, attr_v10.CtlInfo.MoveCoef);
+                       attr_v10.Info.Envlv, attr_v10.Info.MoveCoef);
                 printf("\t OECurve Smooth:%f Offset:%f\n\n", attr_v10.stManual.OECurve.Smooth,
                        attr_v10.stManual.OECurve.Offset);
                 printf(
@@ -214,7 +214,7 @@ XCamReturn sample_amerge_module(const void *arg)
                 rk_aiq_user_api2_amerge_v11_GetAttrib(ctx, &attr_v11);
                 printf("\t sync = %d, done = %d\n", attr_v11.sync.sync_mode, attr_v11.sync.done);
                 printf("\t attr_v11.mode:%d Envlv:%f MoveCoef:%f\n\n", attr_v11.opMode,
-                       attr_v11.CtlInfo.Envlv, attr_v11.CtlInfo.MoveCoef);
+                       attr_v11.Info.Envlv, attr_v11.Info.MoveCoef);
                 printf("\t BaseFrm:%d \n\n", attr_v11.stManual.BaseFrm);
                 printf("\t LongFrmModeData OECurve Smooth:%f Offset:%f\n\n",
                        attr_v11.stManual.LongFrmModeData.OECurve.Smooth,
@@ -352,7 +352,7 @@ XCamReturn sample_amerge_module(const void *arg)
                 rk_aiq_user_api2_amerge_v12_GetAttrib(ctx, &attr_v12);
                 printf("\t sync = %d, done = %d\n", attr_v12.sync.sync_mode, attr_v12.sync.done);
                 printf("\t attr_v12.mode:%d Envlv:%f MoveCoef:%f\n\n", attr_v12.opMode,
-                       attr_v12.CtlInfo.Envlv, attr_v12.CtlInfo.MoveCoef);
+                       attr_v12.Info.Envlv, attr_v12.Info.MoveCoef);
                 printf("\t stManual BaseFrm:%d \n\n", attr_v12.stManual.BaseFrm);
                 printf("\t stManual LongFrmModeData OECurve Smooth:%f Offset:%f\n\n",
                        attr_v12.stManual.LongFrmModeData.OECurve.Smooth,

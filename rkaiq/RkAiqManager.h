@@ -153,7 +153,9 @@ public:
     void setAiqCalibDb(const CamCalibDbContext_t* calibDb);
 #endif
     void setAiqCalibDb(const CamCalibDbV2Context_t* calibDb);
+#if defined(ISP_HW_V20)
     void setLumaAnalyzer(SmartPtr<RkLumaCore> analyzer);
+#endif
     XCamReturn init();
     XCamReturn prepare(uint32_t width, uint32_t height, rk_aiq_working_mode_t mode);
     XCamReturn start();
@@ -191,7 +193,7 @@ public:
     XCamReturn swWorkingModeDyn_msg(rk_aiq_working_mode_t mode);
     void setMulCamConc(bool cc);
     CamCalibDbV2Context_t* getCurrentCalibDBV2(void);
-    XCamReturn calibTuning(const CamCalibDbV2Context_t* aiqCalib,
+    XCamReturn calibTuning(CamCalibDbV2Context_t* aiqCalib,
                            ModuleNameList& change_list);
 #ifdef RKAIQ_ENABLE_CAMGROUP
     void setCamGroupManager(RkAiqCamGroupManager* cam_group_manager, bool isMain) {
@@ -219,7 +221,9 @@ private:
     SmartPtr<RkAiqCore> mRkAiqAnalyzer;
     SmartPtr<RkAiqRstApplyThread> mAiqRstAppTh;
     SmartPtr<RkAiqMngCmdThread> mAiqMngCmdTh;
+#if defined(ISP_HW_V20)
     SmartPtr<RkLumaCore> mRkLumaAnalyzer;
+#endif
     rk_aiq_error_cb mErrCb;
     rk_aiq_metas_cb mMetasCb;
     rk_aiq_hwevt_cb mHwEvtCb;

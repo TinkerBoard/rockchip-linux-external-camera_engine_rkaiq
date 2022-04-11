@@ -30,32 +30,32 @@ RKAIQ_BEGIN_DECLARE
 #define CALIBDBV2_AF_CORRECT_SEARCHTBL_MAX         100
 
 typedef enum CalibDbV2_Af_SearchDir_s {
-    CalibDbV2_CAM_AFM_POSITIVE_SEARCH     = 0,
-    CalibDbV2_CAM_AFM_NEGATIVE_SEARCH     = 1,
-    CalibDbV2_CAM_AFM_ADAPTIVE_SEARCH     = 2
+    CalibDbV2_AF_POSITIVE_SEARCH     = 0,
+    CalibDbV2_AF_NEGATIVE_SEARCH     = 1,
+    CalibDbV2_AF_ADAPTIVE_SEARCH     = 2
 } CalibDbV2_Af_SearchDir_t;
 
 typedef enum CalibDbV2_Af_SS_s {
-    CalibDbV2_CAM_AFM_FSS_INVALID         = 0,
-    CalibDbV2_CAM_AFM_FSS_FULLRANGE       = 1,    /**< scan the full focus range to find the point of best focus */
-    CalibDbV2_CAM_AFM_FSS_HILLCLIMBING    = 2,    /**< use hillclimbing search */
-    CalibDbV2_CAM_AFM_FSS_ADAPTIVE_RANGE  = 3,    /**< similar to full range search, but with multiple subsequent scans
-                                                       with decreasing range and step size will be performed. */
-    CalibDbV2_CAM_AFM_FSS_MUTIWINDOW      = 4,    /**< search by muti-window statistics */
-    CalibDbV2_CAM_AFM_FSS_MAX
+    CalibDbV2_AFSS_INVALID         = 0,
+    CalibDbV2_AFSS_FULLRANGE       = 1,    /**< scan the full focus range to find the point of best focus */
+    CalibDbV2_AFSS_HILLCLIMBING    = 2,    /**< use hillclimbing search */
+    CalibDbV2_AFSS_ADAPTIVE_RANGE  = 3,    /**< similar to full range search, but with multiple subsequent scans
+                                                with decreasing range and step size will be performed. */
+    CalibDbV2_AFSS_MUTIWINDOW      = 4,    /**< search by muti-window statistics */
+    CalibDbV2_AFSS_MAX
 } CalibDbV2_Af_SS_t;
 
 typedef enum CalibDbV2_AF_MODE_s
 {
-    CalibDbV2_AF_MODE_NOT_SET = -1,
-    CalibDbV2_AF_MODE_AUTO,
-    CalibDbV2_AF_MODE_MACRO,
-    CalibDbV2_AF_MODE_INFINITY,
-    CalibDbV2_AF_MODE_FIXED,
-    CalibDbV2_AF_MODE_EDOF,
-    CalibDbV2_AF_MODE_CONTINUOUS_VIDEO,
-    CalibDbV2_AF_MODE_CONTINUOUS_PICTURE,
-    CalibDbV2_AF_MODE_ONESHOT_AFTER_ZOOM,
+    CalibDbV2_AFMODE_NOT_SET = -1,
+    CalibDbV2_AFMODE_AUTO,
+    CalibDbV2_AFMODE_MACRO,
+    CalibDbV2_AFMODE_INFINITY,
+    CalibDbV2_AFMODE_FIXED,
+    CalibDbV2_AFMODE_EDOF,
+    CalibDbV2_AFMODE_CONT_VIDEO,
+    CalibDbV2_AFMODE_CONT_PICTURE,
+    CalibDbV2_AFMODE_ZOOM_ONESHOT,
 } CalibDbV2_AF_MODE_t;
 
 typedef enum CalibDbV2_PDAF_DATA_DIR_s {
@@ -103,14 +103,14 @@ typedef struct CalibDbV2_Af_ContrastZoom_s {
 typedef struct CalibDbV2_Af_Contrast_s {
     // M4_BOOL_DESC("enable", "0")
     bool enable;
-    // M4_ENUM_DESC("SearchStrategy", "CalibDbV2_Af_SS_t", "CalibDbV2_CAM_AFM_FSS_ADAPTIVE_RANGE")
+    // M4_ENUM_DESC("SearchStrategy", "CalibDbV2_Af_SS_t", "CalibDbV2_AFSS_ADAPTIVE_RANGE")
     CalibDbV2_Af_SS_t         Afss;                       /**< enumeration type for search strategy */
-    // M4_ENUM_DESC("FullDir", "CalibDbV2_Af_SearchDir_t", "CalibDbV2_CAM_AFM_ADAPTIVE_SEARCH")
+    // M4_ENUM_DESC("FullDir", "CalibDbV2_Af_SearchDir_t", "CalibDbV2_AF_ADAPTIVE_SEARCH")
     CalibDbV2_Af_SearchDir_t  FullDir;
     // M4_ARRAY_DESC("FullRangeTbl", "u16", M4_SIZE(1,65), M4_RANGE(0,64), "0", M4_DIGIT(0), M4_DYNAMIC(1))
     unsigned short          *FullRangeTbl;             /**< full range search table*/
     int                     FullRangeTbl_len;
-    // M4_ENUM_DESC("AdaptiveDir", "CalibDbV2_Af_SearchDir_t", "CalibDbV2_CAM_AFM_ADAPTIVE_SEARCH")
+    // M4_ENUM_DESC("AdaptiveDir", "CalibDbV2_Af_SearchDir_t", "CalibDbV2_AF_ADAPTIVE_SEARCH")
     CalibDbV2_Af_SearchDir_t  AdaptiveDir;
     // M4_ARRAY_DESC("AdaptRangeTbl", "u16", M4_SIZE(1,65), M4_RANGE(0,64), "0", M4_DIGIT(0), M4_DYNAMIC(1))
     unsigned short          *AdaptRangeTbl;            /**< adaptive range search table*/
@@ -210,14 +210,16 @@ typedef struct CalibDbV2_Af_PdafIsoPara_s {
     float pdConfdRatio1;
     // M4_NUMBER_DESC("pdConfdRatio2", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3),M4_HIDE(0))
     float pdConfdRatio2;
+    // M4_NUMBER_DESC("pdNoiseBias", "f32", M4_RANGE(0,100), "0", M4_DIGIT(3),M4_HIDE(0))
+    float pdNoiseBias;
     // M4_NUMBER_DESC("pdConfdRhresh", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3),M4_HIDE(0))
     float pdConfdThresh;
-    // M4_NUMBER_DESC("defocusPdThresh", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3),M4_HIDE(0))
-    float defocusPdThresh;
+    // M4_NUMBER_DESC("defocusPdThresh", "u16", M4_RANGE(0,1023), "0", M4_DIGIT(0),M4_HIDE(0))
+    unsigned short defocusPdThresh;
     // M4_NUMBER_DESC("stablePdRatio", "f32", M4_RANGE(0,255), "0", M4_DIGIT(3),M4_HIDE(0))
     float stablePdRatio;
-    // M4_NUMBER_DESC("stablePdOffset", "f32", M4_RANGE(0,255), "0", M4_DIGIT(3),M4_HIDE(0))
-    float stablePdOffset;
+    // M4_NUMBER_DESC("stablePdOffset", "u16", M4_RANGE(0,1023), "0", M4_DIGIT(3),M4_HIDE(0))
+    unsigned short stablePdOffset;
     // M4_NUMBER_DESC("stableCntRatio", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3),M4_HIDE(0))
     float stableCntRatio;
     // M4_NUMBER_DESC("noconfCntThresh", "u16", M4_RANGE(0,255), "0", M4_DIGIT(0),M4_HIDE(0))
@@ -232,6 +234,8 @@ typedef struct CalibDbV2_Af_Pdaf_s {
     bool enable;
     // M4_NUMBER_DESC("pdVsCdDebug", "u8", M4_RANGE(0, 1), "0", M4_DIGIT(0))
     unsigned char pdVsCdDebug;
+    // M4_NUMBER_DESC("pdDumpDebug", "u8", M4_RANGE(0, 1), "0", M4_DIGIT(0))
+    unsigned char pdDumpDebug;
     // M4_NUMBER_DESC("pdDataBit", "u16", M4_RANGE(1,16), "0", M4_DIGIT(0),M4_HIDE(0))
     unsigned short pdDataBit;
     // M4_NUMBER_DESC("pdBlkLevel", "u16", M4_RANGE(1,1023), "0", M4_DIGIT(0),M4_HIDE(0))
@@ -240,10 +244,18 @@ typedef struct CalibDbV2_Af_Pdaf_s {
     unsigned short pdSearchRadius;
     // M4_NUMBER_DESC("pdMirrorInCalib", "u8", M4_RANGE(0, 1), "0", M4_DIGIT(0))
     unsigned char pdMirrorInCalib;
+    // M4_NUMBER_DESC("pdVsImgoutMirror", "u8", M4_RANGE(0, 1), "0", M4_DIGIT(0))
+    unsigned char pdVsImgoutMirror;
     // M4_NUMBER_DESC("pdWidth", "u16", M4_RANGE(0, 65535), "0", M4_DIGIT(0))
     unsigned short pdWidth;
     // M4_NUMBER_DESC("pdHeight", "u16", M4_RANGE(0, 65535), "0", M4_DIGIT(0))
     unsigned short pdHeight;
+    // M4_NUMBER_DESC("pdConfdMwinFactor", "u16", M4_RANGE(0,225), "0", M4_DIGIT(0),M4_HIDE(0))
+    unsigned short pdConfdMwinFactor;
+    // M4_ARRAY_DESC("pdStepRatio", "f32", M4_SIZE(1,7), M4_RANGE(0,1), "0.5", M4_DIGIT(3), M4_DYNAMIC(0))
+    float pdStepRatio[7];
+    // M4_ARRAY_DESC("pdStepDefocus", "u16", M4_SIZE(1,7), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    unsigned short pdStepDefocus[7];
     // M4_STRUCT_LIST_DESC("pdIsoPara", M4_SIZE(1,16), "normal_ui_style")
     CalibDbV2_Af_PdafIsoPara_t* pdIsoPara;
     int pdIsoPara_len;
@@ -291,6 +303,8 @@ typedef struct CalibDbV2_Af_ZoomFocusTbl_s {
     int widemod_deviate;
     // M4_NUMBER_DESC("telemod deviate", "u32", M4_RANGE(0, 1000), "0", M4_DIGIT(0))
     int telemod_deviate;
+    // M4_NUMBER_DESC("focus backward value", "u32", M4_RANGE(0, 1000), "0", M4_DIGIT(0))
+    int focus_backval;
     // M4_ARRAY_DESC("zoom move dot", "u32", M4_SIZE(1,32), M4_RANGE(0,1000000), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     int *zoom_move_dot;
     int zoom_move_dot_len;
@@ -337,6 +351,8 @@ typedef struct CalibDbV2_Af_ZoomFocusTbl_s {
     unsigned char IsZoomFocusRec;
     // M4_STRING_DESC("ZoomInfoDir", M4_SIZE(1,1), M4_RANGE(0, 64), "/data/", M4_DYNAMIC(0))
     char *ZoomInfoDir;
+    // M4_NUMBER_DESC("zoom init Index", "u32", M4_RANGE(0, 100000), "0", M4_DIGIT(0))
+    int ZoomInitIndex;
 } CalibDbV2_Af_ZoomFocusTbl_t;
 
 typedef struct CalibDb_Af_LdgParam_s {
@@ -364,7 +380,7 @@ typedef struct CalibDb_Af_HighLightParam_s {
 } CalibDbV2_Af_HighLightParam_t;
 
 typedef struct CalibDbV2_AF_Tuning_Para_s {
-    // M4_ENUM_DESC("mode", "CalibDbV2_AF_MODE_t", "CalibDbV2_AF_MODE_CONTINUOUS_PICTURE")
+    // M4_ENUM_DESC("mode", "CalibDbV2_AF_MODE_t", "CalibDbV2_AFMODE_CONT_PICTURE")
     CalibDbV2_AF_MODE_t af_mode;
     // M4_NUMBER_DESC("win_h_offs", "u16", M4_RANGE(0,2000), "0", M4_DIGIT(0),M4_HIDE(0))
     unsigned short win_h_offs;
@@ -504,7 +520,7 @@ typedef struct CalibDbV2_AfV30_ZoomMeas_s {
 } CalibDbV2_AfV30_ZoomMeas_t;
 
 typedef struct CalibDbV2_AFV30_Tuning_Para_s {
-    // M4_ENUM_DESC("mode", "CalibDbV2_AF_MODE_t", "CalibDbV2_AF_MODE_CONTINUOUS_PICTURE")
+    // M4_ENUM_DESC("mode", "CalibDbV2_AF_MODE_t", "CalibDbV2_AFMODE_CONT_PICTURE")
     CalibDbV2_AF_MODE_t af_mode;
     // M4_NUMBER_DESC("win_h_offs", "u16", M4_RANGE(0,2000), "0", M4_DIGIT(0),M4_HIDE(0))
     unsigned short win_h_offs;
@@ -554,9 +570,9 @@ typedef struct {
 } CalibDbV2_AFV30_t;
 
 typedef enum CalibDbV2_AF_DNSCL_MODE_s {
-    CalibDbV2_AF_DNSCL_DISABLE = 0,
-    CalibDbV2_AF_DNSCL_VDNSCL_2 = 1,
-    CalibDbV2_AF_DNSCL_VDNSCL_4_HDNSCL_2 = 2
+    CalibDbV2_AF_DNSCL_0 = 0,
+    CalibDbV2_AF_DNSCL_1 = 1,
+    CalibDbV2_AF_DNSCL_2 = 2
 } CalibDbV2_AF_DNSCL_MODE_t;
 
 typedef struct CalibDbV2_AfV31_MeasCfg_s {
@@ -572,7 +588,7 @@ typedef struct CalibDbV2_AfV31_MeasCfg_s {
     unsigned short gammaY[17];
     // M4_ARRAY_DESC("gaus coe", "s16", M4_SIZE(3,3), M4_RANGE(-128, 127), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     short gaus_coe[9];
-    // M4_ENUM_DESC("downscale mode", "CalibDbV2_AF_DNSCL_MODE_t", "CalibDbV2_AF_DNSCL_DISABLE")
+    // M4_ENUM_DESC("downscale mode", "CalibDbV2_AF_DNSCL_MODE_t", "CalibDbV2_AF_DNSCL_1")
     CalibDbV2_AF_DNSCL_MODE_t dnscl_mode;
     // M4_NUMBER_DESC("v1fv reliable", "f32", M4_RANGE(0, 1), "0", M4_DIGIT(3))
     float v1fv_reliable;
@@ -641,7 +657,7 @@ typedef struct CalibDbV2_AfV31_MeasCfg_s {
 } CalibDbV2_AfV31_MeasCfg_t;
 
 typedef struct CalibDbV2_AFV31_Tuning_Para_s {
-    // M4_ENUM_DESC("mode", "CalibDbV2_AF_MODE_t", "CalibDbV2_AF_MODE_CONTINUOUS_PICTURE")
+    // M4_ENUM_DESC("mode", "CalibDbV2_AF_MODE_t", "CalibDbV2_AFMODE_CONT_PICTURE")
     CalibDbV2_AF_MODE_t af_mode;
     // M4_NUMBER_DESC("win_h_offs", "u16", M4_RANGE(0,2000), "0", M4_DIGIT(0),M4_HIDE(0))
     unsigned short win_h_offs;

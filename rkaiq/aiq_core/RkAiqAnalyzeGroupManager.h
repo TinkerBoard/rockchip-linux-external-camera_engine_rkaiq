@@ -60,7 +60,7 @@ class RkAiqAnalyzerGroup {
     void setConcreteHandler(const MessageHandleWrapper handler) { mHandler = handler; }
     XCamReturn start();
     bool pushMsg(const SmartPtr<XCamMessage>& msg);
-    XCamReturn msgHandle(const SmartPtr<XCamMessage>& msg);
+    bool msgHandle(const SmartPtr<XCamMessage>& msg);
     XCamReturn stop();
 
     rk_aiq_core_analyze_type_e getType() const { return mGroupType; }

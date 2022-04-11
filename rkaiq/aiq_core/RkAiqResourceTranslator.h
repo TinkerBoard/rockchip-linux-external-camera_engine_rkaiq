@@ -53,9 +53,16 @@ public:
     virtual XCamReturn translateAdehazeStats(const SmartPtr<VideoBuffer>& from,
                                              SmartPtr<RkAiqAdehazeStatsProxy>& to);
 #endif
+#if RKAIQ_HAVE_PDAF
     virtual XCamReturn translatePdafStats(const SmartPtr<VideoBuffer>& from,
                                           SmartPtr<RkAiqPdafStatsProxy>& to, bool sns_mirror);
+#endif
 
+    virtual XCamReturn getParams(const SmartPtr<VideoBuffer>& from);
+    virtual void releaseParams();
+ protected:
+    rkisp_effect_params_v20 _ispParams;
+    SmartPtr<RkAiqExpParamsProxy> _expParams;
  private:
     XCAM_DEAD_COPY (RkAiqResourceTranslator);
 };

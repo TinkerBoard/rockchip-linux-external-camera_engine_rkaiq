@@ -160,6 +160,7 @@ endif()
 if (RKAIQ_HAVE_AWB_V32)
     add_compile_options(-DRKAIQ_HAVE_AWB_V32=1)
     list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAwbV32Handle.cpp)
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqCustomAwbHandle.cpp)
 endif()
 
 if (RKAIQ_HAVE_GIC_V1 OR RKAIQ_HAVE_GIC_V2)
@@ -485,15 +486,25 @@ set(AIQ_CORE_SRC
     ${ALGO_HANDLE_SRC}
     aiq_core/RkAiqHandle.cpp
     aiq_core/RkAiqCore.cpp
-    aiq_core/RkLumaCore.cpp
     aiq_core/MessageBus.cpp
     aiq_core/RkAiqAnalyzeGroupManager.cpp
     aiq_core/RkAiqResourceTranslator.cpp
     aiq_core/RkAiqResourceTranslatorV21.cpp
     aiq_core/RkAiqResourceTranslatorV3x.cpp
     aiq_core/RkAiqResourceTranslatorV32.cpp
-    aiq_core/thumbnails.cpp
     )
+
+if (RKAIQ_ISP_VERSION STREQUAL "20")
+    list(APPEND AIQ_CORE_SRC aiq_core/RkLumaCore.cpp)
+endif()
+
+if (RKAIQ_HAVE_THUMBNAILS)
+    add_compile_options(-DRKAIQ_HAVE_THUMBNAILS)
+    set(AIQ_CORE_SRC
+        ${AIQ_CORE_SRC}
+        aiq_core/thumbnails.cpp
+        )
+endif()
 
 set(ALGO_COMMON_SRC
     algos/interpolation.cpp
@@ -528,25 +539,49 @@ else()
         hwi/isp20/Stream.cpp
         hwi/isp20/RawStreamCapUnit.cpp
         hwi/isp20/RawStreamProcUnit.cpp
-        hwi/isp20/SPStreamProcUnit.cpp
         hwi/isp20/PdafStreamProcUnit.cpp
-        hwi/isp20/NrStatsStream.cpp
-        hwi/isp20/TnrStatsStream.cpp
-        hwi/isp20/NrStreamProcUnit.cpp
-        hwi/isp20/FecParamStream.cpp
-        hwi/isp20/TnrStreamProcUnit.cpp
         hwi/isp20/CaptureRawData.cpp
         hwi/isp21/CamHwIsp21.cpp
         hwi/isp3x/CamHwIsp3x.cpp
         hwi/isp32/CamHwIsp32.cpp
-        hwi/fakecamera/FakeCamHwIsp20.cpp
-        hwi/fakecamera/FakeSensorHw.cpp
         hwi/SensorHw.cpp
         hwi/LensHw.cpp
         hwi/FlashLight.cpp
         hwi/image_processor.cpp
         hwi/isp20/Isp20Evts.cpp
+        )
+endif()
+
+if (RKAIQ_HAVE_MULTIISP)
+    add_compile_options(-DRKAIQ_HAVE_MUTIISP)
+    set(HWI_SRC
+        ${HWI_SRC}
         hwi/IspParamsSplitter.cpp
+        )
+endif()
+
+if (RKAIQ_ISP_VERSION STREQUAL "20")
+    list(APPEND HWI_SRC
+        hwi/isp20/NrStatsStream.cpp
+        hwi/isp20/TnrStatsStream.cpp
+        hwi/isp20/NrStreamProcUnit.cpp
+        hwi/isp20/FecParamStream.cpp
+        hwi/isp20/TnrStreamProcUnit.cpp
+        )
+endif()
+
+if (RKAIQ_HAVE_FAKECAM)
+    add_compile_options(-DRKAIQ_ENABLE_FAKECAM)
+    list(APPEND HWI_SRC
+        hwi/fakecamera/FakeCamHwIsp20.cpp
+        hwi/fakecamera/FakeSensorHw.cpp
+        )
+endif()
+
+if (RKAIQ_HAVE_SPSTREAM)
+    add_compile_options(-DRKAIQ_ENABLE_SPSTREAM)
+    list(APPEND HWI_SRC
+        hwi/isp20/SPStreamProcUnit.cpp
         )
 endif()
 

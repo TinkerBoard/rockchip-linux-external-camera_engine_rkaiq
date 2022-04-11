@@ -97,7 +97,7 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
     LOGI_ASHARP("%s: (exit)\n", __FUNCTION__);
     return result;
 }
-
+#if 0
 static XCamReturn pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
     XCamReturn result = XCAM_RETURN_NO_ERROR;
     bool oldGrayMode  = false;
@@ -127,7 +127,7 @@ static XCamReturn pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* out
     LOGI_ASHARP("%s: (exit)\n", __FUNCTION__);
     return result;
 }
-
+#endif
 static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
     XCamReturn result = XCAM_RETURN_NO_ERROR;
     int DeltaIso      = 0;
@@ -143,6 +143,24 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
 
     LOGD_ASHARP("%s:%d init:%d hdr mode:%d  \n", __FUNCTION__, __LINE__, inparams->u.proc.init,
                 pAsharpProcParams->hdr_mode);
+
+    bool oldGrayMode  = false;
+    oldGrayMode = pAsharpCtx->isGrayMode;
+    if (inparams->u.proc.gray_mode) {
+        pAsharpCtx->isGrayMode = true;
+    } else {
+        pAsharpCtx->isGrayMode = false;
+    }
+
+    if (oldGrayMode != pAsharpCtx->isGrayMode) {
+        pAsharpCtx->isReCalculate |= 1;
+    }
+
+    Asharp_result_V33_t ret = Asharp_PreProcess_V33(pAsharpCtx);
+    if (ret != ASHARP_V33_RET_SUCCESS) {
+        result = XCAM_RETURN_ERROR_FAILED;
+        LOGE_ASHARP("%s: ANRPreProcess failed (%d)\n", __FUNCTION__, ret);
+    }
 
     stExpInfo.hdr_mode = 0;  // pAsharpProcParams->hdr_mode;
     for (int i = 0; i < 3; i++) {
@@ -163,7 +181,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     }
     stExpInfo.snr_mode = 0;
 
-#if 1  // TODO Merge:
+#if 0  // TODO Merge:
     XCamVideoBuffer* xCamAePreRes = pAsharpProcParams->com.u.proc.res_comb->ae_pre_res;
     RkAiqAlgoPreResAe* pAEPreRes  = nullptr;
     if (xCamAePreRes) {
@@ -282,9 +300,9 @@ RkAiqAlgoDescription g_RkIspAlgoDescAsharpV33 = {
         .destroy_context = destroy_context,
     },
     .prepare      = prepare,
-    .pre_process  = pre_process,
+    .pre_process  = NULL,
     .processing   = processing,
-    .post_process = post_process,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

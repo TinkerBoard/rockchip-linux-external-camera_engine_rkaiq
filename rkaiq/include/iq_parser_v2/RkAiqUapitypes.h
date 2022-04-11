@@ -18,12 +18,14 @@
 #ifndef ___RK_AIQ_UAPITYPES_H__
 #define ___RK_AIQ_UAPITYPES_H__
 
-#include "rk_aiq_user_api_common.h"
+#include "adehaze_uapi_head.h"
+#include "adrc_uapi_head.h"
 #include "aec_uapi_head.h"
-#include "awb_uapi_head.h"
+#include "agamma_uapi_head.h"
 #include "amerge_uapi_head.h"
 #include "atmo_uapi_head.h"
-#include "adrc_uapi_head.h"
+#include "awb_uapi_head.h"
+#include "rk_aiq_user_api_common.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,8 +47,20 @@ typedef struct __awb_uapi {
 } awb_uapi_t;
 
 typedef struct __amerge_uapi {
-    // M4_STRUCT_DESC("ctldata", "normal_ui_style")
-    uapiMergeCurrCtlData_t ctldata;
+    // M4_STRUCT_DESC("Info", "normal_ui_style")
+    uapiMergeCurrCtlData_t Info;
+#if defined(ISP_HW_V21)
+    // M4_STRUCT_DESC("stManual", "normal_ui_style")
+    mMergeAttrV10_t stManual;
+#endif
+#if defined(ISP_HW_V30)
+    // M4_STRUCT_DESC("stManual", "normal_ui_style")
+    mMergeAttrV11_t stManual;
+#endif
+#if defined(ISP_HW_V32)
+    // M4_STRUCT_DESC("stManual", "normal_ui_style")
+    mMergeAttrV12_t stManual;
+#endif
 } amerge_uapi_t;
 
 typedef struct __atmo_uapi {
@@ -55,9 +69,48 @@ typedef struct __atmo_uapi {
 } atmo_uapi_t;
 
 typedef struct __adrc_uapi {
-    // M4_STRUCT_DESC("drc", "normal_ui_style")
-    DrcInfo_t drc;
+#if defined(ISP_HW_V21)
+    // M4_STRUCT_DESC("Info", "normal_ui_style")
+    DrcInfoV10_t Info;
+    // M4_STRUCT_DESC("stManual", "normal_ui_style")
+    mdrcAttr_V10_t stManual;
+#endif
+#if defined(ISP_HW_V30)
+    // M4_STRUCT_DESC("Info", "normal_ui_style")
+    DrcInfoV11_t Info;
+    // M4_STRUCT_DESC("stManual", "normal_ui_style")
+    mdrcAttr_V11_t stManual;
+#endif
+#if defined(ISP_HW_V32)
+    // M4_STRUCT_DESC("Info", "normal_ui_style")
+    DrcInfoV12_t Info;
+    // M4_STRUCT_DESC("stManual", "normal_ui_style")
+    mdrcAttr_V12_t stManual;
+#endif
 } adrc_uapi_t;
+
+typedef struct __agamma_uapi {
+#if defined(ISP_HW_V20) || defined(ISP_HW_V21)
+    // M4_STRUCT_DESC("stManual", "normal_ui_style")
+    AgammaApiManualV10_t stManual;
+#else
+    // M4_STRUCT_DESC("stManual", "normal_ui_style")
+    AgammaApiManualV11_t stManual;
+#endif
+} agamma_uapi_t;
+
+typedef struct __adehaze_uapi {
+    // M4_STRUCT_DESC("Info", "normal_ui_style")
+    mDehazeAttrInfoV11_t Info;
+#if defined(ISP_HW_V21) || defined(ISP_HW_V30)
+    // M4_STRUCT_DESC("stManual", "normal_ui_style")
+    mDehazeAttrV11_t stManual;
+#endif
+#if defined(ISP_HW_V32)
+    // M4_STRUCT_DESC("stManual", "normal_ui_style")
+    mDehazeAttrV12_t stManual;
+#endif
+} adehaze_uapi_t;
 
 typedef struct __aiq_scene {
     // M4_STRING_DESC("main_scene", M4_SIZE(1,1), M4_RANGE(0, 32), "normal", M4_DYNAMIC(0))
@@ -116,6 +169,10 @@ typedef struct __aiq_uapi_t {
     // M4_STRUCT_DESC("adrc_uapi", "normal_ui_style")
     adrc_uapi_t adrc_uapi;
 #endif
+    // M4_STRUCT_DESC("agamma_uapi", "normal_ui_style")
+    agamma_uapi_t agamma_uapi;
+    // M4_STRUCT_DESC("adehaze_uapi", "normal_ui_style")
+    adehaze_uapi_t adehaze_uapi;
     // M4_STRUCT_DESC("SystemCtl", "normal_ui_style")
     RkaiqSysCtl_t system;
     // M4_STRUCT_DESC("measure_info", "normal_ui_style")

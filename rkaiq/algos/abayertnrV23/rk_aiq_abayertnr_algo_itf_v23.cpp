@@ -86,7 +86,7 @@ prepare(RkAiqAlgoCom* params)
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
 #if ABAYERTNR_USE_JSON_FILE_V23
         void *pCalibDbV2 = (void*)(pCfgParam->com.u.prepare.calibv2);
-        CalibDbV2_BayerTnr_V23_t *bayertnr_v23 = (CalibDbV2_BayerTnr_V23_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDbV2, bayertnr_v23));
+        CalibDbV2_BayerTnrV23_t *bayertnr_v23 = (CalibDbV2_BayerTnrV23_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDbV2, bayertnr_v23));
         pAbayertnrCtx->bayertnr_v23 = *bayertnr_v23;
 #endif
         pAbayertnrCtx->isIQParaUpdate = true;
@@ -102,7 +102,7 @@ prepare(RkAiqAlgoCom* params)
     LOGI_ANR("%s: (exit)\n", __FUNCTION__ );
     return result;
 }
-
+#if 0
 static XCamReturn
 pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
@@ -134,7 +134,7 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGI_ANR("%s: (exit)\n", __FUNCTION__ );
     return result;
 }
-
+#endif
 static XCamReturn
 processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
@@ -154,6 +154,24 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
              __FUNCTION__, __LINE__,
              inparams->u.proc.init,
              pAbayertnrProcParams->hdr_mode);
+
+    bool oldGrayMode = false;
+    oldGrayMode = pAbayertnrCtx->isGrayMode;
+    if (inparams->u.proc.gray_mode) {
+        pAbayertnrCtx->isGrayMode = true;
+    } else {
+        pAbayertnrCtx->isGrayMode = false;
+    }
+
+    if(oldGrayMode != pAbayertnrCtx->isGrayMode) {
+        pAbayertnrCtx->isReCalculate |= 1;
+    }
+
+    Abayertnr_result_V23_t ret = Abayertnr_PreProcess_V23(pAbayertnrCtx);
+    if(ret != ABAYERTNRV23_RET_SUCCESS) {
+        result = XCAM_RETURN_ERROR_FAILED;
+        LOGE_ANR("%s: ANRPreProcess failed (%d)\n", __FUNCTION__, ret);
+    }
 
     stExpInfo.hdr_mode = 0; //pAnrProcParams->hdr_mode;
     for(int i = 0; i < 3; i++) {
@@ -318,9 +336,9 @@ RkAiqAlgoDescription g_RkIspAlgoDescAbayertnrV23 = {
         .destroy_context = destroy_context,
     },
     .prepare = prepare,
-    .pre_process = pre_process,
+    .pre_process = NULL,
     .processing = processing,
-    .post_process = post_process,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

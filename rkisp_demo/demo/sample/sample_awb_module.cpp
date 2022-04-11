@@ -17,14 +17,6 @@
 
 #include "sample_comm.h"
 
-typedef enum {
-    AWB_CHANNEL_R = 0,
-    AWB_CHANNEL_GR,
-    AWB_CHANNEL_GB,
-    AWB_CHANNEL_B,
-    AWB_CHANNEL_MAX
-} awb_channel_t;
-
 #define safe_free(x) if(NULL!=(x))\
                            free(x); x=NULL;
 
@@ -901,6 +893,18 @@ static int sample_awb_awbv32_getAllAttr(const rk_aiq_sys_ctx_t* ctx)
     return 0;
 }
 
+static int sample_awb_WriteAwbIn(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync)
+{
+    rk_aiq_uapiV2_awb_wrtIn_attr_t attr;
+    memset(&attr,0,sizeof(rk_aiq_uapiV2_awb_wrtIn_attr_t));
+    attr.en = true;
+    attr.mode = 1; // 1 means rgb ,0 means raw
+    sprintf(attr.path,"/tmp");
+    rk_aiq_user_api2_awb_WriteAwbIn(ctx, attr);
+    printf("Write awb input \n\n");
+
+    return 0;
+}
 //#if rk356x || rk3588
 static void sample_awb1_usage()
 {
@@ -1374,9 +1378,10 @@ XCamReturn sample_awb32_module(const void *arg)
                 sample_awb_getMwbAttr(ctx);
                 sample_awb_setMwb2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
                 sample_awb_getMwbAttr(ctx);
-
                 usleep(40 * 1000);
                 sample_awb_getMwbAttr(ctx);
+            case 'Y':
+                sample_awb_WriteAwbIn(ctx, RK_AIQ_UAPI_MODE_ASYNC);
                 break;
             default:
                 break;

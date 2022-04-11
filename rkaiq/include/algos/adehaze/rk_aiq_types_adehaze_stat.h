@@ -11,13 +11,6 @@
 #ifndef __RK_AIQ_TYPES_ADEHAZE_ALGO_STAT_H__
 #define __RK_AIQ_TYPES_ADEHAZE_ALGO_STAT_H__
 
-typedef struct others_t {
-    unsigned short tmo_luma[225];
-    unsigned short short_luma[225];
-    unsigned short middle_luma[25];
-    unsigned short long_luma[225];
-} others_t;
-
 typedef struct dehaze_stats_v12_s {
     unsigned int dhaz_pic_sumh;
     unsigned short dhaz_adp_air_base;
@@ -68,7 +61,6 @@ typedef struct rkisp_adehaze_stats_s {
 #if RKAIQ_HAVE_DEHAZE_V12
     dehaze_stats_v12_t dehaze_stats_v12;
 #endif
-    others_t other_stats;
 } rkisp_adehaze_stats_t;
 
 

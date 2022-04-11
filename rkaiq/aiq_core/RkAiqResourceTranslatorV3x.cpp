@@ -124,6 +124,8 @@ void JudgeWinLocation(
     }
 }
 
+#if defined(RKAIQ_HAVE_MULTIISP)
+
 void MergeAecWinLiteStats(
     rawaelite_stat_t *merge_stats,
     struct isp2x_rawaelite_stat *left_stats,
@@ -341,6 +343,7 @@ void MergeAwbWinStats(
         break;
     }
 }
+#endif
 
 void AwbStatOverflowCheckandFixed(struct isp2x_window* win, rk_aiq_awb_blk_stat_mode_v201_t blkMeasureMode, bool blkStatisticsWithLumaWeightEn, rk_aiq_awb_xy_type_v201_t xyRangeTypeForWpHist,
                                   int lightNum, struct isp3x_rawawb_meas_stat *stats)
@@ -377,6 +380,8 @@ void AwbStatOverflowCheckandFixed(struct isp2x_window* win, rk_aiq_awb_blk_stat_
         }
     }
 }
+
+#if defined(RKAIQ_HAVE_MULTIISP)
 
 void MergeAwbBlkStats(
     struct isp2x_window* ori_win,
@@ -1176,6 +1181,7 @@ RkAiqResourceTranslatorV3x::translateMultiAdehazeStats(const SmartPtr<VideoBuffe
 
     return ret;
 }
+#endif
 
 XCamReturn
 RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAecStatsProxy> &to)
@@ -1188,9 +1194,11 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
     struct rkisp3x_isp_stat_buffer *stats;
     SmartPtr<RkAiqAecStats> statsInt = to->data();
 
+#if defined(RKAIQ_HAVE_MULTIISP)
     if (mIsMultiIsp) {
         return translateMultiAecStats(from, to);
     }
+#endif
 
     stats = (struct rkisp3x_isp_stat_buffer*)(buf->get_v4l2_userptr());
     if(stats == NULL) {
@@ -1771,9 +1779,11 @@ RkAiqResourceTranslatorV3x::translateAwbStats (const SmartPtr<VideoBuffer> &from
     struct rkisp3x_isp_stat_buffer *stats;
     SmartPtr<RkAiqAwbStats> statsInt = to->data();
 
+#if defined(RKAIQ_HAVE_MULTIISP)
     if (mIsMultiIsp) {
         return translateMultiAwbStats(from, to);
     }
+#endif
 
     stats = (struct rkisp3x_isp_stat_buffer*)(buf->get_v4l2_userptr());
     if(stats == NULL) {
@@ -1917,6 +1927,7 @@ RkAiqResourceTranslatorV3x::translateAwbStats (const SmartPtr<VideoBuffer> &from
     return ret;
 }
 
+#if defined(RKAIQ_HAVE_MULTIISP)
 XCamReturn
 RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAfStatsProxy> &to)
 {
@@ -2298,6 +2309,7 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
 
     return ret;
 }
+#endif
 
 
 XCamReturn
@@ -2309,9 +2321,11 @@ RkAiqResourceTranslatorV3x::translateAfStats (const SmartPtr<VideoBuffer> &from,
     struct rkisp3x_isp_stat_buffer *stats;
     SmartPtr<RkAiqAfStats> statsInt = to->data();
 
+#if defined(RKAIQ_HAVE_MULTIISP)
     if (mIsMultiIsp) {
         return translateMultiAfStats(from, to);
     }
+#endif
 
     stats = (struct rkisp3x_isp_stat_buffer*)(buf->get_v4l2_userptr());
     if(stats == NULL) {
@@ -2375,9 +2389,11 @@ RkAiqResourceTranslatorV3x::translateAdehazeStats (const SmartPtr<VideoBuffer> &
     struct rkisp3x_isp_stat_buffer *stats;
     SmartPtr<RkAiqAdehazeStats> statsInt = to->data();
 
+#if defined(RKAIQ_HAVE_MULTIISP)
     if (mIsMultiIsp) {
         return translateMultiAdehazeStats(from, to);
     }
+#endif
 
     stats = (struct rkisp3x_isp_stat_buffer*)(buf->get_v4l2_userptr());
     if(stats == NULL) {

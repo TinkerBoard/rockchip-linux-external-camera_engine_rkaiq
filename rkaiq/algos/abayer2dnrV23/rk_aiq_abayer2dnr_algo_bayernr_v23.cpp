@@ -504,7 +504,7 @@ Abayer2dnr_result_V23_t bayer2dnr_fix_printf_V23(RK_Bayer2dnr_Fix_V23_t * pFix)
 }
 
 
-Abayer2dnr_result_V23_t bayer2dnr_get_setting_by_name_json_V23(CalibDbV2_Bayer2dnr_V23_t* pCalibdb, char *name, int *calib_idx, int *tuning_idx)
+Abayer2dnr_result_V23_t bayer2dnr_get_setting_by_name_json_V23(CalibDbV2_Bayer2dnrV23_t* pCalibdb, char *name, int *calib_idx, int *tuning_idx)
 {
 
     int i = 0;
@@ -548,11 +548,11 @@ Abayer2dnr_result_V23_t bayer2dnr_get_setting_by_name_json_V23(CalibDbV2_Bayer2d
 
 
 
-Abayer2dnr_result_V23_t bayer2dnr_init_params_json_V23(RK_Bayer2dnr_Params_V23_t *pParams, CalibDbV2_Bayer2dnr_V23_t* pCalibdb, int calib_idx, int tuning_idx)
+Abayer2dnr_result_V23_t bayer2dnr_init_params_json_V23(RK_Bayer2dnr_Params_V23_t *pParams, CalibDbV2_Bayer2dnrV23_t* pCalibdb, int calib_idx, int tuning_idx)
 {
     Abayer2dnr_result_V23_t res = ABAYER2DNR_V23_RET_SUCCESS;
-    CalibDbV2_Bayer2dnr_V23_CalibPara_Setting_ISO_t *pCalibIso = NULL;
-    CalibDbV2_Bayer2dnr_V23_TuningPara_Setting_ISO_t *pTuningISO = NULL;
+    CalibDbV2_Bayer2dnrV23_C_ISO_t *pCalibIso = NULL;
+    CalibDbV2_Bayer2dnrV23_T_ISO_t *pTuningISO = NULL;
     //CalibDbV2_BayerTnr_V23_TuningPara_Setting_ISO_t *pTnrIso = NULL;
     int i = 0;
     int j = 0;
@@ -610,7 +610,7 @@ Abayer2dnr_result_V23_t bayer2dnr_init_params_json_V23(RK_Bayer2dnr_Params_V23_t
     return res;
 }
 
-Abayer2dnr_result_V23_t bayer2dnr_config_setting_param_json_V23(RK_Bayer2dnr_Params_V23_t *pParams, CalibDbV2_Bayer2dnr_V23_t* pCalibdbV23, char* param_mode, char * snr_name)
+Abayer2dnr_result_V23_t bayer2dnr_config_setting_param_json_V23(RK_Bayer2dnr_Params_V23_t *pParams, CalibDbV2_Bayer2dnrV23_t* pCalibdbV23, char* param_mode, char * snr_name)
 {
     Abayer2dnr_result_V23_t res = ABAYER2DNR_V23_RET_SUCCESS;
     int calib_idx = 0;

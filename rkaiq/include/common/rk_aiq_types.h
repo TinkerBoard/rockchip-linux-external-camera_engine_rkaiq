@@ -108,7 +108,9 @@ typedef enum rk_aiq_af_sec_stat_e
 {
     RK_AIQ_AF_SEARCH_INVAL   = 0,
     RK_AIQ_AF_SEARCH_RUNNING = 1,
-    RK_AIQ_AF_SEARCH_END     = 2
+    RK_AIQ_AF_SEARCH_END     = 2,
+    RK_AIQ_AF_ZOOM_MOVING    = 3,
+    RK_AIQ_AF_ZOOM_MOVE_END  = 4
 } rk_aiq_af_sec_stat_t;
 
 typedef enum {

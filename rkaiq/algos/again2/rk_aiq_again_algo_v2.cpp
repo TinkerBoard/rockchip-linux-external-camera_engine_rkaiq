@@ -1,6 +1,7 @@
 
 #include "rk_aiq_again_algo_v2.h"
 #include "rk_aiq_again_algo_itf_v2.h"
+#include "mathlib.h"
 
 RKAIQ_BEGIN_DECLARE
 

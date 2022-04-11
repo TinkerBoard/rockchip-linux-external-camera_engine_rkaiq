@@ -130,7 +130,7 @@ typedef struct CalibDb_CISHdrSetV2_s {
     // M4_ENUM_DESC("hdr_mode", "rk_aiq_isp_hdr_mode_t","RK_AIQ_ISP_HDR_MODE_2_LINE_HDR")
     rk_aiq_isp_hdr_mode_t hdr_mode;
 
-    // M4_ENUM_DESC("line_mode", "rk_aiq_sensor_hdr_line_mode_t","RK_AIQ_SENSOR_HDR_LINE_MODE_STAGGER")
+    // M4_ENUM_DESC("line_mode", "rk_aiq_sensor_hdr_line_mode_t","RKAIQ_SENSOR_HDR_MODE_STAGGER")
     rk_aiq_sensor_hdr_line_mode_t line_mode;
 } CalibDb_CISHdrSetV2_t;
 

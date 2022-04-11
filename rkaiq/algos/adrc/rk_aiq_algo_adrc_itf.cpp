@@ -96,24 +96,18 @@ prepare(RkAiqAlgoCom* params)
 #if RKAIQ_HAVE_DRC_V10
         CalibDbV2_drc_V10_t* calibv2_adrc_calib =
             (CalibDbV2_drc_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
-        memcpy(&pAdrcCtx->CalibDBV10, calibv2_adrc_calib,
-               sizeof(CalibDbV2_drc_V10_t));  // reload iq paras
         memcpy(&pAdrcCtx->drcAttrV10.stAuto, calibv2_adrc_calib,
                sizeof(CalibDbV2_drc_V10_t));  // reload stAuto
 #endif
 #if RKAIQ_HAVE_DRC_V11
         CalibDbV2_drc_V11_t* calibv2_adrc_calib =
             (CalibDbV2_drc_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
-        memcpy(&pAdrcCtx->CalibDBV11, calibv2_adrc_calib,
-               sizeof(CalibDbV2_drc_V11_t));  // reload iq paras
         memcpy(&pAdrcCtx->drcAttrV11.stAuto, calibv2_adrc_calib,
                sizeof(CalibDbV2_drc_V11_t));  // reload stAuto
 #endif
 #if RKAIQ_HAVE_DRC_V12
         CalibDbV2_drc_V12_t* calibv2_adrc_calib =
             (CalibDbV2_drc_V12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
-        memcpy(&pAdrcCtx->CalibDBV12, calibv2_adrc_calib,
-               sizeof(CalibDbV2_drc_V12_t));  // reload iq paras
         memcpy(&pAdrcCtx->drcAttrV12.stAuto, calibv2_adrc_calib,
                sizeof(CalibDbV2_drc_V12_t));  // reload stAuto
 #endif
@@ -359,19 +353,20 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #if RKAIQ_HAVE_DRC_V11
         pAdrcCtx->PrevData.ApiMode = pAdrcCtx->drcAttrV11.opMode;
 #endif
-        //output ProcRes
-        pAdrcProcRes->AdrcProcRes.update = !bypass ;//not use in isp3xparams for now
-        pAdrcProcRes->AdrcProcRes.CompressMode = pAdrcCtx->AdrcProcRes.CompressMode;
-        pAdrcProcRes->AdrcProcRes.LongFrameMode = pAdrcCtx->AdrcProcRes.LongFrameMode;
-        pAdrcProcRes->AdrcProcRes.isHdrGlobalTmo = pAdrcCtx->AdrcProcRes.isHdrGlobalTmo;
-        pAdrcProcRes->AdrcProcRes.bTmoEn = pAdrcCtx->AdrcProcRes.bTmoEn;
-        pAdrcProcRes->AdrcProcRes.isLinearTmo = pAdrcCtx->AdrcProcRes.isLinearTmo;
-        memcpy(&pAdrcProcRes->AdrcProcRes.DrcProcRes, &pAdrcCtx->AdrcProcRes.DrcProcRes, sizeof(DrcProcRes_t));
-
         LOGD_ATMO("%s://////////////////////////////////////ADRC Over////////////////////////////////////// \n", __func__);
     } else {
         LOGD_ATMO("%s: Drc Enable if OFF, Bypass Drc !!! \n", __func__);
     }
+
+    // output ProcRes
+    pAdrcProcRes->AdrcProcRes.update = !bypass;  // not use in isp3xparams for now
+    pAdrcProcRes->AdrcProcRes.CompressMode   = pAdrcCtx->AdrcProcRes.CompressMode;
+    pAdrcProcRes->AdrcProcRes.LongFrameMode  = pAdrcCtx->AdrcProcRes.LongFrameMode;
+    pAdrcProcRes->AdrcProcRes.isHdrGlobalTmo = pAdrcCtx->AdrcProcRes.isHdrGlobalTmo;
+    pAdrcProcRes->AdrcProcRes.bTmoEn         = Enable;
+    pAdrcProcRes->AdrcProcRes.isLinearTmo    = pAdrcCtx->AdrcProcRes.isLinearTmo;
+    memcpy(&pAdrcProcRes->AdrcProcRes.DrcProcRes, &pAdrcCtx->AdrcProcRes.DrcProcRes,
+           sizeof(DrcProcRes_t));
 
     LOG1_ATMO("%s:Exit!\n", __FUNCTION__);
     return XCAM_RETURN_NO_ERROR;
@@ -396,9 +391,9 @@ RkAiqAlgoDescription g_RkIspAlgoDescAdrc = {
         .destroy_context = destroy_context,
     },
     .prepare = prepare,
-    .pre_process = pre_process,
+    .pre_process = NULL,
     .processing = processing,
-    .post_process = post_process,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

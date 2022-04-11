@@ -31,7 +31,9 @@ typedef struct rk_aiq_sys_ctx_s {
     SmartPtr<RkAiqManager> _rkAiqManager;
     SmartPtr<ICamHw> _camHw;
     SmartPtr<RkAiqCore> _analyzer;
+#ifdef ISP_HW_V20
     SmartPtr<RkLumaCore> _lumaAnalyzer;
+#endif
 #ifdef RKAIQ_ENABLE_PARSER_V1
     CamCalibDbContext_t *_calibDb;
 #endif

@@ -102,7 +102,7 @@ prepare(RkAiqAlgoCom* params)
     LOGI_ANR("%s: (exit)\n", __FUNCTION__ );
     return result;
 }
-
+#if 0
 static XCamReturn
 pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
@@ -134,7 +134,7 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGI_ANR("%s: (exit)\n", __FUNCTION__ );
     return result;
 }
-
+#endif
 static XCamReturn
 processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
@@ -153,6 +153,24 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
              __FUNCTION__, __LINE__,
              inparams->u.proc.init,
              pAynrProcParams->hdr_mode);
+
+    bool oldGrayMode = false;
+    oldGrayMode = pAynrCtx->isGrayMode;
+    if (inparams->u.proc.gray_mode) {
+        pAynrCtx->isGrayMode = true;
+    } else {
+        pAynrCtx->isGrayMode = false;
+    }
+
+    if(oldGrayMode != pAynrCtx->isGrayMode) {
+        pAynrCtx->isReCalculate |= 1;
+    }
+
+    Aynr_result_V22_t ret = Aynr_PreProcess_V22(pAynrCtx);
+    if(ret != AYNRV22_RET_SUCCESS) {
+        result = XCAM_RETURN_ERROR_FAILED;
+        LOGE_ANR("%s: ANRPreProcess failed (%d)\n", __FUNCTION__, ret);
+    }
 
     stExpInfo.hdr_mode = 0; //pAnrProcParams->hdr_mode;
     for(int i = 0; i < 3; i++) {
@@ -173,7 +191,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     }
     stExpInfo.snr_mode = 0;
 
-#if 1// TODO Merge:
+#if 0// TODO Merge:
     XCamVideoBuffer* xCamAePreRes = pAynrProcParams->com.u.proc.res_comb->ae_pre_res;
     RkAiqAlgoPreResAe* pAEPreRes = nullptr;
     if (xCamAePreRes) {
@@ -310,9 +328,9 @@ RkAiqAlgoDescription g_RkIspAlgoDescAynrV22 = {
         .destroy_context = destroy_context,
     },
     .prepare = prepare,
-    .pre_process = pre_process,
+    .pre_process = NULL,
     .processing = processing,
-    .post_process = post_process,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

@@ -15,10 +15,11 @@
  *   ADD_DESCRIPTION_HERE
  *
  *****************************************************************************/
-#include "math.h"
+//#include "math.h"
 //#include "rk_aiq_types_adrc_algo_int.h"
 #include "rk_aiq_types_adrc_algo_prvt.h"
 #include "xcam_log.h"
+#include "mathlib.h"
 
 /******************************************************************************
  * AdrcStart()
@@ -317,11 +318,6 @@ void AdrcGetEnvLvV12(AdrcContext_t* pAdrcCtx, AecPreResult_t AecHdrPreResult) {
             break;
         case HDR_2X_NUM:
             pAdrcCtx->AeResult.Curr.GlobalEnvLv = AecHdrPreResult.GlobalEnvLv[1];
-            break;
-        case HDR_3X_NUM:
-            if (CHECK_ISP_HW_V30()) {
-                pAdrcCtx->AeResult.Curr.GlobalEnvLv = AecHdrPreResult.GlobalEnvLv[1];
-            }
             break;
         default:
             LOGE_ATMO("%s:  Wrong frame number in HDR mode!!!\n", __FUNCTION__);
@@ -628,11 +624,12 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
 
     // para setting
     if (pAdrcCtx->drcAttrV12.opMode == DRC_OPMODE_AUTO) {
+        float CtrlValue = pAdrcCtx->CurrData.EnvLv;
+        if (pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.CtrlDataType == CTRLDATATYPE_ISO)
+            CtrlValue = pAdrcCtx->CurrData.ISO;
+
         // get Drc gain
         for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv[i] =
-                LIMIT_VALUE(pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv[i],
-                            NORMALIZE_MAX, NORMALIZE_MIN);
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.DrcGain[i] =
                 LIMIT_VALUE(pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.DrcGain[i],
                             DRCGAINMAX, DRCGAINMIN);
@@ -643,20 +640,17 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
                 pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.Clip[i], CLIPMAX, CLIPMIN);
         }
         pAdrcCtx->CurrData.HandleData.Drc_v12.DrcGain = DrcGetCurrParaV12(
-            pAdrcCtx->CurrData.EnvLv, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv,
+            CtrlValue, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.CtrlData,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.DrcGain, ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.Alpha = DrcGetCurrParaV12(
-            pAdrcCtx->CurrData.EnvLv, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv,
+            CtrlValue, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.CtrlData,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.Alpha, ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.Clip = DrcGetCurrParaV12(
-            pAdrcCtx->CurrData.EnvLv, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.EnvLv,
+            CtrlValue, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.CtrlData,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.DrcGain.Clip, ADRC_ENVLV_STEP_MAX);
 
         // get hi lit
         for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv[i] =
-                LIMIT_VALUE(pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv[i],
-                            NORMALIZE_MAX, NORMALIZE_MIN);
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.Strength[i] = LIMIT_VALUE(
                 pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.Strength[i],
                 NORMALIZE_MAX, NORMALIZE_MIN);
@@ -665,21 +659,16 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
                             GAS_T_MAX, GAS_T_MIN);
         }
         pAdrcCtx->CurrData.HandleData.Drc_v12.Strength = DrcGetCurrParaV12(
-            pAdrcCtx->CurrData.EnvLv,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv,
+            CtrlValue, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.CtrlData,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.Strength,
             ADRC_ENVLV_STEP_MAX);
-        pAdrcCtx->CurrData.HandleData.Drc_v12.gas_t =
-            DrcGetCurrParaV12(pAdrcCtx->CurrData.EnvLv,
-                              pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.EnvLv,
-                              pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.gas_t,
-                              ADRC_ENVLV_STEP_MAX);
+        pAdrcCtx->CurrData.HandleData.Drc_v12.gas_t = DrcGetCurrParaV12(
+            CtrlValue, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.CtrlData,
+            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.HiLight.HiLightData.gas_t,
+            ADRC_ENVLV_STEP_MAX);
 
         // get local
         for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv[i] = LIMIT_VALUE(
-                pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv[i],
-                NORMALIZE_MAX, NORMALIZE_MIN);
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalWeit[i] =
                 LIMIT_VALUE(
                     pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalWeit[i],
@@ -712,28 +701,23 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
                     NORMALIZE_MAX, NORMALIZE_MIN);
         }
         pAdrcCtx->CurrData.HandleData.Drc_v12.LocalWeit = DrcGetCurrParaV12(
-            pAdrcCtx->CurrData.EnvLv,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv,
+            CtrlValue, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.CtrlData,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalWeit,
             ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.GlobalContrast = DrcGetCurrParaV12(
-            pAdrcCtx->CurrData.EnvLv,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv,
+            CtrlValue, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.CtrlData,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.GlobalContrast,
             ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.LoLitContrast = DrcGetCurrParaV12(
-            pAdrcCtx->CurrData.EnvLv,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv,
+            CtrlValue, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.CtrlData,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LoLitContrast,
             ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.LocalAutoEnable = DrcGetCurrParaV12Int(
-            pAdrcCtx->CurrData.EnvLv,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv,
+            CtrlValue, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.CtrlData,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoEnable,
             ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.LocalAutoWeit = DrcGetCurrParaV12(
-            pAdrcCtx->CurrData.EnvLv,
-            pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.EnvLv,
+            CtrlValue, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.CtrlData,
             pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoWeit,
             ADRC_ENVLV_STEP_MAX);
         pAdrcCtx->CurrData.HandleData.Drc_v12.MotionStr = DrcGetCurrParaV12(
@@ -1127,16 +1111,24 @@ bool AdrcByPassProcessing(AdrcContext_t* pAdrcCtx, AecPreResult_t AecHdrPreResul
         pAdrcCtx->CurrData.ISO = pAdrcCtx->AeResult.Next.ISO;
         pAdrcCtx->CurrData.ISO = LIMIT_VALUE(pAdrcCtx->CurrData.ISO, ISOMAX, ISOMIN);
 
-        // use Envlv for now
-        diff = pAdrcCtx->PrevData.EnvLv - pAdrcCtx->CurrData.EnvLv;
-        if (pAdrcCtx->PrevData.EnvLv == 0.0) {
-            diff = pAdrcCtx->CurrData.EnvLv;
-            if (diff == 0.0)
-                bypass = true;
-            else
-                bypass = false;
-        } else {
-            diff /= pAdrcCtx->PrevData.EnvLv;
+        if (pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.CtrlDataType == CTRLDATATYPE_ENVLV) {
+            diff = pAdrcCtx->PrevData.EnvLv - pAdrcCtx->CurrData.EnvLv;
+            if (pAdrcCtx->PrevData.EnvLv == 0.0) {
+                diff = pAdrcCtx->CurrData.EnvLv;
+                if (diff == 0.0)
+                    bypass = true;
+                else
+                    bypass = false;
+            } else {
+                diff /= pAdrcCtx->PrevData.EnvLv;
+                if (diff >= ByPassThr || diff <= (0 - ByPassThr))
+                    bypass = false;
+                else
+                    bypass = true;
+            }
+        } else if (pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.CtrlDataType == CTRLDATATYPE_ISO) {
+            diff = pAdrcCtx->PrevData.ISO - pAdrcCtx->CurrData.ISO;
+            diff /= pAdrcCtx->PrevData.ISO;
             if (diff >= ByPassThr || diff <= (0 - ByPassThr))
                 bypass = false;
             else
@@ -1145,9 +1137,11 @@ bool AdrcByPassProcessing(AdrcContext_t* pAdrcCtx, AecPreResult_t AecHdrPreResul
     }
 
     LOGD_ATMO(
-        "%s: FrameID:%d HDRFrameNum:%d LongFrmMode:%d DRCApiMode:%d EnvLv:%f ISO:%f bypass:%d\n",
+        "%s: FrameID:%d HDRFrameNum:%d LongFrmMode:%d DRCApiMode:%d CtrlDataType:%d EnvLv:%f "
+        "ISO:%f bypass:%d\n",
         __FUNCTION__, pAdrcCtx->frameCnt, pAdrcCtx->FrameNumber, pAdrcCtx->AeResult.LongFrmMode,
-        pAdrcCtx->drcAttrV12.opMode, pAdrcCtx->CurrData.EnvLv, pAdrcCtx->CurrData.ISO, bypass);
+        pAdrcCtx->drcAttrV12.opMode, pAdrcCtx->drcAttrV12.stAuto.DrcTuningPara.CtrlDataType,
+        pAdrcCtx->CurrData.EnvLv, pAdrcCtx->CurrData.ISO, bypass);
 
     LOG1_ATMO("%s: CtrlEnvLv:%f PrevEnvLv:%f diff:%f ByPassThr:%f opMode:%d bypass:%d!\n",
               __FUNCTION__, pAdrcCtx->CurrData.EnvLv, pAdrcCtx->PrevData.EnvLv, diff, ByPassThr,
@@ -1180,8 +1174,6 @@ XCamReturn AdrcInit(AdrcContext_t** ppAdrcCtx, CamCalibDbV2Context_t* pCalibDb) 
 
     pAdrcCtx->drcAttrV12.opMode = DRC_OPMODE_AUTO;
     SetDefaultValueV12(pAdrcCtx);  // set default para
-    memcpy(&pAdrcCtx->CalibDBV12, calibv2_adrc_calib, sizeof(CalibDbV2_drc_V12_t));  // load iq
-                                                                                     // paras
     memcpy(&pAdrcCtx->drcAttrV12.stAuto, calibv2_adrc_calib,
            sizeof(CalibDbV2_drc_V12_t));  // set stAuto
 

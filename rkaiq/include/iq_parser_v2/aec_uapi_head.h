@@ -142,10 +142,6 @@ typedef struct uapi_expinfo {
     float             MeanLuma;
     // M4_ARRAY_DESC("HdrMeanLuma", "f32", M4_SIZE(1,3), M4_RANGE(0,256), "0.0", M4_DIGIT(2), M4_DYNAMIC(0))
     float             HdrMeanLuma[3];
-    // M4_NUMBER_DESC("GlobalEnvLux", "f32", M4_RANGE(0,65535), "0.0", M4_DIGIT(2),M4_HIDE(1))
-    float             GlobalEnvLux;
-    // M4_ARRAY_DESC("BlockEnvLux", "f32", M4_SIZE(15,15), M4_RANGE(0,65535), "0.0", M4_DIGIT(2), M4_DYNAMIC(0), M4_HIDE(1))
-    float             BlockEnvLux[ISP2_RAWAE_WINNUM_MAX];
     // M4_STRUCT_DESC("CurExpInfo", "normal_ui_style");
     RKAiqAecExpInfo_t CurExpInfo;
 
@@ -191,26 +187,26 @@ typedef struct uapi_rawae_big_stats_s {
     // M4_ARRAY_DESC("channely_xy", "u16", M4_SIZE(15,15), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t channely_xy[RAWAEBIG_WIN_NUM]; //not HW!
 
-    // M4_ARRAY_DESC("wndx_sumr", "u32", M4_SIZE(1,4), M4_RANGE(0,536870912), "0", M4_DIGIT(0), M4_DYNAMIC(0))
-    uint64_t wndx_sumr[RAWAEBIG_SUBWIN_NUM];
-
-    // M4_ARRAY_DESC("wndx_sumg", "u32", M4_SIZE(1,4), M4_RANGE(0,4294967296), "0", M4_DIGIT(0), M4_DYNAMIC(0))
-    uint64_t wndx_sumg[RAWAEBIG_SUBWIN_NUM];
-
-    // M4_ARRAY_DESC("wndx_sumb", "u32", M4_SIZE(1,4), M4_RANGE(0,536870912), "0", M4_DIGIT(0), M4_DYNAMIC(0))
-    uint64_t wndx_sumb[RAWAEBIG_SUBWIN_NUM];
-
-    // M4_ARRAY_DESC("wndx_channelr", "u16", M4_SIZE(1,4), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("wndx_channelr", "u16", M4_SIZE(1,4), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
     uint16_t wndx_channelr[RAWAEBIG_SUBWIN_NUM]; //not HW!
 
-    // M4_ARRAY_DESC("wndx_channelg", "u16", M4_SIZE(1,4), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("wndx_channelg", "u16", M4_SIZE(1,4), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
     uint16_t wndx_channelg[RAWAEBIG_SUBWIN_NUM]; //not HW!
 
-    // M4_ARRAY_DESC("wndx_channelb", "u16", M4_SIZE(1,4), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("wndx_channelb", "u16", M4_SIZE(1,4), M4_RANGE(0,1023), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
     uint16_t wndx_channelb[RAWAEBIG_SUBWIN_NUM]; //not HW!
 
-    // M4_ARRAY_DESC("wndx_channely", "u16", M4_SIZE(1,4), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("wndx_channely", "u16", M4_SIZE(1,4), M4_RANGE(0,4095), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
     uint16_t wndx_channely[RAWAEBIG_SUBWIN_NUM]; //not HW!
+
+    // M4_ARRAY_DESC("wndx_sumr", "u32", M4_SIZE(1,4), M4_RANGE(0,536870912), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
+    uint64_t wndx_sumr[RAWAEBIG_SUBWIN_NUM];
+
+    // M4_ARRAY_DESC("wndx_sumg", "u32", M4_SIZE(1,4), M4_RANGE(0,4294967296), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
+    uint64_t wndx_sumg[RAWAEBIG_SUBWIN_NUM];
+
+    // M4_ARRAY_DESC("wndx_sumb", "u32", M4_SIZE(1,4), M4_RANGE(0,536870912), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
+    uint64_t wndx_sumb[RAWAEBIG_SUBWIN_NUM];
 } uapi_rawae_big_stats_t;
 
 typedef struct uapi_rawae_lite_stat_s {
@@ -228,11 +224,11 @@ typedef struct uapi_rawae_lite_stat_s {
 } uapi_rawae_lite_stat_t;
 
 typedef struct uapi_yuvae_stats_s {
-    // M4_ARRAY_DESC("channely_xy", "u64", M4_SIZE(1,4), M4_RANGE(0,4294967296), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
-    uint64_t ro_yuvae_sumy[YUVAE_SUBWIN_NUM];
-
     // M4_ARRAY_DESC("channely_xy", "u8", M4_SIZE(15,15), M4_RANGE(0,255), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
     unsigned char mean[YUVAE_WIN_NUM];
+
+    // M4_ARRAY_DESC("channely_xy", "u64", M4_SIZE(1,4), M4_RANGE(0,4294967296), "0", M4_DIGIT(0), M4_DYNAMIC(0),M4_HIDE(1))
+    uint64_t ro_yuvae_sumy[YUVAE_SUBWIN_NUM];
 } uapi_yuvae_stats_t;
 
 typedef struct uapi_raw_stats_s {

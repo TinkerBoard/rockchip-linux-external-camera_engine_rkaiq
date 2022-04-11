@@ -10,6 +10,7 @@ RawStreamProcUnit::RawStreamProcUnit ()
     _raw_proc_thread = new RawProcThread(this);
     _PollCallback = NULL;
     mCamPhyId = -1;
+    _rawCap = NULL;
 }
 
 RawStreamProcUnit::RawStreamProcUnit (const rk_sensor_full_info_t *s_info, bool linked_to_isp)
@@ -18,6 +19,7 @@ RawStreamProcUnit::RawStreamProcUnit (const rk_sensor_full_info_t *s_info, bool 
 {
     _raw_proc_thread = new RawProcThread(this);
     _PollCallback = NULL;
+    _rawCap = NULL;
     //short frame
     if (strlen(s_info->isp_info->rawrd2_s_path)) {
         _dev[0] = new V4l2Device (s_info->isp_info->rawrd2_s_path);//rkisp_rawrd2_s
@@ -59,6 +61,7 @@ RawStreamProcUnit::~RawStreamProcUnit ()
 
 XCamReturn RawStreamProcUnit::start(int mode)
 {
+    _rawCap = new CaptureRawData(mCamPhyId);
     for (int i = 0; i < _mipi_dev_max; i++) {
         _stream[i]->start();
     }
@@ -89,6 +92,11 @@ XCamReturn RawStreamProcUnit::stop ()
     _isp_hdr_fid2times_map.clear();
     _sof_timestamp_map.clear();
     _mipi_trigger_mutex.unlock();
+
+    if (_rawCap) {
+        delete _rawCap;
+        _rawCap = NULL;
+    }
 
     for (int i = 0; i < _mipi_dev_max; i++) {
         _stream[i]->stopDeviceOnly();
@@ -420,7 +428,10 @@ RawStreamProcUnit::trigger_isp_readback()
             int ret = XCAM_RETURN_NO_ERROR;
 
             // whether to start capturing raw files
-            CaptureRawData::getInstance().detect_capture_raw_status(sequence, _first_trigger);
+            if (_rawCap)
+                _rawCap->detect_capture_raw_status(sequence, _first_trigger);
+
+            //CaptureRawData::getInstance().detect_capture_raw_status(sequence, _first_trigger);
             //_camHw->setIsppConfig(sequence);
             for (int i = 0; i < _mipi_dev_max; i++) {
                 ret = _dev[i]->get_buffer(v4l2buf[i],
@@ -454,7 +465,25 @@ RawStreamProcUnit::trigger_isp_readback()
                         }
                     }
 
-                   CaptureRawData::getInstance().dynamic_capture_raw(i, sequence, buf_proxy, v4l2buf[i],_mipi_dev_max,_working_mode,_dev[0]);
+                    if (_rawCap) {
+                       _rawCap->dynamic_capture_raw(i, sequence, buf_proxy, v4l2buf[i],_mipi_dev_max,_working_mode,_dev[0]);
+
+                        if (_rawCap->is_need_save_metadata_and_register()) {
+                            rkisp_effect_params_v20 ispParams;
+                            _camHw->getEffectiveIspParams(ispParams, sequence);
+
+                            SmartPtr<BaseSensorHw> mSensorSubdev = _camHw->mSensorDev.dynamic_cast_ptr<BaseSensorHw>();
+                            SmartPtr<RkAiqExpParamsProxy> ExpParams = nullptr;
+                            mSensorSubdev->getEffectiveExpParams(ExpParams, sequence);
+
+                            SmartPtr<LensHw> mLensSubdev = _camHw->mLensDev.dynamic_cast_ptr<LensHw>();
+                            SmartPtr<RkAiqAfInfoProxy> afParams = nullptr;
+                            if (mLensSubdev.ptr())
+                                mLensSubdev->getAfInfoParams(afParams, sequence);
+                            _rawCap->save_metadata_and_register(sequence, ispParams, ExpParams, afParams, _working_mode);
+                        }
+                    }
+                   //CaptureRawData::getInstance().dynamic_capture_raw(i, sequence, buf_proxy, v4l2buf[i],_mipi_dev_max,_working_mode,_dev[0]);
                 }
             }
 
@@ -507,7 +536,9 @@ RawStreamProcUnit::trigger_isp_readback()
                 LOGE( "%s frame[%d] queue  failed, don't read back!\n",
                                 __func__, sequence);
 
-            CaptureRawData::getInstance().update_capture_raw_status(_first_trigger);
+            if (_rawCap)
+                _rawCap->update_capture_raw_status(_first_trigger);
+            //CaptureRawData::getInstance().update_capture_raw_status(_first_trigger);
         }
     }
 

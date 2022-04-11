@@ -74,8 +74,8 @@ Abayer2dnr_result_V23_t Abayer2dnr_Init_V23(Abayer2dnr_Context_V23_t **ppAbayern
 
     //read v1 params from xml
 #if (ABAYER2DNR_USE_JSON_FILE_V23)
-    CalibDbV2_Bayer2dnr_V23_t * pcalibdbV23_bayernr_v23 =
-        (CalibDbV2_Bayer2dnr_V23_t *)(CALIBDBV2_GET_MODULE_PTR((CamCalibDbV2Context_t*)pCalibDb, bayer2dnr_v23));
+    CalibDbV2_Bayer2dnrV23_t * pcalibdbV23_bayernr_v23 =
+        (CalibDbV2_Bayer2dnrV23_t *)(CALIBDBV2_GET_MODULE_PTR((CamCalibDbV2Context_t*)pCalibDb, bayer2dnr_v23));
     pAbayernrCtx->bayernr_v23 = *pcalibdbV23_bayernr_v23;
 #endif
 

@@ -482,18 +482,6 @@ void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData
                      pAdehazeCtx->stats.dehaze_stats_v10.h_r_iir[i]);
     }
 
-    // get other stats from stats
-    for (int i = 0; i < 225; i++) {
-        pAdehazeCtx->stats.other_stats.short_luma[i] = ROData->other_stats.short_luma[i];
-        pAdehazeCtx->stats.other_stats.long_luma[i]  = ROData->other_stats.long_luma[i];
-        pAdehazeCtx->stats.other_stats.tmo_luma[i]   = ROData->other_stats.tmo_luma[i];
-    }
-
-    if (pAdehazeCtx->FrameNumber == HDR_3X_NUM) {
-        for (int i = 0; i < 25; i++)
-            pAdehazeCtx->stats.other_stats.middle_luma[i] = ROData->other_stats.middle_luma[i];
-    }
-
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);
 }
 
@@ -506,8 +494,20 @@ void AdehazeGetEnvLvISO(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoPreResAe* pAePreR
         return;
     }
 
-    pAdehazeCtx->CurrData.V21.EnvLv =
-        pAePreRes->ae_pre_res_rk.GlobalEnvLv[pAePreRes->ae_pre_res_rk.NormalIndex];
+    switch (pAdehazeCtx->FrameNumber) {
+        case LINEAR_NUM:
+            pAdehazeCtx->CurrDataV10.EnvLv = pAePreRes->ae_pre_res_rk.GlobalEnvLv[0];
+            break;
+        case HDR_2X_NUM:
+            pAdehazeCtx->CurrDataV10.EnvLv = pAePreRes->ae_pre_res_rk.GlobalEnvLv[1];
+            break;
+        case HDR_3X_NUM:
+            pAdehazeCtx->CurrDataV10.EnvLv = pAePreRes->ae_pre_res_rk.GlobalEnvLv[1];
+            break;
+        default:
+            LOGE_ADEHAZE("%s:  Wrong frame number in HDR mode!!!\n", __FUNCTION__);
+            break;
+    }
 
     // Normalize the current envLv for AEC
     pAdehazeCtx->CurrData.V21.EnvLv =

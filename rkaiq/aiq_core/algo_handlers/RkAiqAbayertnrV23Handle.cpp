@@ -26,12 +26,8 @@ void RkAiqAbayertnrV23HandleInt::init() {
 
     RkAiqHandle::deInit();
     mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAbayertnrV23());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAbayertnrV23());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAbayertnrV23());
     mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAbayertnrV23());
     mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAbayertnrV23());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAbayertnrV23());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAbayertnrV23());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -178,7 +174,7 @@ XCamReturn RkAiqAbayertnrV23HandleInt::preProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPreAbayertnrV23* abayertnr_pre_int = (RkAiqAlgoPreAbayertnrV23*)mPreInParam;
     RkAiqAlgoPreResAbayertnrV23* abayertnr_pre_res_int =
         (RkAiqAlgoPreResAbayertnrV23*)mPreOutParam;
@@ -197,6 +193,7 @@ XCamReturn RkAiqAbayertnrV23HandleInt::preProcess() {
     // set result to mAiqCore
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -238,7 +235,7 @@ XCamReturn RkAiqAbayertnrV23HandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPostAbayer2dnrV23* abayertnr_post_int = (RkAiqAlgoPostAbayer2dnrV23*)mPostInParam;
     RkAiqAlgoPostResAbayer2dnrV23* abayertnr_post_res_int =
         (RkAiqAlgoPostResAbayer2dnrV23*)mPostOutParam;
@@ -258,6 +255,7 @@ XCamReturn RkAiqAbayertnrV23HandleInt::postProcess() {
     // set result to mAiqCore
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return ret;
 }
 

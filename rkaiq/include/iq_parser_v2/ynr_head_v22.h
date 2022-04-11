@@ -26,7 +26,7 @@ RKAIQ_BEGIN_DECLARE
 
 ///////////////////////////ynr v1//////////////////////////////////////
 
-typedef struct CalibDbV2_YnrV22_CalibPara_Setting_ISO_s {
+typedef struct CalibDbV2_YnrV22_C_ISO_s {
     // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index2")
     float iso;
     // M4_ARRAY_DESC("sigma_curve", "f32", M4_SIZE(1,5), M4_RANGE(-65535.0, 65535), "0.0", M4_DIGIT(6), M4_DYNAMIC(0))
@@ -36,25 +36,25 @@ typedef struct CalibDbV2_YnrV22_CalibPara_Setting_ISO_s {
     // M4_NUMBER_DESC("ynr_hci", "f32", M4_RANGE(0.0, 2.0), "0.5", M4_DIGIT(3))
     float ynr_hci;
 
-} CalibDbV2_YnrV22_CalibPara_Setting_ISO_t;
+} CalibDbV2_YnrV22_C_ISO_t;
 
-typedef struct CalibDbV2_YnrV22_CalibPara_Setting_s {
+typedef struct CalibDbV2_YnrV22_C_Set_s {
     // M4_STRING_MARK_DESC("SNR_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "LSNR",M4_DYNAMIC(0), "index1")
     char *SNR_Mode;
     // M4_STRING_DESC("Sensor_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "lcg", M4_DYNAMIC(0))
     char *Sensor_Mode;
     // M4_STRUCT_LIST_DESC("Calib_ISO", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_YnrV22_CalibPara_Setting_ISO_t *Calib_ISO;
+    CalibDbV2_YnrV22_C_ISO_t *Calib_ISO;
     int Calib_ISO_len;
-} CalibDbV2_YnrV22_CalibPara_Setting_t;
+} CalibDbV2_YnrV22_C_Set_t;
 
-typedef struct CalibDbV2_YnrV22_CalibPara_s {
+typedef struct CalibDbV2_YnrV22_Calib_s {
     // M4_STRUCT_LIST_DESC("Setting", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_YnrV22_CalibPara_Setting_t *Setting;
+    CalibDbV2_YnrV22_C_Set_t *Setting;
     int Setting_len;
-} CalibDbV2_YnrV22_CalibPara_t;
+} CalibDbV2_YnrV22_Calib_t;
 
-typedef struct CalibDbV2_YnrV22_TuningPara_Setting_ISO_LumaParam_s {
+typedef struct CalibDbV2_YnrV22_LumaParam_s {
     // M4_ARRAY_DESC("lo_lumaPoint", "f32", M4_SIZE(1,6), M4_RANGE(0,256), "[0,32,64,128,192,256]", M4_DIGIT(0), M4_DYNAMIC(0))
     float lo_lumaPoint[6];
     // M4_ARRAY_DESC("lo_ratio", "f32", M4_SIZE(1,6), M4_RANGE(0,2), "[1,1,1,1,1,1]", M4_DIGIT(2), M4_DYNAMIC(0))
@@ -63,10 +63,10 @@ typedef struct CalibDbV2_YnrV22_TuningPara_Setting_ISO_LumaParam_s {
     float hi_lumaPoint[6];
     // M4_ARRAY_DESC("hi_ratio", "f32", M4_SIZE(1,6), M4_RANGE(0,2), "[1,1,1,1,1,1]", M4_DIGIT(2), M4_DYNAMIC(0))
     float hi_ratio[6];
-} CalibDbV2_YnrV22_TuningPara_Setting_ISO_LumaParam_t;
+} CalibDbV2_YnrV22_LumaParam_t;
 
 
-typedef struct CalibDbV2_YnrV22_TuningPara_Setting_ISO_s {
+typedef struct CalibDbV2_YnrV22_T_ISO_s {
     // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index2")
     float iso;
 
@@ -92,7 +92,7 @@ typedef struct CalibDbV2_YnrV22_TuningPara_Setting_ISO_s {
     float ynr_adjust_scale;
 
     // M4_ARRAY_TABLE_DESC("lumaPara", "array_table_ui", "none")
-    CalibDbV2_YnrV22_TuningPara_Setting_ISO_LumaParam_t lumaPara;
+    CalibDbV2_YnrV22_LumaParam_t lumaPara;
 
     // M4_NUMBER_DESC("low_bf1", "f32", M4_RANGE(0.1, 32), "0.5", M4_DIGIT(2))
     float low_bf1;
@@ -150,35 +150,35 @@ typedef struct CalibDbV2_YnrV22_TuningPara_Setting_ISO_s {
     // M4_ARRAY_DESC("rnr_strength", "f32", M4_SIZE(1,17), M4_RANGE(0,16), "1.0", M4_DIGIT(3), M4_DYNAMIC(0))
     float rnr_strength[17];
 
-} CalibDbV2_YnrV22_TuningPara_Setting_ISO_t;
+} CalibDbV2_YnrV22_T_ISO_t;
 
 
-typedef struct CalibDbV2_YnrV22_TuningPara_Setting_s {
+typedef struct CalibDbV2_YnrV22_T_Set_s {
     // M4_STRING_MARK_DESC("SNR_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "LSNR",M4_DYNAMIC(0), "index1")
     char *SNR_Mode;
     // M4_STRING_DESC("Sensor_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "lcg", M4_DYNAMIC(0))
     char *Sensor_Mode;
     // M4_STRUCT_LIST_DESC("Tuning_ISO", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_YnrV22_TuningPara_Setting_ISO_t *Tuning_ISO;
+    CalibDbV2_YnrV22_T_ISO_t *Tuning_ISO;
     int Tuning_ISO_len;
-} CalibDbV2_YnrV22_TuningPara_Setting_t;
+} CalibDbV2_YnrV22_T_Set_t;
 
-typedef struct CalibDbV2_YnrV22_TuningPara_s {
+typedef struct CalibDbV2_YnrV22_Tuning_s {
     // M4_BOOL_DESC("enable", "1")
     bool enable;
     // M4_STRUCT_LIST_DESC("Setting", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_YnrV22_TuningPara_Setting_t *Setting;
+    CalibDbV2_YnrV22_T_Set_t *Setting;
     int Setting_len;
-} CalibDbV2_YnrV22_TuningPara_t;
+} CalibDbV2_YnrV22_Tuning_t;
 
 
 typedef struct CalibDbV2_YnrV22_s {
     // M4_STRING_DESC("Version", M4_SIZE(1,1), M4_RANGE(0, 64), "V2", M4_DYNAMIC(0))
     char *Version;
     // M4_STRUCT_DESC("CalibPara", "normal_ui_style")
-    CalibDbV2_YnrV22_CalibPara_t CalibPara;
+    CalibDbV2_YnrV22_Calib_t CalibPara;
     // M4_STRUCT_DESC("TuningPara", "normal_ui_style")
-    CalibDbV2_YnrV22_TuningPara_t TuningPara;
+    CalibDbV2_YnrV22_Tuning_t TuningPara;
 } CalibDbV2_YnrV22_t;
 
 RKAIQ_END_DECLARE

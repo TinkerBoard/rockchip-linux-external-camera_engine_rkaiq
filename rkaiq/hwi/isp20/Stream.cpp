@@ -495,10 +495,6 @@ RKStatsStream::new_video_buffer(SmartPtr<V4l2Buffer> buf,
     //SmartPtr<VideoBuffer> video_buf = nullptr;
     SmartPtr<Isp20StatsBuffer> isp20stats_buf = nullptr;
 
-    // SmartPtr<RkAiqIspParamsProxy> ispParams = nullptr;
-    rkisp_effect_params_v20 ispParams;
-    memset(&ispParams, 0, sizeof(ispParams));
-    SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
     SmartPtr<RkAiqIrisParamsProxy> irisParams = nullptr;
     SmartPtr<RkAiqAfInfoProxy> afParams = nullptr;
 
@@ -509,9 +505,6 @@ RKStatsStream::new_video_buffer(SmartPtr<V4l2Buffer> buf,
 
     isp20stats_buf = new Isp20StatsBuffer(buf, dev, _event_handle_dev, _rx_handle_dev, afParams, irisParams);
     isp20stats_buf->_buf_type = _dev_type;
-    isp20stats_buf->getEffectiveIspParams(buf->get_buf().sequence, ispParams);
-    isp20stats_buf->getEffectiveExpParams(buf->get_buf().sequence, expParams);
-    CaptureRawData::getInstance().save_metadata_and_register(buf->get_buf().sequence, ispParams, expParams, afParams, _rx_handle_dev->get_workingg_mode());
 
     EXIT_CAMHW_FUNCTION();
 

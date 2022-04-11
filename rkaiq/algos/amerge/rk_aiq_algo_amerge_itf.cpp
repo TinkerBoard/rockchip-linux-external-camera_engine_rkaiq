@@ -91,28 +91,22 @@ static XCamReturn AmergePrepare(RkAiqAlgoCom* params)
         pAmergeCtx->FrameNumber = HDR_3X_NUM;
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
-        LOGD_AMERGE("%s: Amerge Reload Para!\n", __FUNCTION__);
+        LOGI_AMERGE("%s: Amerge Reload Para!\n", __FUNCTION__);
 #if RKAIQ_HAVE_MERGE_V10
         CalibDbV2_merge_V10_t* calibv2_amerge_calib =
             (CalibDbV2_merge_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, amerge_calib));
-        memcpy(&pAmergeCtx->CalibDBV10, calibv2_amerge_calib,
-               sizeof(CalibDbV2_merge_V10_t));  // load iq paras
         memcpy(&pAmergeCtx->mergeAttrV10.stAuto, calibv2_amerge_calib,
                sizeof(CalibDbV2_merge_V10_t));  // set stAuto
 #endif
 #if RKAIQ_HAVE_MERGE_V11
         CalibDbV2_merge_V11_t* calibv2_amerge_calib =
             (CalibDbV2_merge_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, amerge_calib));
-        memcpy(&pAmergeCtx->CalibDBV11, calibv2_amerge_calib,
-               sizeof(CalibDbV2_merge_V11_t));  // load iq paras
         memcpy(&pAmergeCtx->mergeAttrV11.stAuto, calibv2_amerge_calib,
                sizeof(CalibDbV2_merge_V11_t));  // set stAuto
 #endif
 #if RKAIQ_HAVE_MERGE_V12
         CalibDbV2_merge_V12_t* calibv2_amerge_calib =
             (CalibDbV2_merge_V12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, amerge_calib));
-        memcpy(&pAmergeCtx->CalibDBV12, calibv2_amerge_calib,
-               sizeof(CalibDbV2_merge_V12_t));  // load iq paras
         memcpy(&pAmergeCtx->mergeAttrV12.stAuto, calibv2_amerge_calib,
                sizeof(CalibDbV2_merge_V12_t));  // set stAuto
 #endif
@@ -163,7 +157,8 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
         RkAiqAlgoProcResAe* pAEProcRes = NULL;
         if (xCamAeProcRes) {
             pAEProcRes = (RkAiqAlgoProcResAe*)xCamAeProcRes->map(xCamAeProcRes);
-            AmergeGetSensorInfo(pAmergeCtx, pAEProcRes->ae_proc_res_rk);
+            pAmergeCtx->SensorInfo.LongFrmMode =
+                pAEProcRes->ae_proc_res_rk.LongFrmMode && (pAmergeCtx->FrameNumber != LINEAR_NUM);
         }
         else {
             if (!(pAmergeCtx->frameCnt))
@@ -172,7 +167,7 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
                 AecProcResult_t AeProcResult;
                 memset(&AeProcResult, 0x0, sizeof(AecProcResult_t));
                 LOGE_AMERGE("%s: Ae Proc result is null!!!\n", __FUNCTION__);
-                AmergeGetSensorInfo(pAmergeCtx, AeProcResult);
+                pAmergeCtx->SensorInfo.LongFrmMode = false;
             }
         }
 
@@ -305,9 +300,9 @@ RkAiqAlgoDescription g_RkIspAlgoDescAmerge = {
         .destroy_context = AmergeDestroyCtx,
     },
     .prepare = AmergePrepare,
-    .pre_process = AmergePreProcess,
+    .pre_process = NULL,
     .processing = AmergeProcess,
-    .post_process = AmergePostProcess,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

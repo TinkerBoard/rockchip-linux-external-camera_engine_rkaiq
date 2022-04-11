@@ -135,7 +135,10 @@ XCamReturn
 rk_aiq_uapiV2_awbV32_SetAwbMultiwindow(RkAiqAlgoContext *ctx,
                          const rk_aiq_uapiV2_wbV32_awb_mulWindow_t  &multiWindow,
                          bool need_sync);
-
+XCamReturn
+rk_aiq_uapiV2_awb_WriteInput(RkAiqAlgoContext *ctx,
+                          const rk_aiq_uapiV2_awb_wrtIn_attr_t &attr,
+                          bool need_sync);
 
 #endif
 

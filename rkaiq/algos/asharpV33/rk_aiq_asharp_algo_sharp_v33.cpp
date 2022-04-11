@@ -18,6 +18,7 @@
  */
 
 #include "rk_aiq_asharp_algo_sharp_v33.h"
+#include "mathlib.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -702,7 +703,7 @@ Asharp_result_V33_t sharp_init_params_json_V33(RK_SHARP_Params_V33_t* pSharpPara
     int bit_calib = 12;
     int bit_proc;
     int bit_shift;
-    CalibDbV2_SharpV33_TuningPara_Setting_ISO_t* pTuningISO;
+    CalibDbV2_SharpV33_T_ISO_t* pTuningISO;
 
     LOGI_ASHARP("%s(%d): enter\n", __FUNCTION__, __LINE__);
 

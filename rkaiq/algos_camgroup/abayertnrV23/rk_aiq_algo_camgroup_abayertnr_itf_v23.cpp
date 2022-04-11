@@ -119,7 +119,7 @@ static XCamReturn groupAbayertnrV23Prepare(RkAiqAlgoCom* params)
             // todo  update calib pars for surround view
 #if ABAYERTNR_USE_JSON_FILE_V23
             void *pCalibdbV23 = (void*)(para->s_calibv2);
-            CalibDbV2_BayerTnr_V23_t *bayertnr_v23 = (CalibDbV2_BayerTnr_V23_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibdbV23, bayertnr_v23));
+            CalibDbV2_BayerTnrV23_t *bayertnr_v23 = (CalibDbV2_BayerTnrV23_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibdbV23, bayertnr_v23));
             abayertnr_contex_v23->bayertnr_v23 = *bayertnr_v23;
             abayertnr_contex_v23->isIQParaUpdate = true;
             abayertnr_contex_v23->isReCalculate |= 1;

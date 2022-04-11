@@ -128,10 +128,12 @@ protected:
     template<class T>
     void convertAiqHistToIsp20Params(T& isp_cfg,
                                      const rk_aiq_isp_hist_meas_t& hist_meas);
+#if RKAIQ_HAVE_AWB_V20
     template<class T>
     void convertAiqAwbToIsp20Params(T& isp_cfg,
                                     const rk_aiq_awb_stat_cfg_v200_t& awb_meas,
                                     bool awb_cfg_udpate);
+#endif
     template<class T>
     void convertAiqAwbGainToIsp20Params(T& isp_cfg,
                                         const rk_aiq_wb_gain_t& awb_gain, const rk_aiq_isp_blc_t &blc,
@@ -188,6 +190,8 @@ protected:
     void convertAiqIeToIsp20Params(T& isp_cfg,
                                    const rk_aiq_isp_ie_t& ie_cfg);
 #endif
+
+#if RKAIQ_HAVE_ANR_V1
     template<class T>
     void convertAiqRawnrToIsp20Params(T& isp_cfg,
                                       rk_aiq_isp_rawnr_t& rawnr);
@@ -202,10 +206,13 @@ protected:
                                     rk_aiq_isp_ynr_t& ynr);
     template<typename T>
     void convertAiqSharpenToIsp20Params(T& pp_cfg,
-                                        rk_aiq_isp_sharpen_t& sharp, rk_aiq_isp_edgeflt_t& edgeflt);
+                                    rk_aiq_isp_sharpen_t& sharp, rk_aiq_isp_edgeflt_t& edgeflt);
+#endif
+#if RKAIQ_HAVE_AF_V20
     template<class T>
     void convertAiqAfToIsp20Params(T& isp_cfg,
                                    const rk_aiq_isp_af_meas_t& af_data, bool af_cfg_udpate);
+#endif
     template<class T>
     void convertAiqGainToIsp20Params(T& isp_cfg,
                                      rk_aiq_isp_gain_t& gain);

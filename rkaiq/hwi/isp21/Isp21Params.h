@@ -56,19 +56,30 @@ private:
     void convertAiqAdehazeToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                         const rk_aiq_isp_dehaze_v21_t& dhaze);
 #endif
+
+#if RKAIQ_HAVE_AWB_V21
     void convertAiqAwbToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                     const rk_aiq_awb_stat_cfg_v201_t& awb_meas,
                                     bool awb_cfg_udpate);
+#endif
+#if RKAIQ_HAVE_BAYERNR_V2
     void convertAiqRawnrToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                       rk_aiq_isp_baynr_v21_t& rawnr);
+#endif
     void convertAiqTnrToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_bay3d_v21_t& tnr);
+#if RKAIQ_HAVE_CNR_V1
     void convertAiqUvnrToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                      rk_aiq_isp_cnr_v21_t& uvnr);
+#endif
+#if RKAIQ_HAVE_YNR_V2
     void convertAiqYnrToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_ynr_v21_t& ynr);
+#endif
+#if RKAIQ_HAVE_SHARP_V3
     void convertAiqSharpenToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                         rk_aiq_isp_sharp_v21_t& sharp);
+#endif
 #if RKAIQ_HAVE_DRC_V10
     void convertAiqDrcToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_drc_v21_t& adrc_data);

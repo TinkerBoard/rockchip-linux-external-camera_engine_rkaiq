@@ -27,14 +27,8 @@ void RkAiqAfHandleInt::init() {
 
     RkAiqHandle::deInit();
     mConfig      = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAf());
-    mPreInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPreAf());
-    mPreOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAf());
     mProcInParam = (RkAiqAlgoCom*)(new RkAiqAlgoProcAf());
-#if 0
-    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAf());
-#endif
-    mPostInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPostAf());
-    mPostOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAf());
+
     mLastZoomIndex = 0;
 
     EXIT_ANALYZER_FUNCTION();
@@ -332,42 +326,6 @@ XCamReturn RkAiqAfHandleInt::prepare() {
 }
 
 XCamReturn RkAiqAfHandleInt::preProcess() {
-    ENTER_ANALYZER_FUNCTION();
-
-    XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
-    RkAiqAlgoPreAf* af_pre_int        = (RkAiqAlgoPreAf*)mPreInParam;
-    RkAiqAlgoPreResAf* af_pre_res_int = (RkAiqAlgoPreResAf*)mPreOutParam;
-    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
-        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-
-    ret = RkAiqHandle::preProcess();
-    if (ret) {
-        RKAIQCORE_CHECK_RET(ret, "af handle preProcess failed");
-    }
-
-    RkAiqAfStats* xAfStats = nullptr;
-    if (shared->afStatsBuf) {
-        xAfStats = (RkAiqAfStats*)shared->afStatsBuf->map(shared->afStatsBuf);
-        if (!xAfStats) LOGE("af stats is null");
-    } else {
-        LOGW("the xcamvideobuffer of af stats is null");
-    }
-
-    if ((!xAfStats || !xAfStats->af_stats_valid) && !sharedCom->init) {
-        LOGW("no af stats, ignore!");
-        return XCAM_RETURN_BYPASS;
-    }
-
-    af_pre_int->xcam_af_stats  = shared->afStatsBuf;
-    af_pre_int->xcam_aec_stats = shared->aecStatsBuf;
-
-    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
-    ret                       = des->pre_process(mPreInParam, mPreOutParam);
-    RKAIQCORE_CHECK_RET(ret, "af algo pre_process failed");
-
-    EXIT_ANALYZER_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -422,7 +380,7 @@ XCamReturn RkAiqAfHandleInt::processing() {
 #ifdef ZOOM_MOVE_DEBUG
     int zoom_index = 0;
 
-    if (getValueFromFile("/tmp/.zoom_pos", &zoom_index) == true) {
+    if (getValueFromFile("/data/.zoom_pos", &zoom_index) == true) {
         if (mLastZoomIndex != zoom_index) {
             setZoomIndex(zoom_index);
             endZoomChg();
@@ -471,44 +429,6 @@ XCamReturn RkAiqAfHandleInt::processing() {
     mAiqCore->post_message(msg);
 #endif
 
-    EXIT_ANALYZER_FUNCTION();
-    return ret;
-}
-
-XCamReturn RkAiqAfHandleInt::postProcess() {
-    ENTER_ANALYZER_FUNCTION();
-
-    XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
-    RkAiqAlgoPostAf* af_post_int        = (RkAiqAlgoPostAf*)mPostInParam;
-    RkAiqAlgoPostResAf* af_post_res_int = (RkAiqAlgoPostResAf*)mPostOutParam;
-    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
-        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-
-    ret = RkAiqHandle::postProcess();
-    if (ret) {
-        RKAIQCORE_CHECK_RET(ret, "af handle postProcess failed");
-        return ret;
-    }
-
-    RkAiqAfStats* xAfStats = nullptr;
-    if (shared->afStatsBuf) {
-        xAfStats = (RkAiqAfStats*)shared->afStatsBuf->map(shared->afStatsBuf);
-        if (!xAfStats) LOGE("af stats is null");
-    } else {
-        LOGW("the xcamvideobuffer of af stats is null");
-    }
-
-    if ((!xAfStats || !xAfStats->af_stats_valid) && !sharedCom->init) {
-        LOGW("no af stats, ignore!");
-        return XCAM_RETURN_BYPASS;
-    }
-
-    RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
-    ret                       = des->post_process(mPostInParam, mPostOutParam);
-    RKAIQCORE_CHECK_RET(ret, "af algo post_process failed");
-
     if (updateAtt && isUpdateAttDone) {
         mCurAtt         = mNewAtt;
         updateAtt       = false;
@@ -523,6 +443,10 @@ XCamReturn RkAiqAfHandleInt::postProcess() {
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
+}
+
+XCamReturn RkAiqAfHandleInt::postProcess() {
+    return XCAM_RETURN_NO_ERROR;
 }
 
 XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params) {
@@ -630,6 +554,7 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
         }
     }
 
+    cur_params->mFocusParams = params->mFocusParams;
 #if RKAIQ_HAVE_AF_V31
     cur_params->mAfV32Params = params->mAfV32Params;
 #endif
@@ -637,7 +562,7 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     cur_params->mAfV3xParams = params->mAfV3xParams;
 #endif
 #if RKAIQ_HAVE_AF_V20
-    cur_params->mFocusParams = params->mFocusParams;
+    cur_params->mAfParams = params->mAfParams;
 #endif
 
     EXIT_ANALYZER_FUNCTION();

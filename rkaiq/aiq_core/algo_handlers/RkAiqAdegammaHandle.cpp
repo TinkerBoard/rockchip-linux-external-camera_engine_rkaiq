@@ -26,12 +26,8 @@ void RkAiqAdegammaHandleInt::init() {
 
     RkAiqHandle::deInit();
     mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAdegamma());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAdegamma());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAdegamma());
     mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAdegamma());
     mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAdegamma());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAdegamma());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAdegamma());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -118,7 +114,7 @@ XCamReturn RkAiqAdegammaHandleInt::preProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPreAdegamma* adegamma_pre_int        = (RkAiqAlgoPreAdegamma*)mPreInParam;
     RkAiqAlgoPreResAdegamma* adegamma_pre_res_int = (RkAiqAlgoPreResAdegamma*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
@@ -135,6 +131,7 @@ XCamReturn RkAiqAdegammaHandleInt::preProcess() {
     RKAIQCORE_CHECK_RET(ret, "adegamma algo pre_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -170,7 +167,7 @@ XCamReturn RkAiqAdegammaHandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#if 0
     RkAiqAlgoPostAdegamma* adegamma_post_int        = (RkAiqAlgoPostAdegamma*)mPostInParam;
     RkAiqAlgoPostResAdegamma* adegamma_post_res_int = (RkAiqAlgoPostResAdegamma*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
@@ -188,6 +185,7 @@ XCamReturn RkAiqAdegammaHandleInt::postProcess() {
     RKAIQCORE_CHECK_RET(ret, "agamma algo post_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return ret;
 }
 

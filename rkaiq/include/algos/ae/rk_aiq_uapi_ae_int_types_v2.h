@@ -189,10 +189,6 @@ typedef struct Uapi_ExpQueryInfo_s {
     float             MeanLuma;
     // M4_ARRAY_DESC("HdrMeanLuma", "f32", M4_SIZE(1,3), M4_RANGE(0,256), "0.0", M4_DIGIT(2), M4_DYNAMIC(0))
     float             HdrMeanLuma[3];
-    // M4_NUMBER_DESC("GlobalEnvLux", "f32", M4_RANGE(0,65535), "0.0", M4_DIGIT(2),M4_HIDE(1))
-    float             GlobalEnvLux;
-    // M4_ARRAY_DESC("BlockEnvLux", "f32", M4_SIZE(15,15), M4_RANGE(0,65535), "0.0", M4_DIGIT(2), M4_DYNAMIC(0), M4_HIDE(1))
-    float             BlockEnvLux[ISP2_RAWAE_WINNUM_MAX];
     // M4_STRUCT_DESC("CurExpInfo", "normal_ui_style");
     RKAiqAecExpInfo_t CurExpInfo;
 

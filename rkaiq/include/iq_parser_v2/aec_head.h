@@ -46,14 +46,14 @@ typedef enum _CalibDb_HdrAeRatioTypeV2_e {
 } CalibDb_HdrAeRatioTypeV2_t;
 
 typedef enum _CalibDb_AeStrategyModeV2_e {
-    AECV2_STRATEGY_MODE_LOWLIGHT_PRIOR,
-    AECV2_STRATEGY_MODE_HIGHLIGHT_PRIOR,
+    AECV2_STRATEGY_MODE_LOWLIGHT,
+    AECV2_STRATEGY_MODE_HIGHLIGHT,
 } CalibDb_AeStrategyModeV2_t;
 
 typedef enum _CalibDb_AeHdrLongFrmModeV2_e {
-    AECV2_HDR_LONGFRMMODE_NORMAL             = 0,
-    AECV2_HDR_LONGFRMMODE_AUTO_LONG_FRAME    = 1,
-    AECV2_HDR_LONGFRMMODE_LONG_FRAME         = 2,
+    AECV2_HDR_LONGFRMMODE_DISABLE             = 0,
+    AECV2_HDR_LONGFRMMODE_AUTO                = 1,
+    AECV2_HDR_LONGFRMMODE_ENABLE              = 2,
 } CalibDb_AeHdrLongFrmModeV2_t;
 
 typedef enum _CalibDb_AecMeasAreaModeV2_e {
@@ -420,7 +420,7 @@ typedef struct CalibDb_LinearAE_AttrV2_s {
     // M4_NUMBER_DESC("Evbias", "f32", M4_RANGE(-500,500), "0", M4_DIGIT(2),M4_HIDE(1))
     float                           Evbias; //uint: %
 
-    // M4_ENUM_DESC("StrategyMode", "CalibDb_AeStrategyModeV2_t","AECV2_STRATEGY_MODE_LOWLIGHT_PRIOR")
+    // M4_ENUM_DESC("StrategyMode", "CalibDb_AeStrategyModeV2_t","AECV2_STRATEGY_MODE_LOWLIGHT")
     CalibDb_AeStrategyModeV2_t      StrategyMode;
 
     // M4_STRUCT_DESC("InitExp", "normal_ui_style")
@@ -590,7 +590,7 @@ typedef struct CalibDb_SfrmCtrlV2_s
 } CalibDb_SfrmCtrlV2_t;
 
 typedef struct CalibDb_LongFrmCtrlV2_s {
-    // M4_ENUM_DESC("mode", "CalibDb_AeHdrLongFrmModeV2_t","AECV2_HDR_LONGFRMMODE_NORMAL")
+    // M4_ENUM_DESC("mode", "CalibDb_AeHdrLongFrmModeV2_t","AECV2_HDR_LONGFRMMODE_DISABLE")
     CalibDb_AeHdrLongFrmModeV2_t    mode;
 
     // M4_NUMBER_DESC("SfrmMinLine", "u16", M4_RANGE(0,1024), "2", M4_DIGIT(0),M4_HIDE(0))
@@ -610,7 +610,7 @@ typedef struct CalibDb_HdrAE_AttrV2_s {
     // M4_NUMBER_DESC("Evbias", "f32", M4_RANGE(-500,500), "0", M4_DIGIT(0),M4_HIDE(1))
     float                           Evbias;
 
-    // M4_ENUM_DESC("StrategyMode", "CalibDb_AeStrategyModeV2_t","AECV2_STRATEGY_MODE_LOWLIGHT_PRIOR")
+    // M4_ENUM_DESC("StrategyMode", "CalibDb_AeStrategyModeV2_t","AECV2_STRATEGY_MODE_LOWLIGHT")
     CalibDb_AeStrategyModeV2_t      StrategyMode;
 
     // M4_NUMBER_DESC("LumaDistTh", "f32", M4_RANGE(0,100), "10", M4_DIGIT(2),M4_HIDE(0))

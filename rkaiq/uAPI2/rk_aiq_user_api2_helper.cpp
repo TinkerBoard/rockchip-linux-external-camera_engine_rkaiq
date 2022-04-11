@@ -56,15 +56,6 @@
 
 /*****************Add UAPI wrapper here if necessary*****************/
 __RKAIQUAPI_SET_WRAPPER(rk_aiq_tool_api_ae_setExpSwAttr, Uapi_ExpSwAttrV2_t);
-#if RKAIQ_HAVE_DRC_V10
-//__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V10_SetAttrib, drcAttrV10_t);
-#endif
-#if RKAIQ_HAVE_DRC_V11
-//__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V11_SetAttrib, drcAttrV11_t);
-#endif
-#if RKAIQ_HAVE_DRC_V12
-//__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_adrc_V12_SetAttrib, drcAttrV12_t);
-#endif
 
 /********************** Add Attr caller here ************************/
 __RKAIQUAPI_CALLER(uapi_expsw_attr_t);
@@ -74,14 +65,41 @@ __RKAIQUAPI_CALLER(work_mode_t);
 __RKAIQUAPI_CALLER(uapi_wb_gain_t);
 __RKAIQUAPI_CALLER(uapi_wb_mode_t);
 __RKAIQUAPI_CALLER(uapiMergeCurrCtlData_t);
+#if RKAIQ_HAVE_MERGE_V10
+__RKAIQUAPI_CALLER(mMergeAttrV10_t);
+#endif
+#if RKAIQ_HAVE_MERGE_V11
+__RKAIQUAPI_CALLER(mMergeAttrV11_t);
+#endif
+#if RKAIQ_HAVE_MERGE_V12
+__RKAIQUAPI_CALLER(mMergeAttrV12_t);
+#endif
 #if RKAIQ_HAVE_DRC_V10
-__RKAIQUAPI_CALLER(drcAttrV10_t);
+__RKAIQUAPI_CALLER(DrcInfoV10_t);
+__RKAIQUAPI_CALLER(mdrcAttr_V10_t);
 #endif
 #if RKAIQ_HAVE_DRC_V11
-__RKAIQUAPI_CALLER(drcAttrV11_t);
+__RKAIQUAPI_CALLER(DrcInfoV11_t);
+__RKAIQUAPI_CALLER(mdrcAttr_V11_t);
 #endif
 #if RKAIQ_HAVE_DRC_V12
-__RKAIQUAPI_CALLER(drcAttrV12_t);
+__RKAIQUAPI_CALLER(DrcInfoV12_t);
+__RKAIQUAPI_CALLER(mdrcAttr_V12_t);
+#endif
+#if RKAIQ_HAVE_GAMMA_V10
+__RKAIQUAPI_CALLER(AgammaApiManualV10_t);
+#endif
+#if RKAIQ_HAVE_GAMMA_V11
+__RKAIQUAPI_CALLER(AgammaApiManualV11_t);
+#endif
+__RKAIQUAPI_CALLER(mDehazeAttrInfoV11_t);
+#if RKAIQ_HAVE_DEHAZE_V10
+#endif
+#if RKAIQ_HAVE_DEHAZE_V11
+__RKAIQUAPI_CALLER(mDehazeAttrV11_t);
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+__RKAIQUAPI_CALLER(mDehazeAttrV12_t);
 #endif
 __RKAIQUAPI_CALLER(uapi_ae_hwstats_t);
 #if ISP_HW_V21
@@ -104,32 +122,64 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
                          rk_aiq_uapi2_getWBGain),
     __RKAIQUAPI_DESC_DEF("/uapi/0/awb_uapi/mode", uapi_wb_mode_t, rk_aiq_tool_api_setWBMode,
                          rk_aiq_uapi2_getWBMode2),
+
 #if RKAIQ_HAVE_MERGE_V10
-    __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/ctldata", uapiMergeCurrCtlData_t,
-                         rk_aiq_tool_api_amerge_V10_SetAttrib2,
-                         rk_aiq_user_api2_amerge_V10_GetAttrib2),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/Info", uapiMergeCurrCtlData_t, NULL,
+                         rk_aiq_user_api2_amerge_v10_queryinfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/stManual", mMergeAttrV10_t,
+                         rk_aiq_set_amerge_v10_manual_attr, rk_aiq_get_amerge_v10_manual_attr),
 #endif
 #if RKAIQ_HAVE_MERGE_V11
-    __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/ctldata", uapiMergeCurrCtlData_t,
-                         rk_aiq_tool_api_amerge_V11_SetAttrib2,
-                         rk_aiq_user_api2_amerge_V11_GetAttrib2),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/Info", uapiMergeCurrCtlData_t, NULL,
+                         rk_aiq_user_api2_amerge_v11_queryinfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/stManual", mMergeAttrV11_t,
+                         rk_aiq_set_amerge_v11_manual_attr, rk_aiq_get_amerge_v11_manual_attr),
 #endif
 #if RKAIQ_HAVE_MERGE_V12
-    __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/ctldata", uapiMergeCurrCtlData_t,
-                         rk_aiq_tool_api_amerge_V12_SetAttrib2,
-                         rk_aiq_user_api2_amerge_V12_GetAttrib2),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/Info", uapiMergeCurrCtlData_t, NULL,
+                         rk_aiq_user_api2_amerge_v12_queryinfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/amerge_uapi/stManual", mMergeAttrV12_t,
+                         rk_aiq_set_amerge_v12_manual_attr, rk_aiq_get_amerge_v12_manual_attr),
 #endif
 #if RKAIQ_HAVE_DRC_V10
-//__RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV10_t, rk_aiq_tool_api_adrc_V10_SetAttrib,
-//                     rk_aiq_user_api2_adrc_V10_GetAttrib),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/Info", DrcInfoV10_t, NULL,
+                         rk_aiq_user_api2_adrc_v10_queryinfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/stManual", mdrcAttr_V10_t,
+                         rk_aiq_set_adrc_v10_manual_attr, rk_aiq_get_adrc_v10_manual_attr),
 #endif
 #if RKAIQ_HAVE_DRC_V11
-//__RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV11_t, rk_aiq_tool_api_adrc_V11_SetAttrib,
-//                     rk_aiq_user_api2_adrc_V11_GetAttrib),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/Info", DrcInfoV11_t, NULL,
+                         rk_aiq_user_api2_adrc_v11_queryinfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/stManual", mdrcAttr_V11_t,
+                         rk_aiq_set_adrc_v11_manual_attr, rk_aiq_get_adrc_v11_manual_attr),
 #endif
 #if RKAIQ_HAVE_DRC_V12
-//__RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/drc", drcAttrV12_t, rk_aiq_tool_api_adrc_V12_SetAttrib,
-//                     rk_aiq_user_api2_adrc_V12_GetAttrib),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/Info", DrcInfoV12_t, NULL,
+                         rk_aiq_user_api2_adrc_v12_queryinfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/stManual", mdrcAttr_V12_t,
+                         rk_aiq_set_adrc_v12_manual_attr, rk_aiq_get_adrc_v12_manual_attr),
+#endif
+#if RKAIQ_HAVE_GAMMA_V10
+    __RKAIQUAPI_DESC_DEF("/uapi/0/agamma_uapi/stManual", AgammaApiManualV10_t,
+                         rk_aiq_set_agamma_v10_manual_attr, rk_aiq_get_agamma_v10_manual_attr),
+#endif
+#if RKAIQ_HAVE_GAMMA_V11
+    __RKAIQUAPI_DESC_DEF("/uapi/0/agamma_uapi/stManual", AgammaApiManualV11_t,
+                         rk_aiq_set_agamma_v11_manual_attr, rk_aiq_get_agamma_v11_manual_attr),
+#endif
+#if RKAIQ_HAVE_DEHAZE_V10
+#endif
+#if RKAIQ_HAVE_DEHAZE_V11
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adehaze_uapi/Info", mDehazeAttrInfoV11_t, NULL,
+                         rk_aiq_user_api2_adehaze_v11_queryinfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adehaze_uapi/stManual", mDehazeAttrV11_t,
+                         rk_aiq_set_adehaze_v11_manual_attr, rk_aiq_get_adehaze_v11_manual_attr),
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adehaze_uapi/Info", mDehazeAttrInfoV11_t, NULL,
+                         rk_aiq_user_api2_adehaze_v12_queryinfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adehaze_uapi/stManual", mDehazeAttrV12_t,
+                         rk_aiq_set_adehaze_v12_manual_attr, rk_aiq_get_adehaze_v12_manual_attr),
 #endif
     __RKAIQUAPI_DESC_DEF("/uapi/0/system/work_mode", work_mode_t,
                          rk_aiq_tool_api_sysctl_swWorkingModeDyn,
@@ -173,7 +223,6 @@ char *rkaiq_uapi_rpc_response(const char *cmd_path, cJSON *root_js,
       node_json = root_js;
   } else {
       node_json = cJSONUtils_GetPointer(root_js, sub_node);
-      if (node_json) cJSON_DetachItemViaPointer(root_js, node_json);
   }
 
   node_json_clone = cJSON_Duplicate(node_json, 1);
@@ -185,7 +234,7 @@ char *rkaiq_uapi_rpc_response(const char *cmd_path, cJSON *root_js,
     cJSON_AddItemToArray(ret_json, ret_item);
   }
 
-  ret_str = strdup(cJSON_PrintUnformatted(ret_json));
+  ret_str = cJSON_Print(ret_json);
 
   if (ret_json)
     cJSON_Delete(ret_json);
@@ -288,6 +337,8 @@ int rkaiq_uapi_unified_ctl(rk_aiq_sys_ctx_t *sys_ctx, const char *js_str,
       cJSON_Delete(ret_js);
     }
   }
+
+  cJSON_Delete(cmd_js);
 
   return 0;
 }

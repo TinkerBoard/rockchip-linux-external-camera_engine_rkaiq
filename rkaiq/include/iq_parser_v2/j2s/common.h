@@ -86,7 +86,7 @@ extern "C" {
 #endif
 
 #define MAX_LINE 8192
-#define MAX_NAME 64
+#define MAX_NAME 32 
 
 #define J2S_DESC_MAGIC "@desc:"
 

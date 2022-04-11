@@ -640,8 +640,8 @@ Aynr_result_V22_t ynr_init_params_json_V22(RK_YNR_Params_V22_t *pYnrParams, Cali
     int bit_proc;
     int bit_shift;
 
-    CalibDbV2_YnrV22_TuningPara_Setting_ISO_t *pISO = NULL;
-    CalibDbV2_YnrV22_CalibPara_Setting_ISO_t *pCalibISO = NULL;
+    CalibDbV2_YnrV22_T_ISO_t *pISO = NULL;
+    CalibDbV2_YnrV22_C_ISO_t *pCalibISO = NULL;
 
     LOGD_ANR("%s(%d): enter\n", __FUNCTION__, __LINE__);
 

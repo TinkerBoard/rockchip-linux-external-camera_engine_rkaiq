@@ -121,6 +121,7 @@ typedef struct rk_aiq_awb_stat_res_v32_s {
     //wpno histogram
     unsigned int WpNoHist[RK_AIQ_AWB_WP_HIST_BIN_NUM];
     rk_aiq_awb_stat_cfg_effect_v32_t  awb_cfg_effect_v32;
+    int dbginfo_fd;
 } rk_aiq_awb_stat_res_v32_t;
 
 #endif

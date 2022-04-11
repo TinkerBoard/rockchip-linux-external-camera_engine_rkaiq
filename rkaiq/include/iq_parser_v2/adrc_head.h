@@ -1,11 +1,34 @@
-#define ADRC_Y_NUM             17
-#define ADRC_ENVLV_STEP_MAX 13
+/*
+ * adrc_head.h
+ *
+ *  Copyright (c) 2021 Rockchip Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
+#ifndef __CALIBDBV2_ADRC_HEADER_H__
+#define __CALIBDBV2_ADRC_HEADER_H__
+
+#include "adehaze_head.h"
+
+#define ADRC_Y_NUM             17
+#define ADRC_ENVLV_STEP_MAX    13
 
 // drc v10
 typedef struct AdrcGain_s {
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
-    float EnvLv[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float CtrlData[ADRC_ENVLV_STEP_MAX];
     // M4_ARRAY_DESC("DrcGain", "f32", M4_SIZE(1,13), M4_RANGE(1,8), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
     float DrcGain[ADRC_ENVLV_STEP_MAX]; 
     // M4_ARRAY_DESC("Alpha", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
@@ -15,15 +38,15 @@ typedef struct AdrcGain_s {
 } AdrcGain_t;
 
 typedef struct HighLight_s {
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
-    float EnvLv[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float CtrlData[ADRC_ENVLV_STEP_MAX];
     // M4_ARRAY_DESC("Strength", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
     float Strength[ADRC_ENVLV_STEP_MAX]; 
 } HighLight_t;
 
 typedef struct LocalData_s{
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
-    float EnvLv[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float CtrlData[ADRC_ENVLV_STEP_MAX];
     // M4_ARRAY_DESC("LocalWeit", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
     float LocalWeit[ADRC_ENVLV_STEP_MAX];  
     // M4_ARRAY_DESC("GlobalContrast", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
@@ -66,6 +89,8 @@ typedef struct Compress_s {
 typedef struct CalibDbV2_Adrc_V10_s {
     // M4_BOOL_DESC("Enable", "1")
     bool Enable;
+    // M4_ENUM_DESC("CtrlDataType", "CtrlDataType_t", "CTRLDATATYPE_ENVLV")
+    CtrlDataType_t CtrlDataType;
     // M4_ARRAY_TABLE_DESC("DrcGain", "array_table_ui", "none")
     AdrcGain_t DrcGain;
     // M4_ARRAY_TABLE_DESC("HiLight", "array_table_ui", "none")
@@ -97,8 +122,8 @@ typedef struct CalibDbV2_drc_V10_s {
 
 // drc v11
 typedef struct LocalDataV2_s{
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
-    float EnvLv[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
+    float CtrlData[ADRC_ENVLV_STEP_MAX];
     // M4_ARRAY_DESC("LocalWeit", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
     float LocalWeit[ADRC_ENVLV_STEP_MAX];  
     // M4_ARRAY_DESC("LocalAutoEnable", "u8", M4_SIZE(1,13), M4_RANGE(0,1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(0), M4_DYNAMIC(0), 0)
@@ -133,6 +158,8 @@ typedef struct localV11_s {
 typedef struct CalibDbV2_Adrc_V11_s {
     // M4_BOOL_DESC("Enable", "1")
     bool Enable;
+    // M4_ENUM_DESC("CtrlDataType", "CtrlDataType_t", "CTRLDATATYPE_ENVLV")
+    CtrlDataType_t CtrlDataType;
     // M4_ARRAY_TABLE_DESC("DrcGain", "array_table_ui", "none")
     AdrcGain_t DrcGain;
     // M4_ARRAY_TABLE_DESC("HiLight", "array_table_ui", "none")
@@ -192,8 +219,8 @@ typedef struct localV12_s {
 } localV12_t;
 
 typedef struct HighLightDataV12_s {
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
-    float EnvLv[ADRC_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
+    float CtrlData[ADRC_ENVLV_STEP_MAX];
     // M4_ARRAY_DESC("Strength", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(2), M4_DYNAMIC(0), 0)
     float Strength[ADRC_ENVLV_STEP_MAX];  
     // M4_ARRAY_DESC("gas_t", "f32", M4_SIZE(1,13), M4_RANGE(0,2), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
@@ -216,6 +243,8 @@ typedef struct HighLightV12_s {
 typedef struct CalibDbV2_Adrc_V12_s {
     // M4_BOOL_DESC("Enable", "1")
     bool Enable;
+    // M4_ENUM_DESC("CtrlDataType", "CtrlDataType_t", "CTRLDATATYPE_ENVLV")
+    CtrlDataType_t CtrlDataType;
     // M4_ARRAY_TABLE_DESC("DrcGain", "array_table_ui", "none")
     AdrcGain_t DrcGain;
     // M4_ARRAY_TABLE_DESC("HiLight", "normal_ui_style")
@@ -245,4 +274,4 @@ typedef struct CalibDbV2_drc_V12_s {
     CalibDbV2_Adrc_V12_t DrcTuningPara;
 } CalibDbV2_drc_V12_t;
 
-#pragma once
+#endif

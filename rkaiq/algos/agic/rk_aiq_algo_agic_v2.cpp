@@ -78,10 +78,10 @@ void GicV2SelectParam(rkaiq_gic_v2_param_selected_t* selected, int ratio, int in
         INTERPOLATION(ratio, hi->min_grad_thr_dark1, lo->min_grad_thr_dark1);
     selected->min_grad_thr_dark2 =
         INTERPOLATION(ratio, hi->min_grad_thr_dark2, lo->min_grad_thr_dark2);
-    selected->NoiseScale     = INTERPOLATION_F(ratioF, hi->NoiseScale, lo->NoiseScale);
-    selected->NoiseBase      = INTERPOLATION_F(ratioF, hi->NoiseBase, lo->NoiseBase);
+    selected->NoiseScale     = INTERPOLATION(ratio, hi->NoiseScale, lo->NoiseScale);
+    selected->NoiseBase      = INTERPOLATION(ratio, hi->NoiseBase, lo->NoiseBase);
     selected->globalStrength = INTERPOLATION_F(ratioF, hi->globalStrength, lo->globalStrength);
-    selected->diff_clip      = INTERPOLATION_F(ratioF, hi->diff_clip, lo->diff_clip);
+    selected->diff_clip      = INTERPOLATION(ratio, hi->diff_clip, lo->diff_clip);
 }
 #else
 void GicV2SelectParam(AgicConfigV21_t* selected, int ratio, int index,
@@ -107,12 +107,12 @@ void GicV2SelectParam(AgicConfigV21_t* selected, int ratio, int index,
         INTERPOLATION(ratio, hi->min_grad_thr_dark1, lo->min_grad_thr_dark1);
     selected->regmingradthrdark2 =
         INTERPOLATION(ratio, hi->min_grad_thr_dark2, lo->min_grad_thr_dark2);
-    selected->noise_scale    = INTERPOLATION_F(ratioF, hi->NoiseScale, lo->NoiseScale);
-    selected->noise_base     = INTERPOLATION_F(ratioF, hi->NoiseBase, lo->NoiseBase);
+    selected->noise_scale    = INTERPOLATION(ratio, hi->NoiseScale, lo->NoiseScale);
+    selected->noise_base     = INTERPOLATION(ratio, hi->NoiseBase, lo->NoiseBase);
+    selected->diff_clip      = INTERPOLATION(ratio, hi->diff_clip, lo->diff_clip);
     selected->noiseCurve_0   = INTERPOLATION_F(ratioF, hi->noiseCurve_0, lo->noiseCurve_0);
     selected->noiseCurve_1   = INTERPOLATION_F(ratioF, hi->noiseCurve_1, lo->noiseCurve_1);
     selected->globalStrength = INTERPOLATION_F(ratioF, hi->globalStrength, lo->globalStrength);
-    selected->diff_clip      = INTERPOLATION_F(ratioF, hi->diff_clip, lo->diff_clip);
 }
 #endif
 
@@ -259,9 +259,9 @@ void AgicGetProcResultV21(AgicContext_t* pAgicCtx) {
     pAgicCtx->ProcRes.ProcResV21.regmingradthr2 = pAgicCtx->ConfigData.ConfigV21.regmingradthr2;
     pAgicCtx->ProcRes.ProcResV21.gr_ratio       = pAgicCtx->ConfigData.ConfigV21.gr_ratio;
     pAgicCtx->ProcRes.ProcResV21.noise_scale =
-        (pAgicCtx->ConfigData.ConfigV21.noise_scale * 128 + 0.5);
+        (pAgicCtx->ConfigData.ConfigV21.noise_scale);
     pAgicCtx->ProcRes.ProcResV21.noise_base =
-        (int)(pAgicCtx->ConfigData.ConfigV21.noise_base * 4096 + 0.5);
+        (int)(pAgicCtx->ConfigData.ConfigV21.noise_base);
 
     for (int i = 0; i < 15; i++) {
         pAgicCtx->ProcRes.ProcResV21.sigma_y[i] =
@@ -361,6 +361,7 @@ void AgicProcessV21(AgicContext_t* pAgicCtx, int ISO) {
     pAgicCtx->ConfigData.ConfigV21.regdarktthrehi *= mulBit;
     pAgicCtx->ConfigData.ConfigV21.regmingradthrdark1 *= mulBit;
     pAgicCtx->ConfigData.ConfigV21.regmingradthrdark2 *= mulBit;
+    pAgicCtx->ConfigData.ConfigV21.noise_base *= mulBit;
 
     LOG1_AGIC("exit!");
 }

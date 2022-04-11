@@ -98,19 +98,16 @@ float GetCurrParaV10(float inPara, float* inMatrixX, float* inMatrixY, int Max_K
 void AmergeGetEnvLvV10(AmergeContext_t* pAmergeCtx, AecPreResult_t AecHdrPreResult) {
     LOG1_AMERGE("%s:enter!\n", __FUNCTION__);
 
-    // get Ae Pre Result
-    pAmergeCtx->AeResult.GlobalEnvLv = AecHdrPreResult.GlobalEnvLv[AecHdrPreResult.NormalIndex];
-
     // transfer AeResult data into AhdrHandle
     switch (pAmergeCtx->FrameNumber) {
         case LINEAR_NUM:
-            pAmergeCtx->AeResult.GlobalEnvLv = AecHdrPreResult.GlobalEnvLv[0];
+            pAmergeCtx->CurrData.CtrlData.EnvLv = AecHdrPreResult.GlobalEnvLv[0];
             break;
         case HDR_2X_NUM:
-            pAmergeCtx->AeResult.GlobalEnvLv = AecHdrPreResult.GlobalEnvLv[1];
+            pAmergeCtx->CurrData.CtrlData.EnvLv = AecHdrPreResult.GlobalEnvLv[1];
             break;
         case HDR_3X_NUM:
-            pAmergeCtx->AeResult.GlobalEnvLv = AecHdrPreResult.GlobalEnvLv[1];
+            pAmergeCtx->CurrData.CtrlData.EnvLv = AecHdrPreResult.GlobalEnvLv[1];
             break;
         default:
             LOGE_AMERGE("%s:  Wrong frame number in HDR mode!!!\n", __FUNCTION__);
@@ -119,51 +116,13 @@ void AmergeGetEnvLvV10(AmergeContext_t* pAmergeCtx, AecPreResult_t AecHdrPreResu
 
     // Normalize the current envLv for AEC
     pAmergeCtx->CurrData.CtrlData.EnvLv =
-        (pAmergeCtx->AeResult.GlobalEnvLv - MIN_ENV_LV) / (MAX_ENV_LV - MIN_ENV_LV);
+        (pAmergeCtx->CurrData.CtrlData.EnvLv - MIN_ENV_LV) / (MAX_ENV_LV - MIN_ENV_LV);
     pAmergeCtx->CurrData.CtrlData.EnvLv =
         LIMIT_VALUE(pAmergeCtx->CurrData.CtrlData.EnvLv, ENVLVMAX, ENVLVMIN);
 
     LOG1_AMERGE("%s:exit!\n", __FUNCTION__);
 }
 
-void AmergeGetSensorInfo(AmergeContext_t* pAmergeCtx, AecProcResult_t AecHdrProcResult) {
-    LOG1_AMERGE("%s:enter!\n", __FUNCTION__);
-
-    pAmergeCtx->SensorInfo.LongFrmMode =
-        AecHdrProcResult.LongFrmMode && (pAmergeCtx->FrameNumber != LINEAR_NUM);
-
-    for (int i = 0; i < 3; i++) {
-        pAmergeCtx->SensorInfo.HdrMinGain[i]            = AecHdrProcResult.HdrMinGain[i];
-        pAmergeCtx->SensorInfo.HdrMaxGain[i]            = AecHdrProcResult.HdrMaxGain[i];
-        pAmergeCtx->SensorInfo.HdrMinIntegrationTime[i] = AecHdrProcResult.HdrMinIntegrationTime[i];
-        pAmergeCtx->SensorInfo.HdrMaxIntegrationTime[i] = AecHdrProcResult.HdrMaxIntegrationTime[i];
-    }
-
-    if (pAmergeCtx->FrameNumber == HDR_2X_NUM) {
-        pAmergeCtx->SensorInfo.MaxExpoL =
-            pAmergeCtx->SensorInfo.HdrMaxGain[1] * pAmergeCtx->SensorInfo.HdrMaxIntegrationTime[1];
-        pAmergeCtx->SensorInfo.MinExpoL =
-            pAmergeCtx->SensorInfo.HdrMinGain[1] * pAmergeCtx->SensorInfo.HdrMinIntegrationTime[1];
-        pAmergeCtx->SensorInfo.MaxExpoM = 0;
-        pAmergeCtx->SensorInfo.MinExpoM = 0;
-    } else if (pAmergeCtx->FrameNumber == HDR_3X_NUM) {
-        pAmergeCtx->SensorInfo.MaxExpoL =
-            pAmergeCtx->SensorInfo.HdrMaxGain[2] * pAmergeCtx->SensorInfo.HdrMaxIntegrationTime[2];
-        pAmergeCtx->SensorInfo.MinExpoL =
-            pAmergeCtx->SensorInfo.HdrMinGain[2] * pAmergeCtx->SensorInfo.HdrMinIntegrationTime[2];
-        pAmergeCtx->SensorInfo.MaxExpoM =
-            pAmergeCtx->SensorInfo.HdrMaxGain[1] * pAmergeCtx->SensorInfo.HdrMaxIntegrationTime[1];
-        pAmergeCtx->SensorInfo.MinExpoM =
-            pAmergeCtx->SensorInfo.HdrMinGain[1] * pAmergeCtx->SensorInfo.HdrMinIntegrationTime[1];
-    }
-
-    pAmergeCtx->SensorInfo.MaxExpoS =
-        pAmergeCtx->SensorInfo.HdrMaxGain[0] * pAmergeCtx->SensorInfo.HdrMaxIntegrationTime[0];
-    pAmergeCtx->SensorInfo.MinExpoS =
-        pAmergeCtx->SensorInfo.HdrMinGain[0] * pAmergeCtx->SensorInfo.HdrMinIntegrationTime[0];
-
-    LOG1_AMERGE("%s:exit!\n", __FUNCTION__);
-}
 /******************************************************************************
  * CalibrateOECurveV10()
  *****************************************************************************/
@@ -386,8 +345,8 @@ void AmergeTuningProcessing(AmergeContext_t* pAmergeCtx) {
         LOGE_AMERGE("%s:  Amerge wrong mode!!!\n", __FUNCTION__);
 
     // transfer control data to api
-    pAmergeCtx->mergeAttrV10.CtlInfo.Envlv    = pAmergeCtx->CurrData.CtrlData.EnvLv;
-    pAmergeCtx->mergeAttrV10.CtlInfo.MoveCoef = pAmergeCtx->CurrData.CtrlData.MoveCoef;
+    pAmergeCtx->mergeAttrV10.Info.Envlv    = pAmergeCtx->CurrData.CtrlData.EnvLv;
+    pAmergeCtx->mergeAttrV10.Info.MoveCoef = pAmergeCtx->CurrData.CtrlData.MoveCoef;
 
     // merge damp
     MergeDampingV10(pAmergeCtx);
@@ -585,9 +544,6 @@ XCamReturn AmergeInit(AmergeContext_t** ppAmergeCtx, CamCalibDbV2Context_t* pCal
 
     CalibDbV2_merge_V10_t* calibv2_amerge_calib =
         (CalibDbV2_merge_V10_t*)(CALIBDBV2_GET_MODULE_PTR(pCalibV2, amerge_calib));
-
-    memcpy(&pAmergeCtx->CalibDBV10, calibv2_amerge_calib,
-           sizeof(CalibDbV2_merge_V10_t));  // load iq paras
     memcpy(&pAmergeCtx->mergeAttrV10.stAuto, calibv2_amerge_calib,
            sizeof(CalibDbV2_merge_V10_t));  // set deafault stAuto
 
@@ -606,8 +562,8 @@ XCamReturn AmergeInit(AmergeContext_t** ppAmergeCtx, CamCalibDbV2Context_t* pCal
 
     // set default ctrl info
     pAmergeCtx->mergeAttrV10.opMode           = MERGE_OPMODE_AUTO;
-    pAmergeCtx->mergeAttrV10.CtlInfo.Envlv    = 1.0;
-    pAmergeCtx->mergeAttrV10.CtlInfo.MoveCoef = 0.0;
+    pAmergeCtx->mergeAttrV10.Info.Envlv       = 1.0;
+    pAmergeCtx->mergeAttrV10.Info.MoveCoef    = 0.0;
 
     pAmergeCtx->mergeAttrV10.stManual.OECurve.Smooth    = 0.4;
     pAmergeCtx->mergeAttrV10.stManual.OECurve.Offset    = 210;

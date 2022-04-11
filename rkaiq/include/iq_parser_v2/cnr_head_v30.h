@@ -25,7 +25,7 @@
 RKAIQ_BEGIN_DECLARE
 
 ///////////////////////////uvnr//////////////////////////////////////
-typedef struct CalibDbV2_CNRV30_TuningPara_Setting_ISO_s {
+typedef struct CalibDbV2_CNRV30_T_ISO_s {
     // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index2")
     float iso;
 
@@ -91,34 +91,34 @@ typedef struct CalibDbV2_CNRV30_TuningPara_Setting_ISO_s {
     // M4_ARRAY_DESC("gaus_coeff", "f32", M4_SIZE(1,6), M4_RANGE(0,127), "36,24,16,6,4,1", M4_DIGIT(0), M4_DYNAMIC(0))
     float gaus_coeff[6];
 
-} CalibDbV2_CNRV30_TuningPara_Setting_ISO_t;
+} CalibDbV2_CNRV30_T_ISO_t;
 
-typedef struct CalibDbV2_CNRV30_TuningPara_Setting_s {
+typedef struct CalibDbV2_CNRV30_T_Set_s {
     // M4_STRING_MARK_DESC("SNR_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "LSNR",M4_DYNAMIC(0), "index1")
     char *SNR_Mode;
     // M4_STRING_DESC("Sensor_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "lcg", M4_DYNAMIC(0))
     char *Sensor_Mode;
     // M4_STRUCT_LIST_DESC("Tuning_ISO", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_CNRV30_TuningPara_Setting_ISO_t *Tuning_ISO;
+    CalibDbV2_CNRV30_T_ISO_t *Tuning_ISO;
     int Tuning_ISO_len;
 
-} CalibDbV2_CNRV30_TuningPara_Setting_t;
+} CalibDbV2_CNRV30_T_Set_t;
 
 
-typedef struct CalibDbV2_CNRV30_TuningPara_s {
+typedef struct CalibDbV2_CNRV30_Tuning_s {
     // M4_BOOL_DESC("enable", "1")
     int enable;
     // M4_STRUCT_LIST_DESC("Setting", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_CNRV30_TuningPara_Setting_t *Setting;
+    CalibDbV2_CNRV30_T_Set_t *Setting;
     int Setting_len;
-} CalibDbV2_CNRV30_TuningPara_t;
+} CalibDbV2_CNRV30_Tuning_t;
 
 
 typedef struct CalibDbV2_CNRV30_s {
     // M4_STRING_DESC("Version", M4_SIZE(1,1), M4_RANGE(0, 64), "V1", M4_DYNAMIC(0))
     char *Version;
     // M4_STRUCT_DESC("TuningPara", "normal_ui_style")
-    CalibDbV2_CNRV30_TuningPara_t TuningPara;
+    CalibDbV2_CNRV30_Tuning_t TuningPara;
 } CalibDbV2_CNRV30_t;
 
 RKAIQ_END_DECLARE

@@ -19639,15 +19639,15 @@ bool RkAiqCalibParser::parseEntrySystemHDR
             ParseString(psecsubchild, line_mode, sizeof(line_mode));
             if (xmlParseReadWrite == XML_PARSER_READ) {
                 if (0 == strcasecmp(line_mode, HDR_LINE_MODE_DCG_STR))
-                    sysContrl->line_mode = RK_AIQ_SENSOR_HDR_LINE_MODE_DCG;
+                    sysContrl->line_mode = RKAIQ_SENSOR_HDR_MODE_DCG;
                 else if (0 == strcasecmp(line_mode, HDR_LINE_MODE_STAGGER_STR))
-                    sysContrl->line_mode = RK_AIQ_SENSOR_HDR_LINE_MODE_STAGGER;
+                    sysContrl->line_mode = RKAIQ_SENSOR_HDR_MODE_STAGGER;
             }
             else if (xmlParseReadWrite == XML_PARSER_WRITE) {
                 XMLNode *pNode = (XMLNode*)psecsubchild;
-                if (sysContrl->line_mode == RK_AIQ_SENSOR_HDR_LINE_MODE_DCG)
+                if (sysContrl->line_mode == RKAIQ_SENSOR_HDR_MODE_DCG)
                     pNode->FirstChild()->SetValue(HDR_LINE_MODE_DCG_STR);
-                else if (sysContrl->line_mode == RK_AIQ_SENSOR_HDR_LINE_MODE_STAGGER)
+                else if (sysContrl->line_mode == RKAIQ_SENSOR_HDR_MODE_STAGGER)
                     pNode->FirstChild()->SetValue(HDR_LINE_MODE_STAGGER_STR);
             }
         }
@@ -20543,15 +20543,15 @@ bool RkAiqCalibParser::parseEntryExpSetHdrSet
             ParseString(psecsubchild, line_mode, sizeof(line_mode));
             if (xmlParseReadWrite == XML_PARSER_READ) {
                 if (0 == strcasecmp(line_mode, CALIB_EXPSET_HDRSET_LINE_MODE_DCG))
-                    expset->CISHdrSet.line_mode = RK_AIQ_SENSOR_HDR_LINE_MODE_DCG;
+                    expset->CISHdrSet.line_mode = RKAIQ_SENSOR_HDR_MODE_DCG;
                 else if (0 == strcasecmp(line_mode, CALIB_EXPSET_HDRSET_LINE_MODE_STAGGER))
-                    expset->CISHdrSet.line_mode = RK_AIQ_SENSOR_HDR_LINE_MODE_STAGGER;
+                    expset->CISHdrSet.line_mode = RKAIQ_SENSOR_HDR_MODE_STAGGER;
             }
             else if (xmlParseReadWrite == XML_PARSER_WRITE) {
                 XMLNode *pNode = (XMLNode*)psecsubchild;
-                if (expset->CISHdrSet.line_mode == RK_AIQ_SENSOR_HDR_LINE_MODE_DCG)
+                if (expset->CISHdrSet.line_mode == RKAIQ_SENSOR_HDR_MODE_DCG)
                     pNode->FirstChild()->SetValue(CALIB_EXPSET_HDRSET_LINE_MODE_DCG);
-                else if (expset->CISHdrSet.line_mode == RK_AIQ_SENSOR_HDR_LINE_MODE_STAGGER)
+                else if (expset->CISHdrSet.line_mode == RKAIQ_SENSOR_HDR_MODE_STAGGER)
                     pNode->FirstChild()->SetValue(CALIB_EXPSET_HDRSET_LINE_MODE_STAGGER);
             }
         }

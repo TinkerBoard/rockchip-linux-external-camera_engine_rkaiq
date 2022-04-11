@@ -152,6 +152,7 @@ typedef enum rk_aiq_drv_share_mem_type_e {
     MEM_TYPE_LDCH,
     MEM_TYPE_FEC,
     MEM_TYPE_CAC,
+    MEM_TYPE_DBG_INFO,
 } rk_aiq_drv_share_mem_type_t;
 
 typedef void (*alloc_mem_t)(uint8_t id, void* ops_ctx, void* cfg, void** mem_ctx);
@@ -173,6 +174,7 @@ typedef struct rk_aiq_lut_share_mem_info_s {
 
 typedef rk_aiq_lut_share_mem_info_t rk_aiq_ldch_share_mem_info_t;
 typedef rk_aiq_lut_share_mem_info_t rk_aiq_cac_share_mem_info_t;
+typedef rk_aiq_lut_share_mem_info_t rk_aiq_dbg_share_mem_info_t;
 
 typedef struct rk_aiq_fec_share_mem_info_s {
     int size;
@@ -256,7 +258,7 @@ enum cam_thread_type_e {
  */
 
 #define MAX_MEDIA_INDEX               16
-#define DEV_PATH_LEN                  64
+#define DEV_PATH_LEN                  32
 #define SENSOR_ATTACHED_FLASH_MAX_NUM 2
 #define MAX_CAM_NUM                   8
 
@@ -304,12 +306,14 @@ typedef struct {
     char pp_scale0_path[DEV_PATH_LEN];
     char pp_scale1_path[DEV_PATH_LEN];
     char pp_scale2_path[DEV_PATH_LEN];
+#if defined(ISP_HW_V20)
     char pp_input_params_path[DEV_PATH_LEN];
     char pp_stats_path[DEV_PATH_LEN];
     char pp_tnr_params_path[DEV_PATH_LEN];
     char pp_tnr_stats_path[DEV_PATH_LEN];
     char pp_nr_params_path[DEV_PATH_LEN];
     char pp_nr_stats_path[DEV_PATH_LEN];
+#endif
     char pp_fec_params_path[DEV_PATH_LEN];
     char pp_dev_path[DEV_PATH_LEN];
 } rk_aiq_ispp_t;

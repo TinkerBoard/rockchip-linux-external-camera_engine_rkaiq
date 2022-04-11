@@ -97,26 +97,20 @@ prepare(RkAiqAlgoCom* params)
 #if RKAIQ_HAVE_DRC_V10
         CalibDbV2_drc_V10_t* calibv2_adrc_calib =
             (CalibDbV2_drc_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
-        memcpy(&pAdrcGrpCtx->CalibDBV10, calibv2_adrc_calib,
-               sizeof(CalibDbV2_drc_V10_t));  // reload iq paras
         memcpy(&pAdrcGrpCtx->drcAttrV10.stAuto, calibv2_adrc_calib,
                sizeof(CalibDbV2_drc_V10_t));  // reload stAuto
 #endif
 #if RKAIQ_HAVE_DRC_V11
         CalibDbV2_drc_V11_t* calibv2_adrc_calib =
             (CalibDbV2_drc_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
-        memcpy(&pAdrcGrpCtx->CalibDBV11, calibv2_adrc_calib,
-               sizeof(CalibDbV2_drc_V11_t));  // reload iq paras
         memcpy(&pAdrcGrpCtx->drcAttrV11.stAuto, calibv2_adrc_calib,
                sizeof(CalibDbV2_drc_V11_t));  // reload stAuto
 #endif
 #if RKAIQ_HAVE_DRC_V12
         CalibDbV2_drc_V12_t* calibv2_adrc_calib =
             (CalibDbV2_drc_V12_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
-        memcpy(&pAdrcGrpCtx->CalibDBV12, calibv2_adrc_calib,
-               sizeof(CalibDbV2_drc_V12_t));  // reload iq paras
-        memcpy(&pAdrcGrpCtx->drcAttrV12.stAuto.DrcTuningPara, &calibv2_adrc_calib->DrcTuningPara,
-               sizeof(CalibDbV2_Adrc_V12_t));  // reload stAuto
+        memcpy(&pAdrcGrpCtx->drcAttrV12.stAuto, calibv2_adrc_calib,
+               sizeof(CalibDbV2_drc_V12_t));  // reload stAuto
 #endif
     }
 
@@ -334,20 +328,29 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #if RKAIQ_HAVE_DRC_V11
         pAdrcGrpCtx->PrevData.ApiMode = pAdrcGrpCtx->drcAttrV11.opMode;
 #endif
-        //output ProcRes
-        for(int i = 0; i < pAdrcGrpProcRes->arraySize; i++) {
-            pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->update = !bypass ;//not use in isp3xparams for now
-            pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->CompressMode = pAdrcGrpCtx->AdrcProcRes.CompressMode;
-            pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->LongFrameMode = pAdrcGrpCtx->AdrcProcRes.LongFrameMode;
-            pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->isHdrGlobalTmo = pAdrcGrpCtx->AdrcProcRes.isHdrGlobalTmo;
-            pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->bTmoEn = pAdrcGrpCtx->AdrcProcRes.bTmoEn;
-            pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->isLinearTmo = pAdrcGrpCtx->AdrcProcRes.isLinearTmo;
-            memcpy(&pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->DrcProcRes, &pAdrcGrpCtx->AdrcProcRes.DrcProcRes, sizeof(DrcProcRes_t));
-        }
-
-        LOGD_ATMO("%s://////////////////////////////////////ADRC Group Over////////////////////////////////////// \n", __func__);
+        LOGD_ATMO(
+            "%s://////////////////////////////////////ADRC Group "
+            "Over////////////////////////////////////// \n",
+            __func__);
     } else {
         LOGD_ATMO("%s: Group Drc Enable if OFF, Bypass Drc !!! \n", __func__);
+    }
+
+    // output ProcRes
+    for (int i = 0; i < pAdrcGrpProcRes->arraySize; i++) {
+        pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->update =
+            !bypass;  // not use in isp3xparams for now
+        pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->CompressMode =
+            pAdrcGrpCtx->AdrcProcRes.CompressMode;
+        pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->LongFrameMode =
+            pAdrcGrpCtx->AdrcProcRes.LongFrameMode;
+        pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->isHdrGlobalTmo =
+            pAdrcGrpCtx->AdrcProcRes.isHdrGlobalTmo;
+        pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->bTmoEn = Enable;
+        pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->isLinearTmo =
+            pAdrcGrpCtx->AdrcProcRes.isLinearTmo;
+        memcpy(&pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->DrcProcRes,
+               &pAdrcGrpCtx->AdrcProcRes.DrcProcRes, sizeof(DrcProcRes_t));
     }
 
     LOG1_ATMO("%s:Exit!\n", __FUNCTION__);

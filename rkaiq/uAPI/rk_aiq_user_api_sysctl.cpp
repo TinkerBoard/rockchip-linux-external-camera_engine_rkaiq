@@ -273,6 +273,7 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
     rk_aiq_offline_init(ctx);
     if (strstr(sns_ent_name, "FakeCamera") || ctx->_use_fakecam) {
         //ctx->_camHw = new FakeCamHwIsp20();
+#ifdef RKAIQ_ENABLE_FAKECAM
         if (s_info->isp_hw_ver == 4)
 #ifdef ISP_HW_V20
             ctx->_camHw = new FakeCamHwIsp20 ();
@@ -301,6 +302,7 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
             LOGE("do not support this isp hw version %d !", s_info->isp_hw_ver);
             goto error;
         }
+#endif
     } else {
         if (s_info->isp_hw_ver == 4)
 #ifdef ISP_HW_V20
@@ -419,8 +421,10 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
     } else
         ctx->_analyzer->setResrcPath(RKAIQ_DEFAULT_IQ_PATH);
     ctx->_rkAiqManager->setAnalyzer(ctx->_analyzer);
+#ifdef ISP_HW_V20
     ctx->_lumaAnalyzer = new RkLumaCore();
     ctx->_rkAiqManager->setLumaAnalyzer(ctx->_lumaAnalyzer);
+#endif
     //ctx->_calibDb = RkAiqCalibDb::createCalibDb(config_file);
     ctx->_socket  = new SocketServer();
     //if (!ctx->_calibDb)
@@ -489,7 +493,9 @@ rk_aiq_uapi_sysctl_deinit_locked(rk_aiq_sys_ctx_t* ctx)
     ctx->_socket->Deinit();
     delete(ctx->_socket);
     ctx->_analyzer.release();
+#ifdef ISP_HW_V20
     ctx->_lumaAnalyzer.release();
+#endif
     ctx->_rkAiqManager.release();
     ctx->_camHw.release();
     if (ctx->_calibDbProj) {
@@ -854,8 +860,10 @@ camgroupAlgoHandle(const rk_aiq_sys_ctx_t* ctx, const int algo_type)
 #include "uAPI/rk_aiq_user_api_agic.cpp"
 #include "uAPI2/rk_aiq_user_api2_camgroup.cpp"
 #include "uAPI2/rk_aiq_user_api2_agic.cpp"
-#ifdef ISP_HW_V30
+#if defined(ISP_HW_V30)||defined(ISP_HW_V32)
 #include "rk_aiq_user_api2_custom_ae.cpp"
+#endif
+#if defined(ISP_HW_V30)||defined(ISP_HW_V32)
 #include "rk_aiq_user_api2_custom_awb.cpp"
 #endif
 #include "uAPI2/rk_aiq_user_api2_aynr_v3.cpp"
@@ -1349,6 +1357,11 @@ int rk_aiq_uapi_sysctl_switch_scene(const rk_aiq_sys_ctx_t* sys_ctx,
 
     auto new_calib = RkAiqSceneManager::refToScene(sys_ctx->_calibDbProj,
                      main_scene, sub_scene);
+
+    if (!new_calib.calib_scene) {
+        LOGE("failed to find scene calib\n");
+        return -1;
+    }
 
     ret = sys_ctx->_rkAiqManager->updateCalibDb(&new_calib);
     if (ret) {

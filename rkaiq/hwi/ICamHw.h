@@ -133,7 +133,9 @@ public:
     virtual void setCamPhyId(int phyId) = 0;
     virtual int getCamPhyId() = 0;
     virtual void setGroupMode(bool bGroup, bool bMain) = 0;
+#if RKAIQ_HAVE_PDAF
     virtual bool get_pdaf_support() = 0;
+#endif
 private:
     XCAM_DEAD_COPY (ICamHw);
 };

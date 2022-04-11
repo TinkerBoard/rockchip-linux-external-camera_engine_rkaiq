@@ -181,13 +181,13 @@ typedef struct rawaebig_stat {
     uint16_t channelg_xy[RAWAEBIG_WIN_NUM];
     uint16_t channelb_xy[RAWAEBIG_WIN_NUM];
     uint16_t channely_xy[RAWAEBIG_WIN_NUM]; //not HW!
-    uint64_t wndx_sumr[RAWAEBIG_SUBWIN_NUM];
-    uint64_t wndx_sumg[RAWAEBIG_SUBWIN_NUM];
-    uint64_t wndx_sumb[RAWAEBIG_SUBWIN_NUM];
     uint16_t wndx_channelr[RAWAEBIG_SUBWIN_NUM]; //not HW!
     uint16_t wndx_channelg[RAWAEBIG_SUBWIN_NUM]; //not HW!
     uint16_t wndx_channelb[RAWAEBIG_SUBWIN_NUM]; //not HW!
     uint16_t wndx_channely[RAWAEBIG_SUBWIN_NUM]; //not HW!
+    uint64_t wndx_sumr[RAWAEBIG_SUBWIN_NUM];
+    uint64_t wndx_sumg[RAWAEBIG_SUBWIN_NUM];
+    uint64_t wndx_sumb[RAWAEBIG_SUBWIN_NUM];
 } rawaebig_stat_t;
 
 typedef struct rawaelite_stat {
@@ -198,8 +198,8 @@ typedef struct rawaelite_stat {
 } rawaelite_stat_t;
 
 typedef struct yuvae_stat {
-    uint64_t ro_yuvae_sumy[YUVAE_SUBWIN_NUM];
     unsigned char mean[YUVAE_WIN_NUM];
+    uint64_t ro_yuvae_sumy[YUVAE_SUBWIN_NUM];
 } yuvae_stat_t;
 
 typedef struct Aec_Stat_Res_s {
@@ -318,19 +318,19 @@ typedef struct {
 } RkAiqExpParamComb_t;
 
 typedef struct {
+    // M4_BOOL_DESC("update", "0",M4_HIDE(1))
+    bool           update;
     // M4_NUMBER_DESC("step", "s32", M4_RANGE(0,65535), "0", M4_DIGIT(0),M4_HIDE(1))
     int            step;
     // M4_NUMBER_DESC("gain", "s32", M4_RANGE(0,65535), "0", M4_DIGIT(0),M4_HIDE(1))
     int            gain;
-    // M4_BOOL_DESC("update", "0",M4_HIDE(1))
-    bool           update;
 } RkAiqPIrisParam_t;
 
 typedef struct {
-    // M4_NUMBER_DESC("pwmDuty", "s32", M4_RANGE(0,100), "0", M4_DIGIT(0),M4_HIDE(1))
-    int        pwmDuty; //percent value,range = 0-100
     // M4_BOOL_DESC("update", "0",M4_HIDE(1))
     bool       update;
+    // M4_NUMBER_DESC("pwmDuty", "s32", M4_RANGE(0,100), "0", M4_DIGIT(0),M4_HIDE(1))
+    int        pwmDuty; //percent value,range = 0-100
 } RkAiqDCIrisParam_t;
 
 typedef struct {

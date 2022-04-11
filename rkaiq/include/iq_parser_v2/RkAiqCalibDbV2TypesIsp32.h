@@ -87,7 +87,7 @@ typedef struct CamCalibDbV2ContextIsp32_s {
     // M4_STRUCT_DESC("Amerge_calib", "normal_ui_style")
     CalibDbV2_merge_V12_t amerge_calib_V12;
     // M4_STRUCT_DESC("Adrc_calib", "normal_ui_style")
-    CalibDbV2_drc_V12_t adrc_calib_V12;
+    CalibDbV2_drc_V12_t adrc_calib_v12;
     // M4_STRUCT_DESC("agamma_calib", "normal_ui_style")
     CalibDbV2_gamma_V11_t agamma_calib_V11;
     // M4_STRUCT_DESC("adehaze_calib", "normal_ui_style")
@@ -107,9 +107,9 @@ typedef struct CamCalibDbV2ContextIsp32_s {
     // M4_STRUCT_DESC("lsc_v2", "normal_ui_style")
     CalibDbV2_LSC_t lsc_v2;
     // M4_STRUCT_DESC("bayer2dnr_v23", "normal_ui_style")
-    CalibDbV2_Bayer2dnr_V23_t bayer2dnr_v23;
+    CalibDbV2_Bayer2dnrV23_t bayer2dnr_v23;
     // M4_STRUCT_DESC("bayertnr_v23", "normal_ui_style")
-    CalibDbV2_BayerTnr_V23_t bayertnr_v23;
+    CalibDbV2_BayerTnrV23_t bayertnr_v23;
     // M4_STRUCT_DESC("ynr_v22", "normal_ui_style")
     CalibDbV2_YnrV22_t ynr_v22;
     // M4_STRUCT_DESC("cnr_v30", "normal_ui_style")

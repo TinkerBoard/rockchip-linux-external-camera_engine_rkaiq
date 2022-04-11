@@ -31,7 +31,7 @@ void CalibV2CCMFree(CamCalibDbV2Context_t *calibV2)
           return;
     }
     CalibDbV2_Ccm_Accm_Cof_Para_t* aCcmCofV2 = ccm_v2->TuningPara.aCcmCof;
-    CalibDbV2_Ccm_Ccm_Matrix_Para_t* matrixAllV2 =  ccm_v2->TuningPara.matrixAll;
+    CalibDbV2_Ccm_Matrix_Para_t* matrixAllV2 =  ccm_v2->TuningPara.matrixAll;
 
     for (int i = 0; i < aCcmCofV2->matrixUsed_len; i++)
         free(aCcmCofV2->matrixUsed[i]);
@@ -84,7 +84,7 @@ void convertCCMCalib2CalibV2(const CamCalibDbContext_t *calib,CamCalibDbV2Contex
     }
 
     ccm_v2->TuningPara.matrixAll_len = ccm->mode_cell[0].matrixAllNum;
-    ccm_v2->TuningPara.matrixAll = (CalibDbV2_Ccm_Ccm_Matrix_Para_t*)malloc(sizeof(CalibDbV2_Ccm_Ccm_Matrix_Para_t)*ccm_v2->TuningPara.matrixAll_len);
+    ccm_v2->TuningPara.matrixAll = (CalibDbV2_Ccm_Matrix_Para_t*)malloc(sizeof(CalibDbV2_Ccm_Matrix_Para_t)*ccm_v2->TuningPara.matrixAll_len);
     for ( int i = 0; i < ccm_v2->TuningPara.matrixAll_len; i++){
         ccm_v2->TuningPara.matrixAll[i].name =  (char*)malloc(sizeof(char)*CCM_PROFILE_NAME);
         ccm_v2->TuningPara.matrixAll[i].illumination = (char*)malloc(sizeof(char)*CCM_ILLUMINATION_NAME);
@@ -111,7 +111,7 @@ void convertCCMCalib2CalibV2(const CamCalibDbContext_t *calib,CamCalibDbV2Contex
     ccm_v2->TuningPara.illu_estim.frame_no = 8;
 
 #if RKAIQ_HAVE_CCM_V1
-    CalibDbV2_Ccm_Luma_Ccm_Para_t *lumaCcm = &ccm_v2->lumaCCM;
+    CalibDbV2_Ccm_Luma_Ccm_t *lumaCcm = &ccm_v2->lumaCCM;
     lumaCcm->low_bound_pos_bit = ccm->mode_cell[0].luma_ccm.low_bound_pos_bit;
     memcpy(lumaCcm->rgb2y_para, ccm->mode_cell[0].luma_ccm.rgb2y_para, sizeof(lumaCcm->rgb2y_para));
     memcpy(lumaCcm->y_alpha_curve, ccm->mode_cell[0].luma_ccm.y_alpha_curve, sizeof(lumaCcm->y_alpha_curve));
@@ -120,7 +120,7 @@ void convertCCMCalib2CalibV2(const CamCalibDbContext_t *calib,CamCalibDbV2Contex
 #endif
 
 #if RKAIQ_HAVE_CCM_V2
-    CalibDbV2_Ccm_Luma_Ccm_Para_V2_t* lumaCcm = &ccm_v2->lumaCCM;
+    CalibDbV2_Ccm_Luma_Ccm_V2_t* lumaCcm = &ccm_v2->lumaCCM;
     lumaCCM->asym_enable                      = 0;
     lumaCCM->y_alp_sym.highy_adj_en           = 1;
     lumaCcm->y_alp_sym.bound_pos_bit          = ccm->mode_cell[0].luma_ccm.low_bound_pos_bit;

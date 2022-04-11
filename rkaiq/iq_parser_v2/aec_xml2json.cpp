@@ -538,9 +538,9 @@ void convertAecCalibV1ToCalibV2(const CamCalibDbContext_t *calib, CamCalibDbV2Co
         aec_json.LinearAeCtrl.ToleranceIn = aec_xml.LinearAeCtrl.ToleranceIn;
         aec_json.LinearAeCtrl.ToleranceOut = aec_xml.LinearAeCtrl.ToleranceOut;
         if(aec_xml.LinearAeCtrl.StrategyMode <= RKAIQ_AEC_STRATEGY_MODE_LOWLIGHT_PRIOR)
-            aec_json.LinearAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_LOWLIGHT_PRIOR;
+            aec_json.LinearAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_LOWLIGHT;
         else
-            aec_json.LinearAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_HIGHLIGHT_PRIOR;
+            aec_json.LinearAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_HIGHLIGHT;
 
         aec_json.LinearAeCtrl.InitExp.InitTimeValue = aec_xml.CommCtrl.stInitExp.stLinExpInitExp.InitTimeValue;
         aec_json.LinearAeCtrl.InitExp.InitGainValue = aec_xml.CommCtrl.stInitExp.stLinExpInitExp.InitGainValue;
@@ -624,9 +624,9 @@ void convertAecCalibV1ToCalibV2(const CamCalibDbContext_t *calib, CamCalibDbV2Co
         aec_json.HdrAeCtrl.Evbias = aec_xml.HdrAeCtrl.Evbias;
         aec_json.HdrAeCtrl.LumaDistTh = aec_xml.HdrAeCtrl.LumaDistTh;
         if(aec_xml.HdrAeCtrl.StrategyMode <= RKAIQ_AEC_STRATEGY_MODE_LOWLIGHT_PRIOR)
-            aec_json.HdrAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_LOWLIGHT_PRIOR;
+            aec_json.HdrAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_LOWLIGHT;
         else
-            aec_json.HdrAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_HIGHLIGHT_PRIOR;
+            aec_json.HdrAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_HIGHLIGHT;
 
 
         memcpy(aec_json.HdrAeCtrl.InitExp.InitTimeValue, aec_xml.CommCtrl.stInitExp.stHdrExpInitExp.InitTimeValue.fCoeff, 3 * sizeof(float));
@@ -903,9 +903,9 @@ void convertAecCalibV1ToCalibV2(const CamCalibDbContext_t *calib, CamCalibDbV2Co
         aec_json.LinearAeCtrl.ToleranceIn = aec_tune_xml->LinearAeCtrl.ToleranceIn;
         aec_json.LinearAeCtrl.ToleranceOut = aec_tune_xml->LinearAeCtrl.ToleranceOut;
         if(aec_tune_xml->LinearAeCtrl.StrategyMode <= RKAIQ_AEC_STRATEGY_MODE_LOWLIGHT_PRIOR)
-            aec_json.LinearAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_LOWLIGHT_PRIOR;
+            aec_json.LinearAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_LOWLIGHT;
         else
-            aec_json.LinearAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_HIGHLIGHT_PRIOR;
+            aec_json.LinearAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_HIGHLIGHT;
 
         aec_json.LinearAeCtrl.InitExp.InitTimeValue = aec_tune_xml->CommCtrl.stInitExp.stLinExpInitExp.InitTimeValue;
         aec_json.LinearAeCtrl.InitExp.InitGainValue = aec_tune_xml->CommCtrl.stInitExp.stLinExpInitExp.InitGainValue;
@@ -989,9 +989,9 @@ void convertAecCalibV1ToCalibV2(const CamCalibDbContext_t *calib, CamCalibDbV2Co
         aec_json.HdrAeCtrl.Evbias = aec_tune_xml->HdrAeCtrl.Evbias;
         aec_json.HdrAeCtrl.LumaDistTh = aec_tune_xml->HdrAeCtrl.LumaDistTh;
         if(aec_tune_xml->HdrAeCtrl.StrategyMode <= RKAIQ_AEC_STRATEGY_MODE_LOWLIGHT_PRIOR)
-            aec_json.HdrAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_LOWLIGHT_PRIOR;
+            aec_json.HdrAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_LOWLIGHT;
         else
-            aec_json.HdrAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_HIGHLIGHT_PRIOR;
+            aec_json.HdrAeCtrl.StrategyMode = AECV2_STRATEGY_MODE_HIGHLIGHT;
 
 
         memcpy(aec_json.HdrAeCtrl.InitExp.InitTimeValue, aec_tune_xml->CommCtrl.stInitExp.stHdrExpInitExp.InitTimeValue.fCoeff, 3 * sizeof(float));

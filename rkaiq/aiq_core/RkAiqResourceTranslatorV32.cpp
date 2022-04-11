@@ -20,6 +20,10 @@
 #include "isp20/Isp20StatsBuffer.h"
 
 //#define AE_STATS_DEBUG
+#define MAX_10BITS (1 << 10) - 1
+#define MAX_12BITS (1 << 12) - 1
+#define MAX_29BITS (1 << 29) - 1
+#define MAX_32BITS  0xffffffff
 
 namespace RkCam {
 
@@ -42,20 +46,26 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
                   stats->meas_type);
 
     SmartPtr<RkAiqIrisParamsProxy> irisParams = buf->get_iris_params();
+#if 0
     SmartPtr<RkAiqExpParamsProxy> expParams   = nullptr;
     rkisp_effect_params_v20 ispParams;
     memset(&ispParams, 0, sizeof(ispParams));
-    if (buf->getEffectiveExpParams(stats->frame_id, expParams) < 0) LOGE("fail to get expParams");
+
+    if (buf->getEffectiveExpParams(stats->frame_id, expParams) < 0) {
+        LOGE("fail to get expParams");
+        return XCAM_RETURN_BYPASS;
+    }
+
     if (buf->getEffectiveIspParams(stats->frame_id, ispParams) < 0) {
         LOGE("fail to get ispParams ,ignore\n");
         return XCAM_RETURN_BYPASS;
     }
-
+#endif
     // ae stats v3.2
     statsInt->frame_id = stats->frame_id;
 
     /*rawae stats*/
-    struct isp32_isp_meas_cfg* isp_params = &ispParams.isp_params_v32.meas;
+    struct isp32_isp_meas_cfg* isp_params = &_ispParams.isp_params_v32.meas;
     uint8_t AeSwapMode, AeSelMode, AfUseAeBig;
     AeSwapMode             = isp_params->rawae0.rawae_sel;
     AeSelMode              = isp_params->rawae3.rawae_sel;
@@ -63,24 +73,22 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
     unsigned int meas_type = 0;
 
     // ae_stats = (ae_ori_stats_u12/10 - ob_offset_u9 - bls1_val_u12) * awb1_gain_u16 * range_ratio
-    struct isp32_bls_cfg* bls_cfg = &ispParams.isp_params_v32.others.bls_cfg;
-    struct isp32_awb_gain_cfg* awb_gain_cfg = &ispParams.isp_params_v32.others.awb_gain_cfg;
+    struct isp32_bls_cfg* bls_cfg = &_ispParams.isp_params_v32.others.bls_cfg;
+    struct isp32_awb_gain_cfg* awb_gain_cfg = &_ispParams.isp_params_v32.others.awb_gain_cfg;
     struct isp2x_bls_fixed_val bls1_val;  // bls1_val = blc1_ori_val * awb * range_ratio
+
     u16 isp_ob_offset_rb, isp_ob_offset_g, isp_ob_predgain;
     float awb1_gain_r, awb1_gain_gr, awb1_gain_gb, awb1_gain_b;
-    u16 MAX_10BITS     = (1 << 10) - 1;
-    u16 MAX_12BITS     = (1 << 12) - 1;
-    u32 MAX_29BITS     = (1 << 29) - 1;
-    u32 MAX_32BITS     = 0xffffffff;
     u32 pixel_num      = 0;
     u8  rawhist_mode   = 0;
     u8  index0, index1, index2 = 0;
+    bool is_hdr = (getWorkingMode() > 0) ? true : false;
 
     isp_ob_offset_rb = MAX(bls_cfg->isp_ob_offset >> 2, 0);
     isp_ob_offset_g =  MAX(bls_cfg->isp_ob_offset, 0);
     isp_ob_predgain =  MAX(bls_cfg->isp_ob_predgain >> 8, 1);
 
-    if (bls_cfg->bls1_en) {
+    if (bls_cfg->bls1_en && !is_hdr) {
         bls1_val.r  = (bls_cfg->bls1_val.r / isp_ob_predgain) >> 2;
         bls1_val.gr = bls_cfg->bls1_val.gr / isp_ob_predgain;
         bls1_val.gb = bls_cfg->bls1_val.gb / isp_ob_predgain;
@@ -96,12 +104,14 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
     awb1_gain_gr = MAX((float)awb_gain_cfg->awb1_gain_gr / 256, 1);
     awb1_gain_gb = MAX((float)awb_gain_cfg->awb1_gain_gb / 256, 1);
     awb1_gain_b  = MAX((float)awb_gain_cfg->awb1_gain_b / 256, 1);
+
 #ifdef AE_STATS_DEBUG
     LOGE("bls1[%d-%d-%d-%d]", bls1_val.r, bls1_val.gr, bls1_val.gb, bls1_val.b);
     LOGE("isp_ob_offset_rb, isp_ob_offset_g, isp_ob_predgain [%d-%d-%d]",
-            isp_ob_offset_rb, isp_ob_offset_g, isp_ob_predgain);
+         isp_ob_offset_rb, isp_ob_offset_g, isp_ob_predgain);
     LOGE("awb1_gain[%f-%f-%f-%f]", awb1_gain_r, awb1_gain_gr, awb1_gain_gb, awb1_gain_b);
 #endif
+
     switch (AeSwapMode) {
     case AEC_RAWSWAP_MODE_S_LITE:
         meas_type = ((stats->meas_type >> 7) & (0x01)) & ((stats->meas_type >> 11) & (0x01));
@@ -117,15 +127,6 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
         index2       = 2;
         rawhist_mode = isp_params->rawhist1.mode;
         break;
-    /*
-    case AEC_RAWSWAP_MODE_L_LITE:
-        meas_type = ((stats->meas_type >> 9) & (0x01)) & ((stats->meas_type >> 13) & (0x01));
-        index0       = 2;
-        index1       = 1;
-        index2       = 0;
-        rawhist_mode = isp_params->rawhist2.mode;
-        break;
-    */
     default:
         LOGE("wrong AeSwapMode=%d\n", AeSwapMode);
         return XCAM_RETURN_ERROR_PARAM;
@@ -135,97 +136,95 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
     statsInt->aec_stats_valid = (meas_type & 0x01) ? true : false;
 
     for (int i = 0; i < ISP3X_RAWAEBIG_MEAN_NUM; i++) {
+
         if (i < ISP3X_RAWAELITE_MEAN_NUM) {
             statsInt->aec_stats.ae_data.chn[index0].rawae_lite.channelr_xy[i] = (u16)MIN(
-                (stats->params.rawae0.data[i].channelr_xy - isp_ob_offset_rb - bls1_val.r) * awb1_gain_r, MAX_10BITS);
+                        (stats->params.rawae0.data[i].channelr_xy - isp_ob_offset_rb - bls1_val.r) * awb1_gain_r, MAX_10BITS);
             statsInt->aec_stats.ae_data.chn[index0].rawae_lite.channelg_xy[i] = (u16)MIN(
-                (stats->params.rawae0.data[i].channelg_xy - isp_ob_offset_g - bls1_val.gr) * awb1_gain_gr, MAX_12BITS);
+                        (stats->params.rawae0.data[i].channelg_xy - isp_ob_offset_g - bls1_val.gr) * awb1_gain_gr, MAX_12BITS);
             statsInt->aec_stats.ae_data.chn[index0].rawae_lite.channelb_xy[i] = (u16)MIN(
-                (stats->params.rawae0.data[i].channelb_xy - isp_ob_offset_rb - bls1_val.b) * awb1_gain_b, MAX_10BITS);
+                        (stats->params.rawae0.data[i].channelb_xy - isp_ob_offset_rb - bls1_val.b) * awb1_gain_b, MAX_10BITS);
         }
+
         statsInt->aec_stats.ae_data.chn[index1].rawae_big.channelr_xy[i] = (u16)MIN(
-            (stats->params.rawae1_0.data[i].channelr_xy - isp_ob_offset_rb - bls1_val.r) * awb1_gain_r, MAX_10BITS);
+                    (stats->params.rawae1_0.data[i].channelr_xy - isp_ob_offset_rb - bls1_val.r) * awb1_gain_r, MAX_10BITS);
         statsInt->aec_stats.ae_data.chn[index1].rawae_big.channelg_xy[i] = (u16)MIN(
-            (stats->params.rawae1_0.data[i].channelg_xy - isp_ob_offset_g - bls1_val.gr) * awb1_gain_gr, MAX_12BITS);
+                    (stats->params.rawae1_0.data[i].channelg_xy - isp_ob_offset_g - bls1_val.gr) * awb1_gain_gr, MAX_12BITS);
         statsInt->aec_stats.ae_data.chn[index1].rawae_big.channelb_xy[i] = (u16)MIN(
-            (stats->params.rawae1_0.data[i].channelb_xy - isp_ob_offset_rb - bls1_val.b) * awb1_gain_b, MAX_10BITS);
-        statsInt->aec_stats.ae_data.chn[index2].rawae_big.channelr_xy[i] = (u16)MIN(
-            (stats->params.rawae2_0.data[i].channelr_xy - isp_ob_offset_rb - bls1_val.r) * awb1_gain_r, MAX_10BITS);
-        statsInt->aec_stats.ae_data.chn[index2].rawae_big.channelg_xy[i] = (u16)MIN(
-            (stats->params.rawae2_0.data[i].channelg_xy - isp_ob_offset_g - bls1_val.gr) * awb1_gain_gr, MAX_12BITS);
-        statsInt->aec_stats.ae_data.chn[index2].rawae_big.channelb_xy[i] = (u16)MIN(
-            (stats->params.rawae2_0.data[i].channelb_xy - isp_ob_offset_rb - bls1_val.b) * awb1_gain_b, MAX_10BITS);
+                    (stats->params.rawae1_0.data[i].channelb_xy - isp_ob_offset_rb - bls1_val.b) * awb1_gain_b, MAX_10BITS);
 
         if (i < ISP3X_RAWAEBIG_SUBWIN_NUM) {
             pixel_num = isp_params->rawae1.subwin[i].h_size * isp_params->rawae1.subwin[i].v_size;
             statsInt->aec_stats.ae_data.chn[index1].rawae_big.wndx_sumr[i] = (u32)MIN(
-                (stats->params.rawae1_1.sumr[i] - (pixel_num >> 2) * (isp_ob_offset_rb + bls1_val.r)) * awb1_gain_r, MAX_29BITS);
+                        (stats->params.rawae1_1.sumr[i] - (pixel_num >> 2) * (isp_ob_offset_rb + bls1_val.r)) * awb1_gain_r, MAX_29BITS);
             statsInt->aec_stats.ae_data.chn[index1].rawae_big.wndx_sumg[i] = (u32)MIN(
-                (stats->params.rawae1_1.sumg[i] - (pixel_num >> 1) * (isp_ob_offset_g + bls1_val.gr)) * awb1_gain_gr, MAX_32BITS);
+                        (stats->params.rawae1_1.sumg[i] - (pixel_num >> 1) * (isp_ob_offset_g + bls1_val.gr)) * awb1_gain_gr, MAX_32BITS);
             statsInt->aec_stats.ae_data.chn[index1].rawae_big.wndx_sumb[i] = (u32)MIN(
-                (stats->params.rawae1_1.sumb[i] - (pixel_num >> 2) * (isp_ob_offset_rb + bls1_val.b)) * awb1_gain_b, MAX_29BITS);
-
-            pixel_num = isp_params->rawae2.subwin[i].h_size * isp_params->rawae2.subwin[i].v_size;
-            statsInt->aec_stats.ae_data.chn[index2].rawae_big.wndx_sumr[i] = (u32)MIN(
-                (stats->params.rawae2_1.sumr[i] - (pixel_num >> 2) * (isp_ob_offset_rb + bls1_val.r)) * awb1_gain_r, MAX_29BITS);
-            statsInt->aec_stats.ae_data.chn[index2].rawae_big.wndx_sumg[i] = (u32)MIN(
-                (stats->params.rawae2_1.sumg[i] - (pixel_num >> 1) * (isp_ob_offset_g + bls1_val.gr)) * awb1_gain_gr, MAX_32BITS);
-            statsInt->aec_stats.ae_data.chn[index2].rawae_big.wndx_sumb[i] = (u32)MIN(
-                (stats->params.rawae2_1.sumb[i] - (pixel_num >> 2) * (isp_ob_offset_rb + bls1_val.b)) * awb1_gain_b, MAX_29BITS);
+                        (stats->params.rawae1_1.sumb[i] - (pixel_num >> 2) * (isp_ob_offset_rb + bls1_val.b)) * awb1_gain_b, MAX_29BITS);
         }
     }
 
-    if (bls_cfg->bls1_en) {
+    if (bls_cfg->bls1_en && !is_hdr) {
+
         memset(statsInt->aec_stats.ae_data.chn[index0].rawhist_lite.bins, 0,
                ISP3X_HIST_BIN_N_MAX * sizeof(u32));
         memset(statsInt->aec_stats.ae_data.chn[index1].rawhist_big.bins, 0,
                ISP3X_HIST_BIN_N_MAX * sizeof(u32));
-        memset(statsInt->aec_stats.ae_data.chn[index2].rawhist_big.bins, 0,
-               ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+
+        u16 ob;
+        s16 bls1;
+        int tmp;
+        float awb1_gain;
+
+        switch (rawhist_mode) {
+        case 2:
+            ob = isp_ob_offset_rb >> 2;
+            bls1 = bls1_val.r >> 2;
+            awb1_gain = awb1_gain_r;
+            break;
+        case 3:
+            ob = isp_ob_offset_g >> 4;
+            bls1 = bls1_val.gr >> 4;
+            awb1_gain = awb1_gain_gr;
+            break;
+        case 4:
+            ob = isp_ob_offset_rb >> 2;
+            bls1 = bls1_val.b >> 2;
+            awb1_gain = awb1_gain_b;
+            break;
+        case 5:
+        default:
+            ob = (u16)((isp_ob_offset_g >> 4) * 0.587 + (isp_ob_offset_rb >> 2) * 0.299 + (isp_ob_offset_rb >> 2) * 0.144 + 0.5);
+            bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
+            awb1_gain = 1 / (0.299 / awb1_gain_r + 0.587 / awb1_gain_gr + 0.144 / awb1_gain_b);
+            break;
+        }
+
+
         for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
-            int tmp;
-            switch (rawhist_mode) {
-                case 2:
-                    tmp = (i - (isp_ob_offset_rb >> 2) - (bls1_val.r >> 2) > 0)
-                          ? (i - (isp_ob_offset_rb >> 2) - (bls1_val.r >> 2)) * awb1_gain_r + 0.5
-                          : 0;
-                    break;
-                case 3:
-                    tmp = (i - (isp_ob_offset_g >> 4) - (bls1_val.gr >> 4) > 0)
-                          ? (i - (isp_ob_offset_g >> 4) - (bls1_val.gr >> 4)) * awb1_gain_gr + 0.5
-                          : 0;
-                    break;
-                case 4:
-                    tmp = (i - (isp_ob_offset_rb >> 2) - (bls1_val.b >> 2) > 0)
-                          ? (i - (isp_ob_offset_rb >> 2) - (bls1_val.b >> 2)) * awb1_gain_b + 0.5
-                          : 0;
-                    break;
-                case 5:
-                default:
-                    //TODO: need to adapt for isp3.2 awb1_gain
-                    s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 +
-                                            (bls1_val.b >> 2) * 0.144 + 0.5);
-                    s16 hist_offset = (s16)((isp_ob_offset_g >> 4) * 0.587 + (isp_ob_offset_rb >> 2) * 0.299 +
-                                            (isp_ob_offset_rb >> 2) * 0.144 + 0.5);
-                    float awb1_gain = 1 / (0.299 / awb1_gain_r + 0.587 / awb1_gain_gr + 0.144 / awb1_gain_b);
-                    tmp = (i - hist_bls1 - hist_offset > 0) ? (i - hist_bls1 - hist_offset) * awb1_gain + 0.5 : 0;
-                    break;
-            }
-            if (tmp > ISP3X_HIST_BIN_N_MAX - 1) tmp = ISP3X_HIST_BIN_N_MAX - 1;
+
+            tmp = (i - ob - bls1 > 0) ? ((i - ob - bls1) * awb1_gain + 0.5) : 0;
+
+            if (tmp > ISP3X_HIST_BIN_N_MAX - 1)
+                tmp = ISP3X_HIST_BIN_N_MAX - 1;
+
             statsInt->aec_stats.ae_data.chn[index0].rawhist_lite.bins[tmp] +=
                 stats->params.rawhist0.hist_bin[i];
             statsInt->aec_stats.ae_data.chn[index1].rawhist_big.bins[tmp] +=
                 stats->params.rawhist1.hist_bin[i];
-            statsInt->aec_stats.ae_data.chn[index2].rawhist_big.bins[tmp] +=
-                stats->params.rawhist2.hist_bin[i];
+
         }
     } else {
-        memcpy(statsInt->aec_stats.ae_data.chn[index0].rawhist_lite.bins,
-               stats->params.rawhist0.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
-        memcpy(statsInt->aec_stats.ae_data.chn[index1].rawhist_big.bins,
-               stats->params.rawhist1.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
-        memcpy(statsInt->aec_stats.ae_data.chn[index2].rawhist_big.bins,
-               stats->params.rawhist2.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+
+        if(is_hdr || AeSwapMode == AEC_RAWSWAP_MODE_S_LITE) {
+            memcpy(statsInt->aec_stats.ae_data.chn[index0].rawhist_lite.bins,
+                   stats->params.rawhist0.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+        }
+
+        if(is_hdr || AeSwapMode == AEC_RAWSWAP_MODE_M_LITE) {
+            memcpy(statsInt->aec_stats.ae_data.chn[index1].rawhist_big.bins,
+                   stats->params.rawhist1.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+        }
     }
 
     statsInt->af_prior = (AfUseAeBig == 0) ? false : true;
@@ -234,59 +233,63 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
         switch (AeSelMode) {
         case AEC_RAWSEL_MODE_CHN_0:
         case AEC_RAWSEL_MODE_CHN_1:
-        case AEC_RAWSEL_MODE_CHN_2:
             for (int i = 0; i < ISP3X_RAWAEBIG_MEAN_NUM; i++) {
                 statsInt->aec_stats.ae_data.chn[AeSelMode].rawae_big.channelr_xy[i] = (u16)MIN(
-                    (stats->params.rawae3_0.data[i].channelr_xy - isp_ob_offset_rb - bls1_val.r) * awb1_gain_r, MAX_10BITS);
+                            (stats->params.rawae3_0.data[i].channelr_xy - isp_ob_offset_rb - bls1_val.r) * awb1_gain_r, MAX_10BITS);
                 statsInt->aec_stats.ae_data.chn[AeSelMode].rawae_big.channelg_xy[i] = (u16)MIN(
-                    (stats->params.rawae3_0.data[i].channelg_xy - isp_ob_offset_g - bls1_val.gr) * awb1_gain_gr, MAX_12BITS);
+                            (stats->params.rawae3_0.data[i].channelg_xy - isp_ob_offset_g - bls1_val.gr) * awb1_gain_gr, MAX_12BITS);
                 statsInt->aec_stats.ae_data.chn[AeSelMode].rawae_big.channelb_xy[i] = (u16)MIN(
-                    (stats->params.rawae3_0.data[i].channelb_xy - isp_ob_offset_rb - bls1_val.b) * awb1_gain_b, MAX_10BITS);
+                            (stats->params.rawae3_0.data[i].channelb_xy - isp_ob_offset_rb - bls1_val.b) * awb1_gain_b, MAX_10BITS);
 
                 if (i < ISP3X_RAWAEBIG_SUBWIN_NUM) {
                     pixel_num = isp_params->rawae3.subwin[i].h_size * isp_params->rawae3.subwin[i].v_size;
                     statsInt->aec_stats.ae_data.chn[AeSelMode].rawae_big.wndx_sumr[i] = (u32)MIN(
-                        (stats->params.rawae3_1.sumr[i] - (pixel_num >> 2) * (isp_ob_offset_rb + bls1_val.r)) * awb1_gain_r, MAX_29BITS);
+                                (stats->params.rawae3_1.sumr[i] - (pixel_num >> 2) * (isp_ob_offset_rb + bls1_val.r)) * awb1_gain_r, MAX_29BITS);
                     statsInt->aec_stats.ae_data.chn[AeSelMode].rawae_big.wndx_sumg[i] = (u32)MIN(
-                        (stats->params.rawae3_1.sumg[i] - (pixel_num >> 1) * (isp_ob_offset_g + bls1_val.gr)) * awb1_gain_gr, MAX_32BITS);
+                                (stats->params.rawae3_1.sumg[i] - (pixel_num >> 1) * (isp_ob_offset_g + bls1_val.gr)) * awb1_gain_gr, MAX_32BITS);
                     statsInt->aec_stats.ae_data.chn[AeSelMode].rawae_big.wndx_sumb[i] = (u32)MIN(
-                        (stats->params.rawae3_1.sumb[i] - (pixel_num >> 2) * (isp_ob_offset_rb + bls1_val.b)) * awb1_gain_b, MAX_29BITS);
+                                (stats->params.rawae3_1.sumb[i] - (pixel_num >> 2) * (isp_ob_offset_rb + bls1_val.b)) * awb1_gain_b, MAX_29BITS);
                 }
             }
 
-            if (bls_cfg->bls1_en) {
+            if (bls_cfg->bls1_en && !is_hdr) {
                 memset(statsInt->aec_stats.ae_data.chn[AeSelMode].rawhist_big.bins, 0,
                        ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+
+                u16 ob;
+                s16 bls1;
+                int tmp;
+                float awb1_gain;
+
+                switch (isp_params->rawhist3.mode) {
+                case 2:
+                    ob = isp_ob_offset_rb >> 2;
+                    bls1 = bls1_val.r >> 2;
+                    awb1_gain = awb1_gain_r;
+                    break;
+                case 3:
+                    ob = isp_ob_offset_g >> 4;
+                    bls1 = bls1_val.gr >> 4;
+                    awb1_gain = awb1_gain_gr;
+                    break;
+                case 4:
+                    ob = isp_ob_offset_rb >> 2;
+                    bls1 = bls1_val.b >> 2;
+                    awb1_gain = awb1_gain_b;
+                    break;
+                case 5:
+                default:
+                    ob = (u16)((isp_ob_offset_g >> 4) * 0.587 + (isp_ob_offset_rb >> 2) * 0.299 + (isp_ob_offset_rb >> 2) * 0.144 + 0.5);
+                    bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
+                    awb1_gain = 1 / (0.299 / awb1_gain_r + 0.587 / awb1_gain_gr + 0.144 / awb1_gain_b);
+                    break;
+                }
+
+
                 for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
-                    int tmp;
-                    switch (isp_params->rawhist3.mode) {
-                    case 2:
-                        tmp = (i - (isp_ob_offset_rb >> 2) - (bls1_val.r >> 2) > 0)
-                              ? (i - (isp_ob_offset_rb >> 2) - (bls1_val.r >> 2)) * awb1_gain_r + 0.5
-                              : 0;
-                        break;
-                    case 3:
-                        tmp = (i - (isp_ob_offset_g >> 4) - (bls1_val.gr >> 4) > 0)
-                              ? (i - (isp_ob_offset_g >> 4) - (bls1_val.gr >> 4)) * awb1_gain_gr + 0.5
-                              : 0;
-                        break;
-                    case 4:
-                        tmp = (i - (isp_ob_offset_rb >> 2) - (bls1_val.b >> 2) > 0)
-                              ? (i - (isp_ob_offset_rb >> 2) - (bls1_val.b >> 2)) * awb1_gain_b + 0.5
-                              : 0;
-                        break;
-                    case 5:
-                    default:
-                        //TODO: need to adapt for isp3.2 awb1_gain
-                        s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 +
-                                                (bls1_val.b >> 2) * 0.144 + 0.5);
-                        s16 hist_offset = (s16)((isp_ob_offset_g >> 4) * 0.587 + (isp_ob_offset_rb >> 2) * 0.299 +
-                                                (isp_ob_offset_rb >> 2) * 0.144 + 0.5);
-                        float awb1_gain = 1 / (0.299 / awb1_gain_r + 0.587 / awb1_gain_gr + 0.144 / awb1_gain_b);
-                        tmp = (i - hist_bls1 - hist_offset > 0) ? (i - hist_bls1 - hist_offset) * awb1_gain + 0.5 : 0;
-                        break;
-                    }
-                    if (tmp > ISP3X_HIST_BIN_N_MAX - 1) tmp = ISP3X_HIST_BIN_N_MAX - 1;
+                    tmp = (i - ob - bls1 > 0) ? ((i - ob - bls1) * awb1_gain + 0.5) : 0;
+                    if (tmp > ISP3X_HIST_BIN_N_MAX - 1)
+                        tmp = ISP3X_HIST_BIN_N_MAX - 1;
                     statsInt->aec_stats.ae_data.chn[AeSelMode].rawhist_big.bins[tmp] +=
                         stats->params.rawhist3.hist_bin[i];
                 }
@@ -376,8 +379,8 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
      */
 
     // expsoure params
-    if (expParams.ptr()) {
-        statsInt->aec_stats.ae_exp = expParams->data()->aecExpInfo;
+    if (_expParams.ptr()) {
+        statsInt->aec_stats.ae_exp = _expParams->data()->aecExpInfo;
         /*printf("frame[%d],gain=%d,time=%d\n", stats->frame_id,
                expParams->data()->aecExpInfo.LinearExp.exp_sensor_params.analog_gain_code_global,
                expParams->data()->aecExpInfo.LinearExp.exp_sensor_params.coarse_integration_time);*/
@@ -444,24 +447,30 @@ XCamReturn RkAiqResourceTranslatorV32::translateAwbStats(const SmartPtr<VideoBuf
         LOGE_ANALYZER("AWB stats invalid, ignore");
         return XCAM_RETURN_BYPASS;
     }
-
+#if 0
     rkisp_effect_params_v20 ispParams;
-    memset(&ispParams, 0, sizeof(ispParams));
+    //memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveIspParams(stats->frame_id, ispParams) < 0) {
         LOGE("fail to get ispParams ,ignore\n");
         return XCAM_RETURN_BYPASS;
     }
-    memset(&statsInt->awb_stats_v32,0,sizeof(statsInt->awb_stats_v32));
-    statsInt->awb_stats_v32.awb_cfg_effect_v32.blkMeasureMode = ispParams.awb_cfg_v32.blkMeasureMode;
-    statsInt->awb_stats_v32.awb_cfg_effect_v32.lightNum = ispParams.awb_cfg_v32.lightNum;
-    statsInt->awb_stats_v32.awb_cfg_effect_v32.groupIllIndxCurrent = ispParams.awb_cfg_v32.groupIllIndxCurrent;
-    memcpy(statsInt->awb_stats_v32.awb_cfg_effect_v32.IllIndxSetCurrent, ispParams.awb_cfg_v32.IllIndxSetCurrent,
-        sizeof(statsInt->awb_stats_v32.awb_cfg_effect_v32.IllIndxSetCurrent));
-    memcpy(statsInt->awb_stats_v32.awb_cfg_effect_v32.timeSign, ispParams.awb_cfg_v32.timeSign,
-        sizeof(statsInt->awb_stats_v32.awb_cfg_effect_v32.timeSign));
+#endif
+    memset(&statsInt->awb_stats_v32, 0, sizeof(statsInt->awb_stats_v32));
+    if (stats->params.info2ddr.owner == RKISP_INFO2DRR_OWNER_AWB) {
+        statsInt->awb_stats_v32.dbginfo_fd = stats->params.info2ddr.buf_fd;
+    } else {
+        statsInt->awb_stats_v32.dbginfo_fd = -1;
+    }
+    statsInt->awb_stats_v32.awb_cfg_effect_v32.blkMeasureMode = _ispParams.awb_cfg_v32.blkMeasureMode;
+    statsInt->awb_stats_v32.awb_cfg_effect_v32.lightNum = _ispParams.awb_cfg_v32.lightNum;
+    statsInt->awb_stats_v32.awb_cfg_effect_v32.groupIllIndxCurrent = _ispParams.awb_cfg_v32.groupIllIndxCurrent;
+    memcpy(statsInt->awb_stats_v32.awb_cfg_effect_v32.IllIndxSetCurrent, _ispParams.awb_cfg_v32.IllIndxSetCurrent,
+           sizeof(statsInt->awb_stats_v32.awb_cfg_effect_v32.IllIndxSetCurrent));
+    memcpy(statsInt->awb_stats_v32.awb_cfg_effect_v32.timeSign, _ispParams.awb_cfg_v32.timeSign,
+           sizeof(statsInt->awb_stats_v32.awb_cfg_effect_v32.timeSign));
     statsInt->awb_cfg_effect_valid = true;
-    rk_aiq_isp_blc_t *bls_cfg = &ispParams.blc_cfg.v0;
-    statsInt->blc_cfg_effect = ispParams.blc_cfg.v0;
+    rk_aiq_isp_blc_t *bls_cfg = &_ispParams.blc_cfg.v0;
+    statsInt->blc_cfg_effect = _ispParams.blc_cfg.v0;
     statsInt->frame_id = stats->frame_id;
     for(int i = 0; i < statsInt->awb_stats_v32.awb_cfg_effect_v32.lightNum; i++) {
         statsInt->awb_stats_v32.light[i].xYType[RK_AIQ_AWB_XY_TYPE_NORMAL_V201].RgainValue =
@@ -513,6 +522,13 @@ XCamReturn RkAiqResourceTranslatorV32::translateAwbStats(const SmartPtr<VideoBuf
 
 XCamReturn RkAiqResourceTranslatorV32::translateAfStats(const SmartPtr<VideoBuffer>& from,
         SmartPtr<RkAiqAfStatsProxy>& to) {
+
+    struct isp32_rawaf_luma_data {
+        u32 channelg_xy: 12;
+        u32 highlit_cnt: 16;
+        u32 dummy: 4;
+    } __attribute__ ((packed));
+
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     const SmartPtr<Isp20StatsBuffer> buf =
         from.dynamic_cast_ptr<Isp20StatsBuffer>();
@@ -546,10 +562,12 @@ XCamReturn RkAiqResourceTranslatorV32::translateAfStats(const SmartPtr<VideoBuff
             statsInt->af_stats_v3x.wnda_fv_v2[i] = stats->params.rawaf.ramdata[i].v2;
             statsInt->af_stats_v3x.wnda_fv_h1[i] = stats->params.rawaf.ramdata[i].h1;
             statsInt->af_stats_v3x.wnda_fv_h2[i] = stats->params.rawaf.ramdata[i].h2;
+        }
 
-            statsInt->af_stats_v3x.wnda_luma[i] = stats->params.rawae3_0.data[i].channelg_xy;
-            statsInt->af_stats_v3x.wina_highlit_cnt[i] =
-                ((stats->params.rawae3_0.data[i].channelr_xy & 0x3F) << 10) | stats->params.rawae3_0.data[i].channelb_xy;
+        struct isp32_rawaf_luma_data *luma = (struct isp32_rawaf_luma_data *)&stats->params.rawae3_0.data[0];
+        for (int i = 0; i < RKAIQ_RAWAF_SUMDATA_NUM; i++) {
+            statsInt->af_stats_v3x.wnda_luma[i] = luma[i].channelg_xy;
+            statsInt->af_stats_v3x.wina_highlit_cnt[i] = luma[i].highlit_cnt;
         }
 
         if(afParams.ptr()) {

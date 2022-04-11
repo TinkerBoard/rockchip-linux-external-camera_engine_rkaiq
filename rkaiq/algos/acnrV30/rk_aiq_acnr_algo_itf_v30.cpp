@@ -104,7 +104,7 @@ prepare(RkAiqAlgoCom* params)
     LOGI_ANR("%s: (exit)\n", __FUNCTION__ );
     return result;
 }
-
+#if 0
 static XCamReturn
 pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
@@ -136,7 +136,7 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGI_ANR("%s: (exit)\n", __FUNCTION__ );
     return result;
 }
-
+#endif
 static XCamReturn
 processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
@@ -150,6 +150,24 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     Acnr_Context_V30_t* pAcnrCtx = (Acnr_Context_V30_t *)inparams->ctx;
     AcnrV30_ExpInfo_t stExpInfo;
     memset(&stExpInfo, 0x00, sizeof(AcnrV30_ExpInfo_t));
+
+    bool oldGrayMode = false;
+    oldGrayMode = pAcnrCtx->isGrayMode;
+    if (inparams->u.proc.gray_mode) {
+        pAcnrCtx->isGrayMode = true;
+    } else {
+        pAcnrCtx->isGrayMode = false;
+    }
+
+    if(oldGrayMode != pAcnrCtx->isGrayMode) {
+        pAcnrCtx->isReCalculate |= 1;
+    }
+
+    AcnrV30_result_t ret = Acnr_PreProcess_V30(pAcnrCtx);
+    if(ret != ACNRV30_RET_SUCCESS) {
+        result = XCAM_RETURN_ERROR_FAILED;
+        LOGE_ANR("%s: ANRPreProcess failed (%d)\n", __FUNCTION__, ret);
+    }
 
     LOGD_ANR("%s:%d init:%d hdr mode:%d  \n",
              __FUNCTION__, __LINE__,
@@ -307,9 +325,9 @@ RkAiqAlgoDescription g_RkIspAlgoDescAcnrV30 = {
         .destroy_context = destroy_context,
     },
     .prepare = prepare,
-    .pre_process = pre_process,
+    .pre_process = NULL,
     .processing = processing,
-    .post_process = post_process,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

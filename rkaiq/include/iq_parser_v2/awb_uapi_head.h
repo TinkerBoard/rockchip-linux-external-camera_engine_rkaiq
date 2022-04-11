@@ -72,14 +72,14 @@ typedef struct rk_tool_awb_stat_blk_res_v201_s {
     long long Bvalue;
 } rk_tool_awb_stat_blk_res_v201_t;
 
-typedef struct rk_tool_awb_stat_wp_res_light_v201_s {
+typedef struct rk_tool_awb_wp_res_light_v201_s {
     // M4_STRUCT_LIST_DESC("xYType", M4_SIZE(1,2), "normal_ui_style")
     rk_tool_awb_stat_wp_res_v201_t xYType[RK_TOOL_AWB_XY_TYPE_MAX_V201];
-} rk_tool_awb_stat_wp_res_light_v201_t;
+} rk_tool_awb_wp_res_light_v201_t;
 
 typedef struct rk_tool_awb_stat_res2_v201_s {
     // M4_STRUCT_LIST_DESC("light", M4_SIZE(1,7), "normal_ui_style")
-    rk_tool_awb_stat_wp_res_light_v201_t light[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM];
+    rk_tool_awb_wp_res_light_v201_t light[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM];
     //method2
     // M4_STRUCT_LIST_DESC("blockResult", M4_SIZE(1,225), "normal_ui_style")
     rk_tool_awb_stat_blk_res_v201_t   blockResult[RK_TOOL_AWB_GRID_NUM_TOTAL];
@@ -90,13 +90,13 @@ typedef struct rk_tool_awb_stat_res2_v201_s {
 
 typedef struct rk_tool_awb_stat_res2_v30_s {
     // M4_STRUCT_LIST_DESC("light", M4_SIZE(1,7), "normal_ui_style")
-    rk_tool_awb_stat_wp_res_light_v201_t light[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM];
+    rk_tool_awb_wp_res_light_v201_t light[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM];
     // M4_ARRAY_DESC("WpNo2", "s32", M4_SIZE(1,8), M4_RANGE(-2147483648,2147483647), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     int WpNo2[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM];
     // M4_STRUCT_LIST_DESC("blockResult", M4_SIZE(1,225), "normal_ui_style")
     rk_tool_awb_stat_blk_res_v201_t   blockResult[RK_TOOL_AWB_GRID_NUM_TOTAL];
     // M4_STRUCT_LIST_DESC("multiwindowLightResult", M4_SIZE(1,4), "normal_ui_style")
-    rk_tool_awb_stat_wp_res_light_v201_t multiwindowLightResult[4];
+    rk_tool_awb_wp_res_light_v201_t multiwindowLightResult[4];
     // M4_STRUCT_LIST_DESC("excWpRangeResult", M4_SIZE(1,4), "normal_ui_style")
     rk_tool_awb_stat_wp_res_v201_t excWpRangeResult[RK_TOOL_AWB_STAT_WP_RANGE_NUM_V201];
     // M4_ARRAY_DESC("WpNoHist", "u32", M4_SIZE(1,8), M4_RANGE(0,4294967295), "0", M4_DIGIT(0), M4_DYNAMIC(0))
@@ -105,7 +105,7 @@ typedef struct rk_tool_awb_stat_res2_v30_s {
 
 typedef struct rk_tool_isp_awb_stats_v32_s {
     // M4_STRUCT_LIST_DESC("light", M4_SIZE(1,4), "normal_ui_style")
-    rk_tool_awb_stat_wp_res_light_v201_t light[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM_V32];
+    rk_tool_awb_wp_res_light_v201_t light[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM_V32];
     // M4_ARRAY_DESC("WpNo2", "s32", M4_SIZE(1,8), M4_RANGE(-2147483648,2147483647), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     int WpNo2[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM_V32];
     // M4_STRUCT_LIST_DESC("blockResult", M4_SIZE(1,225), "normal_ui_style")
@@ -126,26 +126,26 @@ typedef struct rk_tool_awb_measure_wp_res_fl_s {
     int WpNoHist_2[RK_TOOL_AWB_WP_HIST_BIN_NUM]; //uselsess
 } rk_tool_awb_measure_wp_res_fl_t;
 
-typedef struct rk_tool_awb_measure_blk_res2_fl_s {
+typedef struct rk_tool_awb_blk_res2_fl_s {
     // M4_ARRAY_DESC("WpNo", "u32", M4_SIZE(1,1), M4_RANGE(0,4294967295), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned int WpNo;
     // M4_ARRAY_DESC("gain", "f32", M4_SIZE(1,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float gain[RK_TOOL_AWB_CHANNEL_MAX];//mean rgain  value
-} rk_tool_awb_measure_blk_res2_fl_t;
+} rk_tool_awb_blk_res2_fl_t;
 
-typedef struct rk_tool_awb_measure_wp_res_light_fl_s {
+typedef struct rk_tool_awb_wp_res_light_fl_s {
     // M4_STRUCT_LIST_DESC("xYType", M4_SIZE(1,2), "normal_ui_style")
     rk_tool_awb_measure_wp_res_fl_t xYType[RK_TOOL_AWB_XY_TYPE_MAX_V201];
-} rk_tool_awb_measure_wp_res_light_fl_t;
+} rk_tool_awb_wp_res_light_fl_t;
 
-typedef struct rk_tool_awb_measure_blk_res_fl_s {
+typedef struct rk_tool_awb_blk_res_fl_s {
     // M4_ARRAY_DESC("R", "f32", M4_SIZE(1,1), M4_RANGE(0,1), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float R;//mean r value and normalize to 0~1
     // M4_ARRAY_DESC("G", "f32", M4_SIZE(1,1), M4_RANGE(0,1), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float G;
     // M4_ARRAY_DESC("B", "f32", M4_SIZE(1,1), M4_RANGE(0,1), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float B;
-} rk_tool_awb_measure_blk_res_fl_t;
+} rk_tool_awb_blk_res_fl_t;
 
 typedef struct rk_tool_awb_effect_para1_s{
     // M4_ARRAY_DESC("hdrFrameChoose", "s32", M4_SIZE(1,1), M4_RANGE(-2147483648,2147483647), "0", M4_DIGIT(0), M4_DYNAMIC(0))
@@ -156,7 +156,7 @@ typedef struct rk_tool_awb_stat_res_full_s {
     // M4_ARRAY_DESC("lightNum", "s32", M4_SIZE(1,1), M4_RANGE(-2147483648,2147483647), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     int lightNum;
     // M4_STRUCT_LIST_DESC("light", M4_SIZE(1,14), "normal_ui_style")
-    rk_tool_awb_measure_wp_res_light_fl_t light[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM2];
+    rk_tool_awb_wp_res_light_fl_t light[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM2];
     // M4_BOOL_DESC("lightWpResVaLidIll", "0")
     bool                          lightWpResVaLidIll[RK_TOOL_AWB_MAX_WHITEREGIONS_NUM2];//for time share
     // M4_BOOL_DESC("lightWpResVaLid", "0")
@@ -170,11 +170,11 @@ typedef struct rk_tool_awb_stat_res_full_s {
     // M4_BOOL_DESC("blkSgcResVaLid", "0")
     bool                    blkSgcResVaLid;
     // M4_STRUCT_LIST_DESC("blkSgcResult", M4_SIZE(1,225), "normal_ui_style")
-    rk_tool_awb_measure_blk_res_fl_t blkSgcResult[RK_TOOL_AWB_GRID_NUM_TOTAL];
+    rk_tool_awb_blk_res_fl_t blkSgcResult[RK_TOOL_AWB_GRID_NUM_TOTAL];
     // M4_BOOL_DESC("blkWpResVaLid", "0")
     bool                     blkWpResVaLid;
     // M4_STRUCT_LIST_DESC("blkWpResult", M4_SIZE(1,225), "normal_ui_style")
-    rk_tool_awb_measure_blk_res2_fl_t blkWpResult[RK_TOOL_AWB_GRID_NUM_TOTAL];
+    rk_tool_awb_blk_res2_fl_t blkWpResult[RK_TOOL_AWB_GRID_NUM_TOTAL];
     // M4_BOOL_DESC("excWpResValid", "0")
     bool excWpResValid;
     // M4_STRUCT_LIST_DESC("excWpRangeResult", M4_SIZE(1,4), "normal_ui_style")

@@ -26,7 +26,7 @@ namespace RkCam {
 
 class RkAiqAwbHandleInt : public RkAiqHandle {
     friend class RkAiqAwbV21HandleInt;
-
+    friend class RkAiqCustomAwbHandle;
  public:
     explicit RkAiqAwbHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore), mProcResShared(nullptr) {

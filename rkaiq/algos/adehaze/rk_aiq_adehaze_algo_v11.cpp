@@ -22,6 +22,7 @@
 
 #include "xcam_log.h"
 #include "rkisp21-config.h"
+#include "mathlib.h"
 
 float LinearInterpV11(const float* pX, const float* pY, float posx, int XSize) {
     int index;
@@ -241,7 +242,7 @@ void stManuGetDehazeParamsV11(mDehazeAttrV11_t* pStManu, RkAiqAdehazeProcResult_
             LOGD_ADEHAZE("%s cfg_alpha:1 cfg_air:%f cfg_tmax:%f cfg_wt:%f\n", __func__,
                          pProcRes->ProcResV11.cfg_air / 1.0f,
                          pProcRes->ProcResV11.cfg_tmax / 1023.0f,
-                         pProcRes->ProcResV11.cfg_wt / 255.0ff);
+                         pProcRes->ProcResV11.cfg_wt / 255.0f);
             LOGD_ADEHAZE("%s cfg_alpha_reg:0x255 cfg_air:0x%x cfg_tmax:0x%x cfg_wt:0x%x\n",
                          __func__, pProcRes->ProcResV11.cfg_air, pProcRes->ProcResV11.cfg_tmax,
                          pProcRes->ProcResV11.cfg_wt);
@@ -249,7 +250,7 @@ void stManuGetDehazeParamsV11(mDehazeAttrV11_t* pStManu, RkAiqAdehazeProcResult_
             LOGD_ADEHAZE("%s cfg_alpha:0 air_max:%f air_min:%f tmax_base:%f wt_max:%f\n", __func__,
                          pProcRes->ProcResV11.air_max / 1.0f, pProcRes->ProcResV11.air_min / 1.0f,
                          pProcRes->ProcResV11.tmax_base / 1.0f,
-                         pProcRes->ProcResV11.wt_max / 255.0ff);
+                         pProcRes->ProcResV11.wt_max / 255.0f);
             LOGD_ADEHAZE(
                 "%s cfg_alpha_reg:0x0 air_max:0x%x air_min:0x%x tmax_base:0x%x wt_max:0x%x\n",
                 __func__, pProcRes->ProcResV11.air_max, pProcRes->ProcResV11.air_min,
@@ -532,18 +533,6 @@ void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData
         LOGV_ADEHAZE("%s:  h_rgb_iir[%d]:%d:\n", __FUNCTION__, i,
                      pAdehazeCtx->stats.dehaze_stats_v11.h_rgb_iir[i]);
 
-    // get other stats from stats
-    for (int i = 0; i < 225; i++) {
-        pAdehazeCtx->stats.other_stats.short_luma[i] = ROData->other_stats.short_luma[i];
-        pAdehazeCtx->stats.other_stats.long_luma[i]  = ROData->other_stats.long_luma[i];
-        pAdehazeCtx->stats.other_stats.tmo_luma[i]   = ROData->other_stats.tmo_luma[i];
-    }
-
-    if (pAdehazeCtx->FrameNumber == HDR_3X_NUM) {
-        for (int i = 0; i < 25; i++)
-            pAdehazeCtx->stats.other_stats.middle_luma[i] = ROData->other_stats.middle_luma[i];
-    }
-
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);
 }
 
@@ -552,28 +541,30 @@ void AdehazeGetEnvLvISO(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoPreResAe* pAePreR
 
     if (pAePreRes == NULL) {
         LOGE_ADEHAZE("%s:Ae Pre Res is NULL!\n", __FUNCTION__);
-        pAdehazeCtx->CurrDataV11.EnvLv = 0.0;
+        pAdehazeCtx->CurrDataV11.EnvLv = ENVLVMIN;
         return;
     }
 
-    pAdehazeCtx->CurrDataV11.EnvLv =
-        pAePreRes->ae_pre_res_rk.GlobalEnvLv[pAePreRes->ae_pre_res_rk.NormalIndex];
+    switch (pAdehazeCtx->FrameNumber) {
+        case LINEAR_NUM:
+            pAdehazeCtx->CurrDataV11.EnvLv = pAePreRes->ae_pre_res_rk.GlobalEnvLv[0];
+            break;
+        case HDR_2X_NUM:
+            pAdehazeCtx->CurrDataV11.EnvLv = pAePreRes->ae_pre_res_rk.GlobalEnvLv[1];
+            break;
+        case HDR_3X_NUM:
+            pAdehazeCtx->CurrDataV11.EnvLv = pAePreRes->ae_pre_res_rk.GlobalEnvLv[1];
+            break;
+        default:
+            LOGE_ADEHAZE("%s:  Wrong frame number in HDR mode!!!\n", __FUNCTION__);
+            break;
+    }
 
     // Normalize the current envLv for AEC
     pAdehazeCtx->CurrDataV11.EnvLv =
         (pAdehazeCtx->CurrDataV11.EnvLv - MIN_ENV_LV) / (MAX_ENV_LV - MIN_ENV_LV);
     pAdehazeCtx->CurrDataV11.EnvLv =
         LIMIT_VALUE(pAdehazeCtx->CurrDataV11.EnvLv, ENVLVMAX, ENVLVMIN);
-
-    // get iso
-    if (pAdehazeCtx->FrameNumber == LINEAR_NUM)
-        pAdehazeCtx->CurrDataV11.ISO =
-            pAePreRes->ae_pre_res_rk.LinearExp.exp_real_params.analog_gain *
-            pAePreRes->ae_pre_res_rk.LinearExp.exp_real_params.digital_gain * 50.0;
-    else if (pAdehazeCtx->FrameNumber == HDR_2X_NUM || pAdehazeCtx->FrameNumber == HDR_3X_NUM)
-        pAdehazeCtx->CurrDataV11.ISO =
-            pAePreRes->ae_pre_res_rk.HdrExp[1].exp_real_params.analog_gain *
-            pAePreRes->ae_pre_res_rk.HdrExp[1].exp_real_params.digital_gain * 50.0;
 
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);
 }
@@ -582,12 +573,28 @@ XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx, RKAiqAecExpInfo
                                    XCamVideoBuffer* pAePreRes) {
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
     XCamReturn ret               = XCAM_RETURN_NO_ERROR;
-    RkAiqAlgoPreResAe* pAEPreRes = NULL;
+
+    // get EnvLv
     if (pAePreRes) {
-        pAEPreRes = (RkAiqAlgoPreResAe*)pAePreRes->map(pAePreRes);
+        RkAiqAlgoPreResAe* pAEPreRes = (RkAiqAlgoPreResAe*)pAePreRes->map(pAePreRes);
         AdehazeGetEnvLvISO(pAdehazeCtx, pAEPreRes);
     } else {
-        pAdehazeCtx->CurrDataV11.EnvLv = 0.0;
+        pAdehazeCtx->CurrDataV11.EnvLv = ENVLVMIN;
+        ret                            = XCAM_RETURN_ERROR_PARAM;
+    }
+
+    // get iso
+    if (pAeEffExpo) {
+        if (pAdehazeCtx->FrameNumber == LINEAR_NUM)
+            pAdehazeCtx->CurrDataV11.ISO = pAeEffExpo->LinearExp.exp_real_params.analog_gain *
+                                           pAeEffExpo->LinearExp.exp_real_params.digital_gain *
+                                           50.0f;
+        else if (pAdehazeCtx->FrameNumber == HDR_2X_NUM || pAdehazeCtx->FrameNumber == HDR_3X_NUM)
+            pAdehazeCtx->CurrDataV11.ISO = pAeEffExpo->HdrExp[1].exp_real_params.analog_gain *
+                                           pAeEffExpo->HdrExp[1].exp_real_params.digital_gain *
+                                           50.0f;
+    } else {
+        pAdehazeCtx->CurrDataV11.ISO   = ISOMIN;
         ret                            = XCAM_RETURN_ERROR_PARAM;
     }
 
@@ -598,15 +605,30 @@ XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx, RKAiqAecExpInfo
 XCamReturn AdehazeGetCurrData(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoProcAdhaz* pProcPara) {
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
     XCamReturn ret                = XCAM_RETURN_NO_ERROR;
+
+    // get EvnLv
     XCamVideoBuffer* xCamAePreRes = pProcPara->com.u.proc.res_comb->ae_pre_res;
-    RkAiqAlgoPreResAe* pAEPreRes  = NULL;
     if (xCamAePreRes) {
-        pAEPreRes = (RkAiqAlgoPreResAe*)xCamAePreRes->map(xCamAePreRes);
+        RkAiqAlgoPreResAe* pAEPreRes = (RkAiqAlgoPreResAe*)xCamAePreRes->map(xCamAePreRes);
         AdehazeGetEnvLvISO(pAdehazeCtx, pAEPreRes);
     } else {
-        pAdehazeCtx->CurrDataV11.EnvLv = 0.0;
-        pAdehazeCtx->CurrDataV11.ISO   = 50.0;
+        pAdehazeCtx->CurrDataV11.EnvLv = ENVLVMIN;
         ret                            = XCAM_RETURN_ERROR_PARAM;
+    }
+
+    // get ISO
+    if (pProcPara->com.u.proc.nxtExp) {
+        if (pAdehazeCtx->FrameNumber == LINEAR_NUM)
+            pAdehazeCtx->CurrDataV11.ISO =
+                pProcPara->com.u.proc.nxtExp->LinearExp.exp_real_params.analog_gain *
+                pProcPara->com.u.proc.nxtExp->LinearExp.exp_real_params.digital_gain * 50.0f;
+        else if (pAdehazeCtx->FrameNumber == HDR_2X_NUM || pAdehazeCtx->FrameNumber == HDR_3X_NUM)
+            pAdehazeCtx->CurrDataV11.ISO =
+                pProcPara->com.u.proc.nxtExp->HdrExp[1].exp_real_params.analog_gain *
+                pProcPara->com.u.proc.nxtExp->HdrExp[1].exp_real_params.digital_gain * 50.0f;
+    } else {
+        pAdehazeCtx->CurrDataV11.ISO = ISOMIN;
+        ret                          = XCAM_RETURN_ERROR_PARAM;
     }
 
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);

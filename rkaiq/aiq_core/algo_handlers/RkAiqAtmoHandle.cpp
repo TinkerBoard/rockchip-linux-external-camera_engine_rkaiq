@@ -26,12 +26,8 @@ void RkAiqAtmoHandleInt::init() {
 
     RkAiqHandle::deInit();
     mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAtmo());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAtmo());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAtmo());
     mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAtmo());
     mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAtmo());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAtmo());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAtmo());
 
     EXIT_ANALYZER_FUNCTION();
 }

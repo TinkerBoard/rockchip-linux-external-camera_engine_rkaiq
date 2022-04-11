@@ -64,9 +64,9 @@ add_custom_target(
     -I${ROOT_PROJ_DIR}/include/iq_parser_v2/j2s
     COMMAND ${PROJECT_SOURCE_DIR}/script/headerprocess.sh
     ${ROOT_PROJ_DIR}/include/iq_parser_v2/RkAiqCalibDbTypesV2.h
-    ${ROOT_PROJ_DIR}/include/iq_parser_v2/j2s/j2s_generated.h
+    ${CMAKE_BINARY_DIR}/j2s_generated.h
     COMMAND ${PROJECT_SOURCE_DIR}/bin/parser RkAiqCalibDbTypesV2_M4.h >>
-    ${ROOT_PROJ_DIR}/include/iq_parser_v2/j2s/j2s_generated.h
+    ${CMAKE_BINARY_DIR}/j2s_generated.h
     )
 add_dependencies(parser_tool j2s_parser)
 

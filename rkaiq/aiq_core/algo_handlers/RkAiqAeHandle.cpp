@@ -843,7 +843,7 @@ XCamReturn RkAiqAeHandleInt::processing() {
 
         /* Transfer the initial exposure to other algorithm modules */
         for (auto type = RK_AIQ_CORE_ANALYZE_MEAS; type < RK_AIQ_CORE_ANALYZE_MAX; \
-             type = (rk_aiq_core_analyze_type_e)(type + 1)) {
+                type = (rk_aiq_core_analyze_type_e)(type + 1)) {
             uint64_t grpMask = grpId2GrpMask(type);
             if (!mAiqCore->getGroupSharedParams(grpMask, shared)) {
                 if (shared) {
@@ -927,7 +927,10 @@ XCamReturn RkAiqAeHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     exp_param->aecExpInfo.LinearExp = ae_proc->new_ae_exp.LinearExp;
     memcpy(exp_param->aecExpInfo.HdrExp, ae_proc->new_ae_exp.HdrExp,
            sizeof(ae_proc->new_ae_exp.HdrExp));
-    exp_param->exp_i2c_params = ae_proc->exp_i2c_params;
+    if (ae_proc->exp_i2c_params.bValid)
+        exp_param->exp_i2c_params = ae_proc->exp_i2c_params;
+    else
+        exp_param->exp_i2c_params.bValid = false;
     exp_param->aecExpInfo.frame_length_lines   = ae_proc->new_ae_exp.frame_length_lines;
     exp_param->aecExpInfo.line_length_pixels   = ae_proc->new_ae_exp.line_length_pixels;
     exp_param->aecExpInfo.pixel_clock_freq_mhz = ae_proc->new_ae_exp.pixel_clock_freq_mhz;
@@ -959,7 +962,7 @@ XCamReturn RkAiqAeHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     RkAiqAlgoProcResAe* ae_rk = (RkAiqAlgoProcResAe*)ae_proc;
     memcpy(exp_param->exp_tbl, ae_rk->ae_proc_res_rk.exp_set_tbl, sizeof(exp_param->exp_tbl));
     exp_param->exp_tbl_size = ae_rk->ae_proc_res_rk.exp_set_cnt;
-    exp_param->algo_id      = algo_id;
+    exp_param->algo_id      = 0;//algo_id;
 
     if (algo_id == 0) {
         RkAiqAlgoPostResAe* ae_post_rk = (RkAiqAlgoPostResAe*)ae_post;

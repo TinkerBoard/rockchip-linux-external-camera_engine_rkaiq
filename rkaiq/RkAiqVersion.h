@@ -383,10 +383,19 @@
  * - Fix dehaze/drc/merge/drc api bugs
  * - Fix ae/debayer/nr/sharp params
  * - Optimized heap buffer usage a bit
+ * v4.0x9.8-rc0
+ * - Support write AWB debug buffer to file
+ *   driver version should match with kernel
+ * - Support switch sub-scene
+ * - Support cutomer ae/awb
+ * - Optimized code size
+ * - Optimized memory usages
+ * - Optimized cpu ultilization
+ * - Fix params bug for 3dlut/ccm/gic..
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x8.8-rc0"
-#define RK_AIQ_RELEASE_DATE "2022-04-02 ISP uAPI Release"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.8-rc0"
+#define RK_AIQ_RELEASE_DATE "2022-04-13 for rv1106 beta SDK release"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

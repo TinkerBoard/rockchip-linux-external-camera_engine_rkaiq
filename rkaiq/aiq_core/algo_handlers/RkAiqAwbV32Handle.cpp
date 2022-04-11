@@ -66,6 +66,12 @@ XCamReturn RkAiqAwbV32HandleInt::updateConfig(bool needSync) {
         updateWbV32AwbMultiWindowAttr = false;
         sendSignal(mCurWbV32AwbMultiWindowAttr.sync.sync_mode);
     }
+    if (updateWriteAwbInputAttr) {
+        mCurWriteAwbInputAttr   = mNewWriteAwbInputAttr;
+        rk_aiq_uapiV2_awb_WriteInput(mAlgoCtx, mCurWriteAwbInputAttr, false);
+        updateWriteAwbInputAttr = false;
+        sendSignal(mCurWriteAwbInputAttr.sync.sync_mode);
+    }
     if (needSync) mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();
@@ -188,5 +194,36 @@ XCamReturn RkAiqAwbV32HandleInt::getWbV32Attrib(rk_aiq_uapiV2_wbV32_attrib_t* at
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
+XCamReturn RkAiqAwbV32HandleInt::writeAwbIn(rk_aiq_uapiV2_awb_wrtIn_attr_t att) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    mCfgMutex.lock();
+
+    // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
+    // if something changed, set att to mNewAtt, and
+    // the new params will be effective later when updateConfig
+    // called by RkAiqCore
+    bool isChanged = false;
+    if (att.sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
+        memcmp(&mNewWriteAwbInputAttr, &att, sizeof(att)))
+        isChanged = true;
+    else if (att.sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
+             memcmp(&mCurWriteAwbInputAttr, &att, sizeof(att)))
+        isChanged = true;
+
+    // if something changed
+    if (isChanged) {
+        mNewWriteAwbInputAttr = att;
+        updateWriteAwbInputAttr = true;
+        waitSignal(att.sync.sync_mode);
+    }
+
+    mCfgMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
 
 }  // namespace RkCam

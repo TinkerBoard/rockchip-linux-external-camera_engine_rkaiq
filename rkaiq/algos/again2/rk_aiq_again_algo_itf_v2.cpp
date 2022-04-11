@@ -109,7 +109,7 @@ prepare(RkAiqAlgoCom* params)
     LOGI_ANR("%s: (exit)\n", __FUNCTION__ );
     return result;
 }
-
+#if 0
 static XCamReturn
 pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
@@ -135,7 +135,7 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGI_ANR("%s: (exit)\n", __FUNCTION__ );
     return result;
 }
-
+#endif
 static XCamReturn
 processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 {
@@ -155,6 +155,18 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
              __FUNCTION__, __LINE__,
              inparams->u.proc.init,
              pAgainProcParams->hdr_mode);
+
+    if (inparams->u.proc.gray_mode) {
+        pAgainCtx->isGrayMode = true;
+    } else {
+        pAgainCtx->isGrayMode = false;
+    }
+
+    Again_result_V2_t ret = Again_PreProcess_V2(pAgainCtx);
+    if(ret != AGAINV2_RET_SUCCESS) {
+        result = XCAM_RETURN_ERROR_FAILED;
+        LOGE_ANR("%s: ANRPreProcess failed (%d)\n", __FUNCTION__, ret);
+    }
 
     stExpInfo.hdr_mode = 0; //pAnrProcParams->hdr_mode;
     for(int i = 0; i < 3; i++) {
@@ -329,9 +341,9 @@ RkAiqAlgoDescription g_RkIspAlgoDescAgainV2 = {
         .destroy_context = destroy_context,
     },
     .prepare = prepare,
-    .pre_process = pre_process,
+    .pre_process = NULL,
     .processing = processing,
-    .post_process = post_process,
+    .post_process = NULL,
 };
 
 RKAIQ_END_DECLARE

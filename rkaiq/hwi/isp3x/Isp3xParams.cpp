@@ -85,6 +85,7 @@ void Isp3xParams::fixedAwbOveflowToIsp3xParams(void* isp_cfg_p, bool is_dual_isp
     }
 }
 
+#if RKAIQ_HAVE_AWB_V21
 void Isp3xParams::convertAiqAwbToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_awb_meas_cfg_v3x_t& awb_meas,
         bool awb_cfg_udpate)
@@ -476,7 +477,8 @@ void Isp3xParams::convertAiqAwbToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
     awb_cfg_v30->sw_rawawb_blk_rtdw_measure_en =  awb_meas.blk_rtdw_measure_en;
 
 }
-
+#endif
+#if RKAIQ_HAVE_BAYER2DNR_V2
 void Isp3xParams::convertAiqRawnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         rk_aiq_isp_baynr_v3x_t& rawnr)
 {
@@ -525,7 +527,8 @@ void Isp3xParams::convertAiqRawnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_
 
     LOGD_ANR("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
-
+#endif
+#if RKAIQ_HAVE_BAYERTNR_V2
 void Isp3xParams::convertAiqTnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         rk_aiq_isp_tnr_v3x_t& tnr)
 {
@@ -580,7 +583,8 @@ void Isp3xParams::convertAiqTnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
     }
     LOGD_ANR("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
-
+#endif
+#if RKAIQ_HAVE_CNR_V2
 void Isp3xParams::convertAiqUvnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         rk_aiq_isp_cnr_v3x_t& uvnr)
 {
@@ -641,7 +645,8 @@ void Isp3xParams::convertAiqUvnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_c
     }
     LOGD_ANR("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
-
+#endif
+#if RKAIQ_HAVE_YNR_V3
 void Isp3xParams::convertAiqYnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         rk_aiq_isp_ynr_v3x_t& ynr)
 {
@@ -734,7 +739,8 @@ void Isp3xParams::convertAiqYnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
     }
     LOGD_ANR("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
-
+#endif
+#if RKAIQ_HAVE_SHARP_V4
 void Isp3xParams::convertAiqSharpenToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         rk_aiq_isp_sharp_v3x_t& sharp)
 {
@@ -790,7 +796,7 @@ void Isp3xParams::convertAiqSharpenToIsp3xParams(struct isp3x_isp_params_cfg& is
     }
     LOGD_ANR("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
-
+#endif
 template <class T>
 void Isp3xParams::convertAiqGainToIsp3xParams(T& isp_cfg, rk_aiq_isp_gain_v3x_t& gain) {
     LOGD_ANR("%s:%d enter! enable:%d gain:0x%x 0x%x 0x%x\n", __FUNCTION__, __LINE__,
@@ -881,6 +887,7 @@ void Isp3xParams::convertAiqDrcToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
 }
 #endif
 
+#if RKAIQ_HAVE_AF_V30
 void Isp3xParams::convertAiqAfToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_af_meas_v3x_t& af_data, bool af_cfg_udpate)
 {
@@ -986,7 +993,7 @@ void Isp3xParams::convertAiqAfToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg
         isp_cfg.meas.rawae3.win.v_size = af_data.wina_v_size;
     }
 }
-
+#endif
 #if RKAIQ_HAVE_MERGE_V11
 void Isp3xParams::convertAiqMergeToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_merge_v3x_t& amerge_data)
@@ -1257,9 +1264,11 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_AWB_PARAM:
     {
+#if RKAIQ_HAVE_AWB_V21
         SmartPtr<RkAiqIspAwbParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspAwbParamsProxyV3x>();
         if (params.ptr())
             convertAiqAwbToIsp3xParams(isp_cfg, params->data()->result, true);
+#endif
     }
     break;
     case RESULT_TYPE_DRC_PARAM:
@@ -1273,37 +1282,47 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_TNR_PARAM:
     {
+#if RKAIQ_HAVE_BAYERTNR_V2
         SmartPtr<RkAiqIspTnrParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspTnrParamsProxyV3x>();
         if (params.ptr())
             convertAiqTnrToIsp3xParams(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_RAWNR_PARAM:
     {
+#if RKAIQ_HAVE_BAYER2DNR_V2
         SmartPtr<RkAiqIspBaynrParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspBaynrParamsProxyV3x>();
         if (params.ptr())
             convertAiqRawnrToIsp3xParams(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_YNR_PARAM:
     {
+#if RKAIQ_HAVE_YNR_V3
         SmartPtr<RkAiqIspYnrParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspYnrParamsProxyV3x>();
         if (params.ptr())
             convertAiqYnrToIsp3xParams(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_UVNR_PARAM:
     {
+#if RKAIQ_HAVE_CNR_V2
         SmartPtr<RkAiqIspCnrParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspCnrParamsProxyV3x>();
         if (params.ptr())
             convertAiqUvnrToIsp3xParams(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_SHARPEN_PARAM:
     {
+#if RKAIQ_HAVE_SHARP_V4
         SmartPtr<RkAiqIspSharpenParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspSharpenParamsProxyV3x>();
         if (params.ptr())
             convertAiqSharpenToIsp3xParams(isp_cfg, params->data()->result);
+#endif
     }
     break;
     case RESULT_TYPE_GAIN_PARAM:
@@ -1331,9 +1350,11 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_AF_PARAM:
     {
+#if RKAIQ_HAVE_AF_V30
         SmartPtr<RkAiqIspAfParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspAfParamsProxyV3x>();
         if (params.ptr())
             convertAiqAfToIsp3xParams(isp_cfg, params->data()->result, true);
+#endif
     }
     break;
     case RESULT_TYPE_MERGE_PARAM:

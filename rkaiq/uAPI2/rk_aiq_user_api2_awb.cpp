@@ -920,7 +920,27 @@ rk_aiq_user_api2_awbV32_GetMultiWindowAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk
 #endif
 }
 
+XCamReturn
+rk_aiq_user_api2_awb_WriteAwbIn(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_awb_wrtIn_attr_t attr)
+{
+#if RKAIQ_HAVE_AWB_V32
 
+    CHECK_USER_API_ENABLE2(sys_ctx);
+    CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
+    RKAIQ_API_SMART_LOCK(sys_ctx);
+
+
+    RkAiqAwbV32HandleInt* algo_handle =
+        algoHandle<RkAiqAwbV32HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
+
+    if (algo_handle) {
+        return algo_handle->writeAwbIn(attr);
+    }
+    return XCAM_RETURN_NO_ERROR;
+#else
+    return XCAM_RETURN_ERROR_UNKNOWN;
+#endif
+}
 
 
 RKAIQ_END_DECLARE

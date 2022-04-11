@@ -61,20 +61,40 @@ public:
         return XCAM_RETURN_BYPASS;
     }
     virtual XCamReturn translateAdehazeStats(const SmartPtr<VideoBuffer>& from,
-                                             SmartPtr<RkAiqAdehazeStatsProxy>& to) {
+            SmartPtr<RkAiqAdehazeStatsProxy>& to) {
         return XCAM_RETURN_BYPASS;
     }
+#if RKAIQ_HAVE_PDAF
     virtual XCamReturn translatePdafStats (const SmartPtr<VideoBuffer> &from,
-                                   SmartPtr<RkAiqPdafStatsProxy> &to, bool sns_mirror) {
+                                           SmartPtr<RkAiqPdafStatsProxy> &to, bool sns_mirror) {
         return XCAM_RETURN_BYPASS;
     }
-    void setCamPhyId(int phyId) { mCamPhyId = phyId;}
-    void setGroupMode(bool bGroup) { mIsGroupMode = bGroup;}
-    void setModuleRot(int rot) { mModuleRotation = rot;}
+#endif
+    virtual XCamReturn getParams(const SmartPtr<VideoBuffer>& from) {
+        return XCAM_RETURN_BYPASS;
+    }
+    virtual void releaseParams() {}
+    void setCamPhyId(int phyId) {
+        mCamPhyId = phyId;
+    }
+    void setGroupMode(bool bGroup) {
+        mIsGroupMode = bGroup;
+    }
+    void setModuleRot(int rot) {
+        mModuleRotation = rot;
+    }
+    void setWorkingMode(int working_mode) {
+        mWorkingMode = working_mode;
+    }
+    int getWorkingMode() {
+        return mWorkingMode;
+    }
+
 protected:
     int mCamPhyId;
     bool mIsGroupMode;
     int mModuleRotation;
+    int mWorkingMode;
 
 private:
     XCAM_DEAD_COPY (IRkAiqResourceTranslator);

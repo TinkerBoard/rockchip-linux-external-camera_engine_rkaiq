@@ -310,19 +310,21 @@ void rkaiq_params_tuning(aiq_tunning_ctx *tunning_ctx) {
 int SocketServer::packetHandle(void *packet, MessageType type) {
   if (type == RKAIQ_MESSAGE_NEW) {
     RkAiqSocketPacket_t *aiq_data = (RkAiqSocketPacket_t *)packet;
+
+    if (this->tunning_thread && this->tunning_thread->joinable()) {
+      this->tunning_thread->join();
+      this->tunning_thread.reset();
+      this->tunning_thread = nullptr;
+    }
+
     aiq_tunning_ctx *tunning_ctx =
         (aiq_tunning_ctx *)calloc(1, sizeof(aiq_tunning_ctx));
     tunning_ctx->aiq_data = aiq_data;
     tunning_ctx->aiq_ctx = aiq_ctx;
     tunning_ctx->socketfd = client_socket;
 
-    if (this->tunning_thread && this->tunning_thread->joinable()) {
-      this->tunning_thread->join();
-    }
-
     this->tunning_thread = std::make_shared<std::thread>(
         std::thread(rkaiq_params_tuning, tunning_ctx));
-    this->tunning_thread->detach();
   } else {
     RkAiqSocketPacket *aiq_data = (RkAiqSocketPacket *)packet;
     ProcessText(client_socket, aiq_ctx, aiq_data);

@@ -125,6 +125,7 @@ CamHwIsp21::gen_full_isp_params(const struct isp21_isp_params_cfg* update_params
                                 uint64_t* module_en_update_partial,
                                 uint64_t* module_cfg_update_partial)
 {
+#ifdef ISP_HW_V21
     XCAM_ASSERT (update_params);
     XCAM_ASSERT (full_params);
     int i = 0;
@@ -278,6 +279,7 @@ CamHwIsp21::gen_full_isp_params(const struct isp21_isp_params_cfg* update_params
         }
     }
     EXIT_CAMHW_FUNCTION();
+#endif
 }
 
 XCamReturn
@@ -285,6 +287,7 @@ CamHwIsp21::setIspConfig()
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef ISP_HW_V21
     ENTER_CAMHW_FUNCTION();
 
     SmartPtr<V4l2Buffer> v4l2buf;
@@ -360,9 +363,11 @@ CamHwIsp21::setIspConfig()
         SmartPtr<RkAiqIspAfParamsProxy> afParams;
         if (af_res.ptr()) {
             afParams = af_res.dynamic_cast_ptr<RkAiqIspAfParamsProxy>();
+#if defined(RKAIQ_ENABLE_SPSTREAM)
             if (mSpStreamUnit.ptr()) {
                 mSpStreamUnit->update_af_meas_params(&afParams->data()->result);
             }
+#endif
         }
     }
 
@@ -467,6 +472,7 @@ CamHwIsp21::setIspConfig()
         return XCAM_RETURN_BYPASS;
 
     EXIT_CAMHW_FUNCTION();
+#endif
     return ret;
 }
 

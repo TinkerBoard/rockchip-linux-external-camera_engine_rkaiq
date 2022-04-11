@@ -82,7 +82,7 @@ typedef struct CamCalibDbV2ContextIsp21_s {
     // M4_STRUCT_DESC("amerge_calib", "normal_ui_style")
     CalibDbV2_merge_V10_t amerge_calib;
     // M4_STRUCT_DESC("adrc_calib", "normal_ui_style")
-    CalibDbV2_drc_V10_t adrc_calib_V10;
+    CalibDbV2_drc_V10_t adrc_calib_v10;
     // M4_STRUCT_DESC("cpsl", "normal_ui_style")
     CalibDbV2_Cpsl_t cpsl;
     // M4_STRUCT_DESC("debayer_calib", "normal_ui_style")

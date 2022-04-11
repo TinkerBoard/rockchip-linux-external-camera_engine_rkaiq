@@ -26,12 +26,8 @@ void RkAiqAsharpV33HandleInt::init() {
 
     RkAiqHandle::deInit();
     mConfig       = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAsharpV33());
-    mPreInParam   = (RkAiqAlgoCom*)(new RkAiqAlgoPreAsharpV33());
-    mPreOutParam  = (RkAiqAlgoResCom*)(new RkAiqAlgoPreResAsharpV33());
     mProcInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoProcAsharpV33());
     mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAsharpV33());
-    mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAsharpV33());
-    mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAsharpV33());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -191,6 +187,7 @@ XCamReturn RkAiqAsharpV33HandleInt::preProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret                               = XCAM_RETURN_NO_ERROR;
+#if 0
     RkAiqAlgoPreAsharpV33* asharp_pre_int        = (RkAiqAlgoPreAsharpV33*)mPreInParam;
     RkAiqAlgoPreResAsharpV33* asharp_pre_res_int = (RkAiqAlgoPreResAsharpV33*)mPreOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
@@ -207,7 +204,7 @@ XCamReturn RkAiqAsharpV33HandleInt::preProcess() {
     RKAIQCORE_CHECK_RET(ret, "asharp algo pre_process failed");
 
     EXIT_ANALYZER_FUNCTION();
-
+#endif
     return ret;
 }
 
@@ -243,6 +240,7 @@ XCamReturn RkAiqAsharpV33HandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret                                 = XCAM_RETURN_NO_ERROR;
+#if 0
     RkAiqAlgoPostAsharpV33* asharp_post_int        = (RkAiqAlgoPostAsharpV33*)mPostInParam;
     RkAiqAlgoPostResAsharpV33* asharp_post_res_int = (RkAiqAlgoPostResAsharpV33*)mPostOutParam;
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
@@ -260,6 +258,7 @@ XCamReturn RkAiqAsharpV33HandleInt::postProcess() {
     RKAIQCORE_CHECK_RET(ret, "asharp algo post_process failed");
 
     EXIT_ANALYZER_FUNCTION();
+#endif
     return ret;
 }
 

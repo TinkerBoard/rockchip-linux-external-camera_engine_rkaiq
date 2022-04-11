@@ -103,7 +103,7 @@ public:
     static TuningCalib analyzTuningCalib(const CamCalibDbV2Context_t *calib,
                                          const char* patch_str);
 
-    static int CamCalibDbFreeInternal(CamCalibDbV2Context_t* ctx);
+    static int FreeCalibByJ2S(void* ctx);
 
 private:
     static std::map<std::string, CamCalibDbProj_t *> mCalibDbsMap;
@@ -253,10 +253,10 @@ private:
     static int CamCalibDbFreeCcmV2Ctx(CalibDbV2_Ccm_Para_V32_t* ccm);
 #endif
 #if RKAIQ_HAVE_BAYER2DNR_V23
-    static int CamCalibDbFreeBayer2dnrV23Ctx(CalibDbV2_Bayer2dnr_V23_t* bayer2dnr_v23);
+    static int CamCalibDbFreeBayer2dnrV23Ctx(CalibDbV2_Bayer2dnrV23_t* bayer2dnr_v23);
 #endif
 #if RKAIQ_HAVE_BAYERTNR_V23
-    static int CamCalibDbFreeBayertnrV23Ctx(CalibDbV2_BayerTnr_V23_t* bayertnr_v23);
+    static int CamCalibDbFreeBayertnrV23Ctx(CalibDbV2_BayerTnrV23_t* bayertnr_v23);
 #endif
 #if RKAIQ_HAVE_CNR_V30
     static int CamCalibDbFreeCnrV30Ctx(CalibDbV2_CNRV30_t* cnr_v30);
@@ -270,6 +270,10 @@ private:
 #if RKAIQ_HAVE_AF_V31
     static int CamCalibDbFreeAfV31Ctx(CalibDbV2_AFV31_t* af);
 #endif
+#if RKAIQ_HAVE_GAIN_V2
+    static int CamCalibDbFreeGainV2Ctx(CalibDbV2_GainV2_t* gain_v2);
+#endif
+
 };
 
 } // namespace RkCam

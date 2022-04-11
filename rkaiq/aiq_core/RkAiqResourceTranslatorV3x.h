@@ -64,6 +64,7 @@ public:
             SmartPtr<RkAiqAdehazeStatsProxy> &to);
 #endif
 
+#if defined(RKAIQ_HAVE_MULTIISP)
     XCamReturn translateMultiIspStats(const SmartPtr<VideoBuffer>& from,
                                       SmartPtr<RkAiqIspStatsIntProxy>& to) {
         return XCAM_RETURN_NO_ERROR;
@@ -76,6 +77,7 @@ public:
                                      SmartPtr<RkAiqAfStatsProxy>& to);
     XCamReturn translateMultiAdehazeStats(const SmartPtr<VideoBuffer>& from,
                                           SmartPtr<RkAiqAdehazeStatsProxy>& to);
+#endif
 
 private:
     XCAM_DEAD_COPY (RkAiqResourceTranslatorV3x);

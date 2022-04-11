@@ -39,7 +39,7 @@ XCamReturn RkAiqCustomAwbHandle::processing() {
     if (mIsMulRun) {
 #endif
         // use parent's mem, so child algo results can overwrite parents results
-        RkAiqAwbV21HandleInt* parent =  dynamic_cast<RkAiqAwbV21HandleInt*>(mParentHdl);
+        RkAiqAwbHandleInt* parent =  dynamic_cast<RkAiqAwbHandleInt*>(mParentHdl);
         if (!parent)
             LOGE_AWB("no parent awb handler in multiple handler mode !");
         mProcResShared =  parent->mProcResShared ;
@@ -51,6 +51,13 @@ XCamReturn RkAiqCustomAwbHandle::processing() {
         }
     }
 
+    RkAiqAlgoProcAwb* awb_proc_int = (RkAiqAlgoProcAwb*)mProcInParam;
+#if RKAIQ_HAVE_BLC_V32
+    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
+        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
+    awb_proc_int->ablcProcResV32= shared->res_comb.ablcV32_proc_res;
+    awb_proc_int->ablcProcResVaid = true;
+#endif
     return RkAiqAwbHandleInt::processing();
 
     EXIT_ANALYZER_FUNCTION();

@@ -292,7 +292,7 @@ rk_aiq_user_api_af_GetZoomRange(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_af_zoomr
     }
     focal_length_len = zoomfocus_tbl->focal_length_len;
 
-    if (focal_length_len > 0) {
+    if (focal_length_len > 1) {
         range->min_fl = zoomfocus_tbl->focal_length[0];
         range->max_fl = zoomfocus_tbl->focal_length[focal_length_len - 1];
         range->min_pos = 0;
