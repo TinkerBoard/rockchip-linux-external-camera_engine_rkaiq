@@ -1327,7 +1327,7 @@
 								}
 							}
 						},
-						"adrc_calib_V12":	{
+						"adrc_calib_v12":	{
 							"DrcTuningPara":	{
 								"Enable":	1,
 								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
