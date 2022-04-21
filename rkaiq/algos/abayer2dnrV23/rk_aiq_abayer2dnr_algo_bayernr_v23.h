@@ -14,9 +14,9 @@
 
 XCAM_BEGIN_DECLARE
 
-Abayer2dnr_result_V23_t bayer2dnr_select_params_by_ISO_V23(RK_Bayer2dnr_Params_V23_t *pParams, RK_Bayer2dnr_Params_V23_Select_t *pSelect, Abayer2dnr_ExpInfo_V23_t *pExpInfo);
+Abayer2dnr_result_V23_t bayer2dnr_select_params_by_ISO_V23(RK_Bayer2dnr_Params_V23_t *pParams, RK_Bayer2dnrV23_Params_Select_t *pSelect, Abayer2dnr_ExpInfo_V23_t *pExpInfo);
 
-Abayer2dnr_result_V23_t bayer2dnr_fix_transfer_V23(RK_Bayer2dnr_Params_V23_Select_t* pSelect, RK_Bayer2dnr_Fix_V23_t *pFix, rk_aiq_bayer2dnr_strength_v23_t* pStrength, Abayer2dnr_ExpInfo_V23_t *pExpInfo);
+Abayer2dnr_result_V23_t bayer2dnr_fix_transfer_V23(RK_Bayer2dnrV23_Params_Select_t* pSelect, RK_Bayer2dnr_Fix_V23_t *pFix, rk_aiq_bayer2dnr_strength_v23_t* pStrength, Abayer2dnr_ExpInfo_V23_t *pExpInfo);
 
 Abayer2dnr_result_V23_t bayer2dnr_fix_printf_V23(RK_Bayer2dnr_Fix_V23_t * pFix);
 

@@ -7,12 +7,12 @@
 
 int mfnrV1_calibdb_to_calibdbV2(const CalibDb_MFNR_2_t *pCalibdb,  CalibDbV2_MFNR_t *pCalibdbV2, int mode_idx)
 {
-    CalibDbV2_MFNR_CalibPara_t *pCalibParaV2 = NULL;
-    CalibDbV2_MFNR_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_MFNR_CalibPara_Setting_ISO_t *pCalibISOV2 = NULL;
-    CalibDbV2_MFNR_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
-    CalibDbV2_MFNR_TuningPara_Motion_ISO_t *pMotionISOV2 = NULL;
-    CalibDbV2_MFNR_TuningPara_Dynamic_t *pDynamicV2 = NULL;
+    CalibDbV2_MFNR_Calib_t *pCalibParaV2 = NULL;
+    CalibDbV2_MFNR_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_MFNR_C_ISO_t *pCalibISOV2 = NULL;
+    CalibDbV2_MFNR_T_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_MFNR_Motion_ISO_t *pMotionISOV2 = NULL;
+    CalibDbV2_MFNR_Dynamic_t *pDynamicV2 = NULL;
     CalibDb_MFNR_Setting_t *pSetting = NULL;
     CalibDb_MFNR_Dynamic_t *pDynamic = NULL;
     CalibDb_MFNR_Motion_t  *pMotion = NULL;
@@ -37,24 +37,24 @@ int mfnrV1_calibdb_to_calibdbV2(const CalibDb_MFNR_2_t *pCalibdb,  CalibDbV2_MFN
     pTuningParaV2 = &pCalibdbV2->TuningPara;
 
     //malloc settting size
-    pCalibParaV2->Setting = (CalibDbV2_MFNR_CalibPara_Setting_t *)malloc(MFNRV1_SETTING_NUM * sizeof(CalibDbV2_MFNR_CalibPara_Setting_t));
-    memset(pCalibParaV2->Setting,  0x00, MFNRV1_SETTING_NUM * sizeof(CalibDbV2_MFNR_CalibPara_Setting_t));
+    pCalibParaV2->Setting = (CalibDbV2_MFNR_C_Set_t *)malloc(MFNRV1_SETTING_NUM * sizeof(CalibDbV2_MFNR_C_Set_t));
+    memset(pCalibParaV2->Setting,  0x00, MFNRV1_SETTING_NUM * sizeof(CalibDbV2_MFNR_C_Set_t));
     pCalibParaV2->Setting_len = MFNRV1_SETTING_NUM;
-    pTuningParaV2->Setting = (CalibDbV2_MFNR_TuningPara_Setting_t *)malloc(MFNRV1_SETTING_NUM * sizeof(CalibDbV2_MFNR_TuningPara_Setting_t));
-    memset(pTuningParaV2->Setting, 0x00, MFNRV1_SETTING_NUM * sizeof(CalibDbV2_MFNR_TuningPara_Setting_t));
+    pTuningParaV2->Setting = (CalibDbV2_MFNR_T_Set_t *)malloc(MFNRV1_SETTING_NUM * sizeof(CalibDbV2_MFNR_T_Set_t));
+    memset(pTuningParaV2->Setting, 0x00, MFNRV1_SETTING_NUM * sizeof(CalibDbV2_MFNR_T_Set_t));
     pTuningParaV2->Setting_len = MFNRV1_SETTING_NUM;
 
     //malloc iso size
     for(int i = 0; i < pTuningParaV2->Setting_len; i++) {
-        pCalibParaV2->Setting[i].Calib_ISO =  (CalibDbV2_MFNR_CalibPara_Setting_ISO_t *)malloc(MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_CalibPara_Setting_ISO_t));
-        memset(pCalibParaV2->Setting[i].Calib_ISO, 0x00, MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_CalibPara_Setting_ISO_t));
+        pCalibParaV2->Setting[i].Calib_ISO =  (CalibDbV2_MFNR_C_ISO_t *)malloc(MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_C_ISO_t));
+        memset(pCalibParaV2->Setting[i].Calib_ISO, 0x00, MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_C_ISO_t));
         pCalibParaV2->Setting[i].Calib_ISO_len = MFNRV1_ISO_NUM;
-        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_MFNR_TuningPara_Setting_ISO_t *)malloc(MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_TuningPara_Setting_ISO_t));
-        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_TuningPara_Setting_ISO_t));
+        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_MFNR_T_ISO_t *)malloc(MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_T_ISO_t));
+        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_T_ISO_t));
         pTuningParaV2->Setting[i].Tuning_ISO_len = MFNRV1_ISO_NUM;
     }
-    pTuningParaV2->Motion.Motion_ISO = (CalibDbV2_MFNR_TuningPara_Motion_ISO_t *)malloc(MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_TuningPara_Motion_ISO_t));
-    memset(pTuningParaV2->Motion.Motion_ISO, 0x00, MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_TuningPara_Motion_ISO_t));
+    pTuningParaV2->Motion.Motion_ISO = (CalibDbV2_MFNR_Motion_ISO_t *)malloc(MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_Motion_ISO_t));
+    memset(pTuningParaV2->Motion.Motion_ISO, 0x00, MFNRV1_ISO_NUM * sizeof(CalibDbV2_MFNR_Motion_ISO_t));
     pTuningParaV2->Motion.Motion_ISO_len = MFNRV1_ISO_NUM;
 
     //assign the value
@@ -212,12 +212,12 @@ int mfnrV1_calibdb_to_calibdbV2(const CalibDb_MFNR_2_t *pCalibdb,  CalibDbV2_MFN
 
 int mfnrV1_calibdbV2_to_calibdb(CalibDbV2_MFNR_t *pCalibdbV2,  CalibDb_MFNR_2_t *pCalibdb,  int mode_idx)
 {
-    CalibDbV2_MFNR_CalibPara_t *pCalibParaV2 = NULL;
-    CalibDbV2_MFNR_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_MFNR_CalibPara_Setting_ISO_t *pCalibISOV2 = NULL;
-    CalibDbV2_MFNR_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
-    CalibDbV2_MFNR_TuningPara_Motion_ISO_t *pMotionISOV2 = NULL;
-    CalibDbV2_MFNR_TuningPara_Dynamic_t *pDynamicV2 = NULL;
+    CalibDbV2_MFNR_Calib_t *pCalibParaV2 = NULL;
+    CalibDbV2_MFNR_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_MFNR_C_ISO_t *pCalibISOV2 = NULL;
+    CalibDbV2_MFNR_T_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_MFNR_Motion_ISO_t *pMotionISOV2 = NULL;
+    CalibDbV2_MFNR_Dynamic_t *pDynamicV2 = NULL;
     CalibDb_MFNR_Setting_t *pSetting = NULL;
     CalibDb_MFNR_Dynamic_t *pDynamic = NULL;
     CalibDb_MFNR_Motion_t  *pMotion = NULL;

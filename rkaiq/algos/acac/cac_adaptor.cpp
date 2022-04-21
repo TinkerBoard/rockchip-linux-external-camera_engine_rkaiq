@@ -103,7 +103,10 @@ static inline void CalcCacLutConfig(uint32_t width, uint32_t height, bool is_big
      */
 }
 
-CacAlgoAdaptor::~CacAlgoAdaptor() = default;
+CacAlgoAdaptor::~CacAlgoAdaptor() {
+    current_lut_.clear();
+    lut_manger_ = nullptr;
+};
 
 #if RKAIQ_HAVE_CAC_V03
 XCamReturn CacAlgoAdaptor::SetApiAttr(const rkaiq_cac_v03_api_attr_t* attr) {
@@ -221,18 +224,6 @@ XCamReturn CacAlgoAdaptor::Config(const AlgoCtxInstanceCfg* config,
 #endif
     }
 
-    if (!enable_) {
-        attr_->enable = false;
-        return XCAM_RETURN_BYPASS;
-    }
-
-#if RKAIQ_HAVE_CAC_V10 || RKAIQ_HAVE_CAC_V11
-    if (0 != access(calib->SettingPara.psf_path, O_RDONLY)) {
-        LOGE_ACAC("The PSF file path %s cannot be accessed", calib->SettingPara.psf_path);
-        valid_ = false;
-        return XCAM_RETURN_ERROR_FILE;
-    }
-#endif
     attr_->op_mode = RKAIQ_CAC_API_OPMODE_AUTO;
     attr_->iso_cnt = calib_->TuningPara.SettingByIso_len;
     XCAM_ASSERT(attr_->iso_cnt <= RKAIQ_CAC_MAX_ISO_CNT);
@@ -245,6 +236,10 @@ XCamReturn CacAlgoAdaptor::Config(const AlgoCtxInstanceCfg* config,
     attr_->enable = enable_;
 #endif
 
+    if (!enable_) {
+        attr_->enable = false;
+        return XCAM_RETURN_BYPASS;
+    }
 
     valid_ = true;
     return XCAM_RETURN_NO_ERROR;
@@ -256,8 +251,10 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcac* config) {
     uint32_t width   = config->width;
     uint32_t height  = config->height;
     bool is_big_mode = IsIspBigMode(width, height, config->is_multi_sensor);
+    char cac_map_path[RKCAC_MAX_PATH_LEN] = {0};
 
     LOGD_ACAC("%s : en %d valid: %d Enter", __func__, enable_, valid_);
+
 
     if (!enable_ || !valid_) {
         return XCAM_RETURN_BYPASS;
@@ -294,9 +291,15 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcac* config) {
     XCAM_ASSERT(current_lut_.size() == (uint32_t)(config->is_multi_isp + 1));
 
 #if !RKAIQ_HAVE_CAC_V03
-    std::ifstream ifs(attr_->persist_params.psf_path, std::ios::binary);
+    if (attr_->persist_params.psf_path[0] != '/') {
+        strcpy(cac_map_path, config->iqpath);
+        strcat(cac_map_path, "/");
+    }
+    strcat(cac_map_path, attr_->persist_params.psf_path);
+
+    std::ifstream ifs(cac_map_path, std::ios::binary);
     if (!ifs.is_open()) {
-        LOGE_ACAC("Failed to open PSF file %s", attr_->persist_params.psf_path);
+        LOGE_ACAC("Failed to open PSF file %s", cac_map_path);
         valid_ = false;
         return XCAM_RETURN_ERROR_FILE;
     }
@@ -479,9 +482,9 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
         output->config[0].offset_b = attr_->manual_param.offset_b;
             //ROUND_F(attr_->manual_param.offset_b);
         output->config[0].expo_thed_b =
-            (!attr_->manual_param.expo_det_b_en << 20) | (attr_->manual_param.expo_thed_b & 0xfffff);
+            (!attr_->manual_param.expo_det_b_en << 20) | MIN(attr_->manual_param.expo_thed_b, 0xfffff);
         output->config[0].expo_thed_r =
-            (!attr_->manual_param.expo_det_r_en << 20) | (attr_->manual_param.expo_thed_r & 0xfffff);
+            (!attr_->manual_param.expo_det_r_en << 20) | MIN(attr_->manual_param.expo_thed_r,  0xfffff);
         output->config[0].expo_adj_b = attr_->manual_param.expo_adj_b & 0xfffff;
         output->config[0].expo_adj_r = attr_->manual_param.expo_adj_r & 0xfffff;
         output->enable = attr_->enable;
@@ -545,11 +548,11 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
         expo_adj_b = input->hdr_ratio * expo_adj_b;
         expo_adj_r = input->hdr_ratio * expo_adj_r;
         output->config[0].expo_thed_b =
-            (static_cast<int>(!exp_det_b_en) << 20) | (expo_thed_b & 0xfffff);
+            (static_cast<int>(!exp_det_b_en) << 20) | MIN(expo_thed_b, 0xfffff);
         output->config[0].expo_thed_r =
-            (static_cast<int>(!exp_det_r_en) << 20) | (expo_thed_r & 0xfffff);
-        output->config[0].expo_adj_b = expo_adj_b & 0xfffff;
-        output->config[0].expo_adj_r = expo_adj_r & 0xfffff;
+            (static_cast<int>(!exp_det_r_en) << 20) | MIN(expo_thed_r, 0xfffff);
+        output->config[0].expo_adj_b = MIN(expo_adj_b, 0xfffff);
+        output->config[0].expo_adj_r = MIN(expo_adj_r, 0xfffff);
 #endif
     }
 #endif

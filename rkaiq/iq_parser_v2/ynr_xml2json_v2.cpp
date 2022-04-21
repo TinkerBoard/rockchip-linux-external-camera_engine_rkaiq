@@ -8,10 +8,10 @@
 int ynrV2_calibdb_to_calibdbV2(struct list_head* pYnrList,  CalibDbV2_YnrV2_t *pCalibdbV2, int mode_idx)
 {
 
-    CalibDbV2_YnrV2_CalibPara_t *pCalibParaV2 = NULL;
-    CalibDbV2_YnrV2_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_YnrV2_CalibPara_Setting_ISO_t *pCalibISOV2 = NULL;
-    CalibDbV2_YnrV2_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_YnrV2_Calib_t *pCalibParaV2 = NULL;
+    CalibDbV2_YnrV2_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_YnrV2_C_ISO_t *pCalibISOV2 = NULL;
+    CalibDbV2_YnrV2_T_ISO_t *pTuningISOV2 = NULL;
 
     if(pYnrList == NULL || pCalibdbV2 == NULL) {
         printf(" pCalibdb is NULL pointer\n");
@@ -32,20 +32,20 @@ int ynrV2_calibdb_to_calibdbV2(struct list_head* pYnrList,  CalibDbV2_YnrV2_t *p
     pTuningParaV2 = &pCalibdbV2->TuningPara;
 
     //malloc settting size
-    pCalibParaV2->Setting = (CalibDbV2_YnrV2_CalibPara_Setting_t *)malloc(YNRV2_SETTING_NUM * sizeof(CalibDbV2_YnrV2_CalibPara_Setting_t));
-    memset(pCalibParaV2->Setting,  0x00, YNRV2_SETTING_NUM * sizeof(CalibDbV2_YnrV2_CalibPara_Setting_t));
+    pCalibParaV2->Setting = (CalibDbV2_YnrV2_C_Set_t *)malloc(YNRV2_SETTING_NUM * sizeof(CalibDbV2_YnrV2_C_Set_t));
+    memset(pCalibParaV2->Setting,  0x00, YNRV2_SETTING_NUM * sizeof(CalibDbV2_YnrV2_C_Set_t));
     pCalibParaV2->Setting_len = YNRV2_SETTING_NUM;
-    pTuningParaV2->Setting = (CalibDbV2_YnrV2_TuningPara_Setting_t *)malloc(YNRV2_SETTING_NUM * sizeof(CalibDbV2_YnrV2_TuningPara_Setting_t));
-    memset(pTuningParaV2->Setting, 0x00, YNRV2_SETTING_NUM * sizeof(CalibDbV2_YnrV2_TuningPara_Setting_t));
+    pTuningParaV2->Setting = (CalibDbV2_YnrV2_T_Set_t *)malloc(YNRV2_SETTING_NUM * sizeof(CalibDbV2_YnrV2_T_Set_t));
+    memset(pTuningParaV2->Setting, 0x00, YNRV2_SETTING_NUM * sizeof(CalibDbV2_YnrV2_T_Set_t));
     pTuningParaV2->Setting_len = YNRV2_SETTING_NUM;
 
     //malloc iso size
     for(int i = 0; i < YNRV2_SETTING_NUM; i++) {
-        pCalibParaV2->Setting[i].Calib_ISO =  (CalibDbV2_YnrV2_CalibPara_Setting_ISO_t *)malloc(YNRV2_ISO_NUM * sizeof(CalibDbV2_YnrV2_CalibPara_Setting_ISO_t));
-        memset(pCalibParaV2->Setting[i].Calib_ISO, 0x00, YNRV2_ISO_NUM * sizeof(CalibDbV2_YnrV2_CalibPara_Setting_ISO_t));
+        pCalibParaV2->Setting[i].Calib_ISO =  (CalibDbV2_YnrV2_C_ISO_t *)malloc(YNRV2_ISO_NUM * sizeof(CalibDbV2_YnrV2_C_ISO_t));
+        memset(pCalibParaV2->Setting[i].Calib_ISO, 0x00, YNRV2_ISO_NUM * sizeof(CalibDbV2_YnrV2_C_ISO_t));
         pCalibParaV2->Setting[i].Calib_ISO_len = YNRV2_ISO_NUM;
-        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_YnrV2_TuningPara_Setting_ISO_t *)malloc(YNRV2_ISO_NUM * sizeof(CalibDbV2_YnrV2_TuningPara_Setting_ISO_t));
-        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, YNRV2_ISO_NUM * sizeof(CalibDbV2_YnrV2_TuningPara_Setting_ISO_t));
+        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_YnrV2_T_ISO_t *)malloc(YNRV2_ISO_NUM * sizeof(CalibDbV2_YnrV2_T_ISO_t));
+        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, YNRV2_ISO_NUM * sizeof(CalibDbV2_YnrV2_T_ISO_t));
         pTuningParaV2->Setting[i].Tuning_ISO_len = YNRV2_ISO_NUM;
     }
 
@@ -126,10 +126,10 @@ int ynrV2_calibdb_to_calibdbV2(struct list_head* pYnrList,  CalibDbV2_YnrV2_t *p
 int ynrV2_calibdbV2_to_calibdb(CalibDbV2_YnrV2_t *pCalibdbV2, struct list_head* pYnrList, int mode_idx)
 {
 
-    CalibDbV2_YnrV2_CalibPara_t *pCalibParaV2 = NULL;
-    CalibDbV2_YnrV2_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_YnrV2_CalibPara_Setting_ISO_t *pCalibISOV2 = NULL;
-    CalibDbV2_YnrV2_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_YnrV2_Calib_t *pCalibParaV2 = NULL;
+    CalibDbV2_YnrV2_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_YnrV2_C_ISO_t *pCalibISOV2 = NULL;
+    CalibDbV2_YnrV2_T_ISO_t *pTuningISOV2 = NULL;
 
     if(pYnrList == NULL || pCalibdbV2 == NULL) {
         printf(" pCalibdb is NULL pointer\n");

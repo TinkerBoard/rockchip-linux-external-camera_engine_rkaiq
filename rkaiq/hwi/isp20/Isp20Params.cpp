@@ -1356,13 +1356,17 @@ template<class T>
 void Isp20Params::convertAiqAgammaToIsp20Params(T& isp_cfg,
         const AgammaProcRes_t& gamma_out_cfg)
 {
-    if (gamma_out_cfg.Gamma_v10.gamma_en) {
-        isp_cfg.module_ens |= ISP2X_MODULE_GOC;
-        isp_cfg.module_en_update |= ISP2X_MODULE_GOC;
-        isp_cfg.module_cfg_update |= ISP2X_MODULE_GOC;
+    if (gamma_out_cfg.update) {
+        if (gamma_out_cfg.Gamma_v10.gamma_en) {
+            isp_cfg.module_ens |= ISP2X_MODULE_GOC;
+            isp_cfg.module_en_update |= ISP2X_MODULE_GOC;
+            isp_cfg.module_cfg_update |= ISP2X_MODULE_GOC;
+        } else {
+            isp_cfg.module_ens &= ~ISP2X_MODULE_GOC;
+            isp_cfg.module_en_update |= ISP2X_MODULE_GOC;
+            return;
+        }
     } else {
-        isp_cfg.module_ens &= ~ISP2X_MODULE_GOC;
-        isp_cfg.module_en_update |= ISP2X_MODULE_GOC;
         return;
     }
 
@@ -1936,9 +1940,13 @@ void Isp20Params::convertAiqA3dlutToIsp20Params(T& isp_cfg,
     cfg->bypass_en = lut3d_cfg.bypass_en;
 #endif
     cfg->actual_size = lut3d_cfg.lut3d_lut_wsize;
-    memcpy(cfg->lut_r, lut3d_cfg.look_up_table_r, sizeof(cfg->lut_r));
-    memcpy(cfg->lut_g, lut3d_cfg.look_up_table_g, sizeof(cfg->lut_g));
-    memcpy(cfg->lut_b, lut3d_cfg.look_up_table_b, sizeof(cfg->lut_b));
+    if (lut3d_cfg.enable || !lut3d_cfg.bypass_en) {
+        memcpy(cfg->lut_r, lut3d_cfg.look_up_table_r, sizeof(cfg->lut_r));
+        memcpy(cfg->lut_g, lut3d_cfg.look_up_table_g, sizeof(cfg->lut_g));
+        memcpy(cfg->lut_b, lut3d_cfg.look_up_table_b, sizeof(cfg->lut_b));
+    } else {
+        isp_cfg.module_cfg_update &= ~ISP2X_MODULE_3DLUT;
+    }
 }
 #endif
 

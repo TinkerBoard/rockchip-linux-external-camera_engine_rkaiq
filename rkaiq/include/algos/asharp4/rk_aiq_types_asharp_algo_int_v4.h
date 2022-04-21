@@ -35,17 +35,17 @@ RKAIQ_BEGIN_DECLARE
 #define RK_SHARP_V4_LUMA_POINT_NUM             (8)
 
 #define ASHARPV4_RECALCULATE_DELTA_ISO        (10)
-#define RK_SHARP_V4_PBF_DIAM                    3
-#define RK_SHARP_V4_RF_DIAM                     5
-#define RK_SHARP_V4_BF_DIAM                     3
-#define RK_SHARP_V4_AVG_DIAM                    3
+#define RK_SHARPV4_PBF_DIAM                    3
+#define RK_SHARPV4_RF_DIAM                     5
+#define RK_SHARPV4_BF_DIAM                     3
+#define RK_SHARPV4_AVG_DIAM                    3
 
-#define rk_sharp_V4_sharp_ratio_fix_bits        2
-#define rk_sharp_V4_gaus_ratio_fix_bits         7
-#define rk_sharp_V4_bf_ratio_fix_bits           7
-#define rk_sharp_V4_pbfCoeff_fix_bits           7
-#define rk_sharp_V4_rfCoeff_fix_bits            7
-#define rk_sharp_V4_hbfCoeff_fix_bits           7
+#define rk_sharpV4_sharp_ratio_fix_bits        2
+#define rk_sharpV4_gaus_ratio_fix_bits         7
+#define rk_sharpV4_bf_ratio_fix_bits           7
+#define rk_sharpV4_pbfCoeff_fix_bits           7
+#define rk_sharpV4_rfCoeff_fix_bits            7
+#define rk_sharpV4_hbfCoeff_fix_bits           7
 
 #define INTERP_V4(x0, x1, ratio)            ((ratio) * ((x1) - (x0)) + x0)
 #define CLIP(a, min_v, max_v)               (((a) < (min_v)) ? (min_v) : (((a) > (max_v)) ? (max_v) : (a)))
@@ -124,9 +124,9 @@ typedef struct RK_SHARP_Params_V4_s
     float bf_ratio          [RK_SHARP_V4_MAX_ISO_NUM];
     short local_sharp_strength  [RK_SHARP_V4_MAX_ISO_NUM][RK_SHARP_V4_LUMA_POINT_NUM];
 
-    float prefilter_coeff[RK_SHARP_V4_MAX_ISO_NUM][RK_SHARP_V4_PBF_DIAM * RK_SHARP_V4_PBF_DIAM];
-    float GaussianFilter_coeff   [RK_SHARP_V4_MAX_ISO_NUM][RK_SHARP_V4_RF_DIAM * RK_SHARP_V4_RF_DIAM];
-    float hfBilateralFilter_coeff    [RK_SHARP_V4_MAX_ISO_NUM][RK_SHARP_V4_BF_DIAM * RK_SHARP_V4_BF_DIAM];
+    float prefilter_coeff[RK_SHARP_V4_MAX_ISO_NUM][RK_SHARPV4_PBF_DIAM * RK_SHARPV4_PBF_DIAM];
+    float GaussianFilter_coeff   [RK_SHARP_V4_MAX_ISO_NUM][RK_SHARPV4_RF_DIAM * RK_SHARPV4_RF_DIAM];
+    float hfBilateralFilter_coeff    [RK_SHARP_V4_MAX_ISO_NUM][RK_SHARPV4_BF_DIAM * RK_SHARPV4_BF_DIAM];
 
     float prefilter_sigma[RK_SHARP_V4_MAX_ISO_NUM];
     float GaussianFilter_sigma[RK_SHARP_V4_MAX_ISO_NUM];
@@ -154,9 +154,9 @@ typedef struct RK_SHARP_Params_V4_Select_s
     float bf_ratio      ;
     short local_sharp_strength        [RK_SHARP_V4_LUMA_POINT_NUM];
 
-    float prefilter_coeff[RK_SHARP_V4_PBF_DIAM * RK_SHARP_V4_PBF_DIAM];
-    float GaussianFilter_coeff   [RK_SHARP_V4_RF_DIAM * RK_SHARP_V4_RF_DIAM];
-    float hfBilateralFilter_coeff    [RK_SHARP_V4_BF_DIAM * RK_SHARP_V4_BF_DIAM];
+    float prefilter_coeff[RK_SHARPV4_PBF_DIAM * RK_SHARPV4_PBF_DIAM];
+    float GaussianFilter_coeff   [RK_SHARPV4_RF_DIAM * RK_SHARPV4_RF_DIAM];
+    float hfBilateralFilter_coeff    [RK_SHARPV4_BF_DIAM * RK_SHARPV4_BF_DIAM];
 
     float prefilter_sigma;
     float GaussianFilter_sigma;

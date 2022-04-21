@@ -887,7 +887,7 @@
 								}
 							}
 						},
-						"agamma_calib_V11":	{
+						"agamma_calib_v11":	{
 							"GammaTuningPara":	{
 								"Gamma_en":	1,
 								"Gamma_out_offset":	0,
@@ -1910,8 +1910,7 @@
 							"common":	{
 								"enable":	0,
 								"mode":	"CALIB_Lut3D_MODE_AUTO",
-								"gain_tolerance":	0.1,
-								"wbgain_tolerance":	1
+								"gain_tolerance":	0.1
 							},
 							"MLut3D":	{
 								"Table":	{
@@ -2188,7 +2187,7 @@
 									"pdMirrorInCalib":	1,
 									"pdWidth":	508,
 									"pdHeight":	760,
-									"pdIsoPara": 
+									"pdIsoPara":
 									[
 										{
 											"iso": 50,
@@ -2378,21 +2377,22 @@
 								"meascfg_tbl_len":	2
 							}
 						},
-						"amerge_calib_V11": 
+						"amerge_calib_v11":
 						{
-							"MergeTuningPara": 
+							"MergeTuningPara":
 							{
 								"BaseFrm": "BASEFRAME_LONG",
+								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"ByPassThr": 0,
 								"LongFrmModeData":
 								{
-									"OECurve": 
+									"OECurve":
 									{
-										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 										"Offset":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210]
 									},
-									"MDCurve": 
+									"MDCurve":
 									{
 										"MoveCoef":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"LM_smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
@@ -2402,17 +2402,17 @@
 									},
 									"OECurve_damp": 0.3,
 									"MDCurveLM_damp": 0.3,
-									"MDCurveMS_damp": 0.3	
+									"MDCurveMS_damp": 0.3
 								},
 								"ShortFrmModeData":
 								{
-									"OECurve": 
+									"OECurve":
 									{
-										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 										"Offset":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210]
 									},
-									"MDCurve": 
+									"MDCurve":
 									{
 										"MoveCoef":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Coef":	[0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
@@ -6721,7 +6721,7 @@
 								}
 							}
 						},
-						"agamma_calib_V11":	{
+						"agamma_calib_v11":	{
 							"GammaTuningPara":	{
 								"Gamma_en":	1,
 								"Gamma_out_offset":	0,
@@ -7782,8 +7782,7 @@
 							"common":	{
 								"enable":	0,
 								"mode":	"CALIB_Lut3D_MODE_AUTO",
-								"gain_tolerance":	0.1,
-								"wbgain_tolerance":	1
+								"gain_tolerance":	0.1
 							},
 							"MLut3D":	{
 								"Table":	{
@@ -8217,21 +8216,22 @@
 								"meascfg_tbl_len":	2
 							}
 						},
-						"amerge_calib_V11": 
+						"amerge_calib_v11":
 						{
-							"MergeTuningPara": 
+							"MergeTuningPara":
 							{
 								"BaseFrm": "BASEFRAME_LONG",
+								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"ByPassThr": 0,
 								"LongFrmModeData":
 								{
-									"OECurve": 
+									"OECurve":
 									{
-										"EnvLv":	[0, 0.002, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[0, 0.002, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 										"Offset":	[280, 240, 240, 240, 240, 240, 240, 230, 230, 230, 230, 230, 230]
 									},
-									"MDCurve": 
+									"MDCurve":
 									{
 										"MoveCoef":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"LM_smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
@@ -8241,17 +8241,17 @@
 									},
 									"OECurve_damp": 0.3,
 									"MDCurveLM_damp": 0.3,
-									"MDCurveMS_damp": 0.3	
+									"MDCurveMS_damp": 0.3
 								},
 								"ShortFrmModeData":
 								{
-									"OECurve": 
+									"OECurve":
 									{
-										"EnvLv":	[0, 0.002, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[0, 0.002, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 										"Offset":	[280, 240, 240, 240, 240, 240, 240, 230, 230, 230, 230, 230, 230]
 									},
-									"MDCurve": 
+									"MDCurve":
 									{
 										"MoveCoef":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Coef":	[0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05],

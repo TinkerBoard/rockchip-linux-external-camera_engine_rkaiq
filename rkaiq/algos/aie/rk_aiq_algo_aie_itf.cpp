@@ -162,8 +162,6 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
     RkAiqAlgoProcResAie* res = (RkAiqAlgoProcResAie*)outparams;
 
-    res->params_com = ctx->params;
-
     rk_aiq_aie_params_int_t* int_params = NULL;
 #if RKAIQ_HAVE_AIE_V10
     if (inparams->u.proc.gray_mode &&
@@ -195,6 +193,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #endif
     if (int_params)
         res->params = *int_params;
+    res->params_com = ctx->params;
 
     return XCAM_RETURN_NO_ERROR;
 }

@@ -159,46 +159,44 @@ typedef struct DrcHandleData_s {
 #endif
 } DrcHandleData_t;
 
-typedef struct AdrcPrevData_s {
-    float EnvLv;
-    float ISO;
-    float MotionCoef;
-    drc_OpMode_t ApiMode;
-    int frameCnt;
-    DrcHandleData_t HandleData;
-} AdrcPrevData_t;
-
 typedef struct AdrcAEData_s {
-    float GlobalEnvLv;
+    bool LongFrmMode;
+    float ISO;  // invaild in Curr
+    float EnvLv;
+
     float L2M_Ratio;
     float M2S_Ratio;
     float L2S_Ratio;
-    float ISO;
-    float LExpo;
-    float MExpo;
-    float SExpo;
+    float LExpo;  // invaild in Curr
+    float MExpo;  // invaild in Curr
+    float SExpo;  // invaild in Curr
 } AdrcAEData_t;
-
-typedef struct CurrAeResult_s {
-    bool LongFrmMode;
-    AdrcAEData_t Curr;
-    AdrcAEData_t Next;
-} CurrAeResult_t;
 
 typedef struct CurrData_s {
     bool Enable;
-    float Ratio;
-    float EnvLv;
     float MotionCoef;
-    float ISO;
-    float Damp;
-    float LumaWeight[225];
-    int frameCnt;
+    drc_OpMode_t ApiMode;
+    int FrameID;
+    AdrcAEData_t AEData;
+    FrameNumber_t FrameNumber;
     DrcHandleData_t HandleData;
-    DrcOhters_t Others;
 } CurrData_t;
 
+typedef struct NextData_s {
+    bool Enable;
+    float MotionCoef;
+    float Damp;
+    float LumaWeight[225];
+    int FrameID;
+    FrameNumber_t FrameNumber;
+    AdrcAEData_t AEData;
+    DrcHandleData_t HandleData;
+    DrcOhters_t Others;
+} NextData_t;
+
 typedef struct AdrcContext_s {
+    bool ifReCalcStAuto;
+    bool ifReCalcStManual;
 #if RKAIQ_HAVE_DRC_V10
     drcAttrV10_t drcAttrV10;
 #endif
@@ -210,11 +208,10 @@ typedef struct AdrcContext_s {
     AblcProc_V32_t ablcV32_proc_res;
 #endif
     AdrcState_t state;
-    AdrcPrevData_t PrevData ;
-    RkAiqAdrcProcResult_t AdrcProcRes;
-    CurrAeResult_t AeResult;
     CurrData_t CurrData;
-    int frameCnt;
+    NextData_t NextData;
+    RkAiqAdrcProcResult_t AdrcProcRes;
+    uint32_t FrameID;
     FrameNumber_t FrameNumber;
 } AdrcContext_t;
 

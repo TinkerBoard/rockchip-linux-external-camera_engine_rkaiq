@@ -119,7 +119,7 @@ static XCamReturn groupAbayer2dnrV2Prepare(RkAiqAlgoCom* params)
             // todo  update calib pars for surround view
 #if ABAYER2DNR_USE_JSON_FILE_V2
             void *pCalibdbV2 = (void*)(para->s_calibv2);
-            CalibDbV2_Bayer2dnr_V2_t *bayer2dnr_v2 = (CalibDbV2_Bayer2dnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibdbV2, bayer2dnr_v2));
+            CalibDbV2_Bayer2dnrV2_t *bayer2dnr_v2 = (CalibDbV2_Bayer2dnrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibdbV2, bayer2dnr_v2));
             abayer2dnr_contex_v2->bayernr_v2 = *bayer2dnr_v2;
             abayer2dnr_contex_v2->isIQParaUpdate = true;
             abayer2dnr_contex_v2->isReCalculate |= 1;
@@ -220,7 +220,7 @@ static XCamReturn groupAbayer2dnrV2Processing(const RkAiqAlgoCom* inparams, RkAi
         Abayer2dnr_Context_V2_t * abayer2dnr_contex_v2 = abayernr_group_contex->abayer2dnr_contex_v2;
         Abayer2dnr_ProcResult_V2_t stAbayer2dnrResultV2;
         deltaIso = abs(stExpInfoV2.arIso[stExpInfoV2.hdr_mode] - abayer2dnr_contex_v2->stExpInfo.arIso[stExpInfoV2.hdr_mode]);
-        if(deltaIso > ABAYERNRV2_RECALCULATE_DELTA_ISO) {
+        if(deltaIso > ABAYERNRV2_DELTA_ISO) {
             abayer2dnr_contex_v2->isReCalculate |= 1;
         }
         if(abayer2dnr_contex_v2->isReCalculate) {

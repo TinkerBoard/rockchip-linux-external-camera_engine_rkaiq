@@ -46,6 +46,8 @@
 #define ENHANCE_VALUE_MIN                           (1.0)
 #define ENHANCE_CHROME_MAX                          (16.0)
 #define ENHANCE_CHROME_MIN                          (1.0)
+#define HSIT_WR_MIN_STEP                            (16)
+#define HSIT_WR_X_MAX                               (1023)
 
 //define for dehaze local gain
 #define YNR_BIT_CALIB (12)
@@ -81,20 +83,13 @@ typedef struct AdehazeAePreResV11_s {
     dehaze_api_mode_t ApiMode;
 } AdehazeAePreResV11_t;
 
-typedef struct CalibDbV2_dehaze_V11_duo_prvt_s {
-    CalibDbDehazeV11_t DehazeTuningPara;
-    CalibDbV2_YnrV3_CalibPara_t YnrCalibPara;
-} CalibDbV2_dehaze_V11_duo_prvt_t;
-
-typedef struct CalibDbV2_dehaze_V12_prvt_s {
-    CalibDbDehazeV12_t DehazeTuningPara;
-    CalibDbV2_YnrV22_Calib_t YnrCalibPara;
-} CalibDbV2_dehaze_V12_prvt_t;
-
 typedef struct AdehazeHandle_s {
+    bool ifReCalcStAuto;
+    bool ifReCalcStManual;
+    bool byPassProc;
+    bool is_multi_isp_mode;
 #if RKAIQ_HAVE_DEHAZE_V10
     adehaze_sw_v10_t AdehazeAtrrV10;
-    CalibDbV2_dehaze_v10_t CalibV10;
     AdehazeAePreResV10_t CurrDataV10;
     AdehazeAePreResV10_t PreDataV10;
 #endif
@@ -105,20 +100,18 @@ typedef struct AdehazeHandle_s {
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
     adehaze_sw_v11_t AdehazeAtrrV11duo;
-    CalibDbV2_dehaze_V11_duo_prvt_t CalibV11duo;
+    CalibDbV2_YnrV3_Calib_t YnrCalibParaV3;
     AdehazeAePreResV11_t CurrDataV11duo;
     AdehazeAePreResV11_t PreDataV11duo;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
     adehaze_sw_v12_t AdehazeAtrrV12;
-    CalibDbV2_dehaze_V12_prvt_t CalibV12;
+    CalibDbV2_YnrV22_Calib_t YnrCalibParaV22;
     AdehazeAePreResV11_t CurrDataV12;
     AdehazeAePreResV11_t PreDataV12;
 #endif
     RkAiqAdehazeProcResult_t ProcRes;
     rkisp_adehaze_stats_t stats;
-    bool byPassProc;
-    bool is_multi_isp_mode;
     int width;
     int height;
     int strength;

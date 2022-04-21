@@ -71,7 +71,6 @@ macro(dec_algo name chk_file src_list)
     dec_algo_v(${name} 0 ${chk_file} ${_src_list})
 endmacro(dec_algo)
 
-
 if (RKAIQ_HAVE_AE_V1)
 add_subdirectory(ae)
 endif()

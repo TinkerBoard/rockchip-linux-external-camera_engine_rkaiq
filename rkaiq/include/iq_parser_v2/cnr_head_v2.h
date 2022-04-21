@@ -25,7 +25,7 @@
 RKAIQ_BEGIN_DECLARE
 
 ///////////////////////////uvnr//////////////////////////////////////
-typedef struct CalibDbV2_CNRV2_TuningPara_Setting_ISO_s {
+typedef struct CalibDbV2_CNRV2_T_Set_ISO_s {
     // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index2")
     float iso;
 
@@ -75,41 +75,41 @@ typedef struct CalibDbV2_CNRV2_TuningPara_Setting_ISO_s {
     // M4_NUMBER_DESC("lf_denoise_alpha", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
     float lf_denoise_alpha;
 
-} CalibDbV2_CNRV2_TuningPara_Setting_ISO_t;
+} CalibDbV2_CNRV2_T_Set_ISO_t;
 
-typedef struct CalibDbV2_CNRV2_TuningPara_Setting_s {
+typedef struct CalibDbV2_CNRV2_T_Set_s {
     // M4_STRING_MARK_DESC("SNR_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "LSNR",M4_DYNAMIC(0), "index1")
     char *SNR_Mode;
     // M4_STRING_DESC("Sensor_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "lcg", M4_DYNAMIC(0))
     char *Sensor_Mode;
     // M4_STRUCT_LIST_DESC("Tuning_ISO", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_CNRV2_TuningPara_Setting_ISO_t *Tuning_ISO;
+    CalibDbV2_CNRV2_T_Set_ISO_t *Tuning_ISO;
     int Tuning_ISO_len;
 
-} CalibDbV2_CNRV2_TuningPara_Setting_t;
+} CalibDbV2_CNRV2_T_Set_t;
 
-typedef struct CalibDbV2_CNRV2_TuningPara_Kernel_s {
+typedef struct CalibDbV2_CNRV2_T_Kernel_s {
     // M4_ARRAY_DESC("kernel_5x5", "f32", M4_SIZE(1,5), M4_RANGE(0,1), "[1.0000,0.8825,0.7788,0.6065,0.3679]", M4_DIGIT(6), M4_DYNAMIC(0))
     float kernel_5x5[5];
-} CalibDbV2_CNRV2_TuningPara_Kernel_t;
+} CalibDbV2_CNRV2_T_Kernel_t;
 
 
-typedef struct CalibDbV2_CNRV2_TuningPara_s {
+typedef struct CalibDbV2_CNRV2_Tuning_s {
     // M4_BOOL_DESC("enable", "1")
     int enable;
     // M4_STRUCT_DESC("Kernel_Coeff", "normal_ui_style")
-    CalibDbV2_CNRV2_TuningPara_Kernel_t Kernel_Coeff;
+    CalibDbV2_CNRV2_T_Kernel_t Kernel_Coeff;
     // M4_STRUCT_LIST_DESC("Setting", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_CNRV2_TuningPara_Setting_t *Setting;
+    CalibDbV2_CNRV2_T_Set_t *Setting;
     int Setting_len;
-} CalibDbV2_CNRV2_TuningPara_t;
+} CalibDbV2_CNRV2_Tuning_t;
 
 
 typedef struct CalibDbV2_CNRV2_s {
     // M4_STRING_DESC("Version", M4_SIZE(1,1), M4_RANGE(0, 64), "V1", M4_DYNAMIC(0))
     char *Version;
     // M4_STRUCT_DESC("TuningPara", "normal_ui_style")
-    CalibDbV2_CNRV2_TuningPara_t TuningPara;
+    CalibDbV2_CNRV2_Tuning_t TuningPara;
 } CalibDbV2_CNRV2_t;
 
 RKAIQ_END_DECLARE

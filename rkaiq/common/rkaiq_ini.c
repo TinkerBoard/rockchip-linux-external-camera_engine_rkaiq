@@ -110,8 +110,8 @@ static void split_data(ini_t *ini) {
       case '\t':
       case ' ':
         *p = '\0';
-        /* Fall through */
-
+        p++;
+        break;
       case '\0':
         p++;
         break;

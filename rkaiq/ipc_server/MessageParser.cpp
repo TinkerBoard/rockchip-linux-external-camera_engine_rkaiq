@@ -30,7 +30,8 @@
 
 namespace RkMSG {
 
-MessageParser::MessageParser() : is_running(false) {}
+MessageParser::MessageParser(void* ptr) : pri(ptr), is_running(false) {
+}
 
 int MessageParser::stop() {
   is_running = false;
@@ -89,7 +90,7 @@ void *MessageParser::clonePacket(void *from, MessageType type) {
     }
 
     memcpy(opkt, temp, sizeof(RkAiqSocketPacket_t));
-    opkt->data = (uint8_t *)malloc(temp->payload_size);
+    opkt->data = (uint8_t *)malloc(temp->payload_size + 1);
 
     if (!opkt->data) {
       free(opkt);
@@ -97,6 +98,7 @@ void *MessageParser::clonePacket(void *from, MessageType type) {
     }
 
     memcpy(opkt->data, (uint8_t *)&(temp->data), temp->payload_size);
+    opkt->data[temp->payload_size] = '\0';
 
     return opkt;
   } else if (type == RKAIQ_MESSAGE_OLD) {
@@ -108,7 +110,7 @@ void *MessageParser::clonePacket(void *from, MessageType type) {
     }
 
     memcpy(opkt, temp, sizeof(RkAiqSocketPacket));
-    opkt->data = (char *)malloc(temp->dataSize);
+    opkt->data = (char *)malloc(temp->dataSize + 1);
 
     if (!opkt->data) {
       free(opkt);
@@ -116,6 +118,7 @@ void *MessageParser::clonePacket(void *from, MessageType type) {
     }
 
     memcpy(opkt->data, temp->data, temp->dataSize);
+    opkt->data[temp->dataSize] = '\0';
 
     return opkt;
   }

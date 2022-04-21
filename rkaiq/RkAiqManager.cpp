@@ -1178,73 +1178,20 @@ XCamReturn RkAiqManager::calibTuning(CamCalibDbV2Context_t* aiqCalib,
                                      ModuleNameList& change_list)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    SmartPtr<RkAiqFullParamsProxy> initParams;
 
-    if (_state != AIQ_STATE_STARTED) {
-        LOGW_ANALYZER("should be called at STARTED state");
-        return ret;
-    }
-
-    mAiqRstAppTh->triger_stop();
-    bool bret = mAiqRstAppTh->stop();
-    ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
-    RKAIQMNG_CHECK_RET(ret, "apply result thread stop error");
-
-    ret = mRkAiqAnalyzer->stop();
-    RKAIQMNG_CHECK_RET(ret, "analyzer stop error %d", ret);
-
-    RkAiqCalibDbV2::FreeCalibByJ2S(mCalibDbV2);
-
-    mCalibDbV2 = aiqCalib;
-
-#if defined(ISP_HW_V20)
-    if (mRkLumaAnalyzer.ptr()) {
-        CalibDbV2_LUMA_DETECT_t *lumaDetect =
-            (CalibDbV2_LUMA_DETECT_t*)(CALIBDBV2_GET_MODULE_PTR((void*)aiqCalib, lumaDetect));
-        ret = mRkLumaAnalyzer->init(lumaDetect);
-    }
-#endif
-
+    mCamHw->setCalib(aiqCalib);
     ret = mRkAiqAnalyzer->setCalib(aiqCalib);
 
-    // 3. re-prepare analyzer
-    LOGI_ANALYZER("reprepare analyzer ...");
-    rk_aiq_exposure_sensor_descriptor sensor_des;
-    ret = mCamHw->getSensorModeData(mSnsEntName, sensor_des);
+    mRkAiqAnalyzer->calibTuning(aiqCalib, change_list);
 
-    int working_mode_hw = RK_AIQ_WORKING_MODE_NORMAL;
-    if (mWorkingMode == RK_AIQ_WORKING_MODE_ISP_HDR2)
-        working_mode_hw = RK_AIQ_ISP_HDR_MODE_2_FRAME_HDR;
-    else if (mWorkingMode == RK_AIQ_WORKING_MODE_ISP_HDR3)
-        working_mode_hw = RK_AIQ_ISP_HDR_MODE_2_FRAME_HDR;
-
-    mRkAiqAnalyzer->notifyIspStreamMode(mCamHw->getIspStreamMode());
-    ret = mRkAiqAnalyzer->prepare(&sensor_des, working_mode_hw);
-    RKAIQMNG_CHECK_RET(ret, "analyzer prepare error %d", ret);
-
-    // update calib to hw
-    mCamHw->setCalib(aiqCalib);
-
-    initParams = mRkAiqAnalyzer->getAiqFullParams();
-
-    ret = applyAnalyzerResult(initParams);
-    RKAIQMNG_CHECK_RET(ret, "set initial params error %d", ret);
-
-    // 4. restart analyzer
-    LOGI_ANALYZER("restart analyzer");
-    mAiqRstAppTh->triger_start();
-    bret = mAiqRstAppTh->start();
-    ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
-    RKAIQMNG_CHECK_RET(ret, "apply result thread start error");
-
-    ret = mRkAiqAnalyzer->start();
-    RKAIQMNG_CHECK_RET(ret, "analyzer start error %d", ret);
+    RkAiqCalibDbV2::FreeCalibByJ2S(mCalibDbV2);
+    mCalibDbV2 = aiqCalib;
 
     change_list.reset();
 
     EXIT_XCORE_FUNCTION();
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 } //namespace RkCam

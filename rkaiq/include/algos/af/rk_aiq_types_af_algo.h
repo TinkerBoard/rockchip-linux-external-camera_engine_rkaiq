@@ -121,7 +121,7 @@ typedef struct {
     unsigned int wnda_fv_h1[RKAIQ_RAWAF_SUMDATA_NUM];
     unsigned int wnda_fv_h2[RKAIQ_RAWAF_SUMDATA_NUM];
     unsigned int wina_highlit_cnt[RKAIQ_RAWAF_SUMDATA_NUM];
-    unsigned int int_state;
+    int comp_bls;
 
     struct timeval focus_starttim;
     struct timeval focus_endtim;

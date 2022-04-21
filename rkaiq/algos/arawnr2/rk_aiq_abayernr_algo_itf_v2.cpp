@@ -181,7 +181,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     }
     stExpInfo.snr_mode = 0;
 
-#if 1// TODO Merge:
+#if 0// TODO Merge:
     XCamVideoBuffer* xCamAePreRes = pAbayernrProcParams->com.u.proc.res_comb->ae_pre_res;
     RkAiqAlgoPreResAe* pAEPreRes = nullptr;
     if (xCamAePreRes) {
@@ -245,7 +245,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     }
 #endif
     delta_iso = abs(stExpInfo.arIso[stExpInfo.hdr_mode] - pAbayernrCtx->stExpInfo.arIso[stExpInfo.hdr_mode]);
-    if(delta_iso > ABAYERNRV2_RECALCULATE_DELTA_ISO) {
+    if(delta_iso > ABAYERNRV2_DELTA_ISO) {
         pAbayernrCtx->isReCalculate |= 1;
     }
 

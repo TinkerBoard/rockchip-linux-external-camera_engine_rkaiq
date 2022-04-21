@@ -819,28 +819,8 @@ XCamReturn ReloadCCMCalibV2(accm_handle_t hAccm, const CalibDbV2_Ccm_Tuning_Para
         LOGE_ACCM("%s: ccm_tune OR calib tuningpara is NULL !!!", __FUNCTION__);
         return XCAM_RETURN_ERROR_PARAM;
     }
-    bool clearillu = 0;
     if (TuningPara->aCcmCof_len != stCcm->aCcmCof_len)
-        clearillu = 1;
-    else {
-        int findillu = 0;
-        for (int i = 0; i < stCcm->aCcmCof_len; i++){
-            for (int j = 0; j < stCcm->aCcmCof_len; j++){
-                if (strcmp(stCcm->aCcmCof[i].name, TuningPara->aCcmCof[j].name) == 0){
-                    findillu = 1;
-                    if (0 != memcmp(stCcm->aCcmCof[i].awbGain, TuningPara->aCcmCof[j].awbGain, 2*sizeof(float))){
-                        clearillu = 1;
-                        LOGI_ACCM( "%s: std awbGain has been changed. \n", TuningPara->aCcmCof[j].name);
-                        break;
-                    }
-                }
-            }
-            if (findillu == 0) clearillu = 1;
-            if (clearillu == 1) break;
-        }
-    }
-    if (clearillu == 1)
-        ClearList(&hAccm->accmRest.dominateIlluList);
+      ClearList(&hAccm->accmRest.dominateIlluList);
     hAccm->ccm_tune = *TuningPara;
     return (XCAM_RETURN_NO_ERROR);
 }

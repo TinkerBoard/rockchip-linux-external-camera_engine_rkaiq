@@ -243,6 +243,7 @@ XCamReturn sample_abayertnr_setAuto_v23(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi
     bayertnr_attr.sync.sync_mode = sync_mode;
     bayertnr_attr.eMode = ABAYERTNRV23_OP_MODE_AUTO;
     bayertnr_attr.stAuto.st3DParams.enable = 1;
+
     for(int i = 0; i < RK_BAYERNR_V23_MAX_ISO_NUM; i++) {
         bayertnr_attr.stAuto.st3DParams.iso[i] = 50 * pow(2, i);
 

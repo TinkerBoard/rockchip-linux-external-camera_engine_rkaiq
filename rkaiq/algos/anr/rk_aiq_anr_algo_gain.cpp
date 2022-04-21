@@ -6,7 +6,10 @@ typedef double              FLOAT_GAIN;
 uint32_t FLOAT_LIM2_INT(float In, int bit_deci_dst, int type = 0)
 {
     // would trigger strict-aliasing compile warning on -Os level
-    int exp_val = (((uint32_t*)(&In))[0] >> 23) & 0xff;
+    //int exp_val = (((uint32_t*)(&In))[0] >> 23) & 0xff;
+    uint8_t *in_u8 = reinterpret_cast<uint8_t *>(&In);
+    int exp_val = ((in_u8[3] << 1) & (in_u8[2] >> 7) & 0xff);
+
     uint32_t dst;
     int shf_bit;
     if(exp_val - 127 <= bit_deci_dst || type == 1)

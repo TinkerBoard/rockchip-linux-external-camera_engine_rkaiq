@@ -1,11 +1,6 @@
 set(ADHAZ_SRC
     rk_aiq_algo_adehaze_itf.cpp
     rk_aiq_uapi_adehaze_int.cpp
-    exp_data.c
-    math_err.c
-    math_errf.c
-    pow.c
-    pow_log_data.c
     )
 
 if (RKAIQ_HAVE_DEHAZE_V10)

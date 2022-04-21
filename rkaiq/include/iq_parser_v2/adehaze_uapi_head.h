@@ -80,7 +80,7 @@ typedef struct mEnhance_setting_v11_s {
     // M4_BOOL_DESC("en", "1")
     bool en;
     // M4_ARRAY_DESC("enhance_curve", "f32", M4_SIZE(1,17),  M4_RANGE(0, 1024), "[0,64,128,192,256,320,384,448,512,576,640,704,768,832,896,960,1023]", M4_DIGIT(0), M4_DYNAMIC(0))
-    float enhance_curve[CALIBDB_ADEHAZE_ENHANCE_CURVE_KNOTS_NUM];
+    float enhance_curve[DHAZ_ENHANCE_CURVE_KNOTS_NUM];
     // M4_STRUCT_DESC("EnhanceData", "normal_ui_style")
     mEnhanceDataV11_t EnhanceData;
 } mEnhance_setting_v11_t;
@@ -137,6 +137,17 @@ typedef struct mDehazeAttrInfoV11_s {
     unsigned int MEnhanceChromeStrth;
 } mDehazeAttrInfoV11_t;
 
+typedef struct mEnhanceDataV12_s {
+    // M4_ARRAY_DESC("enhance_curve", "f32", M4_SIZE(1,17),  M4_RANGE(0, 1023), "[0,64,128,192,256,320,384,448,512,576,640,704,768,832,896,960,1023]", M4_DIGIT(0), M4_DYNAMIC(0))
+    float enhance_curve[DHAZ_ENHANCE_CURVE_KNOTS_NUM];
+    // M4_ARRAY_DESC("enh_luma", "f32", M4_SIZE(1,17),	M4_RANGE(0, 16), "[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]", M4_DIGIT(2), M4_DYNAMIC(0))
+    float enh_luma[DHAZ_ENHANCE_CURVE_KNOTS_NUM];
+    // M4_NUMBER_DESC("enhance_value", "f32", M4_RANGE(0,32), "1", M4_DIGIT(4))
+    float enhance_value;
+    // M4_NUMBER_DESC("enhance_chroma", "f32", M4_RANGE(0,32), "1", M4_DIGIT(4))
+    float enhance_chroma;
+} mEnhanceDataV12_t;
+
 typedef struct mEnhance_setting_v12_s {
     // M4_BOOL_DESC("en", "1")
     bool en;
@@ -144,13 +155,34 @@ typedef struct mEnhance_setting_v12_s {
     bool color_deviate_en;
     // M4_BOOL_DESC("enh_luma_en", "0")
     bool enh_luma_en;
-    // M4_ARRAY_DESC("enhance_curve", "f32", M4_SIZE(1,17),  M4_RANGE(0, 1024), "[0,64,128,192,256,320,384,448,512,576,640,704,768,832,896,960,1023]", M4_DIGIT(0), M4_DYNAMIC(0))
-    float enhance_curve[CALIBDB_ADEHAZE_ENHANCE_CURVE_KNOTS_NUM];
-    // M4_ARRAY_DESC("enh_luma", "f32", M4_SIZE(1,17),  M4_RANGE(0, 16), "[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]", M4_DIGIT(2), M4_DYNAMIC(0))
-    float enh_luma[CALIBDB_ADEHAZE_ENHANCE_CURVE_KNOTS_NUM];
     // M4_STRUCT_DESC("EnhanceData", "normal_ui_style")
-    mEnhanceDataV11_t EnhanceData;
+    mEnhanceDataV12_t EnhanceData;
 } mEnhance_setting_v12_t;
+
+typedef struct mManual_curve_s {
+    // M4_ARRAY_MARK_DESC("curve_x", "u32", M4_SIZE(1,17),  M4_RANGE(0, 1023), "[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]", M4_DIGIT(0), M4_DYNAMIC(0), 0)
+    int curve_x[DHAZ_V12_HIST_WR_CURVE_NUM];
+    // M4_ARRAY_MARK_DESC("curve_y", "u32", M4_SIZE(1,17),  M4_RANGE(0, 1023), "[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]", M4_DIGIT(0), M4_DYNAMIC(0), 0)
+    int curve_y[DHAZ_V12_HIST_WR_CURVE_NUM];
+} mManual_curve_t;
+
+typedef struct mHistWr_s {
+    // M4_ENUM_DESC("mode", "HistWrMode_t", "HIST_WR_MANUAL")
+    HistWrMode_t mode;
+    // M4_STRUCT_DESC("manual_curve", "normal_ui_style")
+    mManual_curve_t manual_curve;
+} mHistWr_t;
+
+typedef struct mHist_setting_v12_s {
+    // M4_BOOL_DESC("en", "1")
+    bool en;
+    // M4_BOOL_DESC("hist_para_en", "1")
+    bool hist_para_en;
+    // M4_STRUCT_DESC("hist_wr", "normal_ui_style")
+    mHistWr_t hist_wr;
+    // M4_STRUCT_DESC("HistData", "normal_ui_style")
+    mHistDataV11_t HistData;
+} mHist_setting_v12_t;
 
 typedef struct mDehazeAttrV12_s {
     // M4_BOOL_DESC("Enable", "1")
@@ -162,7 +194,7 @@ typedef struct mDehazeAttrV12_s {
     // M4_STRUCT_DESC("enhance_setting", "normal_ui_style")
     mEnhance_setting_v12_t enhance_setting;
     // M4_STRUCT_DESC("hist_setting", "normal_ui_style")
-    mHist_setting_v11_t hist_setting;
+    mHist_setting_v12_t hist_setting;
     // M4_ARRAY_DESC("sigma_curve", "f32", M4_SIZE(1,5), M4_RANGE(-65535.0, 65535), "0.0", M4_DIGIT(6), M4_DYNAMIC(0))
     double sigma_curve[5];
 } mDehazeAttrV12_t;

@@ -27,6 +27,7 @@
 #include "RkAiqCalibDbTypes.h"
 #include "abayer2dnrV23/rk_aiq_types_abayer2dnr_algo_v23.h"
 #include "bayer2dnr_head_v23.h"
+#include "bayer2dnr_uapi_head_v23.h"
 
 //RKAIQ_BEGIN_DECLARE
 
@@ -84,7 +85,7 @@ typedef struct Abayer2dnr_ExpInfo_V23_s {
     int bayertnr_en;
 } Abayer2dnr_ExpInfo_V23_t;
 
-
+#if 0
 typedef struct RK_Bayer2dnr_Params_V23_Select_s {
     // v23 version register // edge filter params
     int enable;
@@ -112,7 +113,8 @@ typedef struct RK_Bayer2dnr_Params_V23_Select_s {
 
     float hdr_dgain_scale_s;
     float hdr_dgain_scale_m;
-} RK_Bayer2dnr_Params_V23_Select_t;
+} RK_Bayer2dnrV23_Params_Select_t;
+#endif
 
 typedef struct RK_Bayer2dnr_Params_V23_s
 {
@@ -122,14 +124,14 @@ typedef struct RK_Bayer2dnr_Params_V23_s
     // v23 parse
     float iso[RK_BAYER2DNR_V23_MAX_ISO_NUM];
 
-    RK_Bayer2dnr_Params_V23_Select_t Bayer2dnrParamsISO[RK_BAYER2DNR_V23_MAX_ISO_NUM];
+    RK_Bayer2dnrV23_Params_Select_t Bayer2dnrParamsISO[RK_BAYER2DNR_V23_MAX_ISO_NUM];
 
 } RK_Bayer2dnr_Params_V23_t;
 
 
 typedef struct Abayer2dnr_Manual_Attr_V23_s
 {
-    RK_Bayer2dnr_Params_V23_Select_t st2DSelect;
+    RK_Bayer2dnrV23_Params_Select_t st2DSelect;
     RK_Bayer2dnr_Fix_V23_t st2Dfix;
 
 } Abayer2dnr_Manual_Attr_V23_t;
@@ -139,14 +141,14 @@ typedef struct Abayer2dnr_Auto_Attr_V23_s
     //all ISO params and select param
 
     RK_Bayer2dnr_Params_V23_t st2DParams;
-    RK_Bayer2dnr_Params_V23_Select_t st2DSelect;
+    RK_Bayer2dnrV23_Params_Select_t st2DSelect;
 
 } Abayer2dnr_Auto_Attr_V23_t;
 
 typedef struct Abayer2dnr_ProcResult_V23_s {
 
     //for sw simultaion
-    RK_Bayer2dnr_Params_V23_Select_t st2DSelect;
+    RK_Bayer2dnrV23_Params_Select_t st2DSelect;
 
     //for hw register
     RK_Bayer2dnr_Fix_V23_t st2DFix;

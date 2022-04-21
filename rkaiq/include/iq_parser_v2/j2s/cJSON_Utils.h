@@ -23,13 +23,11 @@
 #ifndef cJSON_Utils__h
 #define cJSON_Utils__h
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #include "cJSON.h"
 
+#ifdef __cplusplus
+namespace RkCam {
+#endif
 /* Implement RFC6901 (https://tools.ietf.org/html/rfc6901) JSON Pointer spec. */
 CJSON_PUBLIC(cJSON *) cJSONUtils_GetPointer(cJSON * const object, const char *pointer);
 CJSON_PUBLIC(cJSON *) cJSONUtils_GetPointerCaseSensitive(cJSON * const object, const char *pointer);
@@ -82,7 +80,7 @@ CJSON_PUBLIC(void) cJSONUtils_SortObject(cJSON * const object);
 CJSON_PUBLIC(void) cJSONUtils_SortObjectCaseSensitive(cJSON * const object);
 
 #ifdef __cplusplus
-}
+} //namespace
 #endif
 
 #endif

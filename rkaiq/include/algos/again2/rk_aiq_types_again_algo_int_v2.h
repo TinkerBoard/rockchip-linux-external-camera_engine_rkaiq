@@ -27,6 +27,7 @@
 #include "RkAiqCalibDbTypes.h"
 #include "again2/rk_aiq_types_again_algo_v2.h"
 #include "gain_head_v2.h"
+#include "gain_uapi_head_v2.h"
 
 
 //RKAIQ_BEGIN_DECLARE
@@ -100,7 +101,7 @@ typedef struct Again_ExpInfo_V2_s {
     int mfnr_mode_3to1;
 } Again_ExpInfo_V2_t;
 
-#if 1
+#if 0
 typedef struct RK_GAIN_Select_V2_s
 {
     bool hdrgain_ctrl_enable;

@@ -493,9 +493,9 @@ AsharpResult_t init_sharp_params_v1_json(RKAsharp_Sharp_HW_Params_t *pParams, Ca
     int i = 0;
     int j = 0;
     int max_iso_step = MAX_ISO_STEP;
-    CalibDbV2_SharpV1_TuningPara_Setting_t *pSetting = NULL;
-    CalibDbV2_SharpV1_TuningPara_Setting_ISO_t *pTuning_ISO = NULL;
-    CalibDbV2_SharpV1_TuningPara_Kernel_t *pKernel_coeff = NULL;
+    CalibDbV2_SharpV1_T_Set_t *pSetting = NULL;
+    CalibDbV2_SharpV1_T_ISO_t *pTuning_ISO = NULL;
+    CalibDbV2_SharpV1_Kernel_t *pKernel_coeff = NULL;
 
     if(pParams == NULL) {
         LOGE_ASHARP("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
@@ -1610,8 +1610,8 @@ AsharpResult_t rk_Sharp_fix_transfer(RKAsharp_Sharp_Params_Select_t* sharp, RKAs
 AsharpResult_t sharp_calibdbV2_assign(CalibDbV2_SharpV1_t *pDst, CalibDbV2_SharpV1_t *pSrc)
 {
     AsharpResult_t res = ASHARP_RET_SUCCESS;
-    CalibDbV2_SharpV1_TuningPara_t *pSrcTuningParaV2 = NULL;
-    CalibDbV2_SharpV1_TuningPara_t *pDstTuningParaV2 = NULL;
+    CalibDbV2_SharpV1_Tuning_t *pSrcTuningParaV2 = NULL;
+    CalibDbV2_SharpV1_Tuning_t *pDstTuningParaV2 = NULL;
     int setting_len = 0;
     int iso_len = 0;
 
@@ -1636,14 +1636,14 @@ AsharpResult_t sharp_calibdbV2_assign(CalibDbV2_SharpV1_t *pDst, CalibDbV2_Sharp
 
     //malloc iso size
     setting_len = pSrcTuningParaV2->Setting_len;
-    pDstTuningParaV2->Setting = (CalibDbV2_SharpV1_TuningPara_Setting_t *)malloc(setting_len * sizeof(CalibDbV2_SharpV1_TuningPara_Setting_t));
-    memset(pDstTuningParaV2->Setting, 0x00, setting_len * sizeof(CalibDbV2_SharpV1_TuningPara_Setting_t));
+    pDstTuningParaV2->Setting = (CalibDbV2_SharpV1_T_Set_t *)malloc(setting_len * sizeof(CalibDbV2_SharpV1_T_Set_t));
+    memset(pDstTuningParaV2->Setting, 0x00, setting_len * sizeof(CalibDbV2_SharpV1_T_Set_t));
     pDstTuningParaV2->Setting_len = setting_len;
 
     for(int i = 0; i < setting_len; i++) {
         iso_len = pSrcTuningParaV2->Setting[i].Tuning_ISO_len;
-        pDstTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_SharpV1_TuningPara_Setting_ISO_t *)malloc(iso_len * sizeof(CalibDbV2_SharpV1_TuningPara_Setting_ISO_t));
-        memset(pDstTuningParaV2->Setting[i].Tuning_ISO, 0x00, iso_len * sizeof(CalibDbV2_SharpV1_TuningPara_Setting_ISO_t));
+        pDstTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_SharpV1_T_ISO_t *)malloc(iso_len * sizeof(CalibDbV2_SharpV1_T_ISO_t));
+        memset(pDstTuningParaV2->Setting[i].Tuning_ISO, 0x00, iso_len * sizeof(CalibDbV2_SharpV1_T_ISO_t));
         pDstTuningParaV2->Setting[i].Tuning_ISO_len = iso_len;
     }
 

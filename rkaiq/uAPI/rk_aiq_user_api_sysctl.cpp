@@ -31,6 +31,8 @@
 #include "isp32/CamHwIsp32.h"
 #endif
 
+#include "cJSON.h"
+
 using namespace RkCam;
 using namespace XCam;
 
@@ -115,6 +117,9 @@ typedef struct rk_aiq_sys_preinit_cfg_s {
 } rk_aiq_sys_preinit_cfg_t;
 
 static std::map<std::string, rk_aiq_sys_preinit_cfg_t> g_rk_aiq_sys_preinit_cfg_map;
+static void rk_aiq_init_lib(void) /*__attribute__((constructor))*/;
+static void rk_aiq_deinit_lib(void) /*__attribute__((destructor))*/;
+static bool g_rk_aiq_init_lib = false;
 
 XCamReturn
 rk_aiq_uapi_sysctl_preInit(const char* sns_ent_name,
@@ -234,6 +239,11 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
     std::string sub_scene;
 
     XCAM_ASSERT(sns_ent_name);
+
+    if (!g_rk_aiq_init_lib) {
+        rk_aiq_init_lib();
+        g_rk_aiq_init_lib = true;
+    }
 
     bool is_ent_name = true;
     if (sns_ent_name[0] != 'm' || sns_ent_name[3] != '_')
@@ -584,6 +594,11 @@ rk_aiq_uapi_sysctl_getStaticMetas(const char* sns_ent_name, rk_aiq_static_info_t
 {
     if (!sns_ent_name || !static_info)
         return XCAM_RETURN_ERROR_FAILED;
+
+    if (!g_rk_aiq_init_lib) {
+        rk_aiq_init_lib();
+        g_rk_aiq_init_lib = true;
+    }
 #ifdef RK_SIMULATOR_HW
     /* nothing to do now*/
     static_info = NULL;
@@ -598,6 +613,11 @@ rk_aiq_uapi_sysctl_enumStaticMetas(int index, rk_aiq_static_info_t* static_info)
 {
     if (!static_info)
         return XCAM_RETURN_ERROR_FAILED;
+
+    if (!g_rk_aiq_init_lib) {
+        rk_aiq_init_lib();
+        g_rk_aiq_init_lib = true;
+    }
 #ifdef RK_SIMULATOR_HW
     /* nothing to do now*/
     static_info = NULL;
@@ -614,6 +634,11 @@ rk_aiq_uapi_sysctl_enumStaticMetas(int index, rk_aiq_static_info_t* static_info)
 const char*
 rk_aiq_uapi_sysctl_getBindedSnsEntNmByVd(const char* vd)
 {
+    if (!g_rk_aiq_init_lib) {
+        rk_aiq_init_lib();
+        g_rk_aiq_init_lib = true;
+    }
+
 #ifndef RK_SIMULATOR_HW
     return CamHwIsp20::getBindedSnsEntNmByVd(vd);
 #endif
@@ -1035,7 +1060,6 @@ void rk_aiq_uapi_get_version_info(rk_aiq_ver_info_t* vers)
          vers->af_algo_ver, vers->ahdr_algo_ver);
 }
 
-static void rk_aiq_init_lib(void) __attribute__((constructor));
 static void rk_aiq_init_lib(void)
 {
     xcam_get_log_level();
@@ -1074,7 +1098,7 @@ static void rk_aiq_init_lib(void)
     EXIT_XCORE_FUNCTION();
 
 }
-static void rk_aiq_deinit_lib(void) __attribute__((destructor));
+
 static void rk_aiq_deinit_lib(void)
 {
     ENTER_XCORE_FUNCTION();

@@ -9,10 +9,14 @@ XCamReturn rk_aiq_uapi_adrc_v10_SetAttrib(RkAiqAlgoContext* ctx, const drcAttrV1
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     pAdrcCtx->drcAttrV10.opMode = attr->opMode;
-    if (attr->opMode == DRC_OPMODE_AUTO)
+    if (attr->opMode == DRC_OPMODE_AUTO) {
         memcpy(&pAdrcCtx->drcAttrV10.stAuto, &attr->stAuto, sizeof(CalibDbV2_drc_V10_t));
-    if (attr->opMode == DRC_OPMODE_MANUAL)
+        pAdrcCtx->ifReCalcStAuto = true;
+    }
+    if (attr->opMode == DRC_OPMODE_MANUAL) {
         memcpy(&pAdrcCtx->drcAttrV10.stManual, &attr->stManual, sizeof(mdrcAttr_V10_t));
+        pAdrcCtx->ifReCalcStManual = true;
+    }
 
     LOG1_ATMO("EXIT: %s \n", __func__);
     return ret;
@@ -41,10 +45,14 @@ XCamReturn rk_aiq_uapi_adrc_v11_SetAttrib(RkAiqAlgoContext* ctx, const drcAttrV1
     XCamReturn ret          = XCAM_RETURN_NO_ERROR;
 
     pAdrcCtx->drcAttrV11.opMode = attr->opMode;
-    if (attr->opMode == DRC_OPMODE_AUTO)
+    if (attr->opMode == DRC_OPMODE_AUTO) {
         memcpy(&pAdrcCtx->drcAttrV11.stAuto, &attr->stAuto, sizeof(CalibDbV2_drc_V11_t));
-    if (attr->opMode == DRC_OPMODE_MANUAL)
+        pAdrcCtx->ifReCalcStAuto = true;
+    }
+    if (attr->opMode == DRC_OPMODE_MANUAL) {
         memcpy(&pAdrcCtx->drcAttrV11.stManual, &attr->stManual, sizeof(mdrcAttr_V11_t));
+        pAdrcCtx->ifReCalcStManual = true;
+    }
 
     LOG1_ATMO("EXIT: %s \n", __func__);
     return ret;
@@ -73,10 +81,14 @@ XCamReturn rk_aiq_uapi_adrc_v12_SetAttrib(RkAiqAlgoContext* ctx, const drcAttrV1
     XCamReturn ret          = XCAM_RETURN_NO_ERROR;
 
     pAdrcCtx->drcAttrV12.opMode = attr->opMode;
-    if (attr->opMode == DRC_OPMODE_AUTO)
+    if (attr->opMode == DRC_OPMODE_AUTO) {
         memcpy(&pAdrcCtx->drcAttrV12.stAuto, &attr->stAuto, sizeof(CalibDbV2_drc_V12_t));
-    if (attr->opMode == DRC_OPMODE_MANUAL)
+        pAdrcCtx->ifReCalcStAuto = true;
+    }
+    if (attr->opMode == DRC_OPMODE_MANUAL) {
         memcpy(&pAdrcCtx->drcAttrV12.stManual, &attr->stManual, sizeof(mdrcAttr_V12_t));
+        pAdrcCtx->ifReCalcStManual = true;
+    }
 
     LOG1_ATMO("EXIT: %s \n", __func__);
     return ret;

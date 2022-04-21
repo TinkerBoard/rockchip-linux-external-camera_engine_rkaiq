@@ -32,8 +32,6 @@
 #define DHAZ_V12_ENH_LUMA_NUM      17
 
 typedef struct AdehazeV10ProcResult_s {
-    bool enable;
-    bool update;
     int enhance_en;
     int hist_chn;
     int hpara_en;
@@ -92,8 +90,6 @@ typedef struct AdehazeV10ProcResult_s {
 } AdehazeV10ProcResult_t;
 
 typedef struct AdehazeV11ProcResult_s {
-    bool enable;
-    bool update;
     int enhance_en;
     int air_lc_en;
     int hpara_en;
@@ -142,8 +138,6 @@ typedef struct AdehazeV11ProcResult_s {
 } AdehazeV11ProcResult_t;
 
 typedef struct AdehazeV11duoProcResult_s {
-    bool enable;
-    bool update;
     int round_en;
     int soft_wr_en;
     int enhance_en;
@@ -201,8 +195,6 @@ typedef struct AdehazeV11duoProcResult_s {
 } AdehazeV11duoProcResult_t;
 
 typedef struct AdehazeV12ProcResult_s {
-    bool enable;
-    bool update;
     unsigned char enh_luma_en;
     unsigned char color_deviate_en;
     unsigned char round_en;
@@ -259,6 +251,8 @@ typedef struct AdehazeV12ProcResult_s {
 } AdehazeV12ProcResult_t;
 
 typedef struct RkAiqAdehazeProcResult_s {
+    bool enable;
+    bool update;
 #if RKAIQ_HAVE_DEHAZE_V10
     AdehazeV10ProcResult_t ProcResV10;
 #endif

@@ -44,10 +44,10 @@ typedef struct CalibDbGammaV10_s {
     uint16_t Gamma_curve[CALIBDB_AGAMMA_KNOTS_NUM_V10];
 } CalibDbGammaV10_t;
 
-typedef struct CalibDbV2_gamma_V10_s {
+typedef struct CalibDbV2_gamma_v10_s {
     // M4_STRUCT_DESC("GammaTuningPara", "curve_ui_type_A")
     CalibDbGammaV10_t GammaTuningPara;
-} CalibDbV2_gamma_V10_t;
+} CalibDbV2_gamma_v10_t;
 
 // gamma v11
 typedef struct CalibDbGammaV11_s {
@@ -59,10 +59,10 @@ typedef struct CalibDbGammaV11_s {
     uint16_t Gamma_curve[CALIBDB_AGAMMA_KNOTS_NUM_V11];
 } CalibDbGammaV11_t;
 
-typedef struct CalibDbV2_gamma_V11_s {
+typedef struct CalibDbV2_gamma_v11_s {
     // M4_STRUCT_DESC("GammaTuningPara", "curve_ui_type_A")
     CalibDbGammaV11_t GammaTuningPara;
-} CalibDbV2_gamma_V11_t;
+} CalibDbV2_gamma_v11_t;
 
 RKAIQ_END_DECLARE
 

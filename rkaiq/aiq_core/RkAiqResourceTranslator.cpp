@@ -66,6 +66,7 @@ XCamReturn
 RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAecStatsProxy> &to)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#if defined(ISP_HW_V20) || defined(ISP_HW_V21)
     const SmartPtr<Isp20StatsBuffer> buf =
         from.dynamic_cast_ptr<Isp20StatsBuffer>();
 #if defined(ISP_HW_V21)
@@ -333,7 +334,7 @@ RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, S
     }
 
     to->set_sequence(stats->frame_id);
-
+#endif
     return ret;
 }
 
@@ -341,6 +342,7 @@ XCamReturn
 RkAiqResourceTranslator::translateAwbStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAwbStatsProxy> &to)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#if defined(ISP_HW_V20)
     const SmartPtr<Isp20StatsBuffer> buf =
         from.dynamic_cast_ptr<Isp20StatsBuffer>();
     struct rkisp_isp2x_stat_buffer *stats;
@@ -444,7 +446,7 @@ RkAiqResourceTranslator::translateAwbStats (const SmartPtr<VideoBuffer> &from, S
     statsInt->awb_stats_valid = stats->meas_type >> 5 & 1;
 
     to->set_sequence(stats->frame_id);
-
+#endif
     return ret;
 }
 

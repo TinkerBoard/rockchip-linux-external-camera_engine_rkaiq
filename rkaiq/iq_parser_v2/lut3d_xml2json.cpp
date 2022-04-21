@@ -51,7 +51,6 @@ void convertLut3DCalib2CalibV2(const CamCalibDbContext_t *calib,CamCalibDbV2Cont
     lut3d_v2->common.enable = lut3d->enable;
     lut3d_v2->common.mode = CALIB_Lut3D_MODE_AUTO;
     lut3d_v2->common.gain_tolerance = 0.1;
-    lut3d_v2->common.wbgain_tolerance = 1;
 
     memset(lut3d_v2->MLut3D.Table.look_up_table_b, 0, sizeof(lut3d_v2->MLut3D.Table.look_up_table_b));
     memset(lut3d_v2->MLut3D.Table.look_up_table_g, 0, sizeof(lut3d_v2->MLut3D.Table.look_up_table_g));

@@ -1,5 +1,5 @@
 /*
- * rk_aiq_algo_agamma_itf.c
+ * rk_aiq_algo_camgroup_agamma_itf.cpp
  *
  *  Copyright (c) 2019 Rockchip Corporation
  *
@@ -68,26 +68,25 @@ prepare(RkAiqAlgoCom* params)
     AgammaHandle_t * pAgammaGrpCtx = (AgammaHandle_t *)params->ctx;
     RkAiqAlgoCamGroupPrepare* pCfgParam = (RkAiqAlgoCamGroupPrepare*)params;
     rk_aiq_gamma_cfg_t *agamma_config = &pAgammaGrpCtx->agamma_config;
-    pAgammaGrpCtx->working_mode = pCfgParam->gcom.com.u.prepare.working_mode;
-    pAgammaGrpCtx->prepare_type = pCfgParam->gcom.com.u.prepare.conf_type;
 
-    if(!!(pAgammaGrpCtx->prepare_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
+    if (!!(pCfgParam->gcom.com.u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB)) {
 #if RKAIQ_HAVE_GAMMA_V10
-        CalibDbV2_gamma_V10_t* calibv2_agamma_calib =
-            (CalibDbV2_gamma_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2),
+        CalibDbV2_gamma_v10_t* calibv2_agamma_calib =
+            (CalibDbV2_gamma_v10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2),
                                                               agamma_calib));
         memcpy(&pAgammaGrpCtx->agammaAttrV10.stAuto, calibv2_agamma_calib,
-               sizeof(CalibDbV2_gamma_V10_t));  // reload iq
+               sizeof(CalibDbV2_gamma_v10_t));  // reload iq
 #endif
 #if RKAIQ_HAVE_GAMMA_V11
-        CalibDbV2_gamma_V11_t* calibv2_agamma_calib =
-            (CalibDbV2_gamma_V11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2),
+        CalibDbV2_gamma_v11_t* calibv2_agamma_calib =
+            (CalibDbV2_gamma_v11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2),
                                                               agamma_calib));
         memcpy(&pAgammaGrpCtx->agammaAttrV11.stAuto, calibv2_agamma_calib,
-               sizeof(CalibDbV2_gamma_V11_t));  // reload iq
+               sizeof(CalibDbV2_gamma_v11_t));  // reload iq
 #endif
         LOGI_AGAMMA("%s: Agamma Reload Para!!!\n", __FUNCTION__);
     }
+    pAgammaGrpCtx->ifReCalcStAuto = true;
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);
     return ret;
@@ -99,14 +98,45 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOG1_AGAMMA("ENTER: %s \n", __func__);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     AgammaHandle_t* pAgammaGrpCtx = (AgammaHandle_t *)inparams->ctx;
+    pAgammaGrpCtx->FrameID                      = inparams->frame_id;
     RkAiqAlgoCamGroupProcOut* pAgammaGrpProcRes = (RkAiqAlgoCamGroupProcOut*)outparams;
+    bool bypass                                 = true;
 
-    AgammaProcessing(pAgammaGrpCtx);
+#if RKAIQ_HAVE_GAMMA_V10
+    if (pAgammaGrpCtx->FrameID <= 2)
+        bypass = false;
+    else if (pAgammaGrpCtx->agammaAttrV10.mode != pAgammaGrpCtx->CurrApiMode)
+        bypass = false;
+    else if (pAgammaGrpCtx->agammaAttrV10.mode == RK_AIQ_GAMMA_MODE_MANUAL)
+        bypass = !pAgammaGrpCtx->ifReCalcStManual;
+    else if (pAgammaGrpCtx->agammaAttrV10.mode == RK_AIQ_GAMMA_MODE_AUTO)
+        bypass = !pAgammaGrpCtx->ifReCalcStAuto;
+#endif
+#if RKAIQ_HAVE_GAMMA_V11
+    if (pAgammaGrpCtx->FrameID <= 2)
+        bypass = false;
+    else if (pAgammaGrpCtx->agammaAttrV11.mode != pAgammaGrpCtx->CurrApiMode)
+        bypass = false;
+    else if (pAgammaGrpCtx->agammaAttrV11.mode == RK_AIQ_GAMMA_MODE_MANUAL)
+        bypass = !pAgammaGrpCtx->ifReCalcStManual;
+    else if (pAgammaGrpCtx->agammaAttrV11.mode == RK_AIQ_GAMMA_MODE_AUTO)
+        bypass = !pAgammaGrpCtx->ifReCalcStAuto;
+#endif
+    pAgammaGrpCtx->ifReCalcStAuto   = false;
+    pAgammaGrpCtx->ifReCalcStManual = false;
 
-    //set proc res
-    AgammaSetProcRes(pAgammaGrpProcRes->camgroupParmasArray[0]->_agammaConfig, &pAgammaGrpCtx->agamma_config);
-    for(int i = 0; i < pAgammaGrpProcRes->arraySize; i++)
-        memcpy(pAgammaGrpProcRes->camgroupParmasArray[i]->_agammaConfig, pAgammaGrpProcRes->camgroupParmasArray[0]->_agammaConfig, sizeof(AgammaProcRes_t));
+    if (!bypass) AgammaProcessing(pAgammaGrpCtx);
+
+    // set proc res
+    AgammaSetProcRes(pAgammaGrpProcRes->camgroupParmasArray[0]->_agammaConfig, pAgammaGrpCtx,
+                     bypass);
+    if (!bypass) {
+        for (int i = 0; i < pAgammaGrpProcRes->arraySize; i++) {
+            memcpy(pAgammaGrpProcRes->camgroupParmasArray[i]->_agammaConfig,
+                   pAgammaGrpProcRes->camgroupParmasArray[0]->_agammaConfig,
+                   sizeof(AgammaProcRes_t));
+        }
+    }
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);
     return ret;

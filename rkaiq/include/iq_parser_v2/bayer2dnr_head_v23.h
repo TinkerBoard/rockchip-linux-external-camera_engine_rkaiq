@@ -55,10 +55,10 @@ typedef struct CalibDbV2_Bayer2dnrV23_Calib_s {
 } CalibDbV2_Bayer2dnrV23_Calib_t;
 
 typedef struct CalibDbV2_Bayer2dnrV23_gain_s {
-    // M4_ARRAY_DESC("lumapoint", "f32", M4_SIZE(1,16), M4_RANGE(0,256), "[16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,256]", M4_DIGIT(0), M4_DYNAMIC(0))
-    float gain_lumapoint[16];
-    // M4_ARRAY_DESC("gain_adj", "f32", M4_SIZE(1,16), M4_RANGE(0,4095), "[16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,256]", M4_DIGIT(2), M4_DYNAMIC(0))
-    float gain_adj[16];
+    // M4_ARRAY_DESC("lumapoint", "u16", M4_SIZE(1,16), M4_RANGE(0,256), "[16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,256]", M4_DIGIT(0), M4_DYNAMIC(0))
+    uint16_t gain_lumapoint[16];
+    // M4_ARRAY_DESC("gain_adj", "u16", M4_SIZE(1,16), M4_RANGE(0,4095), "[16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,256]", M4_DIGIT(2), M4_DYNAMIC(0))
+    uint16_t gain_adj[16];
 
 } CalibDbV2_Bayer2dnrV23_gain_t;
 
@@ -88,21 +88,21 @@ typedef struct CalibDbV2_Bayer2dnrV23_T_ISO_s {
     // M4_NUMBER_DESC("gain_scale", "f32", M4_RANGE(0, 16.0), "1.0", M4_DIGIT(2))
     float gain_scale;
 
-    // M4_NUMBER_DESC("pix_diff", "s32", M4_RANGE(0, 16383), "16383", M4_DIGIT(0))
-    int pix_diff;
+    // M4_NUMBER_DESC("pix_diff", "u16", M4_RANGE(0, 16383), "16383", M4_DIGIT(0))
+    uint16_t pix_diff;
 
-    // M4_NUMBER_DESC("diff_thld", "s32", M4_RANGE(0, 1023), "1023", M4_DIGIT(0))
-    int diff_thld;
+    // M4_NUMBER_DESC("diff_thld", "u16", M4_RANGE(0, 1023), "1023", M4_DIGIT(0))
+    uint16_t diff_thld;
 
 
-    // M4_NUMBER_DESC("trans_mode", "s32", M4_RANGE(0, 3), "0", M4_DIGIT(0))
-    int trans_mode;
-    // M4_NUMBER_DESC("trans_offset", "s32", M4_RANGE(0, 8191), "256", M4_DIGIT(0))
-    int trans_offset;
-    // M4_NUMBER_DESC("itrans_offset", "s32", M4_RANGE(0, 65535), "32768", M4_DIGIT(0))
-    int itrans_offset;
-    // M4_NUMBER_DESC("trans_datmax", "s32", M4_RANGE(0, 1048575), "1048575", M4_DIGIT(0))
-    int trans_datmax;
+    // M4_NUMBER_DESC("trans_mode", "u8", M4_RANGE(0, 3), "0", M4_DIGIT(0))
+    uint8_t trans_mode;
+    // M4_NUMBER_DESC("trans_offset", "u16", M4_RANGE(0, 8191), "256", M4_DIGIT(0))
+    uint16_t trans_offset;
+    // M4_NUMBER_DESC("itrans_offset", "u16", M4_RANGE(0, 65535), "32768", M4_DIGIT(0))
+    uint16_t itrans_offset;
+    // M4_NUMBER_DESC("trans_datmax", "u32", M4_RANGE(0, 1048575), "1048575", M4_DIGIT(0))
+    uint32_t trans_datmax;
 
 
     // M4_NUMBER_DESC("hdr_dgain_scale_s", "f32", M4_RANGE(0, 128.0), "1.0", M4_DIGIT(2))

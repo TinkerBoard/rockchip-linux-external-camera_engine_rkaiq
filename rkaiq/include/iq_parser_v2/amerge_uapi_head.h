@@ -12,6 +12,8 @@ extern "C" {
 typedef struct uapiMergeCurrCtlData_s {
     // M4_NUMBER_DESC("Envlv", "f32", M4_RANGE(0,1), "0", M4_DIGIT(4))
     float Envlv;
+    // M4_NUMBER_DESC("ISO", "f32", M4_RANGE(50,1000000000), "0", M4_DIGIT(4))
+    float ISO;
     // M4_NUMBER_DESC("MoveCoef", "f32", M4_RANGE(0,1), "0", M4_DIGIT(4))
     float MoveCoef;
 } uapiMergeCurrCtlData_t;

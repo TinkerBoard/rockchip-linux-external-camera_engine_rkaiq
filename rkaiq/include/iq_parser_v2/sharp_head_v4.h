@@ -26,7 +26,7 @@ RKAIQ_BEGIN_DECLARE
 
 ///////////////////////////sharp//////////////////////////////////////
 
-typedef struct CalibDbV2_SharpV4_TuningPara_Setting_ISO_Luma_s {
+typedef struct CalibDbV2_SharpV4_ISO_Luma_s {
     // M4_ARRAY_DESC("luma_point", "f32", M4_SIZE(1,8), M4_RANGE(0,1024), "[0, 64, 128, 256, 384, 640, 896, 1024]", M4_DIGIT(1), M4_DYNAMIC(0))
     float luma_point[8];
     // M4_ARRAY_DESC("luma_sigma", "f32", M4_SIZE(1,8), M4_RANGE(0,1023), "[8, 10, 10, 12, 14, 12, 12, 10]", M4_DIGIT(1), M4_DYNAMIC(0))
@@ -35,9 +35,9 @@ typedef struct CalibDbV2_SharpV4_TuningPara_Setting_ISO_Luma_s {
     float hf_clip[8];
     // M4_ARRAY_DESC("local_sharp_strength", "f32", M4_SIZE(1,8), M4_RANGE(0,1023), "[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]", M4_DIGIT(1), M4_DYNAMIC(0))
     float local_sharp_strength[8];
-} CalibDbV2_SharpV4_TuningPara_Setting_ISO_Luma_t;
+} CalibDbV2_SharpV4_ISO_Luma_t;
 
-typedef struct CalibDbV2_SharpV4_TuningPara_Setting_ISO_kernel_s {
+typedef struct CalibDbV2_SharpV4_kernel_s {
 
     // M4_ARRAY_DESC("prefilter_coeff", "f32", M4_SIZE(1,3), M4_RANGE(0,1), "[0.2042,0.1238,0.0751]", M4_DIGIT(4), M4_DYNAMIC(0))
     float prefilter_coeff[3];
@@ -45,9 +45,9 @@ typedef struct CalibDbV2_SharpV4_TuningPara_Setting_ISO_kernel_s {
     float GaussianFilter_coeff[6];
     // M4_ARRAY_DESC("hfBilateralFilter_coeff", "f32", M4_SIZE(1,3), M4_RANGE(0,1), "[0.2042,0.1238,0.0751]", M4_DIGIT(4), M4_DYNAMIC(0))
     float hfBilateralFilter_coeff[3];
-} CalibDbV2_SharpV4_TuningPara_Setting_ISO_kernel_t;
+} CalibDbV2_SharpV4_kernel_t;
 
-typedef struct CalibDbV2_SharpV4_TuningPara_Setting_ISO_kernel_sigma_s {
+typedef struct CalibDbV2_SharpV4_sigma_s {
 
     // M4_ARRAY_DESC("prefilter_sigma", "f32", M4_SIZE(1,1), M4_RANGE(0,100), "[1.0]", M4_DIGIT(2), M4_DYNAMIC(0))
     float prefilter_sigma;
@@ -58,9 +58,9 @@ typedef struct CalibDbV2_SharpV4_TuningPara_Setting_ISO_kernel_sigma_s {
     // M4_ARRAY_DESC("GaussianFilter_radius", "f32", M4_SIZE(1,1), M4_RANGE(1,2), "[2.0]", M4_DIGIT(0), M4_DYNAMIC(0))
     float GaussianFilter_radius;
 
-} CalibDbV2_SharpV4_TuningPara_Setting_ISO_kernel_sigma_t;
+} CalibDbV2_SharpV4_sigma_t;
 
-typedef struct CalibDbV2_SharpV4_TuningPara_Setting_ISO_s {
+typedef struct CalibDbV2_SharpV4_Set_ISO_s {
     // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index2")
     float iso;
 
@@ -86,26 +86,26 @@ typedef struct CalibDbV2_SharpV4_TuningPara_Setting_ISO_s {
     float bf_add;
 
     // M4_ARRAY_TABLE_DESC("luma_para", "array_table_ui", "none")
-    CalibDbV2_SharpV4_TuningPara_Setting_ISO_Luma_t luma_para;
+    CalibDbV2_SharpV4_ISO_Luma_t luma_para;
 
     // M4_ARRAY_TABLE_DESC("kernel_para", "array_table_ui", "none")
-    CalibDbV2_SharpV4_TuningPara_Setting_ISO_kernel_t kernel_para;
+    CalibDbV2_SharpV4_kernel_t kernel_para;
 
     // M4_ARRAY_TABLE_DESC("kernel_sigma", "array_table_ui", "none")
-    CalibDbV2_SharpV4_TuningPara_Setting_ISO_kernel_sigma_t kernel_sigma;
-} CalibDbV2_SharpV4_TuningPara_Setting_ISO_t;
+    CalibDbV2_SharpV4_sigma_t kernel_sigma;
+} CalibDbV2_SharpV4_Set_ISO_t;
 
-typedef struct CalibDbV2_SharpV4_TuningPara_Setting_s {
+typedef struct CalibDbV2_SharpV4_Set_s {
     // M4_STRING_MARK_DESC("SNR_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "LSNR",M4_DYNAMIC(0), "index1")
     char *SNR_Mode;
     // M4_STRING_DESC("Sensor_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "lcg", M4_DYNAMIC(0))
     char *Sensor_Mode;
     // M4_STRUCT_LIST_DESC("Tuning_ISO", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_SharpV4_TuningPara_Setting_ISO_t *Tuning_ISO;
+    CalibDbV2_SharpV4_Set_ISO_t *Tuning_ISO;
     int Tuning_ISO_len;
-} CalibDbV2_SharpV4_TuningPara_Setting_t;
+} CalibDbV2_SharpV4_Set_t;
 
-typedef struct CalibDbV2_SharpV4_TuningPara_s {
+typedef struct CalibDbV2_SharpV4_Tuning_s {
     // M4_BOOL_DESC("enable", "1")
     bool enable;
 
@@ -113,16 +113,16 @@ typedef struct CalibDbV2_SharpV4_TuningPara_s {
     bool kernel_sigma_enable;
 
     // M4_STRUCT_LIST_DESC("Setting", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_SharpV4_TuningPara_Setting_t *Setting;
+    CalibDbV2_SharpV4_Set_t *Setting;
     int Setting_len;
 
-} CalibDbV2_SharpV4_TuningPara_t;
+} CalibDbV2_SharpV4_Tuning_t;
 
 typedef struct CalibDbV2_SharpV4_s {
     // M4_STRING_DESC("Version", M4_SIZE(1,1), M4_RANGE(0, 64), "V3", M4_DYNAMIC(0))
     char *Version;
     // M4_STRUCT_DESC("TuningPara", "normal_ui_style")
-    CalibDbV2_SharpV4_TuningPara_t TuningPara;
+    CalibDbV2_SharpV4_Tuning_t TuningPara;
 } CalibDbV2_SharpV4_t;
 
 RKAIQ_END_DECLARE

@@ -33,8 +33,6 @@ RKAIQ_BEGIN_DECLARE
 
 typedef struct lut3d_3ares_info_s{
     float sensorGain;
-    float awbGain[2];
-    bool wbgain_stable;
     bool gain_stable;
 } lut3d_3ares_info_t;
 

@@ -41,7 +41,7 @@ AcnrV2_result_t cnr_select_params_by_ISO_V2(RK_CNR_Params_V2_t *pParams, RK_CNR_
 
     iso = pExpInfo->arIso[pExpInfo->hdr_mode];
 
-    //确定iso等级
+    //确锟斤拷iso锟饺硷拷
     //rkuvnriso@50 100 200 400 800 1600 3200  6400 12800
     //      isogain: 1  2   4   8   16  32   64    128  256
     //     isoindex: 0  1   2   3   4   5    6     7    8
@@ -391,7 +391,7 @@ AcnrV2_result_t cnr_get_setting_by_name_json_V2(CalibDbV2_CNRV2_t *pCalibdbV2, c
 AcnrV2_result_t cnr_init_params_json_V2(RK_CNR_Params_V2_t *pParams, CalibDbV2_CNRV2_t *pCalibdbV2, int tuning_idx)
 {
     AcnrV2_result_t res = ACNRV2_RET_SUCCESS;
-    CalibDbV2_CNRV2_TuningPara_Setting_ISO_t *pTuningISO = NULL;
+    CalibDbV2_CNRV2_T_Set_ISO_t *pTuningISO = NULL;
 
     if(pParams == NULL || pCalibdbV2 == NULL) {
         LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);

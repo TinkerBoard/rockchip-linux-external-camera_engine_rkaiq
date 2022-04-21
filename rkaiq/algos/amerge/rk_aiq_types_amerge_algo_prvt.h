@@ -56,7 +56,7 @@
 #define BIT_MIN               (0)
 #define BIT_8_MAX             (255)
 #define BIT_10_MAX            (1023)
-
+#define RATIO_DEFAULT         (1.0f)
 #define LIMIT_VALUE(value,max_value,min_value)      (value > max_value? max_value : value < min_value ? min_value : value)
 #define LIMIT_VALUE_UNSIGNED(value, max_value) (value > max_value ? max_value : value)
 #define LIMIT_PARA(a,b,c,d,e)      (c+(a-e)*(b-c)/(d -e))
@@ -108,13 +108,17 @@ typedef enum AmergeState_e {
 } AmergeState_t;
 
 typedef struct MergeExpoData_s {
-    float nextLExpo;
-    float nextMExpo;
-    float nextSExpo;
-    float nextSGain;
-    float nextMGain;
-    float nextRatioLS;
-    float nextRatioLM;
+    bool LongFrmMode;
+    float EnvLv;
+    float ISO;
+
+    float LExpo;
+    float MExpo;
+    float SExpo;
+    float SGain;
+    float MGain;
+    float RatioLS;
+    float RatioLM;
 } MergeExpoData_t;
 
 typedef struct MergeHandleDataV10_s {
@@ -170,38 +174,36 @@ typedef struct MergeHandleData_s {
 #endif
 } MergeHandleData_t;
 
-typedef struct MergePrevCtrlData_s {
-    int MergeMode;
-    float EnvLv;
-    float MoveCoef;
-    merge_OpMode_t ApiMode;
-} MergePrevCtrlData_t;
-
-typedef struct AmergePrevData_s {
-    MergePrevCtrlData_t CtrlData;
-    MergeHandleData_t HandleData;
-} AmergePrevData_t;
-
 typedef struct MergeCurrCtrlData_s {
-    float EnvLv;
+    int MergeMode;
+    float MoveCoef;
+    MergeExpoData_t ExpoData;
+    merge_OpMode_t ApiMode;
+} MergeCurrCtrlData_t;
+
+typedef struct AmergeCurrData_s {
+    MergeCurrCtrlData_t CtrlData;
+    MergeHandleData_t HandleData;
+} AmergeCurrData_t;
+
+typedef struct MergeNextCtrlData_s {
+    MergeExpoData_t ExpoData;
     float MoveCoef;
     float MergeOEDamp;
     float MergeMDDampLM;
     float MergeMDDampMS;
-} MergeCurrCtrlData_t;
+} MergeNextCtrlData_t;
 
-typedef struct MergeCurrData_s {
-    MergeCurrCtrlData_t CtrlData;
+typedef struct AmergeNextData_s {
+    MergeNextCtrlData_t CtrlData;
     MergeHandleData_t HandleData;
-} MergeCurrData_t;
-
-typedef struct SensorInfo_s {
-    bool  LongFrmMode;
-} SensorInfo_t;
+} AmergeNextData_t;
 
 typedef struct AmergeContext_s {
+    bool ifReCalcStAuto;
+    bool ifReCalcStManual;
     bool SceneChange;
-    int frameCnt;
+    uint32_t FrameID;
 #if RKAIQ_HAVE_MERGE_V10
     mergeAttrV10_t mergeAttrV10;
 #endif
@@ -212,10 +214,9 @@ typedef struct AmergeContext_s {
     mergeAttrV12_t mergeAttrV12;
 #endif
     AmergeState_t state;
-    AmergePrevData_t PrevData ;
+    AmergeCurrData_t CurrData;
+    AmergeNextData_t NextData;
     RkAiqAmergeProcResult_t ProcRes;
-    MergeCurrData_t CurrData;
-    SensorInfo_t SensorInfo;
     FrameNumber_t FrameNumber;
 } AmergeContext_t;
 

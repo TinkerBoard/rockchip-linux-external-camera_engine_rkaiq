@@ -12,10 +12,13 @@ XCamReturn rk_aiq_uapi_amerge_v10_SetAttrib(RkAiqAlgoContext* ctx, const mergeAt
     AmergeContext_t* pAmergeCtx = (AmergeContext_t*)ctx;
 
     pAmergeCtx->mergeAttrV10.opMode = attr->opMode;
-    if (attr->opMode == MERGE_OPMODE_MANUAL)
-        memcpy(&pAmergeCtx->mergeAttrV10.stAuto, &attr->stAuto, sizeof(CalibDbV2_merge_V10_t));
-    else if (attr->opMode == MERGE_OPMODE_MANUAL)
+    if (attr->opMode == MERGE_OPMODE_AUTO) {
+        memcpy(&pAmergeCtx->mergeAttrV10.stAuto, &attr->stAuto, sizeof(CalibDbV2_merge_v10_t));
+        pAmergeCtx->ifReCalcStAuto = true;
+    } else if (attr->opMode == MERGE_OPMODE_MANUAL) {
         memcpy(&pAmergeCtx->mergeAttrV10.stManual, &attr->stManual, sizeof(mMergeAttrV10_t));
+        pAmergeCtx->ifReCalcStManual = true;
+    }
 
     return ret;
 }
@@ -31,7 +34,7 @@ XCamReturn rk_aiq_uapi_amerge_v10_GetAttrib(RkAiqAlgoContext* ctx, mergeAttrV10_
 
     attr->opMode = pAmergeCtx->mergeAttrV10.opMode;
     memcpy(&attr->stManual, &pAmergeCtx->mergeAttrV10.stManual, sizeof(mMergeAttrV10_t));
-    memcpy(&attr->stAuto, &pAmergeCtx->mergeAttrV10.stAuto, sizeof(CalibDbV2_merge_V10_t));
+    memcpy(&attr->stAuto, &pAmergeCtx->mergeAttrV10.stAuto, sizeof(CalibDbV2_merge_v10_t));
     memcpy(&attr->Info, &pAmergeCtx->mergeAttrV10.Info, sizeof(MergeCurrCtlData_t));
 
     return ret;
@@ -49,10 +52,13 @@ XCamReturn rk_aiq_uapi_amerge_v11_SetAttrib(RkAiqAlgoContext* ctx, const mergeAt
     AmergeContext_t* pAmergeCtx = (AmergeContext_t*)ctx;
 
     pAmergeCtx->mergeAttrV11.opMode = attr->opMode;
-    if (attr->opMode == MERGE_OPMODE_MANUAL)
-        memcpy(&pAmergeCtx->mergeAttrV11.stAuto, &attr->stAuto, sizeof(CalibDbV2_merge_V11_t));
-    else if (attr->opMode == MERGE_OPMODE_MANUAL)
+    if (attr->opMode == MERGE_OPMODE_AUTO) {
+        memcpy(&pAmergeCtx->mergeAttrV11.stAuto, &attr->stAuto, sizeof(CalibDbV2_merge_v11_t));
+        pAmergeCtx->ifReCalcStAuto = true;
+    } else if (attr->opMode == MERGE_OPMODE_MANUAL) {
         memcpy(&pAmergeCtx->mergeAttrV11.stManual, &attr->stManual, sizeof(mMergeAttrV11_t));
+        pAmergeCtx->ifReCalcStManual = true;
+    }
 
     return ret;
 }
@@ -67,7 +73,7 @@ XCamReturn rk_aiq_uapi_amerge_v11_GetAttrib(RkAiqAlgoContext* ctx, mergeAttrV11_
     AmergeContext_t* pAmergeCtx = (AmergeContext_t*)ctx;
 
     attr->opMode = pAmergeCtx->mergeAttrV11.opMode;
-    memcpy(&attr->stAuto, &pAmergeCtx->mergeAttrV11.stAuto, sizeof(CalibDbV2_merge_V11_t));
+    memcpy(&attr->stAuto, &pAmergeCtx->mergeAttrV11.stAuto, sizeof(CalibDbV2_merge_v11_t));
     memcpy(&attr->stManual, &pAmergeCtx->mergeAttrV11.stManual, sizeof(mMergeAttrV11_t));
     memcpy(&attr->Info, &pAmergeCtx->mergeAttrV11.Info, sizeof(MergeCurrCtlData_t));
 
@@ -86,10 +92,13 @@ XCamReturn rk_aiq_uapi_amerge_v12_SetAttrib(RkAiqAlgoContext* ctx, const mergeAt
     AmergeContext_t* pAmergeCtx = (AmergeContext_t*)ctx;
 
     pAmergeCtx->mergeAttrV12.opMode = attr->opMode;
-    if (attr->opMode == MERGE_OPMODE_MANUAL)
-        memcpy(&pAmergeCtx->mergeAttrV12.stAuto, &attr->stAuto, sizeof(CalibDbV2_merge_V12_t));
-    else if (attr->opMode == MERGE_OPMODE_MANUAL)
+    if (attr->opMode == MERGE_OPMODE_AUTO) {
+        memcpy(&pAmergeCtx->mergeAttrV12.stAuto, &attr->stAuto, sizeof(CalibDbV2_merge_v12_t));
+        pAmergeCtx->ifReCalcStAuto = true;
+    } else if (attr->opMode == MERGE_OPMODE_MANUAL) {
         memcpy(&pAmergeCtx->mergeAttrV12.stManual, &attr->stManual, sizeof(mMergeAttrV12_t));
+        pAmergeCtx->ifReCalcStManual = true;
+    }
 
     return ret;
 }
@@ -104,7 +113,7 @@ XCamReturn rk_aiq_uapi_amerge_v12_GetAttrib(RkAiqAlgoContext* ctx, mergeAttrV12_
     AmergeContext_t* pAmergeCtx = (AmergeContext_t*)ctx;
 
     attr->opMode = pAmergeCtx->mergeAttrV12.opMode;
-    memcpy(&attr->stAuto, &pAmergeCtx->mergeAttrV12.stAuto, sizeof(CalibDbV2_merge_V12_t));
+    memcpy(&attr->stAuto, &pAmergeCtx->mergeAttrV12.stAuto, sizeof(CalibDbV2_merge_v12_t));
     memcpy(&attr->stManual, &pAmergeCtx->mergeAttrV12.stManual, sizeof(mMergeAttrV12_t));
     memcpy(&attr->Info, &pAmergeCtx->mergeAttrV12.Info, sizeof(MergeCurrCtlData_t));
 

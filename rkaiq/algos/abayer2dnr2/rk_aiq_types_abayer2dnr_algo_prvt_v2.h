@@ -83,7 +83,7 @@ typedef struct Abayer2dnr_Context_V2_s {
     Abayer2dnr_ParamMode_V2_t eParamMode;
     int prepare_type;
 
-    CalibDbV2_Bayer2dnr_V2_t bayernr_v2;
+    CalibDbV2_Bayer2dnrV2_t bayernr_v2;
 
     int isReCalculate;
 } Abayer2dnr_Context_V2_t;

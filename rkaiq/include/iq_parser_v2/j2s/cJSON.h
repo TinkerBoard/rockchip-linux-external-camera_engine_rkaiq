@@ -23,11 +23,6 @@
 #ifndef cJSON__h
 #define cJSON__h
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #if !defined(__WINDOWS__) && (defined(WIN32) || defined(WIN64) || defined(_MSC_VER) || defined(_WIN32))
 #define __WINDOWS__
 #endif
@@ -137,6 +132,9 @@ typedef int cJSON_bool;
 #define CJSON_NESTING_LIMIT 1000
 #endif
 
+#ifdef __cplusplus
+namespace RkCam {
+#endif
 /* returns the version of cJSON as a string */
 CJSON_PUBLIC(const char*) cJSON_Version(void);
 
@@ -287,7 +285,7 @@ CJSON_PUBLIC(void *) cJSON_malloc(size_t size);
 CJSON_PUBLIC(void) cJSON_free(void *object);
 
 #ifdef __cplusplus
-}
+} //namespace
 #endif
 
 #endif

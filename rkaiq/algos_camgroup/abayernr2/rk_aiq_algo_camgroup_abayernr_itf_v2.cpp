@@ -219,7 +219,7 @@ static XCamReturn groupAbayernrV2Processing(const RkAiqAlgoCom* inparams, RkAiqA
         Abayernr_Context_V2_t * abayernr_contex_v2 = abayernr_group_contex->abayernr_contex_v2;
         Abayernr_ProcResult_V2_t stAbayernrResultV2;
         deltaIso = abs(stExpInfoV2.arIso[stExpInfoV2.hdr_mode] - abayernr_contex_v2->stExpInfo.arIso[stExpInfoV2.hdr_mode]);
-        if(deltaIso > ABAYERNRV2_RECALCULATE_DELTA_ISO) {
+        if(deltaIso > ABAYERNRV2_DELTA_ISO) {
             abayernr_contex_v2->isReCalculate |= 1;
         }
         if(abayernr_contex_v2->isReCalculate) {

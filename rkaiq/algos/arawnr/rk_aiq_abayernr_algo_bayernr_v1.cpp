@@ -61,11 +61,11 @@ Abayernr_result_v1_t init_bayernrV1_params_json(RK_Bayernr_Params_V1_t *pParams,
         return ABAYERNR_RET_V1_NULL_POINTER;
     }
 
-    CalibDbV2_BayerNrV1_CalibPara_Setting_t *pCalibSetting =  &pCalibdb->CalibPara.Setting[calib_idx];
-    CalibDbV2_BayerNrV1_TuningPara_Setting_t *pTuningSetting = &pCalibdb->TuningPara.Setting[tuning_idx];
+    CalibDbV2_BayerNrV1_C_Set_t *pCalibSetting =  &pCalibdb->CalibPara.Setting[calib_idx];
+    CalibDbV2_BayerNrV1_T_Set_t *pTuningSetting = &pCalibdb->TuningPara.Setting[tuning_idx];
 
-    CalibDbV2_BayerNrV1_CalibPara_Setting_ISO_t *pCalib_ISO = NULL;
-    CalibDbV2_BayerNrV1_TuningPara_Setting_ISO_t *pTuning_ISO = NULL;
+    CalibDbV2_BayerNrV1_C_ISO_t *pCalib_ISO = NULL;
+    CalibDbV2_BayerNrV1_T_ISO_t *pTuning_ISO = NULL;
 
 
     for(i = 0; i < pTuningSetting->Tuning_ISO_len; i++) {
@@ -147,10 +147,10 @@ Abayernr_result_v1_t bayernrV1_config_setting_param_json(RK_Bayernr_Params_V1_t 
 Abayernr_result_v1_t bayernrV1_calibdbV2_assign(CalibDbV2_BayerNrV1_t *pDst, CalibDbV2_BayerNrV1_t *pSrc)
 {
     Abayernr_result_v1_t res = ABAYERNR_RET_V1_SUCCESS;
-    CalibDbV2_BayerNrV1_CalibPara_t *pSrcCalibParaV2 = NULL;
-    CalibDbV2_BayerNrV1_TuningPara_t *pSrcTuningParaV2 = NULL;
-    CalibDbV2_BayerNrV1_CalibPara_t *pDstCalibParaV2 = NULL;
-    CalibDbV2_BayerNrV1_TuningPara_t *pDstTuningParaV2 = NULL;
+    CalibDbV2_BayerNrV1_Calib_t *pSrcCalibParaV2 = NULL;
+    CalibDbV2_BayerNrV1_Tuning_t *pSrcTuningParaV2 = NULL;
+    CalibDbV2_BayerNrV1_Calib_t *pDstCalibParaV2 = NULL;
+    CalibDbV2_BayerNrV1_Tuning_t *pDstTuningParaV2 = NULL;
     int setting_len = 0;
     int iso_len = 0;
 
@@ -174,15 +174,15 @@ Abayernr_result_v1_t bayernrV1_calibdbV2_assign(CalibDbV2_BayerNrV1_t *pDst, Cal
 
     //malloc iso size
     setting_len = pSrcCalibParaV2->Setting_len;
-    pDstCalibParaV2->Setting = (CalibDbV2_BayerNrV1_CalibPara_Setting_t *)malloc(setting_len * sizeof(CalibDbV2_BayerNrV1_CalibPara_Setting_t));
-    memset(pDstCalibParaV2->Setting,  0x00, setting_len * sizeof(CalibDbV2_BayerNrV1_CalibPara_Setting_t));
+    pDstCalibParaV2->Setting = (CalibDbV2_BayerNrV1_C_Set_t *)malloc(setting_len * sizeof(CalibDbV2_BayerNrV1_C_Set_t));
+    memset(pDstCalibParaV2->Setting,  0x00, setting_len * sizeof(CalibDbV2_BayerNrV1_C_Set_t));
     pDstCalibParaV2->Setting_len = setting_len;
 
 
     for(int i = 0; i < setting_len; i++) {
         iso_len = pSrcCalibParaV2->Setting[i].Calib_ISO_len;
-        pDstCalibParaV2->Setting[i].Calib_ISO =  (CalibDbV2_BayerNrV1_CalibPara_Setting_ISO_t *)malloc(iso_len * sizeof(CalibDbV2_BayerNrV1_CalibPara_Setting_ISO_t));
-        memset(pDstCalibParaV2->Setting[i].Calib_ISO, 0x00, iso_len * sizeof(CalibDbV2_BayerNrV1_CalibPara_Setting_ISO_t));
+        pDstCalibParaV2->Setting[i].Calib_ISO =  (CalibDbV2_BayerNrV1_C_ISO_t *)malloc(iso_len * sizeof(CalibDbV2_BayerNrV1_C_ISO_t));
+        memset(pDstCalibParaV2->Setting[i].Calib_ISO, 0x00, iso_len * sizeof(CalibDbV2_BayerNrV1_C_ISO_t));
         pDstCalibParaV2->Setting[i].Calib_ISO_len = iso_len;
     }
 
@@ -204,14 +204,14 @@ Abayernr_result_v1_t bayernrV1_calibdbV2_assign(CalibDbV2_BayerNrV1_t *pDst, Cal
 
 
     setting_len = pSrcTuningParaV2->Setting_len;
-    pDstTuningParaV2->Setting = (CalibDbV2_BayerNrV1_TuningPara_Setting_t *)malloc(setting_len * sizeof(CalibDbV2_BayerNrV1_TuningPara_Setting_t));
-    memset(pDstTuningParaV2->Setting, 0x00, setting_len * sizeof(CalibDbV2_BayerNrV1_TuningPara_Setting_t));
+    pDstTuningParaV2->Setting = (CalibDbV2_BayerNrV1_T_Set_t *)malloc(setting_len * sizeof(CalibDbV2_BayerNrV1_T_Set_t));
+    memset(pDstTuningParaV2->Setting, 0x00, setting_len * sizeof(CalibDbV2_BayerNrV1_T_Set_t));
     pDstTuningParaV2->Setting_len = setting_len;
 
     for(int i = 0; i < setting_len; i++) {
         iso_len = pSrcTuningParaV2->Setting[i].Tuning_ISO_len;
-        pDstTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_BayerNrV1_TuningPara_Setting_ISO_t *)malloc(iso_len * sizeof(CalibDbV2_BayerNrV1_TuningPara_Setting_ISO_t));
-        memset(pDstTuningParaV2->Setting[i].Tuning_ISO, 0x00, iso_len * sizeof(CalibDbV2_BayerNrV1_TuningPara_Setting_ISO_t));
+        pDstTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_BayerNrV1_T_ISO_t *)malloc(iso_len * sizeof(CalibDbV2_BayerNrV1_T_ISO_t));
+        memset(pDstTuningParaV2->Setting[i].Tuning_ISO, 0x00, iso_len * sizeof(CalibDbV2_BayerNrV1_T_ISO_t));
         pDstTuningParaV2->Setting[i].Tuning_ISO_len = iso_len;
     }
 

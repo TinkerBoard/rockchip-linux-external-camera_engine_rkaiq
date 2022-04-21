@@ -6,10 +6,10 @@
 
 int sharpV3_calibdb_to_calibdbV2(struct list_head *pSharpList,   CalibDbV2_SharpV3_t *pCalibdbV2,  int mode_idx)
 {
-    CalibDbV2_SharpV3_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_SharpV3_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
-    CalibDbV2_SharpV3_TuningPara_Setting_ISO_Luma_t *pLumaParaV2 = NULL;
-    CalibDbV2_SharpV3_TuningPara_Setting_ISO_kernel_t *pKernelCoeffV2 = NULL;
+    CalibDbV2_SharpV3_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_SharpV3_T_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_SharpV3_Luma_t *pLumaParaV2 = NULL;
+    CalibDbV2_SharpV3_kernel_t *pKernelCoeffV2 = NULL;
 
     if(pSharpList == NULL || pCalibdbV2 == NULL) {
         printf(" pCalibdb is NULL pointer\n");
@@ -29,14 +29,14 @@ int sharpV3_calibdb_to_calibdbV2(struct list_head *pSharpList,   CalibDbV2_Sharp
     pTuningParaV2 = &pCalibdbV2->TuningPara;
 
     //malloc settting size
-    pTuningParaV2->Setting = (CalibDbV2_SharpV3_TuningPara_Setting_t *)malloc(SHARPV3_SETTING_NUM * sizeof(CalibDbV2_SharpV3_TuningPara_Setting_t));
-    memset(pTuningParaV2->Setting, 0x00, SHARPV3_SETTING_NUM * sizeof(CalibDbV2_SharpV3_TuningPara_Setting_t));
+    pTuningParaV2->Setting = (CalibDbV2_SharpV3_T_Set_t *)malloc(SHARPV3_SETTING_NUM * sizeof(CalibDbV2_SharpV3_T_Set_t));
+    memset(pTuningParaV2->Setting, 0x00, SHARPV3_SETTING_NUM * sizeof(CalibDbV2_SharpV3_T_Set_t));
     pTuningParaV2->Setting_len = SHARPV3_SETTING_NUM;
 
     //malloc iso size
     for(int i = 0; i < SHARPV3_SETTING_NUM; i++) {
-        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_SharpV3_TuningPara_Setting_ISO_t *)malloc(SHARPV3_ISO_NUM * sizeof(CalibDbV2_SharpV3_TuningPara_Setting_ISO_t));
-        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, SHARPV3_ISO_NUM * sizeof(CalibDbV2_SharpV3_TuningPara_Setting_ISO_t));
+        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_SharpV3_T_ISO_t *)malloc(SHARPV3_ISO_NUM * sizeof(CalibDbV2_SharpV3_T_ISO_t));
+        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, SHARPV3_ISO_NUM * sizeof(CalibDbV2_SharpV3_T_ISO_t));
         pTuningParaV2->Setting[i].Tuning_ISO_len = SHARPV3_ISO_NUM;
     }
 
@@ -91,10 +91,10 @@ int sharpV3_calibdb_to_calibdbV2(struct list_head *pSharpList,   CalibDbV2_Sharp
 
 int sharpV3_calibdbV2_to_calibdb(CalibDbV2_SharpV3_t *pCalibdbV2, struct list_head *pSharpList, int mode_idx)
 {
-    CalibDbV2_SharpV3_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_SharpV3_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
-    CalibDbV2_SharpV3_TuningPara_Setting_ISO_Luma_t *pLumaParaV2 = NULL;
-    CalibDbV2_SharpV3_TuningPara_Setting_ISO_kernel_t *pKernelCoeffV2 = NULL;
+    CalibDbV2_SharpV3_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_SharpV3_T_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_SharpV3_Luma_t *pLumaParaV2 = NULL;
+    CalibDbV2_SharpV3_kernel_t *pKernelCoeffV2 = NULL;
 
     if(pSharpList == NULL || pCalibdbV2 == NULL) {
         printf(" pCalibdb is NULL pointer\n");

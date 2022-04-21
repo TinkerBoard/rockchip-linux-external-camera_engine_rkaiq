@@ -30,11 +30,12 @@
 #include "ablc_head.h"
 #include "ablc_head_V32.h"
 #include "config.h"
-#include "j2s.h"
 #include "rk_aiq_algo_des.h"
 #include "sharp_head_v33.h"
 #include "xcam_log.h"
 #include "xcam_mutex.h"
+
+struct cJSON;
 
 namespace RkCam {
 
@@ -118,7 +119,7 @@ private:
     static int CamCalibDbFreeAwbV20Ctx(CalibDbV2_Wb_Para_V20_t* awb);
 #endif
 #if RKAIQ_HAVE_GAMMA_V10
-    static int CamCalibDbFreeGammaCtx(CalibDbV2_gamma_V10_t* gamma);
+    static int CamCalibDbFreeGammaCtx(CalibDbV2_gamma_v10_t* gamma);
 #endif
     static int CamCalibDbFreeBlcCtx(CalibDbV2_Ablc_t* blc);
     static int CamCalibDbFreeDegammaCtx(CalibDbV2_Adegmma_t* degamma);
@@ -188,9 +189,6 @@ private:
 #if RKAIQ_HAVE_GIC_V2
     static int CamCalibDbFreeGicV21Ctx(CalibDbV2_Gic_V21_t* gic);
 #endif
-#if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
-    static int CamCalibDbFreeDehazeV11Ctx(CalibDbV2_dehaze_v11_t* dehaze);
-#endif
 #if RKAIQ_HAVE_BAYERNR_V2
     static int CamCalibDbFreeBayerNrV2Ctx(CalibDbV2_BayerNrV2_t* bayernr_v1);
 #endif
@@ -209,7 +207,7 @@ private:
 
     //isp30
 #if RKAIQ_HAVE_GAMMA_V11
-    static int CamCalibDbFreeGammaV2Ctx(CalibDbV2_gamma_V11_t* gamma);
+    static int CamCalibDbFreeGammaV2Ctx(CalibDbV2_gamma_v11_t* gamma);
 #endif
 #if RKAIQ_HAVE_CAC_V03
     static int CamCalibDbFreeCacV03Ctx(CalibDbV2_Cac_V03_t* cac_calib);
@@ -221,10 +219,10 @@ private:
     static int CamCalibDbFreeCacV11Ctx(CalibDbV2_Cac_V11_t* cac_calib);
 #endif
 #if RKAIQ_HAVE_BAYER2DNR_V2
-    static int CamCalibDbFreeBayer2dnrV2Ctx(CalibDbV2_Bayer2dnr_V2_t* bayer2dnr_v2);
+    static int CamCalibDbFreeBayer2dnrV2Ctx(CalibDbV2_Bayer2dnrV2_t* bayer2dnr_v2);
 #endif
 #if RKAIQ_HAVE_BAYERTNR_V2
-    static int CamCalibDbFreeBayertnrV2Ctx(CalibDbV2_BayerTnr_V2_t* bayertnr_v2);
+    static int CamCalibDbFreeBayertnrV2Ctx(CalibDbV2_BayerTnrV2_t* bayertnr_v2);
 #endif
 #if RKAIQ_HAVE_CNR_V2
     static int CamCalibDbFreeCnrV2Ctx(CalibDbV2_CNRV2_t* cnr_v2);

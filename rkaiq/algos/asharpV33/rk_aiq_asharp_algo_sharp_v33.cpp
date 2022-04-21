@@ -18,7 +18,6 @@
  */
 
 #include "rk_aiq_asharp_algo_sharp_v33.h"
-#include "mathlib.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -111,113 +110,113 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(RK_SHARP_Params_V33_t* pParam
 
     pSelect->enable = pParams->enable;
 
-    pSelect->center_mode    = pParams->center_mode;
+    pSelect->Center_Mode    = pParams->Center_Mode;
     pSelect->kernel_sigma_enable = pParams->kernel_sigma_enable;
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
-        pSelect->sharpParamsSelectISO.luma_point[i] =
+        pSelect->luma_point[i] =
             pParams->sharpParamsISO[gain_low].luma_point[i];
-        pSelect->sharpParamsSelectISO.luma_sigma[i] =
+        pSelect->luma_sigma[i] =
             INTERP_V4(pParams->sharpParamsISO[gain_low].luma_sigma[i],
                       pParams->sharpParamsISO[gain_high].luma_sigma[i], ratio);
-        pSelect->sharpParamsSelectISO.lum_clip_h[i] =
-            (int16_t)ROUND_F(INTERP_V4(pParams->sharpParamsISO[gain_low].lum_clip_h[i],
-                                       pParams->sharpParamsISO[gain_high].lum_clip_h[i], ratio));
+        pSelect->hf_clip[i] =
+            (int16_t)ROUND_F(INTERP_V4(pParams->sharpParamsISO[gain_low].hf_clip[i],
+                                       pParams->sharpParamsISO[gain_high].hf_clip[i], ratio));
     }
 
     if (iso - iso_low <= iso_high - iso) {
-        pSelect->sharpParamsSelectISO.global_clip_pos = pParams->sharpParamsISO[gain_low].global_clip_pos;
-        pSelect->sharpParamsSelectISO.GaussianFilter_radius = pParams->sharpParamsISO[gain_low].GaussianFilter_radius;
-        pSelect->sharpParamsSelectISO.noiseclip_mode = pParams->sharpParamsISO[gain_low].noiseclip_mode;
+        pSelect->global_hf_clip_pos = pParams->sharpParamsISO[gain_low].global_hf_clip_pos;
+        pSelect->GaussianFilter_radius = pParams->sharpParamsISO[gain_low].GaussianFilter_radius;
+        pSelect->noiseclip_mode = pParams->sharpParamsISO[gain_low].noiseclip_mode;
     } else {
-        pSelect->sharpParamsSelectISO.global_clip_pos = pParams->sharpParamsISO[gain_high].global_clip_pos;
-        pSelect->sharpParamsSelectISO.GaussianFilter_radius = pParams->sharpParamsISO[gain_high].GaussianFilter_radius;
-        pSelect->sharpParamsSelectISO.noiseclip_mode = pParams->sharpParamsISO[gain_high].noiseclip_mode;
+        pSelect->global_hf_clip_pos = pParams->sharpParamsISO[gain_high].global_hf_clip_pos;
+        pSelect->GaussianFilter_radius = pParams->sharpParamsISO[gain_high].GaussianFilter_radius;
+        pSelect->noiseclip_mode = pParams->sharpParamsISO[gain_high].noiseclip_mode;
     }
-    pSelect->sharpParamsSelectISO.prefilter_sigma =
+    pSelect->prefilter_sigma =
         INTERP_V4(pParams->sharpParamsISO[gain_low].prefilter_sigma,
                   pParams->sharpParamsISO[gain_high].prefilter_sigma, ratio);
-    pSelect->sharpParamsSelectISO.hfBilateralFilter_sigma =
+    pSelect->hfBilateralFilter_sigma =
         INTERP_V4(pParams->sharpParamsISO[gain_low].hfBilateralFilter_sigma,
                   pParams->sharpParamsISO[gain_high].hfBilateralFilter_sigma, ratio);
-    pSelect->sharpParamsSelectISO.GaussianFilter_sigma =
+    pSelect->GaussianFilter_sigma =
         INTERP_V4(pParams->sharpParamsISO[gain_low].GaussianFilter_sigma,
                   pParams->sharpParamsISO[gain_high].GaussianFilter_sigma, ratio);
-    pSelect->sharpParamsSelectISO.pbf_gain =
+    pSelect->pbf_gain =
         INTERP_V4(pParams->sharpParamsISO[gain_low].pbf_gain,
                   pParams->sharpParamsISO[gain_high].pbf_gain, ratio);
-    pSelect->sharpParamsSelectISO.pbf_add =
+    pSelect->pbf_add =
         INTERP_V4(pParams->sharpParamsISO[gain_low].pbf_add,
                   pParams->sharpParamsISO[gain_high].pbf_add, ratio);
-    pSelect->sharpParamsSelectISO.pbf_ratio =
+    pSelect->pbf_ratio =
         INTERP_V4(pParams->sharpParamsISO[gain_low].pbf_ratio,
                   pParams->sharpParamsISO[gain_high].pbf_ratio, ratio);
 
-    pSelect->sharpParamsSelectISO.gaus_ratio =
+    pSelect->gaus_ratio =
         INTERP_V4(pParams->sharpParamsISO[gain_low].gaus_ratio,
                   pParams->sharpParamsISO[gain_high].gaus_ratio, ratio);
-    pSelect->sharpParamsSelectISO.sharp_ratio =
+    pSelect->sharp_ratio =
         INTERP_V4(pParams->sharpParamsISO[gain_low].sharp_ratio,
                   pParams->sharpParamsISO[gain_high].sharp_ratio, ratio);
 
-    pSelect->sharpParamsSelectISO.bf_gain =
+    pSelect->bf_gain =
         INTERP_V4(pParams->sharpParamsISO[gain_low].bf_gain,
                   pParams->sharpParamsISO[gain_high].bf_gain, ratio);
-    pSelect->sharpParamsSelectISO.bf_add = INTERP_V4(
-            pParams->sharpParamsISO[gain_low].bf_add, pParams->sharpParamsISO[gain_high].bf_add, ratio);
-    pSelect->sharpParamsSelectISO.bf_ratio =
+    pSelect->bf_add = INTERP_V4(
+                          pParams->sharpParamsISO[gain_low].bf_add, pParams->sharpParamsISO[gain_high].bf_add, ratio);
+    pSelect->bf_ratio =
         INTERP_V4(pParams->sharpParamsISO[gain_low].bf_ratio,
                   pParams->sharpParamsISO[gain_high].bf_ratio, ratio);
 
-    for (int i = 0; i < RK_SHARP_V33_PBF_DIAM * RK_SHARP_V33_PBF_DIAM; i++) {
-        pSelect->sharpParamsSelectISO.prefilter_coeff[i] =
+    for (int i = 0; i < 3; i++) {
+        pSelect->prefilter_coeff[i] =
             INTERP_V4(pParams->sharpParamsISO[gain_low].prefilter_coeff[i],
                       pParams->sharpParamsISO[gain_high].prefilter_coeff[i], ratio);
     }
 
-    for (int i = 0; i < RK_SHARP_V33_RF_DIAM * RK_SHARP_V33_RF_DIAM; i++) {
-        pSelect->sharpParamsSelectISO.GaussianFilter_coeff[i] =
+    for (int i = 0; i < 6; i++) {
+        pSelect->GaussianFilter_coeff[i] =
             INTERP_V4(pParams->sharpParamsISO[gain_low].GaussianFilter_coeff[i],
                       pParams->sharpParamsISO[gain_high].GaussianFilter_coeff[i], ratio);
     }
 
-    for (int i = 0; i < RK_SHARP_V33_BF_DIAM * RK_SHARP_V33_BF_DIAM; i++) {
-        pSelect->sharpParamsSelectISO.hfBilateralFilter_coeff[i] =
+    for (int i = 0; i < 3; i++) {
+        pSelect->hfBilateralFilter_coeff[i] =
             INTERP_V4(pParams->sharpParamsISO[gain_low].hfBilateralFilter_coeff[i],
                       pParams->sharpParamsISO[gain_high].hfBilateralFilter_coeff[i], ratio);
     }
 
-    pSelect->sharpParamsSelectISO.global_gain =
+    pSelect->global_gain =
         INTERP_V4(pParams->sharpParamsISO[gain_low].global_gain,
                   pParams->sharpParamsISO[gain_high].global_gain, ratio);
-    pSelect->sharpParamsSelectISO.global_gain_alpha =
+    pSelect->global_gain_alpha =
         INTERP_V4(pParams->sharpParamsISO[gain_low].global_gain_alpha,
                   pParams->sharpParamsISO[gain_high].global_gain_alpha, ratio);
-    pSelect->sharpParamsSelectISO.local_gainscale =
+    pSelect->local_gainscale =
         INTERP_V4(pParams->sharpParamsISO[gain_low].local_gainscale,
                   pParams->sharpParamsISO[gain_high].local_gainscale, ratio);
 
     for (int i = 0; i < RK_SHARP_V33_SHARP_ADJ_GAIN_TABLE_LEN; i++) {
-        pSelect->sharpParamsSelectISO.gain_adj_sharp_strength[i] =
+        pSelect->gain_adj_sharp_strength[i] =
             INTERP_V4(pParams->sharpParamsISO[gain_low].gain_adj_sharp_strength[i],
                       pParams->sharpParamsISO[gain_high].gain_adj_sharp_strength[i], ratio);
     }
-    pSelect->sharpParamsSelectISO.exgain_bypass =
+    pSelect->exgain_bypass =
         INTERP_V4(pParams->sharpParamsISO[gain_low].exgain_bypass,
                   pParams->sharpParamsISO[gain_high].exgain_bypass, ratio);
 
     for (int i = 0; i < RK_SHARP_V33_STRENGTH_TABLE_LEN; i++) {
-        pSelect->sharpParamsSelectISO.dis_adj_sharp_strength[i] =
+        pSelect->dis_adj_sharp_strength[i] =
             INTERP_V4(pParams->sharpParamsISO[gain_low].dis_adj_sharp_strength[i],
                       pParams->sharpParamsISO[gain_high].dis_adj_sharp_strength[i], ratio);
     }
 
-    pSelect->sharpParamsSelectISO.noiseclip_strength =
+    pSelect->noiseclip_strength =
         INTERP_V4(pParams->sharpParamsISO[gain_low].noiseclip_strength,
                   pParams->sharpParamsISO[gain_high].noiseclip_strength, ratio);
-    pSelect->sharpParamsSelectISO.enhance_bit =
+    pSelect->enhance_bit =
         INTERP_V4(pParams->sharpParamsISO[gain_low].enhance_bit,
                   pParams->sharpParamsISO[gain_high].enhance_bit, ratio);
-    pSelect->sharpParamsSelectISO.noise_sigma_clip =
+    pSelect->noise_sigma_clip =
         INTERP_V4(pParams->sharpParamsISO[gain_low].noise_sigma_clip,
                   pParams->sharpParamsISO[gain_high].noise_sigma_clip, ratio);
 
@@ -276,9 +275,9 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     int cols = pExpInfo->rawWidth; //raw  width
 
     // SHARP_EN (0x0000)
-    pFix->sharp_exgain_bypass = pSelect->sharpParamsSelectISO.exgain_bypass;
+    pFix->sharp_exgain_bypass = pSelect->exgain_bypass;
     pFix->sharp_center_mode = 0;
-    pFix->sharp_noiseclip_mode = pSelect->sharpParamsSelectISO.noiseclip_mode;
+    pFix->sharp_noiseclip_mode = pSelect->noiseclip_mode;
     pFix->sharp_bypass        = !pSelect->enable;
     pFix->sharp_en            = pSelect->enable;
 
@@ -290,30 +289,30 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     LOGD_ASHARP("sharp_noiseclip_mode:%d \n", pFix->sharp_noiseclip_mode);
 
     // CENTER
-    pFix->sharp_center_mode   = pSelect->center_mode;
+    pFix->sharp_center_mode   = pSelect->Center_Mode;
     tmp = cols / 2;
     pFix->sharp_center_wid = CLIP(tmp, 0, 8191);
     tmp = rows / 2;
     pFix->sharp_center_het = CLIP(tmp, 0, 8191);
 
     // SHARP_RATIO  (0x0004)
-    tmp                     = (int)ROUND_F(pSelect->sharpParamsSelectISO.pbf_ratio / fPercent *
+    tmp                     = (int)ROUND_F(pSelect->pbf_ratio / fPercent *
                                            (1 << RK_SHARP_V33_BF_RATIO_FIX_BITS));
     pFix->sharp_pbf_ratio   = CLIP(tmp, 0, 0x80);
-    tmp                     = (int)ROUND_F(pSelect->sharpParamsSelectISO.gaus_ratio / fPercent *
+    tmp                     = (int)ROUND_F(pSelect->gaus_ratio / fPercent *
                                            (1 << RK_SHARP_V33_GAUS_RATIO_FIX_BITS));
     pFix->sharp_gaus_ratio  = CLIP(tmp, 0, 0x80);
-    tmp                     = (int)ROUND_F(pSelect->sharpParamsSelectISO.sharp_ratio * fPercent *
+    tmp                     = (int)ROUND_F(pSelect->sharp_ratio * fPercent *
                                            (1 << RK_SHARP_V33_SHARP_RATIO_FIX_BITS));
     pFix->sharp_sharp_ratio = CLIP(tmp, 0, 127);
-    tmp                     = (int)ROUND_F(pSelect->sharpParamsSelectISO.bf_ratio / fPercent *
+    tmp                     = (int)ROUND_F(pSelect->bf_ratio / fPercent *
                                            (1 << RK_SHARP_V33_BF_RATIO_FIX_BITS));
     pFix->sharp_bf_ratio    = CLIP(tmp, 0, 0x80);
 
     // SHARP_LUMA_DX (0x0008)
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM - 1; i++) {
-        tmp                    = (int16_t)LOG2(pSelect->sharpParamsSelectISO.luma_point[i + 1] -
-                                               pSelect->sharpParamsSelectISO.luma_point[i]);
+        tmp                    = (int16_t)LOG2(pSelect->luma_point[i + 1] -
+                                               pSelect->luma_point[i]);
         pFix->sharp_luma_dx[i] = CLIP(tmp, 0, 15);
     }
 
@@ -326,8 +325,8 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     int shf_bits        = 0;
     short sigma_bits[3];
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
-        int cur_sigma = FLOOR((pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.pbf_gain +
-                               pSelect->sharpParamsSelectISO.pbf_add) / fPercent);
+        int cur_sigma = FLOOR((pSelect->luma_sigma[i] * pSelect->pbf_gain +
+                               pSelect->pbf_add) / fPercent);
         if (max_val < cur_sigma) max_val = cur_sigma;
         if (min_val > cur_sigma) min_val = cur_sigma;
     }
@@ -336,8 +335,8 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     sigma_bits[2]   = sigma_deci_bits + sigma_bits[0];
     pbf_sigma_shift = sigma_bits[2] - 5;
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
-        tmp = (int16_t)ROUND_F((float)1 / (pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.pbf_gain +
-                                           pSelect->sharpParamsSelectISO.pbf_add) * fPercent * (1 << sigma_bits[2]));
+        tmp = (int16_t)ROUND_F((float)1 / (pSelect->luma_sigma[i] * pSelect->pbf_gain +
+                                           pSelect->pbf_add) * fPercent * (1 << sigma_bits[2]));
         pFix->sharp_pbf_sigma_inv[i] = CLIP(tmp, 0, 4095);
     }
 
@@ -349,8 +348,8 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     min_val         = 65536;
     shf_bits        = 0;
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
-        int cur_sigma = FLOOR((pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.bf_gain
-                               + pSelect->sharpParamsSelectISO.bf_add) / fPercent);
+        int cur_sigma = FLOOR((pSelect->luma_sigma[i] * pSelect->bf_gain
+                               + pSelect->bf_add) / fPercent);
         if (max_val < cur_sigma) max_val = cur_sigma;
         if (min_val > cur_sigma) min_val = cur_sigma;
     }
@@ -359,8 +358,8 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     sigma_bits[2]  = sigma_deci_bits + sigma_bits[0];
     bf_sigma_shift = sigma_bits[2] - 5;
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
-        tmp = (int16_t)ROUND_F((float)1 / (pSelect->sharpParamsSelectISO.luma_sigma[i] * pSelect->sharpParamsSelectISO.bf_gain +
-                                           pSelect->sharpParamsSelectISO.bf_add) * fPercent * (1 << sigma_bits[2]));
+        tmp = (int16_t)ROUND_F((float)1 / (pSelect->luma_sigma[i] * pSelect->bf_gain +
+                                           pSelect->bf_add) * fPercent * (1 << sigma_bits[2]));
         pFix->sharp_bf_sigma_inv[i] = CLIP(tmp, 0, 4095);
     }
 
@@ -368,24 +367,24 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     pFix->sharp_pbf_sigma_shift = CLIP(pbf_sigma_shift, 0, 15);
     pFix->sharp_bf_sigma_shift  = CLIP(bf_sigma_shift, 0, 15);
 
-    if (pSelect->sharpParamsSelectISO.global_clip_pos == 1) {
-        pSelect->sharpParamsSelectISO.dis_adj_sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 64;
+    if (pSelect->global_hf_clip_pos == 1) {
+        pSelect->dis_adj_sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 64;
         for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
-            pSelect->sharpParamsSelectISO.lum_clip_h[i] =
-                MAX(pSelect->sharpParamsSelectISO.lum_clip_h[i], 256);
+            pSelect->hf_clip[i] =
+                MAX(pSelect->hf_clip[i], 256);
         }
-    } else if (pSelect->sharpParamsSelectISO.global_clip_pos == 2) {
-        pSelect->sharpParamsSelectISO.dis_adj_sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 128;
+    } else if (pSelect->global_hf_clip_pos == 2) {
+        pSelect->dis_adj_sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 128;
         for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
-            pSelect->sharpParamsSelectISO.lum_clip_h[i] =
-                MAX(pSelect->sharpParamsSelectISO.lum_clip_h[i], 512);
+            pSelect->hf_clip[i] =
+                MAX(pSelect->hf_clip[i], 512);
         }
     } else {
-        pSelect->sharpParamsSelectISO.dis_adj_sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 0;
+        pSelect->dis_adj_sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 0;
     }
     // SHARP_SHARP_CLIP_HF_0 (0x0034 -  0x003c)
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
-        tmp                    = (int)(pSelect->sharpParamsSelectISO.lum_clip_h[i] * fPercent);
+        tmp                    = (int)(pSelect->hf_clip[i] * fPercent);
         pFix->sharp_clip_hf[i] = CLIP(tmp, 0, 1023);
     }
 
@@ -397,7 +396,7 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     if (pSelect->kernel_sigma_enable) {
         float dis_table_3x3[3] = {0.0, 1.0, 2.0};
         double e               = 2.71828182845905;
-        float sigma            = pSelect->sharpParamsSelectISO.prefilter_sigma;
+        float sigma            = pSelect->prefilter_sigma;
         float sum_gauss_coeff  = 0.0;
         for (int i = 0; i < 3; i++) {
             float tmp          = pow(e, -dis_table_3x3[i] / 2.0 / sigma / sigma);
@@ -411,7 +410,7 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
         }
     } else {
         for (int i = 0; i < 3; i++) {
-            pre_bila_filter[i] = pSelect->sharpParamsSelectISO.prefilter_coeff[i];
+            pre_bila_filter[i] = pSelect->prefilter_coeff[i];
             LOGD_ASHARP("kernel_sigma_enable:%d pre_bila_filter[%d]:%f\n",
                         pSelect->kernel_sigma_enable, i, pre_bila_filter[i]);
         }
@@ -434,7 +433,7 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     if (pSelect->kernel_sigma_enable) {
         float dis_table_3x3[3] = {0.0, 1.0, 2.0};
         double e               = 2.71828182845905;
-        float sigma            = pSelect->sharpParamsSelectISO.hfBilateralFilter_sigma;
+        float sigma            = pSelect->hfBilateralFilter_sigma;
         float sum_gauss_coeff  = 0.0;
         for (int i = 0; i < 3; i++) {
             float tmp      = pow(e, -dis_table_3x3[i] / 2.0 / sigma / sigma);
@@ -448,7 +447,7 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
         }
     } else {
         for (int i = 0; i < 3; i++) {
-            bila_filter[i] = pSelect->sharpParamsSelectISO.hfBilateralFilter_coeff[i];
+            bila_filter[i] = pSelect->hfBilateralFilter_coeff[i];
             LOGD_ASHARP("kernel_sigma_enable:%d bila_filter[%d]:%f\n", pSelect->kernel_sigma_enable,
                         i, bila_filter[i]);
         }
@@ -470,15 +469,15 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     // rk_sharp_V33_rfCoeff : [4], [1], [0]
     float range_filter[6];
     LOGD_ASHARP("GaussianFilter_sigma = %f ,GaussianFilter_radius %f \n",
-                pSelect->sharpParamsSelectISO.GaussianFilter_sigma,
-                pSelect->sharpParamsSelectISO.GaussianFilter_radius);
+                pSelect->GaussianFilter_sigma,
+                pSelect->GaussianFilter_radius);
     if (pSelect->kernel_sigma_enable) {
         float gauss_dis_table_5x5[6] = {0.0, 1.0, 2.0, 4.0, 5.0, 8.0};
         float gauss_dis_table_3x3[6] = {0.0, 1.0, 2.0, 1000, 1000, 1000};
         double e                     = 2.71828182845905;
-        float sigma                  = pSelect->sharpParamsSelectISO.GaussianFilter_sigma;
+        float sigma                  = pSelect->GaussianFilter_sigma;
         float sum_gauss_coeff        = 0.0;
-        if (pSelect->sharpParamsSelectISO.GaussianFilter_radius == 2) {
+        if (pSelect->GaussianFilter_radius == 2) {
             for (int i = 0; i < 6; i++) {
                 float tmp       = pow(e, -gauss_dis_table_5x5[i] / 2.0 / sigma / sigma);
                 range_filter[i] = tmp;
@@ -499,7 +498,7 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
         }
     } else {
         for (int i = 0; i < 6; i++) {
-            range_filter[i] = pSelect->sharpParamsSelectISO.GaussianFilter_coeff[i];
+            range_filter[i] = pSelect->GaussianFilter_coeff[i];
             LOGD_ASHARP("kernel_sigma_enable:%d range_filter[%d]:%f\n",
                         pSelect->kernel_sigma_enable, i, range_filter[i]);
         }
@@ -528,36 +527,36 @@ Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect
     pFix->sharp_gaus_coef[0] = CLIP(tmp, 0, 127);
 
     // gain
-    tmp = pSelect->sharpParamsSelectISO.global_gain * (1 << RK_SHARP_V33_GLOBAL_GAIN_FIX_BITS);
+    tmp = pSelect->global_gain * (1 << RK_SHARP_V33_GLOBAL_GAIN_FIX_BITS);
     pFix->sharp_global_gain = CLIP(tmp, 0, 1023);
-    tmp                     = pSelect->sharpParamsSelectISO.global_gain_alpha *
+    tmp                     = pSelect->global_gain_alpha *
                               (1 << RK_SHARP_V33_GLOBAL_GAIN_ALPHA_FIX_BITS);
     pFix->sharp_global_gain_alpha = CLIP(tmp, 0, 8);
-    tmp                           = pSelect->sharpParamsSelectISO.local_gainscale *
+    tmp                           = pSelect->local_gainscale *
                                     (1 << RK_SHARP_V33_LOCAL_GAIN_SACLE_FIX_BITS);
     pFix->sharp_local_gainscale = CLIP(tmp, 0, 128);
 
     // gain adjust strength
     for (int i = 0; i < RK_SHARP_V33_SHARP_ADJ_GAIN_TABLE_LEN; i++) {
-        tmp                     = ROUND_F(pSelect->sharpParamsSelectISO.gain_adj_sharp_strength[i] *
+        tmp                     = ROUND_F(pSelect->gain_adj_sharp_strength[i] *
                                           (1 << RK_SHARP_V33_ADJ_GAIN_FIX_BITS));
         pFix->sharp_gain_adj[i] = CLIP(tmp, 0, 16384);
     }
 
     // gain dis strength
     for (int i = 0; i < RK_SHARP_V33_STRENGTH_TABLE_LEN; i++) {
-        tmp                     = ROUND_F(pSelect->sharpParamsSelectISO.dis_adj_sharp_strength[i] *
+        tmp                     = ROUND_F(pSelect->dis_adj_sharp_strength[i] *
                                           (1 << RK_SHARP_V33_STRENGTH_TABLE_FIX_BITS));
         pFix->sharp_strength[i] = CLIP(tmp, 0, 128);
     }
 
     // texture: sharp enhence strength
-    tmp                        = ROUND_F(pSelect->sharpParamsSelectISO.noiseclip_strength *
+    tmp                        = ROUND_F(pSelect->noiseclip_strength *
                                          (1 << RK_SHARP_V33_ADJ_GAIN_FIX_BITS));
     pFix->sharp_noise_strength = CLIP(tmp, 0, 16383);
-    tmp                        = ROUND_F(pSelect->sharpParamsSelectISO.enhance_bit);
+    tmp                        = ROUND_F(pSelect->enhance_bit);
     pFix->sharp_enhance_bit    = CLIP(tmp, 0, 9);
-    tmp                        = ROUND_F(pSelect->sharpParamsSelectISO.noise_sigma_clip);
+    tmp                        = ROUND_F(pSelect->noise_sigma_clip);
     pFix->sharp_noise_sigma    = CLIP(tmp, 0, 1023);
 
 #if 1
@@ -580,7 +579,7 @@ Asharp_result_V33_t sharp_fix_printf_V33(RK_SHARP_Fix_V33_t* pFix) {
     }
 
     // SHARP_SHARP_EN (0X0000)
-    LOGD_ASHARP("(0x0000) sahrp_center_mode:0x%x sharp_bypass:0x%x sharp_en:0x%x \n",
+    LOGD_ASHARP("(0x0000) sahrp_Center_Mode:0x%x sharp_bypass:0x%x sharp_en:0x%x \n",
                 pFix->sharp_center_mode, pFix->sharp_bypass, pFix->sharp_en);
 
     // SHARP_SHARP_RATIO (0x0004)
@@ -714,7 +713,7 @@ Asharp_result_V33_t sharp_init_params_json_V33(RK_SHARP_Params_V33_t* pSharpPara
 
     pSharpParams->enable              = pCalibdbV2->TuningPara.enable;
     pSharpParams->kernel_sigma_enable = pCalibdbV2->TuningPara.kernel_sigma_enable;
-    pSharpParams->center_mode         = pCalibdbV2->TuningPara.Center_Mode;
+    pSharpParams->Center_Mode         = pCalibdbV2->TuningPara.Center_Mode;
     for (i = 0; i < pCalibdbV2->TuningPara.Setting[tuning_idx].Tuning_ISO_len &&
             i < RK_SHARP_V33_MAX_ISO_NUM;
             i++) {
@@ -724,7 +723,7 @@ Asharp_result_V33_t sharp_init_params_json_V33(RK_SHARP_Params_V33_t* pSharpPara
         for (j = 0; j < RK_SHARP_V33_LUMA_POINT_NUM; j++) {
             pSharpParams->sharpParamsISO[i].luma_point[j] = pTuningISO->luma_para.luma_point[j];
             pSharpParams->sharpParamsISO[i].luma_sigma[j] = pTuningISO->luma_para.luma_sigma[j];
-            pSharpParams->sharpParamsISO[i].lum_clip_h[j] = pTuningISO->luma_para.hf_clip[j];
+            pSharpParams->sharpParamsISO[i].hf_clip[j] = pTuningISO->luma_para.hf_clip[j];
         }
 
         pSharpParams->sharpParamsISO[i].pbf_gain        = pTuningISO->pbf_gain;
@@ -735,7 +734,7 @@ Asharp_result_V33_t sharp_init_params_json_V33(RK_SHARP_Params_V33_t* pSharpPara
         pSharpParams->sharpParamsISO[i].bf_gain         = pTuningISO->bf_gain;
         pSharpParams->sharpParamsISO[i].bf_add          = pTuningISO->bf_add;
         pSharpParams->sharpParamsISO[i].bf_ratio        = pTuningISO->bf_ratio;
-        pSharpParams->sharpParamsISO[i].global_clip_pos = pTuningISO->global_hf_clip_pos;
+        pSharpParams->sharpParamsISO[i].global_hf_clip_pos = pTuningISO->global_hf_clip_pos;
 
         for (j = 0; j < 3; j++) {
             pSharpParams->sharpParamsISO[i].prefilter_coeff[j] =

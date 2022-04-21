@@ -30,10 +30,10 @@ typedef struct CalibDbV2_CNRV30_T_ISO_s {
     float iso;
 
     ///////////new/////////////
-    // M4_NUMBER_DESC("down_scale_x", "s32", M4_RANGE(2, 8), "8", M4_DIGIT(0))
-    int down_scale_x;
-    // M4_NUMBER_DESC("down_scale_y", "s32", M4_RANGE(2, 6), "6", M4_DIGIT(0))
-    int down_scale_y;
+    // M4_NUMBER_DESC("down_scale_x", "u8", M4_RANGE(2, 8), "8", M4_DIGIT(0))
+    uint8_t down_scale_x;
+    // M4_NUMBER_DESC("down_scale_y", "u8", M4_RANGE(2, 6), "6", M4_DIGIT(0))
+    uint8_t down_scale_y;
 
     // M4_NUMBER_DESC("thumb_sigma", "f32", M4_RANGE(0.0, 1.0), "0.0039", M4_DIGIT(4))
     float thumb_sigma;
@@ -107,7 +107,7 @@ typedef struct CalibDbV2_CNRV30_T_Set_s {
 
 typedef struct CalibDbV2_CNRV30_Tuning_s {
     // M4_BOOL_DESC("enable", "1")
-    int enable;
+    bool enable;
     // M4_STRUCT_LIST_DESC("Setting", M4_SIZE_DYNAMIC, "double_index_list")
     CalibDbV2_CNRV30_T_Set_t *Setting;
     int Setting_len;

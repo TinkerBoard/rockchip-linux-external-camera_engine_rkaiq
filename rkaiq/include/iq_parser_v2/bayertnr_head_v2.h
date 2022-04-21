@@ -25,7 +25,7 @@
 RKAIQ_BEGIN_DECLARE
 
 ////////////////////////bayernr V2//////////////////////////////////////
-typedef struct CalibDbV2_BayerTnr_V2_CalibPara_Setting_ISO_s {
+typedef struct CalibDbV2_BayerTnrV2_C_ISO_s {
     // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index2")
     float iso;
 
@@ -44,27 +44,27 @@ typedef struct CalibDbV2_BayerTnr_V2_CalibPara_Setting_ISO_s {
     // M4_ARRAY_DESC("hi_sigma", "s32", M4_SIZE(1,16), M4_RANGE(0,65535), "0.0", M4_DIGIT(0), M4_DYNAMIC(0))
     int hi_sigma[16];
 
-} CalibDbV2_BayerTnr_V2_CalibPara_Setting_ISO_t;
+} CalibDbV2_BayerTnrV2_C_ISO_t;
 
-typedef struct CalibDbV2_BayerTnr_V2_CalibPara_Setting_s {
+typedef struct CalibDbV2_BayerTnrV2_C_Set_s {
     // M4_STRING_MARK_DESC("SNR_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "LSNR",M4_DYNAMIC(0), "index1")
     char *SNR_Mode;
     // M4_STRING_DESC("Sensor_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "lcg", M4_DYNAMIC(0))
     char *Sensor_Mode;
     // M4_STRUCT_LIST_DESC("Calib_ISO", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_BayerTnr_V2_CalibPara_Setting_ISO_t *Calib_ISO;
+    CalibDbV2_BayerTnrV2_C_ISO_t *Calib_ISO;
     int Calib_ISO_len;
 
-} CalibDbV2_BayerTnr_V2_CalibPara_Setting_t;
+} CalibDbV2_BayerTnrV2_C_Set_t;
 
-typedef struct CalibDbV2_BayerTnr_V2_CalibPara_s {
+typedef struct CalibDbV2_BayerTnrV2_Calib_s {
     // M4_STRUCT_LIST_DESC("Setting", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_BayerTnr_V2_CalibPara_Setting_t *Setting;
+    CalibDbV2_BayerTnrV2_C_Set_t *Setting;
     int Setting_len;
-} CalibDbV2_BayerTnr_V2_CalibPara_t;
+} CalibDbV2_BayerTnrV2_Calib_t;
 
 
-typedef struct CalibDbV2_BayerTnr_V2_TuningPara_Setting_ISO_s {
+typedef struct CalibDbV2_BayerTnrV2_T_ISO_s {
     // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index2")
     float iso;
 
@@ -115,35 +115,35 @@ typedef struct CalibDbV2_BayerTnr_V2_TuningPara_Setting_ISO_s {
     float soft_threshold_ratio;
 
 
-} CalibDbV2_BayerTnr_V2_TuningPara_Setting_ISO_t;
+} CalibDbV2_BayerTnrV2_T_ISO_t;
 
-typedef struct CalibDbV2_BayerTnr_V2_TuningPara_Setting_s {
+typedef struct CalibDbV2_BayerTnrV2_T_Set_s {
     // M4_STRING_MARK_DESC("SNR_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "LSNR",M4_DYNAMIC(0), "index1")
     char *SNR_Mode;
     // M4_STRING_DESC("Sensor_Mode", M4_SIZE(1,1), M4_RANGE(0, 64), "lcg", M4_DYNAMIC(0))
     char *Sensor_Mode;
     // M4_STRUCT_LIST_DESC("Tuning_ISO", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_BayerTnr_V2_TuningPara_Setting_ISO_t *Tuning_ISO;
+    CalibDbV2_BayerTnrV2_T_ISO_t *Tuning_ISO;
     int Tuning_ISO_len;
-} CalibDbV2_BayerTnr_V2_TuningPara_Setting_t;
+} CalibDbV2_BayerTnrV2_T_Set_t;
 
-typedef struct CalibDbV2_BayerTnr_V2_TuningPara_s {
+typedef struct CalibDbV2_BayerTnrV2_Tuning_s {
     // M4_BOOL_DESC("enable", "1")
     bool enable;
     // M4_STRUCT_LIST_DESC("Setting", M4_SIZE_DYNAMIC, "double_index_list")
-    CalibDbV2_BayerTnr_V2_TuningPara_Setting_t *Setting;
+    CalibDbV2_BayerTnrV2_T_Set_t *Setting;
     int Setting_len;
-} CalibDbV2_BayerTnr_V2_TuningPara_t;
+} CalibDbV2_BayerTnrV2_Tuning_t;
 
 
-typedef struct CalibDbV2_BayerTnr_V2_s {
+typedef struct CalibDbV2_BayerTnrV2_s {
     // M4_STRING_DESC("Version", M4_SIZE(1,1), M4_RANGE(0, 64), "V2", M4_DYNAMIC(0))
     char *Version;
     // M4_STRUCT_DESC("CalibPara", "normal_ui_style")
-    CalibDbV2_BayerTnr_V2_CalibPara_t CalibPara;
+    CalibDbV2_BayerTnrV2_Calib_t CalibPara;
     // M4_STRUCT_DESC("Bayernr3D", "normal_ui_style")
-    CalibDbV2_BayerTnr_V2_TuningPara_t TuningPara;
-} CalibDbV2_BayerTnr_V2_t;
+    CalibDbV2_BayerTnrV2_Tuning_t TuningPara;
+} CalibDbV2_BayerTnrV2_t;
 
 RKAIQ_END_DECLARE
 

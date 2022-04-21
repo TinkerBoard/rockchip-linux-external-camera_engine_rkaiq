@@ -126,6 +126,7 @@ RkAiqCore::RkAiqCore(int isp_hw_ver)
     , mAiqPdafStatsPool(nullptr)
 #endif
     , mCustomEnAlgosMask(0xffffffffffffffff)
+    , groupUpdateMask(0x00)
 {
     ENTER_ANALYZER_FUNCTION();
     // mAlogsSharedParams.reset();
@@ -428,6 +429,9 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
     CalibDbV2_ColorAsGrey_t *colorAsGrey =
         (CalibDbV2_ColorAsGrey_t*)CALIBDBV2_GET_MODULE_PTR((void*)(mAlogsComSharedParams.calibv2), colorAsGrey);
 
+    CalibDbV2_Cpsl_t* calibv2_cpsl_db =
+        (CalibDbV2_Cpsl_t*)CALIBDBV2_GET_MODULE_PTR((void*)(mAlogsComSharedParams.calibv2), cpsl);
+
 #if defined(RKAIQ_HAVE_THUMBNAILS)
     CalibDbV2_Thumbnails_t* thumbnails_config_db =
         (CalibDbV2_Thumbnails_t*)CALIBDBV2_GET_MODULE_PTR((void*)(mAlogsComSharedParams.calibv2), thumbnails);
@@ -492,6 +496,13 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
         if (colorAsGrey->param.enable) {
             mAlogsComSharedParams.gray_mode = true;
             mGrayMode = RK_AIQ_GRAY_MODE_ON;
+        } else if (calibv2_cpsl_db->param.enable) {
+            mGrayMode = RK_AIQ_GRAY_MODE_CPSL;
+            mAlogsComSharedParams.gray_mode =
+                mAlogsComSharedParams.fill_light_on && calibv2_cpsl_db->param.force_gray;
+        } else {
+            mGrayMode                       = RK_AIQ_GRAY_MODE_OFF;
+            mAlogsComSharedParams.gray_mode = false;
         }
     }
 
@@ -1736,6 +1747,34 @@ RkAiqCore::events_analyze(const SmartPtr<ispHwEvt_t> &evts)
 }
 
 XCamReturn
+RkAiqCore::prepare(enum rk_aiq_core_analyze_type_e type)
+{
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    std::vector<SmartPtr<RkAiqHandle>>& algo_list =
+        mRkAiqCoreGroupManager->getGroupAlgoList(type);
+
+    for (auto& algoHdl : algo_list) {
+        RkAiqHandle* curHdl = algoHdl.ptr();
+        while (curHdl) {
+            if (curHdl->getEnable()) {
+                ret = curHdl->updateConfig(true);
+                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d updateConfig failed", curHdl->getAlgoType());
+                ret = curHdl->prepare();
+                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d processing failed", curHdl->getAlgoType());
+            }
+            curHdl = curHdl->getNextHdl();
+        }
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
 RkAiqCore::preProcess(enum rk_aiq_core_analyze_type_e type)
 {
     ENTER_ANALYZER_FUNCTION();
@@ -2165,7 +2204,6 @@ XCamReturn RkAiqCore::calibTuning(const CamCalibDbV2Context_t* aiqCalib,
     }
 
     // Fill new calib to the AlogsSharedParams
-    /* TODO: xuhf WARNING */
     mAlogsComSharedParams.calibv2 = aiqCalib;
     mAlogsComSharedParams.conf_type = RK_AIQ_ALGO_CONFTYPE_UPDATECALIB;
 
@@ -2174,29 +2212,37 @@ XCamReturn RkAiqCore::calibTuning(const CamCalibDbV2Context_t* aiqCalib,
         if (!name.compare(0, 4, "cpsl", 0, 4)) {
             initCpsl();
         } else if (!name.compare(0, 11, "colorAsGrey", 0, 11)) {
-            setGrayMode(mGrayMode);
+            CalibDbV2_ColorAsGrey_t* colorAsGrey =
+                (CalibDbV2_ColorAsGrey_t*)CALIBDBV2_GET_MODULE_PTR(
+                    (void*)(mAlogsComSharedParams.calibv2), colorAsGrey);
+
+            CalibDbV2_Cpsl_t* calibv2_cpsl_db = (CalibDbV2_Cpsl_t*)CALIBDBV2_GET_MODULE_PTR(
+                (void*)(mAlogsComSharedParams.calibv2), cpsl);
+
+            if (colorAsGrey->param.enable) {
+                mGrayMode                       = RK_AIQ_GRAY_MODE_ON;
+                mAlogsComSharedParams.gray_mode = true;
+            } else if (calibv2_cpsl_db->param.enable) {
+                mGrayMode = RK_AIQ_GRAY_MODE_CPSL;
+                mAlogsComSharedParams.gray_mode =
+                    mAlogsComSharedParams.fill_light_on && calibv2_cpsl_db->param.force_gray;
+            } else {
+                mGrayMode                       = RK_AIQ_GRAY_MODE_OFF;
+                mAlogsComSharedParams.gray_mode = false;
+            }
         }
     });
 
-    AlgoList change_list = std::make_shared<std::list<RkAiqAlgoType_t>>();
-    std::transform(
-        change_name_list->begin(), change_name_list->end(), std::back_inserter(*change_list),
-    [](const std::string name) {
-        return RkAiqCalibDbV2::string2algostype(name.c_str());
-    });
-
-    change_list->sort();
-    change_list->unique();
-
-    // Call prepare of the Alog handle annd notify update param
-    list<RkAiqAlgoType_t>::iterator it;
-    for(it = change_list->begin(); it != change_list->end(); it++) {
-        auto algo_handle = getCurAlgoTypeHandle(*it);
-        if (algo_handle) {
-            (*algo_handle)->updateConfig(true);
-            (*algo_handle)->prepare();
-        }
+    uint64_t grpMask = 0;
+    auto algoGroupMap = mRkAiqCoreGroupManager->getGroupAlgoListMap();
+    for (const auto& group : algoGroupMap) {
+      if (group.first != RK_AIQ_CORE_ANALYZE_ALL) {
+        grpMask |= grpId2GrpMask(group.first);
+      }
     }
+
+    notifyUpdate(grpMask);
+    waitUpdateDone();
 
     EXIT_ANALYZER_FUNCTION();
 
@@ -2877,6 +2923,44 @@ RkAiqCore::newAiqGroupAnayzer()
     mRkAiqCoreGroupManager = new RkAiqAnalyzeGroupManager(this, mIsSingleThread);
     mRkAiqCoreGroupManager->parseAlgoGroup(mAlgosDesArray);
     return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn RkAiqCore::updateCalib(enum rk_aiq_core_analyze_type_e type)
+{
+  SmartLock lock (_update_mutex);
+  // check if group bit still set
+  uint64_t need_update = groupUpdateMask & grpId2GrpMask(type);
+  if (!need_update) {
+    return XCAM_RETURN_NO_ERROR;
+  }
+
+  prepare(type);
+  // clear group bit after update
+  groupUpdateMask &= (~need_update);
+  // notify update done
+  _update_done_cond.broadcast();
+
+  return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn RkAiqCore::notifyUpdate(uint64_t mask)
+{
+  SmartLock lock (_update_mutex);
+
+  groupUpdateMask |= mask;
+
+  return XCamReturn();
+}
+
+XCamReturn RkAiqCore::waitUpdateDone()
+{
+  SmartLock lock (_update_mutex);
+
+  while (groupUpdateMask != 0) {
+    _update_done_cond.timedwait(_update_mutex, 100000ULL);
+  }
+
+  return XCamReturn();
 }
 
 } //namespace RkCam

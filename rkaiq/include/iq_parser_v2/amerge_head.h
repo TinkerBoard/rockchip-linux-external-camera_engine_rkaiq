@@ -20,6 +20,7 @@
 #ifndef __CALIBDBV2_AMERGE_HEADER_H__
 #define __CALIBDBV2_AMERGE_HEADER_H__
 
+#include "adehaze_head.h"
 #include "rk_aiq_comm.h"
 
 #define MERGE_ENVLV_STEP_MAX 13
@@ -28,8 +29,8 @@ RKAIQ_BEGIN_DECLARE
 
 // merge V10
 typedef struct MergeOECurveV10_s {
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
-    float EnvLv[MERGE_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,13), M4_RANGE(0,10000000), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float CtrlData[MERGE_ENVLV_STEP_MAX];
     // M4_ARRAY_DESC("Smooth", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
     float Smooth[MERGE_ENVLV_STEP_MAX];
     // M4_ARRAY_DESC("Offset", "f32", M4_SIZE(1,13), M4_RANGE(108,300), "[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
@@ -50,6 +51,8 @@ typedef struct MergeMDCurveV10_s {
 } MergeMDCurveV10_t;
 
 typedef struct MergeV10_s {
+    // M4_ENUM_DESC("CtrlDataType", "CtrlDataType_t", "CTRLDATATYPE_ENVLV")
+    CtrlDataType_t CtrlDataType;
     // M4_ARRAY_TABLE_DESC("OECurve", "array_table_ui", "none")
     MergeOECurveV10_t OECurve;
     // M4_ARRAY_TABLE_DESC("MDCurve", "array_table_ui", "none")
@@ -64,10 +67,10 @@ typedef struct MergeV10_s {
     float MDCurveMS_damp;
 } MergeV10_t;
 
-typedef struct CalibDbV2_merge_V10_s {
+typedef struct CalibDbV2_merge_v10_s {
     // M4_STRUCT_DESC("MergeTuningPara", "normal_ui_style")
     MergeV10_t MergeTuningPara;
-} CalibDbV2_merge_V10_t;
+} CalibDbV2_merge_v10_t;
 
 // merge V11
 typedef enum MergeBaseFrame_e {
@@ -113,6 +116,8 @@ typedef struct ShortFrameModeData_s {
 typedef struct MergeV11_s {
     // M4_ENUM_DESC("BaseFrm", "MergeBaseFrame_t", "BASEFRAME_LONG")
     MergeBaseFrame_t BaseFrm;
+    // M4_ENUM_DESC("CtrlDataType", "CtrlDataType_t", "CTRLDATATYPE_ENVLV")
+    CtrlDataType_t CtrlDataType;
     // M4_NUMBER_DESC("ByPassThr", "f32", M4_RANGE(0,1), "0", M4_DIGIT(4))
     float ByPassThr;
     // M4_STRUCT_DESC("LongFrmModeData", "normal_ui_style")
@@ -121,15 +126,15 @@ typedef struct MergeV11_s {
     ShortFrameModeData_t ShortFrmModeData;
 } MergeV11_t;
 
-typedef struct CalibDbV2_merge_V11_s {
+typedef struct CalibDbV2_merge_v11_s {
     // M4_STRUCT_DESC("MergeTuningPara", "normal_ui_style")
     MergeV11_t MergeTuningPara;
-} CalibDbV2_merge_V11_t;
+} CalibDbV2_merge_v11_t;
 
 // merge v12
 typedef struct MergeEachChnCurveV12_s {
-    // M4_ARRAY_DESC("EnvLv", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
-    float EnvLv[MERGE_ENVLV_STEP_MAX];
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,13), M4_RANGE(0,10000000), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float CtrlData[MERGE_ENVLV_STEP_MAX];
     // M4_ARRAY_DESC("Smooth", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
     float Smooth[MERGE_ENVLV_STEP_MAX];
     // M4_ARRAY_DESC("Offset", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
@@ -156,6 +161,8 @@ typedef struct LongFrameModeDataV12_s {
 typedef struct MergeV12_s {
     // M4_ENUM_DESC("BaseFrm", "MergeBaseFrame_t", "BASEFRAME_LONG")
     MergeBaseFrame_t BaseFrm;
+    // M4_ENUM_DESC("CtrlDataType", "CtrlDataType_t", "CTRLDATATYPE_ENVLV")
+    CtrlDataType_t CtrlDataType;
     // M4_NUMBER_DESC("ByPassThr", "f32", M4_RANGE(0,1), "0", M4_DIGIT(4))
     float ByPassThr;
     // M4_STRUCT_DESC("LongFrmModeData", "normal_ui_style")
@@ -164,10 +171,10 @@ typedef struct MergeV12_s {
     ShortFrameModeData_t ShortFrmModeData;
 } MergeV12_t;
 
-typedef struct CalibDbV2_merge_V12_s {
+typedef struct CalibDbV2_merge_v12_s {
     // M4_STRUCT_DESC("MergeTuningPara", "normal_ui_style")
     MergeV12_t MergeTuningPara;
-} CalibDbV2_merge_V12_t;
+} CalibDbV2_merge_v12_t;
 
 RKAIQ_END_DECLARE
 

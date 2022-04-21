@@ -50,7 +50,7 @@ typedef struct __uapi_wb_gain_t {
 #define RK_TOOL_AWB_XY_TYPE_MAX_V201 2
 #define RK_TOOL_AWB_GRID_NUM_TOTAL 225
 #define RK_TOOL_AWB_CHANNEL_MAX 4
-
+#define RK_TOOL_MAX_AWB_TIME_SHARE_FRAME_NUM 4
 //typedef struct stat3a_lightType_s
 typedef struct rk_tool_awb_stat_wp_res_v201_s {
     // M4_NUMBER_DESC("WpNo", "u32", M4_RANGE(-9223372036854775808,9223372036854775807), "0", M4_DIGIT(0), M4_HIDE(0))
@@ -196,14 +196,14 @@ typedef struct rk_tool_awb_smart_run_res_s{
     bool wbgainStable;
     // M4_BOOL_DESC("wpDiffweiStable", "0")
     bool wpDiffweiStable;
-    // M4_BOOL_DESC("statisticsStable", "0")
-    bool statisticsStable;
+    // M4_NUMBER_DESC("statisticsStable", "u8", M4_RANGE(0,255), "0", M4_DIGIT(0))
+    unsigned char statisticsStable;
     // M4_BOOL_DESC("forceRunAwbFlag", "0")
     bool forceRunAwbFlag;//update by api or prepare;
     // M4_BOOL_DESC("samrtRunAwbFlag2", "0")
     bool samrtRunAwbFlag2;//update by above paras
-    // M4_ARRAY_DESC("wbgainMean", "f32", M4_SIZE(1,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))
-    float wbgainMean[RK_TOOL_AWB_CHANNEL_MAX];
+    // M4_ARRAY_DESC("wbgainMean", "f32", M4_SIZE(4,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))
+    float wbgainMean[RK_TOOL_MAX_AWB_TIME_SHARE_FRAME_NUM][RK_TOOL_AWB_CHANNEL_MAX];
     // M4_BOOL_DESC("algMethodStable", "0")
     bool algMethodStable;
 }rk_tool_awb_smart_run_res_t;
@@ -223,7 +223,7 @@ typedef struct rk_tool_awb_illInf_s {
     float spatialGainValue[RK_TOOL_AWB_CHANNEL_MAX];
     // M4_ARRAY_DESC("prob_WPNO", "f32", M4_SIZE(1,1), M4_RANGE(0,1), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float prob_WPNO;
-    // M4_ARRAY_DESC("gainValue", "f32", M4_SIZE(1,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("staWeight", "f32", M4_SIZE(1,1), M4_RANGE(0,1), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float staWeight;
     // M4_ARRAY_DESC("xyType2Weight", "f32", M4_SIZE(1,1), M4_RANGE(0,1), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float xyType2Weight;

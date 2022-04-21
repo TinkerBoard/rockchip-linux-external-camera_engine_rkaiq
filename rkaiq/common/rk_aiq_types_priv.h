@@ -73,7 +73,33 @@ typedef rk_aiq_isp_params_t<rk_aiq_isp_ie_t>            rk_aiq_isp_ie_params_v20
 typedef rk_aiq_isp_params_t<CalibDb_MFNR_Motion_t>      rk_aiq_isp_motion_params_v20_t;
 typedef rk_aiq_isp_params_t<rk_aiq_amd_params_t>        rk_aiq_isp_md_params_v20_t;
 
-typedef struct rkisp_effect_params {
+#ifdef ISP_HW_V20
+typedef struct rkisp_effect_params_s {
+    struct isp2x_isp_params_cfg isp_params;
+    rk_aiq_awb_stat_cfg_v200_t  awb_cfg;
+} rkisp_effect_params_v20;
+#elif ISP_HW_V21
+typedef struct rkisp_effect_params_s {
+    struct isp21_isp_params_cfg isp_params_v21;
+    rk_aiq_awb_stat_cfg_v201_t  awb_cfg_v201;
+    rk_aiq_isp_blc_v21_t blc_cfg;
+} rkisp_effect_params_v20;
+#elif ISP_HW_V30
+typedef struct rkisp_effect_params_s {
+    struct isp3x_isp_params_cfg isp_params_v3x[3];
+    rk_aiq_isp_awb_meas_cfg_v3x_t awb_cfg_v3x;
+    rk_aiq_isp_blc_v21_t blc_cfg;
+} rkisp_effect_params_v20;
+#elif ISP_HW_V32
+typedef struct rkisp_effect_params_s {
+    //struct isp32_isp_params_cfg isp_params_v32;
+	struct isp32_isp_meas_cfg meas;
+	struct isp32_bls_cfg bls_cfg;
+	struct isp32_awb_gain_cfg awb_gain_cfg;
+    rk_aiq_awb_stat_cfg_v32_t awb_cfg_v32;
+} rkisp_effect_params_v20;
+#else
+typedef struct rkisp_effect_params_s {
     union {
         struct isp2x_isp_params_cfg isp_params;
         struct isp21_isp_params_cfg isp_params_v21;
@@ -89,6 +115,9 @@ typedef struct rkisp_effect_params {
     };
     rk_aiq_isp_blc_v21_t blc_cfg;
 } rkisp_effect_params_v20;
+#endif
+
+typedef rk_aiq_isp_params_t<rkisp_effect_params_v20>  rkisp_effect_params;
 
 #define RKAIQ_ISPP_TNR_ID           (1 << 0)
 #define RKAIQ_ISPP_NR_ID            (1 << 1)

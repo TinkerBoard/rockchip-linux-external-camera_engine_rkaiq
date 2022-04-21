@@ -429,7 +429,8 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
     if (fp != nullptr) {
         if (working_mode == RK_AIQ_ISP_HDR_MODE_3_FRAME_HDR || \
                 working_mode == RK_AIQ_ISP_HDR_MODE_3_LINE_HDR) {
-            if (CHECK_ISP_HW_V20())
+            if (CHECK_ISP_HW_V20()) {
+#ifdef ISP_HW_V20
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-l_m_s-gain[%08.5f_%08.5f_%08.5f]-time[%08.5f_%08.5f_%08.5f]-"
@@ -448,7 +449,9 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          1,
                          focusCode,
                          zoomCode);
-            else if (CHECK_ISP_HW_V21())
+#endif
+            } else if (CHECK_ISP_HW_V21()) {
+#ifdef ISP_HW_V21
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-l_m_s-gain[%08.5f_%08.5f_%08.5f]-time[%08.5f_%08.5f_%08.5f]-"
@@ -467,7 +470,9 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          1,
                          focusCode,
                          zoomCode);
-            else if (CHECK_ISP_HW_V30())
+#endif
+            } else if (CHECK_ISP_HW_V30()) {
+#ifdef ISP_HW_V30
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-l_m_s-gain[%08.5f_%08.5f_%08.5f]-time[%08.5f_%08.5f_%08.5f]-"
@@ -486,7 +491,9 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          1,
                          focusCode,
                          zoomCode);
-            else if (CHECK_ISP_HW_V32())
+#endif
+            } else if (CHECK_ISP_HW_V32()) {
+#ifdef ISP_HW_V32
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-l_m_s-gain[%08.5f_%08.5f_%08.5f]-time[%08.5f_%08.5f_%08.5f]-"
@@ -498,16 +505,18 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          expParams->data()->aecExpInfo.HdrExp[2].exp_real_params.integration_time,
                          expParams->data()->aecExpInfo.HdrExp[1].exp_real_params.integration_time,
                          expParams->data()->aecExpInfo.HdrExp[0].exp_real_params.integration_time,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.gain0_red,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.gain0_green_r,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.gain0_green_b,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.gain0_blue,
+                         ispParams.awb_gain_cfg.gain0_red,
+                         ispParams.awb_gain_cfg.gain0_green_r,
+                         ispParams.awb_gain_cfg.gain0_green_b,
+                         ispParams.awb_gain_cfg.gain0_blue,
                          1,
                          focusCode,
                          zoomCode);
+#endif
         } else if (working_mode == RK_AIQ_ISP_HDR_MODE_2_FRAME_HDR || \
                    working_mode == RK_AIQ_ISP_HDR_MODE_2_LINE_HDR) {
-            if (CHECK_ISP_HW_V20())
+            if (CHECK_ISP_HW_V20()) {
+#ifdef ISP_HW_V20
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-l_s-gain[%08.5f_%08.5f]-time[%08.5f_%08.5f]-"
@@ -524,7 +533,9 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          1,
                          focusCode,
                          zoomCode);
-            else if (CHECK_ISP_HW_V21())
+#endif
+            } else if (CHECK_ISP_HW_V21()) {
+#ifdef ISP_HW_V21
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-l_s-gain[%08.5f_%08.5f]-time[%08.5f_%08.5f]-"
@@ -541,7 +552,9 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          1,
                          focusCode,
                          zoomCode);
-            else if (CHECK_ISP_HW_V30())
+#endif
+            } else if (CHECK_ISP_HW_V30()) {
+#ifdef ISP_HW_V30
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-l_s-gain[%08.5f_%08.5f]-time[%08.5f_%08.5f]-"
@@ -558,7 +571,9 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          1,
                          focusCode,
                          zoomCode);
-            else if (CHECK_ISP_HW_V32())
+#endif
+            } else if (CHECK_ISP_HW_V32()) {
+#ifdef ISP_HW_V32
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-l_s-gain[%08.5f_%08.5f]-time[%08.5f_%08.5f]-"
@@ -568,16 +583,17 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          expParams->data()->aecExpInfo.HdrExp[0].exp_real_params.analog_gain,
                          expParams->data()->aecExpInfo.HdrExp[1].exp_real_params.integration_time,
                          expParams->data()->aecExpInfo.HdrExp[0].exp_real_params.integration_time,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.gain0_red,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.gain0_green_r,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.gain0_green_b,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.gain0_blue,
+                         ispParams.awb_gain_cfg.gain0_red,
+                         ispParams.awb_gain_cfg.gain0_green_r,
+                         ispParams.awb_gain_cfg.gain0_green_b,
+                         ispParams.awb_gain_cfg.gain0_blue,
                          1,
                          focusCode,
                          zoomCode);
-
+#endif
         } else {
-            if (CHECK_ISP_HW_V20())
+            if (CHECK_ISP_HW_V20()) {
+#ifdef ISP_HW_V20
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-gain[%08.5f]-time[%08.5f]-"
@@ -592,7 +608,9 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          1,
                          focusCode,
                          zoomCode);
-            else if (CHECK_ISP_HW_V21())
+#endif
+            } else if (CHECK_ISP_HW_V21()) {
+#ifdef ISP_HW_V21
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-gain[%08.5f]-time[%08.5f]-"
@@ -607,7 +625,9 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          1,
                          focusCode,
                          zoomCode);
-            else if (CHECK_ISP_HW_V30())
+#endif
+            } else if (CHECK_ISP_HW_V30()) {
+#ifdef ISP_HW_V30
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-gain[%08.5f]-time[%08.5f]-"
@@ -622,7 +642,9 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          1,
                          focusCode,
                          zoomCode);
-            else if (CHECK_ISP_HW_V32())
+#endif
+            } else if (CHECK_ISP_HW_V32()) {
+#ifdef ISP_HW_V32
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-gain[%08.5f]-time[%08.5f]-"
@@ -630,14 +652,18 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          frame_id,
                          expParams->data()->aecExpInfo.LinearExp.exp_real_params.analog_gain,
                          expParams->data()->aecExpInfo.LinearExp.exp_real_params.integration_time,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.awb1_gain_r,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.awb1_gain_gr,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.awb1_gain_gb,
-                         ispParams.isp_params_v32.others.awb_gain_cfg.awb1_gain_b,
+                         ispParams.awb_gain_cfg.awb1_gain_r,
+                         ispParams.awb_gain_cfg.awb1_gain_gr,
+                         ispParams.awb_gain_cfg.awb1_gain_gb,
+                         ispParams.awb_gain_cfg.awb1_gain_b,
                          1,
                          focusCode,
                          zoomCode);
 
+#endif
+                }
+            }
+        }
         }
 
         fwrite((void *)buffer, strlen(buffer), 1, fp);

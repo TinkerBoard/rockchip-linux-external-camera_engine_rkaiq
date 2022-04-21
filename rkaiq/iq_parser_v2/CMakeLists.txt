@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 
 set(J2S_SRC
-    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/cJSON.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/cJSON_Utils.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/j2s.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/j2s_utils.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/cJSON.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/cJSON_Utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/j2s.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/j2s_utils.cpp
     )
 
 #########################################################
@@ -98,8 +98,8 @@ add_custom_target(
 #########################################################
 add_custom_target(
     j2s_parser
-    COMMAND gcc -std=gnu99 -DJ2S_ENABLE_DESC -DCOMPILE_TEMPLATE -o dump ${J2S_SRC} ${ISP_HW_VERSION}
-    ${CMAKE_SOURCE_DIR}/tools/iq_check/src/dump.c
+	COMMAND g++ -std=c++11 -DJ2S_ENABLE_DESC -DCOMPILE_TEMPLATE -o dump ${J2S_SRC} ${ISP_HW_VERSION}
+    ${CMAKE_SOURCE_DIR}/tools/iq_check/src/dump.cpp
     -I${CMAKE_SOURCE_DIR}/include/common
     -I${CMAKE_SOURCE_DIR}/
     -I${CMAKE_SOURCE_DIR}/include/uAPI2
@@ -117,10 +117,10 @@ add_custom_target(
     )
 
 SET(IQ_PARSERV2_SRC
-    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/cJSON.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/cJSON_Utils.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/j2s.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/j2s_utils.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/cJSON.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/cJSON_Utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/j2s.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/j2s/j2s_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/RkAiqCalibDbV2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/scene/scene_manager.cpp
     )

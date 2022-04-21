@@ -5,9 +5,9 @@
 
 int uvnrV1_calibdb_to_calibdbV2(const CalibDb_UVNR_2_t *pCalibdb,  CalibDbV2_UVNR_t *pCalibdbV2, int mode_idx)
 {
-    CalibDbV2_UVNR_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_UVNR_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
-    CalibDbV2_UVNR_TuningPara_Kernel_t *pKernel_Coeff;
+    CalibDbV2_UVNR_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_UVNR_T_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_UVNR_Kernel_t *pKernel_Coeff;
     CalibDb_UVNR_Params_t *pSetting = NULL;
 
     if(pCalibdb == NULL) {
@@ -88,9 +88,9 @@ int uvnrV1_calibdb_to_calibdbV2(const CalibDb_UVNR_2_t *pCalibdb,  CalibDbV2_UVN
 
 int uvnrV1_calibdbV2_to_calibdb(CalibDbV2_UVNR_t *pCalibdbV2,  CalibDb_UVNR_2_t *pCalibdb,   int mode_idx)
 {
-    CalibDbV2_UVNR_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_UVNR_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
-    CalibDbV2_UVNR_TuningPara_Kernel_t *pKernel_Coeff;
+    CalibDbV2_UVNR_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_UVNR_T_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_UVNR_Kernel_t *pKernel_Coeff;
     CalibDb_UVNR_Params_t *pSetting = NULL;
 
     if(pCalibdb == NULL) {

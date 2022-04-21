@@ -31,7 +31,7 @@
 //RKAIQ_BEGIN_DECLARE
 
 #define RK_BAYER2DNR_V2_MAX_ISO_NUM  CALIBDB_MAX_ISO_LEVEL
-#define ABAYER2DNRV2_RECALCULATE_DELTA_ISO (10)
+#define ABAYER2DNRV2_DELTA_ISO (10)
 
 typedef enum Abayer2dnr_result_V2_e {
     ABAYER2DNR_RET_SUCCESS             = 0,   // this has to be 0, if clauses rely on it

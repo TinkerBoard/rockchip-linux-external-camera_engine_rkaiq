@@ -68,14 +68,6 @@ typedef struct CalibDbV2_BayerTnrV23_T_ISO_s {
     // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index2")
     float iso;
 
-    // M4_NUMBER_DESC("thumbds_w", "s32", M4_RANGE(4, 8), "4", M4_DIGIT(0))
-    int thumbds_w;
-    // M4_NUMBER_DESC("thumbds_h", "s32", M4_RANGE(4, 8), "8", M4_DIGIT(0))
-    int thumbds_h;
-
-    // M4_BOOL_DESC("lo_enable", "1")
-    bool lo_enable;
-
     // M4_BOOL_DESC("hi_enable", "1")
     bool hi_enable;
 
@@ -90,9 +82,6 @@ typedef struct CalibDbV2_BayerTnrV23_T_ISO_s {
     // M4_BOOL_DESC("hi_gslum_en", "1")
     bool hi_gslum_en;
 
-    // M4_BOOL_DESC("trans_en", "0")
-    bool trans_en;
-
     // M4_BOOL_DESC("wgt_use_mode", "0")
     bool wgt_use_mode;
     // M4_BOOL_DESC("wgt_mge_mode", "1")
@@ -103,7 +92,7 @@ typedef struct CalibDbV2_BayerTnrV23_T_ISO_s {
     bool kl_guass;
 
     // M4_BOOL_DESC("global_pk_en", "1")
-    int global_pk_en;
+    bool global_pk_en;
     // M4_NUMBER_DESC("global_pksq", "s32", M4_RANGE(0, 268435455), "1024", M4_DIGIT(0))
     int global_pksq;
 
@@ -126,38 +115,38 @@ typedef struct CalibDbV2_BayerTnrV23_T_ISO_s {
 
     // M4_NUMBER_DESC("lo_filter_rat0", "f32", M4_RANGE(0, 16), "0", M4_DIGIT(2))
     float lo_filter_rat0;
-    // M4_NUMBER_DESC("lo_filter_thed0", "s32", M4_RANGE(0, 4095), "1024", M4_DIGIT(0))
-    int lo_filter_thed0;
+    // M4_NUMBER_DESC("lo_filter_thed0", "u16", M4_RANGE(0, 4095), "1024", M4_DIGIT(0))
+    uint16_t lo_filter_thed0;
 
-    // M4_NUMBER_DESC("hi_filter_abs_ctrl", "s32", M4_RANGE(0, 2), "0", M4_DIGIT(0))
-    int hi_filter_abs_ctrl;
-    // M4_NUMBER_DESC("hi_filter_filt_bay", "s32", M4_RANGE(0, 2), "0", M4_DIGIT(0))
-    int hi_filter_filt_bay;
-    // M4_NUMBER_DESC("hi_filter_filt_avg", "s32", M4_RANGE(0, 2), "0", M4_DIGIT(0))
-    int hi_filter_filt_avg;
-    // M4_NUMBER_DESC("hi_filter_filt_mode", "s32", M4_RANGE(0, 4), "4", M4_DIGIT(0))
-    int hi_filter_filt_mode;
+    // M4_NUMBER_DESC("hi_filter_abs_ctrl", "u8", M4_RANGE(0, 2), "0", M4_DIGIT(0))
+    uint8_t hi_filter_abs_ctrl;
+    // M4_NUMBER_DESC("hi_filter_filt_bay", "u8", M4_RANGE(0, 2), "0", M4_DIGIT(0))
+    uint8_t hi_filter_filt_bay;
+    // M4_NUMBER_DESC("hi_filter_filt_avg", "u8", M4_RANGE(0, 2), "0", M4_DIGIT(0))
+    uint8_t hi_filter_filt_avg;
+    // M4_NUMBER_DESC("hi_filter_filt_mode", "u8", M4_RANGE(0, 4), "4", M4_DIGIT(0))
+    uint8_t hi_filter_filt_mode;
 
     // M4_NUMBER_DESC("hi_filter_rat0", "f32", M4_RANGE(0, 16), "0", M4_DIGIT(2))
     float hi_filter_rat0;
-    // M4_NUMBER_DESC("hi_filter_thed0", "s32", M4_RANGE(0, 4095), "1024", M4_DIGIT(0))
-    int hi_filter_thed0;
+    // M4_NUMBER_DESC("hi_filter_thed0", "u16", M4_RANGE(0, 4095), "1024", M4_DIGIT(0))
+    uint16_t hi_filter_thed0;
     // M4_NUMBER_DESC("hi_filter_rat1", "f32", M4_RANGE(0, 16), "0", M4_DIGIT(2))
     float hi_filter_rat1;
-    // M4_NUMBER_DESC("hi_filter_thed1", "s32", M4_RANGE(0, 4095), "1024", M4_DIGIT(0))
-    int hi_filter_thed1;
+    // M4_NUMBER_DESC("hi_filter_thed1", "u16", M4_RANGE(0, 4095), "1024", M4_DIGIT(0))
+    uint16_t hi_filter_thed1;
 
 
 
 
-    // M4_NUMBER_DESC("guass_guide_coeff0", "s32", M4_RANGE(0, 63), "16", M4_DIGIT(0))
-    int guass_guide_coeff0;
-    // M4_NUMBER_DESC("guass_guide_coeff1", "s32", M4_RANGE(0, 63), "8", M4_DIGIT(0))
-    int guass_guide_coeff1;
-    // M4_NUMBER_DESC("guass_guide_coeff2", "s32", M4_RANGE(0, 63), "16", M4_DIGIT(0))
-    int guass_guide_coeff2;
-    // M4_NUMBER_DESC("guass_guide_coeff3", "s32", M4_RANGE(0, 63), "8", M4_DIGIT(0))
-    int guass_guide_coeff3;
+    // M4_NUMBER_DESC("guass_guide_coeff0", "u8", M4_RANGE(0, 63), "16", M4_DIGIT(0))
+    uint8_t guass_guide_coeff0;
+    // M4_NUMBER_DESC("guass_guide_coeff1", "u8", M4_RANGE(0, 63), "8", M4_DIGIT(0))
+    uint8_t guass_guide_coeff1;
+    // M4_NUMBER_DESC("guass_guide_coeff2", "u8", M4_RANGE(0, 63), "16", M4_DIGIT(0))
+    uint8_t guass_guide_coeff2;
+    // M4_NUMBER_DESC("guass_guide_coeff3", "u8", M4_RANGE(0, 63), "8", M4_DIGIT(0))
+    uint8_t guass_guide_coeff3;
 
 
 } CalibDbV2_BayerTnrV23_T_ISO_t;
@@ -175,6 +164,14 @@ typedef struct CalibDbV2_BayerTnrV23_T_Set_s {
 typedef struct CalibDbV2_BayerTnrV23_Tuning_s {
     // M4_BOOL_DESC("enable", "1")
     bool enable;
+    // M4_NUMBER_DESC("thumbds_w", "u8", M4_RANGE(4, 8), "8", M4_DIGIT(0))
+    uint8_t thumbds_w;
+    // M4_NUMBER_DESC("thumbds_h", "u8", M4_RANGE(4, 8), "4", M4_DIGIT(0))
+    uint8_t thumbds_h;
+    // M4_BOOL_DESC("trans_en", "0")
+    bool trans_en;
+    // M4_BOOL_DESC("lo_enable", "1")
+    bool lo_enable;
     // M4_STRUCT_LIST_DESC("Setting", M4_SIZE_DYNAMIC, "double_index_list")
     CalibDbV2_BayerTnrV23_T_Set_t *Setting;
     int Setting_len;

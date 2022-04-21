@@ -342,14 +342,17 @@ CamHwIsp21::setIspConfig()
             awbParams = awb_res.dynamic_cast_ptr<RkAiqIspAwbParamsProxyV21>();
             {
                 SmartLock locker (_isp_params_cfg_mutex);
-                _effecting_ispparam_map[frameId].awb_cfg_v201 = awbParams->data()->result;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[frameId]->data()->result.awb_cfg_v201 = awbParams->data()->result;
 
             }
         } else {
             /* use the latest */
             SmartLock locker (_isp_params_cfg_mutex);
             if (!_effecting_ispparam_map.empty()) {
-                _effecting_ispparam_map[frameId].awb_cfg_v201 = (_effecting_ispparam_map.rbegin())->second.awb_cfg_v201;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[frameId]->data()->result.awb_cfg_v201 =
+                        (_effecting_ispparam_map.rbegin())->second->data()->result.awb_cfg_v201;
                 LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %u awb params for frame %u !\n",
                                 frameId, (_effecting_ispparam_map.rbegin())->first);
             } else {
@@ -398,9 +401,11 @@ CamHwIsp21::setIspConfig()
     {
         SmartLock locker (_isp_params_cfg_mutex);
         if (frameId == (uint32_t)(-1)) {
-            _effecting_ispparam_map[0].isp_params_v21 = _full_active_isp21_params;
+            if (getParamsForEffMap(frameId))
+                _effecting_ispparam_map[0]->data()->result.isp_params_v21 = _full_active_isp21_params;
         } else {
-            _effecting_ispparam_map[frameId].isp_params_v21 = _full_active_isp21_params;
+            if (getParamsForEffMap(frameId))
+                _effecting_ispparam_map[frameId]->data()->result.isp_params_v21 = _full_active_isp21_params;
         }
     }
 

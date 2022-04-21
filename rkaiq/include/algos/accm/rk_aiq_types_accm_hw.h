@@ -23,8 +23,12 @@
 #include "rk_aiq_comm.h"
 
 RKAIQ_BEGIN_DECLARE
+#ifndef CCM_CURVE_DOT_NUM
 #define CCM_CURVE_DOT_NUM 17
+#endif
+#ifndef CCM_CURVE_DOT_NUM_V2
 #define CCM_CURVE_DOT_NUM_V2 18
+#endif
 
 typedef struct rk_aiq_ccm_cfg_s {
     bool ccmEnable;

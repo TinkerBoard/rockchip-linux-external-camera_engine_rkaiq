@@ -28,7 +28,7 @@ typedef struct mergeAttrV10_s {
 
     merge_OpMode_t opMode;
     mMergeAttrV10_t stManual;
-    CalibDbV2_merge_V10_t stAuto;
+    CalibDbV2_merge_v10_t stAuto;
     MergeCurrCtlData_t Info;
 } mergeAttrV10_t;
 
@@ -38,7 +38,7 @@ typedef struct mergeAttrV11_s {
 
     merge_OpMode_t opMode;
     mMergeAttrV11_t stManual;
-    CalibDbV2_merge_V11_t stAuto;
+    CalibDbV2_merge_v11_t stAuto;
     MergeCurrCtlData_t Info;
 } mergeAttrV11_t;
 
@@ -48,7 +48,7 @@ typedef struct mergeAttrV12_s {
 
     merge_OpMode_t opMode;
     mMergeAttrV12_t stManual;
-    CalibDbV2_merge_V12_t stAuto;
+    CalibDbV2_merge_v12_t stAuto;
     MergeCurrCtlData_t Info;
 } mergeAttrV12_t;
 

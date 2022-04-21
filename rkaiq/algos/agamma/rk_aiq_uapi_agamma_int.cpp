@@ -10,12 +10,16 @@ XCamReturn rk_aiq_uapi_agamma_v10_SetAttrib(RkAiqAlgoContext* ctx,
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     gamma_handle->agammaAttrV10.mode = attr_v10->mode;
-    if (attr_v10->mode == RK_AIQ_GAMMA_MODE_MANUAL)
+    if (attr_v10->mode == RK_AIQ_GAMMA_MODE_MANUAL) {
         memcpy(&gamma_handle->agammaAttrV10.stManual, &attr_v10->stManual,
                sizeof(AgammaApiManualV10_t));
-    if (attr_v10->mode == RK_AIQ_GAMMA_MODE_AUTO)
+        gamma_handle->ifReCalcStManual = true;
+    }
+    if (attr_v10->mode == RK_AIQ_GAMMA_MODE_AUTO) {
         memcpy(&gamma_handle->agammaAttrV10.stAuto, &attr_v10->stAuto,
-               sizeof(CalibDbV2_gamma_V10_t));
+               sizeof(CalibDbV2_gamma_v10_t));
+        gamma_handle->ifReCalcStAuto = true;
+    }
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);
     return ret;
@@ -29,7 +33,7 @@ XCamReturn rk_aiq_uapi_agamma_v10_GetAttrib(const RkAiqAlgoContext* ctx,
     attr_v10->mode = gamma_handle->agammaAttrV10.mode;
     memcpy(&attr_v10->stManual, &gamma_handle->agammaAttrV10.stManual,
            sizeof(AgammaApiManualV10_t));
-    memcpy(&attr_v10->stAuto, &gamma_handle->agammaAttrV10.stAuto, sizeof(CalibDbV2_gamma_V10_t));
+    memcpy(&attr_v10->stAuto, &gamma_handle->agammaAttrV10.stAuto, sizeof(CalibDbV2_gamma_v10_t));
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);
     return XCAM_RETURN_NO_ERROR;
@@ -45,12 +49,16 @@ XCamReturn rk_aiq_uapi_agamma_v11_SetAttrib(RkAiqAlgoContext* ctx,
     XCamReturn ret               = XCAM_RETURN_NO_ERROR;
 
     gamma_handle->agammaAttrV11.mode = attr_v11->mode;
-    if (attr_v11->mode == RK_AIQ_GAMMA_MODE_MANUAL)
+    if (attr_v11->mode == RK_AIQ_GAMMA_MODE_MANUAL) {
         memcpy(&gamma_handle->agammaAttrV11.stManual, &attr_v11->stManual,
                sizeof(AgammaApiManualV11_t));
-    if (attr_v11->mode == RK_AIQ_GAMMA_MODE_AUTO)
+        gamma_handle->ifReCalcStManual = true;
+    }
+    if (attr_v11->mode == RK_AIQ_GAMMA_MODE_AUTO) {
         memcpy(&gamma_handle->agammaAttrV11.stAuto, &attr_v11->stAuto,
-               sizeof(CalibDbV2_gamma_V11_t));
+               sizeof(CalibDbV2_gamma_v11_t));
+        gamma_handle->ifReCalcStAuto = true;
+    }
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);
     return ret;
@@ -64,7 +72,7 @@ XCamReturn rk_aiq_uapi_agamma_v11_GetAttrib(const RkAiqAlgoContext* ctx,
     attr_v11->mode = gamma_handle->agammaAttrV11.mode;
     memcpy(&attr_v11->stManual, &gamma_handle->agammaAttrV11.stManual,
            sizeof(AgammaApiManualV11_t));
-    memcpy(&attr_v11->stAuto, &gamma_handle->agammaAttrV11.stAuto, sizeof(CalibDbV2_gamma_V11_t));
+    memcpy(&attr_v11->stAuto, &gamma_handle->agammaAttrV11.stAuto, sizeof(CalibDbV2_gamma_v11_t));
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);
     return XCAM_RETURN_NO_ERROR;

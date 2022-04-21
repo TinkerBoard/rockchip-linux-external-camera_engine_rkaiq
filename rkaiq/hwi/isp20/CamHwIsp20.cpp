@@ -39,6 +39,7 @@ rk_aiq_isp_hw_info_t CamHwIsp20::mIspHwInfos;
 rk_aiq_cif_hw_info_t CamHwIsp20::mCifHwInfos;
 bool CamHwIsp20::mIsMultiIspMode = false;
 uint16_t CamHwIsp20::mMultiIspExtendedPixel = 0;
+#define CAMHWISP_EFFECT_ISP_POOL_NUM 6
 
 CamHwIsp20::CamHwIsp20()
     : _hdr_mode(0)
@@ -67,7 +68,13 @@ CamHwIsp20::CamHwIsp20()
     xcam_mem_clear(_fec_drv_mem_ctx);
     xcam_mem_clear(_ldch_drv_mem_ctx);
     xcam_mem_clear(_cac_drv_mem_ctx);
+    xcam_mem_clear(fec_mem_info_array);
+    xcam_mem_clear(ldch_mem_info_array);
+    xcam_mem_clear(cac_mem_info_array);
+#ifndef NDEBUG
     xcam_mem_clear(_dbg_drv_mem_ctx);
+    xcam_mem_clear(dbg_mem_info_array);
+#endif
     _fec_drv_mem_ctx.type = MEM_TYPE_FEC;
     _fec_drv_mem_ctx.ops_ctx = this;
     _fec_drv_mem_ctx.mem_info = (void*)(fec_mem_info_array);
@@ -80,9 +87,11 @@ CamHwIsp20::CamHwIsp20()
     _cac_drv_mem_ctx.ops_ctx = this;
     _cac_drv_mem_ctx.mem_info = (void*)(cac_mem_info_array);
 
+#ifndef NDEBUG
     _dbg_drv_mem_ctx.type = MEM_TYPE_DBG_INFO;
     _dbg_drv_mem_ctx.ops_ctx = this;
     _dbg_drv_mem_ctx.mem_info = (void*)(dbg_mem_info_array);
+#endif
 
     xcam_mem_clear(_crop_rect);
     mParamsAssembler = new IspParamsAssembler("ISP_PARAMS_ASSEMBLER");
@@ -91,6 +100,7 @@ CamHwIsp20::CamHwIsp20()
     mIsGroupMode = false;
     mIsMain = false;
     _isp_stream_status = ISP_STREAM_STATUS_INVALID;
+    mEffectIspParamsPool = new RkAiqIspEffParamsPool("ISP_EFF", CAMHWISP_EFFECT_ISP_POOL_NUM);
 }
 
 CamHwIsp20::~CamHwIsp20()
@@ -3925,7 +3935,7 @@ XCamReturn
 CamHwIsp20::getEffectiveIspParams(rkisp_effect_params_v20& ispParams, uint32_t frame_id)
 {
     ENTER_CAMHW_FUNCTION();
-    std::map<uint32_t, rkisp_effect_params_v20>::iterator it;
+    std::map<uint32_t, SmartPtr<RkAiqIspEffParamsProxy>>::iterator it;
     uint32_t search_id = frame_id == uint32_t(-1) ? 0 : frame_id;
     SmartLock locker (_isp_params_cfg_mutex);
 
@@ -3939,7 +3949,7 @@ CamHwIsp20::getEffectiveIspParams(rkisp_effect_params_v20& ispParams, uint32_t f
 
     // havn't found
     if (it == _effecting_ispparam_map.end()) {
-        std::map<uint32_t, rkisp_effect_params_v20>::reverse_iterator rit;
+        std::map<uint32_t, SmartPtr<RkAiqIspEffParamsProxy>>::reverse_iterator rit;
 
         rit = _effecting_ispparam_map.rbegin();
         do {
@@ -3956,10 +3966,9 @@ CamHwIsp20::getEffectiveIspParams(rkisp_effect_params_v20& ispParams, uint32_t f
             LOGE_CAMHW_SUBM(ISP20HW_SUBM, "can't find the latest effecting exposure for id %u, impossible case !", frame_id);
             return XCAM_RETURN_ERROR_PARAM;
         }
-
-        ispParams = rit->second;
+        ispParams = rit->second->data()->result;
     } else {
-        ispParams = it->second;
+        ispParams = it->second->data()->result;
     }
 
     EXIT_CAMHW_FUNCTION();
@@ -4921,11 +4930,11 @@ void CamHwIsp20::allocMemResource(uint8_t id, void *ops_ctx, void *config, void 
             struct isp2x_mesh_head* head = (struct isp2x_mesh_head*)mem_info_array[offset + i].map_addr;
             mem_info_array[offset + i].addr = (void*)((char*)mem_info_array[offset + i].map_addr + head->data_oft);
             mem_info_array[offset + i].state = (char*)&head->stat;
-            LOGE(">>>>>>> Got CAC LUT fd %d for ISP %d", mem_info_array[offset + i].fd, id);
+            LOGD_CAMHW_SUBM(ISP20HW_SUBM, "Got CAC LUT fd %d for ISP %d", mem_info_array[offset + i].fd, id);
         }
         *mem_ctx = (void*)(&isp20->_cac_drv_mem_ctx);
+#ifndef NDEBUG
     } else if (share_mem_cfg->mem_type == MEM_TYPE_DBG_INFO) {
-
         id = 0;
         offset = id * RKISP_INFO2DDR_BUF_MAX;
         dbgbuf_info.wsize = share_mem_cfg->alloc_param.width;
@@ -4960,6 +4969,7 @@ void CamHwIsp20::allocMemResource(uint8_t id, void *ops_ctx, void *config, void 
             mem_info_array[offset+i].fd = dbgbuf_info.buf_fd[i];
         }
         *mem_ctx = (void*)(&isp20->_dbg_drv_mem_ctx);
+#endif
     }
 }
 
@@ -4967,8 +4977,10 @@ void CamHwIsp20::releaseMemResource(uint8_t id, void *mem_ctx)
 {
     int ret = -1;
     drv_share_mem_ctx_t* drv_mem_ctx = (drv_share_mem_ctx_t*)mem_ctx;
+    if (mem_ctx == nullptr) return;
     CamHwIsp20 *isp20 = (CamHwIsp20*)(drv_mem_ctx->ops_ctx);
     uint8_t offset = id * ISP3X_MESH_BUF_NUM;
+    uint64_t module_id = 0;
 
     SmartLock locker (isp20->_mem_mutex);
     if (drv_mem_ctx->type == MEM_TYPE_LDCH) {
@@ -4976,37 +4988,61 @@ void CamHwIsp20::releaseMemResource(uint8_t id, void *mem_ctx)
             (rk_aiq_ldch_share_mem_info_t*)(drv_mem_ctx->mem_info);
         for (int i = 0; i < ISP2X_MESH_BUF_NUM; i++) {
             if (mem_info_array[offset + i].map_addr) {
+                if (mem_info_array[offset + i].state &&
+                    (MESH_BUF_CHIPINUSE != mem_info_array[offset + i].state[0])) {
+                    mem_info_array[offset + i].state[0] = MESH_BUF_INIT;
+                }
                 ret = munmap(mem_info_array[offset + i].map_addr, mem_info_array[offset + i].size);
                 if (ret < 0)
                     LOGE_CAMHW_SUBM(ISP20HW_SUBM, "munmap ldch buf info!!");
                 mem_info_array[offset + i].map_addr = NULL;
             }
-            ::close(mem_info_array[offset + i].fd);
+            if (mem_info_array[offset + i].fd > 0) {
+                ::close(mem_info_array[offset + i].fd);
+                mem_info_array[offset + i].fd = -1;
+            }
         }
+        module_id = ISP2X_MODULE_LDCH;
     } else if (drv_mem_ctx->type == MEM_TYPE_FEC) {
         rk_aiq_fec_share_mem_info_t* mem_info_array =
             (rk_aiq_fec_share_mem_info_t*)(drv_mem_ctx->mem_info);
         for (int i = 0; i < FEC_MESH_BUF_NUM; i++) {
             if (mem_info_array[i].map_addr) {
+                if (mem_info_array[i].state &&
+                    (MESH_BUF_CHIPINUSE != mem_info_array[i].state[0])) {
+                    mem_info_array[i].state[0] = MESH_BUF_INIT;
+                }
                 ret = munmap(mem_info_array[i].map_addr, mem_info_array[i].size);
                 if (ret < 0)
                     LOGE_CAMHW_SUBM(ISP20HW_SUBM, "munmap fec buf info!!");
                 mem_info_array[i].map_addr = NULL;
             }
-            ::close(mem_info_array[i].fd);
+            if (mem_info_array[i].fd > 0) {
+                ::close(mem_info_array[i].fd);
+                mem_info_array[i].fd = -1;
+            }
         }
     } else if (drv_mem_ctx->type == MEM_TYPE_CAC) {
         rk_aiq_cac_share_mem_info_t* mem_info_array =
             (rk_aiq_cac_share_mem_info_t*)(drv_mem_ctx->mem_info);
         for (int i = 0; i < ISP3X_MESH_BUF_NUM; i++) {
             if (mem_info_array[offset + i].map_addr) {
+                if (mem_info_array[offset + i].state &&
+                    (MESH_BUF_CHIPINUSE != mem_info_array[offset + i].state[0])) {
+                    mem_info_array[offset + i].state[0] = MESH_BUF_INIT;
+                }
                 ret = munmap(mem_info_array[offset + i].map_addr, mem_info_array[offset + i].size);
                 if (ret < 0)
                     LOGE_CAMHW_SUBM(ISP20HW_SUBM, "munmap cac buf info!!");
                 mem_info_array[offset + i].map_addr = NULL;
             }
-            ::close(mem_info_array[offset + i].fd);
+            if (mem_info_array[offset + i].fd > 0) {
+                ::close(mem_info_array[offset + i].fd);
+                mem_info_array[offset + i].fd = -1;
+            }
         }
+        module_id = ISP3X_MODULE_CAC;
+#ifndef NDEBUG
     } else if (drv_mem_ctx->type == MEM_TYPE_DBG_INFO) {
         rk_aiq_dbg_share_mem_info_t* mem_info_array =
             (rk_aiq_dbg_share_mem_info_t*)(drv_mem_ctx->mem_info);
@@ -5027,7 +5063,15 @@ void CamHwIsp20::releaseMemResource(uint8_t id, void *mem_ctx)
                     LOGE_CAMHW_SUBM(ISP20HW_SUBM, "munmap dbg buf info!!");
                 mem_info_array[offset + i].map_addr = NULL;
             }
-            ::close(mem_info_array[offset + i].fd);
+            if (mem_info_array[offset + i].fd > 0) ::close(mem_info_array[offset + i].fd);
+        }
+#endif
+    }
+
+    if (module_id != 0) {
+        ret = isp20->mIspCoreDev->io_control(RKISP_CMD_MESHBUF_FREE, &module_id);
+        if (ret < 0) {
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "free cac buf failed!");
         }
     }
 }
@@ -5038,6 +5082,7 @@ CamHwIsp20::getFreeItem(uint8_t id, void *mem_ctx)
     unsigned int idx;
     int retry_cnt = 3;
     drv_share_mem_ctx_t* drv_mem_ctx = (drv_share_mem_ctx_t*)mem_ctx;
+    if (!mem_ctx || !drv_mem_ctx->ops_ctx) return nullptr;
     CamHwIsp20 *isp20 = (CamHwIsp20*)(drv_mem_ctx->ops_ctx);
     uint8_t offset = id * ISP3X_MESH_BUF_NUM;
 
@@ -5047,44 +5092,56 @@ CamHwIsp20::getFreeItem(uint8_t id, void *mem_ctx)
             (rk_aiq_ldch_share_mem_info_t*)(drv_mem_ctx->mem_info);
         do {
             for (idx = 0; idx < ISP2X_MESH_BUF_NUM; idx++) {
-                if (mem_info_array[offset + idx].state &&
+                if (mem_info_array[offset + idx].map_addr) {
+                    if (mem_info_array[offset + idx].state &&
                         (0 == mem_info_array[offset + idx].state[0])) {
-                    return (void*)&mem_info_array[offset + idx];
+                        return (void*)&mem_info_array[offset + idx];
+                    }
                 }
             }
         } while(retry_cnt--);
     } else if (drv_mem_ctx->type == MEM_TYPE_FEC) {
         rk_aiq_fec_share_mem_info_t* mem_info_array =
             (rk_aiq_fec_share_mem_info_t*)(drv_mem_ctx->mem_info);
+        if (mem_info_array == nullptr) return nullptr;
         do {
             for (idx = 0; idx < FEC_MESH_BUF_NUM; idx++) {
-                if (mem_info_array[id].state &&
-                        (0 == mem_info_array[id].state[0])) {
-                    return (void*)&mem_info_array[id];
+                if (mem_info_array[idx].map_addr) {
+                    if (mem_info_array[idx].state && (0 == mem_info_array[idx].state[0])) {
+                        return (void*)&mem_info_array[idx];
+                    }
                 }
             }
         } while(retry_cnt--);
     } else if (drv_mem_ctx->type == MEM_TYPE_CAC) {
         rk_aiq_cac_share_mem_info_t* mem_info_array =
             (rk_aiq_cac_share_mem_info_t*)(drv_mem_ctx->mem_info);
+        if (mem_info_array == nullptr) return nullptr;
         do {
             for (idx = 0; idx < ISP3X_MESH_BUF_NUM; idx++) {
-                if (mem_info_array[offset + idx].state &&
+                if (mem_info_array[offset + idx].map_addr) {
+                    if (mem_info_array[offset + idx].state &&
                         (0 == mem_info_array[offset + idx].state[0])) {
-                    return (void*)&mem_info_array[offset + idx];
+                        return (void*)&mem_info_array[offset + idx];
+                    }
                 }
             }
         } while(retry_cnt--);
+#ifndef NDEBUG
     } else if (drv_mem_ctx->type == MEM_TYPE_DBG_INFO) {
         rk_aiq_dbg_share_mem_info_t* mem_info_array =
             (rk_aiq_dbg_share_mem_info_t*)(drv_mem_ctx->mem_info);
+        if (mem_info_array == nullptr) return nullptr;
         do {
             for (idx = 0; idx < RKISP_INFO2DDR_BUF_MAX; idx++) {
-                uint32_t state = *(uint32_t*)(mem_info_array[offset + idx].map_addr);
-                if (state == RKISP_INFO2DDR_BUF_INIT)
-                    return (void*)&mem_info_array[offset + idx];
+                if (mem_info_array[offset + idx].map_addr) {
+                    uint32_t state = *(uint32_t*)(mem_info_array[offset + idx].map_addr);
+                    if (state == RKISP_INFO2DDR_BUF_INIT)
+                        return (void*)&mem_info_array[offset + idx];
+                }
             }
         } while(retry_cnt--);
+#endif
     }
     return NULL;
 }
@@ -5468,6 +5525,20 @@ CamHwIsp20::handlePpReslut(SmartPtr<cam3aResult> &result)
 }
 #endif
 
+bool CamHwIsp20::getParamsForEffMap(uint32_t frameId)
+{
+    if (_effecting_ispparam_map.count(frameId) <= 0) {
+        if (mEffectIspParamsPool->has_free_items()) {
+            _effecting_ispparam_map[frameId] = mEffectIspParamsPool->get_item();
+            return true;
+        } else {
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "no free eff ispparam");
+            return false;
+        }
+    }
+    return true;
+}
+
 XCamReturn
 CamHwIsp20::setIspConfig()
 {
@@ -5480,7 +5551,7 @@ CamHwIsp20::setIspConfig()
     uint32_t frameId = (uint32_t)(-1);
     {
         SmartLock locker (_isp_params_cfg_mutex);
-        while (_effecting_ispparam_map.size() > 4)
+        while (_effecting_ispparam_map.size() > 3)
             _effecting_ispparam_map.erase(_effecting_ispparam_map.begin());
     }
     if (mIspParamsDev.ptr()) {
@@ -5553,13 +5624,16 @@ CamHwIsp20::setIspConfig()
             awbParams = awb_res.dynamic_cast_ptr<RkAiqIspAwbParamsProxy>();
             {
                 SmartLock locker (_isp_params_cfg_mutex);
-                _effecting_ispparam_map[frameId].awb_cfg = awbParams->data()->result;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[frameId]->data()->result.awb_cfg = awbParams->data()->result;
             }
         } else {
             SmartLock locker (_isp_params_cfg_mutex);
             /* use the latest */
             if (!_effecting_ispparam_map.empty()) {
-                _effecting_ispparam_map[frameId].awb_cfg = (_effecting_ispparam_map.rbegin())->second.awb_cfg;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[frameId]->data()->result.awb_cfg =
+                        (_effecting_ispparam_map.rbegin())->second->data()->result.awb_cfg;
                 LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %u awb params for frame %d !\n",
                                 frameId, (_effecting_ispparam_map.rbegin())->first);
             } else {
@@ -5595,9 +5669,11 @@ CamHwIsp20::setIspConfig()
     {
         SmartLock locker (_isp_params_cfg_mutex);
         if (frameId == (uint32_t)(-1)) {
-            _effecting_ispparam_map[0].isp_params = _full_active_isp_params;
+            if (getParamsForEffMap(frameId))
+                _effecting_ispparam_map[0]->data()->result.isp_params = _full_active_isp_params;
         } else {
-            _effecting_ispparam_map[frameId].isp_params = _full_active_isp_params;
+            if (getParamsForEffMap(frameId))
+                _effecting_ispparam_map[frameId]->data()->result.isp_params = _full_active_isp_params;
         }
     }
     if (v4l2buf.ptr()) {

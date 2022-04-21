@@ -710,6 +710,9 @@ using RkAiqAlgoProcResAblcV32IntShared = AlgoRstShared<RkAiqAlgoProcResAblcV32>;
 typedef SharedItemPool<AecProcResult_t> RkAiqAeProcResultPool;
 typedef SharedItemProxy<AecProcResult_t> RkAiqAeProcResultProxy;
 
+typedef SharedItemPool<rkisp_effect_params> RkAiqIspEffParamsPool;
+typedef SharedItemProxy<rkisp_effect_params> RkAiqIspEffParamsProxy;
+
 }
 
 #endif //RK_AIQ_POOL_H

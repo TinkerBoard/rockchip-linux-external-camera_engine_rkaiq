@@ -92,6 +92,7 @@ Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(RK_Bayertnr_Params_V23_
     pSelect->thumbds_w = pLowISO->thumbds_w;
     pSelect->thumbds_h = pLowISO->thumbds_h;
 
+
     pSelect->lo_filter_strength =
         float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lo_filter_strength
         + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lo_filter_strength;
@@ -344,7 +345,8 @@ Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t
     pFix->pksig_ind_sel = pSelect->kl_guass;
     pFix->iirwr_rnd_en = 1;
     pFix->curds_high_en = 0;
-    tmp = CLIP(pSelect->hi_filter_filt_mode, 0, 4);
+    tmp = pSelect->hi_filter_filt_mode;
+    tmp = CLIP(tmp, 0, 4);
     pFix->higaus3_mode = 0;
     pFix->higaus5x5_en = 0;
     if(tmp == 0)
@@ -635,9 +637,9 @@ Abayertnr_result_V23_t bayertnr_init_params_json_V23(RK_Bayertnr_Params_V23_t *p
     for(int i = 0; i < pCalibdb->TuningPara.Setting[tuning_idx].Tuning_ISO_len && i < RK_BAYERNR_V23_MAX_ISO_NUM; i++) {
         pTuningIso = &pCalibdb->TuningPara.Setting[tuning_idx].Tuning_ISO[i];
         pParams->iso[i] = pTuningIso->iso;
-        pParams->bayertnrParamISO[i].thumbds_w = pTuningIso->thumbds_w;
-        pParams->bayertnrParamISO[i].thumbds_h = pTuningIso->thumbds_h;
-        pParams->bayertnrParamISO[i].lo_enable = pTuningIso->lo_enable;
+        pParams->bayertnrParamISO[i].thumbds_w = pCalibdb->TuningPara.thumbds_w;
+        pParams->bayertnrParamISO[i].thumbds_h = pCalibdb->TuningPara.thumbds_h;
+        pParams->bayertnrParamISO[i].lo_enable = pCalibdb->TuningPara.lo_enable;
         pParams->bayertnrParamISO[i].hi_enable = pTuningIso->hi_enable;
         pParams->bayertnrParamISO[i].lo_filter_strength = pTuningIso->lo_filter_strength;
         pParams->bayertnrParamISO[i].hi_filter_strength = pTuningIso->hi_filter_strength;
@@ -679,7 +681,7 @@ Abayertnr_result_V23_t bayertnr_init_params_json_V23(RK_Bayertnr_Params_V23_t *p
         pParams->bayertnrParamISO[i].wgt_mge_mode = pTuningIso->wgt_mge_mode;
         pParams->bayertnrParamISO[i].hi_guass = pTuningIso->hi_guass;
         pParams->bayertnrParamISO[i].kl_guass = pTuningIso->kl_guass;
-        pParams->bayertnrParamISO[i].trans_en = pTuningIso->trans_en;
+        pParams->bayertnrParamISO[i].trans_en = pCalibdb->TuningPara.trans_en;
 
     }
 

@@ -164,12 +164,29 @@ bool RkAiqAnalyzeGroupMsgHdlThread::loop() {
     }
 
     for (auto& grp : mHandlerGroups) {
+        handleCalibUpdate(grp);
+    }
+
+    for (auto& grp : mHandlerGroups) {
         res = grp->msgHandle(msg);
     }
 
     EXIT_ANALYZER_FUNCTION();
 
     return res;
+}
+
+XCamReturn RkAiqAnalyzeGroupMsgHdlThread::handleCalibUpdate(RkAiqAnalyzerGroup* grp)
+{
+  ENTER_ANALYZER_FUNCTION();
+  XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+  if (grp && grp->getAiqCore()) {
+    grp->getAiqCore()->updateCalib(grp->getType());
+  }
+
+  EXIT_ANALYZER_FUNCTION();
+  return ret;
 }
 
 RkAiqAnalyzeGroupManager::RkAiqAnalyzeGroupManager(RkAiqCore* aiqCore, bool single_thread)
@@ -429,6 +446,7 @@ XCamReturn RkAiqAnalyzeGroupManager::groupMessageHandler(std::vector<SmartPtr<XC
     return XCAM_RETURN_NO_ERROR;
 }
 
+#if defined(RKAIQ_HAVE_THUMBNAILS)
 XCamReturn RkAiqAnalyzeGroupManager::thumbnailsGroupMessageHandler(
     std::vector<SmartPtr<XCamMessage>>& msgs, uint32_t id, uint64_t grpId) {
     //XCAM_STATIC_FPS_CALCULATION(THUMBHANDLER, 100);
@@ -458,6 +476,7 @@ XCamReturn RkAiqAnalyzeGroupManager::thumbnailsGroupMessageHandler(
 
     return XCAM_RETURN_NO_ERROR;
 }
+#endif
 
 void RkAiqAnalyzeGroupManager::parseAlgoGroup(const struct RkAiqAlgoDesCommExt* algoDes) {
     uint64_t enAlgosMask = mAiqCore->getCustomEnAlgosMask();

@@ -899,7 +899,7 @@
 								}
 							}
 						},
-						"agamma_calib_V10":	{
+						"agamma_calib_v10":	{
 							"GammaTuningPara":	{
 								"Gamma_en":	1,
 								"Gamma_out_segnum":	"GAMMATYPE_LOG",
@@ -1224,10 +1224,11 @@
 								}
 							}
 						},
-						"amerge_calib":	{
+						"amerge_calib_v10":	{
 							"MergeTuningPara":	{
+								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"OECurve":	{
-									"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+									"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 									"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 									"Offset":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210]
 								},
@@ -1941,8 +1942,7 @@
 							"common":	{
 								"enable":	1,
 								"mode":	"CALIB_Lut3D_MODE_AUTO",
-								"gain_tolerance":	0.1,
-								"wbgain_tolerance":	1
+								"gain_tolerance":	0.1
 							},
 							"MLut3D":	{
 								"Table":	{

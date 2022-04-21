@@ -15,10 +15,6 @@
 #ifndef J2S_H
 #define J2S_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "cJSON.h"
 #include "common.h"
 
@@ -185,9 +181,5 @@ typedef struct {
 
 /* Dump structs to JSON, info should end with {NULL, NULL} */
 char* j2s_dump_structs(j2s_ctx* ctx, j2s_struct_info* info);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // J2S_H

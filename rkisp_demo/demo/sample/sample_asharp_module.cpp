@@ -150,7 +150,7 @@ XCamReturn sample_sharp_setAuto_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mod
     sharpV33_attr.stAuto.stParams.enable = 1;
     sharpV33_attr.stAuto.stParams.kernel_sigma_enable = 1;
 
-    sharpV33_attr.stAuto.stParams.center_mode = 0;
+    sharpV33_attr.stAuto.stParams.Center_Mode = 0;
     sharpV33_attr.stAuto.stParams.center_x = 0;
     sharpV33_attr.stAuto.stParams.center_y = 0;
 
@@ -211,15 +211,6 @@ XCamReturn sample_sharp_setAuto_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mod
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].luma_sigma[5] = 16;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].luma_sigma[6] = 16;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].luma_sigma[7] = 16;
-
-        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].lum_clip_h[0] = 128;
-        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].lum_clip_h[1] = 128;
-        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].lum_clip_h[2] = 128;
-        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].lum_clip_h[3] = 128;
-        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].lum_clip_h[4] = 128;
-        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].lum_clip_h[5] = 128;
-        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].lum_clip_h[6] = 128;
-        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].lum_clip_h[7] = 128;
 
 
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].pbf_gain = 1.0;
@@ -414,111 +405,102 @@ XCamReturn sample_sharp_setManual_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_m
     sharpV33_attr.stManual.stSelect.enable = 1;
     sharpV33_attr.stManual.stSelect.kernel_sigma_enable = 0;
 
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_point[0] = 0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_point[1] = 64;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_point[2] = 128;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_point[3] = 256;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_point[4] = 384;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_point[5] = 640;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_point[6] = 896;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_point[7] = 1024;
+    sharpV33_attr.stManual.stSelect.luma_point[0] = 0;
+    sharpV33_attr.stManual.stSelect.luma_point[1] = 64;
+    sharpV33_attr.stManual.stSelect.luma_point[2] = 128;
+    sharpV33_attr.stManual.stSelect.luma_point[3] = 256;
+    sharpV33_attr.stManual.stSelect.luma_point[4] = 384;
+    sharpV33_attr.stManual.stSelect.luma_point[5] = 640;
+    sharpV33_attr.stManual.stSelect.luma_point[6] = 896;
+    sharpV33_attr.stManual.stSelect.luma_point[7] = 1024;
 
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_sigma[0] = 16;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_sigma[1] = 16;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_sigma[2] = 16;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_sigma[3] = 16;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_sigma[4] = 16;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_sigma[5] = 16;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_sigma[6] = 16;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.luma_sigma[7] = 16;
-
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.lum_clip_h[0] = 128;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.lum_clip_h[1] = 128;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.lum_clip_h[2] = 128;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.lum_clip_h[3] = 128;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.lum_clip_h[4] = 128;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.lum_clip_h[5] = 128;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.lum_clip_h[6] = 128;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.lum_clip_h[7] = 128;
+    sharpV33_attr.stManual.stSelect.luma_sigma[0] = 16;
+    sharpV33_attr.stManual.stSelect.luma_sigma[1] = 16;
+    sharpV33_attr.stManual.stSelect.luma_sigma[2] = 16;
+    sharpV33_attr.stManual.stSelect.luma_sigma[3] = 16;
+    sharpV33_attr.stManual.stSelect.luma_sigma[4] = 16;
+    sharpV33_attr.stManual.stSelect.luma_sigma[5] = 16;
+    sharpV33_attr.stManual.stSelect.luma_sigma[6] = 16;
+    sharpV33_attr.stManual.stSelect.luma_sigma[7] = 16;
 
 
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.pbf_gain = 1.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.pbf_add = 0.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.pbf_ratio = 0.5;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gaus_ratio = 0.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.sharp_ratio = 10.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.bf_gain = 1.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.bf_add = 0.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.bf_ratio = 0.5;
+    sharpV33_attr.stManual.stSelect.pbf_gain = 1.0;
+    sharpV33_attr.stManual.stSelect.pbf_add = 0.0;
+    sharpV33_attr.stManual.stSelect.pbf_ratio = 0.5;
+    sharpV33_attr.stManual.stSelect.gaus_ratio = 0.0;
+    sharpV33_attr.stManual.stSelect.sharp_ratio = 10.0;
+    sharpV33_attr.stManual.stSelect.bf_gain = 1.0;
+    sharpV33_attr.stManual.stSelect.bf_add = 0.0;
+    sharpV33_attr.stManual.stSelect.bf_ratio = 0.5;
 
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.prefilter_coeff[0] = 0.2042;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.prefilter_coeff[1] = 0.1238;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.prefilter_coeff[2] = 0.0751;
+    sharpV33_attr.stManual.stSelect.prefilter_coeff[0] = 0.2042;
+    sharpV33_attr.stManual.stSelect.prefilter_coeff[1] = 0.1238;
+    sharpV33_attr.stManual.stSelect.prefilter_coeff[2] = 0.0751;
 
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.hfBilateralFilter_coeff[0] = 0.2042;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.hfBilateralFilter_coeff[1] = 0.1238;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.hfBilateralFilter_coeff[2] = 0.0751;
-
-
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.GaussianFilter_coeff[0] = 0.0935;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.GaussianFilter_coeff[1] = 0.0724;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.GaussianFilter_coeff[2] = 0.0561;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.GaussianFilter_coeff[3] = 0.0337;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.GaussianFilter_coeff[4] = 0.0261;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.GaussianFilter_coeff[5] = 0.0121;
+    sharpV33_attr.stManual.stSelect.hfBilateralFilter_coeff[0] = 0.2042;
+    sharpV33_attr.stManual.stSelect.hfBilateralFilter_coeff[1] = 0.1238;
+    sharpV33_attr.stManual.stSelect.hfBilateralFilter_coeff[2] = 0.0751;
 
 
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.prefilter_sigma = 1.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.hfBilateralFilter_sigma = 1.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.GaussianFilter_sigma = 1.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.GaussianFilter_radius = 2.0;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff[0] = 0.0935;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff[1] = 0.0724;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff[2] = 0.0561;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff[3] = 0.0337;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff[4] = 0.0261;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff[5] = 0.0121;
 
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.global_gain = 1.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.global_gain_alpha = 0.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.local_gainscale = 1.0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.exgain_bypass = 0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.noiseclip_strength = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.enhance_bit = 3;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.noiseclip_mode = 0;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.noise_sigma_clip = 1023;
 
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[0] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[1] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[2] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[3] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[4] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[5] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[6] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[7] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[8] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[9] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[10] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[11] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[12] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.gain_adj_sharp_strength[13] = 1;
+    sharpV33_attr.stManual.stSelect.prefilter_sigma = 1.0;
+    sharpV33_attr.stManual.stSelect.hfBilateralFilter_sigma = 1.0;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_sigma = 1.0;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_radius = 2.0;
 
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[0] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[1] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[2] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[3] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[4] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[5] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[6] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[7] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[8] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[9] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[10] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[11] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[12] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[13] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[14] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[15] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[16] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[17] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[18] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[19] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[20] = 1;
-    sharpV33_attr.stManual.stSelect.sharpParamsSelectISO.dis_adj_sharp_strength[21] = 1;
+    sharpV33_attr.stManual.stSelect.global_gain = 1.0;
+    sharpV33_attr.stManual.stSelect.global_gain_alpha = 0.0;
+    sharpV33_attr.stManual.stSelect.local_gainscale = 1.0;
+    sharpV33_attr.stManual.stSelect.exgain_bypass = 0;
+    sharpV33_attr.stManual.stSelect.noiseclip_strength = 1;
+    sharpV33_attr.stManual.stSelect.enhance_bit = 3;
+    sharpV33_attr.stManual.stSelect.noiseclip_mode = 0;
+    sharpV33_attr.stManual.stSelect.noise_sigma_clip = 1023;
+
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[0] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[1] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[2] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[3] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[4] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[5] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[6] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[7] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[8] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[9] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[10] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[11] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[12] = 1;
+    sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[13] = 1;
+
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[0] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[1] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[2] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[3] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[4] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[5] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[6] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[7] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[8] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[9] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[10] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[11] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[12] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[13] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[14] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[15] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[16] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[17] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[18] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[19] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[20] = 1;
+    sharpV33_attr.stManual.stSelect.dis_adj_sharp_strength[21] = 1;
 
     ret = rk_aiq_user_api2_asharpV33_SetAttrib(ctx, &sharpV33_attr);
     printf("set sharp v4 attri manual ret:%d \n\n", ret);

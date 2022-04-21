@@ -679,6 +679,8 @@ if (RKAIQ_ENABLE_CAMGROUP)
         )
 endif()
 
+set(RK_AIQ_STATIC_LIB_ARS)
+
 if(GENMESH_ONLINE AND (RKAIQ_HAVE_LDCH_V10 OR RKAIQ_HAVE_LDCH_V21 OR RKAIQ_HAVE_FEC_V10))
     set(GENMESH_LIBS genMeshLib)
     if(ARCH STREQUAL "aarch64")
@@ -690,6 +692,7 @@ if(GENMESH_ONLINE AND (RKAIQ_HAVE_LDCH_V10 OR RKAIQ_HAVE_LDCH_V21 OR RKAIQ_HAVE_
             ${PROJECT_SOURCE_DIR}/common/gen_mesh/linux/genMesh_static_32bit/
             )
     endif()
+    list(APPEND RK_AIQ_STATIC_LIB_ARS ${GENMESH_LIBS_DIR}/libgenMeshLib.a)
     add_compile_options(-DGENMESH_ONLINE)
 endif()
 
@@ -736,15 +739,20 @@ cmake_policy(SET CMP0015 NEW)
 
 link_directories("${LIBRARY_OUTPUT_PATH}" "${OPENCV_LIBS_DIR}" "${GENMESH_LIBS_DIR}")
 
+add_library(rkaiq_tmp STATIC ${RK_AIQ_SRC})
+set_target_properties(rkaiq_tmp PROPERTIES FOLDER "rk_aiq")
+set_target_properties(rkaiq_tmp PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+add_dependencies(rkaiq_tmp j2s_parser)
+
 add_library(rkaiq SHARED ${RK_AIQ_SRC})
 set_target_properties(rkaiq PROPERTIES FOLDER "rk_aiq")
 set_target_properties(rkaiq PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 set_target_properties(rkaiq PROPERTIES C_VISIBILITY_PRESET default)
 set_target_properties(rkaiq PROPERTIES CXX_VISIBILITY_PRESET default)
-add_dependencies(rkaiq j2s_parser)
 
 target_link_libraries(rkaiq
-    PRIVATE
+	PRIVATE
+    rkaiq_tmp
     rkaiq_ae
     rkaiq_awb
     rkaiq_asd
@@ -754,11 +762,21 @@ target_link_libraries(rkaiq
     ${MOTION_DETECT_LIBS}
     pthread)
 
+set(STATIC_LIB_PREFIX $<TARGET_FILE:)
+set(STATIC_LIB_SUFFIX >)
+list(APPEND RK_AIQ_STATIC_LIB_ARS
+    ${STATIC_LIB_PREFIX}rkaiq_tmp${STATIC_LIB_SUFFIX}
+    ${STATIC_LIB_PREFIX}rkaiq_ae${STATIC_LIB_SUFFIX}
+    ${STATIC_LIB_PREFIX}rkaiq_awb${STATIC_LIB_SUFFIX}
+    ${STATIC_LIB_PREFIX}rkaiq_asd${STATIC_LIB_SUFFIX}
+    )
+
 if (RKAIQ_HAVE_YNR_V2)
 target_link_libraries(rkaiq
     PRIVATE
     rkaiq_aynr_v2
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_aynr_v2${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_GIC_V1 OR RKAIQ_HAVE_GIC_V2)
@@ -766,6 +784,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_agic
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_agic${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_ORB_V1)
@@ -773,6 +792,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_aorb
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_aorb${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_EIS_V1)
@@ -780,6 +800,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_aeis
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_aeis${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_CAC_V03 OR RKAIQ_HAVE_CAC_V10 OR RKAIQ_HAVE_CAC_V11)
@@ -787,6 +808,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_acac
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_acac${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_YNR_V1)
@@ -794,6 +816,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_aynr_v1
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_aynr_v1${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_YNR_V3)
@@ -801,6 +824,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_aynr_v3
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_aynr_v3${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_YNR_V22)
@@ -808,6 +832,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_aynr_v22
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_aynr_v22${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_UVNR_V1)
@@ -815,6 +840,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_auvnr_v1
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_auvnr_v1${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_CNR_V1)
@@ -822,6 +848,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_acnr_v1
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_acnr_v1${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_CNR_V2)
@@ -829,6 +856,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_acnr_v2
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_acnr_v2${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_CNR_V30)
@@ -836,6 +864,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_acnr_v30
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_acnr_v30${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_SHARP_V1)
@@ -843,6 +872,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_asharp
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_asharp${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_SHARP_V3)
@@ -850,6 +880,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_asharp_v3
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_asharp_v3${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_SHARP_V4)
@@ -857,6 +888,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_asharp_v4
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_asharp_v4${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_SHARP_V33)
@@ -864,6 +896,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_asharp_v33
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_asharp_v33${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_MFNR_V1)
@@ -871,6 +904,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_amfnr_v1
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_amfnr_v1${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_BAYERNR_V1)
@@ -878,6 +912,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_arawnr_v1
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_arawnr_v1${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_BAYERNR_V2)
@@ -885,6 +920,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_arawnr_v2
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_arawnr_v2${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_BAYER2DNR_V2)
@@ -892,6 +928,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_abayer2dnr_v2
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_abayer2dnr_v2${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_BAYER2DNR_V23)
@@ -899,6 +936,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_abayer2dnr_v23
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_abayer2dnr_v23${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_BAYERTNR_V2)
@@ -906,6 +944,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_abayertnr_v2
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_abayertnr_v2${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_BAYERTNR_V23)
@@ -913,6 +952,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_abayertnr_v23
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_abayertnr_v23${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_GAIN_V1)
@@ -920,6 +960,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_again_v1
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_again_v1${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_GAIN_V2)
@@ -927,6 +968,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_again_v2
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_again_v2${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_BLC_V1)
@@ -934,6 +976,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_ablc
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_ablc${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_BLC_V32)
@@ -941,6 +984,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_ablc_v32
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_ablc_v32${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_ANR_V1)
@@ -948,6 +992,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_anr
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_anr${STATIC_LIB_SUFFIX})
 endif()
 
 
@@ -956,6 +1001,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_amd
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_amd${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_AF_V20 OR RKAIQ_HAVE_AF_V30 OR RKAIQ_HAVE_AF_V31)
@@ -964,6 +1010,7 @@ target_link_libraries(rkaiq
     rkaiq_af
     ${PDAF_LIBS}
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}${PDAF_LIBS}${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_3DLUT_V1)
@@ -971,12 +1018,14 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_a3dlut
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_a3dlut${STATIC_LIB_SUFFIX})
 endif()
 if (RKAIQ_HAVE_CCM_V1 OR RKAIQ_HAVE_CCM_V2)
 target_link_libraries(rkaiq
     PRIVATE
     rkaiq_accm
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_accm${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_GAMMA_V10 OR RKAIQ_HAVE_GAMMA_V11)
@@ -984,6 +1033,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_agamma
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_agamma${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_MERGE_V10 OR RKAIQ_HAVE_MERGE_V11 OR RKAIQ_HAVE_MERGE_V12)
@@ -991,6 +1041,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_amerge
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_amerge${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_DRC_V10 OR RKAIQ_HAVE_DRC_V11 OR RKAIQ_HAVE_DRC_V12)
@@ -998,6 +1049,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_adrc
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_adrc${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_DEHAZE_V10 OR RKAIQ_HAVE_DEHAZE_V11 OR RKAIQ_HAVE_DEHAZE_V11_DUO OR RKAIQ_HAVE_DEHAZE_V12)
@@ -1005,6 +1057,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_adehaze
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_adehaze${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_DEGAMMA_V1)
@@ -1012,6 +1065,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_adegamma
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_adegamma${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_TMO_V1)
@@ -1019,6 +1073,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_atmo
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_atmo${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_WDR_V1)
@@ -1026,6 +1081,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_awdr
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_awdr${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_LDCH_V10 OR RKAIQ_HAVE_LDCH_V21)
@@ -1033,6 +1089,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_aldch
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_aldch${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_FEC_V10)
@@ -1040,6 +1097,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_afec
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_afec${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_CSM_V1)
@@ -1047,6 +1105,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_acsm
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_acsm${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_CGC_V1)
@@ -1054,6 +1113,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_acgc
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_acgc${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_ENABLE_CAMGROUP)
@@ -1063,6 +1123,11 @@ target_link_libraries(rkaiq
     rkaiq_camgroup_awb
     rkaiq_camgroup_misc
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS
+    ${STATIC_LIB_PREFIX}rkaiq_camgroup_ae${STATIC_LIB_SUFFIX}
+    ${STATIC_LIB_PREFIX}rkaiq_camgroup_awb${STATIC_LIB_SUFFIX}
+    ${STATIC_LIB_PREFIX}rkaiq_camgroup_misc${STATIC_LIB_SUFFIX}
+    )
 endif()
 
 if (RKAIQ_HAVE_DEBAYER_V1 OR RKAIQ_HAVE_DEBAYER_V2)
@@ -1070,6 +1135,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_adebayer
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_adebayer${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_LSC_V1 OR RKAIQ_HAVE_LSC_V2 OR RKAIQ_HAVE_LSC_V3)
@@ -1077,6 +1143,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_alsc
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_alsc${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_DPCC_V1)
@@ -1084,6 +1151,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_adpcc
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_adpcc${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_AIE_V10)
@@ -1091,6 +1159,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_aie
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_aie${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_ACP_V10)
@@ -1098,6 +1167,7 @@ target_link_libraries(rkaiq
     PRIVATE
     rkaiq_acp
     )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_acp${STATIC_LIB_SUFFIX})
 endif()
 
 if (LIBDL_FOUND)
@@ -1114,10 +1184,19 @@ if (LIBDRM_FOUND)
         )
 endif()
 
-set (VERSIONFILEPATH ${PROJECT_SOURCE_DIR}/)
-execute_process(COMMAND sh
-    ${PROJECT_SOURCE_DIR}/tools/check-version-with-tuningtools.sh
-    ${VERSIONFILEPATH})
+#build static librkaiq.a
+
+foreach(STATIC_LIB_AR ${RK_AIQ_STATIC_LIB_ARS})
+	add_custom_command (TARGET rkaiq_tmp POST_BUILD
+	COMMAND ${CMAKE_AR} x ${STATIC_LIB_AR}
+	)
+endforeach()
+
+add_custom_command (TARGET rkaiq_tmp POST_BUILD
+	COMMAND ${CMAKE_AR} rcs ${CMAKE_LIBRARY_PATH}/librkaiq.a *.o
+	COMMAND ${CMAKE_STRIP} --strip-debug ${CMAKE_LIBRARY_PATH}/librkaiq.a
+	COMMAND rm *.o
+	)
 
 install(DIRECTORY include/
     DESTINATION include/rkaiq
@@ -1126,3 +1205,4 @@ install(FILES ${PROJECT_BINARY_DIR}/config.h
     DESTINATION include/rkaiq)
 install(TARGETS rkaiq
     LIBRARY DESTINATION lib)
+install(FILES ${CMAKE_LIBRARY_PATH}/librkaiq.a DESTINATION lib)

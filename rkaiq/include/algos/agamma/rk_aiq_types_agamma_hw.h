@@ -37,10 +37,13 @@ typedef struct AgammaProcResV11_s {
 } AgammaProcResV11_t;
 
 typedef struct AgammaProcRes_s {
-    union {
-        AgammaProcResV10_t Gamma_v10;
-        AgammaProcResV11_t Gamma_v11;
-    };
+    bool update;
+#if RKAIQ_HAVE_GAMMA_V10
+    AgammaProcResV10_t Gamma_v10;
+#endif
+#if RKAIQ_HAVE_GAMMA_V11
+    AgammaProcResV11_t Gamma_v11;
+#endif
 } AgammaProcRes_t;
 
 #endif  //_RK_AIQ_ALGO_AGAMMA_HW_H_

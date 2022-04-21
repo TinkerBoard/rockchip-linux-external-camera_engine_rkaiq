@@ -28,17 +28,13 @@
 #include "asharpV33/rk_aiq_types_asharp_algo_v33.h"
 #include "rk_aiq_comm.h"
 #include "sharp_head_v33.h"
+#include "sharp_uapi_head_v33.h"
 
-#define RK_SHARP_V33_MAX_ISO_NUM    CALIBDB_MAX_ISO_LEVEL
-#define RK_SHARP_V33_LUMA_POINT_NUM (8)
+
 
 #define ASHARPV33_RECALCULATE_DELTA_ISO       (10)
-#define RK_SHARP_V33_PBF_DIAM                 3
-#define RK_SHARP_V33_RF_DIAM                  5
-#define RK_SHARP_V33_BF_DIAM                  3
-#define RK_SHARP_V33_AVG_DIAM                 3
-#define RK_SHARP_V33_SHARP_ADJ_GAIN_TABLE_LEN 14
-#define RK_SHARP_V33_STRENGTH_TABLE_LEN       22
+#define RK_SHARP_V33_MAX_ISO_NUM    CALIBDB_MAX_ISO_LEVEL
+
 
 #define RK_SHARP_V33_SHARP_RATIO_FIX_BITS 2
 #define RK_SHARP_V33_GAUS_RATIO_FIX_BITS  7
@@ -107,6 +103,7 @@ typedef struct Asharp_ExpInfo_V33_s {
     int rawHeight;
 } Asharp_ExpInfo_V33_t;
 
+#if 0
 // sharp params related to ISO
 typedef struct RK_SHARP_V33_Select_ISO_s {
     int luma_sigma[RK_SHARP_V33_LUMA_POINT_NUM];
@@ -159,6 +156,8 @@ typedef struct RK_SHARP_Params_V33_Select_s {
     RK_SHARP_V33_Select_ISO_t sharpParamsSelectISO;
 
 } RK_SHARP_Params_V33_Select_t;
+#endif
+
 
 // sharp params
 typedef struct RK_SHARP_Params_V33_s {
@@ -167,12 +166,12 @@ typedef struct RK_SHARP_Params_V33_s {
     char version[64];
 
 
-    int center_mode;
+    int Center_Mode;
     int center_x;
     int center_y;
 
     int iso[RK_SHARP_V33_MAX_ISO_NUM];
-    RK_SHARP_V33_Select_ISO_t sharpParamsISO[RK_SHARP_V33_MAX_ISO_NUM];
+    RK_SHARP_Params_V33_Select_t sharpParamsISO[RK_SHARP_V33_MAX_ISO_NUM];
 
 } RK_SHARP_Params_V33_t;
 

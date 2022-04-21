@@ -5,10 +5,10 @@
 
 int edgefilterV1_calibdb_to_calibdbV2(const CalibDb_EdgeFilter_2_t *pCalibdb,  CalibDbV2_Edgefilter_t *pCalibdbV2, int mode_idx)
 {
-    CalibDbV2_Edgefilter_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_Edgefilter_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
-    CalibDbV2_Edgefilter_TuningPara_Setting_ISO_Luma_t *pLuma_para = NULL;
-    CalibDbV2_Edgefilter_TuningPara_Kernel_t *pDog_kernel = NULL;
+    CalibDbV2_Edgefilter_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_Edgefilter_T_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_Edgefilter_Luma_t *pLuma_para = NULL;
+    CalibDbV2_Edgefilter_Kernel_t *pDog_kernel = NULL;
     CalibDb_EdgeFilter_Setting_t *pSetting = NULL;
     struct CalibDb_EdgeFilter_ISO_s *pISO = NULL;
 
@@ -26,14 +26,14 @@ int edgefilterV1_calibdb_to_calibdbV2(const CalibDb_EdgeFilter_2_t *pCalibdb,  C
 
 
     //malloc settting size
-    pTuningParaV2->Setting = (CalibDbV2_Edgefilter_TuningPara_Setting_t *)malloc(EDGEFILTERV1_SETTING_NUM * sizeof(CalibDbV2_Edgefilter_TuningPara_Setting_t));
-    memset(pTuningParaV2->Setting, 0x00, EDGEFILTERV1_SETTING_NUM * sizeof(CalibDbV2_Edgefilter_TuningPara_Setting_t));
+    pTuningParaV2->Setting = (CalibDbV2_Edgefilter_T_Set_t *)malloc(EDGEFILTERV1_SETTING_NUM * sizeof(CalibDbV2_Edgefilter_T_Set_t));
+    memset(pTuningParaV2->Setting, 0x00, EDGEFILTERV1_SETTING_NUM * sizeof(CalibDbV2_Edgefilter_T_Set_t));
     pTuningParaV2->Setting_len = EDGEFILTERV1_SETTING_NUM;
 
     //malloc iso size
     for(int i = 0; i < EDGEFILTERV1_SETTING_NUM; i++) {
-        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_Edgefilter_TuningPara_Setting_ISO_t *)malloc(EDGEFILTERV1_ISO_NUM * sizeof(CalibDbV2_Edgefilter_TuningPara_Setting_ISO_t));
-        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, EDGEFILTERV1_ISO_NUM * sizeof(CalibDbV2_Edgefilter_TuningPara_Setting_ISO_t));
+        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_Edgefilter_T_ISO_t *)malloc(EDGEFILTERV1_ISO_NUM * sizeof(CalibDbV2_Edgefilter_T_ISO_t));
+        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, EDGEFILTERV1_ISO_NUM * sizeof(CalibDbV2_Edgefilter_T_ISO_t));
         pTuningParaV2->Setting[i].Tuning_ISO_len = EDGEFILTERV1_ISO_NUM;
     }
 
@@ -87,10 +87,10 @@ int edgefilterV1_calibdb_to_calibdbV2(const CalibDb_EdgeFilter_2_t *pCalibdb,  C
 
 int edgefilterV1_calibdbV2_to_calibdb(CalibDbV2_Edgefilter_t *pCalibdbV2, CalibDb_EdgeFilter_2_t *pCalibdb,  int mode_idx)
 {
-    CalibDbV2_Edgefilter_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_Edgefilter_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
-    CalibDbV2_Edgefilter_TuningPara_Setting_ISO_Luma_t *pLuma_para = NULL;
-    CalibDbV2_Edgefilter_TuningPara_Kernel_t *pDog_kernel = NULL;
+    CalibDbV2_Edgefilter_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_Edgefilter_T_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_Edgefilter_Luma_t *pLuma_para = NULL;
+    CalibDbV2_Edgefilter_Kernel_t *pDog_kernel = NULL;
     CalibDb_EdgeFilter_Setting_t *pSetting = NULL;
     struct CalibDb_EdgeFilter_ISO_s *pISO = NULL;
 

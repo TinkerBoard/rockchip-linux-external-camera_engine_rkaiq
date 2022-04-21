@@ -71,7 +71,7 @@ typedef struct CamCalibDbV2ContextIsp20_s {
     // M4_STRUCT_DESC("wb_v20", "normal_ui_style")
     CalibDbV2_Wb_Para_V20_t wb_v20;
     // M4_STRUCT_DESC("agamma_calib", "normal_ui_style")
-    CalibDbV2_gamma_V10_t agamma_calib_V10;
+    CalibDbV2_gamma_v10_t agamma_calib_v10;
     // M4_STRUCT_DESC("ablc_calib", "normal_ui_style")
     CalibDbV2_Ablc_t ablc_calib;
     // M4_STRUCT_DESC("degamma", "curve_ui_type_A")
@@ -83,7 +83,7 @@ typedef struct CamCalibDbV2ContextIsp20_s {
     // M4_STRUCT_DESC("adpcc_calib", "normal_ui_style")
     CalibDbV2_Dpcc_t adpcc_calib;
     // M4_STRUCT_DESC("amerge_calib", "normal_ui_style")
-    CalibDbV2_merge_V10_t amerge_calib;
+    CalibDbV2_merge_v10_t amerge_calib_v10;
     // M4_STRUCT_DESC("atmo_calib", "normal_ui_style")
     CalibDbV2_tmo_t atmo_calib;
     // M4_STRUCT_DESC("cpsl", "normal_ui_style")

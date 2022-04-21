@@ -201,7 +201,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             pAbayertnrCtx->isReCalculate |= 1;
         }
     }
-#if 1// TODO Merge:
+#if 0// TODO Merge:
     XCamVideoBuffer* xCamAePreRes = pAbayertnrProcParams->com.u.proc.res_comb->ae_pre_res;
     RkAiqAlgoPreResAe* pAEPreRes = nullptr;
     if (xCamAePreRes) {

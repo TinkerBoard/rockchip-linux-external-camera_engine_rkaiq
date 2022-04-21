@@ -1186,8 +1186,8 @@ RkAiqResourceTranslatorV3x::translateMultiAdehazeStats(const SmartPtr<VideoBuffe
 XCamReturn
 RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAecStatsProxy> &to)
 {
-
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#if defined(ISP_HW_V30)
 
     const SmartPtr<Isp20StatsBuffer> buf =
         from.dynamic_cast_ptr<Isp20StatsBuffer>();
@@ -1741,7 +1741,7 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
     }
 
     to->set_sequence(stats->frame_id);
-
+#endif
     return ret;
 }
 
@@ -1774,6 +1774,7 @@ XCamReturn
 RkAiqResourceTranslatorV3x::translateAwbStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAwbStatsProxy> &to)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#if defined(ISP_HW_V30)
     const SmartPtr<Isp20StatsBuffer> buf =
         from.dynamic_cast_ptr<Isp20StatsBuffer>();
     struct rkisp3x_isp_stat_buffer *stats;
@@ -1923,7 +1924,7 @@ RkAiqResourceTranslatorV3x::translateAwbStats (const SmartPtr<VideoBuffer> &from
     //statsInt->awb_stats_valid = ISP2X_STAT_RAWAWB(stats->meas_type)? true:false;
     statsInt->awb_stats_valid = stats->meas_type >> 5 & 1;
     to->set_sequence(stats->frame_id);
-
+#endif
     return ret;
 }
 
@@ -2139,7 +2140,6 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
         else
             statsInt->af_stats_valid = false;
 
-        statsInt->af_stats_v3x.int_state = left_stats->params.rawaf.int_state | right_stats->params.rawaf.int_state;
         if (af_split_info.winb_side_info == LEFT_AND_RIGHT_MODE) {
             statsInt->af_stats_v3x.wndb_luma = left_stats->params.rawaf.afm_lum_b * af_split_info.winb_l_ratio +
                                                right_stats->params.rawaf.afm_lum_b * af_split_info.winb_r_ratio;
@@ -2345,7 +2345,6 @@ RkAiqResourceTranslatorV3x::translateAfStats (const SmartPtr<VideoBuffer> &from,
         statsInt->af_stats_valid =
             (stats->meas_type >> 6) & (0x01) ? true : false;
 
-        statsInt->af_stats_v3x.int_state = stats->params.rawaf.int_state;
         statsInt->af_stats_v3x.wndb_luma = stats->params.rawaf.afm_lum_b;
         statsInt->af_stats_v3x.wndb_sharpness = stats->params.rawaf.afm_sum_b;
         statsInt->af_stats_v3x.winb_highlit_cnt = stats->params.rawaf.highlit_cnt_winb;

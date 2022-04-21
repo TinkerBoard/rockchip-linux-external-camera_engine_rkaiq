@@ -284,10 +284,10 @@ Aynr_Result_V1_t init_ynr_params_json_v1(RK_YNR_Params_V1_t *pYnrParams, CalibDb
     }
 
     RK_YNR_Params_V1_Select_t *pParams = pYnrParams->aYnrParamsISO;
-    CalibDbV2_YnrV1_CalibPara_Setting_t *pCalibSetting = &pYnrCalib->CalibPara.Setting[calib_idx];
-    CalibDbV2_YnrV1_TuningPara_Setting_t *pTuningSetting = &pYnrCalib->TuningPara.Setting[tuning_idx];
-    CalibDbV2_YnrV1_CalibPara_Setting_ISO_t *pCalib_ISO = NULL;
-    CalibDbV2_YnrV1_TuningPara_Setting_ISO_t *pTuning_ISO = NULL;
+    CalibDbV2_YnrV1_C_Set_t *pCalibSetting = &pYnrCalib->CalibPara.Setting[calib_idx];
+    CalibDbV2_YnrV1_T_Set_t *pTuningSetting = &pYnrCalib->TuningPara.Setting[tuning_idx];
+    CalibDbV2_YnrV1_C_ISO_t *pCalib_ISO = NULL;
+    CalibDbV2_YnrV1_T_ISO_t *pTuning_ISO = NULL;
 
     short isoCurveSectValue;
     short isoCurveSectValue1;
@@ -1278,10 +1278,10 @@ Aynr_Result_V1_t ynr_fix_printf_v1(RK_YNR_Fix_V1_t * pNrCfg)
 Aynr_Result_V1_t ynr_calibdbV2_assign_v1(CalibDbV2_YnrV1_t *pDst, CalibDbV2_YnrV1_t *pSrc)
 {
     Aynr_Result_V1_t res = AYNR_RET_V1_SUCCESS;
-    CalibDbV2_YnrV1_CalibPara_t *pSrcCalibParaV2 = NULL;
-    CalibDbV2_YnrV1_TuningPara_t *pSrcTuningParaV2 = NULL;
-    CalibDbV2_YnrV1_CalibPara_t *pDstCalibParaV2 = NULL;
-    CalibDbV2_YnrV1_TuningPara_t *pDstTuningParaV2 = NULL;
+    CalibDbV2_YnrV1_Calib_t *pSrcCalibParaV2 = NULL;
+    CalibDbV2_YnrV1_Tuning_t *pSrcTuningParaV2 = NULL;
+    CalibDbV2_YnrV1_Calib_t *pDstCalibParaV2 = NULL;
+    CalibDbV2_YnrV1_Tuning_t *pDstTuningParaV2 = NULL;
     int setting_len = 0;
     int iso_len = 0;
 

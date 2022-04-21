@@ -26,6 +26,17 @@
 #include "atmo_uapi_head.h"
 #include "awb_uapi_head.h"
 #include "rk_aiq_user_api_common.h"
+#if defined(ISP_HW_V32)
+#include "bayertnr_uapi_head_v23.h"
+#include "bayer2dnr_uapi_head_v23.h"
+#include "ynr_uapi_head_v22.h"
+#include "cnr_uapi_head_v30.h"
+#include "sharp_uapi_head_v33.h"
+#endif
+#if defined(ISP_HW_V32) || defined(ISP_HW_V30)
+#include "gain_uapi_head_v2.h"
+#endif
+#include "ccm_uapi_head.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -155,6 +166,64 @@ typedef struct __aiq_measure_info {
 } aiq_measure_info_t;
 #endif
 
+
+typedef struct __abayertnr_uapi {
+#if defined(ISP_HW_V32)
+    // M4_STRUCT_DESC("manual", "normal_ui_style")
+    RK_Bayertnr_Params_V23_Select_t manual;
+#endif
+} abayertnr_uapi_t;
+
+
+typedef struct __abayer2dnr_uapi {
+#if defined(ISP_HW_V32)
+    // M4_STRUCT_DESC("manual", "normal_ui_style")
+    RK_Bayer2dnrV23_Params_Select_t manual;
+#endif
+} abayer2dnr_uapi_t;
+
+
+typedef struct __aynr_uapi {
+#if defined(ISP_HW_V32)
+    // M4_STRUCT_DESC("manual", "normal_ui_style")
+    RK_YNR_Params_V22_Select_t manual;
+#endif
+} aynr_uapi_t;
+
+typedef struct __acnr_uapi {
+#if defined(ISP_HW_V32)
+    // M4_STRUCT_DESC("manual", "normal_ui_style")
+    RK_CNR_Params_V30_Select_t manual;
+#endif
+} acnr_uapi_t;
+
+typedef struct __asharp_uapi {
+#if defined(ISP_HW_V32)
+    // M4_STRUCT_DESC("manual", "normal_ui_style")
+    RK_SHARP_Params_V33_Select_t manual;
+#endif
+} asharp_uapi_t;
+
+typedef struct __again_uapi {
+#if defined(ISP_HW_V32) || defined(ISP_HW_V30)
+    // M4_STRUCT_DESC("manual", "normal_ui_style")
+    RK_GAIN_Select_V2_t manual;
+#endif
+} again_uapi_t;
+
+typedef struct __accm_uapi {
+    // M4_STRUCT_DESC("Info", "normal_ui_style", "0", "1")
+    rk_aiq_ccm_querry_info_t Info;
+#if defined(ISP_HW_V20) || defined(ISP_HW_V21) || defined(ISP_HW_V30)
+    // M4_STRUCT_DESC("manual", "normal_ui_style")
+    rk_aiq_ccm_mccm_attrib_t stManual;
+#endif
+#if defined(ISP_HW_V32)
+    // M4_STRUCT_DESC("manual", "normal_ui_style")
+    rk_aiq_ccm_mccm_attrib_v2_t stManual;
+#endif
+} accm_uapi_t;
+
 typedef struct __aiq_uapi_t {
     // M4_STRUCT_DESC("ae_uapi", "normal_ui_style")
     ae_uapi_t ae_uapi;
@@ -175,8 +244,23 @@ typedef struct __aiq_uapi_t {
     adehaze_uapi_t adehaze_uapi;
     // M4_STRUCT_DESC("SystemCtl", "normal_ui_style")
     RkaiqSysCtl_t system;
-    // M4_STRUCT_DESC("measure_info", "normal_ui_style")
+
+    // M4_STRUCT_DESC("abayertnr_uapi", "normal_ui_style")
+    abayertnr_uapi_t abayertnr_uapi;
+    // M4_STRUCT_DESC("abayer2dnr_uapi", "normal_ui_style")
+    abayer2dnr_uapi_t abayer2dnr_uapi;
+    // M4_STRUCT_DESC("aynr_uapi", "normal_ui_style")
+    aynr_uapi_t aynr_uapi;
+    // M4_STRUCT_DESC("acnr_uapi", "normal_ui_style")
+    acnr_uapi_t acnr_uapi;
+    // M4_STRUCT_DESC("asharp_uapi", "normal_ui_style")
+    asharp_uapi_t asharp_uapi;
+    // M4_STRUCT_DESC("again_uapi", "normal_ui_style")
+    again_uapi_t again_uapi;
+    // M4_STRUCT_DESC("measure_info", "normal_ui_style",M4_HIDE(1))
     aiq_measure_info_t measure_info;
+    // M4_STRUCT_DESC("accm_uapi", "normal_ui_style")
+    accm_uapi_t accm_uapi;
 } RkaiqUapi_t;
 
 #ifdef __cplusplus

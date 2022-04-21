@@ -7,12 +7,12 @@
 
 int bayernrV2_calibdb_to_calibdbV2(struct list_head *pBayernrList,  CalibDbV2_BayerNrV2_t *pCalibdbV2, int mode_idx)
 {
-    CalibDbV2_BayerNrV2_CalibPara_t *pCalibParaV2 = NULL;
-    CalibDbV2_BayerNrV2_Bayernr2d_t *p2dV2 = NULL;
-    CalibDbV2_BayerNrV2_Bayernr3d_t *p3dV2 = NULL;
-    CalibDbV2_BayerNrV2_CalibPara_Setting_ISO_t *pCalibISOV2 = NULL;
-    CalibDbV2_BayerNrV2_Bayernr2d_Setting_ISO_t *p2dISOV2 = NULL;
-    CalibDbV2_BayerNrV2_Bayernr3d_Setting_ISO_t *p3dISOV2 = NULL;
+    CalibDbV2_BayerNrV2_Calib_t *pCalibParaV2 = NULL;
+    CalibDbV2_BayerNrV2_2d_t *p2dV2 = NULL;
+    CalibDbV2_BayerNrV2_3d_t *p3dV2 = NULL;
+    CalibDbV2_BayerNrV2_C_ISO_t *pCalibISOV2 = NULL;
+    CalibDbV2_BayerNrV2_2d_ISO_t *p2dISOV2 = NULL;
+    CalibDbV2_BayerNrV2_3d_ISO_t *p3dISOV2 = NULL;
 
 
     if(pBayernrList == NULL || pCalibdbV2 == NULL) {
@@ -35,14 +35,14 @@ int bayernrV2_calibdb_to_calibdbV2(struct list_head *pBayernrList,  CalibDbV2_Ba
     p3dV2 = &pCalibdbV2->Bayernr3D;
 
     //malloc settting size
-    pCalibParaV2->Setting = (CalibDbV2_BayerNrV2_CalibPara_Setting_t *)malloc(BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_CalibPara_Setting_t));
-    memset(pCalibParaV2->Setting,  0x00, BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_CalibPara_Setting_t));
+    pCalibParaV2->Setting = (CalibDbV2_BayerNrV2_C_Set_t *)malloc(BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_C_Set_t));
+    memset(pCalibParaV2->Setting,  0x00, BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_C_Set_t));
     pCalibParaV2->Setting_len = BAYERNRV2_SETTING_NUM;
-    p2dV2->Setting = (CalibDbV2_BayerNrV2_Bayernr2d_Setting_t *)malloc(BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_Bayernr2d_Setting_t));
-    memset(p2dV2->Setting, 0x00, BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_Bayernr2d_Setting_t));
+    p2dV2->Setting = (CalibDbV2_BayerNrV2_2d_Set_t *)malloc(BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_2d_Set_t));
+    memset(p2dV2->Setting, 0x00, BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_2d_Set_t));
     p2dV2->Setting_len = BAYERNRV2_SETTING_NUM;
-    p3dV2->Setting = (CalibDbV2_BayerNrV2_Bayernr3d_Setting_t *)malloc(BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_Bayernr3d_Setting_t));
-    memset(p3dV2->Setting, 0x00, BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_Bayernr3d_Setting_t));
+    p3dV2->Setting = (CalibDbV2_BayerNrV2_3d_Set_t *)malloc(BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_3d_Set_t));
+    memset(p3dV2->Setting, 0x00, BAYERNRV2_SETTING_NUM * sizeof(CalibDbV2_BayerNrV2_3d_Set_t));
     p3dV2->Setting_len = BAYERNRV2_SETTING_NUM;
 
     //malloc iso size
@@ -122,12 +122,12 @@ int bayernrV2_calibdb_to_calibdbV2(struct list_head *pBayernrList,  CalibDbV2_Ba
 
 int bayernrV2_calibdbV2_to_calibdb(CalibDbV2_BayerNrV2_t *pCalibdbV2,  struct list_head *pBayernrList,  int mode_idx)
 {
-    CalibDbV2_BayerNrV2_CalibPara_t *pCalibParaV2 = NULL;
-    CalibDbV2_BayerNrV2_Bayernr2d_t *p2dV2 = NULL;
-    CalibDbV2_BayerNrV2_Bayernr3d_t *p3dV2 = NULL;
-    CalibDbV2_BayerNrV2_CalibPara_Setting_ISO_t *pCalibISOV2 = NULL;
-    CalibDbV2_BayerNrV2_Bayernr2d_Setting_ISO_t *p2dISOV2 = NULL;
-    CalibDbV2_BayerNrV2_Bayernr3d_Setting_ISO_t *p3dISOV2 = NULL;
+    CalibDbV2_BayerNrV2_Calib_t *pCalibParaV2 = NULL;
+    CalibDbV2_BayerNrV2_2d_t *p2dV2 = NULL;
+    CalibDbV2_BayerNrV2_3d_t *p3dV2 = NULL;
+    CalibDbV2_BayerNrV2_C_ISO_t *pCalibISOV2 = NULL;
+    CalibDbV2_BayerNrV2_2d_ISO_t *p2dISOV2 = NULL;
+    CalibDbV2_BayerNrV2_3d_ISO_t *p3dISOV2 = NULL;
 
     CalibDb_Bayernr_V2_t* pBayenrProfile = NULL;
     Calibdb_Bayernr_2Dparams_V2_t *p2dParamCalibV1 = NULL;

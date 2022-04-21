@@ -904,8 +904,8 @@ Abayernr_result_t bayernr2D_get_setting_by_name_json_V2(CalibDbV2_BayerNrV2_t* p
 Abayernr_result_t bayernr2D_init_params_json_V2(RK_Bayernr_2D_Params_V2_t *pParams, CalibDbV2_BayerNrV2_t* pCalibdb, int calib_idx, int tuning_idx)
 {
     Abayernr_result_t res = ABAYERNR_RET_SUCCESS;
-    CalibDbV2_BayerNrV2_CalibPara_Setting_ISO_t *pCalibIso = NULL;
-    CalibDbV2_BayerNrV2_Bayernr2d_Setting_ISO_t *pTuningISO = NULL;
+    CalibDbV2_BayerNrV2_C_ISO_t *pCalibIso = NULL;
+    CalibDbV2_BayerNrV2_2d_ISO_t *pTuningISO = NULL;
     int i = 0;
     int j = 0;
 
@@ -1010,8 +1010,8 @@ Abayernr_result_t bayernr3D_get_setting_by_name_json_V2(CalibDbV2_BayerNrV2_t* p
 Abayernr_result_t bayernr3D_init_params_json_V2(RK_Bayernr_3D_Params_V2_t *pParams, CalibDbV2_BayerNrV2_t* pCalibdb, int calib_idx, int tuning_idx)
 {
     Abayernr_result_t res = ABAYERNR_RET_SUCCESS;
-    CalibDbV2_BayerNrV2_CalibPara_Setting_ISO_t *pCalibIso = NULL;
-    CalibDbV2_BayerNrV2_Bayernr3d_Setting_ISO_t *pTuningIso = NULL;
+    CalibDbV2_BayerNrV2_C_ISO_t *pCalibIso = NULL;
+    CalibDbV2_BayerNrV2_3d_ISO_t *pTuningIso = NULL;
 
     LOGI_ANR("%s:(%d) oyyf bayerner xml config start\n", __FUNCTION__, __LINE__);
     if(pParams == NULL || pCalibdb == NULL) {

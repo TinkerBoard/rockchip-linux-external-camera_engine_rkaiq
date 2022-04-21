@@ -73,8 +73,8 @@ Abayertnr_result_V2_t Abayertnr_Init_V2(Abayertnr_Context_V2_t **ppAbayertnrCtx,
 
     //read v1 params from xml
 #if (ABAYERTNR_USE_JSON_FILE_V2)
-    CalibDbV2_BayerTnr_V2_t * pcalibdbV2_bayertnr_v2 =
-        (CalibDbV2_BayerTnr_V2_t *)(CALIBDBV2_GET_MODULE_PTR((CamCalibDbV2Context_t*)pCalibDb, bayertnr_v2));
+    CalibDbV2_BayerTnrV2_t * pcalibdbV2_bayertnr_v2 =
+        (CalibDbV2_BayerTnrV2_t *)(CALIBDBV2_GET_MODULE_PTR((CamCalibDbV2Context_t*)pCalibDb, bayertnr_v2));
     pAbayertnrCtx->bayertnr_v2 = *pcalibdbV2_bayertnr_v2;
 #endif
 

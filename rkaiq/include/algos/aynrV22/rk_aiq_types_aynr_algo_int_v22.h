@@ -27,6 +27,7 @@
 #include "RkAiqCalibDbTypes.h"
 #include "aynrV22/rk_aiq_types_aynr_algo_v22.h"
 #include "ynr_head_v22.h"
+#include "ynr_uapi_head_v22.h"
 
 
 //RKAIQ_BEGIN_DECLARE
@@ -34,8 +35,6 @@
 
 
 #define AYNRV22_RECALCULATE_DELTA_ISO       (10)
-#define YNR_V22_ISO_CURVE_POINT_BIT          4
-#define YNR_V22_ISO_CURVE_POINT_NUM          ((1 << YNR_V22_ISO_CURVE_POINT_BIT)+1)
 #define YNR_V22_SIGMA_BITS                  10
 #define YNR_V22_NOISE_SIGMA_FIX_BIT              3
 #define LOG2(x)                             (log((double)x)                 / log((double)2))
@@ -90,7 +89,7 @@ typedef struct Aynr_ExpInfo_V22_s {
     int rawWidth;
     int rawHeight;
 } Aynr_ExpInfo_V22_t;
-
+#if 0
 typedef struct RK_YNR_Params_V22_Select_s
 {
     int enable;
@@ -148,7 +147,7 @@ typedef struct RK_YNR_Params_V22_Select_s
     int hi_filter_coeff2_2;
     int hi_filter_coeff2_3;
 } RK_YNR_Params_V22_Select_t;
-
+#endif
 
 
 typedef struct RK_YNR_Params_V22_s

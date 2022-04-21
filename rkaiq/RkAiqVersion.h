@@ -392,10 +392,22 @@
  * - Optimized memory usages
  * - Optimized cpu ultilization
  * - Fix params bug for 3dlut/ccm/gic..
+ * v4.0x9.8-rc1
+ * - Fix a few IQ tunning stable issues
+ * - Support static link library
+ * - AWB ：Fix smart run judging scheme
+ * - AE : Fix stats translate error
+ * - IE : Fix BW not working for one frame during tunning
+ * - CAC : Fix buffer not freed when using ctrl-c to exit app
+ * - CAC : Limit expo_thed/adj value ranges
+ * - CAC : Support related path for psf map binary
+ * - GAMMA/MERGE/DRC: Rename and Optimize cpu usage
+ * - DEHAZE: Support hist wr
+ * - Update os04a10/sc4336/sc500ai IQ json
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.8-rc0"
-#define RK_AIQ_RELEASE_DATE "2022-04-13 for rv1106 beta SDK release"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.8-rc1"
+#define RK_AIQ_RELEASE_DATE "2022-04-27 for rv1106 beta SDK release"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

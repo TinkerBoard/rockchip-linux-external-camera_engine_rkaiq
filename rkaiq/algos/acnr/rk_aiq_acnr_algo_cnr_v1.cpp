@@ -546,7 +546,7 @@ Acnr_result_t cnr_get_setting_by_name_json_V1(CalibDbV2_CNR_t *pCalibdbV2, char 
 Acnr_result_t cnr_init_params_json_V1(RK_CNR_Params_V1_t *pParams, CalibDbV2_CNR_t *pCalibdbV2, int tuning_idx)
 {
     Acnr_result_t res = ACNR_RET_SUCCESS;
-    CalibDbV2_CNR_TuningPara_Setting_ISO_t *pTuningISO = NULL;
+    CalibDbV2_CNR_T_ISO_t *pTuningISO = NULL;
 
     if(pParams == NULL || pCalibdbV2 == NULL) {
         LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);

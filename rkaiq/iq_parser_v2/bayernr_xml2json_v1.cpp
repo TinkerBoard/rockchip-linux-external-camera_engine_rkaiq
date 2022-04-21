@@ -5,10 +5,10 @@
 
 int bayernrV1_calibdb_to_calibdbV2(const CalibDb_BayerNr_2_t *pCalibdb,  CalibDbV2_BayerNrV1_t *pCalibdbV2, int mode_idx)
 {
-    CalibDbV2_BayerNrV1_CalibPara_t *pCalibParaV2 = NULL;
-    CalibDbV2_BayerNrV1_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_BayerNrV1_CalibPara_Setting_ISO_t *pCalibISOV2 = NULL;
-    CalibDbV2_BayerNrV1_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_BayerNrV1_Calib_t *pCalibParaV2 = NULL;
+    CalibDbV2_BayerNrV1_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_BayerNrV1_C_ISO_t *pCalibISOV2 = NULL;
+    CalibDbV2_BayerNrV1_T_ISO_t *pTuningISOV2 = NULL;
     CalibDb_BayerNR_Params_t *pSetting = NULL;
 
 
@@ -32,20 +32,20 @@ int bayernrV1_calibdb_to_calibdbV2(const CalibDb_BayerNr_2_t *pCalibdb,  CalibDb
     pTuningParaV2 = &pCalibdbV2->TuningPara;
 
     //malloc settting size
-    pCalibParaV2->Setting = (CalibDbV2_BayerNrV1_CalibPara_Setting_t *)malloc(BAYERNRV1_SETTING_NUM * sizeof(CalibDbV2_BayerNrV1_CalibPara_Setting_t));
-    memset(pCalibParaV2->Setting,  0x00, BAYERNRV1_SETTING_NUM * sizeof(CalibDbV2_BayerNrV1_CalibPara_Setting_t));
+    pCalibParaV2->Setting = (CalibDbV2_BayerNrV1_C_Set_t *)malloc(BAYERNRV1_SETTING_NUM * sizeof(CalibDbV2_BayerNrV1_C_Set_t));
+    memset(pCalibParaV2->Setting,  0x00, BAYERNRV1_SETTING_NUM * sizeof(CalibDbV2_BayerNrV1_C_Set_t));
     pCalibParaV2->Setting_len = BAYERNRV1_SETTING_NUM;
-    pTuningParaV2->Setting = (CalibDbV2_BayerNrV1_TuningPara_Setting_t *)malloc(BAYERNRV1_SETTING_NUM * sizeof(CalibDbV2_BayerNrV1_TuningPara_Setting_t));
-    memset(pTuningParaV2->Setting, 0x00, BAYERNRV1_SETTING_NUM * sizeof(CalibDbV2_BayerNrV1_TuningPara_Setting_t));
+    pTuningParaV2->Setting = (CalibDbV2_BayerNrV1_T_Set_t *)malloc(BAYERNRV1_SETTING_NUM * sizeof(CalibDbV2_BayerNrV1_T_Set_t));
+    memset(pTuningParaV2->Setting, 0x00, BAYERNRV1_SETTING_NUM * sizeof(CalibDbV2_BayerNrV1_T_Set_t));
     pTuningParaV2->Setting_len = BAYERNRV1_SETTING_NUM;
 
     //malloc iso size
     for(int i = 0; i < BAYERNRV1_SETTING_NUM; i++) {
-        pCalibParaV2->Setting[i].Calib_ISO =  (CalibDbV2_BayerNrV1_CalibPara_Setting_ISO_t *)malloc(BAYERNRV1_ISO_NUM * sizeof(CalibDbV2_BayerNrV1_CalibPara_Setting_ISO_t));
-        memset(pCalibParaV2->Setting[i].Calib_ISO, 0x00, BAYERNRV1_ISO_NUM * sizeof(CalibDbV2_BayerNrV1_CalibPara_Setting_ISO_t));
+        pCalibParaV2->Setting[i].Calib_ISO =  (CalibDbV2_BayerNrV1_C_ISO_t *)malloc(BAYERNRV1_ISO_NUM * sizeof(CalibDbV2_BayerNrV1_C_ISO_t));
+        memset(pCalibParaV2->Setting[i].Calib_ISO, 0x00, BAYERNRV1_ISO_NUM * sizeof(CalibDbV2_BayerNrV1_C_ISO_t));
         pCalibParaV2->Setting[i].Calib_ISO_len = BAYERNRV1_ISO_NUM;
-        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_BayerNrV1_TuningPara_Setting_ISO_t *)malloc(BAYERNRV1_ISO_NUM * sizeof(CalibDbV2_BayerNrV1_TuningPara_Setting_ISO_t));
-        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, BAYERNRV1_ISO_NUM * sizeof(CalibDbV2_BayerNrV1_TuningPara_Setting_ISO_t));
+        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_BayerNrV1_T_ISO_t *)malloc(BAYERNRV1_ISO_NUM * sizeof(CalibDbV2_BayerNrV1_T_ISO_t));
+        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, BAYERNRV1_ISO_NUM * sizeof(CalibDbV2_BayerNrV1_T_ISO_t));
         pTuningParaV2->Setting[i].Tuning_ISO_len = BAYERNRV1_ISO_NUM;
     }
 
@@ -97,10 +97,10 @@ int bayernrV1_calibdb_to_calibdbV2(const CalibDb_BayerNr_2_t *pCalibdb,  CalibDb
 
 int bayernrV1_calibdbV2_to_calibdb(CalibDbV2_BayerNrV1_t *pCalibdbV2,  CalibDb_BayerNr_2_t *pCalibdb,  int mode_idx)
 {
-    CalibDbV2_BayerNrV1_CalibPara_t *pCalibParaV2 = NULL;
-    CalibDbV2_BayerNrV1_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_BayerNrV1_CalibPara_Setting_ISO_t *pCalibISOV2 = NULL;
-    CalibDbV2_BayerNrV1_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_BayerNrV1_Calib_t *pCalibParaV2 = NULL;
+    CalibDbV2_BayerNrV1_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_BayerNrV1_C_ISO_t *pCalibISOV2 = NULL;
+    CalibDbV2_BayerNrV1_T_ISO_t *pTuningISOV2 = NULL;
     CalibDb_BayerNR_Params_t *pSetting = NULL;
 
     if(pCalibdb == NULL) {

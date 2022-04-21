@@ -174,14 +174,19 @@ void
 Isp21Params::convertAiqAdehazeToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_dehaze_v21_t& dhaze)
 {
-    if (dhaze.ProcResV11.enable) {
-        isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
-        isp_cfg.module_ens |= ISP2X_MODULE_DHAZ;
-        isp_cfg.module_cfg_update |= ISP2X_MODULE_DHAZ;
+    if (dhaze.update) {
+        if (dhaze.enable) {
+            isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
+            isp_cfg.module_ens |= ISP2X_MODULE_DHAZ;
+            isp_cfg.module_cfg_update |= ISP2X_MODULE_DHAZ;
+        } else {
+            isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
+            isp_cfg.module_ens &= ~(ISP2X_MODULE_DHAZ);
+            isp_cfg.module_cfg_update &= ~(ISP2X_MODULE_DHAZ);
+            return;
+        }
     } else {
-        isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
-        isp_cfg.module_ens &= ~(ISP2X_MODULE_DHAZ);
-        isp_cfg.module_cfg_update &= ~(ISP2X_MODULE_DHAZ);
+        return;
     }
 
     struct isp21_dhaz_cfg *  cfg = &isp_cfg.others.dhaz_cfg;
@@ -930,18 +935,19 @@ void
 Isp21Params::convertAiqDrcToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                         rk_aiq_isp_drc_v21_t& adrc_data)
 {
-    bool enable = adrc_data.bTmoEn;
-    if(enable)
-    {
-        isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
-        isp_cfg.module_ens |= 1LL << Rk_ISP21_DRC_ID;
-        isp_cfg.module_cfg_update |= 1LL << Rk_ISP21_DRC_ID;
-    }
-    else
-    {
-        isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
-        isp_cfg.module_ens &= ~(1LL << Rk_ISP21_DRC_ID);
-        isp_cfg.module_cfg_update &= ~(1LL << Rk_ISP21_DRC_ID);
+    if (adrc_data.update) {
+        if (adrc_data.bDrcEn) {
+            isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
+            isp_cfg.module_ens |= 1LL << Rk_ISP21_DRC_ID;
+            isp_cfg.module_cfg_update |= 1LL << Rk_ISP21_DRC_ID;
+        } else {
+            isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
+            isp_cfg.module_ens &= ~(1LL << Rk_ISP21_DRC_ID);
+            isp_cfg.module_cfg_update &= ~(1LL << Rk_ISP21_DRC_ID);
+            return;
+        }
+    } else {
+        return;
     }
 
     isp_cfg.others.drc_cfg.sw_drc_offset_pow2   = adrc_data.DrcProcRes.Drc_v10.sw_drc_offset_pow2;

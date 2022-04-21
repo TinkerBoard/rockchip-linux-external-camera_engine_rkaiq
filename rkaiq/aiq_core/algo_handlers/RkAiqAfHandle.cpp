@@ -15,8 +15,10 @@
  */
 #include "RkAiqAfHandle.h"
 
-#include "RkAiqCore.h"
+#include <fcntl.h>
+
 #include "RkAiqAeHandle.h"
+#include "RkAiqCore.h"
 
 namespace RkCam {
 

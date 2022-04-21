@@ -30,7 +30,7 @@
 
 //RKAIQ_BEGIN_DECLARE
 
-#define ABAYERTNRV2_RECALCULATE_DELTA_ISO (10)
+#define ABAYERTNRV2_DELTA_ISO (10)
 
 typedef enum Abayertnr_result_V2_e {
     ABAYERTNRV2_RET_SUCCESS             = 0,   // this has to be 0, if clauses rely on it

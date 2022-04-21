@@ -53,6 +53,9 @@
 #define RKISP_CMD_INFO2DDR \
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 10, struct rkisp_info2ddr)
 
+#define RKISP_CMD_MESHBUF_FREE \
+	_IOW('V', BASE_VIDIOC_PRIVATE + 11, long long)
+
 /****************ISP VIDEO IOCTL******************************/
 
 #define RKISP_CMD_GET_CSI_MEMORY_MODE \

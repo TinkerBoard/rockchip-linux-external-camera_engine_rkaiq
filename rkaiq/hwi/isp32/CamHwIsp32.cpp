@@ -277,14 +277,16 @@ XCamReturn CamHwIsp32::setIspConfig() {
             awbParams = awb_res.dynamic_cast_ptr<RkAiqIspAwbParamsProxyV32>();
             {
                 SmartLock locker(_isp_params_cfg_mutex);
-                _effecting_ispparam_map[frameId].awb_cfg_v32 = awbParams->data()->result;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[frameId]->data()->result.awb_cfg_v32 = awbParams->data()->result;
             }
         } else {
             /* use the latest */
             SmartLock locker(_isp_params_cfg_mutex);
             if (!_effecting_ispparam_map.empty()) {
-                _effecting_ispparam_map[frameId].awb_cfg_v32 =
-                    (_effecting_ispparam_map.rbegin())->second.awb_cfg_v32;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[frameId]->data()->result.awb_cfg_v32 =
+                            (_effecting_ispparam_map.rbegin())->second->data()->result.awb_cfg_v32;
                 LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %u awb params for frame %u !\n", frameId,
                                 (_effecting_ispparam_map.rbegin())->first);
             } else {
@@ -292,30 +294,6 @@ XCamReturn CamHwIsp32::setIspConfig() {
                                 "get awb params from 3a result failed for frame %u !\n", frameId);
             }
         }
-
-#if 0 // to do , should be repalced weith blc32
-        SmartPtr<cam3aResult> blc_res = get_3a_module_result(ready_results, RESULT_TYPE_BLC_PARAM);
-        SmartPtr<RkAiqIspBlcParamsProxyV21> blcParams;
-        if (blc_res.ptr()) {
-            blcParams = blc_res.dynamic_cast_ptr<RkAiqIspBlcParamsProxyV21>();
-            {
-                SmartLock locker(_isp_params_cfg_mutex);
-                _effecting_ispparam_map[frameId].blc_cfg = blcParams->data()->result;
-            }
-        } else {
-            /* use the latest */
-            SmartLock locker(_isp_params_cfg_mutex);
-            if (!_effecting_ispparam_map.empty()) {
-                _effecting_ispparam_map[frameId].blc_cfg =
-                    (_effecting_ispparam_map.rbegin())->second.blc_cfg;
-                LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %d blc params for frame %d !\n", frameId,
-                                (_effecting_ispparam_map.rbegin())->first);
-            } else {
-                LOGW_CAMHW_SUBM(ISP20HW_SUBM,
-                                "get blc params from 3a result failed for frame %d !\n", frameId);
-            }
-        }
-#endif
     }
 
     // TODO: merge_isp_results would cause the compile warning: reference to merge_isp_results is
@@ -363,9 +341,17 @@ XCamReturn CamHwIsp32::setIspConfig() {
         {
             SmartLock locker(_isp_params_cfg_mutex);
             if (frameId == (uint32_t)(-1)) {
-                _effecting_ispparam_map[0].isp_params_v32 = _full_active_isp32_params;
+                if (getParamsForEffMap(frameId)) {
+                    _effecting_ispparam_map[0]->data()->result.meas = _full_active_isp32_params.meas;
+                    _effecting_ispparam_map[0]->data()->result.bls_cfg = _full_active_isp32_params.others.bls_cfg;
+                    _effecting_ispparam_map[0]->data()->result.awb_gain_cfg = _full_active_isp32_params.others.awb_gain_cfg;
+                }
             } else {
-                _effecting_ispparam_map[frameId].isp_params_v32 = _full_active_isp32_params;
+                if (getParamsForEffMap(frameId)) {
+                    _effecting_ispparam_map[frameId]->data()->result.meas = _full_active_isp32_params.meas;
+                    _effecting_ispparam_map[frameId]->data()->result.bls_cfg = _full_active_isp32_params.others.bls_cfg;
+                    _effecting_ispparam_map[frameId]->data()->result.awb_gain_cfg = _full_active_isp32_params.others.awb_gain_cfg;
+                }
             }
         }
 

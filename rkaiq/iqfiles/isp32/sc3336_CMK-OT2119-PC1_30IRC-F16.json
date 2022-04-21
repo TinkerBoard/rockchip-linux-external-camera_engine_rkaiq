@@ -1170,8 +1170,7 @@
 							"common":	{
 								"enable":	0,
 								"mode":	"CALIB_Lut3D_MODE_AUTO",
-								"gain_tolerance":	0.1,
-								"wbgain_tolerance":	1
+								"gain_tolerance":	0.1
 							},
 							"MLut3D":	{
 								"Table":	{
@@ -1303,14 +1302,15 @@
 								}
 							}
 						},
-						"amerge_calib_V12":	{
+						"amerge_calib_v12":	{
 							"MergeTuningPara":	{
 								"BaseFrm":	"BASEFRAME_LONG",
+								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"ByPassThr":	0,
 								"LongFrmModeData":	{
 									"EnableEachChn":	0,
 									"OECurve":	{
-										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 										"Offset":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210]
 									},
@@ -1322,7 +1322,7 @@
 										"MS_offset":	[0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38]
 									},
 									"EachChnCurve":	{
-										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 										"Offset":	[0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38]
 									},
@@ -1332,7 +1332,7 @@
 								},
 								"ShortFrmModeData":	{
 									"OECurve":	{
-										"EnvLv":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 										"Offset":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210]
 									},
@@ -1402,7 +1402,7 @@
 								"damp":	0.9
 							}
 						},
-						"agamma_calib_V11":	{
+						"agamma_calib_v11":	{
 							"GammaTuningPara":	{
 								"Gamma_en":	1,
 								"Gamma_out_offset":	0,
@@ -1453,17 +1453,145 @@
 									"en":	1,
 									"color_deviate_en":	0,
 									"enh_luma_en":	0,
-									"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-									"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-									"EnhanceData":	{
-										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-										"enhance_value":	[1.25, 1.25, 1.2, 1.2, 1.2, 1.15, 1.1, 1.1, 1.1, 1.1, 1.05, 1.05, 1],
-										"enhance_chroma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-									}
+									"EnhanceData":	[{
+										"CtrlData":	0,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.25,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	0.005,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.25,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	0.01,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.2,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	0.05,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.2,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	0.1,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.2,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	0.15,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.15,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	0.2,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.1,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	0.3,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.1,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	0.4,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.1,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	0.5,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.1,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	0.6,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.05,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	0.8,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1.05,
+										"enhance_chroma":	1
+									}, {
+										"CtrlData":	1,
+										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+										"enhance_value":	1,
+										"enhance_chroma":	1
+									}]
 								},
 								"hist_setting":	{
 									"en":	0,
 									"hist_para_en":	1,
+									"hist_wr":	{
+										"mode":	"HIST_WR_MANUAL",
+										"manual_curve":	[{
+												"CtrlData":	0,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											}, {
+												"CtrlData":	0.005,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											},{
+												"CtrlData":	0.01,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											}, {
+												"CtrlData":	0.05,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											},{
+												"CtrlData":	0.1,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											}, {
+												"CtrlData":	0.15,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											},{
+												"CtrlData":	0.2,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											}, {
+												"CtrlData":	0.3,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											},{
+												"CtrlData":	0.4,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											}, {
+												"CtrlData":	0.5,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											},{
+												"CtrlData":	0.6,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											}, {
+												"CtrlData":	0.8,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											}, {
+												"CtrlData":	1,
+												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
+											}]
+									},
 									"HistData":	{
 										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"hist_gratio":	[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -2936,19 +3064,21 @@
 							},
 							"TuningPara":	{
 								"enable":	1,
+								"thumbds_w":	8,
+								"thumbds_h":	4,
+								"lo_enable":	1,
+								"trans_en":	0,
 								"Setting":	[{
 										"SNR_Mode":	"LSNR",
 										"Sensor_Mode":	"lcg",
 										"Tuning_ISO":	[{
 												"iso":	50,
-												"lo_enable":	0,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -2973,20 +3103,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	100,
-												"lo_enable":	0,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3011,20 +3137,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	200,
-												"lo_enable":	0,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3049,20 +3171,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	400,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3087,20 +3205,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	800,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1.3,
 												"hi_filter_rat0":	0,
@@ -3125,20 +3239,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	1600,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1.5,
 												"hi_filter_rat0":	0,
@@ -3163,20 +3273,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	3200,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	0.9,
 												"hi_filter_strength":	1.1,
 												"hi_filter_rat0":	0,
@@ -3201,20 +3307,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	6400,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	0.9,
 												"hi_filter_strength":	1.1,
 												"hi_filter_rat0":	0,
@@ -3239,20 +3341,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	12800,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1.1,
 												"hi_filter_strength":	1.3,
 												"hi_filter_rat0":	0,
@@ -3277,20 +3375,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	8,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	25600,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1.5,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0.3,
@@ -3315,20 +3409,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	51200,
-												"lo_enable":	1,
 												"hi_enable":	0,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	3,
 												"hi_filter_rat0":	0,
@@ -3353,20 +3443,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	8,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	102400,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3391,20 +3477,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	204800,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3429,8 +3511,6 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}],
@@ -3440,14 +3520,12 @@
 										"Sensor_Mode":	"hcg",
 										"Tuning_ISO":	[{
 												"iso":	50,
-												"lo_enable":	0,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3472,20 +3550,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	100,
-												"lo_enable":	0,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3510,20 +3584,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	200,
-												"lo_enable":	0,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3548,20 +3618,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	400,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
@@ -3586,20 +3652,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	800,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1.3,
 												"hi_filter_rat0":	0,
@@ -3624,20 +3686,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	1600,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1.5,
 												"hi_filter_rat0":	0,
@@ -3662,20 +3720,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	3200,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1.5,
 												"hi_filter_rat0":	0,
@@ -3700,20 +3754,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	6400,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	1.5,
 												"hi_filter_strength":	1.6,
 												"hi_filter_rat0":	0,
@@ -3738,20 +3788,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	12800,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3776,20 +3822,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	25600,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3814,20 +3856,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	51200,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2.5,
 												"hi_filter_rat0":	0,
@@ -3852,20 +3890,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	102400,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3890,20 +3924,16 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}, {
 												"iso":	204800,
-												"lo_enable":	1,
 												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"trans_en":	0,
 												"lo_filter_strength":	2,
 												"hi_filter_strength":	2,
 												"hi_filter_rat0":	0,
@@ -3928,8 +3958,6 @@
 												"lo_clipwgt":	0.03215,
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
-												"thumbds_h":	4,
-												"thumbds_w":	8,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	0
 											}],

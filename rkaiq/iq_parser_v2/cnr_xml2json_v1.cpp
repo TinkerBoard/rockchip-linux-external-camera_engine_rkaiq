@@ -6,8 +6,8 @@
 
 int cnrV1_calibdb_to_calibdbV2(struct list_head *pCnrList,  CalibDbV2_CNR_t *pCalibdbV2, int mode_idx)
 {
-    CalibDbV2_CNR_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_CNR_TuningPara_Setting_ISO_t *pISOV2 = NULL;
+    CalibDbV2_CNR_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_CNR_T_ISO_t *pISOV2 = NULL;
 
 
     if(pCnrList == NULL || pCalibdbV2 == NULL) {
@@ -29,14 +29,14 @@ int cnrV1_calibdb_to_calibdbV2(struct list_head *pCnrList,  CalibDbV2_CNR_t *pCa
     pTuningParaV2 = &pCalibdbV2->TuningPara;
 
     //malloc settting size
-    pTuningParaV2->Setting = (CalibDbV2_CNR_TuningPara_Setting_t *)malloc(CNRV1_SETTING_NUM * sizeof(CalibDbV2_CNR_TuningPara_Setting_t));
-    memset(pTuningParaV2->Setting, 0x00, CNRV1_SETTING_NUM * sizeof(CalibDbV2_CNR_TuningPara_Setting_t));
+    pTuningParaV2->Setting = (CalibDbV2_CNR_T_Set_t *)malloc(CNRV1_SETTING_NUM * sizeof(CalibDbV2_CNR_T_Set_t));
+    memset(pTuningParaV2->Setting, 0x00, CNRV1_SETTING_NUM * sizeof(CalibDbV2_CNR_T_Set_t));
     pTuningParaV2->Setting_len = CNRV1_SETTING_NUM;
 
     //malloc iso size
     for(int i = 0; i < CNRV1_SETTING_NUM; i++) {
-        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_CNR_TuningPara_Setting_ISO_t *)malloc(CNRV1_ISO_NUM * sizeof(CalibDbV2_CNR_TuningPara_Setting_ISO_t));
-        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, CNRV1_ISO_NUM * sizeof(CalibDbV2_CNR_TuningPara_Setting_ISO_t));
+        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_CNR_T_ISO_t *)malloc(CNRV1_ISO_NUM * sizeof(CalibDbV2_CNR_T_ISO_t));
+        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, CNRV1_ISO_NUM * sizeof(CalibDbV2_CNR_T_ISO_t));
         pTuningParaV2->Setting[i].Tuning_ISO_len = CNRV1_ISO_NUM;
     }
 
@@ -95,8 +95,8 @@ int cnrV1_calibdb_to_calibdbV2(struct list_head *pCnrList,  CalibDbV2_CNR_t *pCa
 
 int cnrV1_calibdbV2_to_calibdb(CalibDbV2_CNR_t *pCalibdbV2,  struct list_head *pCnrList,   int mode_idx)
 {
-    CalibDbV2_CNR_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_CNR_TuningPara_Setting_ISO_t *pISOV2 = NULL;
+    CalibDbV2_CNR_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_CNR_T_ISO_t *pISOV2 = NULL;
 
     if(pCalibdbV2 == NULL || pCnrList == NULL) {
         printf(" pCalibdb is NULL pointer\n");

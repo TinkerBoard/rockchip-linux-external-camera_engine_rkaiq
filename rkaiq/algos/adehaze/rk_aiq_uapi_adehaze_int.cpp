@@ -6,7 +6,7 @@
 XCamReturn rk_aiq_uapi_adehaze_v10_SetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v10_t* attr,
                                              bool need_sync) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    AdehazeHandle_t * AdehazeHandle = (AdehazeHandle_t *)ctx;
+    AdehazeHandle_t* pAdehazeHandle = (AdehazeHandle_t*)ctx;
 
     // AdehazeHandle->AdehazeAtrrV10.mode = attr->mode;
     // if(attr->mode == DEHAZE_API_MANUAL)
@@ -21,7 +21,7 @@ XCamReturn rk_aiq_uapi_adehaze_v10_SetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v
 
 XCamReturn rk_aiq_uapi_adehaze_v10_GetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v10_t* attr) {
     XCamReturn ret                 = XCAM_RETURN_NO_ERROR;
-    AdehazeHandle_t* AdehazeHandle = (AdehazeHandle_t*)ctx;
+    AdehazeHandle_t* pAdehazeHandle = (AdehazeHandle_t*)ctx;
 
     // attr->mode = AdehazeHandle->AdehazeAtrrV10.mode;
     // memcpy(&attr->stManual, &AdehazeHandle->AdehazeAtrrV10.stManual, sizeof(mDehazeAttrV11_t));
@@ -34,26 +34,34 @@ XCamReturn rk_aiq_uapi_adehaze_v10_GetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v
 XCamReturn rk_aiq_uapi_adehaze_v11_SetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v11_t* attr,
                                              bool need_sync) {
     XCamReturn ret                 = XCAM_RETURN_NO_ERROR;
-    AdehazeHandle_t* AdehazeHandle = (AdehazeHandle_t*)ctx;
+    AdehazeHandle_t* pAdehazeHandle = (AdehazeHandle_t*)ctx;
 
 #if RKAIQ_HAVE_DEHAZE_V11
-    AdehazeHandle->AdehazeAtrrV11.mode = attr->mode;
-    AdehazeHandle->AdehazeAtrrV11.Info = attr->Info;
-    if (attr->mode == DEHAZE_API_MANUAL)
-        memcpy(&AdehazeHandle->AdehazeAtrrV11.stManual, &attr->stManual, sizeof(mDehazeAttrV11_t));
-    if (attr->mode == DEHAZE_API_AUTO)
-        memcpy(&AdehazeHandle->AdehazeAtrrV11.stAuto, &attr->stAuto,
+    pAdehazeHandle->AdehazeAtrrV11.mode = attr->mode;
+    pAdehazeHandle->AdehazeAtrrV11.Info = attr->Info;
+    if (attr->mode == DEHAZE_API_MANUAL) {
+        memcpy(&pAdehazeHandle->AdehazeAtrrV11.stManual, &attr->stManual, sizeof(mDehazeAttrV11_t));
+        pAdehazeHandle->ifReCalcStManual = true;
+    }
+    if (attr->mode == DEHAZE_API_AUTO) {
+        memcpy(&pAdehazeHandle->AdehazeAtrrV11.stAuto, &attr->stAuto,
                sizeof(CalibDbV2_dehaze_v11_t));
+        pAdehazeHandle->ifReCalcStAuto = true;
+    }
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
-    AdehazeHandle->AdehazeAtrrV11duo.mode = attr->mode;
-    AdehazeHandle->AdehazeAtrrV11duo.Info = attr->Info;
-    if (attr->mode == DEHAZE_API_MANUAL)
-        memcpy(&AdehazeHandle->AdehazeAtrrV11duo.stManual, &attr->stManual,
+    pAdehazeHandle->AdehazeAtrrV11duo.mode = attr->mode;
+    pAdehazeHandle->AdehazeAtrrV11duo.Info = attr->Info;
+    if (attr->mode == DEHAZE_API_MANUAL) {
+        memcpy(&pAdehazeHandle->AdehazeAtrrV11duo.stManual, &attr->stManual,
                sizeof(mDehazeAttrV11_t));
-    if (attr->mode == DEHAZE_API_AUTO)
-        memcpy(&AdehazeHandle->AdehazeAtrrV11duo.stAuto, &attr->stAuto,
+        pAdehazeHandle->ifReCalcStManual = true;
+    }
+    if (attr->mode == DEHAZE_API_AUTO) {
+        memcpy(&pAdehazeHandle->AdehazeAtrrV11duo.stAuto, &attr->stAuto,
                sizeof(CalibDbV2_dehaze_v11_t));
+        pAdehazeHandle->ifReCalcStAuto = true;
+    }
 #endif
 
     return ret;
@@ -61,19 +69,20 @@ XCamReturn rk_aiq_uapi_adehaze_v11_SetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v
 
 XCamReturn rk_aiq_uapi_adehaze_v11_GetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v11_t* attr) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    AdehazeHandle_t * AdehazeHandle = (AdehazeHandle_t *)ctx;
+    AdehazeHandle_t* pAdehazeHandle = (AdehazeHandle_t*)ctx;
 
 #if RKAIQ_HAVE_DEHAZE_V11
-    attr->mode = AdehazeHandle->AdehazeAtrrV11.mode;
-    memcpy(&attr->stManual, &AdehazeHandle->AdehazeAtrrV11.stManual, sizeof(mDehazeAttrV11_t));
-    memcpy(&attr->stAuto, &AdehazeHandle->AdehazeAtrrV11.stAuto, sizeof(CalibDbV2_dehaze_v11_t));
-    memcpy(&attr->Info, &AdehazeHandle->AdehazeAtrrV11.Info, sizeof(mDehazeAttrInfoV11_t));
+    attr->mode = pAdehazeHandle->AdehazeAtrrV11.mode;
+    memcpy(&attr->stManual, &pAdehazeHandle->AdehazeAtrrV11.stManual, sizeof(mDehazeAttrV11_t));
+    memcpy(&attr->stAuto, &pAdehazeHandle->AdehazeAtrrV11.stAuto, sizeof(CalibDbV2_dehaze_v11_t));
+    memcpy(&attr->Info, &pAdehazeHandle->AdehazeAtrrV11.Info, sizeof(mDehazeAttrInfoV11_t));
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
-    attr->mode = AdehazeHandle->AdehazeAtrrV11duo.mode;
-    memcpy(&attr->stManual, &AdehazeHandle->AdehazeAtrrV11duo.stManual, sizeof(mDehazeAttrV11_t));
-    memcpy(&attr->stAuto, &AdehazeHandle->AdehazeAtrrV11duo.stAuto, sizeof(CalibDbV2_dehaze_v11_t));
-    memcpy(&attr->Info, &AdehazeHandle->AdehazeAtrrV11duo.Info, sizeof(mDehazeAttrInfoV11_t));
+    attr->mode = pAdehazeHandle->AdehazeAtrrV11duo.mode;
+    memcpy(&attr->stManual, &pAdehazeHandle->AdehazeAtrrV11duo.stManual, sizeof(mDehazeAttrV11_t));
+    memcpy(&attr->stAuto, &pAdehazeHandle->AdehazeAtrrV11duo.stAuto,
+           sizeof(CalibDbV2_dehaze_v11_t));
+    memcpy(&attr->Info, &pAdehazeHandle->AdehazeAtrrV11duo.Info, sizeof(mDehazeAttrInfoV11_t));
 #endif
 
     return ret;
@@ -83,27 +92,31 @@ XCamReturn rk_aiq_uapi_adehaze_v11_GetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v
 XCamReturn rk_aiq_uapi_adehaze_v12_SetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v12_t* attr,
                                              bool need_sync) {
     XCamReturn ret                 = XCAM_RETURN_NO_ERROR;
-    AdehazeHandle_t* AdehazeHandle = (AdehazeHandle_t*)ctx;
+    AdehazeHandle_t* pAdehazeHandle = (AdehazeHandle_t*)ctx;
 
-    AdehazeHandle->AdehazeAtrrV12.mode = attr->mode;
-    AdehazeHandle->AdehazeAtrrV12.Info = attr->Info;
-    if (attr->mode == DEHAZE_API_MANUAL)
-        memcpy(&AdehazeHandle->AdehazeAtrrV12.stManual, &attr->stManual, sizeof(mDehazeAttrV12_t));
-    if (attr->mode == DEHAZE_API_AUTO)
-        memcpy(&AdehazeHandle->AdehazeAtrrV12.stAuto, &attr->stAuto,
+    pAdehazeHandle->AdehazeAtrrV12.mode = attr->mode;
+    pAdehazeHandle->AdehazeAtrrV12.Info = attr->Info;
+    if (attr->mode == DEHAZE_API_MANUAL) {
+        memcpy(&pAdehazeHandle->AdehazeAtrrV12.stManual, &attr->stManual, sizeof(mDehazeAttrV12_t));
+        pAdehazeHandle->ifReCalcStManual = true;
+    }
+    if (attr->mode == DEHAZE_API_AUTO) {
+        memcpy(&pAdehazeHandle->AdehazeAtrrV12.stAuto, &attr->stAuto,
                sizeof(CalibDbV2_dehaze_v12_t));
+        pAdehazeHandle->ifReCalcStAuto = true;
+    }
 
     return ret;
 }
 
 XCamReturn rk_aiq_uapi_adehaze_v12_GetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v12_t* attr) {
     XCamReturn ret                 = XCAM_RETURN_NO_ERROR;
-    AdehazeHandle_t* AdehazeHandle = (AdehazeHandle_t*)ctx;
+    AdehazeHandle_t* pAdehazeHandle = (AdehazeHandle_t*)ctx;
 
-    attr->mode = AdehazeHandle->AdehazeAtrrV12.mode;
-    attr->Info = AdehazeHandle->AdehazeAtrrV12.Info;
-    memcpy(&attr->stManual, &AdehazeHandle->AdehazeAtrrV12.stManual, sizeof(mDehazeAttrV12_t));
-    memcpy(&attr->stAuto, &AdehazeHandle->AdehazeAtrrV12.stAuto, sizeof(CalibDbV2_dehaze_v10_t));
+    attr->mode = pAdehazeHandle->AdehazeAtrrV12.mode;
+    attr->Info = pAdehazeHandle->AdehazeAtrrV12.Info;
+    memcpy(&attr->stManual, &pAdehazeHandle->AdehazeAtrrV12.stManual, sizeof(mDehazeAttrV12_t));
+    memcpy(&attr->stAuto, &pAdehazeHandle->AdehazeAtrrV12.stAuto, sizeof(CalibDbV2_dehaze_v10_t));
 
     return ret;
 }

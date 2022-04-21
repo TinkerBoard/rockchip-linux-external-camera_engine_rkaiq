@@ -35,7 +35,7 @@ typedef struct rk_aiq_gamma_v10_attr_s {
 
     rk_aiq_gamma_op_mode_t mode;
     AgammaApiManualV10_t stManual;
-    CalibDbV2_gamma_V10_t stAuto;
+    CalibDbV2_gamma_v10_t stAuto;
 } rk_aiq_gamma_v10_attr_t;
 
 // gamma v11
@@ -44,7 +44,7 @@ typedef struct rk_aiq_gamma_v11_attr_s {
 
     rk_aiq_gamma_op_mode_t mode;
     AgammaApiManualV11_t stManual;
-    CalibDbV2_gamma_V11_t stAuto;
+    CalibDbV2_gamma_v11_t stAuto;
 } rk_aiq_gamma_v11_attr_t;
 
 #endif

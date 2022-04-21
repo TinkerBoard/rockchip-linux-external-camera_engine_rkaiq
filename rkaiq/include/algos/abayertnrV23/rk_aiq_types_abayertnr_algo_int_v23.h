@@ -27,6 +27,8 @@
 #include "RkAiqCalibDbTypes.h"
 #include "abayertnrV23/rk_aiq_types_abayertnr_algo_v23.h"
 #include "bayertnr_head_v23.h"
+#include "bayertnr_uapi_head_v23.h"
+
 
 //RKAIQ_BEGIN_DECLARE
 
@@ -82,10 +84,10 @@ typedef struct Abayertnr_ExpInfo_V23_s {
     float blc_ob_predgain;
 } Abayertnr_ExpInfo_V23_t;
 
-
+#if 0
 typedef struct RK_Bayertnr_Params_V23_Select_s
 {
-    int enable;
+    bool enable;
 
     //calib
     int lumapoint[16];
@@ -95,23 +97,23 @@ typedef struct RK_Bayertnr_Params_V23_Select_s
     int hi_sigma[16];
 
     //tuning
-    int thumbds_w;
-    int thumbds_h;
+    uint8_t thumbds_w;
+    uint8_t thumbds_h;
 
-    int lo_enable;
-    int hi_enable;
-    int lo_med_en;
-    int lo_gsbay_en;
-    int lo_gslum_en;
-    int hi_med_en;
-    int hi_gslum_en;
+    bool lo_enable;
+    bool hi_enable;
+    bool lo_med_en;
+    bool lo_gsbay_en;
+    bool lo_gslum_en;
+    bool hi_med_en;
+    bool hi_gslum_en;
 
-    int trans_en;
+    bool trans_en;
 
-    int wgt_use_mode;
-    int wgt_mge_mode;
-    int hi_guass;
-    int kl_guass;
+    bool wgt_use_mode;
+    bool wgt_mge_mode;
+    bool hi_guass;
+    bool kl_guass;
 
     bool global_pk_en;
     int global_pksq;
@@ -144,14 +146,12 @@ typedef struct RK_Bayertnr_Params_V23_Select_s
     int   guass_guide_coeff3;
 
 } RK_Bayertnr_Params_V23_Select_t;
-
+#endif
 
 typedef struct RK_Bayertnr_Params_V23_s
 {
-    int enable;
-
+    bool enable;
     float iso[RK_BAYERNR_V23_MAX_ISO_NUM];
-
     RK_Bayertnr_Params_V23_Select_t bayertnrParamISO[RK_BAYERNR_V23_MAX_ISO_NUM];
 } RK_Bayertnr_Params_V23_t;
 

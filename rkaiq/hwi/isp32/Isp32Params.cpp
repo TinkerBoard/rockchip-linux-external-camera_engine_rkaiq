@@ -1132,14 +1132,19 @@ void Isp32Params::convertAiqMergeToIsp32Params(struct isp32_isp_params_cfg& isp_
 #if RKAIQ_HAVE_DEHAZE_V12
 void Isp32Params::convertAiqAdehazeToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                                  const rk_aiq_isp_dehaze_v32_t& dhaze) {
-    if (dhaze.ProcResV12.enable) {
-        isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
-        isp_cfg.module_ens |= ISP2X_MODULE_DHAZ;
-        isp_cfg.module_cfg_update |= ISP2X_MODULE_DHAZ;
+    if (dhaze.update) {
+        if (dhaze.enable) {
+            isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
+            isp_cfg.module_ens |= ISP2X_MODULE_DHAZ;
+            isp_cfg.module_cfg_update |= ISP2X_MODULE_DHAZ;
+        } else {
+            isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
+            isp_cfg.module_ens &= ~(ISP2X_MODULE_DHAZ);
+            isp_cfg.module_cfg_update &= ~(ISP2X_MODULE_DHAZ);
+            return;
+        }
     } else {
-        isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
-        isp_cfg.module_ens &= ~(ISP2X_MODULE_DHAZ);
-        isp_cfg.module_cfg_update &= ~(ISP2X_MODULE_DHAZ);
+        return;
     }
 
     struct isp32_dhaz_cfg* cfg = &isp_cfg.others.dhaz_cfg;
@@ -1222,14 +1227,19 @@ void Isp32Params::convertAiqAdehazeToIsp32Params(struct isp32_isp_params_cfg& is
 #if RKAIQ_HAVE_DRC_V12
 void Isp32Params::convertAiqDrcToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                              rk_aiq_isp_drc_v32_t& adrc_data) {
-    if (adrc_data.bTmoEn) {
-        isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
-        isp_cfg.module_ens |= 1LL << Rk_ISP21_DRC_ID;
-        isp_cfg.module_cfg_update |= 1LL << Rk_ISP21_DRC_ID;
+    if (adrc_data.update) {
+        if (adrc_data.bDrcEn) {
+            isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
+            isp_cfg.module_ens |= 1LL << Rk_ISP21_DRC_ID;
+            isp_cfg.module_cfg_update |= 1LL << Rk_ISP21_DRC_ID;
+        } else {
+            isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
+            isp_cfg.module_ens &= ~(1LL << Rk_ISP21_DRC_ID);
+            isp_cfg.module_cfg_update &= ~(1LL << Rk_ISP21_DRC_ID);
+            return;
+        }
     } else {
-        isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
-        isp_cfg.module_ens &= ~(1LL << Rk_ISP21_DRC_ID);
-        isp_cfg.module_cfg_update &= ~(1LL << Rk_ISP21_DRC_ID);
+        return;
     }
 
     isp_cfg.others.drc_cfg.bypass_en       = adrc_data.DrcProcRes.Drc_v12.bypass_en;

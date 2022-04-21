@@ -122,7 +122,7 @@ Amfnr_Result_V1_t mfnr_config_motion_param_json_v1(CalibDb_MFNR_Motion_t *pMotio
     Amfnr_Result_V1_t res = AMFNR_RET_V1_SUCCESS;
     int mode_idx = 0;
     int setting_idx = 0;
-    CalibDbV2_MFNR_TuningPara_Motion_ISO_t *pMotion_ISO = NULL;
+    CalibDbV2_MFNR_Motion_ISO_t *pMotion_ISO = NULL;
 
     if(pMotion == NULL || pCalibdb == NULL || param_mode == NULL ) {
         LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
@@ -506,10 +506,10 @@ Amfnr_Result_V1_t init_mfnr_params_json_v1(RK_MFNR_Params_V1_t *pParams, CalibDb
     max_lvl_uv = 3;
     pParams->back_ref_num = 0;
 
-    CalibDbV2_MFNR_TuningPara_Setting_t *pTuningSetting = &pCalibdb->TuningPara.Setting[tuning_idx];
-    CalibDbV2_MFNR_CalibPara_Setting_t *pCalibSetting = &pCalibdb->CalibPara.Setting[calib_idx];
-    CalibDbV2_MFNR_TuningPara_Setting_ISO_t *pTuningISO = NULL;
-    CalibDbV2_MFNR_CalibPara_Setting_ISO_t *pCalibISO = NULL;
+    CalibDbV2_MFNR_T_Set_t *pTuningSetting = &pCalibdb->TuningPara.Setting[tuning_idx];
+    CalibDbV2_MFNR_C_Set_t *pCalibSetting = &pCalibdb->CalibPara.Setting[calib_idx];
+    CalibDbV2_MFNR_T_ISO_t *pTuningISO = NULL;
+    CalibDbV2_MFNR_C_ISO_t *pCalibISO = NULL;
 
 #ifndef RK_SIMULATOR_HW
     pParams->motion_detection_enable = pCalibdb->TuningPara.motion_detect_en;
@@ -1818,10 +1818,10 @@ Amfnr_Result_V1_t mfnr_dynamic_calc_v1(RK_MFNR_Dynamic_V1_t  * pDynamic, Amfnr_E
 Amfnr_Result_V1_t mfnr_calibdbV2_assign_v1(CalibDbV2_MFNR_t *pDst, CalibDbV2_MFNR_t *pSrc)
 {
     Amfnr_Result_V1_t res = AMFNR_RET_V1_SUCCESS;
-    CalibDbV2_MFNR_CalibPara_t *pSrcCalibParaV2 = NULL;
-    CalibDbV2_MFNR_TuningPara_t *pSrcTuningParaV2 = NULL;
-    CalibDbV2_MFNR_CalibPara_t *pDstCalibParaV2 = NULL;
-    CalibDbV2_MFNR_TuningPara_t *pDstTuningParaV2 = NULL;
+    CalibDbV2_MFNR_Calib_t *pSrcCalibParaV2 = NULL;
+    CalibDbV2_MFNR_Tuning_t *pSrcTuningParaV2 = NULL;
+    CalibDbV2_MFNR_Calib_t *pDstCalibParaV2 = NULL;
+    CalibDbV2_MFNR_Tuning_t *pDstTuningParaV2 = NULL;
     int setting_len = 0;
     int iso_len = 0;
 

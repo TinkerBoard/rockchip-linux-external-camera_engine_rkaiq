@@ -572,9 +572,9 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"af_v31", RK_AIQ_ALGO_TYPE_AF},
         {"ablc_calib", RK_AIQ_ALGO_TYPE_ABLC},
         {"adpcc_calib", RK_AIQ_ALGO_TYPE_ADPCC},
-        {"amerge_calib_V10", RK_AIQ_ALGO_TYPE_AMERGE},
-        {"amerge_calib_V11", RK_AIQ_ALGO_TYPE_AMERGE},
-        {"amerge_calib_V12", RK_AIQ_ALGO_TYPE_AMERGE},
+        {"amerge_calib_v10", RK_AIQ_ALGO_TYPE_AMERGE},
+        {"amerge_calib_v11", RK_AIQ_ALGO_TYPE_AMERGE},
+        {"amerge_calib_v12", RK_AIQ_ALGO_TYPE_AMERGE},
         {"atmo_calib", RK_AIQ_ALGO_TYPE_ATMO},
         {"anr_calib", RK_AIQ_ALGO_TYPE_ANR},
         {"lsc_v2", RK_AIQ_ALGO_TYPE_ALSC},
@@ -584,8 +584,8 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"debayer", RK_AIQ_ALGO_TYPE_ADEBAYER},
         {"ccm_calib", RK_AIQ_ALGO_TYPE_ACCM},
         {"ccm_calib_v2", RK_AIQ_ALGO_TYPE_ACCM},
-        {"agamma_calib_V10", RK_AIQ_ALGO_TYPE_AGAMMA},
-        {"agamma_calib_V11", RK_AIQ_ALGO_TYPE_AGAMMA},
+        {"agamma_calib_v10", RK_AIQ_ALGO_TYPE_AGAMMA},
+        {"agamma_calib_v11", RK_AIQ_ALGO_TYPE_AGAMMA},
         {"awdr_calib", RK_AIQ_ALGO_TYPE_AWDR},
         {"adehaze_calib_v10", RK_AIQ_ALGO_TYPE_ADHAZ},
         {"adehaze_calib_v11", RK_AIQ_ALGO_TYPE_ADHAZ},
@@ -644,7 +644,6 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"cnr_v30", RK_AIQ_ALGO_TYPE_ACNR},
         {"sharp_v33", RK_AIQ_ALGO_TYPE_ASHARP},
         {"wb_v32", RK_AIQ_ALGO_TYPE_AWB},
-
 
     };
 
@@ -1201,15 +1200,11 @@ int RkAiqCalibDbV2::CamCalibDbFreeAwbV32Ctx(CalibDbV2_Wb_Para_V32_t* awb)
 #endif
 
 #if RKAIQ_HAVE_GAMMA_V10
-int RkAiqCalibDbV2::CamCalibDbFreeGammaCtx(CalibDbV2_gamma_V10_t* gamma) {
-    return 0;
-}
+int RkAiqCalibDbV2::CamCalibDbFreeGammaCtx(CalibDbV2_gamma_v10_t* gamma) { return 0; }
 #endif
 
 #if RKAIQ_HAVE_GAMMA_V11
-int RkAiqCalibDbV2::CamCalibDbFreeGammaV2Ctx(CalibDbV2_gamma_V11_t* gamma) {
-    return 0;
-}
+int RkAiqCalibDbV2::CamCalibDbFreeGammaV2Ctx(CalibDbV2_gamma_v11_t* gamma) { return 0; }
 #endif
 
 #if RKAIQ_HAVE_BLC_V1
@@ -1335,86 +1330,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeGicV21Ctx(CalibDbV2_Gic_V21_t* gic)
         calib_free(GicData->globalStrength);
     if (GicData->diff_clip)
         calib_free(GicData->diff_clip);
-
-    return 0;
-}
-#endif
-
-#if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
-int RkAiqCalibDbV2::CamCalibDbFreeDehazeV11Ctx(CalibDbV2_dehaze_v11_t* dehaze) {
-    CalibDbDehazeV11_t* DehazeTuningPara = &dehaze->DehazeTuningPara;
-
-    Dehaze_Setting_V11_t* dehaze_setting = &DehazeTuningPara->dehaze_setting;
-    DehazeDataV11_t* DehazeData          = &dehaze_setting->DehazeData;
-
-    if (DehazeData->CtrlData) calib_free(DehazeData->CtrlData);
-    if (DehazeData->dc_min_th)
-        calib_free(DehazeData->dc_min_th);
-    if (DehazeData->dc_max_th)
-        calib_free(DehazeData->dc_max_th);
-    if (DehazeData->yhist_th)
-        calib_free(DehazeData->yhist_th);
-    if (DehazeData->yblk_th)
-        calib_free(DehazeData->yblk_th);
-    if (DehazeData->dark_th)
-        calib_free(DehazeData->dark_th);
-    if (DehazeData->bright_min)
-        calib_free(DehazeData->bright_min);
-    if (DehazeData->bright_max)
-        calib_free(DehazeData->bright_max);
-    if (DehazeData->wt_max)
-        calib_free(DehazeData->wt_max);
-    if (DehazeData->air_min)
-        calib_free(DehazeData->air_min);
-    if (DehazeData->air_max)
-        calib_free(DehazeData->air_max);
-    if (DehazeData->tmax_base)
-        calib_free(DehazeData->tmax_base);
-    if (DehazeData->tmax_off)
-        calib_free(DehazeData->tmax_off);
-    if (DehazeData->tmax_max)
-        calib_free(DehazeData->tmax_max);
-    if (DehazeData->cfg_wt)
-        calib_free(DehazeData->cfg_wt);
-    if (DehazeData->cfg_air)
-        calib_free(DehazeData->cfg_air);
-    if (DehazeData->cfg_tmax)
-        calib_free(DehazeData->cfg_tmax);
-    if (DehazeData->dc_weitcur)
-        calib_free(DehazeData->dc_weitcur);
-    if (DehazeData->bf_weight)
-        calib_free(DehazeData->bf_weight);
-    if (DehazeData->range_sigma)
-        calib_free(DehazeData->range_sigma);
-    if (DehazeData->space_sigma_pre)
-        calib_free(DehazeData->space_sigma_pre);
-    if (DehazeData->space_sigma_cur)
-        calib_free(DehazeData->space_sigma_cur);
-
-    Enhance_Setting_V11_t* enhance_setting = &DehazeTuningPara->enhance_setting;
-    EnhanceDataV11_t* EnhanceData          = &enhance_setting->EnhanceData;
-
-    if (EnhanceData->CtrlData) calib_free(EnhanceData->CtrlData);
-    if (EnhanceData->enhance_value)
-        calib_free(EnhanceData->enhance_value);
-    if (EnhanceData->enhance_chroma)
-        calib_free(EnhanceData->enhance_chroma);
-
-    Hist_setting_V11_t* hist_setting = &DehazeTuningPara->hist_setting;
-    HistDataV11_t* HistData          = &hist_setting->HistData;
-    if (HistData->CtrlData) calib_free(HistData->CtrlData);
-    if (HistData->hist_gratio)
-        calib_free(HistData->hist_gratio);
-    if (HistData->hist_th_off)
-        calib_free(HistData->hist_th_off);
-    if (HistData->hist_k)
-        calib_free(HistData->hist_k);
-    if (HistData->hist_min)
-        calib_free(HistData->hist_min);
-    if (HistData->hist_scale)
-        calib_free(HistData->hist_scale);
-    if (HistData->cfg_gratio)
-        calib_free(HistData->cfg_gratio);
 
     return 0;
 }
@@ -1898,9 +1813,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeBayerNrV2Ctx(CalibDbV2_BayerNrV2_t* bayernr_v1
     if (bayernr_v1->Version)
         calib_free(bayernr_v1->Version);
 
-    CalibDbV2_BayerNrV2_CalibPara_t* CalibPara = &bayernr_v1->CalibPara;
+    CalibDbV2_BayerNrV2_Calib_t* CalibPara = &bayernr_v1->CalibPara;
     for (int i = 0; i < CalibPara->Setting_len; i++) {
-        CalibDbV2_BayerNrV2_CalibPara_Setting_t *Setting = CalibPara->Setting + i;
+        CalibDbV2_BayerNrV2_C_Set_t *Setting = CalibPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -1912,9 +1827,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeBayerNrV2Ctx(CalibDbV2_BayerNrV2_t* bayernr_v1
     if (CalibPara->Setting)
         calib_free(CalibPara->Setting);
 
-    CalibDbV2_BayerNrV2_Bayernr2d_t* Bayernr2D = &bayernr_v1->Bayernr2D;
+    CalibDbV2_BayerNrV2_2d_t* Bayernr2D = &bayernr_v1->Bayernr2D;
     for (int i = 0; i < CalibPara->Setting_len; i++) {
-        CalibDbV2_BayerNrV2_Bayernr2d_Setting_t *Setting = Bayernr2D->Setting + i;
+        CalibDbV2_BayerNrV2_2d_Set_t *Setting = Bayernr2D->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -1926,9 +1841,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeBayerNrV2Ctx(CalibDbV2_BayerNrV2_t* bayernr_v1
     if (Bayernr2D->Setting)
         calib_free(Bayernr2D->Setting);
 
-    CalibDbV2_BayerNrV2_Bayernr3d_t * Bayernr3D = &bayernr_v1->Bayernr3D;
+    CalibDbV2_BayerNrV2_3d_t * Bayernr3D = &bayernr_v1->Bayernr3D;
     for (int i = 0; i < CalibPara->Setting_len; i++) {
-        CalibDbV2_BayerNrV2_Bayernr3d_Setting_t *Setting = Bayernr3D->Setting + i;
+        CalibDbV2_BayerNrV2_3d_Set_t *Setting = Bayernr3D->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -1988,9 +1903,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeCnrCtx(CalibDbV2_CNR_t* cnr)
     if (cnr->Version)
         calib_free(cnr->Version);
 
-    CalibDbV2_CNR_TuningPara_t* TuningPara = &cnr->TuningPara;
+    CalibDbV2_CNR_Tuning_t* TuningPara = &cnr->TuningPara;
     for (int i = 0; i < TuningPara->Setting_len; i++) {
-        CalibDbV2_CNR_TuningPara_Setting_t *Setting = TuningPara->Setting + i;
+        CalibDbV2_CNR_T_Set_t *Setting = TuningPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2012,9 +1927,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeYnrV2Ctx(CalibDbV2_YnrV2_t* ynr_v2)
     if (ynr_v2->Version)
         calib_free(ynr_v2->Version);
 
-    CalibDbV2_YnrV2_CalibPara_t* CalibPara = &ynr_v2->CalibPara;
+    CalibDbV2_YnrV2_Calib_t* CalibPara = &ynr_v2->CalibPara;
     for (int i = 0; i < CalibPara->Setting_len; i++) {
-        CalibDbV2_YnrV2_CalibPara_Setting_t *Setting = CalibPara->Setting + i;
+        CalibDbV2_YnrV2_C_Set_t *Setting = CalibPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2026,9 +1941,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeYnrV2Ctx(CalibDbV2_YnrV2_t* ynr_v2)
     if (CalibPara->Setting)
         calib_free(CalibPara->Setting);
 
-    CalibDbV2_YnrV2_TuningPara_t* TuningPara = &ynr_v2->TuningPara;
+    CalibDbV2_YnrV2_Tuning_t* TuningPara = &ynr_v2->TuningPara;
     for (int i = 0; i < TuningPara->Setting_len; i++) {
-        CalibDbV2_YnrV2_TuningPara_Setting_t *Setting = TuningPara->Setting + i;
+        CalibDbV2_YnrV2_T_Set_t *Setting = TuningPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2050,9 +1965,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeSharpV3Ctx(CalibDbV2_SharpV3_t* sharp_v3)
     if (sharp_v3->Version)
         calib_free(sharp_v3->Version);
 
-    CalibDbV2_SharpV3_TuningPara_t* TuningPara = &sharp_v3->TuningPara;
+    CalibDbV2_SharpV3_Tuning_t* TuningPara = &sharp_v3->TuningPara;
     for (int i = 0; i < TuningPara->Setting_len; i++) {
-        CalibDbV2_SharpV3_TuningPara_Setting_t *Setting = TuningPara->Setting + i;
+        CalibDbV2_SharpV3_T_Set_t *Setting = TuningPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2069,14 +1984,14 @@ int RkAiqCalibDbV2::CamCalibDbFreeSharpV3Ctx(CalibDbV2_SharpV3_t* sharp_v3)
 #endif
 
 #if RKAIQ_HAVE_BAYER2DNR_V2
-int RkAiqCalibDbV2::CamCalibDbFreeBayer2dnrV2Ctx(CalibDbV2_Bayer2dnr_V2_t* bayer2dnr_v2)
+int RkAiqCalibDbV2::CamCalibDbFreeBayer2dnrV2Ctx(CalibDbV2_Bayer2dnrV2_t* bayer2dnr_v2)
 {
     if (bayer2dnr_v2->Version)
         calib_free(bayer2dnr_v2->Version);
 
-    CalibDbV2_Bayer2dnr_V2_CalibPara_t* CalibPara = &bayer2dnr_v2->CalibPara;
+    CalibDbV2_Bayer2dnrV2_Calib_t* CalibPara = &bayer2dnr_v2->CalibPara;
     for (int i = 0; i < CalibPara->Setting_len; i++) {
-        CalibDbV2_Bayer2dnr_V2_CalibPara_Setting_t *Setting = CalibPara->Setting + i;
+        CalibDbV2_Bayer2dnrV2_C_Set_t *Setting = CalibPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2088,9 +2003,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeBayer2dnrV2Ctx(CalibDbV2_Bayer2dnr_V2_t* bayer
     if (CalibPara->Setting)
         calib_free(CalibPara->Setting);
 
-    CalibDbV2_Bayer2dnr_V2_TuningPara_t* TuningPara = &bayer2dnr_v2->TuningPara;
+    CalibDbV2_Bayer2dnrV2_Tuning_t* TuningPara = &bayer2dnr_v2->TuningPara;
     for (int i = 0; i < TuningPara->Setting_len; i++) {
-        CalibDbV2_Bayer2dnr_V2_TuningPara_Setting_t *Setting = TuningPara->Setting + i;
+        CalibDbV2_Bayer2dnrV2_T_Set_t *Setting = TuningPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2108,14 +2023,14 @@ int RkAiqCalibDbV2::CamCalibDbFreeBayer2dnrV2Ctx(CalibDbV2_Bayer2dnr_V2_t* bayer
 #endif
 
 #if RKAIQ_HAVE_BAYERTNR_V2
-int RkAiqCalibDbV2::CamCalibDbFreeBayertnrV2Ctx(CalibDbV2_BayerTnr_V2_t* bayertnr_v2)
+int RkAiqCalibDbV2::CamCalibDbFreeBayertnrV2Ctx(CalibDbV2_BayerTnrV2_t* bayertnr_v2)
 {
     if (bayertnr_v2->Version)
         calib_free(bayertnr_v2->Version);
 
-    CalibDbV2_BayerTnr_V2_CalibPara_t* CalibPara = &bayertnr_v2->CalibPara;
+    CalibDbV2_BayerTnrV2_Calib_t* CalibPara = &bayertnr_v2->CalibPara;
     for (int i = 0; i < CalibPara->Setting_len; i++) {
-        CalibDbV2_BayerTnr_V2_CalibPara_Setting_t *Setting = CalibPara->Setting + i;
+        CalibDbV2_BayerTnrV2_C_Set_t *Setting = CalibPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2127,9 +2042,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeBayertnrV2Ctx(CalibDbV2_BayerTnr_V2_t* bayertn
     if (CalibPara->Setting)
         calib_free(CalibPara->Setting);
 
-    CalibDbV2_BayerTnr_V2_TuningPara_t* TuningPara = &bayertnr_v2->TuningPara;
+    CalibDbV2_BayerTnrV2_Tuning_t* TuningPara = &bayertnr_v2->TuningPara;
     for (int i = 0; i < TuningPara->Setting_len; i++) {
-        CalibDbV2_BayerTnr_V2_TuningPara_Setting_t *Setting = TuningPara->Setting + i;
+        CalibDbV2_BayerTnrV2_T_Set_t *Setting = TuningPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2190,9 +2105,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeCnrV2Ctx(CalibDbV2_CNRV2_t* cnr_v2)
     if (cnr_v2->Version)
         calib_free(cnr_v2->Version);
 
-    CalibDbV2_CNRV2_TuningPara_t* TuningPara = &cnr_v2->TuningPara;
+    CalibDbV2_CNRV2_Tuning_t* TuningPara = &cnr_v2->TuningPara;
     for (int i = 0; i < TuningPara->Setting_len; i++) {
-        CalibDbV2_CNRV2_TuningPara_Setting_t *Setting = TuningPara->Setting + i;
+        CalibDbV2_CNRV2_T_Set_t *Setting = TuningPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2263,9 +2178,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeYnrV3Ctx(CalibDbV2_YnrV3_t* ynr_v3)
     if (ynr_v3->Version)
         calib_free(ynr_v3->Version);
 
-    CalibDbV2_YnrV3_CalibPara_t* CalibPara = &ynr_v3->CalibPara;
+    CalibDbV2_YnrV3_Calib_t* CalibPara = &ynr_v3->CalibPara;
     for (int i = 0; i < CalibPara->Setting_len; i++) {
-        CalibDbV2_YnrV3_CalibPara_Setting_t *Setting = CalibPara->Setting + i;
+        CalibDbV2_YnrV3_C_Set_t *Setting = CalibPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2277,9 +2192,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeYnrV3Ctx(CalibDbV2_YnrV3_t* ynr_v3)
     if (CalibPara->Setting)
         calib_free(CalibPara->Setting);
 
-    CalibDbV2_YnrV3_TuningPara_t* TuningPara = &ynr_v3->TuningPara;
+    CalibDbV2_YnrV3_Tuning_t* TuningPara = &ynr_v3->TuningPara;
     for (int i = 0; i < TuningPara->Setting_len; i++) {
-        CalibDbV2_YnrV3_TuningPara_Setting_t *Setting = TuningPara->Setting + i;
+        CalibDbV2_YnrV3_T_Set_t *Setting = TuningPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2339,9 +2254,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeSharpV4Ctx(CalibDbV2_SharpV4_t* sharp_v4)
     if (sharp_v4->Version)
         calib_free(sharp_v4->Version);
 
-    CalibDbV2_SharpV4_TuningPara_t* TuningPara = &sharp_v4->TuningPara;
+    CalibDbV2_SharpV4_Tuning_t* TuningPara = &sharp_v4->TuningPara;
     for (int i = 0; i < TuningPara->Setting_len; i++) {
-        CalibDbV2_SharpV4_TuningPara_Setting_t *Setting = TuningPara->Setting + i;
+        CalibDbV2_SharpV4_Set_t *Setting = TuningPara->Setting + i;
 
         if (Setting->SNR_Mode)
             calib_free(Setting->SNR_Mode);
@@ -2462,11 +2377,11 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
 #endif
 
 #if RKAIQ_HAVE_GAMMA_V10 || RKAIQ_HAVE_GAMMA_V11
-    CalibDbV2_gamma_V10_t* agamma_calib =
-        (CalibDbV2_gamma_V10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, agamma_calib));
+    CalibDbV2_gamma_v10_t* agamma_calib =
+        (CalibDbV2_gamma_v10_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, agamma_calib));
     if (agamma_calib) {
 #if RKAIQ_HAVE_GAMMA_V11
-        CamCalibDbFreeGammaV2Ctx((CalibDbV2_gamma_V11_t*)agamma_calib);
+        CamCalibDbFreeGammaV2Ctx((CalibDbV2_gamma_v11_t*)agamma_calib);
 #endif
 #if RKAIQ_HAVE_GAMMA_V10
         CamCalibDbFreeGammaCtx(agamma_calib);
@@ -2491,12 +2406,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
         (CalibDbV2_Gic_V21_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, agic_calib_v21));
     if (agic_calib_v21)
         CamCalibDbFreeGicV21Ctx(agic_calib_v21);
-#endif
-
-#if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
-    CalibDbV2_dehaze_v11_t* adehaze_calib_v11 =
-        (CalibDbV2_dehaze_v11_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adehaze_calib_v11));
-    if (adehaze_calib_v11) CamCalibDbFreeDehazeV11Ctx(adehaze_calib_v11);
 #endif
 
     CalibDbV2_Dpcc_t *adpcc_calib =
@@ -2570,8 +2479,8 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
     if (thumbnails) CamCalibDbFreeThumbnailsCtx(thumbnails);
 
 #if RKAIQ_HAVE_BAYER2DNR_V2
-    CalibDbV2_Bayer2dnr_V2_t* bayer2dnr_v2 =
-        (CalibDbV2_Bayer2dnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayer2dnr_v2));
+    CalibDbV2_Bayer2dnrV2_t* bayer2dnr_v2 =
+        (CalibDbV2_Bayer2dnrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayer2dnr_v2));
     if (bayer2dnr_v2) CamCalibDbFreeBayer2dnrV2Ctx(bayer2dnr_v2);
 #endif
 
@@ -2582,8 +2491,8 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
 #endif
 
 #if RKAIQ_HAVE_BAYERTNR_V2
-    CalibDbV2_BayerTnr_V2_t* bayertnr_v2 =
-        (CalibDbV2_BayerTnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayertnr_v2));
+    CalibDbV2_BayerTnrV2_t* bayertnr_v2 =
+        (CalibDbV2_BayerTnrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, bayertnr_v2));
     if (bayertnr_v2) CamCalibDbFreeBayertnrV2Ctx(bayertnr_v2);
 #endif
 

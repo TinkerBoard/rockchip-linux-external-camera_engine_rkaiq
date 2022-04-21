@@ -27,6 +27,7 @@
 #include "RkAiqCalibDbTypes.h"
 #include "acnrV30/rk_aiq_types_acnr_algo_v30.h"
 #include "cnr_head_v30.h"
+#include "cnr_uapi_head_v30.h"
 
 
 //RKAIQ_BEGIN_DECLARE
@@ -129,7 +130,7 @@ typedef struct AcnrV30_ExpInfo_s {
 } AcnrV30_ExpInfo_t;
 
 
-
+#if 0
 typedef struct RK_CNR_Params_V30_Select_s
 {
     int enable;
@@ -171,6 +172,7 @@ typedef struct RK_CNR_Params_V30_Select_s
 
 
 } RK_CNR_Params_V30_Select_t;
+#endif
 
 typedef struct RK_CNR_Params_V30_s
 {

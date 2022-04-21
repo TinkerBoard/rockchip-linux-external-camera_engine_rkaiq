@@ -16,6 +16,7 @@
  */
 
 #include "uAPI2/rk_aiq_user_api2_helper.h"
+#include "uAPI/rk_aiq_api_private.h"
 #include "RkAiqCalibDbV2.h"
 #include "RkAiqUapitypes.h"
 #include "cJSON.h"
@@ -27,8 +28,6 @@
 #include "uAPI2/rk_aiq_user_api2_ae.h"
 #include "uAPI2/rk_aiq_user_api2_imgproc.h"
 #include "uAPI2/rk_aiq_user_api2_wrapper.h"
-
-#include "rk_aiq_tool_api.h"
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
@@ -55,7 +54,7 @@
 //
 
 /*****************Add UAPI wrapper here if necessary*****************/
-__RKAIQUAPI_SET_WRAPPER(rk_aiq_tool_api_ae_setExpSwAttr, Uapi_ExpSwAttrV2_t);
+__RKAIQUAPI_SET_WRAPPER(rk_aiq_user_api2_ae_setExpSwAttr, Uapi_ExpSwAttrV2_t);
 
 /********************** Add Attr caller here ************************/
 __RKAIQUAPI_CALLER(uapi_expsw_attr_t);
@@ -111,16 +110,22 @@ __RKAIQUAPI_CALLER(rk_tool_isp_awb_stats_v32_t);
 #endif
 __RKAIQUAPI_CALLER(rk_tool_awb_stat_res_full_t);
 __RKAIQUAPI_CALLER(rk_tool_awb_strategy_result_t);
+__RKAIQUAPI_CALLER(rk_aiq_ccm_querry_info_t);
+#if ISP_HW_V21 || ISP_HW_V30
+__RKAIQUAPI_CALLER(rk_aiq_ccm_mccm_attrib_t);
+#elif ISP_HW_V32
+__RKAIQUAPI_CALLER(rk_aiq_ccm_mccm_attrib_v2_t);
+#endif
 
 RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
     __RKAIQUAPI_DESC_DEF("/uapi/0/ae_uapi/expsw_attr", uapi_expsw_attr_t,
-                         __RKAIQUAPI_SET_WRAPPER_NAME(rk_aiq_tool_api_ae_setExpSwAttr),
+                         __RKAIQUAPI_SET_WRAPPER_NAME(rk_aiq_user_api2_ae_setExpSwAttr),
                          rk_aiq_user_api2_ae_getExpSwAttr),
     __RKAIQUAPI_DESC_DEF("/uapi/0/ae_uapi/expinfo", uapi_expinfo_t, NULL,
-                         rk_aiq_user_api_ae_queryExpResInfo),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/awb_uapi/wbgain", uapi_wb_gain_t, rk_aiq_tool_api_setMWBGain,
+                         rk_aiq_user_api2_ae_queryExpResInfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/awb_uapi/wbgain", uapi_wb_gain_t, rk_aiq_uapi2_setMWBGain,
                          rk_aiq_uapi2_getWBGain),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/awb_uapi/mode", uapi_wb_mode_t, rk_aiq_tool_api_setWBMode,
+    __RKAIQUAPI_DESC_DEF("/uapi/0/awb_uapi/mode", uapi_wb_mode_t, rk_aiq_uapi2_setWBMode2,
                          rk_aiq_uapi2_getWBMode2),
 
 #if RKAIQ_HAVE_MERGE_V10
@@ -182,9 +187,9 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
                          rk_aiq_set_adehaze_v12_manual_attr, rk_aiq_get_adehaze_v12_manual_attr),
 #endif
     __RKAIQUAPI_DESC_DEF("/uapi/0/system/work_mode", work_mode_t,
-                         rk_aiq_tool_api_sysctl_swWorkingModeDyn,
+                         rk_aiq_uapi_sysctl_swWorkingModeDyn2,
                          rk_aiq_uapi_sysctl_getWorkingModeDyn),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/system/scene", aiq_scene_t, rk_aiq_tool_api_set_scene,
+    __RKAIQUAPI_DESC_DEF("/uapi/0/system/scene", aiq_scene_t, rk_aiq_user_api2_set_scene,
                          rk_aiq_user_api2_get_scene),
     __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/ae_hwstats", uapi_ae_hwstats_t, NULL,
                          rk_aiq_uapi_get_ae_hwstats),
@@ -203,6 +208,18 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
     __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_strategy_result",
                          rk_tool_awb_strategy_result_t, NULL,
                          rk_aiq_user_api2_awb_getStrategyResult),
+#if ISP_HW_V21 || ISP_HW_V30
+    __RKAIQUAPI_DESC_DEF("/uapi/0/accm_uapi/Info", rk_aiq_ccm_querry_info_t, NULL,
+                         rk_aiq_user_api2_accm_QueryCcmInfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/accm_uapi/stManual", rk_aiq_ccm_mccm_attrib_t,
+                         rk_aiq_set_accm_v1_manual_attr, rk_aiq_get_accm_v1_manual_attr),
+#elif ISP_HW_V32
+    __RKAIQUAPI_DESC_DEF("/uapi/0/accm_uapi/Info", rk_aiq_ccm_querry_info_t, NULL,
+                         rk_aiq_user_api2_accm_QueryCcmInfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/accm_uapi/stManual", rk_aiq_ccm_mccm_attrib_v2_t,
+                         rk_aiq_set_accm_v2_manual_attr, rk_aiq_get_accm_v2_manual_attr),
+#endif
+
 };
 /***********************END OF CUSTOM AREA**************************/
 
@@ -326,7 +343,8 @@ int rkaiq_uapi_unified_ctl(rk_aiq_sys_ctx_t *sys_ctx, const char *js_str,
     return -1;
   }
 
-  uapi_desc->uapi_caller(uapi_desc, sys_ctx, cmd_js, (void **)&ret_js, op_mode);
+  uapi_desc->uapi_caller(uapi_desc, get_next_ctx(sys_ctx),
+                         cmd_js, (void **)&ret_js, op_mode);
 
   if (op_mode == RKAIQUAPI_OPMODE_SET) {
     *ret_str = NULL;

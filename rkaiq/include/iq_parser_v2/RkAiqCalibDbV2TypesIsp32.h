@@ -85,11 +85,11 @@ typedef struct CamCalibDbV2ContextIsp32_s {
     // M4_STRUCT_DESC("debayer_calib", "normal_ui_style")
     CalibDbV2_Debayer_v2_t debayer_v2;
     // M4_STRUCT_DESC("Amerge_calib", "normal_ui_style")
-    CalibDbV2_merge_V12_t amerge_calib_V12;
+    CalibDbV2_merge_v12_t amerge_calib_v12;
     // M4_STRUCT_DESC("Adrc_calib", "normal_ui_style")
     CalibDbV2_drc_V12_t adrc_calib_v12;
     // M4_STRUCT_DESC("agamma_calib", "normal_ui_style")
-    CalibDbV2_gamma_V11_t agamma_calib_V11;
+    CalibDbV2_gamma_v11_t agamma_calib_v11;
     // M4_STRUCT_DESC("adehaze_calib", "normal_ui_style")
     CalibDbV2_dehaze_v12_t adehaze_calib_v12;
     // M4_STRUCT_DESC("adpcc_calib", "normal_ui_style")

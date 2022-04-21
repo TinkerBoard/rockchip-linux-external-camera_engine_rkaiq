@@ -67,6 +67,8 @@ class RkAiqAnalyzerGroup {
     uint64_t getDepsFlag() const { return mDepsFlag; }
     void setDepsFlag(uint64_t new_deps) { mDepsFlag = new_deps; }
 
+    RkAiqCore* getAiqCore() { return mAiqCore; }
+
  private:
     void msgReduction(std::map<uint32_t, GroupMessage>& msgMap);
     int8_t getMsgDelayCnt(XCamMessageType &msg_id);
@@ -112,6 +114,9 @@ class RkAiqAnalyzeGroupMsgHdlThread : public Thread {
     virtual bool loop();
 
  private:
+    XCamReturn handleCalibUpdate(RkAiqAnalyzerGroup* grp);
+
+ private:
     std::vector<RkAiqAnalyzerGroup*> mHandlerGroups;
     SafeList<XCamMessage> mMsgsQueue;
 };
@@ -134,12 +139,17 @@ class RkAiqAnalyzeGroupManager {
         return mGroupAlgoListMap[group];
     }
 
+    std::map<uint64_t, std::vector<SmartPtr<RkAiqHandle>>> getGroupAlgoListMap() {
+        return mGroupAlgoListMap;
+    }
+
  protected:
     XCamReturn groupMessageHandler(std::vector<SmartPtr<XCamMessage>>& msgs, uint32_t id,
                                    uint64_t grpId);
+#if defined(RKAIQ_HAVE_THUMBNAILS)
     XCamReturn thumbnailsGroupMessageHandler(std::vector<SmartPtr<XCamMessage>>& msgs, uint32_t id,
                                              uint64_t grpId);
-
+#endif
  private:
     RkAiqCore* mAiqCore;
     const bool mSingleThreadMode;

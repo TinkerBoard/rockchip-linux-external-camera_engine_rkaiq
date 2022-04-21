@@ -828,18 +828,19 @@ void Isp3xParams::convertAiqGainToIsp3xParams(T& isp_cfg, rk_aiq_isp_gain_v3x_t&
 void Isp3xParams::convertAiqDrcToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         rk_aiq_isp_drc_v3x_t& adrc_data)
 {
-    bool enable = adrc_data.bTmoEn;
-    if(enable)
-    {
-        isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
-        isp_cfg.module_ens |= 1LL << Rk_ISP21_DRC_ID;
-        isp_cfg.module_cfg_update |= 1LL << Rk_ISP21_DRC_ID;
-    }
-    else
-    {
-        isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
-        isp_cfg.module_ens &= ~(1LL << Rk_ISP21_DRC_ID);
-        isp_cfg.module_cfg_update &= ~(1LL << Rk_ISP21_DRC_ID);
+    if (adrc_data.update) {
+        if (adrc_data.bDrcEn) {
+            isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
+            isp_cfg.module_ens |= 1LL << Rk_ISP21_DRC_ID;
+            isp_cfg.module_cfg_update |= 1LL << Rk_ISP21_DRC_ID;
+        } else {
+            isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
+            isp_cfg.module_ens &= ~(1LL << Rk_ISP21_DRC_ID);
+            isp_cfg.module_cfg_update &= ~(1LL << Rk_ISP21_DRC_ID);
+            return;
+        }
+    } else {
+        return;
     }
 
     isp_cfg.others.drc_cfg.bypass_en       = adrc_data.DrcProcRes.Drc_v11.bypass_en;
@@ -1071,13 +1072,17 @@ void Isp3xParams::convertAiqMergeToIsp3xParams(struct isp3x_isp_params_cfg& isp_
 template <class T>
 void Isp3xParams::convertAiqAgammaToIsp3xParams(T& isp_cfg,
                                                 const rk_aiq_isp_goc_v3x_t& gamma_out_cfg) {
-    if (gamma_out_cfg.Gamma_v11.gamma_en) {
-        isp_cfg.module_ens |= ISP2X_MODULE_GOC;
-        isp_cfg.module_en_update |= ISP2X_MODULE_GOC;
-        isp_cfg.module_cfg_update |= ISP2X_MODULE_GOC;
+    if (gamma_out_cfg.update) {
+        if (gamma_out_cfg.Gamma_v11.gamma_en) {
+            isp_cfg.module_ens |= ISP2X_MODULE_GOC;
+            isp_cfg.module_en_update |= ISP2X_MODULE_GOC;
+            isp_cfg.module_cfg_update |= ISP2X_MODULE_GOC;
+        } else {
+            isp_cfg.module_ens &= ~ISP2X_MODULE_GOC;
+            isp_cfg.module_en_update |= ISP2X_MODULE_GOC;
+            return;
+        }
     } else {
-        isp_cfg.module_ens &= ~ISP2X_MODULE_GOC;
-        isp_cfg.module_en_update |= ISP2X_MODULE_GOC;
         return;
     }
 
@@ -1145,14 +1150,19 @@ void Isp3xParams::convertAiqCacToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
 void Isp3xParams::convertAiqAdehazeToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_dehaze_v3x_t& dhaze)
 {
-    if (dhaze.ProcResV11duo.enable) {
-        isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
-        isp_cfg.module_ens |= ISP2X_MODULE_DHAZ;
-        isp_cfg.module_cfg_update |= ISP2X_MODULE_DHAZ;
+    if (dhaze.update) {
+        if (dhaze.enable) {
+            isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
+            isp_cfg.module_ens |= ISP2X_MODULE_DHAZ;
+            isp_cfg.module_cfg_update |= ISP2X_MODULE_DHAZ;
+        } else {
+            isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
+            isp_cfg.module_ens &= ~(ISP2X_MODULE_DHAZ);
+            isp_cfg.module_cfg_update &= ~(ISP2X_MODULE_DHAZ);
+            return;
+        }
     } else {
-        isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
-        isp_cfg.module_ens &= ~(ISP2X_MODULE_DHAZ);
-        isp_cfg.module_cfg_update &= ~(ISP2X_MODULE_DHAZ);
+        return;
     }
 
     struct isp3x_dhaz_cfg *  cfg = &isp_cfg.others.dhaz_cfg;

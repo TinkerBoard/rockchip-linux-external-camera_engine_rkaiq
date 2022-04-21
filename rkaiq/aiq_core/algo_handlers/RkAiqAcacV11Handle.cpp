@@ -40,6 +40,12 @@ XCamReturn RkAiqAcacV11HandleInt::prepare() {
     } else
         return XCAM_RETURN_BYPASS;
 
+    if (sharedCom->resourcePath) {
+        strcpy(acac_config_int->iqpath, sharedCom->resourcePath);
+    } else {
+        strcpy(acac_config_int->iqpath, "/etc/iqfiles");
+    }
+
     acac_config_int->mem_ops                  = mAiqCore->mShareMemOps;
     acac_config_int->width                    = sharedCom->snsDes.isp_acq_width;
     acac_config_int->height                   = sharedCom->snsDes.isp_acq_height;
@@ -113,6 +119,8 @@ XCamReturn RkAiqAcacV11HandleInt::processing() {
         return XCAM_RETURN_BYPASS;
 
     RKAiqAecExpInfo_t* aeCurExp = &shared->curExp;
+    acac_proc_int->hdr_ratio = 1;
+    acac_proc_int->iso = 50;
     if (aeCurExp != NULL) {
         if ((rk_aiq_working_mode_t)sharedCom->working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
             acac_proc_int->hdr_ratio = 1;
@@ -125,8 +133,8 @@ XCamReturn RkAiqAcacV11HandleInt::processing() {
                                        (aeCurExp->HdrExp[0].exp_real_params.analog_gain *
                                         aeCurExp->HdrExp[0].exp_real_params.integration_time);
             acac_proc_int->iso = aeCurExp->HdrExp[1].exp_real_params.analog_gain * 50;
-            LOGD_ACAC("%s:HDR2:iso=%d,again=%f\n", __FUNCTION__, acac_proc_int->iso,
-                      aeCurExp->HdrExp[1].exp_real_params.analog_gain);
+            LOGD_ACAC("%s:HDR2:iso=%d,again=%f ratio %f\n", __FUNCTION__, acac_proc_int->iso,
+                      aeCurExp->HdrExp[1].exp_real_params.analog_gain, acac_proc_int->hdr_ratio);
         } else if ((rk_aiq_working_mode_t)sharedCom->working_mode == RK_AIQ_WORKING_MODE_ISP_HDR3) {
             acac_proc_int->hdr_ratio = (aeCurExp->HdrExp[2].exp_real_params.analog_gain *
                                         aeCurExp->HdrExp[2].exp_real_params.integration_time) /

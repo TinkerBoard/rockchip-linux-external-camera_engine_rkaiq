@@ -21,11 +21,11 @@ Abayertnr_result_V2_t bayertnr_fix_transfer_V2(RK_Bayertnr_Params_V2_Select_t* p
 
 Abayertnr_result_V2_t bayertnr_fix_printf_V2(RK_Bayertnr_Fix_V2_t * pFix);
 
-Abayertnr_result_V2_t bayertnr_get_setting_by_name_json_V2(CalibDbV2_BayerTnr_V2_t* pCalibdb, char *name, int *calib_idx, int *tuning_idx);
+Abayertnr_result_V2_t bayertnr_get_setting_by_name_json_V2(CalibDbV2_BayerTnrV2_t* pCalibdb, char *name, int *calib_idx, int *tuning_idx);
 
-Abayertnr_result_V2_t bayertnr_init_params_json_V2(RK_Bayertnr_Params_V2_t *pParams, CalibDbV2_BayerTnr_V2_t* pCalibdb, int calib_idx, int tuning_idx);
+Abayertnr_result_V2_t bayertnr_init_params_json_V2(RK_Bayertnr_Params_V2_t *pParams, CalibDbV2_BayerTnrV2_t* pCalibdb, int calib_idx, int tuning_idx);
 
-Abayertnr_result_V2_t bayertnr_config_setting_param_json_V2(RK_Bayertnr_Params_V2_t *pParams, CalibDbV2_BayerTnr_V2_t* pCalibdbV2, char* param_mode, char * snr_name);
+Abayertnr_result_V2_t bayertnr_config_setting_param_json_V2(RK_Bayertnr_Params_V2_t *pParams, CalibDbV2_BayerTnrV2_t* pCalibdbV2, char* param_mode, char * snr_name);
 
 
 XCAM_END_DECLARE

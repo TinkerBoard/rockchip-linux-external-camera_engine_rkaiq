@@ -29,11 +29,8 @@
 #define ISP3X_SEGNUM_LOG_49     (2)
 #define ISP3X_SEGNUM_LOG_45     (0)
 #define ISP3X_SEGNUM_EQU_45     (1)
-
 #define GAMMA_CRUVE_MAX (4095)
 #define GAMMA_CRUVE_MIN (0)
-
-enum { GAMMA_OUT_LOG_SEGMENT = 0, GAMMA_OUT_EQ_SEGMENT = 1 };
 
 typedef struct rk_aiq_gamma_cfg_s {
     bool gamma_en;
@@ -43,6 +40,9 @@ typedef struct rk_aiq_gamma_cfg_s {
 }  rk_aiq_gamma_cfg_t;
 
 typedef struct AgammaHandle_s {
+    bool ifReCalcStAuto;
+    bool ifReCalcStManual;
+    uint32_t FrameID;
     rk_aiq_gamma_cfg_t  agamma_config;
 #if RKAIQ_HAVE_GAMMA_V10
     rk_aiq_gamma_v10_attr_t agammaAttrV10;
@@ -50,9 +50,9 @@ typedef struct AgammaHandle_s {
 #if RKAIQ_HAVE_GAMMA_V11
     rk_aiq_gamma_v11_attr_t agammaAttrV11;
 #endif
+    rk_aiq_gamma_op_mode_t CurrApiMode;
     AgammaProcRes_t ProcRes;
     int working_mode;
-    int prepare_type;
 } AgammaHandle_t;
 
 #endif

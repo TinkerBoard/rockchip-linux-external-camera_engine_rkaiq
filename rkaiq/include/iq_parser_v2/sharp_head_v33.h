@@ -28,8 +28,8 @@ RKAIQ_BEGIN_DECLARE
 typedef struct CalibDbV2_SharpV33_Luma_t {
     // M4_ARRAY_DESC("luma_point", "u16", M4_SIZE(1,8), M4_RANGE(0,1024), "[0, 64, 128, 256, 384, 640, 896, 1024]", M4_DIGIT(1), M4_DYNAMIC(0))
     uint16_t luma_point[8];
-    // M4_ARRAY_DESC("luma_sigma", "f32", M4_SIZE(1,8), M4_RANGE(0.0,1023.0), "[8.0, 12.0, 16.0, 16.0, 24.0, 20.0, 16.0, 16.0]", M4_DIGIT(1), M4_DYNAMIC(0))
-    float luma_sigma[8];
+    // M4_ARRAY_DESC("luma_sigma", "u16", M4_SIZE(1,8), M4_RANGE(0,1023), "[8, 12, 16, 16, 24, 20, 16, 16]", M4_DIGIT(0), M4_DYNAMIC(0))
+    uint16_t luma_sigma[8];
     // M4_ARRAY_DESC("hf_clip", "s32", M4_SIZE(1,8), M4_RANGE(0,1023), "[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t hf_clip[8];
 } CalibDbV2_SharpV33_Luma_t;
@@ -84,8 +84,8 @@ typedef struct CalibDbV2_SharpV33_T_ISO_s {
     float local_gainscale;
     // M4_NUMBER_DESC("global_hf_clip_pos", "u8", M4_RANGE(0, 2), "0", M4_DIGIT(0))
     uint8_t global_hf_clip_pos;
-    // M4_NUMBER_DESC("noiseclip_strength", "u16", M4_RANGE(0, 10), "1", M4_DIGIT(1))
-    uint16_t noiseclip_strength;
+    // M4_NUMBER_DESC("noiseclip_strength", "f32", M4_RANGE(0, 10.0), "1", M4_DIGIT(1))
+    float noiseclip_strength;
     // M4_NUMBER_DESC("enhance_bit", "u8", M4_RANGE(0, 9), "3", M4_DIGIT(0))
     uint8_t enhance_bit;
     // M4_BOOL_DESC("noiseclip_mode","0")

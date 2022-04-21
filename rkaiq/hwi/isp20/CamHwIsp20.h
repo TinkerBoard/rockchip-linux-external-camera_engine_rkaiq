@@ -131,6 +131,7 @@ public:
             return RK_ISP_STREAM_MODE_OFFLNIE;
     }
     void notify_isp_stream_status(bool on);
+    bool getParamsForEffMap(uint32_t frameId);
 private:
     using V4l2Device::start;
 
@@ -264,7 +265,7 @@ protected:
     rk_aiq_ldch_share_mem_info_t ldch_mem_info_array[2*ISP2X_MESH_BUF_NUM];
     rk_aiq_fec_share_mem_info_t fec_mem_info_array[FEC_MESH_BUF_NUM];
     rk_aiq_cac_share_mem_info_t cac_mem_info_array[2*ISP3X_MESH_BUF_NUM];
-    rk_aiq_dbg_share_mem_info_t dbg_mem_info_array[RKISP_INFO2DDR_BUF_MAX];
+    rk_aiq_dbg_share_mem_info_t dbg_mem_info_array[2*RKISP_INFO2DDR_BUF_MAX];
     typedef struct drv_share_mem_ctx_s {
         void* ops_ctx;
         void* mem_info;
@@ -273,7 +274,9 @@ protected:
     drv_share_mem_ctx_t _ldch_drv_mem_ctx;
     drv_share_mem_ctx_t _fec_drv_mem_ctx;
     drv_share_mem_ctx_t _cac_drv_mem_ctx;
+#ifndef NDEBUG
     drv_share_mem_ctx_t _dbg_drv_mem_ctx;
+#endif
     Mutex _mem_mutex;
     rk_aiq_rect_t _crop_rect;
     uint32_t _ds_width;
@@ -311,7 +314,8 @@ protected:
 
     std::map<int, cam3aResultList> _camIsp3aResult;
 
-    std::map<uint32_t, rkisp_effect_params_v20> _effecting_ispparam_map;
+    std::map<uint32_t, SmartPtr<RkAiqIspEffParamsProxy>> _effecting_ispparam_map;
+    SmartPtr<RkAiqIspEffParamsPool> mEffectIspParamsPool;
     SmartPtr<IspParamsAssembler> mParamsAssembler;
     uint32_t mPpModuleInitEns;
     bool mVicapIspPhyLinkSupported; // if phsical link between vicap and isp, only isp3x support now

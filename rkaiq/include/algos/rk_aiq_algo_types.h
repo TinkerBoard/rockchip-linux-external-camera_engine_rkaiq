@@ -1315,6 +1315,7 @@ typedef struct _RkAiqAlgoConfigAcac {
     bool is_multi_sensor;
     bool is_multi_isp;
     uint8_t multi_isp_extended_pixel;
+    char iqpath[255];
 } RkAiqAlgoConfigAcac;
 
 typedef struct _RkAiqAlgoProcAcac {

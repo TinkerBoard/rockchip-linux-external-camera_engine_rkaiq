@@ -279,14 +279,17 @@ CamHwIsp3x::setIspConfig()
             awbParams = awb_res.dynamic_cast_ptr<RkAiqIspAwbParamsProxyV3x>();
             {
                 SmartLock locker (_isp_params_cfg_mutex);
-                _effecting_ispparam_map[frameId].awb_cfg_v3x = awbParams->data()->result;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[frameId]->data()->result.awb_cfg_v3x = awbParams->data()->result;
 
             }
         } else {
             /* use the latest */
             SmartLock locker (_isp_params_cfg_mutex);
             if (!_effecting_ispparam_map.empty()) {
-                _effecting_ispparam_map[frameId].awb_cfg_v3x = (_effecting_ispparam_map.rbegin())->second.awb_cfg_v3x;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[frameId]->data()->result.awb_cfg_v3x =
+                        (_effecting_ispparam_map.rbegin())->second->data()->result.awb_cfg_v3x;
                 LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %d awb params for frame %d !\n",
                                 frameId, (_effecting_ispparam_map.rbegin())->first);
             } else {
@@ -300,14 +303,17 @@ CamHwIsp3x::setIspConfig()
             blcParams = blc_res.dynamic_cast_ptr<RkAiqIspBlcParamsProxyV21>();
             {
                 SmartLock locker (_isp_params_cfg_mutex);
-                _effecting_ispparam_map[frameId].blc_cfg = blcParams->data()->result;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[frameId]->data()->result.blc_cfg = blcParams->data()->result;
 
             }
         } else {
             /* use the latest */
             SmartLock locker (_isp_params_cfg_mutex);
             if (!_effecting_ispparam_map.empty()) {
-                _effecting_ispparam_map[frameId].blc_cfg = (_effecting_ispparam_map.rbegin())->second.blc_cfg;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[frameId]->data()->result.blc_cfg =
+                        (_effecting_ispparam_map.rbegin())->second->data()->result.blc_cfg;
                 LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %d blc params for frame %d !\n",
                                 frameId, (_effecting_ispparam_map.rbegin())->first);
             } else {
@@ -404,17 +410,23 @@ CamHwIsp3x::setIspConfig()
         {
             SmartLock locker(_isp_params_cfg_mutex);
             if (frameId == (uint32_t)(-1)) {
-                _effecting_ispparam_map[0].isp_params_v3x[0] = _full_active_isp3x_params;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[0]->data()->result.isp_params_v3x[0] = _full_active_isp3x_params;
             } else {
-                _effecting_ispparam_map[frameId].isp_params_v3x[0] = _full_active_isp3x_params;
+                if (getParamsForEffMap(frameId))
+                    _effecting_ispparam_map[frameId]->data()->result.isp_params_v3x[0] = _full_active_isp3x_params;
             }
             if (isMultiIsp) {
                 if (frameId == (uint32_t)(-1)) {
-                    _effecting_ispparam_map[0].isp_params_v3x[1] = isp_params[0];
-                    _effecting_ispparam_map[0].isp_params_v3x[2] = isp_params[1];
+                    if (getParamsForEffMap(frameId)) {
+                        _effecting_ispparam_map[0]->data()->result.isp_params_v3x[1] = isp_params[0];
+                        _effecting_ispparam_map[0]->data()->result.isp_params_v3x[2] = isp_params[1];
+                    }
                 } else {
-                    _effecting_ispparam_map[frameId].isp_params_v3x[1] = isp_params[0];
-                    _effecting_ispparam_map[frameId].isp_params_v3x[2] = isp_params[1];
+                    if (getParamsForEffMap(frameId)) {
+                        _effecting_ispparam_map[frameId]->data()->result.isp_params_v3x[1] = isp_params[0];
+                        _effecting_ispparam_map[frameId]->data()->result.isp_params_v3x[2] = isp_params[1];
+                    }
                 }
             }
         }

@@ -76,8 +76,7 @@ namespace RkMSG {
 
 class MessageParser {
 public:
-  explicit MessageParser();
-  explicit MessageParser(void *ptr) { pri = ptr; };
+  explicit MessageParser(void *ptr);
   ~MessageParser();
 
 public:

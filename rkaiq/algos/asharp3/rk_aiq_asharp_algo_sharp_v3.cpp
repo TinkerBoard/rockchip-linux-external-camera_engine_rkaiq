@@ -713,7 +713,7 @@ Asharp3_result_t sharp_init_params_json_V3(RK_SHARP_Params_V3_t *pSharpParams, C
     int bit_calib = 12;
     int bit_proc;
     int bit_shift;
-    CalibDbV2_SharpV3_TuningPara_Setting_ISO_t *pTuningISO;
+    CalibDbV2_SharpV3_T_ISO_t *pTuningISO;
 
     LOGI_ASHARP("%s(%d): enter\n", __FUNCTION__, __LINE__);
 

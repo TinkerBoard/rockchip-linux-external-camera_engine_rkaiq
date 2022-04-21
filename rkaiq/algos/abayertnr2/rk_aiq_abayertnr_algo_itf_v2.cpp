@@ -86,7 +86,7 @@ prepare(RkAiqAlgoCom* params)
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
 #if ABAYERTNR_USE_JSON_FILE_V2
         void *pCalibDbV2 = (void*)(pCfgParam->com.u.prepare.calibv2);
-        CalibDbV2_BayerTnr_V2_t *bayertnr_v2 = (CalibDbV2_BayerTnr_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDbV2, bayertnr_v2));
+        CalibDbV2_BayerTnrV2_t *bayertnr_v2 = (CalibDbV2_BayerTnrV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDbV2, bayertnr_v2));
         pAbayertnrCtx->bayertnr_v2 = *bayertnr_v2;
 #endif
         pAbayertnrCtx->isIQParaUpdate = true;
@@ -174,7 +174,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     }
     stExpInfo.snr_mode = 0;
 
-#if 1// TODO Merge:
+#if 0// TODO Merge:
     XCamVideoBuffer* xCamAePreRes = pAbayertnrProcParams->com.u.proc.res_comb->ae_pre_res;
     RkAiqAlgoPreResAe* pAEPreRes = nullptr;
     if (xCamAePreRes) {
@@ -258,7 +258,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     }
 #endif
     delta_iso = abs(stExpInfo.arIso[stExpInfo.hdr_mode] - pAbayertnrCtx->stExpInfo.arIso[stExpInfo.hdr_mode]);
-    if(delta_iso > ABAYERNRV2_RECALCULATE_DELTA_ISO) {
+    if(delta_iso > ABAYERTNRV2_DELTA_ISO) {
         pAbayertnrCtx->isReCalculate |= 1;
     }
 

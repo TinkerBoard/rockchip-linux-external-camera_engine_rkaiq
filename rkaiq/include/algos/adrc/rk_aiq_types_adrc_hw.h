@@ -114,10 +114,6 @@ typedef struct DrcProcResV12_s {
     unsigned short gain_y[DRC_V12_Y_NUM];
     unsigned short compres_y[DRC_V12_Y_NUM];
     unsigned short scale_y[DRC_V12_Y_NUM];
-
-    unsigned short isp_ob_offset;
-    unsigned short isp_ob_predgain;
-    unsigned int isp_ob_max;
 } DrcProcResV12_t;
 
 typedef struct DrcProcRes_s {
@@ -133,13 +129,9 @@ typedef struct DrcProcRes_s {
 } DrcProcRes_t;
 
 typedef struct RkAiqAdrcProcResult_s {
-    DrcProcRes_t DrcProcRes;
-    CompressMode_t CompressMode;
     bool update;
-    bool LongFrameMode;
-    bool isHdrGlobalTmo;
-    bool bTmoEn;
-    bool isLinearTmo;
+    bool bDrcEn;
+    DrcProcRes_t DrcProcRes;
 } RkAiqAdrcProcResult_t;
 
 #endif  //_RK_AIQ_ALGO_ADRC_HW_H_

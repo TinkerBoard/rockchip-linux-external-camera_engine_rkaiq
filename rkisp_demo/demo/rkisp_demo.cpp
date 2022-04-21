@@ -2236,7 +2236,7 @@ static void rkisp_routine(demo_context_t *ctx)
                 if (ctx->ctl_type != TEST_CTL_TYPE_DEFAULT) {
 restart:
                     static int test_ctl_cnts = 0;
-                    ctx->frame_count = 10;
+                    ctx->frame_count = 60;
                     start_capturing(ctx);
                     while ((ctx->frame_count-- > 0))
                         read_frame(ctx);
@@ -2248,6 +2248,20 @@ restart:
                         printf("aiq deinit .....\n");
                         rk_aiq_uapi2_sysctl_deinit(ctx->aiq_ctx);
                         printf("aiq init .....\n");
+                        if (work_mode == RK_AIQ_WORKING_MODE_NORMAL) {
+                            ret = rk_aiq_uapi2_sysctl_preInit_scene(sns_entity_name, "normal", "day");
+                            if (ctx->hdrmode == 2)
+                                work_mode = RK_AIQ_WORKING_MODE_ISP_HDR2;
+                            else if (ctx->hdrmode == 3)
+                                work_mode = RK_AIQ_WORKING_MODE_ISP_HDR3;
+                        } else {
+                            ret = rk_aiq_uapi2_sysctl_preInit_scene(sns_entity_name, "hdr", "day");
+                            work_mode = RK_AIQ_WORKING_MODE_NORMAL;
+                        }
+                        if (ret < 0)
+                            ERR("%s: failed to set %s scene\n",
+                                get_sensor_name(ctx),
+                                work_mode == RK_AIQ_WORKING_MODE_NORMAL ? "normal" : "hdr");
                         ctx->aiq_ctx = rk_aiq_uapi2_sysctl_init(sns_entity_name, ctx->iqpath, NULL, NULL);
                         printf("aiq prepare .....\n");
                         XCamReturn ret = rk_aiq_uapi2_sysctl_prepare(ctx->aiq_ctx, ctx->width, ctx->height, work_mode);

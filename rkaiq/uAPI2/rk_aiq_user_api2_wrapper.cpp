@@ -426,3 +426,48 @@ XCamReturn rk_aiq_get_adehaze_v12_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
     return ret;
 }
 #endif
+
+XCamReturn rk_aiq_set_accm_v1_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                              rk_aiq_ccm_mccm_attrib_t* manual) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_ccm_attrib_t ccm_attr_v1;
+    ret                      = rk_aiq_user_api2_accm_GetAttrib(sys_ctx, &ccm_attr_v1);
+    ccm_attr_v1.stManual = *manual;
+    ret                      = rk_aiq_user_api2_accm_SetAttrib(sys_ctx, &ccm_attr_v1);
+
+    return ret;
+}
+XCamReturn rk_aiq_get_accm_v1_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                              rk_aiq_ccm_mccm_attrib_t* manual) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_ccm_attrib_t ccm_attr_v1;
+    ret     = rk_aiq_user_api2_accm_GetAttrib(sys_ctx, &ccm_attr_v1);
+    *manual = ccm_attr_v1.stManual;
+
+    return ret;
+}
+
+XCamReturn rk_aiq_set_accm_v2_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                              rk_aiq_ccm_mccm_attrib_v2_t* manual) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_ccm_v2_attrib_t ccm_attr_v2;
+    ret                      = rk_aiq_user_api2_accm_v2_GetAttrib(sys_ctx, &ccm_attr_v2);
+    ccm_attr_v2.stManual = *manual;
+    ret                      = rk_aiq_user_api2_accm_v2_SetAttrib(sys_ctx, &ccm_attr_v2);
+
+    return ret;
+}
+XCamReturn rk_aiq_get_accm_v2_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                              rk_aiq_ccm_mccm_attrib_v2_t* manual) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_ccm_v2_attrib_t ccm_attr_v2;
+    ret     = rk_aiq_user_api2_accm_v2_GetAttrib(sys_ctx, &ccm_attr_v2);
+    *manual = ccm_attr_v2.stManual;
+
+    return ret;
+}
+

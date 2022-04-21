@@ -5,10 +5,10 @@
 
 int sharpV1_calibdb_to_calibdbV2(const CalibDb_Sharp_2_t *pCalibdb,   CalibDbV2_SharpV1_t *pCalibdbV2,  int mode_idx)
 {
-    CalibDbV2_SharpV1_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_SharpV1_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
-    CalibDbV2_SharpV1_TuningPara_Setting_ISO_Luma_t *pLumaParaV2 = NULL;
-    CalibDbV2_SharpV1_TuningPara_Kernel_t *pKernelCoeffV2 = NULL;
+    CalibDbV2_SharpV1_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_SharpV1_T_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_SharpV1_Luma_t *pLumaParaV2 = NULL;
+    CalibDbV2_SharpV1_Kernel_t *pKernelCoeffV2 = NULL;
     CalibDb_Sharp_Setting_t *pSetting = NULL;
     struct CalibDb_Sharp_ISO_s  *pISO = NULL;
 
@@ -25,14 +25,14 @@ int sharpV1_calibdb_to_calibdbV2(const CalibDb_Sharp_2_t *pCalibdb,   CalibDbV2_
     pTuningParaV2 = &pCalibdbV2->TuningPara;
 
     //malloc settting size
-    pTuningParaV2->Setting = (CalibDbV2_SharpV1_TuningPara_Setting_t *)malloc(SHARPV1_SETTING_NUM * sizeof(CalibDbV2_SharpV1_TuningPara_Setting_t));
-    memset(pTuningParaV2->Setting, 0x00, SHARPV1_SETTING_NUM * sizeof(CalibDbV2_SharpV1_TuningPara_Setting_t));
+    pTuningParaV2->Setting = (CalibDbV2_SharpV1_T_Set_t *)malloc(SHARPV1_SETTING_NUM * sizeof(CalibDbV2_SharpV1_T_Set_t));
+    memset(pTuningParaV2->Setting, 0x00, SHARPV1_SETTING_NUM * sizeof(CalibDbV2_SharpV1_T_Set_t));
     pTuningParaV2->Setting_len = SHARPV1_SETTING_NUM;
 
     //malloc iso size
     for(int i = 0; i < SHARPV1_SETTING_NUM; i++) {
-        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_SharpV1_TuningPara_Setting_ISO_t *)malloc(SHARPV1_ISO_NUM * sizeof(CalibDbV2_SharpV1_TuningPara_Setting_ISO_t));
-        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, SHARPV1_ISO_NUM * sizeof(CalibDbV2_SharpV1_TuningPara_Setting_ISO_t));
+        pTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_SharpV1_T_ISO_t *)malloc(SHARPV1_ISO_NUM * sizeof(CalibDbV2_SharpV1_T_ISO_t));
+        memset(pTuningParaV2->Setting[i].Tuning_ISO, 0x00, SHARPV1_ISO_NUM * sizeof(CalibDbV2_SharpV1_T_ISO_t));
         pTuningParaV2->Setting[i].Tuning_ISO_len = SHARPV1_ISO_NUM;
     }
 
@@ -104,10 +104,10 @@ int sharpV1_calibdb_to_calibdbV2(const CalibDb_Sharp_2_t *pCalibdb,   CalibDbV2_
 
 int sharpV1_calibdbV2_to_calibdb(CalibDbV2_SharpV1_t *pCalibdbV2, CalibDb_Sharp_2_t *pCalibdb, int mode_idx)
 {
-    CalibDbV2_SharpV1_TuningPara_t *pTuningParaV2 = NULL;
-    CalibDbV2_SharpV1_TuningPara_Setting_ISO_t *pTuningISOV2 = NULL;
-    CalibDbV2_SharpV1_TuningPara_Setting_ISO_Luma_t *pLumaParaV2 = NULL;
-    CalibDbV2_SharpV1_TuningPara_Kernel_t *pKernelCoeffV2 = NULL;
+    CalibDbV2_SharpV1_Tuning_t *pTuningParaV2 = NULL;
+    CalibDbV2_SharpV1_T_ISO_t *pTuningISOV2 = NULL;
+    CalibDbV2_SharpV1_Luma_t *pLumaParaV2 = NULL;
+    CalibDbV2_SharpV1_Kernel_t *pKernelCoeffV2 = NULL;
     CalibDb_Sharp_Setting_t *pSetting = NULL;
     struct CalibDb_Sharp_ISO_s  *pISO = NULL;
 

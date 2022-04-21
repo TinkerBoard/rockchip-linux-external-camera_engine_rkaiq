@@ -239,8 +239,8 @@ Auvnr_result_t init_uvnr_params_json_v1(RK_UVNR_Params_V1_t *pParams, CalibDbV2_
         return AUVNR_RET_NULL_POINTER;
     }
 
-    CalibDbV2_UVNR_TuningPara_Setting_t *pSetting = &pCalibdb->TuningPara.Setting[setting_idx];
-    CalibDbV2_UVNR_TuningPara_Setting_ISO_t *pTuning_ISO = NULL;
+    CalibDbV2_UVNR_T_Set_t *pSetting = &pCalibdb->TuningPara.Setting[setting_idx];
+    CalibDbV2_UVNR_T_ISO_t *pTuning_ISO = NULL;
     for(i = 0; i < pSetting->Tuning_ISO_len; i++) {
         pTuning_ISO = &pSetting->Tuning_ISO[i];
 #ifndef RK_SIMULATOR_HW
@@ -811,8 +811,8 @@ Auvnr_result_t uvnr_fix_Printf_v1(RK_UVNR_Fix_V1_t  * pNrCfg)
 Auvnr_result_t uvnr_calibdbV2_assign_v1(CalibDbV2_UVNR_t *pDst, CalibDbV2_UVNR_t *pSrc)
 {
     Auvnr_result_t res = AUVNR_RET_SUCCESS;
-    CalibDbV2_UVNR_TuningPara_t *pSrcTuningParaV2 = NULL;
-    CalibDbV2_UVNR_TuningPara_t *pDstTuningParaV2 = NULL;
+    CalibDbV2_UVNR_Tuning_t *pSrcTuningParaV2 = NULL;
+    CalibDbV2_UVNR_Tuning_t *pDstTuningParaV2 = NULL;
     int setting_len = 0;
     int iso_len = 0;
 
@@ -833,14 +833,14 @@ Auvnr_result_t uvnr_calibdbV2_assign_v1(CalibDbV2_UVNR_t *pDst, CalibDbV2_UVNR_t
 
     //malloc iso size
     setting_len = pSrcTuningParaV2->Setting_len;
-    pDstTuningParaV2->Setting = (CalibDbV2_UVNR_TuningPara_Setting_t *)malloc(setting_len * sizeof(CalibDbV2_UVNR_TuningPara_Setting_t));
-    memset(pDstTuningParaV2->Setting, 0x00, setting_len * sizeof(CalibDbV2_UVNR_TuningPara_Setting_t));
+    pDstTuningParaV2->Setting = (CalibDbV2_UVNR_T_Set_t *)malloc(setting_len * sizeof(CalibDbV2_UVNR_T_Set_t));
+    memset(pDstTuningParaV2->Setting, 0x00, setting_len * sizeof(CalibDbV2_UVNR_T_Set_t));
     pDstTuningParaV2->Setting_len = setting_len;
 
     for(int i = 0; i < setting_len; i++) {
         iso_len = pSrcTuningParaV2->Setting[i].Tuning_ISO_len;
-        pDstTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_UVNR_TuningPara_Setting_ISO_t *)malloc(iso_len * sizeof(CalibDbV2_UVNR_TuningPara_Setting_ISO_t));
-        memset(pDstTuningParaV2->Setting[i].Tuning_ISO, 0x00, iso_len * sizeof(CalibDbV2_UVNR_TuningPara_Setting_ISO_t));
+        pDstTuningParaV2->Setting[i].Tuning_ISO = (CalibDbV2_UVNR_T_ISO_t *)malloc(iso_len * sizeof(CalibDbV2_UVNR_T_ISO_t));
+        memset(pDstTuningParaV2->Setting[i].Tuning_ISO, 0x00, iso_len * sizeof(CalibDbV2_UVNR_T_ISO_t));
         pDstTuningParaV2->Setting[i].Tuning_ISO_len = iso_len;
     }
 

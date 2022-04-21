@@ -79,10 +79,8 @@ typedef struct CalibDbV2_Lut3D_Common_Para_s {
     bool enable;
     // M4_ENUM_DESC("mode", "CalibDbV2_Lut3D_Op_Mode_t", "CALIB_Lut3D_MODE_AUTO");
     CalibDbV2_Lut3D_Op_Mode_t mode;
-   // M4_NUMBER_DESC("gain tolerance", "f32", M4_RANGE(0.0, 256), "0.2", M4_DIGIT(4))
-  float gain_tolerance;
-   // M4_NUMBER_DESC("wbgain tolerance", "f32", M4_RANGE(0.0, 4), "0.5", M4_DIGIT(4))
-  float wbgain_tolerance;
+    // M4_NUMBER_DESC("gain tolerance", "f32", M4_RANGE(0.0, 256), "0.2", M4_DIGIT(4))
+    float gain_tolerance;
 }CalibDbV2_Lut3D_Common_Para_t;
 
 typedef struct {
