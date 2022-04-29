@@ -380,7 +380,6 @@ void AmergeTuningProcessing(AmergeContext_t* pAmergeCtx) {
         }
         // merge damp
         MergeDampingV11(pAmergeCtx);
-        pAmergeCtx->ifReCalcStAuto = false;
     } else if (pAmergeCtx->mergeAttrV11.opMode == MERGE_OPMODE_MANUAL) {
         pAmergeCtx->NextData.HandleData.Merge_v11.BaseFrm =
             pAmergeCtx->mergeAttrV11.stManual.BaseFrm;
@@ -415,7 +414,6 @@ void AmergeTuningProcessing(AmergeContext_t* pAmergeCtx) {
             pAmergeCtx->NextData.HandleData.Merge_v11.MDCurve_lm_thd0 =
                 pAmergeCtx->mergeAttrV11.stManual.ShortFrmModeData.MDCurve.lm_thd0;
         }
-        pAmergeCtx->ifReCalcStManual = false;
     }
 
     LOGD_AMERGE("%s: Current BaseFrm:%d OECurve_smooth:%f OECurve_offset:%f \n", __FUNCTION__,

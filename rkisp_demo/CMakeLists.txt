@@ -17,11 +17,13 @@ include(GNUInstallDirs)
 find_package(librga QUIET)
 if (LIBRGA_FOUND)
     add_compile_options(${LIBRGA_CFLAGS})
+    add_compile_options(-DISPDEMO_ENABLE_RGA=1)
 endif()
 
 find_package(libdrm QUIET)
 if (LIBDRM_FOUND)
     add_compile_options(${LIBDRM_CFLAGS})
+    add_compile_options(-DISPDEMO_ENABLE_DRM=1)
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -36,12 +38,8 @@ message("rkaiq src path" ${RK_AIQ_SOURCE_DIR})
 if(ADD_RK_AIQ)
     add_compile_options(-Os)
     add_compile_options(-DADD_RK_AIQ)
-    if(NOT ARCH STREQUAL "fpga")
-        add_compile_options(-fstack-protector-strong -D_FORTIFY_SOURCE=2)
-    else ()
-        add_compile_options(-DARCH_FPGA)
-    endif()
-    set(RK_AIQ_INSTALLED_DIR CACHE STRING "${RK_AIQ_SOURCE_DIR}/build/linux/output/${ARCH}/installed")
+    add_compile_options(-fstack-protector-strong -D_FORTIFY_SOURCE=2)
+    set(RK_AIQ_INSTALLED_DIR "${RK_AIQ_SOURCE_DIR}/build/linux/output/${ARCH}/installed" CACHE STRING "AIQ library installed dir")
     set(RK_AIQ_LIB_DIR ${RK_AIQ_INSTALLED_DIR}/lib)
     message("rkaiq lib path" ${RK_AIQ_LIB_DIR})
     set(RK_AIQ_INCLUDE_DIR
@@ -63,6 +61,7 @@ if (ENABLE_IIO_API)
 endif()
 
 include_directories(
+    deps/include
     demo
     demo/include
     demo/include/rga
@@ -73,18 +72,15 @@ include_directories(
     demo/sample/
     )
 
-if (NOT ARCH STREQUAL "fpga")
+if (LIBDRM_FOUND)
     aux_source_directory(demo DIR_SRCS)
     aux_source_directory(demo/drmDsp DRMDSP_DIR_SRCS)
     aux_source_directory(demo/sample SAMPLE_DIR_SRCS)
-else ()
+else()
     set (DIR_SRCS
         demo/rkisp_demo.cpp
-        demo/drmDsp.c
-        demo/drmDsp/bo.c
-        demo/drmDsp/dev.c
-        demo/drmDsp/modeset.c
         )
+    aux_source_directory(demo/sample SAMPLE_DIR_SRCS)
 endif()
 
 if (ENABLE_IIO_API)
@@ -118,9 +114,17 @@ message(${LIBRARY_OUTPUT_PATH})
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
+if (LIBDRM_FOUND)
+link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}" "${PROJECT_SOURCE_DIR}/deps/lib")
+else()
 link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}")
+endif()
 add_executable(rkisp_demo ${DIR_SRCS})
+if (LIBDRM_FOUND)
+target_link_libraries(rkisp_demo rga drm ${RK_AIQ_LIB} ${IIO_LIBS} pthread)
+else()
 target_link_libraries(rkisp_demo ${RK_AIQ_LIB} ${IIO_LIBS} pthread)
+endif()
 
 if (LIBDRM_FOUND)
     target_link_libraries(rkisp_demo

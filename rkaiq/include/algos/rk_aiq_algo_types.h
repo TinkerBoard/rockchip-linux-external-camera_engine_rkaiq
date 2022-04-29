@@ -195,6 +195,7 @@ typedef struct _RkAiqAlgoProcAf {
     XCamVideoBuffer *xcam_af_stats;
     XCamVideoBuffer *xcam_aec_stats;
     XCamVideoBuffer *xcam_pdaf_stats;
+    bool ae_stable;
 } RkAiqAlgoProcAf;
 
 typedef struct _RkAiqAlgoProcResAf {

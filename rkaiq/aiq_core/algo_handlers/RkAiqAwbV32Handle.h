@@ -35,7 +35,13 @@ class RkAiqAwbV32HandleInt : public RkAiqAwbHandleInt {
         : RkAiqAwbHandleInt(des, aiqCore) {
         memset(&mCurWbV32Attr, 0, sizeof(rk_aiq_uapiV2_wbV32_attrib_t));
         memset(&mNewWbV32Attr, 0, sizeof(rk_aiq_uapiV2_wbV32_attrib_t));
+        memset(&mCurWbV32AwbMultiWindowAttr, 0, sizeof(rk_aiq_uapiV2_wbV32_awb_mulWindow_t));
+        memset(&mNewWbV32AwbMultiWindowAttr, 0, sizeof(rk_aiq_uapiV2_wbV32_awb_mulWindow_t));
+        memset(&mCurWriteAwbInputAttr, 0, sizeof(rk_aiq_uapiV2_awb_wrtIn_attr_t));
+        memset(&mNewWriteAwbInputAttr, 0, sizeof(rk_aiq_uapiV2_awb_wrtIn_attr_t));
         updateWbV32Attr = false;
+        updateWbV32AwbMultiWindowAttr = false;
+        updateWriteAwbInputAttr = false;
     };
     virtual ~RkAiqAwbV32HandleInt() {
         freeWbGainAdjustAttrib(&mNewWbV32Attr.stAuto.wbGainAdjust);
@@ -60,7 +66,7 @@ class RkAiqAwbV32HandleInt : public RkAiqAwbHandleInt {
     mutable std::atomic<bool> updateWbV32AwbMultiWindowAttr;
     rk_aiq_uapiV2_awb_wrtIn_attr_t mCurWriteAwbInputAttr;
     rk_aiq_uapiV2_awb_wrtIn_attr_t mNewWriteAwbInputAttr;
-    bool updateWriteAwbInputAttr;
+    mutable std::atomic<bool>  updateWriteAwbInputAttr;
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAwbV32HandleInt);
 };

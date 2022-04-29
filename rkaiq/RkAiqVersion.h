@@ -404,10 +404,16 @@
  * - GAMMA/MERGE/DRC: Rename and Optimize cpu usage
  * - DEHAZE: Support hist wr
  * - Update os04a10/sc4336/sc500ai IQ json
+ * v4.0x9.8-rc2
+ * - rkisp_demo: Support build without drm and rga
+ * - 3DLUT: Fix memory leak
+ * - DRC/MERGE/DEHAZE: Fix a few issue in uAPI and tool API
+ * - AF: Fix a few functional issues
+ * - AWB: Fix memory not initilized
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.8-rc1"
-#define RK_AIQ_RELEASE_DATE "2022-04-27 for rv1106 beta SDK release"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.8-rc2"
+#define RK_AIQ_RELEASE_DATE "2022-05-10 for rv1106 beta SDK release"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

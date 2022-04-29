@@ -128,7 +128,7 @@ typedef struct LocalDataV2_s{
     float LocalWeit[ADRC_ENVLV_STEP_MAX];  
     // M4_ARRAY_DESC("LocalAutoEnable", "u8", M4_SIZE(1,13), M4_RANGE(0,1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(0), M4_DYNAMIC(0), 0)
     int LocalAutoEnable[ADRC_ENVLV_STEP_MAX];  
-    // M4_ARRAY_DESC("LocalAutoWeit[ADRC_ENVLV_STEP_MAX]", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477]",M4_DIGIT(5), M4_DYNAMIC(0), 0)
+    // M4_ARRAY_DESC("LocalAutoWeit", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477, 0.037477]",M4_DIGIT(5), M4_DYNAMIC(0), 0)
     float LocalAutoWeit[ADRC_ENVLV_STEP_MAX];  
     // M4_ARRAY_DESC("GlobalContrast", "f32", M4_SIZE(1,13), M4_RANGE(0,1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(3), M4_DYNAMIC(0), 0)
     float GlobalContrast[ADRC_ENVLV_STEP_MAX]; 

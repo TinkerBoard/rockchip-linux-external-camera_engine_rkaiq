@@ -532,6 +532,7 @@ public:
     explicit RkAiqAfStats() {
         xcam_mem_clear(af_stats);
         xcam_mem_clear(af_stats_v3x);
+        xcam_mem_clear(aecExpInfo);
         af_stats_valid = false;
         frame_id = -1;
     };
@@ -540,6 +541,7 @@ public:
         rk_aiq_isp_af_stats_t af_stats;
         rk_aiq_isp_af_stats_v3x_t af_stats_v3x;
     };
+    RKAiqAecExpInfo_t aecExpInfo;
     bool af_stats_valid;
     uint32_t frame_id;
 private:

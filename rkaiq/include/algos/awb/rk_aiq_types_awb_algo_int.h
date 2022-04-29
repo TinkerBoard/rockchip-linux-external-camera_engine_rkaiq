@@ -257,6 +257,7 @@ typedef struct rk_aiq_uapiV2_awb_wrtIn_attr_s {
     bool en;
     int mode;
     char path[100];
+    int call_cnt;
 } rk_aiq_uapiV2_awb_wrtIn_attr_t;
 
 #endif

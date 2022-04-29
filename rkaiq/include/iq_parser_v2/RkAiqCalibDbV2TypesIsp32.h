@@ -36,17 +36,19 @@
 #include "bayertnr_head_v23.h"
 #include "cac_head.h"
 #include "ccm_head.h"
+#include "cgc_head.h"
 #include "cnr_head_v30.h"
 #include "cproc_head.h"
 #include "cpsl_head.h"
+#include "csm_head.h"
 #include "debayer_head.h"
 #include "fec_head.h"
+#include "gain_head_v2.h"
 #include "ldch_head.h"
 #include "lut3d_head.h"
 #include "sharp_head_v33.h"
 #include "thumbnails_head.h"
 #include "ynr_head_v22.h"
-#include "gain_head_v2.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -122,6 +124,10 @@ typedef struct CamCalibDbV2ContextIsp32_s {
     CalibDbV2_AFV31_t af_v31;
     // M4_STRUCT_DESC("gain_v2", "normal_ui_style")
     CalibDbV2_GainV2_t gain_v2;
+    // M4_STRUCT_DESC("csm", "normal_ui_style")
+    CalibDbV2_csm_t csm;
+    // M4_STRUCT_DESC("cgc", "normal_ui_style")
+    CalibDbV2_cgc_t cgc;
 } CamCalibDbV2ContextIsp32_t;
 
 RKAIQ_END_DECLARE

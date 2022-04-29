@@ -69,12 +69,10 @@ static RkAiqGrpCondition_t awbGrpCond[] = {
 static RkAiqGrpConditions_t awbGrpConds = {grp_conds_array_info(awbGrpCond)};
 
 static RkAiqGrpCondition_t afGrpCondV3x[] = {
-    [0] = {XCAM_MESSAGE_SOF_INFO_OK, 0},
-    [1] = {XCAM_MESSAGE_AE_PRE_RES_OK, 0},
-    [2] = {XCAM_MESSAGE_AE_PROC_RES_OK, 0},
-    [3] = {XCAM_MESSAGE_AF_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
-    [4] = {XCAM_MESSAGE_AEC_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
-    [5] = {XCAM_MESSAGE_PDAF_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
+    [0] = {XCAM_MESSAGE_AF_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
+#if RKAIQ_HAVE_PDAF
+    [1] = {XCAM_MESSAGE_PDAF_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
+#endif
 };
 static RkAiqGrpConditions_t afGrpCondsV3x = {grp_conds_array_info(afGrpCondV3x)};
 

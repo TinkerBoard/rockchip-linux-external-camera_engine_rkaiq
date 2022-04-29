@@ -58,6 +58,7 @@ class RkAiqAfHandleInt : virtual public RkAiqHandle {
     XCamReturn GetSearchPath(rk_aiq_af_sec_path_t* path);
     XCamReturn GetSearchResult(rk_aiq_af_result_t* result);
     XCamReturn GetFocusRange(rk_aiq_af_focusrange* range);
+    XCamReturn setAeStable(bool ae_stable);
 
  protected:
     virtual void init();
@@ -74,6 +75,9 @@ class RkAiqAfHandleInt : virtual public RkAiqHandle {
     int mLastZoomIndex;
 
     SmartPtr<RkAiqAlgoProcResAfIntShared> mProcResShared;
+
+    XCam::Mutex mAeStableMutex;
+    bool mAeStable = false;
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAfHandleInt);

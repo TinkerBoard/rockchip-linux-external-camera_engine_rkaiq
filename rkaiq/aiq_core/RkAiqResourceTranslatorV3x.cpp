@@ -1983,6 +1983,12 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
         return XCAM_RETURN_BYPASS;
     }
 
+    SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
+    if (buf->getEffectiveExpParams(left_stats->frame_id, expParams) < 0)
+        LOGE("fail to get expParams");
+    if (expParams.ptr())
+        statsInt->aecExpInfo = expParams->data()->aecExpInfo;
+
     statsInt->frame_id = left_stats->frame_id;
 
     struct isp3x_rawaf_meas_cfg &org_af = ispParams.isp_params_v3x[0].meas.rawaf;
@@ -2339,6 +2345,12 @@ RkAiqResourceTranslatorV3x::translateAfStats (const SmartPtr<VideoBuffer> &from,
 
     memset(&statsInt->af_stats_v3x, 0, sizeof(rk_aiq_isp_af_stats_v3x_t));
     statsInt->frame_id = stats->frame_id;
+
+    SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
+    if (buf->getEffectiveExpParams(stats->frame_id, expParams) < 0)
+        LOGE("fail to get expParams");
+    if (expParams.ptr())
+        statsInt->aecExpInfo = expParams->data()->aecExpInfo;
 
     //af
     {

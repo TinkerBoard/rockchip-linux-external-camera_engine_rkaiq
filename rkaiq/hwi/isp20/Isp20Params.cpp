@@ -1104,17 +1104,15 @@ template<class T>
 void Isp20Params::convertAiqMergeToIsp20Params(T& isp_cfg,
         const rk_aiq_isp_merge_t& amerge_data)
 {
-    if(amerge_data.update)
-    {
+    if (amerge_data.update) {
         isp_cfg.module_en_update |= 1LL << RK_ISP2X_HDRMGE_ID;
         isp_cfg.module_ens |= 1LL << RK_ISP2X_HDRMGE_ID;
         isp_cfg.module_cfg_update |= 1LL << RK_ISP2X_HDRMGE_ID;
-    }
-    else
-    {
+    } else {
         isp_cfg.module_en_update |= 1LL << RK_ISP2X_HDRMGE_ID;
         isp_cfg.module_ens &= ~(1LL << RK_ISP2X_HDRMGE_ID);
         isp_cfg.module_cfg_update &= ~(1LL << RK_ISP2X_HDRMGE_ID);
+        return;
     }
 
     isp_cfg.others.hdrmge_cfg.mode         = amerge_data.Merge_v10.sw_hdrmge_mode;

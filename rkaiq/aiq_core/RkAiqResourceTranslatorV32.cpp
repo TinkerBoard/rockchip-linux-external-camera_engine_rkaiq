@@ -591,8 +591,23 @@ XCamReturn RkAiqResourceTranslatorV32::translateAfStats(const SmartPtr<VideoBuff
     int temp_luma, comp_bls = 0;
     u16 max_val = (1 << 12) - 1;
 
-    if (bls_cfg->bls1_en && !is_hdr && !from_awb && !from_ynr)
-        comp_bls = bls_cfg->fixed_val.gr + bls_cfg->bls1_val.gr - bls_cfg->isp_ob_offset;
+    if (bls_cfg->bls1_en && !is_hdr && !from_awb && !from_ynr) {
+        comp_bls = (bls_cfg->bls1_val.gr + bls_cfg->bls1_val.gb) / 2  - bls_cfg->isp_ob_offset;
+        comp_bls = MAX(comp_bls, 0);
+    }
+
+#if 0
+    struct isp32_awb_gain_cfg* awb_gain_cfg = &_ispParams.awb_gain_cfg;
+
+    LOGE("bls0[%d-%d]", bls_cfg->fixed_val.gr, bls_cfg->fixed_val.gb);
+    LOGE("bls1[%d-%d]", bls_cfg->bls1_val.gr, bls_cfg->bls1_val.gb);
+    LOGE("isp_ob_offset, isp_ob_max, isp_ob_predgain [%d-%d-%d]",
+        bls_cfg->isp_ob_offset, bls_cfg->isp_ob_max, bls_cfg->isp_ob_predgain);
+    LOGE("awb0_gain[%d-%d], awb1_gain[%d-%d]",
+        awb_gain_cfg->gain0_green_b, awb_gain_cfg->gain0_green_r,
+        awb_gain_cfg->gain1_green_b, awb_gain_cfg->gain1_green_r);
+    LOGE("comp_bls %d", comp_bls);
+#endif
 
     memset(&statsInt->af_stats_v3x, 0, sizeof(rk_aiq_isp_af_stats_v3x_t));
     statsInt->frame_id = stats->frame_id;
@@ -602,7 +617,7 @@ XCamReturn RkAiqResourceTranslatorV32::translateAfStats(const SmartPtr<VideoBuff
         statsInt->af_stats_valid =
             (stats->meas_type >> 6) & (0x01) ? true : false;
 
-        statsInt->af_stats_v3x.comp_bls = MAX(comp_bls >> 2, 0);
+        statsInt->af_stats_v3x.comp_bls = comp_bls >> 2;
         statsInt->af_stats_v3x.wndb_luma = stats->params.rawaf.afm_lum_b;
         statsInt->af_stats_v3x.wndb_sharpness = stats->params.rawaf.afm_sum_b;
         statsInt->af_stats_v3x.winb_highlit_cnt = stats->params.rawaf.highlit_cnt_winb;
@@ -632,6 +647,9 @@ XCamReturn RkAiqResourceTranslatorV32::translateAfStats(const SmartPtr<VideoBuff
             statsInt->af_stats_v3x.zoomCorrection = afParams->data()->zoomCorrection;
             statsInt->af_stats_v3x.angleZ = afParams->data()->angleZ;
         }
+
+        if (_expParams.ptr())
+            statsInt->aecExpInfo = _expParams->data()->aecExpInfo;
     }
 
 #endif

@@ -70,7 +70,6 @@ typedef struct alut3d_context_s {
 typedef alut3d_context_t* alut3d_handle_t ;
 
 typedef struct _RkAiqAlgoContext {
-    void* place_holder[0];
     alut3d_handle_t a3dlut_para;
 } RkAiqAlgoContext;
 

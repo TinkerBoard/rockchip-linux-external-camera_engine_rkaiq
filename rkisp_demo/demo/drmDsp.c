@@ -14,7 +14,7 @@
 #include "./include/xf86drmMode.h"
 #include "drmDsp.h"
 
-#ifndef ARCH_FPGA
+#if ISPDEMO_ENABLE_RGA
 #include "rkRgaApi.h"
 #include "rga.h"
 #endif
@@ -67,7 +67,7 @@ int initDrmDsp() {
   if (!pDrmDsp->test_plane)
     return -1;
 
-#ifndef ARCH_FPGA
+#if ISPDEMO_ENABLE_RGA
   rkRgaInit();
 #endif
   return ret;
@@ -270,7 +270,7 @@ int drmDspFrame(int srcWidth, int srcHeight, int dispWidth, int dispHeight,
   pitches[1] = wAlign16;
   offsets[1] = dispWidth * dispHeight; //wAlign16 * hAlign16;
 
-#ifndef ARCH_FPGA
+#if ISPDEMO_ENABLE_RGA
   struct rkRgaCfg src_cfg, dst_cfg;
 
   src_cfg.fd = dmaFd;

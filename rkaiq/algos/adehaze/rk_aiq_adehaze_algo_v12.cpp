@@ -556,10 +556,10 @@ void GetEnhanceParamsV12(CalibDbDehazeV12_t* pCalibV12, RkAiqAdehazeProcResult_t
                         pCalibV12->enhance_setting.EnhanceData[i].enhance_curve[j];
                 }
                 for (int j = 0; j < DHAZ_V12_ENH_LUMA_NUM; j++) {
-                    pProcRes->ProcResV12.enh_luma[j] =
-                        ratio * (pCalibV12->enhance_setting.EnhanceData[i + 1].enh_luma[j] -
-                                 pCalibV12->enhance_setting.EnhanceData[i].enh_luma[j]) +
-                        pCalibV12->enhance_setting.EnhanceData[i].enh_luma[j];
+                    tmp = ratio * (pCalibV12->enhance_setting.EnhanceData[i + 1].enh_luma[j] -
+                                   pCalibV12->enhance_setting.EnhanceData[i].enh_luma[j]) +
+                          pCalibV12->enhance_setting.EnhanceData[i].enh_luma[j];
+                    pProcRes->ProcResV12.enh_luma[j] = ClipValueV12(tmp, 4, 6);
                 }
                 break;
             } else

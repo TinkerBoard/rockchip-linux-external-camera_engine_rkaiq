@@ -323,6 +323,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             pAdrcGrpCtx->NextData.AEData.L2M_Ratio >= 1) {
             if (pAdrcGrpCtx->FrameID <= 2)
                 bypass_expo_params = false;
+            else if (pAdrcGrpCtx->ifReCalcStAuto || pAdrcGrpCtx->ifReCalcStManual)
+                bypass_expo_params = false;
             else if (!pAdrcGrpCtx->CurrData.AEData.LongFrmMode !=
                      !pAdrcGrpCtx->NextData.AEData.LongFrmMode)
                 bypass_expo_params = false;
@@ -355,6 +357,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             __func__);
 
         pAdrcGrpCtx->CurrData.Enable = pAdrcGrpCtx->NextData.Enable;
+        pAdrcGrpCtx->ifReCalcStAuto   = false;
+        pAdrcGrpCtx->ifReCalcStManual = false;
         // output ProcRes
         for (int i = 0; i < pAdrcGrpProcRes->arraySize; i++) {
             pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->bDrcEn = Enable;

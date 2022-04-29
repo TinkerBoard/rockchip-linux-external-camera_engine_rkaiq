@@ -5720,6 +5720,22 @@
 									}],
 								"meascfg_tbl_len":	2
 							}
+						},
+						"csm":	{
+							"TuningPara":	{
+								"op_mode":	"RK_AIQ_OP_MODE_AUTO",
+								"full_range":	1,
+								"y_offset":	0,
+								"c_offset":	0,
+								"coeff":	[0.299, 0.587, 0.114, -0.169, -0.331, 0.5, 0.5, -0.419, -0.081]
+							}
+						},
+						"cgc":	{
+							"TuningPara":	{
+								"op_mode":	"RK_AIQ_OP_MODE_AUTO",
+								"cgc_ratio_en":	0,
+								"cgc_yuv_limit":	0
+							}
 						}
 					}
 				}],
@@ -11314,6 +11330,22 @@
 										"highlit_thresh":	912
 									}],
 								"meascfg_tbl_len":	2
+							}
+						},
+						"csm":	{
+							"TuningPara":	{
+								"op_mode":	"RK_AIQ_OP_MODE_AUTO",
+								"full_range":	1,
+								"y_offset":	0,
+								"c_offset":	0,
+								"coeff":	[0.299, 0.587, 0.114, -0.169, -0.331, 0.5, 0.5, -0.419, -0.081]
+							}
+						},
+						"cgc":	{
+							"TuningPara":	{
+								"op_mode":	"RK_AIQ_OP_MODE_AUTO",
+								"cgc_ratio_en":	0,
+								"cgc_yuv_limit":	0
 							}
 						}
 					}

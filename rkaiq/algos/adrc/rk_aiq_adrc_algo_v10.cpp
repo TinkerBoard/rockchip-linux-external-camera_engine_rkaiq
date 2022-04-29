@@ -321,8 +321,6 @@ void AdrcGetTuningProcResV10(RkAiqAdrcProcResult_t* pAdrcProcRes, NextData_t* pN
         (int)(SHIFT4BIT(pNextData->HandleData.Drc_v10.LocalWeit) + 0.5);
     for (int i = 0; i < ADRC_Y_NUM; ++i) {
         pAdrcProcRes->DrcProcRes.Drc_v10.sw_drc_scale_y[i] = (int)(pNextData->Others.Scale_y[i]);
-        pAdrcProcRes->DrcProcRes.Drc_v10.sw_drc_compres_y[i] =
-            pNextData->HandleData.Drc_v10.Manual_curve[i];
     }
 
     // get sw_drc_gain_y
@@ -611,6 +609,11 @@ void AdrcExpoParaProcessing(AdrcContext_t* pAdrcCtx) {
             curveTable[i] = (tmp * curveparam2 / (tmp + curveparam3));
             pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v10.sw_drc_compres_y[i] = (int)(curveTable[i]);
         }
+    } else if (pAdrcCtx->NextData.HandleData.Drc_v10.Mode == COMPRESS_MANUAL) {
+        for (int i = 0; i < ADRC_Y_NUM; ++i) {
+            pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v10.sw_drc_compres_y[i] =
+                pAdrcCtx->NextData.HandleData.Drc_v10.Manual_curve[i];
+        }
     }
 
     // store expo data
@@ -778,9 +781,6 @@ bool AdrcByPassTuningProcessing(AdrcContext_t* pAdrcCtx, AecPreResult_t AecHdrPr
         __FUNCTION__, pAdrcCtx->NextData.AEData.EnvLv, pAdrcCtx->CurrData.AEData.EnvLv,
         pAdrcCtx->NextData.AEData.ISO, pAdrcCtx->CurrData.AEData.ISO, diff,
         pAdrcCtx->drcAttrV10.stAuto.DrcTuningPara.ByPassThr, pAdrcCtx->drcAttrV10.opMode, bypass);
-
-    pAdrcCtx->ifReCalcStAuto   = false;
-    pAdrcCtx->ifReCalcStManual = false;
 
     LOG1_ATMO("%s:exit!\n", __FUNCTION__);
     return bypass;

@@ -999,17 +999,15 @@ void Isp3xParams::convertAiqAfToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg
 void Isp3xParams::convertAiqMergeToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_merge_v3x_t& amerge_data)
 {
-    if(amerge_data.update)
-    {
+    if (amerge_data.update) {
         isp_cfg.module_en_update |= 1LL << RK_ISP2X_HDRMGE_ID;
         isp_cfg.module_ens |= 1LL << RK_ISP2X_HDRMGE_ID;
         isp_cfg.module_cfg_update |= 1LL << RK_ISP2X_HDRMGE_ID;
-    }
-    else
-    {
+    } else {
         isp_cfg.module_en_update |= 1LL << RK_ISP2X_HDRMGE_ID;
         isp_cfg.module_ens &= ~(1LL << RK_ISP2X_HDRMGE_ID);
         isp_cfg.module_cfg_update &= ~(1LL << RK_ISP2X_HDRMGE_ID);
+        return;
     }
 
     isp_cfg.others.hdrmge_cfg.mode         = amerge_data.Merge_v11.sw_hdrmge_mode;

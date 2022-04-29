@@ -56,7 +56,10 @@ XCamReturn lut3d_index_estimation(int lut_num, const CalibDbV2_Lut3D_LutPara_t l
     LOGD_A3DLUT("wbGain:%f,%f, estimation lut is %s\n", awbGain[0], awbGain[1],
                 lutAll[*index].name);
 
-    LOG1_A3DLUT( "%s: (exit)\n", __FUNCTION__);
+    if (dist)
+        free(dist);
+
+    LOG1_A3DLUT("%s: (exit)\n", __FUNCTION__);
     return ret;
 }
 
@@ -404,9 +407,6 @@ XCamReturn Alut3dInit(alut3d_handle_t *hAlut3d, const CamCalibDbV2Context_t* cal
     LOGI_A3DLUT("%s: (enter)\n", __FUNCTION__);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    *hAlut3d = (alut3d_context_t*)malloc(sizeof(alut3d_context_t));
-    alut3d_context_t* alut3d_contex = *hAlut3d;
-    memset(alut3d_contex, 0, sizeof(alut3d_context_t));
 
     if(calibv2 == NULL) {
         return XCAM_RETURN_ERROR_FAILED;
@@ -416,6 +416,11 @@ XCamReturn Alut3dInit(alut3d_handle_t *hAlut3d, const CamCalibDbV2Context_t* cal
     if (calib_lut3d == NULL)
         return XCAM_RETURN_ERROR_MEM;
 
+    *hAlut3d = (alut3d_context_t*)malloc(sizeof(alut3d_context_t));
+    if (!*hAlut3d) return XCAM_RETURN_ERROR_MEM;
+
+    alut3d_context_t* alut3d_contex = *hAlut3d;
+    memset(alut3d_contex, 0, sizeof(alut3d_context_t));
     alut3d_contex->swinfo.sensorGain = 1.0;
     alut3d_contex->swinfo.awbIIRDampCoef = 0;
     alut3d_contex->swinfo.awbConverged = false;

@@ -37,6 +37,8 @@
 #include "gain_uapi_head_v2.h"
 #endif
 #include "ccm_uapi_head.h"
+#include "csm_head.h"
+#include "cgc_head.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -224,6 +226,16 @@ typedef struct __accm_uapi {
 #endif
 } accm_uapi_t;
 
+typedef struct __acsm_uapi {
+    // M4_STRUCT_DESC("manual", "normal_ui_style")
+    Csm_Param_t manual;
+} acsm_uapi_t;
+
+typedef struct __acgc_uapi {
+    // M4_STRUCT_DESC("manual", "normal_ui_style")
+    Cgc_Param_t manual;
+} acgc_uapi_t;
+
 typedef struct __aiq_uapi_t {
     // M4_STRUCT_DESC("ae_uapi", "normal_ui_style")
     ae_uapi_t ae_uapi;
@@ -261,6 +273,12 @@ typedef struct __aiq_uapi_t {
     aiq_measure_info_t measure_info;
     // M4_STRUCT_DESC("accm_uapi", "normal_ui_style")
     accm_uapi_t accm_uapi;
+    // M4_STRUCT_DESC("acsm_uapi", "normal_ui_style")
+    acsm_uapi_t acsm_uapi;
+#ifndef ISP_HW_V20
+    // M4_STRUCT_DESC("acgc_uapi", "normal_ui_style")
+    acgc_uapi_t acgc_uapi;
+#endif
 } RkaiqUapi_t;
 
 #ifdef __cplusplus

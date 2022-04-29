@@ -274,9 +274,7 @@ protected:
     drv_share_mem_ctx_t _ldch_drv_mem_ctx;
     drv_share_mem_ctx_t _fec_drv_mem_ctx;
     drv_share_mem_ctx_t _cac_drv_mem_ctx;
-#ifndef NDEBUG
     drv_share_mem_ctx_t _dbg_drv_mem_ctx;
-#endif
     Mutex _mem_mutex;
     rk_aiq_rect_t _crop_rect;
     uint32_t _ds_width;

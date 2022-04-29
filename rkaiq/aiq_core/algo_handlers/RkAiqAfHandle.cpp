@@ -297,6 +297,18 @@ XCamReturn RkAiqAfHandleInt::GetFocusRange(rk_aiq_af_focusrange* range) {
     return ret;
 }
 
+XCamReturn RkAiqAfHandleInt::setAeStable(bool ae_stable) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    mAeStableMutex.lock();
+    mAeStable = ae_stable;
+    mAeStableMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
 XCamReturn RkAiqAfHandleInt::prepare() {
     ENTER_ANALYZER_FUNCTION();
 
@@ -413,6 +425,9 @@ XCamReturn RkAiqAfHandleInt::processing() {
     af_proc_int->xcam_af_stats  = shared->afStatsBuf;
     af_proc_int->xcam_aec_stats = shared->aecStatsBuf;
     af_proc_int->xcam_pdaf_stats = shared->pdafStatsBuf;
+    mAeStableMutex.lock();
+    af_proc_int->ae_stable = mAeStable;
+    mAeStableMutex.unlock();
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
 #if 0

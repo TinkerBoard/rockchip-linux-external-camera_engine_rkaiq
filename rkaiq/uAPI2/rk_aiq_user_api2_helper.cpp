@@ -116,6 +116,8 @@ __RKAIQUAPI_CALLER(rk_aiq_ccm_mccm_attrib_t);
 #elif ISP_HW_V32
 __RKAIQUAPI_CALLER(rk_aiq_ccm_mccm_attrib_v2_t);
 #endif
+__RKAIQUAPI_CALLER(Cgc_Param_t);
+__RKAIQUAPI_CALLER(Csm_Param_t);
 
 RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
     __RKAIQUAPI_DESC_DEF("/uapi/0/ae_uapi/expsw_attr", uapi_expsw_attr_t,
@@ -219,6 +221,10 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
     __RKAIQUAPI_DESC_DEF("/uapi/0/accm_uapi/stManual", rk_aiq_ccm_mccm_attrib_v2_t,
                          rk_aiq_set_accm_v2_manual_attr, rk_aiq_get_accm_v2_manual_attr),
 #endif
+__RKAIQUAPI_DESC_DEF("/uapi/0/acgc_uapi/manual", Cgc_Param_t,
+                         rk_aiq_set_acgc_manual_attr, rk_aiq_get_acgc_manual_attr),
+__RKAIQUAPI_DESC_DEF("/uapi/0/acsm_uapi/manual", Csm_Param_t,
+                         rk_aiq_set_acsm_manual_attr, rk_aiq_get_acsm_manual_attr),
 
 };
 /***********************END OF CUSTOM AREA**************************/

@@ -115,6 +115,8 @@ typedef struct CalibDbV2_Af_Contrast_s {
     // M4_ARRAY_DESC("AdaptRangeTbl", "u16", M4_SIZE(1,65), M4_RANGE(0,64), "[0,8,16,24,32,40,48,56,64]", M4_DIGIT(0), M4_DYNAMIC(1))
     unsigned short          *AdaptRangeTbl;            /**< adaptive range search table*/
     int                     AdaptRangeTbl_len;
+    // M4_NUMBER_DESC("FineSearchStep", "s8", M4_RANGE(0, 64), "4", M4_DIGIT(0),M4_HIDE(0))
+    char                    FineSearchStep;
     // M4_ARRAY_DESC("TrigThers", "f32", M4_SIZE(1,32), M4_RANGE(0,1), "0.075", M4_DIGIT(3), M4_DYNAMIC(1))
     float                   *TrigThers;                    /**< AF trigger threshold */
     int                     TrigThers_len;

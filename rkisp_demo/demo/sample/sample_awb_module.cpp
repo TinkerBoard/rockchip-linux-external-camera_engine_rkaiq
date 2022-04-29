@@ -895,10 +895,12 @@ static int sample_awb_awbv32_getAllAttr(const rk_aiq_sys_ctx_t* ctx)
 
 static int sample_awb_WriteAwbIn(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync)
 {
+    static int call_cnt =0;
     rk_aiq_uapiV2_awb_wrtIn_attr_t attr;
     memset(&attr,0,sizeof(rk_aiq_uapiV2_awb_wrtIn_attr_t));
     attr.en = true;
     attr.mode = 1; // 1 means rgb ,0 means raw
+    attr.call_cnt = call_cnt++;
     sprintf(attr.path,"/tmp");
     rk_aiq_user_api2_awb_WriteAwbIn(ctx, attr);
     printf("Write awb input \n\n");

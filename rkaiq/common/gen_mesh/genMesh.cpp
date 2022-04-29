@@ -140,7 +140,13 @@ void genLdchMeshInit(int srcW, int srcH, int dstW, int dstH, LdchParams &ldchPar
 /* LDCH: ∑¥≥ı ºªØ */
 void genLdchMeshDeInit(LdchParams &ldchParams)
 {
-	delete[] ldchParams.mapx;
-	delete[] ldchParams.mapy;
+    if (ldchParams.mapx) {
+        delete[] ldchParams.mapx;
+        ldchParams.mapx = nullptr;
+    }
+    if (ldchParams.mapy) {
+        delete[] ldchParams.mapy;
+        ldchParams.mapy = nullptr;
+    }
 }
 

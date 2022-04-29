@@ -287,6 +287,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         if (pAdrcCtx->NextData.AEData.L2S_Ratio >= 1 && pAdrcCtx->NextData.AEData.L2M_Ratio >= 1) {
             if (pAdrcCtx->FrameID <= 2)
                 bypass_expo_params = false;
+            else if (pAdrcCtx->ifReCalcStAuto || pAdrcCtx->ifReCalcStManual)
+                bypass_expo_params = false;
             else if (!pAdrcCtx->CurrData.AEData.LongFrmMode !=
                      !pAdrcCtx->NextData.AEData.LongFrmMode)
                 bypass_expo_params = false;
@@ -316,6 +318,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         __func__);
 
     pAdrcCtx->CurrData.Enable = pAdrcCtx->NextData.Enable;
+    pAdrcCtx->ifReCalcStAuto   = false;
+    pAdrcCtx->ifReCalcStManual = false;
     // output ProcRes
     pAdrcProcRes->AdrcProcRes.update = !bypass_tuning_params || !bypass_expo_params;
     pAdrcProcRes->AdrcProcRes.bDrcEn = Enable;

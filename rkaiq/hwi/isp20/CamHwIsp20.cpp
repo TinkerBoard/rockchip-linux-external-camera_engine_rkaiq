@@ -71,10 +71,8 @@ CamHwIsp20::CamHwIsp20()
     xcam_mem_clear(fec_mem_info_array);
     xcam_mem_clear(ldch_mem_info_array);
     xcam_mem_clear(cac_mem_info_array);
-#ifndef NDEBUG
     xcam_mem_clear(_dbg_drv_mem_ctx);
     xcam_mem_clear(dbg_mem_info_array);
-#endif
     _fec_drv_mem_ctx.type = MEM_TYPE_FEC;
     _fec_drv_mem_ctx.ops_ctx = this;
     _fec_drv_mem_ctx.mem_info = (void*)(fec_mem_info_array);
@@ -87,11 +85,9 @@ CamHwIsp20::CamHwIsp20()
     _cac_drv_mem_ctx.ops_ctx = this;
     _cac_drv_mem_ctx.mem_info = (void*)(cac_mem_info_array);
 
-#ifndef NDEBUG
     _dbg_drv_mem_ctx.type = MEM_TYPE_DBG_INFO;
     _dbg_drv_mem_ctx.ops_ctx = this;
     _dbg_drv_mem_ctx.mem_info = (void*)(dbg_mem_info_array);
-#endif
 
     xcam_mem_clear(_crop_rect);
     mParamsAssembler = new IspParamsAssembler("ISP_PARAMS_ASSEMBLER");
@@ -4933,8 +4929,8 @@ void CamHwIsp20::allocMemResource(uint8_t id, void *ops_ctx, void *config, void 
             LOGD_CAMHW_SUBM(ISP20HW_SUBM, "Got CAC LUT fd %d for ISP %d", mem_info_array[offset + i].fd, id);
         }
         *mem_ctx = (void*)(&isp20->_cac_drv_mem_ctx);
-#ifndef NDEBUG
     } else if (share_mem_cfg->mem_type == MEM_TYPE_DBG_INFO) {
+
         id = 0;
         offset = id * RKISP_INFO2DDR_BUF_MAX;
         dbgbuf_info.wsize = share_mem_cfg->alloc_param.width;
@@ -4962,14 +4958,14 @@ void CamHwIsp20::allocMemResource(uint8_t id, void *ops_ctx, void *config, void 
                 mmap(NULL, dbgbuf_info.wsize*dbgbuf_info.vsize, PROT_READ | PROT_WRITE, MAP_SHARED, dbgbuf_info.buf_fd[i], 0);
             if (MAP_FAILED == mem_info_array[offset+i].map_addr) {
                 mem_info_array[offset+i].map_addr = NULL;
-                LOGE_CAMHW_SUBM(ISP20HW_SUBM, "failed to map cac buf!!");
+                LOGE_CAMHW_SUBM(ISP20HW_SUBM, "failed to map dbg buf!!");
                 *mem_ctx = nullptr;
                 return;
             }
+            mem_info_array[offset+i].size = dbgbuf_info.wsize*dbgbuf_info.vsize;
             mem_info_array[offset+i].fd = dbgbuf_info.buf_fd[i];
         }
         *mem_ctx = (void*)(&isp20->_dbg_drv_mem_ctx);
-#endif
     }
 }
 
@@ -5042,7 +5038,6 @@ void CamHwIsp20::releaseMemResource(uint8_t id, void *mem_ctx)
             }
         }
         module_id = ISP3X_MODULE_CAC;
-#ifndef NDEBUG
     } else if (drv_mem_ctx->type == MEM_TYPE_DBG_INFO) {
         rk_aiq_dbg_share_mem_info_t* mem_info_array =
             (rk_aiq_dbg_share_mem_info_t*)(drv_mem_ctx->mem_info);
@@ -5060,18 +5055,18 @@ void CamHwIsp20::releaseMemResource(uint8_t id, void *mem_ctx)
             if (mem_info_array[offset + i].map_addr) {
                 ret = munmap(mem_info_array[offset + i].map_addr, mem_info_array[offset + i].size);
                 if (ret < 0)
-                    LOGE_CAMHW_SUBM(ISP20HW_SUBM, "munmap dbg buf info!!");
+                    LOGE_CAMHW_SUBM(ISP20HW_SUBM, "%dth,munmap dbg buf info!! error:%s, map_addr:%p, size:%d",
+                    i,strerror(errno),mem_info_array[offset + i].map_addr,
+                    mem_info_array[offset + i].size);
                 mem_info_array[offset + i].map_addr = NULL;
             }
             if (mem_info_array[offset + i].fd > 0) ::close(mem_info_array[offset + i].fd);
         }
-#endif
     }
-
     if (module_id != 0) {
         ret = isp20->mIspCoreDev->io_control(RKISP_CMD_MESHBUF_FREE, &module_id);
         if (ret < 0) {
-            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "free cac buf failed!");
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "free dbg buf failed!");
         }
     }
 }
@@ -5127,7 +5122,6 @@ CamHwIsp20::getFreeItem(uint8_t id, void *mem_ctx)
                 }
             }
         } while(retry_cnt--);
-#ifndef NDEBUG
     } else if (drv_mem_ctx->type == MEM_TYPE_DBG_INFO) {
         rk_aiq_dbg_share_mem_info_t* mem_info_array =
             (rk_aiq_dbg_share_mem_info_t*)(drv_mem_ctx->mem_info);
@@ -5141,7 +5135,6 @@ CamHwIsp20::getFreeItem(uint8_t id, void *mem_ctx)
                 }
             }
         } while(retry_cnt--);
-#endif
     }
     return NULL;
 }

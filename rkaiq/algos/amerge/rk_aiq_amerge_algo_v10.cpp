@@ -296,7 +296,6 @@ void AmergeTuningProcessing(AmergeContext_t* pAmergeCtx) {
 
         // merge damp
         MergeDampingV10(pAmergeCtx);
-        pAmergeCtx->ifReCalcStAuto = false;
     } else if (pAmergeCtx->mergeAttrV10.opMode == MERGE_OPMODE_MANUAL) {
         pAmergeCtx->NextData.HandleData.Merge_v10.OECurve_smooth =
             pAmergeCtx->mergeAttrV10.stManual.OECurve.Smooth;
@@ -312,8 +311,6 @@ void AmergeTuningProcessing(AmergeContext_t* pAmergeCtx) {
             pAmergeCtx->mergeAttrV10.stManual.MDCurve.MS_smooth;
         pAmergeCtx->NextData.HandleData.Merge_v10.MDCurveMS_offset =
             pAmergeCtx->mergeAttrV10.stManual.MDCurve.MS_offset;
-
-        pAmergeCtx->ifReCalcStManual = false;
     } else
         LOGE_AMERGE("%s:  Amerge wrong mode!!!\n", __FUNCTION__);
 

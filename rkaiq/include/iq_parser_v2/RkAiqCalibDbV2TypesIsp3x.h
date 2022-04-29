@@ -36,17 +36,19 @@
 #include "bayertnr_head_v2.h"
 #include "cac_head.h"
 #include "ccm_head.h"
+#include "cgc_head.h"
 #include "cnr_head_v2.h"
 #include "cproc_head.h"
 #include "cpsl_head.h"
+#include "csm_head.h"
 #include "debayer_head.h"
 #include "fec_head.h"
+#include "gain_head_v2.h"
 #include "ldch_head.h"
 #include "lut3d_head.h"
 #include "sharp_head_v4.h"
 #include "thumbnails_head.h"
 #include "ynr_head_v3.h"
-#include "gain_head_v2.h"
 RKAIQ_BEGIN_DECLARE
 
 typedef struct CalibDbV2_ColorAsGrey_Param_s {
@@ -125,6 +127,10 @@ typedef struct CamCalibDbV2ContextIsp30_s {
     CalibDbV2_FEC_t afec;
     // M4_STRUCT_DESC("gain_v2", "normal_ui_style")
     CalibDbV2_GainV2_t gain_v2;
+    // M4_STRUCT_DESC("csm", "normal_ui_style")
+    CalibDbV2_csm_t csm;
+    // M4_STRUCT_DESC("cgc", "normal_ui_style")
+    CalibDbV2_cgc_t cgc;
 } CamCalibDbV2ContextIsp30_t;
 
 RKAIQ_END_DECLARE

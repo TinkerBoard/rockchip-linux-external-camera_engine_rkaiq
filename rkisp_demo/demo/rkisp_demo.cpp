@@ -19,7 +19,9 @@
 #include <dlfcn.h>
 #include <signal.h>
 #include <dirent.h>
+#if ISPDEMO_ENABLE_DRM
 #include "drmDsp.h"
+#endif
 #include "uAPI2/rk_aiq_user_api2_sysctl.h"
 #include "rk_aiq_user_api2_debug.h"
 #include "sample_image_process.h"
@@ -32,11 +34,9 @@
 #include "awb_algo_demo/third_party_awbV32_algo.h" //for rv1106
 #include "af_algo_demo/third_party_af_algo.h"
 
-#ifndef ARCH_FPGA
+#if ISPDEMO_ENABLE_RGA && ISPDEMO_ENABLE_DRM
 #include "display.h"
 #include "rga.h"
-#else
-#define NO_RGA_DISPLAY
 #endif
 #include <list>
 #include <vector>
@@ -1033,6 +1033,7 @@ static int read_frame(demo_context_t *ctx)
     else
         bytesused = buf.bytesused;
 
+#if ISPDEMO_ENABLE_DRM
     if (ctx->vop) {
         int dispWidth, dispHeight;
 
@@ -1045,25 +1046,21 @@ static int read_frame(demo_context_t *ctx)
             dispHeight = 1088;
         else
             dispHeight = ctx->height;
-#ifndef Android
-#ifndef NO_RGA_DISPLAY
+
+#if ISPDEMO_ENABLE_RGA
         if (strlen(ctx->dev_name) && strlen(ctx->dev_name2)) {
             if (ctx->dev_using == 1)
                 display_win1(ctx->buffers[i].start, ctx->buffers[i].export_fd,  RK_FORMAT_YCbCr_420_SP, dispWidth, dispHeight, 0);
             else
                 display_win2(ctx->buffers[i].start, ctx->buffers[i].export_fd,  RK_FORMAT_YCbCr_420_SP, dispWidth, dispHeight, 0);
         } else {
-            drmDspFrame(ctx->width, ctx->height, dispWidth, dispHeight, ctx->buffers[i].export_fd, DRM_FORMAT_NV12);
-        }
 #else
         {
-            drmDspFrame(ctx->width, ctx->height, dispWidth, dispHeight, ctx->buffers[i].start, DRM_FORMAT_NV12);
+#endif
+            drmDspFrame(ctx->width, ctx->height, dispWidth, dispHeight, ctx->buffers[i].export_fd, DRM_FORMAT_NV12);
         }
-#endif
-#else
-        drmDspFrame(ctx->width, ctx->height, dispWidth, dispHeight, ctx->buffers[i].export_fd, DRM_FORMAT_NV12);
-#endif
     }
+#endif
 
     process_image(ctx->buffers[i].start,  buf.sequence, bytesused, ctx);
 
@@ -2391,32 +2388,24 @@ int main(int argc, char **argv)
 
     parse_args(argc, argv, &main_ctx);
 
+#if ISPDEMO_ENABLE_DRM
     if (main_ctx.vop) {
 
-#ifndef Android
-#ifndef NO_RGA_DISPLAY
+#if ISPDEMO_ENABLE_RGA
         if (strlen(main_ctx.dev_name) && strlen(main_ctx.dev_name2)) {
             if (display_init(720, 1280) < 0) {
                 printf("display_init failed\n");
             }
         } else {
-            if (initDrmDsp() < 0) {
-                printf("initDrmDsp failed\n");
-            }
-        }
 #else
         {
+#endif
             if (initDrmDsp() < 0) {
                 printf("initDrmDsp failed\n");
             }
         }
-#endif
-#else
-        if (initDrmDsp() < 0) {
-            printf("initDrmDsp failed\n");
-        }
-#endif
     }
+#endif
 
     rkisp_routine(&main_ctx);
     g_main_ctx = &main_ctx;
@@ -2460,14 +2449,11 @@ int main(int argc, char **argv)
     }
     deinit(&main_ctx);
 
-#ifndef Android
-#ifndef NO_RGA_DISPLAY
+#if ISPDEMO_ENABLE_DRM
     if (strlen(main_ctx.dev_name) && strlen(main_ctx.dev_name2)) {
         display_exit();
     }
-#else
     deInitDrmDsp();
-#endif
 #endif
     return 0;
 }

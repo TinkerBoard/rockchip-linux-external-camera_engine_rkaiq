@@ -51,7 +51,7 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
     if (ctx->acsmCtx.calibv2) {
         Csm_Param_t *csm =
             (Csm_Param_t*)(CALIBDBV2_GET_MODULE_PTR(ctx->acsmCtx.calibv2, csm));
-        if (csm) {
+        if (csm && (csm->full_range)) {
             *params = *csm;
         } else {
             // auto means using chip reset valuse
@@ -86,7 +86,7 @@ prepare(RkAiqAlgoCom* params)
 #if RKAIQ_HAVE_CSM_V1
             Csm_Param_t *csm =
                 (Csm_Param_t*)(CALIBDBV2_GET_MODULE_PTR(pCfgParam->com.u.prepare.calibv2, csm));
-            if (csm) {
+            if (csm && (csm->full_range)) {
                 *acsm_params = *csm;
             }
 #endif

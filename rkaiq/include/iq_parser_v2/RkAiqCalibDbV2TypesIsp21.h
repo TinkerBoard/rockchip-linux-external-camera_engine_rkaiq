@@ -32,9 +32,11 @@
 #include "awb_head.h"
 #include "bayernr_head_v2.h"
 #include "ccm_head.h"
+#include "cgc_head.h"
 #include "cnr_head_v1.h"
 #include "cproc_head.h"
 #include "cpsl_head.h"
+#include "csm_head.h"
 #include "debayer_head.h"
 #include "fec_head.h"
 #include "ldch_head.h"
@@ -114,6 +116,10 @@ typedef struct CamCalibDbV2ContextIsp21_s {
     CalibDbV2_YnrV2_t ynr_v2;
     // M4_STRUCT_DESC("sharp_v3", "normal_ui_style")
     CalibDbV2_SharpV3_t sharp_v3;
+    // M4_STRUCT_DESC("csm", "normal_ui_style")
+    CalibDbV2_csm_t csm;
+    // M4_STRUCT_DESC("cgc", "normal_ui_style")
+    CalibDbV2_cgc_t cgc;
 } CamCalibDbV2ContextIsp21_t;
 
 RKAIQ_END_DECLARE

@@ -34,8 +34,8 @@ typedef struct __cgc_param {
 } Cgc_Param_t;
 
 typedef struct __cgc {
-    // M4_STRUCT_DESC("CgcTuningPara", "normal_ui_style")
-    Cgc_Param_t param;
+    // M4_STRUCT_DESC("TuningPara", "normal_ui_style")
+    Cgc_Param_t TuningPara;
 } CalibDbV2_cgc_t;
 
 RKAIQ_END_DECLARE

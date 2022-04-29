@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "RkAiqAeHandle.h"
+#include "RkAiqAfHandle.h"
 
 #include "RkAiqCore.h"
 
@@ -863,6 +864,20 @@ XCamReturn RkAiqAeHandleInt::processing() {
             mAiqCore->post_message(msg);
         }
     }
+
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
+    SmartPtr<RkAiqHandle>* af_handle = mAiqCore->getCurAlgoTypeHandle(RK_AIQ_ALGO_TYPE_AF);
+    int algo_id                      = (*af_handle)->getAlgoId();
+
+    if (af_handle) {
+        if (algo_id == 0) {
+            RkAiqAfHandleInt* af_algo = dynamic_cast<RkAiqAfHandleInt*>(af_handle->ptr());
+            RkAiqAlgoProcResAe* ae_res = &mProcResShared->result;
+
+            af_algo->setAeStable(ae_res->ae_proc_res_rk.IsConverged);
+        }
+    }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;

@@ -1062,6 +1062,7 @@ void Isp32Params::convertAiqMergeToIsp32Params(struct isp32_isp_params_cfg& isp_
         isp_cfg.module_en_update |= 1LL << RK_ISP2X_HDRMGE_ID;
         isp_cfg.module_ens &= ~(1LL << RK_ISP2X_HDRMGE_ID);
         isp_cfg.module_cfg_update &= ~(1LL << RK_ISP2X_HDRMGE_ID);
+        return;
     }
 
     isp_cfg.others.hdrmge_cfg.mode         = amerge_data.Merge_v12.mode;
@@ -1512,9 +1513,9 @@ void Isp32Params::convertAiqAldchToIsp32Params(struct isp32_isp_params_cfg& isp_
 
     // TODO: add update flag for ldch
     if (ldch_cfg.ldch_en) {
-        isp_cfg.module_ens |= ISP3X_MODULE_LDCH;
-        isp_cfg.module_en_update |= ISP3X_MODULE_LDCH;
-        isp_cfg.module_cfg_update |= ISP3X_MODULE_LDCH;
+        isp_cfg.module_ens |= ISP32_MODULE_LDCH;
+        isp_cfg.module_en_update |= ISP32_MODULE_LDCH;
+        isp_cfg.module_cfg_update |= ISP32_MODULE_LDCH;
 
         pLdchCfg->hsize = ldch_cfg.lut_h_size;
         pLdchCfg->vsize = ldch_cfg.lut_v_size;
@@ -1526,11 +1527,12 @@ void Isp32Params::convertAiqAldchToIsp32Params(struct isp32_isp_params_cfg& isp_
         pLdchCfg->bic_mode_en = ldch_cfg.bic_mode_en;
         memcpy(pLdchCfg->bicubic, ldch_cfg.bicubic, sizeof(ldch_cfg.bicubic));
 
-        LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "enable ldch h/v size: %d",
-                        pLdchCfg->hsize, pLdchCfg->vsize);
+        LOGV_CAMHW_SUBM(ISP20PARAM_SUBM, "enable ldch h/v size: %d, buf_fd: %d",
+                        pLdchCfg->hsize, pLdchCfg->vsize, pLdchCfg->buf_fd);
+
     } else {
-        isp_cfg.module_ens &= ~ISP2X_MODULE_LDCH;
-        isp_cfg.module_en_update |= ISP2X_MODULE_LDCH;
+        isp_cfg.module_ens &= ~ISP32_MODULE_LDCH;
+        isp_cfg.module_en_update |= ISP32_MODULE_LDCH;
     }
 }
 

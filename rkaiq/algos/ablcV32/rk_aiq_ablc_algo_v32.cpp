@@ -469,7 +469,7 @@ AblcResult_V32_t AblcV32Process(AblcContext_V32_t* pAblcCtx, AblcExpInfo_V32_t* 
         } else {
             pAblcCtx->ProcRes.blc_ob_enable   = false;
             pAblcCtx->ProcRes.isp_ob_offset   = 0;
-            pAblcCtx->ProcRes.isp_ob_predgain = 0;
+            pAblcCtx->ProcRes.isp_ob_predgain = 1;
             pAblcCtx->ProcRes.isp_ob_max      = 0xfffff;
         }
     } else if (pAblcCtx->eMode == ABLC_V32_OP_MODE_MANUAL) {
@@ -497,7 +497,7 @@ AblcResult_V32_t AblcV32Process(AblcContext_V32_t* pAblcCtx, AblcExpInfo_V32_t* 
         } else {
             pAblcCtx->ProcRes.blc_ob_enable   = false;
             pAblcCtx->ProcRes.isp_ob_offset   = 0;
-            pAblcCtx->ProcRes.isp_ob_predgain = 0;
+            pAblcCtx->ProcRes.isp_ob_predgain = 1;
             pAblcCtx->ProcRes.isp_ob_max      = 0xfffff;
         }
     } else {

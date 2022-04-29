@@ -28,6 +28,8 @@
 #include "uAPI2/rk_aiq_user_api2_ae.h"
 #include "uAPI2/rk_aiq_user_api2_imgproc.h"
 #include "uAPI/include/rk_aiq_user_api_sysctl.h"
+#include "uAPI2/rk_aiq_user_api2_acsm.h"
+#include "uAPI2/rk_aiq_user_api2_acgc.h"
 
 int rk_aiq_uapi_sysctl_swWorkingModeDyn2(const rk_aiq_sys_ctx_t *ctx,
         work_mode_t *mode) {
@@ -467,6 +469,51 @@ XCamReturn rk_aiq_get_accm_v2_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
     rk_aiq_ccm_v2_attrib_t ccm_attr_v2;
     ret     = rk_aiq_user_api2_accm_v2_GetAttrib(sys_ctx, &ccm_attr_v2);
     *manual = ccm_attr_v2.stManual;
+
+    return ret;
+}
+
+XCamReturn rk_aiq_set_acgc_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                        Cgc_Param_t* manual) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    LOGE_ACGC("READY TO SET ATTR\n");
+
+    rk_aiq_uapi_acgc_attrib_t cgc_attr;
+    ret = rk_aiq_user_api2_acgc_GetAttrib(sys_ctx, &cgc_attr);
+    cgc_attr.param = *manual;
+    ret = rk_aiq_user_api2_acgc_SetAttrib(sys_ctx, &cgc_attr);
+
+    return ret;
+}
+XCamReturn rk_aiq_get_acgc_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                        Cgc_Param_t* manual) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_uapi_acgc_attrib_t cgc_attr;
+    ret = rk_aiq_user_api2_acgc_GetAttrib(sys_ctx, &cgc_attr);
+    *manual = cgc_attr.param;
+
+    return ret;
+}
+
+XCamReturn rk_aiq_set_acsm_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                        Csm_Param_t* manual) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_uapi_acsm_attrib_t csm_attr;
+    ret = rk_aiq_user_api2_acsm_GetAttrib(sys_ctx, &csm_attr);
+    csm_attr.param = *manual;
+    ret = rk_aiq_user_api2_acsm_SetAttrib(sys_ctx, &csm_attr);
+
+    return ret;
+}
+XCamReturn rk_aiq_get_acsm_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                        Csm_Param_t* manual) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    rk_aiq_uapi_acsm_attrib_t csm_attr;
+    ret = rk_aiq_user_api2_acsm_GetAttrib(sys_ctx, &csm_attr);
+    *manual = csm_attr.param;
 
     return ret;
 }

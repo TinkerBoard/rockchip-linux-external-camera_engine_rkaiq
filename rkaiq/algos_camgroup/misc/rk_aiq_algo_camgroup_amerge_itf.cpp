@@ -311,6 +311,8 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
             pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLM >= 1) {
             if (pAmergeGrpCtx->FrameID <= 2)
                 bypass_expo_process = false;
+            else if (pAmergeGrpCtx->ifReCalcStAuto || pAmergeGrpCtx->ifReCalcStManual)
+                bypass_expo_process = false;
             else if (!pAmergeGrpCtx->CurrData.CtrlData.ExpoData.LongFrmMode !=
                      !pAmergeGrpCtx->NextData.CtrlData.ExpoData.LongFrmMode)
                 bypass_expo_process = false;
@@ -352,6 +354,9 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
         LOGD_AMERGE("%s FrameID:%d, It's in Linear Mode, Merge function bypass_tuning_process\n",
                     __FUNCTION__, pAmergeGrpCtx->FrameID);
     }
+
+    pAmergeGrpCtx->ifReCalcStAuto   = false;
+    pAmergeGrpCtx->ifReCalcStManual = false;
 
     pAmergeGrpCtx->ProcRes.update = !bypass_tuning_process || !bypass_expo_process;
     for (int i = 0; i < pAmergeGrpProcRes->arraySize; i++) {
