@@ -81,6 +81,9 @@ typedef struct CalibDbV2_YnrV22_T_ISO_s {
     // M4_BOOL_DESC("ynr_nlm11x11_bypass", "0")
     bool ynr_nlm11x11_bypass;
 
+    // M4_BOOL_DESC("ynr_thumb_mix_cur_en", "0")
+    bool ynr_thumb_mix_cur_en;
+
     // M4_NUMBER_DESC("ynr_global_gain_alpha", "f32", M4_RANGE(0, 1.0), "0", M4_DIGIT(2))
     float ynr_global_gain_alpha;
     // M4_NUMBER_DESC("ynr_global_gain", "f32", M4_RANGE(0, 64), "1", M4_DIGIT(2))
@@ -125,7 +128,7 @@ typedef struct CalibDbV2_YnrV22_T_ISO_s {
     // M4_NUMBER_DESC("hi_gain_alpha", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
     float hi_gain_alpha;
 
-    // M4_NUMBER_DESC("hi_center_weight", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
+    // M4_NUMBER_DESC("hi_center_weight", "f32", M4_RANGE(0.0, 128.0), "1.0", M4_DIGIT(2))
     float hi_center_weight;
     // M4_NUMBER_DESC("hi_weight_offset", "f32", M4_RANGE(0.0, 1.0), "0.05", M4_DIGIT(2))
     float hi_weight_offset;

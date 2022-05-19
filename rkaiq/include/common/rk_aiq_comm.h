@@ -31,11 +31,6 @@
 
 RKAIQ_BEGIN_DECLARE
 
-typedef enum {
-    BOOL_FALSE = 0,
-    BOOL_TRUE = (!BOOL_FALSE)
-} bool_t;
-
 typedef int RESULT;
 
 typedef enum RKAiqResult_e {

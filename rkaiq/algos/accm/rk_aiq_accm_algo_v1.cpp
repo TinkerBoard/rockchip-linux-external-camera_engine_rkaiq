@@ -180,26 +180,30 @@ XCamReturn AccmAutoConfig
             hAccm->ccmHwConf.alp_y[i] = fScale * pCcm->lumaCCM.y_alpha_curve[i];
         }
     }
-    if (!hAccm->accmSwInfo.ccmConverged ||hAccm->update || hAccm->updateAtt) {
-      // 7) . Damping
-        ret = Damping((pCcm->TuningPara.damp_enable && hAccm->count > 1) ? hAccm->accmSwInfo.awbIIRDampCoef : 0,
-                      hAccm->accmRest.undampedCcmMatrix, hAccm->accmRest.dampedCcmMatrix,
-                      hAccm->accmRest.undampedCcOffset, hAccm->accmRest.dampedCcOffset);
-
-        float d_ccm = 0;
-        float d_ccoff = 0;
-        for (int i = 0; i < 9; i++)
-            d_ccm += fabs(hAccm->accmRest.undampedCcmMatrix[i] - hAccm->accmRest.dampedCcmMatrix[i]);
-        for (int i = 0; i < 3; i++)
-            d_ccoff += fabs(hAccm->accmRest.undampedCcOffset[i] - hAccm->accmRest.dampedCcOffset[i]);
-        if ((d_ccm < DIVMIN)&&(d_ccoff < DIVMIN))
-            hAccm->accmSwInfo.ccmConverged = true;
-        else
-            hAccm->accmSwInfo.ccmConverged = false;
+    if (pCcm->TuningPara.damp_enable && (hAccm->count > 1) && (hAccm->accmSwInfo.awbIIRDampCoef > 0.0) &&
+                            ((!hAccm->accmSwInfo.ccmConverged) || hAccm->update || hAccm->updateAtt)) {
+        // 7) . Damping
+        ret = Damping(hAccm->accmSwInfo.awbIIRDampCoef,
+                    hAccm->accmRest.undampedCcmMatrix, hAccm->accmRest.dampedCcmMatrix,
+                    hAccm->accmRest.undampedCcOffset, hAccm->accmRest.dampedCcOffset);
+        hAccm->accmSwInfo.ccmConverged =
+                !(memcmp(hAccm->accmRest.undampedCcmMatrix, hAccm->accmRest.dampedCcmMatrix,
+            sizeof(hAccm->accmRest.dampedCcmMatrix)) ||
+            memcmp(hAccm->accmRest.undampedCcOffset, hAccm->accmRest.dampedCcOffset,
+            sizeof(hAccm->accmRest.dampedCcOffset)));
+    } else {
+        memcpy(hAccm->accmRest.dampedCcmMatrix, hAccm->accmRest.undampedCcmMatrix,
+            sizeof(hAccm->accmRest.dampedCcmMatrix));
+        hAccm->accmRest.dampedCcOffset[0] = hAccm->accmRest.undampedCcOffset[0];
+        hAccm->accmRest.dampedCcOffset[1] = hAccm->accmRest.undampedCcOffset[1];
+        hAccm->accmRest.dampedCcOffset[2] = hAccm->accmRest.undampedCcOffset[2];
+        hAccm->accmSwInfo.ccmConverged = true;
     }
       // 8)  set to ic  to do bit check
     memcpy(hAccm->ccmHwConf.matrix, hAccm->accmRest.dampedCcmMatrix, sizeof(hAccm->accmRest.dampedCcmMatrix));
-    memcpy(hAccm->ccmHwConf.offs, hAccm->accmRest.dampedCcOffset, sizeof(hAccm->accmRest.dampedCcOffset));
+    hAccm->ccmHwConf.offs[0] = hAccm->accmRest.dampedCcOffset[0];
+    hAccm->ccmHwConf.offs[1] = hAccm->accmRest.dampedCcOffset[1];
+    hAccm->ccmHwConf.offs[2] = hAccm->accmRest.dampedCcOffset[2];
 
     LOG1_ACCM("%s: (exit)\n", __FUNCTION__);
 
@@ -309,7 +313,9 @@ static XCamReturn UpdateCcmCalibV2ParaV1(accm_handle_t hAccm)
 
     hAccm->mCurAtt.mode = (rk_aiq_ccm_op_mode_t)calib_ccm->control.mode;
 
+#if RKAIQ_ACCM_ILLU_VOTE
     ReloadCCMCalibV2(hAccm, &calib_ccm->TuningPara);
+#endif
 
     ret = pCcmMatrixAll_init(hAccm, &calib_ccm->TuningPara);
 
@@ -339,9 +345,6 @@ XCamReturn AccmInit(accm_handle_t *hAccm, const CamCalibDbV2Context_t* calibv2)
     LOGI_ACCM("%s: (enter)\n", __FUNCTION__);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    *hAccm = (accm_context_t*)malloc(sizeof(accm_context_t));
-    accm_context_t* accm_context = *hAccm;
-    memset(accm_context, 0, sizeof(accm_context_t));
 
     if(calibv2 == NULL) {
         return  XCAM_RETURN_ERROR_PARAM;
@@ -352,10 +355,15 @@ XCamReturn AccmInit(accm_handle_t *hAccm, const CamCalibDbV2Context_t* calibv2)
     if (calib_ccm == NULL)
         return XCAM_RETURN_ERROR_MEM;
 
+    *hAccm = (accm_context_t*)malloc(sizeof(accm_context_t));
+    accm_context_t* accm_context = *hAccm;
+    memset(accm_context, 0, sizeof(accm_context_t));
+
     accm_context->accmSwInfo.sensorGain = 1.0;
     accm_context->accmSwInfo.awbIIRDampCoef = 0;
     accm_context->accmSwInfo.varianceLuma = 255;
     accm_context->accmSwInfo.awbConverged = false;
+
     accm_context->accmSwInfo.awbGain[0] = 1;
     accm_context->accmSwInfo.awbGain[1] = 1;
 
@@ -389,7 +397,9 @@ XCamReturn AccmRelease(accm_handle_t hAccm)
     LOGI_ACCM("%s: (enter)\n", __FUNCTION__);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#if RKAIQ_ACCM_ILLU_VOTE
     ClearList(&hAccm->accmRest.dominateIlluList);
+#endif
     ClearList(&hAccm->accmRest.problist);
     free(hAccm);
     hAccm = NULL;

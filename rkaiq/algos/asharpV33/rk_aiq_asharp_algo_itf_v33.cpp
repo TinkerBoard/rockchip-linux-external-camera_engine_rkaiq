@@ -181,6 +181,13 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     }
     stExpInfo.snr_mode = 0;
 
+    stExpInfo.blc_ob_predgain = 1.0;
+    if(pAsharpProcParams != NULL) {
+        stExpInfo.blc_ob_predgain = pAsharpProcParams->stAblcV32_proc_res.isp_ob_predgain;
+        if(stExpInfo.blc_ob_predgain != pAsharpCtx->stExpInfo.blc_ob_predgain) {
+            pAsharpCtx->isReCalculate |= 1;
+        }
+    }
 #if 0  // TODO Merge:
     XCamVideoBuffer* xCamAePreRes = pAsharpProcParams->com.u.proc.res_comb->ae_pre_res;
     RkAiqAlgoPreResAe* pAEPreRes  = nullptr;
@@ -217,8 +224,11 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
             } else {
                 stExpInfo.arDGain[0] = curExp->LinearExp.exp_real_params.digital_gain;
             }
+            if(stExpInfo.blc_ob_predgain < 1.0) {
+                stExpInfo.blc_ob_predgain = 1.0;
+            }
             stExpInfo.arTime[0] = curExp->LinearExp.exp_real_params.integration_time;
-            stExpInfo.arIso[0]  = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * 50;
+            stExpInfo.arIso[0]  = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * stExpInfo.blc_ob_predgain * 50;
             LOGD_ASHARP("new snr mode:%d old:%d  gain:%f iso:%d time:%f\n",
                         stExpInfo.snr_mode,
                         pAsharpCtx->stExpInfo.snr_mode,
@@ -240,6 +250,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
                     LOGW_ASHARP("hdr mode dgain is wrong, use 1.0 instead\n");
                     stExpInfo.arDGain[i] = curExp->HdrExp[i].exp_real_params.digital_gain;
                 }
+                stExpInfo.blc_ob_predgain = 1.0;
                 stExpInfo.arTime[i] = curExp->HdrExp[i].exp_real_params.integration_time;
                 stExpInfo.arIso[i]  = stExpInfo.arAGain[i] * stExpInfo.arDGain[i] * 50;
 

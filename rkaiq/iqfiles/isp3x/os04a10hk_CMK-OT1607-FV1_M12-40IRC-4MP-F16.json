@@ -1598,7 +1598,8 @@
 						},
 						"colorAsGrey":	{
 							"param":	{
-								"enable":	0
+								"enable":	0,
+								"skip_frame": 10
 							}
 						},
 						"lsc_v2":	{
@@ -7209,7 +7210,8 @@
 						},
 						"colorAsGrey":	{
 							"param":	{
-								"enable":	0
+								"enable":	0,
+								"skip_frame": 10
 							}
 						},
 						"lsc_v2":	{

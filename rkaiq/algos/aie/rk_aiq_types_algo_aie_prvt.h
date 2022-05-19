@@ -12,7 +12,7 @@ typedef struct _RkAiqAlgoContext {
     CamCalibDbContext_t* calib;
     CamCalibDbV2Context_t *calibv2;
     rk_aiq_aie_params_t params;
-    rk_aiq_aie_params_t last_params;
+    rk_aiq_aie_last_params_t last_params;
     rk_aiq_aie_params_int_t sharp_params;
     rk_aiq_aie_params_int_t emboss_params;
     rk_aiq_aie_params_int_t sketch_params;

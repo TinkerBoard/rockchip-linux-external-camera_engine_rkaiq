@@ -90,7 +90,7 @@ SPStreamProcUnit::new_video_buffer(SmartPtr<V4l2Buffer> buf,
 
 int SPStreamProcUnit::get_lowpass_fv(uint32_t sequence, SmartPtr<V4l2BufferProxy> buf_proxy)
 {
-#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF_V20
     SmartPtr<LensHw> lensHw = _focus_dev.dynamic_cast_ptr<LensHw>();
     uint8_t *image_buf = (uint8_t *)buf_proxy->get_v4l2_planar_userptr(0);
     rk_aiq_af_algo_meas_t meas_param;
@@ -120,7 +120,7 @@ SPStreamProcUnit::poll_buffer_ready (SmartPtr<VideoBuffer> &buf)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF_V20
     if (ldg_enable) {
         SmartPtr<V4l2BufferProxy> buf_proxy = buf.dynamic_cast_ptr<V4l2BufferProxy>();
         get_lowpass_fv(buf->get_sequence(), buf_proxy);

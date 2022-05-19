@@ -233,6 +233,7 @@ private:
     const CamCalibDbContext_t* mCalibDb;
 #endif
     CamCalibDbV2Context_t* mCalibDbV2;
+    CamCalibDbV2Context_t* tuningCalib;
     rk_aiq_working_mode_t mWorkingMode;
     rk_aiq_working_mode_t mOldWkModeForGray;
     bool mWkSwitching;

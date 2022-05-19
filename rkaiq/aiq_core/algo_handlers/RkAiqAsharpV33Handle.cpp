@@ -226,6 +226,7 @@ XCamReturn RkAiqAsharpV33HandleInt::processing() {
     // TODO: fill procParam
     asharp_proc_int->iso      = sharedCom->iso;
     asharp_proc_int->hdr_mode = sharedCom->working_mode;
+    asharp_proc_int->stAblcV32_proc_res = shared->res_comb.ablcV32_proc_res;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);

@@ -133,7 +133,7 @@ const static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
 #if RKAIQ_HAVE_AWB_V20
     { &g_RkIspAlgoDescAwb.common,       RK_AIQ_CORE_ANALYZE_AWB,   0, 0, 0, awbGrpConds   },
 #endif
-#if RKAIQ_HAVE_AF_V20
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
     { &g_RkIspAlgoDescAf.common,        RK_AIQ_CORE_ANALYZE_MEAS,  0, 0, 0, measGrpConds  },
 #endif
 #if RKAIQ_HAVE_BLC_V1

@@ -147,21 +147,33 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     RkAiqAlgoCamGroupProcOut* pGrpProcResPara = (RkAiqAlgoCamGroupProcOut*)outparams;
     pAdehazeGrpHandle->FrameID                = inparams->frame_id;
 
+    LOGD_ADEHAZE("/*************************Adehaze Group Start******************/ \n");
+
+    ret = AdehazeGetCurrDataGroup(pAdehazeGrpHandle,
+                                  &pGrpProcPara->camgroupParmasArray[0]->aec._effAecExpInfo,
+                                  pGrpProcPara->camgroupParmasArray[0]->aec._aePreRes);
+    if (ret == XCAM_RETURN_ERROR_PARAM) {
+        if (pAdehazeGrpHandle->FrameID <= 2)
+            return XCAM_RETURN_NO_ERROR;
+        else {
+            LOGE_ADEHAZE("%s:PreResBuf is NULL!\n", __FUNCTION__);
+        }
+    }
+#if RKAIQ_HAVE_DEHAZE_V12
+    if (pAdehazeGrpHandle->FrameNumber == LINEAR_NUM) {
+        // ablcV32_proc_res not ready for now
+        pAdehazeGrpHandle->ablcV32_proc_res.blc_ob_enable   = false;
+        pAdehazeGrpHandle->ablcV32_proc_res.isp_ob_predgain = 1.0f;
+        if (pAdehazeGrpHandle->ablcV32_proc_res.blc_ob_enable)
+            pAdehazeGrpHandle->CurrDataV12.ISO *=
+                pAdehazeGrpHandle->ablcV32_proc_res.isp_ob_predgain;
+    }
+#endif
+    AdehazeByPassProcessing(pAdehazeGrpHandle);
+
     bool Enable = DehazeEnableSetting(pAdehazeGrpHandle);
 
     if (Enable) {
-        LOGD_ADEHAZE("/*************************Adehaze Group Start******************/ \n");
-
-        ret = AdehazeGetCurrDataGroup(pAdehazeGrpHandle,
-                                      &pGrpProcPara->camgroupParmasArray[0]->aec._effAecExpInfo,
-                                      pGrpProcPara->camgroupParmasArray[0]->aec._aePreRes);
-        if (ret == XCAM_RETURN_ERROR_PARAM) {
-            if (pAdehazeGrpHandle->FrameID <= 2)
-                return XCAM_RETURN_NO_ERROR;
-            else {
-                LOGE_ADEHAZE("%s:PreResBuf is NULL!\n", __FUNCTION__);
-            }
-        }
         // get ynr snr mode
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
     if (pGrpProcPara->gcom.com.u.proc.curExp->CISFeature.SNR == 0)
@@ -187,13 +199,13 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
 #endif
 
     // process
-    if (!(AdehazeByPassProcessing(pAdehazeGrpHandle))) ret = AdehazeProcess(pAdehazeGrpHandle);
-
-    LOGD_ADEHAZE("/*************************Adehaze Group Over******************/ \n");
+    if (!(pAdehazeGrpHandle->byPassProc)) ret = AdehazeProcess(pAdehazeGrpHandle);
     } else {
         LOGD_ADEHAZE("%s: FrameID:%d Group Dehaze Enable is OFF, Bypass Dehaze !!! \n",
                      pAdehazeGrpHandle->FrameID);
     }
+
+    LOGD_ADEHAZE("/*************************Adehaze Group Over******************/ \n");
 
     // proc res
     pAdehazeGrpHandle->ProcRes.enable = Enable;

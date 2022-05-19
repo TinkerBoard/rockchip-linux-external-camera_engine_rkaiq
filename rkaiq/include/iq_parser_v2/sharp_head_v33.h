@@ -30,7 +30,7 @@ typedef struct CalibDbV2_SharpV33_Luma_t {
     uint16_t luma_point[8];
     // M4_ARRAY_DESC("luma_sigma", "u16", M4_SIZE(1,8), M4_RANGE(0,1023), "[8, 12, 16, 16, 24, 20, 16, 16]", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t luma_sigma[8];
-    // M4_ARRAY_DESC("hf_clip", "s32", M4_SIZE(1,8), M4_RANGE(0,1023), "[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("hf_clip", "u16", M4_SIZE(1,8), M4_RANGE(0,1023), "[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t hf_clip[8];
 } CalibDbV2_SharpV33_Luma_t;
 
@@ -94,7 +94,7 @@ typedef struct CalibDbV2_SharpV33_T_ISO_s {
     uint16_t noise_sigma_clip;
     // M4_ARRAY_DESC("gain_adj_sharp_strength", "f32", M4_SIZE(1,14), M4_RANGE(0.0,31.275), "[1.0]", M4_DIGIT(3), M4_DYNAMIC(0))
     float gain_adj_sharp_strength[14];
-    // M4_ARRAY_DESC("dis_adj_sharp_strength", "f32", M4_SIZE(1,22), M4_RANGE(0.0,1.0), "[1.0]", M4_DIGIT(1), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("dis_adj_sharp_strength", "f32", M4_SIZE(1,22), M4_RANGE(0.0,1.0), "[1.0]", M4_DIGIT(3), M4_DYNAMIC(0))
     float dis_adj_sharp_strength[22];
     // M4_ARRAY_TABLE_DESC("lumaPara", "array_table_ui", "none")
     CalibDbV2_SharpV33_Luma_t luma_para;

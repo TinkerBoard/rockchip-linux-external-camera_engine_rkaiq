@@ -177,7 +177,7 @@ static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
 #if RKAIQ_HAVE_CSM_V1
     { &g_RkIspAlgoDescAcsm.common,          RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },
 #endif
-#if RKAIQ_HAVE_AF_V30
+#if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
     { &g_RkIspAlgoDescAf.common,            RK_AIQ_CORE_ANALYZE_AF,     0, 1, 0,    afGrpCondsV3x      },
 #endif
 #if RKAIQ_HAVE_GIC_V2

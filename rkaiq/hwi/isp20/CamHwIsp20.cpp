@@ -97,6 +97,7 @@ CamHwIsp20::CamHwIsp20()
     mIsMain = false;
     _isp_stream_status = ISP_STREAM_STATUS_INVALID;
     mEffectIspParamsPool = new RkAiqIspEffParamsPool("ISP_EFF", CAMHWISP_EFFECT_ISP_POOL_NUM);
+    _module_cfg_update_frome_drv = 0;
 }
 
 CamHwIsp20::~CamHwIsp20()
@@ -902,10 +903,10 @@ CamHwIsp20::selectIqFile(const char* sns_ent_name, char* iqfile_name)
     module_name = base_inf->module;
     lens_name = base_inf->lens;
     if (strlen(module_name) && strlen(lens_name)) {
-        sprintf(iqfile_name, "%s_%s_%s.xml",
+        sprintf(iqfile_name, "%s_%s_%s.json",
                 sensor_name_full, module_name, lens_name);
     } else {
-        sprintf(iqfile_name, "%s.xml", sensor_name_full);
+        sprintf(iqfile_name, "%s.json", sensor_name_full);
     }
 
     return XCAM_RETURN_NO_ERROR;
@@ -1471,6 +1472,7 @@ CamHwIsp20::init(const char* sns_ent_name)
     }
     //isp params
     mIspParamStream = new RKStream(mIspParamsDev, ISP_POLL_PARAMS);
+    mIspParamStream->setPollCallback (this);
 
     if (s_info->flash_num) {
         mFlashLight = new FlashLightHw(s_info->module_flash_dev_name, s_info->flash_num);
@@ -1534,6 +1536,14 @@ CamHwIsp20::poll_buffer_ready (SmartPtr<VideoBuffer> &buf)
             }
 
         }
+    } else if (buf->_buf_type == ISP_POLL_PARAMS) {
+        const SmartPtr<V4l2BufferProxy> v4lbuf = buf.dynamic_cast_ptr<V4l2BufferProxy>();
+        struct isp2x_isp_params_cfg* data = (struct isp2x_isp_params_cfg*)(v4lbuf->get_v4l2_userptr());
+        {
+            SmartLock locker (_isp_params_cfg_mutex);
+            _module_cfg_update_frome_drv |= data->module_cfg_update;
+        }
+        return XCAM_RETURN_NO_ERROR;
     }
     return CamHwBase::poll_buffer_ready(buf);
 }
@@ -2754,6 +2764,7 @@ XCamReturn CamHwIsp20::stop()
         SmartLock locker (_isp_params_cfg_mutex);
         _camIsp3aResult.clear();
         _effecting_ispparam_map.clear();
+        _module_cfg_update_frome_drv = 0;
     }
     _state = CAM_HW_STATE_STOPPED;
 
@@ -5542,6 +5553,9 @@ CamHwIsp20::setIspConfig()
 
     SmartPtr<V4l2Buffer> v4l2buf;
     uint32_t frameId = (uint32_t)(-1);
+
+    std::lock_guard<std::mutex> lk(mIspConfigLock);
+
     {
         SmartLock locker (_isp_params_cfg_mutex);
         while (_effecting_ispparam_map.size() > 3)

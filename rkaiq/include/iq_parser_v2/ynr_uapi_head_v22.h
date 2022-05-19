@@ -46,6 +46,9 @@ typedef struct RK_YNR_Params_V22_Select_s
     // M4_BOOL_DESC("ynr_nlm11x11_bypass", "0")
     bool ynr_nlm11x11_bypass;
 
+    // M4_BOOL_DESC("ynr_thumb_mix_cur_en", "0")
+    bool ynr_thumb_mix_cur_en;
+
 
     // M4_ARRAY_DESC("lumaPoint", "u16", M4_SIZE(1,17), M4_RANGE(0, 1024), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t lumaPoint[YNR_V22_ISO_CURVE_POINT_NUM];
@@ -116,7 +119,7 @@ typedef struct RK_YNR_Params_V22_Select_s
     float hi_gain_alpha;
     // M4_NUMBER_DESC("hi_center_weight", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
     float hi_center_weight;
-    // M4_NUMBER_DESC("hi_weight_offset", "f32", M4_RANGE(0.0, 1.0), "0.05", M4_DIGIT(2))
+    // M4_NUMBER_DESC("hi_weight_offset", "f32", M4_RANGE(0.0, 128.0), "0.05", M4_DIGIT(2))
     float hi_weight_offset;
     // M4_NUMBER_DESC("hi_min_sigma", "f32", M4_RANGE(0.0, 1.0), "0.0068", M4_DIGIT(4))
     float hi_min_sigma;

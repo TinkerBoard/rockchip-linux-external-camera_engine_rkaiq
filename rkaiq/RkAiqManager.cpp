@@ -120,6 +120,7 @@ RkAiqManager::RkAiqManager(const char* sns_ent_name,
     , mCalibDb(NULL)
 #endif
     , mCalibDbV2(NULL)
+    , tuningCalib(NULL)
     , mWorkingMode(RK_AIQ_WORKING_MODE_NORMAL)
     , mOldWkModeForGray(RK_AIQ_WORKING_MODE_NORMAL)
     , mWkSwitching(false)
@@ -454,6 +455,11 @@ RkAiqManager::deInit()
         delete mCalibDbV2;
         mCalibDbV2 = NULL;
     }
+    if (tuningCalib) {
+        RkAiqCalibDbV2::FreeCalibByJ2S(tuningCalib);
+        mCalibDbV2 = NULL;
+    }
+
     _state = AIQ_STATE_INVALID;
 
     EXIT_XCORE_FUNCTION();
@@ -465,64 +471,15 @@ XCamReturn
 RkAiqManager::updateCalibDb(const CamCalibDbV2Context_t* newCalibDb)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    SmartPtr<RkAiqFullParamsProxy> initParams;
+    auto update_list = std::make_shared<std::list<std::string>>();
 
-    if (_state != AIQ_STATE_STARTED) {
-        LOGW_ANALYZER("should be called at STARTED state");
-        return ret;
-    }
+    update_list->push_back("colorAsGrey");
 
-    mAiqRstAppTh->triger_stop();
-    bool bret = mAiqRstAppTh->stop();
-    ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
-    RKAIQMNG_CHECK_RET(ret, "apply result thread stop error");
+    mCamHw->setCalib(newCalibDb);
+    mRkAiqAnalyzer->calibTuning(newCalibDb, update_list);
 
-    ret = mRkAiqAnalyzer->stop();
-    RKAIQMNG_CHECK_RET(ret, "analyzer stop error %d", ret);
-
-    *mCalibDbV2 = *newCalibDb;
-
-#ifdef ISP_HW_V20
-    if (mRkLumaAnalyzer.ptr()) {
-        CalibDbV2_LUMA_DETECT_t *lumaDetect =
-            (CalibDbV2_LUMA_DETECT_t*)(CALIBDBV2_GET_MODULE_PTR((void*)mCalibDbV2, lumaDetect));
-        ret = mRkLumaAnalyzer->init(lumaDetect);
-    }
-#endif
+    *mCalibDbV2 = *(CamCalibDbV2Context_t*)newCalibDb;
     ret = mRkAiqAnalyzer->setCalib(mCalibDbV2);
-
-    // 3. re-prepare analyzer
-    LOGI_ANALYZER("reprepare analyzer ...");
-    rk_aiq_exposure_sensor_descriptor sensor_des;
-    ret = mCamHw->getSensorModeData(mSnsEntName, sensor_des);
-
-    int working_mode_hw = RK_AIQ_WORKING_MODE_NORMAL;
-    if (mWorkingMode == RK_AIQ_WORKING_MODE_ISP_HDR2)
-        working_mode_hw = RK_AIQ_ISP_HDR_MODE_2_FRAME_HDR;
-    else if (mWorkingMode == RK_AIQ_WORKING_MODE_ISP_HDR3)
-        working_mode_hw = RK_AIQ_ISP_HDR_MODE_2_FRAME_HDR;
-
-    mRkAiqAnalyzer->notifyIspStreamMode(mCamHw->getIspStreamMode());
-    ret = mRkAiqAnalyzer->prepare(&sensor_des, working_mode_hw);
-    RKAIQMNG_CHECK_RET(ret, "analyzer prepare error %d", ret);
-
-    // update calib to hw
-    mCamHw->setCalib(mCalibDbV2);
-
-    initParams = mRkAiqAnalyzer->getAiqFullParams();
-
-    ret = applyAnalyzerResult(initParams);
-    RKAIQMNG_CHECK_RET(ret, "set initial params error %d", ret);
-
-    // 4. restart analyzer
-    LOGI_ANALYZER("restart analyzer");
-    mAiqRstAppTh->triger_start();
-    bret = mAiqRstAppTh->start();
-    ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
-    RKAIQMNG_CHECK_RET(ret, "apply result thread start error");
-
-    ret = mRkAiqAnalyzer->start();
-    RKAIQMNG_CHECK_RET(ret, "analyzer start error %d", ret);
 
     EXIT_XCORE_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -714,7 +671,7 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
     APPLY_ANALYZER_RESULT(Awb, AWB);
 #endif
     APPLY_ANALYZER_RESULT(AwbGain, AWBGAIN);
-#if RKAIQ_HAVE_AF_V20
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
     APPLY_ANALYZER_RESULT(Af, AF);
 #endif
 #if RKAIQ_HAVE_DPCC_V1
@@ -824,7 +781,7 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
 #if (RKAIQ_HAVE_LSC_V1 | RKAIQ_HAVE_LSC_V2 | RKAIQ_HAVE_LSC_V3)
     APPLY_ANALYZER_RESULT(Lsc, LSC);
 #endif
-#if RKAIQ_HAVE_AF_V30
+#if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
     APPLY_ANALYZER_RESULT(AfV3x, AF);
 #endif
 #if RKAIQ_HAVE_BAYER2DNR_V2
@@ -883,7 +840,7 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
 #if RKAIQ_HAVE_AWB_V32
     APPLY_ANALYZER_RESULT(AwbV32, AWB);
 #endif
-#if RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
     APPLY_ANALYZER_RESULT(AfV32, AF);
 #endif
 #if RKAIQ_HAVE_AWB_V32
@@ -1182,10 +1139,14 @@ XCamReturn RkAiqManager::calibTuning(CamCalibDbV2Context_t* aiqCalib,
     mCamHw->setCalib(aiqCalib);
     ret = mRkAiqAnalyzer->setCalib(aiqCalib);
 
+    std::for_each(std::begin(*change_list), std::end(*change_list),
+                  [](const std::string& name) { std::cout << "tuning : " << name << std::endl; });
     mRkAiqAnalyzer->calibTuning(aiqCalib, change_list);
 
-    RkAiqCalibDbV2::FreeCalibByJ2S(mCalibDbV2);
-    mCalibDbV2 = aiqCalib;
+    // Won't free calib witch from iqfiles
+    RkAiqCalibDbV2::FreeCalibByJ2S(tuningCalib);
+    *mCalibDbV2 = *aiqCalib;
+    tuningCalib = aiqCalib;
 
     change_list.reset();
 

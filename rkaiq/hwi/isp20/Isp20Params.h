@@ -208,7 +208,7 @@ protected:
     void convertAiqSharpenToIsp20Params(T& pp_cfg,
                                     rk_aiq_isp_sharpen_t& sharp, rk_aiq_isp_edgeflt_t& edgeflt);
 #endif
-#if RKAIQ_HAVE_AF_V20
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
     template<class T>
     void convertAiqAfToIsp20Params(T& isp_cfg,
                                    const rk_aiq_isp_af_meas_t& af_data, bool af_cfg_udpate);
@@ -245,7 +245,7 @@ protected:
     virtual bool convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result, void* isp_cfg_p, bool is_multi_isp = false);
     SmartPtr<cam3aResult> get_3a_result (cam3aResultList &results, int32_t type);
     // std::map<int, std::list<SmartPtr<cam3aResult>>> _cam3aConfig;
-    SmartPtr<cam3aResult> mBlcResult;
+    SmartPtr<cam3aResult> mBlcResult = NULL;
 };
 }
 #endif

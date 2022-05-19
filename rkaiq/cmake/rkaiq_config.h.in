@@ -51,6 +51,9 @@
 #cmakedefine01 RKAIQ_HAVE_AF_V20
 #cmakedefine01 RKAIQ_HAVE_AF_V30
 #cmakedefine01 RKAIQ_HAVE_AF_V31
+#cmakedefine01 RKAIQ_ONLY_AF_STATS_V20
+#cmakedefine01 RKAIQ_ONLY_AF_STATS_V30
+#cmakedefine01 RKAIQ_ONLY_AF_STATS_V31
 #cmakedefine01 RKAIQ_HAVE_3DLUT_V1
 #cmakedefine01 RKAIQ_HAVE_CCM_V1
 #cmakedefine01 RKAIQ_HAVE_CCM_V2

@@ -141,8 +141,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     RkAiqAlgoCamGroupProcOut* pAdrcGrpProcRes = (RkAiqAlgoCamGroupProcOut*)outparams;
 
 #if RKAIQ_HAVE_DRC_V12
-    // memcpy(&pAdrcGrpCtx->ablcV32_proc_res, &RkAiqAlgoCamGroupProcIn->ablcV32_proc_res,
-    // sizeof(AblcProc_t));
+    // ablcV32_proc_res not ready for now
+    pAdrcGrpCtx->ablcV32_proc_res.blc_ob_enable   = false;
+    pAdrcGrpCtx->ablcV32_proc_res.isp_ob_predgain = 1.0f;
 #endif
 
     LOGD_ATMO(
@@ -194,6 +195,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                 pAdrcGrpParams->camgroupParmasArray[0]
                     ->aec._effAecExpInfo.LinearExp.exp_real_params.digital_gain *
                 pAdrcGrpParams->camgroupParmasArray[0]
+                    ->aec._effAecExpInfo.LinearExp.exp_real_params.isp_dgain *
+                pAdrcGrpParams->camgroupParmasArray[0]
                     ->aec._effAecExpInfo.LinearExp.exp_real_params.integration_time;
             pAdrcGrpCtx->NextData.AEData.MExpo = pAdrcGrpCtx->NextData.AEData.SExpo;
             pAdrcGrpCtx->NextData.AEData.LExpo = pAdrcGrpCtx->NextData.AEData.SExpo;
@@ -202,7 +205,13 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                     ->aec._effAecExpInfo.LinearExp.exp_real_params.analog_gain *
                 pAdrcGrpParams->camgroupParmasArray[0]
                     ->aec._effAecExpInfo.LinearExp.exp_real_params.digital_gain *
+                pAdrcGrpParams->camgroupParmasArray[0]
+                    ->aec._effAecExpInfo.LinearExp.exp_real_params.isp_dgain *
                 ISOMIN;
+#if RKAIQ_HAVE_DRC_V12
+            if (pAdrcGrpCtx->ablcV32_proc_res.blc_ob_enable)
+                pAdrcGrpCtx->NextData.AEData.ISO *= pAdrcGrpCtx->ablcV32_proc_res.isp_ob_predgain;
+#endif
             pAdrcGrpCtx->NextData.AEData.ISO =
                 LIMIT_VALUE(pAdrcGrpCtx->NextData.AEData.ISO, ISOMAX, ISOMIN);
         } else if (pAdrcGrpCtx->FrameNumber == HDR_2X_NUM) {
@@ -214,6 +223,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                                                      .exp_real_params.digital_gain *
                                                  pAdrcGrpParams->camgroupParmasArray[0]
                                                      ->aec._effAecExpInfo.HdrExp[0]
+                                                     .exp_real_params.isp_dgain *
+                                                 pAdrcGrpParams->camgroupParmasArray[0]
+                                                     ->aec._effAecExpInfo.HdrExp[0]
                                                      .exp_real_params.integration_time;
             pAdrcGrpCtx->NextData.AEData.MExpo = pAdrcGrpParams->camgroupParmasArray[0]
                                                      ->aec._effAecExpInfo.HdrExp[1]
@@ -223,14 +235,20 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                                                      .exp_real_params.digital_gain *
                                                  pAdrcGrpParams->camgroupParmasArray[0]
                                                      ->aec._effAecExpInfo.HdrExp[1]
+                                                     .exp_real_params.isp_dgain *
+                                                 pAdrcGrpParams->camgroupParmasArray[0]
+                                                     ->aec._effAecExpInfo.HdrExp[1]
                                                      .exp_real_params.integration_time;
             pAdrcGrpCtx->NextData.AEData.LExpo = pAdrcGrpCtx->NextData.AEData.MExpo;
             pAdrcGrpCtx->NextData.AEData.ISO   = pAdrcGrpParams->camgroupParmasArray[0]
-                                                   ->aec._effAecExpInfo.HdrExp[0]
+                                                   ->aec._effAecExpInfo.HdrExp[1]
                                                    .exp_real_params.analog_gain *
                                                pAdrcGrpParams->camgroupParmasArray[0]
-                                                   ->aec._effAecExpInfo.HdrExp[0]
+                                                   ->aec._effAecExpInfo.HdrExp[1]
                                                    .exp_real_params.digital_gain *
+                                               pAdrcGrpParams->camgroupParmasArray[0]
+                                                   ->aec._effAecExpInfo.HdrExp[1]
+                                                   .exp_real_params.isp_dgain *
                                                ISOMIN;
             pAdrcGrpCtx->NextData.AEData.ISO =
                 LIMIT_VALUE(pAdrcGrpCtx->NextData.AEData.ISO, ISOMAX, ISOMIN);
@@ -243,6 +261,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                                                      .exp_real_params.digital_gain *
                                                  pAdrcGrpParams->camgroupParmasArray[0]
                                                      ->aec._effAecExpInfo.HdrExp[0]
+                                                     .exp_real_params.isp_dgain *
+                                                 pAdrcGrpParams->camgroupParmasArray[0]
+                                                     ->aec._effAecExpInfo.HdrExp[0]
                                                      .exp_real_params.integration_time;
             pAdrcGrpCtx->NextData.AEData.MExpo = pAdrcGrpParams->camgroupParmasArray[0]
                                                      ->aec._effAecExpInfo.HdrExp[1]
@@ -250,6 +271,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                                                  pAdrcGrpParams->camgroupParmasArray[0]
                                                      ->aec._effAecExpInfo.HdrExp[1]
                                                      .exp_real_params.digital_gain *
+                                                 pAdrcGrpParams->camgroupParmasArray[0]
+                                                     ->aec._effAecExpInfo.HdrExp[1]
+                                                     .exp_real_params.isp_dgain *
                                                  pAdrcGrpParams->camgroupParmasArray[0]
                                                      ->aec._effAecExpInfo.HdrExp[1]
                                                      .exp_real_params.integration_time;
@@ -261,13 +285,19 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                                                      .exp_real_params.digital_gain *
                                                  pAdrcGrpParams->camgroupParmasArray[0]
                                                      ->aec._effAecExpInfo.HdrExp[2]
+                                                     .exp_real_params.isp_dgain *
+                                                 pAdrcGrpParams->camgroupParmasArray[0]
+                                                     ->aec._effAecExpInfo.HdrExp[2]
                                                      .exp_real_params.integration_time;
             pAdrcGrpCtx->NextData.AEData.ISO = pAdrcGrpParams->camgroupParmasArray[0]
-                                                   ->aec._effAecExpInfo.HdrExp[0]
+                                                   ->aec._effAecExpInfo.HdrExp[1]
                                                    .exp_real_params.analog_gain *
                                                pAdrcGrpParams->camgroupParmasArray[0]
-                                                   ->aec._effAecExpInfo.HdrExp[0]
+                                                   ->aec._effAecExpInfo.HdrExp[1]
                                                    .exp_real_params.digital_gain *
+                                               pAdrcGrpParams->camgroupParmasArray[0]
+                                                   ->aec._effAecExpInfo.HdrExp[1]
+                                                   .exp_real_params.isp_dgain *
                                                ISOMIN;
             pAdrcGrpCtx->NextData.AEData.ISO =
                 LIMIT_VALUE(pAdrcGrpCtx->NextData.AEData.ISO, ISOMAX, ISOMIN);
@@ -275,27 +305,49 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         if (pAdrcGrpCtx->FrameNumber == HDR_2X_NUM || pAdrcGrpCtx->FrameNumber == HDR_2X_NUM) {
             LOGV_ATMO("%s: nextFrame: sexp: %f-%f, mexp: %f-%f, lexp: %f-%f\n", __FUNCTION__,
                       pAdrcGrpParams->camgroupParmasArray[0]
-                          ->aec._effAecExpInfo.HdrExp[0]
-                          .exp_real_params.analog_gain,
+                              ->aec._effAecExpInfo.HdrExp[0]
+                              .exp_real_params.analog_gain *
+                          pAdrcGrpParams->camgroupParmasArray[0]
+                              ->aec._effAecExpInfo.HdrExp[0]
+                              .exp_real_params.digital_gain *
+                          pAdrcGrpParams->camgroupParmasArray[0]
+                              ->aec._effAecExpInfo.HdrExp[0]
+                              .exp_real_params.isp_dgain,
                       pAdrcGrpParams->camgroupParmasArray[0]
                           ->aec._effAecExpInfo.HdrExp[0]
                           .exp_real_params.integration_time,
                       pAdrcGrpParams->camgroupParmasArray[0]
-                          ->aec._effAecExpInfo.HdrExp[1]
-                          .exp_real_params.analog_gain,
+                              ->aec._effAecExpInfo.HdrExp[1]
+                              .exp_real_params.analog_gain *
+                          pAdrcGrpParams->camgroupParmasArray[0]
+                              ->aec._effAecExpInfo.HdrExp[1]
+                              .exp_real_params.digital_gain *
+                          pAdrcGrpParams->camgroupParmasArray[0]
+                              ->aec._effAecExpInfo.HdrExp[1]
+                              .exp_real_params.isp_dgain,
                       pAdrcGrpParams->camgroupParmasArray[0]
                           ->aec._effAecExpInfo.HdrExp[1]
                           .exp_real_params.integration_time,
                       pAdrcGrpParams->camgroupParmasArray[0]
-                          ->aec._effAecExpInfo.HdrExp[2]
-                          .exp_real_params.analog_gain,
+                              ->aec._effAecExpInfo.HdrExp[2]
+                              .exp_real_params.analog_gain *
+                          pAdrcGrpParams->camgroupParmasArray[0]
+                              ->aec._effAecExpInfo.HdrExp[2]
+                              .exp_real_params.digital_gain *
+                          pAdrcGrpParams->camgroupParmasArray[0]
+                              ->aec._effAecExpInfo.HdrExp[2]
+                              .exp_real_params.isp_dgain,
                       pAdrcGrpParams->camgroupParmasArray[0]
                           ->aec._effAecExpInfo.HdrExp[2]
                           .exp_real_params.integration_time);
         } else if (pAdrcGrpCtx->FrameNumber == LINEAR_NUM) {
             LOGV_ATMO("%s: nextFrame: exp: %f-%f\n", __FUNCTION__,
                       pAdrcGrpParams->camgroupParmasArray[0]
-                          ->aec._effAecExpInfo.LinearExp.exp_real_params.analog_gain,
+                              ->aec._effAecExpInfo.LinearExp.exp_real_params.analog_gain *
+                          pAdrcGrpParams->camgroupParmasArray[0]
+                              ->aec._effAecExpInfo.LinearExp.exp_real_params.digital_gain *
+                          pAdrcGrpParams->camgroupParmasArray[0]
+                              ->aec._effAecExpInfo.LinearExp.exp_real_params.isp_dgain,
                       pAdrcGrpParams->camgroupParmasArray[0]
                           ->aec._effAecExpInfo.LinearExp.exp_real_params.integration_time);
         }

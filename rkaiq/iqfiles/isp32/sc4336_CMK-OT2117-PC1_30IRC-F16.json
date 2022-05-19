@@ -1126,8 +1126,7 @@
 							"common":	{
 								"enable":	1,
 								"mode":	"CALIB_Lut3D_MODE_AUTO",
-								"gain_tolerance":	0.1,
-								"wbgain_tolerance":	1
+								"gain_tolerance":	0.1
 							},
 							"MLut3D":	{
 								"Table":	{
@@ -1137,7 +1136,7 @@
 								}
 							},
 							"ALut3D":	{
-								"damp_en":	1,
+								"damp_en":	0,
 								"lutAll":	[{
 										"name":	"D65",
 										"awbGain":	[1.65055, 1.51472],
@@ -1803,7 +1802,8 @@
 						},
 						"colorAsGrey":	{
 							"param":	{
-								"enable":	0
+								"enable":	0,
+								"skip_frame": 10
 							}
 						},
 						"lsc_v2":	{
@@ -3817,6 +3817,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.4,
@@ -3859,6 +3860,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -3901,6 +3903,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -3943,6 +3946,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -3985,6 +3989,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.2,
@@ -4027,6 +4032,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.2,
@@ -4069,6 +4075,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4111,6 +4118,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.17,
@@ -4153,6 +4161,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.2,
@@ -4195,6 +4204,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4237,6 +4247,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4279,6 +4290,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4321,6 +4333,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4368,6 +4381,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4410,6 +4424,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4452,6 +4467,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4494,6 +4510,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4536,6 +4553,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4578,6 +4596,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4620,6 +4639,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4662,6 +4682,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4704,6 +4725,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4746,6 +4768,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4788,6 +4811,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4830,6 +4854,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -4872,6 +4897,7 @@
 												"ynr_lgft3x3_bypass":	0,
 												"ynr_flt1x1_bypass":	0,
 												"ynr_nlm11x11_bypass":	0,
+												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.3,
@@ -6922,6 +6948,7 @@
 									"AdaptiveDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"AdaptRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"AdaptRangeTbl_len":	9,
+									"FineSearchStep":	4,
 									"TrigThers":	[0.075],
 									"TrigThers_len":	1,
 									"TrigThersFv":	[0],
@@ -6964,11 +6991,11 @@
 										"StopStep":	[0],
 										"StopStep_len":	1,
 										"SkipHighPassZoomIdx":	0,
+										"SkipHighPassGain":	0,
 										"SwitchDirZoomIdx":	1000,
 										"SpotlightHighlightRatio":	0.014,
 										"SpotlightLumaRatio":	[0.3, 0.5, 0.8],
-										"SpotlightBlkCnt":	[0.2, 0.5, 0.25],
-										"SkipHighPassGain":	0
+										"SpotlightBlkCnt":	[0.2, 0.5, 0.25]
 									}
 								},
 								"video_contrast_af":	{
@@ -6980,6 +7007,7 @@
 									"AdaptiveDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"AdaptRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"AdaptRangeTbl_len":	9,
+									"FineSearchStep":	4,
 									"TrigThers":	[0.15],
 									"TrigThers_len":	1,
 									"TrigThersFv":	[0],
@@ -7037,41 +7065,41 @@
 								"pdaf":	{
 									"enable":	0,
 									"pdVsCdDebug":	0,
+									"pdDumpDebug":	0,
 									"pdDataBit":	10,
 									"pdBlkLevel":	64,
 									"pdSearchRadius":	3,
 									"pdMirrorInCalib":	1,
+									"pdVsImgoutMirror":	1,
 									"pdWidth":	508,
 									"pdHeight":	760,
+									"pdConfdMwinFactor":	3,
+									"pdStepRatio":	[1.0, 1.0, 1.0, 0.9, 0.8, 0.7, 0.7],
+									"pdStepDefocus":	[32, 64, 96, 128, 160, 192, 224],
 									"pdIsoPara":	[{
-											"iso":	50,
-											"pdNoiseFactor":	0.15,
+											"iso": 50,
+											"pdNoiseFactor":	0.315,
 											"pdConfdRatio1":	1,
 											"pdConfdRatio2":	1,
+											"pdNoiseBias":		1.3,
 											"pdConfdThresh":	0.4,
-											"defocusPdThresh":	18,
+											"defocusPdThresh":	12,
 											"stablePdRatio":	0.125,
 											"stablePdOffset":	8,
 											"stableCntRatio":	1.5,
 											"noconfCntThresh":	4,
 											"fineSearchTbl":	[{
-													"confidence":	512,
-													"range":	4,
-													"stepPos":	1
-												}, {
-													"confidence":	256,
-													"range":	8,
-													"stepPos":	2
-												}],
-											"fineSearchTbl_len":	2,
-											"pdNoiseBias":	0
+												"confidence":	0.5,
+												"range":	0,
+												"stepPos":	1
+											}, {
+												"confidence":	0,
+												"range":	4,
+												"stepPos":	1
+											}],
+											"fineSearchTbl_len":	2
 										}],
-									"pdIsoPara_len":	1,
-									"pdConfdMwinFactor":	0,
-									"pdDumpDebug":	0,
-									"pdStepDefocus":	[0, 0, 0, 0, 0, 0, 0],
-									"pdStepRatio":	[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-									"pdVsImgoutMirror":	0
+									"pdIsoPara_len":	1
 								},
 								"vcmcfg":	{
 									"start_current":	-1,

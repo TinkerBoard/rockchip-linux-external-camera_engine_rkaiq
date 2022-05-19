@@ -410,10 +410,15 @@
  * - DRC/MERGE/DEHAZE: Fix a few issue in uAPI and tool API
  * - AF: Fix a few functional issues
  * - AWB: Fix memory not initilized
+ * v4.0x9.8-rc3
+ * - DRC/DEHAZE/MERGE/NR/SHARP: Consider PreDGain and OB offset
+ * - Optimize switch scene for switching between night and day
+ * - Optimize CPU usage of CSM and 3DLUT
+ * - IQ: Add and Update sc4336, sc230ai, gc4653 and jx_k17
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.8-rc2"
-#define RK_AIQ_RELEASE_DATE "2022-05-10 for rv1106 beta SDK release"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.8-rc3"
+#define RK_AIQ_RELEASE_DATE "2022-05-20 for rv1106 SDK release"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

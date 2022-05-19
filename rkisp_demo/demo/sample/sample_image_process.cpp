@@ -48,6 +48,7 @@
 #include "sample_cgc_module.h"
 #include "sample_cac_module.h"
 #include "sample_again_module.h"
+#include "sample_smartIr.h"
 
 struct module_sample_info {
     const char * const name;
@@ -90,6 +91,7 @@ static struct module_sample_info module_samples[] = {
     MODULE_INFO(RK_ISP_AGAIN, sample_again_module, sample_print_again_info),
     MODULE_INFO(RK_ISP_ACCM_V2, sample_accm_v2_module, sample_print_accm_v2_info),
     MODULE_INFO(RK_ISP_ALDCH_V21, sample_aldch_v21_module, sample_print_aldch_v21_info),
+    MODULE_INFO(RK_SMARTIR, sample_smartIr_module, sample_print_smartIr_info),
 };
 
 static void sample_usage()
@@ -125,6 +127,7 @@ static void sample_usage()
     printf("\t p) AWBV32:     module test sample.\n");
     printf("\t r) CCMV2:      module test sample.\n");
     printf("\t s) ALDCHV32:  module test sample.\n");
+    printf("\t t) SMARTIR:    module test sample.\n");
     printf("\n");
     printf("\t please press the key: ");
 
@@ -320,6 +323,12 @@ XCamReturn sample_main (const void *arg)
     }
     case 's': {
         struct module_sample_info *info = &module_samples[RK_ISP_ALDCH_V21];
+        info->debug (nullptr);
+        info->func (arg);
+        break;
+    }
+    case 't': {
+        struct module_sample_info *info = &module_samples[RK_SMARTIR];
         info->debug (nullptr);
         info->func (arg);
         break;

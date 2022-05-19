@@ -26,6 +26,7 @@
 
 
 RKAIQ_BEGIN_DECLARE
+#define RKAIQ_ACCM_ILLU_VOTE 0
 #define CCM_CURVE_DOT_NUM 17
 
 typedef struct ccm_3ares_info_s{
@@ -36,7 +37,9 @@ typedef struct ccm_3ares_info_s{
 
 typedef struct accm_rest_s {
     float fSaturation;
+#if RKAIQ_ACCM_ILLU_VOTE
     List dominateIlluList;//to record domain illuminant
+#endif
     List problist;
     int dominateIlluProfileIdx;
     const CalibDbV2_Ccm_Matrix_Para_t *pCcmProfile1;

@@ -66,7 +66,7 @@
 #endif
 #include "algo_handlers/RkAiqAeisHandle.h"
 #include "algo_handlers/RkAiqAfecHandle.h"
-#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF
 #include "algo_handlers/RkAiqAfHandle.h"
 #endif
 #include "algo_handlers/RkAiqAgainHandle.h"

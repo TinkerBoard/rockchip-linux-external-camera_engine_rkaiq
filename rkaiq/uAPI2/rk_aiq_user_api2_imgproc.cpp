@@ -716,6 +716,7 @@ XCamReturn rk_aiq_uapi2_setMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned in
         RKAIQ_IMGPROC_CHECK_RET(ret, "param error, strength range is [0,100]!");
     }
 #if RKAIQ_HAVE_DEHAZE_V10
+#if 0
     adehaze_sw_v10_t attr_v10;
     memset(&attr_v10, 0, sizeof(adehaze_sw_v10_t));
     ret = rk_aiq_user_api2_adehaze_v10_getSwAttrib(ctx, &attr_v10);
@@ -732,23 +733,23 @@ XCamReturn rk_aiq_uapi2_setMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned in
     // attr_v10.i.MDehazeStrth = level;
     for (int i = 0; i < attr_v10.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.CtrlData_len;
             i++) {
-        float level_diff = (float)(level - DEHAZE_API_MANUAL_DEFAULT_LEVEL);
+        float level_diff = (float)(level - DEHAZE_DEFAULT_LEVEL);
         // sw_dhaz_cfg_wt
         attr_v10.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_wt[i] +=
-            level_diff * DEHAZE_API_MANUAL_DEFAULT_CFG_WT_STEP;
+            level_diff * DEHAZE_DEFAULT_CFG_WT_STEP;
         attr_v10.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_wt[i] =
             LIMIT_VALUE(attr_v10.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_wt[i],
                         NORMALIZE_MAX, NORMALIZE_MIN);
 
         // sw_dhaz_cfg_air
         attr_v10.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_air[i] +=
-            level_diff * DEHAZE_API_MANUAL_DEFAULT_CFG_AIR_STEP;
+            level_diff * DEHAZE_DEFAULT_CFG_AIR_STEP;
         attr_v10.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_air[i] = LIMIT_VALUE(
                     attr_v10.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_air[i], 255, 0);
 
         // sw_dhaz_cfg_tmax
         attr_v10.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_tmax[i] +=
-            level_diff * DEHAZE_API_MANUAL_DEFAULT_CFG_TMAX_STEP;
+            level_diff * DEHAZE_DEFAULT_CFG_TMAX_STEP;
         attr_v10.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_tmax[i] =
             LIMIT_VALUE(attr_v10.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_tmax[i],
                         NORMALIZE_MAX, NORMALIZE_MIN);
@@ -756,6 +757,7 @@ XCamReturn rk_aiq_uapi2_setMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned in
 
     ret = rk_aiq_user_api2_adehaze_v10_setSwAttrib(ctx, &attr_v10);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setMDhzStrth failed!");
+#endif
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
     adehaze_sw_v11_t attr_v11;
@@ -770,31 +772,7 @@ XCamReturn rk_aiq_uapi2_setMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned in
     attr_v11.stAuto.DehazeTuningPara.dehaze_setting.en  = true;
     attr_v11.stAuto.DehazeTuningPara.enhance_setting.en = false;
     attr_v11.stAuto.DehazeTuningPara.cfg_alpha          = NORMALIZE_MAX;
-    attr_v11.stAuto.DehazeTuningPara.ByPassThr          = NORMALIZE_MIN;
     attr_v11.Info.MDehazeStrth                          = level;
-    for (int i = 0; i < DHAZ_CTRL_DATA_STEP_MAX; i++) {
-        float level_diff = (float)(level - DEHAZE_API_MANUAL_DEFAULT_LEVEL);
-        // sw_dhaz_cfg_wt
-        attr_v11.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_wt[i] +=
-            level_diff * DEHAZE_API_MANUAL_DEFAULT_CFG_WT_STEP;
-        attr_v11.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_wt[i] =
-            LIMIT_VALUE(attr_v11.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_wt[i],
-                        NORMALIZE_MAX, NORMALIZE_MIN);
-
-        // sw_dhaz_cfg_air
-        attr_v11.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_air[i] +=
-            level_diff * DEHAZE_API_MANUAL_DEFAULT_CFG_AIR_STEP;
-        attr_v11.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_air[i] = LIMIT_VALUE(
-                    attr_v11.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_air[i], 255, 0);
-
-        // sw_dhaz_cfg_tmax
-        attr_v11.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_tmax[i] +=
-            level_diff * DEHAZE_API_MANUAL_DEFAULT_CFG_TMAX_STEP;
-        attr_v11.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_tmax[i] =
-            LIMIT_VALUE(attr_v11.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_tmax[i],
-                        NORMALIZE_MAX, NORMALIZE_MIN);
-    }
-
     ret = rk_aiq_user_api2_adehaze_v11_setSwAttrib(ctx, &attr_v11);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setMDhzStrth failed!");
 #endif
@@ -811,28 +789,7 @@ XCamReturn rk_aiq_uapi2_setMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned in
     attr_v12.stAuto.DehazeTuningPara.dehaze_setting.en  = true;
     attr_v12.stAuto.DehazeTuningPara.enhance_setting.en = false;
     attr_v12.stAuto.DehazeTuningPara.cfg_alpha          = NORMALIZE_MAX;
-    attr_v12.stAuto.DehazeTuningPara.ByPassThr          = NORMALIZE_MIN;
     attr_v12.Info.MDehazeStrth                          = level;
-    for (int i = 0; i < DHAZ_CTRL_DATA_STEP_MAX; i++) {
-        float level_diff = (float)(level - DEHAZE_API_MANUAL_DEFAULT_LEVEL);
-        // sw_dhaz_cfg_wt
-        attr_v12.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_wt[i] +=
-            level_diff * DEHAZE_API_MANUAL_DEFAULT_CFG_WT_STEP;
-        attr_v12.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_wt[i] =
-            LIMIT_VALUE(attr_v12.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_wt[i],
-                        NORMALIZE_MAX, NORMALIZE_MIN);
-        // sw_dhaz_cfg_air
-        attr_v12.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_air[i] +=
-            level_diff * DEHAZE_API_MANUAL_DEFAULT_CFG_AIR_STEP;
-        attr_v12.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_air[i] = LIMIT_VALUE(
-                    attr_v12.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_air[i], 255, 0);
-        // sw_dhaz_cfg_tmax
-        attr_v12.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_tmax[i] +=
-            level_diff * DEHAZE_API_MANUAL_DEFAULT_CFG_TMAX_STEP;
-        attr_v12.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_tmax[i] =
-            LIMIT_VALUE(attr_v12.stAuto.DehazeTuningPara.dehaze_setting.DehazeData.cfg_tmax[i],
-                        NORMALIZE_MAX, NORMALIZE_MIN);
-    }
     ret = rk_aiq_user_api2_adehaze_v12_setSwAttrib(ctx, &attr_v12);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setMDhzStrth failed!");
 #endif
@@ -897,6 +854,7 @@ XCamReturn rk_aiq_uapi2_setMEnhanceStrth(const rk_aiq_sys_ctx_t* ctx, unsigned i
         RKAIQ_IMGPROC_CHECK_RET(ret, "param error, level range is [0,100]!");
     }
 #if RKAIQ_HAVE_DEHAZE_V10
+#if 0
     adehaze_sw_v10_info_t attr_v10_info;
     memset(&attr_v10_info, 0, sizeof(adehaze_sw_v10_info_t));
     ret = rk_aiq_user_api2_adehaze_v10_getSwAttribInfo(ctx, &attr_v10_info);
@@ -917,18 +875,9 @@ XCamReturn rk_aiq_uapi2_setMEnhanceStrth(const rk_aiq_sys_ctx_t* ctx, unsigned i
     attr_v10.stAuto.DehazeTuningPara.enhance_setting.en = true;
     attr_v10.stAuto.DehazeTuningPara.cfg_alpha          = NORMALIZE_MAX;
     attr_v10.stAuto.DehazeTuningPara.ByPassThr          = NORMALIZE_MIN;
-    float level_diff = (float)(level - DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL);
-    for (int i = 0; i < attr_v10.stAuto.DehazeTuningPara.enhance_setting.EnhanceData.CtrlData_len;
-            i++) {
-        // enhance_value
-        attr_v10.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_value +=
-            level_diff * DEHAZE_API_ENHANCE_MANUAL_DEFAULT_STEP;
-        attr_v10.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_value = LIMIT_VALUE(
-            attr_v10.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_value, 16.0,
-            1.0);
-    }
     ret = rk_aiq_user_api2_adehaze_v10_setSwAttrib(ctx, &attr_v10);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setMEnhanceStrth failed!");
+#endif
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
     adehaze_sw_v11_t attr_v11;
@@ -942,19 +891,7 @@ XCamReturn rk_aiq_uapi2_setMEnhanceStrth(const rk_aiq_sys_ctx_t* ctx, unsigned i
     attr_v11.stAuto.DehazeTuningPara.Enable             = true;
     attr_v11.stAuto.DehazeTuningPara.dehaze_setting.en  = false;
     attr_v11.stAuto.DehazeTuningPara.enhance_setting.en = true;
-    attr_v11.stAuto.DehazeTuningPara.cfg_alpha          = NORMALIZE_MAX;
-    attr_v11.stAuto.DehazeTuningPara.ByPassThr          = NORMALIZE_MIN;
     attr_v11.Info.MEnhanceStrth                         = level;
-    float level_diff = (float)(level - DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL);
-
-    for (int i = 0; i < DHAZ_CTRL_DATA_STEP_MAX; i++) {
-        // enhance_value
-        attr_v11.stAuto.DehazeTuningPara.enhance_setting.EnhanceData.enhance_value[i] +=
-            level_diff * DEHAZE_API_ENHANCE_MANUAL_DEFAULT_STEP;
-        attr_v11.stAuto.DehazeTuningPara.enhance_setting.EnhanceData.enhance_value[i] = LIMIT_VALUE(
-            attr_v11.stAuto.DehazeTuningPara.enhance_setting.EnhanceData.enhance_value[i], 16.0,
-            1.0);
-    }
     ret = rk_aiq_user_api2_adehaze_v11_setSwAttrib(ctx, &attr_v11);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setMEnhanceStrth failed!");
 #endif
@@ -970,19 +907,7 @@ XCamReturn rk_aiq_uapi2_setMEnhanceStrth(const rk_aiq_sys_ctx_t* ctx, unsigned i
     attr_v12.stAuto.DehazeTuningPara.Enable             = true;
     attr_v12.stAuto.DehazeTuningPara.dehaze_setting.en  = false;
     attr_v12.stAuto.DehazeTuningPara.enhance_setting.en = true;
-    attr_v12.stAuto.DehazeTuningPara.cfg_alpha          = NORMALIZE_MAX;
-    attr_v12.stAuto.DehazeTuningPara.ByPassThr          = NORMALIZE_MIN;
     attr_v12.Info.MEnhanceStrth                         = level;
-    float level_diff = (float)(level - DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL);
-
-    for (int i = 0; i < DHAZ_CTRL_DATA_STEP_MAX; i++) {
-        // enhance_value
-        attr_v12.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_value +=
-            level_diff * DEHAZE_API_ENHANCE_MANUAL_DEFAULT_STEP;
-        attr_v12.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_value = LIMIT_VALUE(
-            attr_v12.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_value, 16.0,
-            1.0);
-    }
     ret = rk_aiq_user_api2_adehaze_v12_setSwAttrib(ctx, &attr_v12);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setMEnhanceStrth failed!");
 #endif
@@ -1045,6 +970,7 @@ XCamReturn rk_aiq_uapi2_setMEnhanceChromeStrth(const rk_aiq_sys_ctx_t* ctx, unsi
         RKAIQ_IMGPROC_CHECK_RET(ret, "param error, level range is [0,100]!");
     }
 #if RKAIQ_HAVE_DEHAZE_V10
+#if 0
     adehaze_sw_v10_info_t attr_v10_info;
     memset(&attr_v10_info, 0, sizeof(adehaze_sw_v10_info_t));
     ret = rk_aiq_user_api2_adehaze_v10_getSwAttribInfo(ctx, &attr_v10_info);
@@ -1066,12 +992,12 @@ XCamReturn rk_aiq_uapi2_setMEnhanceChromeStrth(const rk_aiq_sys_ctx_t* ctx, unsi
     attr_v10.stAuto.DehazeTuningPara.enhance_setting.en = true;
     attr_v10.stAuto.DehazeTuningPara.cfg_alpha          = NORMALIZE_MAX;
     attr_v10.stAuto.DehazeTuningPara.ByPassThr          = NORMALIZE_MIN;
-    float level_diff = (float)(level - DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL);
+    float level_diff = (float)(level - ENHANCE_DEFAULT_LEVEL);
     for (int i = 0; i < attr_v10.stAuto.DehazeTuningPara.enhance_setting.EnhanceData.CtrlData_len;
             i++) {
         // enhance_chroma
         attr_v10.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_chroma +=
-            level_diff * DEHAZE_API_ENHANCE_MANUAL_DEFAULT_STEP;
+            level_diff * ENHANCE_VALUE_DEFAULT_STEP;
         attr_v10.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_chroma =
             LIMIT_VALUE(
                 attr_v10.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_chroma,
@@ -1079,6 +1005,7 @@ XCamReturn rk_aiq_uapi2_setMEnhanceChromeStrth(const rk_aiq_sys_ctx_t* ctx, unsi
     }
     ret = rk_aiq_user_api2_adehaze_v10_setSwAttrib(ctx, &attr_v10);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setMEnhanceStrth failed!");
+#endif
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11 || RKAIQ_HAVE_DEHAZE_V11_DUO
     adehaze_sw_v11_t attr_v11;
@@ -1092,20 +1019,7 @@ XCamReturn rk_aiq_uapi2_setMEnhanceChromeStrth(const rk_aiq_sys_ctx_t* ctx, unsi
     attr_v11.stAuto.DehazeTuningPara.Enable             = true;
     attr_v11.stAuto.DehazeTuningPara.dehaze_setting.en  = false;
     attr_v11.stAuto.DehazeTuningPara.enhance_setting.en = true;
-    attr_v11.stAuto.DehazeTuningPara.cfg_alpha          = NORMALIZE_MAX;
-    attr_v11.stAuto.DehazeTuningPara.ByPassThr          = NORMALIZE_MIN;
     attr_v11.Info.MEnhanceChromeStrth                   = level;
-    float level_diff = (float)(level - DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL);
-
-    for (int i = 0; i < DHAZ_CTRL_DATA_STEP_MAX; i++) {
-        // enhance_chroma
-        attr_v11.stAuto.DehazeTuningPara.enhance_setting.EnhanceData.enhance_chroma[i] +=
-            level_diff * DEHAZE_API_ENHANCE_MANUAL_DEFAULT_STEP;
-        attr_v11.stAuto.DehazeTuningPara.enhance_setting.EnhanceData.enhance_chroma[i] =
-            LIMIT_VALUE(
-                attr_v11.stAuto.DehazeTuningPara.enhance_setting.EnhanceData.enhance_chroma[i],
-                16.0, 1.0);
-    }
     ret = rk_aiq_user_api2_adehaze_v11_setSwAttrib(ctx, &attr_v11);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setMEnhanceStrth failed!");
 #endif
@@ -1121,20 +1035,7 @@ XCamReturn rk_aiq_uapi2_setMEnhanceChromeStrth(const rk_aiq_sys_ctx_t* ctx, unsi
     attr_v12.stAuto.DehazeTuningPara.Enable             = true;
     attr_v12.stAuto.DehazeTuningPara.dehaze_setting.en  = false;
     attr_v12.stAuto.DehazeTuningPara.enhance_setting.en = true;
-    attr_v12.stAuto.DehazeTuningPara.cfg_alpha          = NORMALIZE_MAX;
-    attr_v12.stAuto.DehazeTuningPara.ByPassThr          = NORMALIZE_MIN;
     attr_v12.Info.MEnhanceChromeStrth                   = level;
-    float level_diff = (float)(level - DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL);
-
-    for (int i = 0; i < DHAZ_CTRL_DATA_STEP_MAX; i++) {
-        // enhance_chroma
-        attr_v12.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_chroma +=
-            level_diff * DEHAZE_API_ENHANCE_MANUAL_DEFAULT_STEP;
-        attr_v12.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_chroma =
-            LIMIT_VALUE(
-                attr_v12.stAuto.DehazeTuningPara.enhance_setting.EnhanceData[i].enhance_chroma,
-                16.0, 1.0);
-    }
     ret = rk_aiq_user_api2_adehaze_v12_setSwAttrib(ctx, &attr_v12);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setMEnhanceStrth failed!");
 #endif

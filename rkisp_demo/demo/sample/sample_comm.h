@@ -57,6 +57,7 @@ enum RK_ISP_HW_MODULE_e {
     RK_ISP_AGAIN,
     RK_ISP_ACCM_V2,
     RK_ISP_ALDCH_V21,
+    RK_SMARTIR,
     RK_ISP_MAX,
 };
 

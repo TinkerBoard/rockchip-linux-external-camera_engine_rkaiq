@@ -1256,7 +1256,7 @@ void Isp20Params::convertAiqTmoToIsp20Params(T& isp_cfg,
 #endif
 }
 
-#if RKAIQ_HAVE_AF_V20
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
 template<class T>
 void
 Isp20Params::convertAiqAfToIsp20Params(T& isp_cfg,
@@ -3914,7 +3914,7 @@ bool Isp20Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_AF_PARAM:
     {
-#if RKAIQ_HAVE_AF_V20
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
         SmartPtr<RkAiqIspAfParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspAfParamsProxy>();
         if (params.ptr())
             convertAiqAfToIsp20Params(isp_cfg, params->data()->result, true);
@@ -4215,7 +4215,7 @@ SmartPtr<cam3aResult>
 Isp20Params::get_3a_result (cam3aResultList &results, int32_t type)
 {
     cam3aResultList::iterator i_res = results.begin();
-    SmartPtr<cam3aResult> res;
+    SmartPtr<cam3aResult> res = NULL;
 
     for ( ; i_res !=  results.end(); ++i_res) {
         if (type == (*i_res)->getType ()) {

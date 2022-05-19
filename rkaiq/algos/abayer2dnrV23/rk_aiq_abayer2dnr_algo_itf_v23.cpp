@@ -237,9 +237,13 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             } else {
                 stExpInfo.arDGain[0] = curExp->LinearExp.exp_real_params.digital_gain;
             }
+            float tmp_preDgain = stExpInfo.blc_ob_predgain;
+            if(tmp_preDgain < 1.0) {
+                tmp_preDgain = 1.0;
+            }
             // stExpInfo.arAGain[0] = 64.0;
             stExpInfo.arTime[0] = curExp->LinearExp.exp_real_params.integration_time;
-            stExpInfo.arIso[0] = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * 50;
+            stExpInfo.arIso[0] = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * tmp_preDgain * 50;
         } else {
             for(int i = 0; i < 3; i++) {
                 if(curExp->HdrExp[i].exp_real_params.analog_gain < 1.0) {
@@ -254,6 +258,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                     LOGW_ANR("hdr mode dgain is wrong, use 1.0 instead\n");
                     stExpInfo.arDGain[i] = curExp->HdrExp[i].exp_real_params.digital_gain;
                 }
+                stExpInfo.blc_ob_predgain = 1.0;
                 stExpInfo.arTime[i] = curExp->HdrExp[i].exp_real_params.integration_time;
                 stExpInfo.arIso[i] = stExpInfo.arAGain[i] * stExpInfo.arDGain[i] * 50;
 

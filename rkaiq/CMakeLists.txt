@@ -319,6 +319,7 @@ if (RKAIQ_HAVE_AMD_V1)
 endif()
 
 if (RKAIQ_HAVE_AF_V20 OR RKAIQ_HAVE_AF_V30 OR RKAIQ_HAVE_AF_V31)
+    add_compile_options(-DRKAIQ_HAVE_AF=1)
     if (RKAIQ_HAVE_AF_V20)
         add_compile_options(-DRKAIQ_HAVE_AF_V20=1)
     endif()
@@ -327,6 +328,20 @@ if (RKAIQ_HAVE_AF_V20 OR RKAIQ_HAVE_AF_V30 OR RKAIQ_HAVE_AF_V31)
     endif()
     if (RKAIQ_HAVE_AF_V31)
         add_compile_options(-DRKAIQ_HAVE_AF_V31=1)
+    endif()
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAfHandle.cpp)
+endif()
+
+if (RKAIQ_ONLY_AF_STATS_V20 OR RKAIQ_ONLY_AF_STATS_V30 OR RKAIQ_ONLY_AF_STATS_V31)
+    add_compile_options(-DRKAIQ_HAVE_AF=1)
+    if (RKAIQ_ONLY_AF_STATS_V20)
+        add_compile_options(-DRKAIQ_ONLY_AF_STATS_V20=1)
+    endif()
+    if (RKAIQ_ONLY_AF_STATS_V30)
+        add_compile_options(-DRKAIQ_ONLY_AF_STATS_V30=1)
+    endif()
+    if (RKAIQ_ONLY_AF_STATS_V31)
+        add_compile_options(-DRKAIQ_ONLY_AF_STATS_V31=1)
     endif()
     list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAfHandle.cpp)
 endif()
@@ -705,7 +720,7 @@ endif()
 if (RKAIQ_HAVE_PDAF)
     add_compile_options(-DRKAIQ_HAVE_PDAF=1)
 endif()
-if (RKAIQ_HAVE_AF_V20 OR RKAIQ_HAVE_AF_V30 OR RKAIQ_HAVE_AF_V31)
+if (RKAIQ_HAVE_PDAF)
     set (PDAF_LIBS rkaiq_pdaf)
 endif()
 
@@ -1010,7 +1025,13 @@ target_link_libraries(rkaiq
     rkaiq_af
     ${PDAF_LIBS}
     )
-list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}${PDAF_LIBS}${STATIC_LIB_SUFFIX})
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_af${STATIC_LIB_SUFFIX})
+elseif (RKAIQ_ONLY_AF_STATS_V20 OR RKAIQ_ONLY_AF_STATS_V30 OR RKAIQ_ONLY_AF_STATS_V31)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_thirdaf
+    )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_thirdaf${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_3DLUT_V1)

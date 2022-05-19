@@ -1220,7 +1220,7 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_AF_PARAM:
     {
-#if RKAIQ_HAVE_AF_V20
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
         SmartPtr<RkAiqIspAfParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspAfParamsProxy>();
         if (params.ptr())
             convertAiqAfToIsp20Params(isp_cfg, params->data()->result, true);

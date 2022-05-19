@@ -358,6 +358,7 @@ typedef struct _RkAiqAlgoProcAsharpV33 {
     RkAiqAlgoCom com;
     int iso;
     int hdr_mode;
+    AblcProc_V32_t stAblcV32_proc_res;
 } RkAiqAlgoProcAsharpV33;
 
 typedef struct _RkAiqAlgoProcResAsharpV33 {
@@ -478,6 +479,7 @@ typedef struct _RkAiqAlgoProcAdhaz {
     int rawWidth;
     int iso;
     int hdr_mode;
+    AblcProc_V32_t ablcV32_proc_res;
 } RkAiqAlgoProcAdhaz;
 
 typedef struct _RkAiqAlgoProcResAdhaz {
@@ -1384,6 +1386,7 @@ typedef struct _RkAiqAlgoProcAynrV22 {
     RkAiqAlgoCom com;
     int iso;
     int hdr_mode;
+    AblcProc_V32_t stAblcV32_proc_res;
 } RkAiqAlgoProcAynrV22;
 
 typedef struct _RkAiqAlgoProcResAynrV22 {
@@ -1401,6 +1404,7 @@ typedef struct _RkAiqAlgoProcAcnrV30 {
     RkAiqAlgoCom com;
     int iso;
     int hdr_mode;
+    AblcProc_V32_t stAblcV32_proc_res;
 } RkAiqAlgoProcAcnrV30;
 
 typedef struct _RkAiqAlgoProcResAcnrV30 {

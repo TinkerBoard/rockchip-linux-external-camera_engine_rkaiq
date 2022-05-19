@@ -485,7 +485,7 @@ void Isp32Params::convertAiqAwbToIsp32Params(struct isp32_isp_params_cfg& isp_cf
     awb_cfg_v32->blk_rtdw_measure_en = awb_meas.blk_rtdw_measure_en;
 }
 #endif
-#if RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
 void Isp32Params::convertAiqAfToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                             const rk_aiq_isp_af_v31_t& af_data,
                                             bool af_cfg_udpate) {
@@ -1581,7 +1581,7 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
     }
     break;
     case RESULT_TYPE_AF_PARAM: {
-#if RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
         SmartPtr<RkAiqIspAfParamsProxyV32> params =
             result.dynamic_cast_ptr<RkAiqIspAfParamsProxyV32>();
         if (params.ptr()) convertAiqAfToIsp32Params(isp_cfg, params->data()->result, true);

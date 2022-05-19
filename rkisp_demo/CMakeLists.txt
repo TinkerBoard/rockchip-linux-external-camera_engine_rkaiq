@@ -60,6 +60,15 @@ if (ENABLE_IIO_API)
     set(IIO_LIBS easyiio iio serialport xml2 )
 endif()
 
+#set (ENABLE_SMARTIR_API true)
+if (ENABLE_SMARTIR_API)
+	set(SMARTIR_DIR ${PROJECT_SOURCE_DIR}/../smart_ir)
+	set(SMARTIR_INCLUDE_DIR ${SMARTIR_DIR}/include)
+	set(SMARTIR_INSTALLED_LIB_DIR ${SMARTIR_DIR}/build/linux/output/${ARCH}/installed/lib)
+	set(SMARTIR_LIB smartIr)
+    add_compile_options(-DSAMPLE_SMART_IR)
+endif()
+
 include_directories(
     deps/include
     demo
@@ -70,6 +79,7 @@ include_directories(
     demo/iio/include
     ${RK_AIQ_INCLUDE_DIR}
     demo/sample/
+	${SMARTIR_INCLUDE_DIR}
     )
 
 if (LIBDRM_FOUND)
@@ -115,15 +125,18 @@ message(${LIBRARY_OUTPUT_PATH})
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 if (LIBDRM_FOUND)
-link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}" "${PROJECT_SOURCE_DIR}/deps/lib")
+link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}"
+	"${PROJECT_SOURCE_DIR}/deps/lib" "${SMARTIR_INSTALLED_LIB_DIR}")
 else()
-link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}")
+link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}"
+	"${SMARTIR_INSTALLED_LIB_DIR}")
 endif()
 add_executable(rkisp_demo ${DIR_SRCS})
 if (LIBDRM_FOUND)
-target_link_libraries(rkisp_demo rga drm ${RK_AIQ_LIB} ${IIO_LIBS} pthread)
+target_link_libraries(rkisp_demo rga drm ${RK_AIQ_LIB} ${IIO_LIBS}
+	${SMARTIR_LIB} pthread)
 else()
-target_link_libraries(rkisp_demo ${RK_AIQ_LIB} ${IIO_LIBS} pthread)
+target_link_libraries(rkisp_demo ${RK_AIQ_LIB} ${IIO_LIBS} ${SMARTIR_LIB} pthread)
 endif()
 
 if (LIBDRM_FOUND)

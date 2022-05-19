@@ -575,6 +575,7 @@ static void StableProbEstimation(List l, int listSize, int count, int illuNum, f
     prob_tmp = NULL;
 }
 
+#if RKAIQ_ACCM_ILLU_VOTE
 static void UpdateDominateIlluList(List *l, int illu, int listMaxSize)
 {
     illu_node_t *pCurNode;
@@ -632,6 +633,7 @@ static void StableIlluEstimation(List l, int listSize, int illuNum, float varian
     free(illuSet);
     LOGV_ACCM("final estmination illu is %d\n", *newIllu);
 }
+#endif
 
 XCamReturn interpCCMbywbgain(const CalibDbV2_Ccm_Tuning_Para_t* pCcm, accm_handle_t hAccm,
                              float fSaturation) {
@@ -724,16 +726,21 @@ XCamReturn selectCCM(const CalibDbV2_Ccm_Tuning_Para_t* pCcm, accm_handle_t hAcc
     const CalibDbV2_Ccm_Matrix_Para_t* pCcmProfile1 = NULL;
     const CalibDbV2_Ccm_Matrix_Para_t* pCcmProfile2 = NULL;
     int dominateIlluProfileIdx;
+#if RKAIQ_ACCM_ILLU_VOTE
     int dominateIlluListSize = 15;//to do from xml;
     float varianceLumaTh = 0.006;//to do from xml;
+#endif
+
     ret                      = illuminant_index_estimation_ccm(pCcm->aCcmCof_len, pCcm->aCcmCof,
                                           hAccm->accmSwInfo.awbGain, &dominateIlluProfileIdx);
     RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
+#if RKAIQ_ACCM_ILLU_VOTE
     UpdateDominateIlluList(&hAccm->accmRest.dominateIlluList, dominateIlluProfileIdx, dominateIlluListSize);
     StableIlluEstimation(hAccm->accmRest.dominateIlluList, dominateIlluListSize, pCcm->aCcmCof_len,
                          hAccm->accmSwInfo.varianceLuma, varianceLumaTh,
                          hAccm->accmSwInfo.awbConverged, hAccm->accmRest.dominateIlluProfileIdx,
                          &dominateIlluProfileIdx);
+#endif
 
     hAccm->accmRest.dominateIlluProfileIdx = dominateIlluProfileIdx;
 
@@ -798,6 +805,7 @@ bool JudgeCcmRes3aConverge
          + (res3a_info->awbGain[1]-accmSwInfo->awbGain[1])*(res3a_info->awbGain[1]-accmSwInfo->awbGain[1]) > wb_th) {
         res3a_info->awbGain[0] = accmSwInfo->awbGain[0];
         res3a_info->awbGain[1] = accmSwInfo->awbGain[1];
+        LOGD_ACCM("update wbgain: %f, %f\n", accmSwInfo->awbGain[0], accmSwInfo->awbGain[1]);
     } else {
         wbgain_upd = false;
         accmSwInfo->awbGain[0] = res3a_info->awbGain[0];
@@ -811,7 +819,7 @@ bool JudgeCcmRes3aConverge
   * ReloadCCMCalibV2
   *      config ccm_tune used new CalibV2 json para
 ***************************************************/
-
+#if RKAIQ_ACCM_ILLU_VOTE
 XCamReturn ReloadCCMCalibV2(accm_handle_t hAccm, const CalibDbV2_Ccm_Tuning_Para_t* TuningPara)
 {
     CalibDbV2_Ccm_Tuning_Para_t *stCcm = &hAccm->ccm_tune;
@@ -820,10 +828,12 @@ XCamReturn ReloadCCMCalibV2(accm_handle_t hAccm, const CalibDbV2_Ccm_Tuning_Para
         return XCAM_RETURN_ERROR_PARAM;
     }
     if (TuningPara->aCcmCof_len != stCcm->aCcmCof_len)
-      ClearList(&hAccm->accmRest.dominateIlluList);
+        ClearList(&hAccm->accmRest.dominateIlluList);
+
     hAccm->ccm_tune = *TuningPara;
     return (XCAM_RETURN_NO_ERROR);
 }
+#endif
 
 
 RKAIQ_END_DECLARE

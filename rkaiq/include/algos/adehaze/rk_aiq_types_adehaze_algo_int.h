@@ -24,12 +24,13 @@
 #include "adehaze_head.h"
 #include "adehaze_uapi_head.h"
 
-#define DEHAZE_API_MANUAL_DEFAULT_LEVEL         (50)
-#define DEHAZE_API_MANUAL_DEFAULT_CFG_WT_STEP   (0.005)
-#define DEHAZE_API_MANUAL_DEFAULT_CFG_AIR_STEP  (0.5)
-#define DEHAZE_API_MANUAL_DEFAULT_CFG_TMAX_STEP (0.005)
-#define DEHAZE_API_ENHANCE_MANUAL_DEFAULT_LEVEL (50)
-#define DEHAZE_API_ENHANCE_MANUAL_DEFAULT_STEP  (0.08)
+#define DEHAZE_DEFAULT_LEVEL         (50)
+#define DEHAZE_DEFAULT_CFG_WT_STEP   (1)
+#define DEHAZE_DEFAULT_CFG_AIR_STEP  (1)
+#define DEHAZE_DEFAULT_CFG_TMAX_STEP (5)
+#define ENHANCE_DEFAULT_LEVEL        (50)
+#define ENHANCE_VALUE_DEFAULT_STEP   (80)
+#define ENH_LUMA_DEFAULT_STEP        (5)
 
 typedef enum dehaze_api_mode_s {
     DEHAZE_API_AUTO   = 0, /**< run atuo mode */

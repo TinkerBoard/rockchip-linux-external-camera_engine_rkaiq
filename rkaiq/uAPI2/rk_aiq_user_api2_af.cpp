@@ -25,7 +25,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
-#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF
 
 XCamReturn
 rk_aiq_user_api2_af_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_af_attrib_t *attr)
@@ -56,6 +56,24 @@ rk_aiq_user_api2_af_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_af_attrib_
 
     return XCAM_RETURN_NO_ERROR;
 }
+
+#else
+
+XCamReturn
+rk_aiq_user_api2_af_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_af_attrib_t *attr)
+{
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn
+rk_aiq_user_api2_af_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_af_attrib_t *attr)
+{
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+#endif
+
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
 
 XCamReturn
 rk_aiq_user_api2_af_Lock(const rk_aiq_sys_ctx_t* sys_ctx)
@@ -350,18 +368,6 @@ rk_aiq_user_api2_af_setAngleZ(const rk_aiq_sys_ctx_t* sys_ctx, float angleZ)
 }
 
 #else
-
-XCamReturn
-rk_aiq_user_api2_af_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_af_attrib_t *attr)
-{
-    return XCAM_RETURN_ERROR_UNKNOWN;
-}
-
-XCamReturn
-rk_aiq_user_api2_af_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_af_attrib_t *attr)
-{
-    return XCAM_RETURN_ERROR_UNKNOWN;
-}
 
 XCamReturn
 rk_aiq_user_api2_af_Lock(const rk_aiq_sys_ctx_t* sys_ctx)

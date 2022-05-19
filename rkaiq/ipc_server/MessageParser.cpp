@@ -441,7 +441,6 @@ int MessageParser::start() {
   is_running = true;
   proc_thread =
       std::make_shared<std::thread>(&RkMSG::MessageParser::process, this);
-  proc_thread->detach();
 
   return 0;
 }

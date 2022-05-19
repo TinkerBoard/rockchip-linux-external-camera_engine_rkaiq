@@ -41,8 +41,6 @@ typedef struct alut3d_rest_info_s {
     List dominateIdxList;//to record domain lutIdx
     int dominateIdx;
     const CalibDbV2_Lut3D_LutPara_t *pLutProfile;
-    CalibDbV2_Lut3D_Table_Para_t undampedLut;
-    CalibDbV2_Lut3D_Table_Para_t dampedLut;
     lut3d_3ares_info_t res3a_info;
 } alut3d_rest_info_t;
 

@@ -132,10 +132,12 @@ typedef struct rk_aiq_wb_attrib_s {
 } rk_aiq_wb_attrib_t;
 
 typedef struct rk_aiq_wb_querry_info_s {
-    rk_aiq_wb_gain_t gain;
+    rk_aiq_wb_gain_t gain;//effective gain
     rk_aiq_wb_cct_t cctGloabl;
     bool awbConverged;
     uint32_t LVValue;
+    rk_aiq_wb_gain_t stat_gain_glb;
+    rk_aiq_wb_gain_t stat_gain_blk;
 } rk_aiq_wb_querry_info_t;
 
 typedef enum rk_aiq_wb_lock_state_s {

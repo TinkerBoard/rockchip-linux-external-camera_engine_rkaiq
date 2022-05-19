@@ -251,9 +251,9 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
 
     if (!is_ent_name) {
         if (config_file_dir && (strlen(config_file_dir) > 0))
-            sprintf(config_file, "%s/%s.xml", config_file_dir, sns_ent_name);
+            sprintf(config_file, "%s/%s.json", config_file_dir, sns_ent_name);
         else
-            sprintf(config_file, "%s/%s.xml", RKAIQ_DEFAULT_IQ_PATH, sns_ent_name);
+            sprintf(config_file, "%s/%s.json", RKAIQ_DEFAULT_IQ_PATH, sns_ent_name);
     }
     rk_aiq_sys_ctx_t* ctx = new rk_aiq_sys_ctx_t();
     RKAIQSYS_CHECK_RET(!ctx, NULL, "malloc main ctx error !");
@@ -371,14 +371,14 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
             CamHwIsp20::selectIqFile(sns_ent_name, iq_file);
 
             char* hdr_mode = getenv("HDR_MODE");
-            int start = strlen(iq_file) - strlen(".xml");
+            int start = strlen(iq_file) - strlen(".json");
 
             if (hdr_mode) {
                 iq_file[start] = '\0';
                 if (strstr(hdr_mode, "32"))
-                    strcat(iq_file, "-hdr3.xml");
+                    strcat(iq_file, "-hdr3.json");
                 else
-                    strcat(iq_file, "_normal.xml");
+                    strcat(iq_file, "_normal.json");
             }
 
             if (config_file_dir) {
@@ -391,11 +391,11 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
             if (hdr_mode && access(config_file, F_OK)) {
                 LOGW("%s not exist, will use the default !", config_file);
                 if (strstr(hdr_mode, "32"))
-                    start = strlen(config_file) - strlen("-hdr3.xml");
+                    start = strlen(config_file) - strlen("-hdr3.json");
                 else
-                    start = strlen(config_file) - strlen("_normal.xml");
+                    start = strlen(config_file) - strlen("_normal.json");
                 config_file[start] = '\0';
-                strcat(config_file, ".xml");
+                strcat(config_file, ".json");
             }
             LOGI("use iq file %s", config_file);
         }

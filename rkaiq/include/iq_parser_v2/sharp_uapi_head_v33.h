@@ -46,10 +46,10 @@ typedef struct RK_SHARP_Params_V33_Select_s {
     bool exgain_bypass;
 
     // M4_ARRAY_DESC("luma_point", "u16", M4_SIZE(1,8), M4_RANGE(0,1024), "[0, 64, 128, 256, 384, 640, 896, 1024]", M4_DIGIT(1), M4_DYNAMIC(0))
-    uint16_t luma_point[8];    
-    // M4_ARRAY_DESC("luma_sigma", "u16", M4_SIZE(1,8), M4_RANGE(0,1023), "[8, 12, 16, 16, 24, 20, 16, 16]", M4_DIGIT(0), M4_DYNAMIC(0)) 
+    uint16_t luma_point[8];
+    // M4_ARRAY_DESC("luma_sigma", "u16", M4_SIZE(1,8), M4_RANGE(0,1023), "[8, 12, 16, 16, 24, 20, 16, 16]", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t luma_sigma[8];
-    // M4_ARRAY_DESC("hf_clip", "s32", M4_SIZE(1,8), M4_RANGE(0,1023), "[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("hf_clip", "u16", M4_SIZE(1,8), M4_RANGE(0,1023), "[1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023]", M4_DIGIT(0), M4_DYNAMIC(0))
     uint16_t hf_clip[8];
 
 
@@ -87,7 +87,7 @@ typedef struct RK_SHARP_Params_V33_Select_s {
     uint16_t noise_sigma_clip;
     // M4_ARRAY_DESC("gain_adj_sharp_strength", "f32", M4_SIZE(1,14), M4_RANGE(0.0,31.275), "[1.0]", M4_DIGIT(3), M4_DYNAMIC(0))
     float gain_adj_sharp_strength[14];
-    // M4_ARRAY_DESC("dis_adj_sharp_strength", "f32", M4_SIZE(1,22), M4_RANGE(0.0,1.0), "[1.0]", M4_DIGIT(1), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("dis_adj_sharp_strength", "f32", M4_SIZE(1,22), M4_RANGE(0.0,1.0), "[1.0]", M4_DIGIT(3), M4_DYNAMIC(0))
     float dis_adj_sharp_strength[22];
 
 

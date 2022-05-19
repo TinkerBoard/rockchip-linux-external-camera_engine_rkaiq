@@ -119,8 +119,8 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(RK_SHARP_Params_V33_t* pParam
             INTERP_V4(pParams->sharpParamsISO[gain_low].luma_sigma[i],
                       pParams->sharpParamsISO[gain_high].luma_sigma[i], ratio);
         pSelect->hf_clip[i] =
-            (int16_t)ROUND_F(INTERP_V4(pParams->sharpParamsISO[gain_low].hf_clip[i],
-                                       pParams->sharpParamsISO[gain_high].hf_clip[i], ratio));
+            (uint16_t)ROUND_F(INTERP_V4(pParams->sharpParamsISO[gain_low].hf_clip[i],
+                                        pParams->sharpParamsISO[gain_high].hf_clip[i], ratio));
     }
 
     if (iso - iso_low <= iso_high - iso) {

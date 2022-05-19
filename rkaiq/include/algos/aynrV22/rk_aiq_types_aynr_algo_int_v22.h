@@ -88,6 +88,7 @@ typedef struct Aynr_ExpInfo_V22_s {
     int   snr_mode;
     int rawWidth;
     int rawHeight;
+    float blc_ob_predgain;
 } Aynr_ExpInfo_V22_t;
 #if 0
 typedef struct RK_YNR_Params_V22_Select_s

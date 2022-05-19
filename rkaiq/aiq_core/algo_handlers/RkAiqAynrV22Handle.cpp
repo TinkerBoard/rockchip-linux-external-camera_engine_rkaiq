@@ -216,6 +216,7 @@ XCamReturn RkAiqAynrV22HandleInt::processing() {
     // TODO: fill procParam
     aynr_proc_int->iso      = sharedCom->iso;
     aynr_proc_int->hdr_mode = sharedCom->working_mode;
+    aynr_proc_int->stAblcV32_proc_res = shared->res_comb.ablcV32_proc_res;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);

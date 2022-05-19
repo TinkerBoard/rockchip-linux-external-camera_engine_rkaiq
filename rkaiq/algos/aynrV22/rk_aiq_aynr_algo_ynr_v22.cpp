@@ -60,7 +60,7 @@ Aynr_result_V22_t ynr_select_params_by_ISO_V22(RK_YNR_Params_V22_t *pParams, RK_
     pSelect->ynr_lgft3x3_bypass = pParamTmp->ynr_lgft3x3_bypass;
     pSelect->ynr_flt1x1_bypass = pParamTmp->ynr_flt1x1_bypass;
     pSelect->ynr_nlm11x11_bypass = pParamTmp->ynr_nlm11x11_bypass;
-
+    pSelect->ynr_thumb_mix_cur_en = pParamTmp->ynr_thumb_mix_cur_en;
 
     pSelect->hi_filter_coeff1_1 = pParamTmp->hi_filter_coeff1_1;
     pSelect->hi_filter_coeff1_2 = pParamTmp->hi_filter_coeff1_2;
@@ -231,7 +231,7 @@ Aynr_result_V22_t ynr_fix_transfer_V22(RK_YNR_Params_V22_Select_t* pSelect, RK_Y
     // YNR_2700_GLOBAL_CTRL (0x0000)
     pFix->rnr_en = 1;
     pFix->gate_dis = 0;
-    pFix->thumb_mix_cur_en = 0;
+    pFix->thumb_mix_cur_en = pSelect->ynr_thumb_mix_cur_en;
     tmp = (int)(pSelect->ynr_global_gain_alpha * (1 << 3));
     pFix->global_gain_alpha = CLIP(tmp, 0, 8);
     tmp = (int)(pSelect->ynr_global_gain * (1 << 4));
@@ -715,6 +715,7 @@ Aynr_result_V22_t ynr_init_params_json_V22(RK_YNR_Params_V22_t *pYnrParams, Cali
         pYnrParams->arYnrParamsISO[j].ynr_lgft3x3_bypass = pISO->ynr_lgft3x3_bypass;
         pYnrParams->arYnrParamsISO[j].ynr_flt1x1_bypass = pISO->ynr_flt1x1_bypass;
         pYnrParams->arYnrParamsISO[j].ynr_nlm11x11_bypass = pISO->ynr_nlm11x11_bypass;
+        pYnrParams->arYnrParamsISO[j].ynr_thumb_mix_cur_en = pISO->ynr_thumb_mix_cur_en;
 
         //low freq
         pYnrParams->arYnrParamsISO[j].low_bf1 = pISO->low_bf1;

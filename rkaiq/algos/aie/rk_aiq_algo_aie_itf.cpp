@@ -45,6 +45,9 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
         } else {
             ctx->params.mode = RK_AIQ_IE_EFFECT_NONE;
         }
+
+        ctx->last_params.skip_frame = 10;
+
     } else if (ctx->calibv2) {
         CalibDbV2_IE_t* calibv2_ie =
                 (CalibDbV2_IE_t*)(CALIBDBV2_GET_MODULE_PTR(ctx->calibv2, ie));
@@ -52,6 +55,15 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
             ctx->params.mode = (rk_aiq_ie_effect_t)calibv2_ie->param.mode;
         } else {
             ctx->params.mode = RK_AIQ_IE_EFFECT_NONE;
+        }
+
+        CalibDbV2_ColorAsGrey_t *colorAsGrey =
+                (CalibDbV2_ColorAsGrey_t*)(CALIBDBV2_GET_MODULE_PTR(ctx->calibv2, colorAsGrey));
+
+        if (colorAsGrey->param.enable) {
+            ctx->last_params.skip_frame = colorAsGrey->param.skip_frame;
+        } else {
+            ctx->last_params.skip_frame = 10;
         }
     }
 
@@ -109,22 +121,54 @@ prepare(RkAiqAlgoCom* params)
         RkAiqAlgoContext *ctx = params->ctx;
         ctx->calib = confPara->com.u.prepare.calib;
         ctx->calibv2 = confPara->com.u.prepare.calibv2;
+
 #if RKAIQ_HAVE_AIE_V10
         if (ctx->calib) {
             CalibDb_IE_t *calib_ie =
                 (CalibDb_IE_t*)(CALIBDB_GET_MODULE_PTR(ctx->calib, ie));
-            if (calib_ie->enable) {
-                ctx->params.mode = (rk_aiq_ie_effect_t)calib_ie->mode;
+            if (ctx->skip_frame > 0) {
+                if (!calib_ie->enable ||
+                        (calib_ie->enable &&
+                        ((rk_aiq_ie_effect_t)calib_ie->mode == ctx->last_params.mode))) {
+                    return XCAM_RETURN_NO_ERROR;
+                } else {
+                    ctx->params.mode = (rk_aiq_ie_effect_t)calib_ie->mode;
+                    ctx->last_params.mode = ctx->params.mode;
+                }
             } else {
-                ctx->params.mode = RK_AIQ_IE_EFFECT_NONE;
+                if (calib_ie->enable){
+                    ctx->params.mode = (rk_aiq_ie_effect_t)calib_ie->mode;
+                    ctx->last_params.mode = ctx->params.mode;
+                } else {
+                    ctx->params.mode = RK_AIQ_IE_EFFECT_NONE;
+                }
             }
         } else if (ctx->calibv2) {
             CalibDbV2_IE_t* calibv2_ie =
                 (CalibDbV2_IE_t*)(CALIBDBV2_GET_MODULE_PTR(ctx->calibv2, ie));
-            if (calibv2_ie->param.enable) {
-                ctx->params.mode = (rk_aiq_ie_effect_t)calibv2_ie->param.mode;
+            if (ctx->skip_frame > 0) {
+                if (!calibv2_ie->param.enable ||
+                        (calibv2_ie->param.enable &&
+                        ((rk_aiq_ie_effect_t)calibv2_ie->param.mode == ctx->last_params.mode))) {
+                    return XCAM_RETURN_NO_ERROR;
+                } else {
+                    ctx->params.mode = (rk_aiq_ie_effect_t)calibv2_ie->param.mode;
+                    ctx->last_params.mode = ctx->params.mode;
+                }
             } else {
-                ctx->params.mode = RK_AIQ_IE_EFFECT_NONE;
+                if (calibv2_ie->param.enable){
+                    ctx->params.mode = (rk_aiq_ie_effect_t)calibv2_ie->param.mode;
+                    ctx->last_params.mode = ctx->params.mode;
+                } else {
+                    ctx->params.mode = RK_AIQ_IE_EFFECT_NONE;
+                }
+            }
+
+            CalibDbV2_ColorAsGrey_t *colorAsGrey =
+                (CalibDbV2_ColorAsGrey_t*)(CALIBDBV2_GET_MODULE_PTR(ctx->calibv2, colorAsGrey));
+
+            if (colorAsGrey->param.enable) {
+                ctx->last_params.skip_frame = colorAsGrey->param.skip_frame;
             }
         }
 #endif
@@ -142,14 +186,14 @@ pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #if RKAIQ_HAVE_AIE_V10
     if (pAiePreParams->com.u.proc.gray_mode &&
         ctx->params.mode !=  RK_AIQ_IE_EFFECT_BW) {
-        ctx->last_params = ctx->params;
+        ctx->last_params.mode = ctx->params.mode;
         ctx->params.mode = RK_AIQ_IE_EFFECT_BW;
-        ctx->skip_frame = 10;
+        ctx->skip_frame = ctx->last_params.skip_frame;
     } else if (!pAiePreParams->com.u.proc.gray_mode &&
                ctx->params.mode == RK_AIQ_IE_EFFECT_BW) {
         // force non gray_mode by aiq framework
         if (ctx->skip_frame && --ctx->skip_frame == 0)
-            ctx->params = ctx->last_params;
+            ctx->params.mode = ctx->last_params.mode;
     }
 #endif
     return XCAM_RETURN_NO_ERROR;
@@ -166,14 +210,17 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #if RKAIQ_HAVE_AIE_V10
     if (inparams->u.proc.gray_mode &&
         ctx->params.mode !=  RK_AIQ_IE_EFFECT_BW) {
-        ctx->last_params = ctx->params;
+        ctx->last_params.mode = ctx->params.mode;
         ctx->params.mode = RK_AIQ_IE_EFFECT_BW;
-        ctx->skip_frame = 10;
+        ctx->skip_frame = ctx->last_params.skip_frame;
     } else if (!inparams->u.proc.gray_mode &&
                ctx->params.mode == RK_AIQ_IE_EFFECT_BW) {
         // force non gray_mode by aiq framework
         if (ctx->skip_frame && --ctx->skip_frame == 0)
-            ctx->params = ctx->last_params;
+            ctx->params.mode = ctx->last_params.mode;
+        if (ctx->skip_frame) {
+            LOGE_AIE("still need skip %d frame!!! \n", ctx->skip_frame);
+        }
     }
 
     switch (ctx->params.mode)

@@ -1439,17 +1439,17 @@ RkAiqCore::copyIspStats(SmartPtr<RkAiqAecStatsProxy>& aecStat,
 #endif
     }
     if (mIspHwVer == 4) {
-#if RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
         to->af_hw_ver = RKAIQ_AF_HW_V31;
         if (afStat.ptr()) to->af_stats_v3x = afStat->data()->af_stats_v3x;
 #endif
     } else if (mIspHwVer == 3) {
-#if RKAIQ_HAVE_AF_V30
+#if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
         to->af_hw_ver = RKAIQ_AF_HW_V30;
         if (afStat.ptr()) to->af_stats_v3x = afStat->data()->af_stats_v3x;
 #endif
     } else {
-#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V21
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V21 || RKAIQ_ONLY_AF_STATS_V20
         to->af_hw_ver = RKAIQ_AF_HW_V20;
         if (afStat.ptr()) to->af_stats = afStat->data()->af_stats;
 #endif

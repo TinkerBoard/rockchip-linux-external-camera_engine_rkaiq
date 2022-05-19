@@ -179,6 +179,13 @@ static XCamReturn groupAcnrV30Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
         stExpInfoV30.arTime[i] = 0.01;
     }
 
+    stExpInfoV30.blc_ob_predgain = 1.0f;
+    if(procParaGroup != NULL) {
+        LOGD_ANR(" predgain:%f\n",
+                 procParaGroup->stAblcV32_proc_res.isp_ob_predgain);
+        stExpInfoV30.blc_ob_predgain = procParaGroup->stAblcV32_proc_res.isp_ob_predgain;
+
+    }
 
     //merge ae result, iso mean value
     rk_aiq_singlecam_3a_result_t* scam_3a_res = procParaGroup->camgroupParmasArray[0];
@@ -190,7 +197,16 @@ static XCamReturn groupAcnrV30Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
             stExpInfoV30.arAGain[0] = pCurExp->LinearExp.exp_real_params.analog_gain;
             stExpInfoV30.arDGain[0] = pCurExp->LinearExp.exp_real_params.digital_gain;
             stExpInfoV30.arTime[0] = pCurExp->LinearExp.exp_real_params.integration_time;
-            stExpInfoV30.arIso[0] = stExpInfoV30.arAGain[0] * stExpInfoV30.arDGain[0] * 50;
+            if(stExpInfoV30.arAGain[0] < 1.0) {
+                stExpInfoV30.arAGain[0] = 1.0;
+            }
+            if(stExpInfoV30.arDGain[0] < 1.0) {
+                stExpInfoV30.arDGain[0] = 1.0;
+            }
+            if(stExpInfoV30.blc_ob_predgain < 1.0) {
+                stExpInfoV30.blc_ob_predgain = 1.0;
+            }
+            stExpInfoV30.arIso[0] = stExpInfoV30.arAGain[0] * stExpInfoV30.arDGain[0] * stExpInfoV30.blc_ob_predgain * 50;
 
         } else {
             if(procParaGroup->working_mode == RK_AIQ_ISP_HDR_MODE_2_FRAME_HDR
@@ -203,6 +219,13 @@ static XCamReturn groupAcnrV30Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
                 stExpInfoV30.hdr_mode = 0;
                 LOGE_ANR("mode error\n");
             }
+            if(stExpInfoV30.arAGain[i] < 1.0) {
+                stExpInfoV30.arAGain[i] = 1.0;
+            }
+            if(stExpInfoV30.arDGain[i] < 1.0) {
+                stExpInfoV30.arDGain[i] = 1.0;
+            }
+            stExpInfoV30.blc_ob_predgain = 1.0;
             for(int i = 0; i < 3; i++) {
                 stExpInfoV30.arAGain[i] = pCurExp->HdrExp[i].exp_real_params.analog_gain;
                 stExpInfoV30.arDGain[i] = pCurExp->HdrExp[i].exp_real_params.digital_gain;
@@ -222,6 +245,9 @@ static XCamReturn groupAcnrV30Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
         Acnr_ProcResult_V30_t stAcnrResultV30;
         deltaIso = abs(stExpInfoV30.arIso[stExpInfoV30.hdr_mode] - acnr_contex_v30->stExpInfo.arIso[stExpInfoV30.hdr_mode]);
         if(deltaIso > ACNRV30_RECALCULATE_DELTA_ISO) {
+            acnr_contex_v30->isReCalculate |= 1;
+        }
+        if(stExpInfoV30.blc_ob_predgain != acnr_contex_v30->stExpInfoV23.blc_ob_predgain) {
             acnr_contex_v30->isReCalculate |= 1;
         }
         if(acnr_contex_v30->isReCalculate) {

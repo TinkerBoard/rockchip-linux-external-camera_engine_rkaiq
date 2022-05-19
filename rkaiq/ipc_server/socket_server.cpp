@@ -328,7 +328,6 @@ int SocketServer::packetHandle(void *packet, MessageType type) {
   } else {
     RkAiqSocketPacket *aiq_data = (RkAiqSocketPacket *)packet;
     ProcessText(client_socket, aiq_ctx, aiq_data);
-    RkMSG::MessageParser::freePacket(aiq_data, RKAIQ_MESSAGE_OLD);
   }
 
   return 0;

@@ -46,7 +46,7 @@
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 #define FMT_NUM_PLANES 1
 
-#define BUFFER_COUNT 6
+#define BUFFER_COUNT 3
 
 #ifdef ANDROID
 #define CAPTURE_RAW_PATH "/data"
@@ -56,7 +56,7 @@
 #define DEFAULT_CAPTURE_RAW_PATH "/tmp/capture_image"
 #endif
 #define CAPTURE_CNT_FILENAME ".capture_cnt"
-// #define ENABLE_UAPI_TEST
+//#define ENABLE_UAPI_TEST
 #define IQFILE_PATH_MAX_LEN 256
 // #define CUSTOM_AE_DEMO_TEST
 // #define CUSTOM_GROUP_AE_DEMO_TEST

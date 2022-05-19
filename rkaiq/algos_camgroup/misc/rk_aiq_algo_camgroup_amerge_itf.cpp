@@ -185,71 +185,39 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
         }
 
         //expo para process
-        if(pAmergeGrpCtx->FrameNumber == HDR_2X_NUM) {
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.SExpo =
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[0]
-                    .exp_real_params.analog_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[0]
-                    .exp_real_params.digital_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[0]
-                    .exp_real_params.integration_time;
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.MExpo =
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[1]
-                    .exp_real_params.analog_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[1]
-                    .exp_real_params.digital_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[1]
-                    .exp_real_params.integration_time;
+        pAmergeGrpCtx->NextData.CtrlData.ExpoData.SGain = pAmergeGrpParams->camgroupParmasArray[0]
+                                                              ->aec._effAecExpInfo.HdrExp[0]
+                                                              .exp_real_params.analog_gain *
+                                                          pAmergeGrpParams->camgroupParmasArray[0]
+                                                              ->aec._effAecExpInfo.HdrExp[0]
+                                                              .exp_real_params.digital_gain *
+                                                          pAmergeGrpParams->camgroupParmasArray[0]
+                                                              ->aec._effAecExpInfo.HdrExp[0]
+                                                              .exp_real_params.isp_dgain;
+        pAmergeGrpCtx->NextData.CtrlData.ExpoData.MGain = pAmergeGrpParams->camgroupParmasArray[0]
+                                                              ->aec._effAecExpInfo.HdrExp[1]
+                                                              .exp_real_params.analog_gain *
+                                                          pAmergeGrpParams->camgroupParmasArray[0]
+                                                              ->aec._effAecExpInfo.HdrExp[1]
+                                                              .exp_real_params.digital_gain *
+                                                          pAmergeGrpParams->camgroupParmasArray[0]
+                                                              ->aec._effAecExpInfo.HdrExp[1]
+                                                              .exp_real_params.isp_dgain;
+
+        pAmergeGrpCtx->NextData.CtrlData.ExpoData.SExpo =
+            pAmergeGrpCtx->NextData.CtrlData.ExpoData.SGain *
+            pAmergeGrpParams->camgroupParmasArray[0]
+                ->aec._effAecExpInfo.HdrExp[0]
+                .exp_real_params.integration_time;
+        pAmergeGrpCtx->NextData.CtrlData.ExpoData.MExpo =
+            pAmergeGrpCtx->NextData.CtrlData.ExpoData.MGain *
+            pAmergeGrpParams->camgroupParmasArray[0]
+                ->aec._effAecExpInfo.HdrExp[1]
+                .exp_real_params.integration_time;
+        if (pAmergeGrpCtx->FrameNumber == HDR_2X_NUM) {
             pAmergeGrpCtx->NextData.CtrlData.ExpoData.LExpo =
                 pAmergeGrpCtx->NextData.CtrlData.ExpoData.MExpo;
-
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.SGain =
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[0]
-                    .exp_real_params.analog_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[0]
-                    .exp_real_params.digital_gain;
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.MGain =
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[1]
-                    .exp_real_params.analog_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[1]
-                    .exp_real_params.digital_gain;
-
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.ISO =
-                pAmergeGrpCtx->NextData.CtrlData.ExpoData.MGain * ISOMIN;
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.ISO =
-                LIMIT_VALUE(pAmergeGrpCtx->NextData.CtrlData.ExpoData.ISO, ISOMAX, ISOMIN);
-        }
-        else if(pAmergeGrpCtx->FrameNumber == HDR_3X_NUM) {
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.SExpo =
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[0]
-                    .exp_real_params.analog_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[0]
-                    .exp_real_params.digital_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[0]
-                    .exp_real_params.integration_time;
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.MExpo =
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[1]
-                    .exp_real_params.analog_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[1]
-                    .exp_real_params.digital_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[1]
-                    .exp_real_params.integration_time;
+        } else if (pAmergeGrpCtx->FrameNumber == HDR_3X_NUM) {
             pAmergeGrpCtx->NextData.CtrlData.ExpoData.LExpo =
                 pAmergeGrpParams->camgroupParmasArray[0]
                     ->aec._effAecExpInfo.HdrExp[2]
@@ -259,35 +227,36 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
                     .exp_real_params.digital_gain *
                 pAmergeGrpParams->camgroupParmasArray[0]
                     ->aec._effAecExpInfo.HdrExp[2]
+                    .exp_real_params.isp_dgain *
+                pAmergeGrpParams->camgroupParmasArray[0]
+                    ->aec._effAecExpInfo.HdrExp[2]
                     .exp_real_params.integration_time;
-
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.SGain =
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[0]
-                    .exp_real_params.analog_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[0]
-                    .exp_real_params.digital_gain;
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.MGain =
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[1]
-                    .exp_real_params.analog_gain *
-                pAmergeGrpParams->camgroupParmasArray[0]
-                    ->aec._effAecExpInfo.HdrExp[1]
-                    .exp_real_params.digital_gain;
-
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.ISO =
-                pAmergeGrpCtx->NextData.CtrlData.ExpoData.MGain * ISOMIN;
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.ISO =
-                LIMIT_VALUE(pAmergeGrpCtx->NextData.CtrlData.ExpoData.ISO, ISOMAX, ISOMIN);
         }
+        pAmergeGrpCtx->NextData.CtrlData.ExpoData.ISO =
+            pAmergeGrpCtx->NextData.CtrlData.ExpoData.MGain * ISOMIN;
+        pAmergeGrpCtx->NextData.CtrlData.ExpoData.ISO =
+            LIMIT_VALUE(pAmergeGrpCtx->NextData.CtrlData.ExpoData.ISO, ISOMAX, ISOMIN);
         LOGV_AMERGE("%s: nextFrame: sexp: %f-%f, mexp: %f-%f, lexp: %f-%f\n", __FUNCTION__,
-                    pAmergeGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[0].exp_real_params.analog_gain,
-                    pAmergeGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[0].exp_real_params.integration_time,
-                    pAmergeGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[1].exp_real_params.analog_gain,
-                    pAmergeGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[1].exp_real_params.integration_time,
-                    pAmergeGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[2].exp_real_params.analog_gain,
-                    pAmergeGrpParams->camgroupParmasArray[0]->aec._effAecExpInfo.HdrExp[2].exp_real_params.integration_time);
+                    pAmergeGrpCtx->NextData.CtrlData.ExpoData.SGain,
+                    pAmergeGrpParams->camgroupParmasArray[0]
+                        ->aec._effAecExpInfo.HdrExp[0]
+                        .exp_real_params.integration_time,
+                    pAmergeGrpCtx->NextData.CtrlData.ExpoData.MGain,
+                    pAmergeGrpParams->camgroupParmasArray[0]
+                        ->aec._effAecExpInfo.HdrExp[1]
+                        .exp_real_params.integration_time,
+                    pAmergeGrpParams->camgroupParmasArray[0]
+                            ->aec._effAecExpInfo.HdrExp[2]
+                            .exp_real_params.analog_gain *
+                        pAmergeGrpParams->camgroupParmasArray[0]
+                            ->aec._effAecExpInfo.HdrExp[2]
+                            .exp_real_params.digital_gain *
+                        pAmergeGrpParams->camgroupParmasArray[0]
+                            ->aec._effAecExpInfo.HdrExp[2]
+                            .exp_real_params.isp_dgain,
+                    pAmergeGrpParams->camgroupParmasArray[0]
+                        ->aec._effAecExpInfo.HdrExp[2]
+                        .exp_real_params.integration_time);
         if (pAmergeGrpCtx->NextData.CtrlData.ExpoData.SExpo > 0)
             pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLS =
                 pAmergeGrpCtx->NextData.CtrlData.ExpoData.LExpo /

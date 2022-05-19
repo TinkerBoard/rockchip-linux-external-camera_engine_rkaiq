@@ -204,6 +204,18 @@ typedef struct Uapi_ExpQueryInfo_s {
     // M4_NUMBER_DESC("PixelClockFreqMHZ", "f32", M4_RANGE(0,4096), "0", M4_DIGIT(2),M4_HIDE(1))
     float             PixelClockFreqMHZ;
 
+    // M4_NUMBER_DESC("GlobalEnvLv", "f32", M4_RANGE(0,65535), "0", M4_DIGIT(2),M4_HIDE(1))
+    float             GlobalEnvLv;
+
+    // M4_NUMBER_DESC("OverExpROIPdf", "f32", M4_RANGE(0,1), "0", M4_DIGIT(2),M4_HIDE(1))
+    float             OverExpROIPdf;
+
+    // M4_NUMBER_DESC("HighLightROIPdf", "f32", M4_RANGE(0,1), "0", M4_DIGIT(2),M4_HIDE(1))
+    float             HighLightROIPdf;
+
+    // M4_NUMBER_DESC("LowLightROIPdf", "f32", M4_RANGE(0,1), "0", M4_DIGIT(2),M4_HIDE(1))
+    float             LowLightROIPdf;
+
 } Uapi_ExpQueryInfo_t;
 
 

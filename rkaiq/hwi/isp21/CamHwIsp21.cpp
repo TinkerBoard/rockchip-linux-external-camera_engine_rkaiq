@@ -293,6 +293,8 @@ CamHwIsp21::setIspConfig()
     SmartPtr<V4l2Buffer> v4l2buf;
     uint32_t frameId = -1;
 
+    std::lock_guard<std::mutex> lk(mIspConfigLock);
+
     {
         SmartLock locker (_isp_params_cfg_mutex);
         while (_effecting_ispparam_map.size() > 4)
@@ -422,7 +424,12 @@ CamHwIsp21::setIspConfig()
         if (isp_params->module_cfg_update & ISP2X_MODULE_LSC)
             isp_params->module_en_update |= ISP2X_MODULE_LSC;
         isp_params->frame_id = frameId;
-
+        {
+            // update the lost params by ISP driver again
+            SmartLock locker (_isp_params_cfg_mutex);
+            isp_params->module_cfg_update |= _module_cfg_update_frome_drv;
+            _module_cfg_update_frome_drv = 0;
+        }
 #if 0 //TODO: isp21 params has no exposure info field
         SmartPtr<SensorHw> mSensorSubdev = mSensorDev.dynamic_cast_ptr<SensorHw>();
         if (mSensorSubdev.ptr()) {

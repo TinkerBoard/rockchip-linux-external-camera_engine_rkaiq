@@ -20,12 +20,35 @@
 #ifndef XCAM_SMARTPTR_H
 #define XCAM_SMARTPTR_H
 
-#include <stdint.h>
-#include <atomic>
-#include <type_traits>
 #include <base/xcam_defs.h>
+#include <stdint.h>
+
+#include <atomic>
+#include <cassert>
+#include <iostream>
+#include <type_traits>
 
 namespace XCam {
+
+#ifndef M_Assert
+#ifndef NDEBUG
+#   define M_Assert(Expr, Msg) \
+    __M_Assert(#Expr, Expr, __FILE__, __LINE__, Msg)
+#else
+#   define M_Assert(Expr, Msg) ;
+#endif
+#endif
+
+static void __M_Assert(const char* expr_str, bool expr, const char* file, int line, const char* msg)
+{
+    if (!expr)
+    {
+        std::cerr << "Assert failed:\t" << msg << "\n"
+            << "Expected:\t" << expr_str << "\n"
+            << "Source:\t\t" << file << ", line " << line << "\n";
+        abort();
+    }
+}
 
 class RefCount;
 
@@ -66,7 +89,7 @@ public:
 template<typename Obj>
 RefObj* generate_ref_count (Obj *obj, std::true_type)
 {
-    XCAM_ASSERT (obj);
+    M_Assert(obj != nullptr, "smartptr generate_ref_count failed\n");
     obj->ref ();
     return obj;
 }
@@ -103,7 +126,7 @@ public:
     {
         if (_ref) {
             _ref->ref();
-            XCAM_ASSERT (_ptr);
+            M_Assert(_ptr != nullptr, "smartptr copy from pointer failed\n");
         }
     }
 
@@ -113,7 +136,7 @@ public:
     {
         if (_ref) {
             _ref->ref();
-            XCAM_ASSERT (_ptr);
+            M_Assert(_ptr != nullptr, "smartptr copy from derived pointer failed\n");
         }
     }
 
@@ -160,13 +183,13 @@ public:
         if (!_ptr)
             return;
 
-        XCAM_ASSERT (_ref);
+        M_Assert(_ref != nullptr, "smartptr release ref failed\n");
         if (!_ref->unref()) {
             if (!_ref->is_a_object ()) {
-                XCAM_ASSERT (dynamic_cast<RefCount*>(_ref));
+                M_Assert(dynamic_cast<RefCount*>(_ref), "smartptr release dcast obj failed\n");
                 delete _ref;
             } else {
-                XCAM_ASSERT (dynamic_cast<Obj*>(_ref) == _ptr);
+                M_Assert(dynamic_cast<Obj*>(_ref) == _ptr, "smartptr release dcast obj failed\n");
             }
             delete _ptr;
         }
@@ -208,7 +231,7 @@ private:
         // consider is_base_of or dynamic_cast ?
         typedef std::is_base_of<RefObj, ObjD> BaseCheck;
         _ref = generate_ref_count (obj, BaseCheck());
-        XCAM_ASSERT (_ref);
+        M_Assert(_ref != nullptr, "smartptr init_ref failed\n");
     }
 
 private:

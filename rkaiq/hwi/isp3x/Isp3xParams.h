@@ -68,7 +68,7 @@ protected:
     void convertAiqDrcToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_drc_v3x_t& adrc_data);
 #endif
-#if RKAIQ_HAVE_AF_V30
+#if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
     void convertAiqAfToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                    const rk_aiq_isp_af_meas_v3x_t& af_data, bool af_cfg_udpate);
 #endif

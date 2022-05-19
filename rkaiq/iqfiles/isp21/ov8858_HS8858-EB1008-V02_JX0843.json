@@ -1718,7 +1718,8 @@
 						},
 						"colorAsGrey":	{
 							"param":	{
-								"enable":	0
+								"enable":	0,
+								"skip_frame": 10
 							}
 						},
 						"lumaDetect":	{

@@ -51,6 +51,8 @@ RKAIQ_BEGIN_DECLARE
 typedef struct CalibDbV2_ColorAsGrey_Param_s {
     // M4_BOOL_DESC("enable", "0")
     bool enable;
+    // M4_NUMBER_DESC("skip_frame", "s8", M4_RANGE(0,255), "10", M4_DIGIT(0))
+    int8_t skip_frame;
 } CalibDbV2_ColorAsGrey_Param_t;
 
 typedef struct CalibDbV2_ColorAsGrey_s {

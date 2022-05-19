@@ -177,6 +177,13 @@ static XCamReturn groupAbayertnrV23Processing(const RkAiqAlgoCom* inparams, RkAi
         stExpInfoV23.arTime[i] = 0.01;
     }
 
+    stExpInfoV23.blc_ob_predgain = 1.0f;
+    if(procParaGroup != NULL) {
+        LOGD_ANR(" predgain:%f\n",
+                 procParaGroup->stAblcV32_proc_res.isp_ob_predgain);
+        stExpInfoV23.blc_ob_predgain = procParaGroup->stAblcV32_proc_res.isp_ob_predgain;
+
+    }
 
     //merge ae result, iso mean value
     rk_aiq_singlecam_3a_result_t* scam_3a_res = procParaGroup->camgroupParmasArray[0];
@@ -188,7 +195,16 @@ static XCamReturn groupAbayertnrV23Processing(const RkAiqAlgoCom* inparams, RkAi
             stExpInfoV23.arAGain[0] = pCurExp->LinearExp.exp_real_params.analog_gain;
             stExpInfoV23.arDGain[0] = pCurExp->LinearExp.exp_real_params.digital_gain;
             stExpInfoV23.arTime[0] = pCurExp->LinearExp.exp_real_params.integration_time;
-            stExpInfoV23.arIso[0] = stExpInfoV23.arAGain[0] * stExpInfoV23.arDGain[0] * 50;
+            if(stExpInfoV23.arAGain[0] < 1.0) {
+                stExpInfoV23.arAGain[0] = 1.0;
+            }
+            if(stExpInfoV23.arDGain[0] < 1.0) {
+                stExpInfoV23.arDGain[0] = 1.0;
+            }
+            if(stExpInfoV23.blc_ob_predgain < 1.0) {
+                stExpInfoV23.blc_ob_predgain = 1.0;
+            }
+            stExpInfoV23.arIso[0] = stExpInfoV23.arAGain[0] * stExpInfoV23.arDGain[0] * stExpInfoV23.blc_ob_predgain * 50;
 
         } else {
             if(procParaGroup->working_mode == RK_AIQ_ISP_HDR_MODE_2_FRAME_HDR
@@ -206,6 +222,13 @@ static XCamReturn groupAbayertnrV23Processing(const RkAiqAlgoCom* inparams, RkAi
                 stExpInfoV23.arAGain[i] = pCurExp->HdrExp[i].exp_real_params.analog_gain;
                 stExpInfoV23.arDGain[i] = pCurExp->HdrExp[i].exp_real_params.digital_gain;
                 stExpInfoV23.arTime[i] = pCurExp->HdrExp[i].exp_real_params.integration_time;
+                if(stExpInfoV23.arAGain[i] < 1.0) {
+                    stExpInfoV23.arAGain[i] = 1.0;
+                }
+                if(stExpInfoV23.arDGain[i] < 1.0) {
+                    stExpInfoV23.arDGain[i] = 1.0;
+                }
+                stExpInfoV23.blc_ob_predgain = 1.0;
                 stExpInfoV23.arIso[i] = stExpInfoV23.arAGain[i] * stExpInfoV23.arDGain[i] * 50;
             }
 
@@ -219,6 +242,9 @@ static XCamReturn groupAbayertnrV23Processing(const RkAiqAlgoCom* inparams, RkAi
     if(CHECK_ISP_HW_V32()) {
         Abayertnr_Context_V23_t * abayertnr_contex_v23 = abayertnr_group_contex->abayertnr_contex_v23;
         Abayertnr_ProcResult_V23_t stAbayertnrResultV23;
+        if(stExpInfoV23.blc_ob_predgain != abayertnr_contex_v23->stExpInfoV23.blc_ob_predgain) {
+            abayertnr_contex_v23->isReCalculate |= 1;
+        }
         deltaIso = abs(stExpInfoV23.arIso[stExpInfoV23.hdr_mode] - abayertnr_contex_v23->stExpInfo.arIso[stExpInfoV23.hdr_mode]);
         if(deltaIso > ABAYERTNRV23_RECALCULATE_DELTA_ISO) {
             abayertnr_contex_v23->isReCalculate |= 1;

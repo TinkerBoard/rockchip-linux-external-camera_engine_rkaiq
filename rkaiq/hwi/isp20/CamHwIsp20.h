@@ -201,6 +201,7 @@ protected:
     uint32_t _ispp_module_init_ens;
     SmartPtr<V4l2SubDevice> _ispp_sd;
 #endif
+    uint64_t _module_cfg_update_frome_drv;
     SmartPtr<V4l2SubDevice> _cif_csi2_sd;
     char sns_name[32];
     static std::map<std::string, SmartPtr<rk_aiq_static_info_t>> mCamHwInfos;
@@ -326,6 +327,7 @@ protected:
     int _isp_stream_status;
 
     rk_sensor_pdaf_info_t mPdafInfo;
+    std::mutex mIspConfigLock;
 };
 
 }

@@ -223,6 +223,8 @@ XCamReturn CamHwIsp32::setIspConfig() {
     SmartPtr<V4l2Buffer> v4l2buf;
     uint32_t frameId = -1;
 
+    std::lock_guard<std::mutex> lk(mIspConfigLock);
+
     {
         SmartLock locker(_isp_params_cfg_mutex);
         while (_effecting_ispparam_map.size() > 4)
@@ -353,6 +355,9 @@ XCamReturn CamHwIsp32::setIspConfig() {
                     _effecting_ispparam_map[frameId]->data()->result.awb_gain_cfg = _full_active_isp32_params.others.awb_gain_cfg;
                 }
             }
+            // update the lost params by ISP driver again
+            isp_params->module_cfg_update |= _module_cfg_update_frome_drv;
+            _module_cfg_update_frome_drv = 0;
         }
 
         LOGD_ABLC("isp_params_ob: ob_offset:0x%x ob_predgain:0x%x ob_max:0x%x",

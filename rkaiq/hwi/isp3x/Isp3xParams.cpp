@@ -888,7 +888,7 @@ void Isp3xParams::convertAiqDrcToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
 }
 #endif
 
-#if RKAIQ_HAVE_AF_V30
+#if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
 void Isp3xParams::convertAiqAfToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_af_meas_v3x_t& af_data, bool af_cfg_udpate)
 {
@@ -1358,7 +1358,7 @@ bool Isp3xParams::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     break;
     case RESULT_TYPE_AF_PARAM:
     {
-#if RKAIQ_HAVE_AF_V30
+#if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
         SmartPtr<RkAiqIspAfParamsProxyV3x> params = result.dynamic_cast_ptr<RkAiqIspAfParamsProxyV3x>();
         if (params.ptr())
             convertAiqAfToIsp3xParams(isp_cfg, params->data()->result, true);

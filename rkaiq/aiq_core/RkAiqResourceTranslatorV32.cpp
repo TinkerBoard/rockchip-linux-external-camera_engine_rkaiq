@@ -135,6 +135,7 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
     }
 
     statsInt->aec_stats_valid = (meas_type & 0x01) ? true : false;
+    if (!statsInt->aec_stats_valid) return XCAM_RETURN_BYPASS;
 
     u16 bls_r, bls_g, bls_b;
     bls_r = ((isp_ob_offset_rb + bls1_val.r) * awb1_gain_r + 128) / 256;
@@ -218,11 +219,11 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
             break;
         case 5:
         default:
-            ob = (u16)((isp_ob_offset_g >> 4) * 587 + (isp_ob_offset_rb >> 2) * 299 + (isp_ob_offset_rb >> 2) * 144 + 500) / 1000;
-            bls1 = (s16)((bls1_val.gr >> 4) * 587 + (bls1_val.r >> 2) * 299 + (bls1_val.b >> 2) * 144 + 500) / 1000;
+            ob = (u16)((isp_ob_offset_g >> 4) * 587 + (isp_ob_offset_rb >> 2) * 299 + (isp_ob_offset_rb >> 2) * 114 + 500) / 1000;
+            bls1 = (s16)((bls1_val.gr >> 4) * 587 + (bls1_val.r >> 2) * 299 + (bls1_val.b >> 2) * 114 + 500) / 1000;
             awb1_gain = 100;
             bls = (ob + bls1) * awb1_gain;
-            div_part = 7655 / awb1_gain_r + 15027 / awb1_gain_gr + 3687 / awb1_gain_b;
+            div_part = 7655 / awb1_gain_r + 15027 / awb1_gain_gr + 2919 / awb1_gain_b;
             round_part = div_part / 2;
             break;
         }
@@ -317,11 +318,11 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
                     break;
                 case 5:
                 default:
-                    ob = (u16)((isp_ob_offset_g >> 4) * 587 + (isp_ob_offset_rb >> 2) * 299 + (isp_ob_offset_rb >> 2) * 144 + 500) / 1000;
-                    bls1 = (s16)((bls1_val.gr >> 4) * 587 + (bls1_val.r >> 2) * 299 + (bls1_val.b >> 2) * 144 + 500) / 1000;
+                    ob = (u16)((isp_ob_offset_g >> 4) * 587 + (isp_ob_offset_rb >> 2) * 299 + (isp_ob_offset_rb >> 2) * 114 + 500) / 1000;
+                    bls1 = (s16)((bls1_val.gr >> 4) * 587 + (bls1_val.r >> 2) * 299 + (bls1_val.b >> 2) * 114 + 500) / 1000;
                     awb1_gain = 100;
                     bls = (ob + bls1) * awb1_gain;
-                    div_part = 7655 / awb1_gain_r + 15027 / awb1_gain_gr + 3687 / awb1_gain_b;
+                    div_part = 7655 / awb1_gain_r + 15027 / awb1_gain_gr + 2919 / awb1_gain_b;
                     round_part = div_part / 2;
                     break;
                 }
@@ -583,6 +584,11 @@ XCamReturn RkAiqResourceTranslatorV32::translateAfStats(const SmartPtr<VideoBuff
     LOGI_ANALYZER("stats: frame_id: %d,  meas_type; 0x%x",
                   stats->frame_id, stats->meas_type);
 
+    statsInt->af_stats_valid =
+            (stats->meas_type >> 6) & (0x01) ? true : false;
+    if (!statsInt->af_stats_valid)
+        return XCAM_RETURN_BYPASS;
+
     SmartPtr<RkAiqAfInfoProxy> afParams = buf->get_af_params();
     struct isp32_bls_cfg* bls_cfg = &_ispParams.bls_cfg;
     u8 from_awb = _ispParams.meas.rawaf.from_awb;
@@ -614,9 +620,6 @@ XCamReturn RkAiqResourceTranslatorV32::translateAfStats(const SmartPtr<VideoBuff
 
     //af
     {
-        statsInt->af_stats_valid =
-            (stats->meas_type >> 6) & (0x01) ? true : false;
-
         statsInt->af_stats_v3x.comp_bls = comp_bls >> 2;
         statsInt->af_stats_v3x.wndb_luma = stats->params.rawaf.afm_lum_b;
         statsInt->af_stats_v3x.wndb_sharpness = stats->params.rawaf.afm_sum_b;
@@ -675,6 +678,8 @@ XCamReturn RkAiqResourceTranslatorV32::translateAdehazeStats(const SmartPtr<Vide
 
     // dehaze
     statsInt->adehaze_stats_valid = stats->meas_type >> 17 & 1;
+    if (!statsInt->adehaze_stats_valid) return XCAM_RETURN_BYPASS;
+
     statsInt->adehaze_stats.dehaze_stats_v12.dhaz_adp_air_base =
         stats->params.dhaz.dhaz_adp_air_base;
     statsInt->adehaze_stats.dehaze_stats_v12.dhaz_adp_wt     = stats->params.dhaz.dhaz_adp_wt;

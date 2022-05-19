@@ -666,7 +666,7 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
             break;
         case 5:
         default:
-            hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
+            hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.114 + 0.5);
             hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
             break;
         }
@@ -726,7 +726,7 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
             break;
         case 5:
         default:
-            hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
+            hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.114 + 0.5);
             hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
             break;
         }
@@ -785,7 +785,7 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
             break;
         case 5:
         default:
-            hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
+            hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.114 + 0.5);
             hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
             break;
         }
@@ -854,7 +854,7 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
                 break;
             case 5:
             default:
-                hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
+                hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.114 + 0.5);
                 hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
                 break;
             }
@@ -1310,7 +1310,7 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                     break;
                 case 5:
                 default:
-                    s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
+                    s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.114 + 0.5);
                     float hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
                     tmp = (i - hist_bls1 > 0) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
                     break;
@@ -1379,7 +1379,7 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                     break;
                 case 5:
                 default:
-                    s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
+                    s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.114 + 0.5);
                     float hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
                     tmp = (i - hist_bls1 > 0) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
                     break;
@@ -1448,7 +1448,7 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                     break;
                 case 5:
                 default:
-                    s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
+                    s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.114 + 0.5);
                     float hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
                     tmp = (i - hist_bls1 > 0) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
                     break;
@@ -1509,7 +1509,7 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                         break;
                     case 5:
                     default:
-                        s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.144 + 0.5);
+                        s16 hist_bls1 = (s16)((bls1_val.gr >> 4) * 0.587 + (bls1_val.r >> 2) * 0.299 + (bls1_val.b >> 2) * 0.114 + 0.5);
                         float hist_bls_ratio = (float)((1 << 8) - 1) / ((1 << 8) - 1 - hist_bls1);
                         tmp = (i - hist_bls1 > 0) ? (i - hist_bls1) * hist_bls_ratio + 0.5 : 0;
                         break;

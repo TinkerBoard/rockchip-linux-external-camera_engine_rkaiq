@@ -127,6 +127,7 @@ typedef struct AcnrV30_ExpInfo_s {
     int   snr_mode;
     int rawWidth;
     int rawHeight;
+    float blc_ob_predgain;
 } AcnrV30_ExpInfo_t;
 
 

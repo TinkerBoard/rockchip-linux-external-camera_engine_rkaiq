@@ -25,6 +25,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <atomic>
 
 #define RKAIQ_SOCKET_DATA_EXTRA_SIZE 28
 #define RKAIQ_SOCKET_DATA_OFFSET 24
@@ -99,7 +100,7 @@ private:
   std::mutex proc_mutex;
   std::condition_variable proc_cond;
   std::shared_ptr<std::thread> proc_thread;
-  bool is_running;
+  std::atomic<bool> is_running;
   MessageCallBack mCallBackFunc;
 
   int notify_wakeup();

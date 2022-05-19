@@ -65,7 +65,7 @@ private:
     void convertAiqBlcToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_blc_v32_t& blc);
 
-#if RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
     void convertAiqAfToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                    const rk_aiq_isp_af_v31_t& af_data, bool af_cfg_udpate);
 #endif

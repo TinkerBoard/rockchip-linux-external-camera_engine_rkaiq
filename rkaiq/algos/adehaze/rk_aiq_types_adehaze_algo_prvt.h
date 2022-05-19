@@ -109,6 +109,7 @@ typedef struct AdehazeHandle_s {
     CalibDbV2_YnrV22_Calib_t YnrCalibParaV22;
     AdehazeAePreResV11_t CurrDataV12;
     AdehazeAePreResV11_t PreDataV12;
+    AblcProc_V32_t ablcV32_proc_res;
 #endif
     RkAiqAdehazeProcResult_t ProcRes;
     rkisp_adehaze_stats_t stats;

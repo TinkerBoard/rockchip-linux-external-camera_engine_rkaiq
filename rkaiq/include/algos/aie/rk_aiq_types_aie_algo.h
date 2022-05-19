@@ -34,4 +34,9 @@ typedef struct rk_aiq_aie_params_s {
     rk_aiq_ie_effect_t mode;
 } rk_aiq_aie_params_t;
 
+typedef struct rk_aiq_aie_last_params_s {
+    rk_aiq_ie_effect_t mode;
+    int skip_frame;
+} rk_aiq_aie_last_params_t;
+
 #endif

@@ -416,6 +416,7 @@ XCamReturn RkAiqAfHandleInt::processing() {
         LOGW("the xcamvideobuffer of af stats is null");
     }
 
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
     if ((!xAfStats || !xAfStats->af_stats_valid) && !sharedCom->init) {
         LOGW("no af stats, ignore!");
         mProcResShared.release();
@@ -428,6 +429,7 @@ XCamReturn RkAiqAfHandleInt::processing() {
     mAeStableMutex.lock();
     af_proc_int->ae_stable = mAeStable;
     mAeStableMutex.unlock();
+#endif
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
 #if 0
@@ -479,13 +481,13 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
 
     RkAiqAlgoProcResAf* af_com                  = &mProcResShared->result;
 
-#if RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
     rk_aiq_isp_af_params_v32_t* af_param = params->mAfV32Params->data().ptr();
 #endif
-#if RKAIQ_HAVE_AF_V30
+#if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
     rk_aiq_isp_af_params_v3x_t* af_param = params->mAfV3xParams->data().ptr();
 #endif
-#if RKAIQ_HAVE_AF_V20
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
     rk_aiq_isp_af_params_v20_t* af_param = params->mAfParams->data().ptr();
 #endif
 
@@ -518,13 +520,13 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
             focus_param->frame_id = shared->frameId;
         }
 
-#if RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
         af_param->result = af_rk->af_isp_param_v31;
 #endif
-#if RKAIQ_HAVE_AF_V30
+#if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
         af_param->result = af_rk->af_isp_param_v3x;
 #endif
-#if RKAIQ_HAVE_AF_V20
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
         af_param->result = af_rk->af_isp_param;
 #endif
 #endif
@@ -572,13 +574,13 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     }
 
     cur_params->mFocusParams = params->mFocusParams;
-#if RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
     cur_params->mAfV32Params = params->mAfV32Params;
 #endif
-#if RKAIQ_HAVE_AF_V30
+#if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
     cur_params->mAfV3xParams = params->mAfV3xParams;
 #endif
-#if RKAIQ_HAVE_AF_V20
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
     cur_params->mAfParams = params->mAfParams;
 #endif
 

@@ -162,6 +162,20 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
             LOGE_ADEHAZE("%s:PreResBuf is NULL!\n", __FUNCTION__);
         }
     }
+#if RKAIQ_HAVE_DEHAZE_V12
+    if (pAdehazeHandle->FrameNumber == LINEAR_NUM) {
+        memcpy(&pAdehazeHandle->ablcV32_proc_res, &pProcPara->ablcV32_proc_res,
+               sizeof(AblcProc_V32_t));
+        if (pAdehazeHandle->ablcV32_proc_res.blc_ob_enable &&
+            pAdehazeHandle->ablcV32_proc_res.isp_ob_predgain < 1.0f) {
+            LOGE_ADEHAZE("%s: ob_enable ON , and ob_predgain[%f]<1.0f!!!\n", __FUNCTION__,
+                         pAdehazeHandle->ablcV32_proc_res.isp_ob_predgain);
+            pAdehazeHandle->ablcV32_proc_res.isp_ob_predgain = 1.0f;
+        }
+        if (pAdehazeHandle->ablcV32_proc_res.blc_ob_enable)
+            pAdehazeHandle->CurrDataV12.ISO *= pAdehazeHandle->ablcV32_proc_res.isp_ob_predgain;
+    }
+#endif
     AdehazeByPassProcessing(pAdehazeHandle);
 
     bool Enable = DehazeEnableSetting(pAdehazeHandle);

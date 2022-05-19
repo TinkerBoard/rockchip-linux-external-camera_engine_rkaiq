@@ -123,14 +123,11 @@ bool RkAiqAnalyzerGroup::msgHandle(const SmartPtr<XCamMessage>& msg) {
 
     uint64_t msg_flags = msgWrapper.msg_flags;
     if (!(msg_flags ^ mDepsFlag)) {
-        std::vector<SmartPtr<XCamMessage>>& msgList = msgWrapper.msgList;
+        std::vector<SmartPtr<XCamMessage>> msgList = msgWrapper.msgList;
         mHandler(msgList, userId, getType());
-        auto it = mGroupMsgMap.begin();
-        while ((it = std::find_if(it, std::end(mGroupMsgMap),
-                                  [&](const std::pair<uint32_t, GroupMessage>& msg) {
-                                      return msg.first <= userId;
-                                  })) != std::end(mGroupMsgMap))
-            mGroupMsgMap.erase(it++);
+        auto beg = mGroupMsgMap.begin();
+        auto end = mGroupMsgMap.find(userId);
+        mGroupMsgMap.erase(beg, end);
         LOGD_ANALYZER("%s, group %s erase frame(%d) msg map\n", __FUNCTION__, AnalyzerGroupType2Str[mGroupType], userId);
     } else {
         msgReduction(mGroupMsgMap);

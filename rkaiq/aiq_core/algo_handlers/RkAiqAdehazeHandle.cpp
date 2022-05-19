@@ -176,6 +176,8 @@ XCamReturn RkAiqAdehazeHandleInt::processing() {
 
     adhaz_proc_int->hdr_mode = sharedCom->working_mode;
 
+    adhaz_proc_int->ablcV32_proc_res = shared->res_comb.ablcV32_proc_res;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "adhaz handle processing failed");

@@ -101,6 +101,7 @@ typedef struct Asharp_ExpInfo_V33_s {
     int snr_mode;
     int rawWidth;
     int rawHeight;
+    float blc_ob_predgain;
 } Asharp_ExpInfo_V33_t;
 
 #if 0
