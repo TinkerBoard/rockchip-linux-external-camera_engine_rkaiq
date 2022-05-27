@@ -415,10 +415,15 @@
  * - Optimize switch scene for switching between night and day
  * - Optimize CPU usage of CSM and 3DLUT
  * - IQ: Add and Update sc4336, sc230ai, gc4653 and jx_k17
+ * v4.0x9.8
+ * - Fix aiq crashed on IQTool read/write
+ * - CAC: correct HDR ratio value
+ * - 3DLUT: Fix a few issues
+ * - NR/SHARP: Support tools ui controls
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.8-rc3"
-#define RK_AIQ_RELEASE_DATE "2022-05-20 for rv1106 SDK release"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.8"
+#define RK_AIQ_RELEASE_DATE "2022-05-30 for rv1106 SDK release"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

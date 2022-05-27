@@ -37,6 +37,8 @@ public:
         mNewStrength.percent = 1.0;
         memset(&mCurAtt, 0x00, sizeof(mCurAtt));
         memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+        memset(&mCurInfo, 0x00, sizeof(mCurInfo));
+        memset(&mNewInfo, 0x00, sizeof(mNewInfo));
     };
     virtual ~RkAiqAbayer2dnrV23HandleInt() {
         RkAiqHandle::deInit();
@@ -52,7 +54,7 @@ public:
     XCamReturn getAttrib(rk_aiq_bayer2dnr_attrib_v23_t* att);
     XCamReturn setStrength(const rk_aiq_bayer2dnr_strength_v23_t* pStrength);
     XCamReturn getStrength(rk_aiq_bayer2dnr_strength_v23_t* pStrength);
-
+    XCamReturn getInfo(rk_aiq_bayer2dnr_info_v23_t *pInfo);
 protected:
     virtual void init();
     virtual void deInit() {
@@ -65,8 +67,10 @@ private:
     rk_aiq_bayer2dnr_attrib_v23_t mNewAtt;
     rk_aiq_bayer2dnr_strength_v23_t mCurStrength;
     rk_aiq_bayer2dnr_strength_v23_t mNewStrength;
+    rk_aiq_bayer2dnr_info_v23_t mCurInfo;
+    rk_aiq_bayer2dnr_info_v23_t mNewInfo;
     mutable std::atomic<bool> updateStrength;
-
+    mutable std::atomic<bool> updateInfo;
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAbayer2dnrV23HandleInt);
 };

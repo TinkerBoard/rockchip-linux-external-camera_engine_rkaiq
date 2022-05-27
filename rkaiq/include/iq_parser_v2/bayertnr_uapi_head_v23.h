@@ -131,6 +131,42 @@ typedef struct RK_Bayertnr_Params_V23_Select_s
     uint8_t guass_guide_coeff3;
 
 } RK_Bayertnr_Params_V23_Select_t;
+
+typedef struct Abayertnr_ExpInfo_V23_s {
+    // M4_NUMBER_DESC("hdr_mode", "u8", M4_RANGE(0, 2), "0", M4_DIGIT(0))
+    int hdr_mode;
+
+    // M4_NUMBER_DESC("snr_mode", "s8", M4_RANGE(0, 2), "0", M4_DIGIT(0))
+    int   snr_mode;
+
+    // M4_ARRAY_DESC("time", "f32", M4_SIZE(1,3), M4_RANGE(0, 1024), "0.01", M4_DIGIT(6))
+    float arTime[3];
+    // M4_ARRAY_DESC("again", "f32", M4_SIZE(1,3), M4_RANGE(0, 204800), "1", M4_DIGIT(3))
+    float arAGain[3];
+    // M4_ARRAY_DESC("dgain", "f32", M4_SIZE(1,3), M4_RANGE(0, 204800), "1", M4_DIGIT(3))
+    float arDGain[3];
+    // M4_NUMBER_DESC("blc_ob_predgain", "f32", M4_RANGE(0, 204800), "1", M4_DIGIT(3))
+    float blc_ob_predgain;
+    // M4_ARRAY_DESC("iso", "u32", M4_SIZE(1,3), M4_RANGE(0, 204800), "1", M4_DIGIT(0))
+    int   arIso[3];
+
+    // M4_NUMBER_DESC("isoLevelLow", "u8", M4_RANGE(0, 12), "0", M4_DIGIT(0))
+    int isoLevelLow;
+    // M4_NUMBER_DESC("isoLevelHig", "u8", M4_RANGE(0, 12), "0", M4_DIGIT(0))
+    int isoLevelHig;
+
+} Abayertnr_ExpInfo_V23_t;
+
+typedef struct rk_aiq_bayertnr_info_v23_s {
+    // M4_ARRAY_TABLE_DESC("sync", "array_table_ui", "none", "1")
+    rk_aiq_uapi_sync_t sync;
+    // M4_NUMBER_DESC("iso", "u32", M4_RANGE(0, 204800), "50", M4_DIGIT(0), "0", "0")
+    int iso;
+    // M4_ARRAY_TABLE_DESC("expo_info", "normal_ui_style", "none", "0", "0")
+    Abayertnr_ExpInfo_V23_t expo_info;
+} rk_aiq_bayertnr_info_v23_t;
+
+
 #endif
 
 

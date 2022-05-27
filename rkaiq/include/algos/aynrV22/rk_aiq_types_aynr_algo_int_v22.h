@@ -79,17 +79,7 @@ typedef enum Aynr_ParamMode_V22_e {
     AYNRV22_PARAM_MODE_MAX                                      /**< max */
 } Aynr_ParamMode_V22_t;
 
-typedef struct Aynr_ExpInfo_V22_s {
-    int hdr_mode;
-    float arTime[3];
-    float arAGain[3];
-    float arDGain[3];
-    int   arIso[3];
-    int   snr_mode;
-    int rawWidth;
-    int rawHeight;
-    float blc_ob_predgain;
-} Aynr_ExpInfo_V22_t;
+
 #if 0
 typedef struct RK_YNR_Params_V22_Select_s
 {
@@ -228,6 +218,9 @@ typedef struct rk_aiq_ynr_strength_v22_s {
     float percent;
     bool strength_enable;
 } rk_aiq_ynr_strength_v22_t;
+
+
+
 
 
 //calibdb

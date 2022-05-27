@@ -119,6 +119,21 @@ __RKAIQUAPI_CALLER(rk_aiq_ccm_mccm_attrib_v2_t);
 __RKAIQUAPI_CALLER(Cgc_Param_t);
 __RKAIQUAPI_CALLER(Csm_Param_t);
 
+#if ISP_HW_V32
+__RKAIQUAPI_CALLER(asharp_uapi_manual_t);
+__RKAIQUAPI_CALLER(abayer2dnr_uapi_manual_t);
+__RKAIQUAPI_CALLER(abayertnr_uapi_manual_t);
+__RKAIQUAPI_CALLER(aynr_uapi_manual_t);
+__RKAIQUAPI_CALLER(acnr_uapi_manual_t);
+__RKAIQUAPI_CALLER(again_uapi_manual_t);
+__RKAIQUAPI_CALLER(abayertnr_uapi_info_t);
+__RKAIQUAPI_CALLER(abayer2dnr_uapi_info_t);
+__RKAIQUAPI_CALLER(aynr_uapi_info_t);
+__RKAIQUAPI_CALLER(acnr_uapi_info_t);
+__RKAIQUAPI_CALLER(asharp_uapi_info_t);
+__RKAIQUAPI_CALLER(again_uapi_info_t);
+#endif
+
 RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
     __RKAIQUAPI_DESC_DEF("/uapi/0/ae_uapi/expsw_attr", uapi_expsw_attr_t,
                          __RKAIQUAPI_SET_WRAPPER_NAME(rk_aiq_user_api2_ae_setExpSwAttr),
@@ -221,150 +236,184 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
     __RKAIQUAPI_DESC_DEF("/uapi/0/accm_uapi/stManual", rk_aiq_ccm_mccm_attrib_v2_t,
                          rk_aiq_set_accm_v2_manual_attr, rk_aiq_get_accm_v2_manual_attr),
 #endif
-__RKAIQUAPI_DESC_DEF("/uapi/0/acgc_uapi/manual", Cgc_Param_t,
+    __RKAIQUAPI_DESC_DEF("/uapi/0/acgc_uapi/manual", Cgc_Param_t,
                          rk_aiq_set_acgc_manual_attr, rk_aiq_get_acgc_manual_attr),
-__RKAIQUAPI_DESC_DEF("/uapi/0/acsm_uapi/manual", Csm_Param_t,
+    __RKAIQUAPI_DESC_DEF("/uapi/0/acsm_uapi/manual", Csm_Param_t,
                          rk_aiq_set_acsm_manual_attr, rk_aiq_get_acsm_manual_attr),
+
+#if ISP_HW_V32
+    __RKAIQUAPI_DESC_DEF("/uapi/0/asharp_uapi/manual", asharp_uapi_manual_t,
+                         rk_aiq_set_asharp_manual_attr, rk_aiq_get_asharp_manual_attr),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/abayer2dnr_uapi/manual", abayer2dnr_uapi_manual_t,
+                         rk_aiq_set_abayer2dnr_manual_attr, rk_aiq_get_abayer2dnr_manual_attr),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/abayertnr_uapi/manual", abayertnr_uapi_manual_t,
+                         rk_aiq_set_abayertnr_manual_attr, rk_aiq_get_abayertnr_manual_attr),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/aynr_uapi/manual", aynr_uapi_manual_t,
+                         rk_aiq_set_aynr_manual_attr, rk_aiq_get_aynr_manual_attr),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/acnr_uapi/manual", acnr_uapi_manual_t,
+                         rk_aiq_set_acnr_manual_attr, rk_aiq_get_acnr_manual_attr),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/again_uapi/manual", again_uapi_manual_t,
+                         rk_aiq_set_again_manual_attr, rk_aiq_get_again_manual_attr),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/abayertnr_uapi/info", abayertnr_uapi_info_t,
+                         NULL, rk_aiq_get_abayertnr_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/abayer2dnr_uapi/info", abayer2dnr_uapi_info_t,
+                         NULL, rk_aiq_get_abayer2dnr_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/aynr_uapi/info", aynr_uapi_info_t,
+                         NULL, rk_aiq_get_aynr_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/acnr_uapi/info", acnr_uapi_info_t,
+                         NULL, rk_aiq_get_acnr_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/asharp_uapi/info", asharp_uapi_info_t,
+                         NULL, rk_aiq_get_asharp_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/again_uapi/info", again_uapi_info_t,
+                         NULL, rk_aiq_get_again_info),
+
+#endif
 
 };
 /***********************END OF CUSTOM AREA**************************/
 
 char *rkaiq_uapi_rpc_response(const char *cmd_path, cJSON *root_js,
                               const char *sub_node) {
-  char *ret_str = NULL;
-  cJSON *ret_json = NULL;
-  cJSON *node_json = NULL;
-  cJSON *node_json_clone = NULL;
-  ret_json = cJSON_CreateArray();
+    char *ret_str = NULL;
+    cJSON *ret_json = NULL;
+    cJSON *node_json = NULL;
+    cJSON *node_json_clone = NULL;
+    ret_json = cJSON_CreateArray();
 
-  if (!root_js || !sub_node) {
-    XCAM_LOG_ERROR("invalid json argument for sysctl!");
-    return NULL;
-  }
+    if (!root_js || !sub_node) {
+        XCAM_LOG_ERROR("invalid json argument for sysctl!");
+        return NULL;
+    }
 
-  if (0 == strcmp(sub_node, "/")) {
-      node_json = root_js;
-  } else {
-      node_json = cJSONUtils_GetPointer(root_js, sub_node);
-  }
+    if (0 == strcmp(sub_node, "/")) {
+        node_json = root_js;
+    } else {
+        node_json = cJSONUtils_GetPointer(root_js, sub_node);
+    }
 
-  node_json_clone = cJSON_Duplicate(node_json, 1);
+    node_json_clone = cJSON_Duplicate(node_json, 1);
 
-  if (root_js) {
-    cJSON *ret_item = cJSON_CreateObject();
-    cJSON_AddStringToObject(ret_item, JSON_PATCH_PATH, cmd_path);
-    cJSON_AddItemToObject(ret_item, JSON_PATCH_VALUE, node_json_clone);
-    cJSON_AddItemToArray(ret_json, ret_item);
-  }
+    if (root_js) {
+        cJSON *ret_item = cJSON_CreateObject();
+        cJSON_AddStringToObject(ret_item, JSON_PATCH_PATH, cmd_path);
+        cJSON_AddItemToObject(ret_item, JSON_PATCH_VALUE, node_json_clone);
+        cJSON_AddItemToArray(ret_json, ret_item);
+    }
 
-  ret_str = cJSON_Print(ret_json);
+    ret_str = cJSON_Print(ret_json);
 
-  if (ret_json)
-    cJSON_Delete(ret_json);
+    if (ret_json)
+        cJSON_Delete(ret_json);
 
-  return ret_str;
+    return ret_str;
 }
 
 int rkaiq_uapi_best_match(const char* cmd_path_str)
 {
-  int i = 0;
-  int list_len = -1;
-  int beset_match = -1;
-  int max_length = -1;
+    int i = 0;
+    int list_len = -1;
+    int beset_match = -1;
+    int max_length = -1;
 
-  list_len = sizeof(rkaiq_uapidesc_list) / sizeof(RkAiqUapiDesc_t);
-  if (list_len <= 0) {
-    return -1;
-  }
-
-  // Find most match uapi
-  for (i = 0; i < list_len; i++) {
-    RkAiqUapiDesc_t *temp_uapi_desc = &rkaiq_uapidesc_list[i];
-    if (strstr(cmd_path_str, temp_uapi_desc->arg_path)) {
-      int path_length = std::string(temp_uapi_desc->arg_path).length();
-      if (path_length < max_length) {
-        continue;
-      }
-      max_length = path_length;
-      beset_match = i;
+    list_len = sizeof(rkaiq_uapidesc_list) / sizeof(RkAiqUapiDesc_t);
+    if (list_len <= 0) {
+        return -1;
     }
-  }
 
-  return beset_match;
+    // Find most match uapi
+    for (i = 0; i < list_len; i++) {
+        RkAiqUapiDesc_t *temp_uapi_desc = &rkaiq_uapidesc_list[i];
+        if (strstr(cmd_path_str, temp_uapi_desc->arg_path)) {
+            int path_length = std::string(temp_uapi_desc->arg_path).length();
+            if (path_length < max_length) {
+                continue;
+            }
+            max_length = path_length;
+            beset_match = i;
+        }
+    }
+
+    return beset_match;
 }
 
 int rkaiq_uapi_unified_ctl(rk_aiq_sys_ctx_t *sys_ctx, const char *js_str,
                            char **ret_str, int op_mode) {
-  RkAiqUapiDesc_t *uapi_desc = NULL;
-  std::string cmd_path_str;
-  std::string final_path = "/";
-  cJSON *cmd_js = NULL;
-  cJSON *ret_js = NULL;
-  cJSON *arr_item = NULL;
-  int list_len = -1;
-  int change_sum = -1;
-  int max_length = -1;
-  int i = 0;
-  *ret_str = NULL;
-
-  list_len = sizeof(rkaiq_uapidesc_list) / sizeof(RkAiqUapiDesc_t);
-  if (list_len <= 0) {
-    return -1;
-  }
-
-  cmd_js = cJSON_Parse(js_str);
-  change_sum = cJSON_GetArraySize(cmd_js);
-
-  if (change_sum <= 0) {
-    XCAM_LOG_ERROR("can't find json patch operation\n");
-    return -1;
-  }
-
-  arr_item = cmd_js->child;
-
-  for (int i = 0; i <= (change_sum - 1); ++i) {
-    if (arr_item) {
-      if (cJSON_GetObjectItem(arr_item, JSON_PATCH_PATH)->valuestring) {
-        cmd_path_str = std::string(
-            cJSON_GetObjectItem(arr_item, JSON_PATCH_PATH)->valuestring);
-        int desc_i = rkaiq_uapi_best_match(cmd_path_str.c_str());
-        if (desc_i >= 0) {
-          uapi_desc = &rkaiq_uapidesc_list[desc_i];
-          if (0 == std::string(uapi_desc->arg_path).compare(cmd_path_str)) {
-            final_path = "/";
-          } else {
-            final_path = cmd_path_str.substr(
-                std::string(uapi_desc->arg_path).length());
-          }
-          cJSON_ReplaceItemInObject(arr_item, JSON_PATCH_PATH,
-                                    cJSON_CreateString(final_path.c_str()));
-        }
-      }
-    }
-    arr_item = arr_item->next;
-  }
-
-  if (!uapi_desc) {
-    XCAM_LOG_ERROR("can't find uapi for %s\n", cmd_path_str.c_str());
-    return -1;
-  }
-
-  uapi_desc->uapi_caller(uapi_desc, get_next_ctx(sys_ctx),
-                         cmd_js, (void **)&ret_js, op_mode);
-
-  if (op_mode == RKAIQUAPI_OPMODE_SET) {
+    RkAiqUapiDesc_t *uapi_desc = NULL;
+    std::string cmd_path_str;
+    std::string final_path = "/";
+    cJSON *cmd_js = NULL;
+    cJSON *ret_js = NULL;
+    cJSON *arr_item = NULL;
+    int list_len = -1;
+    int change_sum = -1;
+    int max_length = -1;
+    int i = 0;
     *ret_str = NULL;
-  } else if (op_mode == RKAIQUAPI_OPMODE_GET) {
-    if (ret_js) {
-      *ret_str = rkaiq_uapi_rpc_response(cmd_path_str.c_str(), ret_js,
-                                         final_path.c_str());
-      cJSON_Delete(ret_js);
+
+    list_len = sizeof(rkaiq_uapidesc_list) / sizeof(RkAiqUapiDesc_t);
+    if (list_len <= 0) {
+        return -1;
     }
-  }
 
-  cJSON_Delete(cmd_js);
+    cmd_js = cJSON_Parse(js_str);
+    change_sum = cJSON_GetArraySize(cmd_js);
 
-  return 0;
+    if (change_sum <= 0) {
+        XCAM_LOG_ERROR("can't find json patch operation\n");
+        return -1;
+    }
+
+    arr_item = cmd_js->child;
+
+    for (int i = 0; i <= (change_sum - 1); ++i) {
+        if (arr_item) {
+            if (cJSON_GetObjectItem(arr_item, JSON_PATCH_PATH)->valuestring) {
+                cmd_path_str = std::string(
+                                   cJSON_GetObjectItem(arr_item, JSON_PATCH_PATH)->valuestring);
+                int desc_i = rkaiq_uapi_best_match(cmd_path_str.c_str());
+                if (desc_i >= 0) {
+                    uapi_desc = &rkaiq_uapidesc_list[desc_i];
+                    if (0 == std::string(uapi_desc->arg_path).compare(cmd_path_str)) {
+                        final_path = "/";
+                    } else {
+                        final_path = cmd_path_str.substr(
+                                         std::string(uapi_desc->arg_path).length());
+                    }
+                    cJSON_ReplaceItemInObject(arr_item, JSON_PATCH_PATH,
+                                              cJSON_CreateString(final_path.c_str()));
+                }
+            }
+        }
+        arr_item = arr_item->next;
+    }
+
+    if (!uapi_desc) {
+        XCAM_LOG_ERROR("can't find uapi for %s\n", cmd_path_str.c_str());
+        return -1;
+    }
+
+    uapi_desc->uapi_caller(uapi_desc, get_next_ctx(sys_ctx),
+                           cmd_js, (void **)&ret_js, op_mode);
+
+    if (op_mode == RKAIQUAPI_OPMODE_SET) {
+        *ret_str = NULL;
+    } else if (op_mode == RKAIQUAPI_OPMODE_GET) {
+        if (ret_js) {
+            *ret_str = rkaiq_uapi_rpc_response(cmd_path_str.c_str(), ret_js,
+                                               final_path.c_str());
+            cJSON_Delete(ret_js);
+        }
+    }
+
+    cJSON_Delete(cmd_js);
+
+    return 0;
 }
 
 #if defined(__GNUC__) && !defined(__clang__)

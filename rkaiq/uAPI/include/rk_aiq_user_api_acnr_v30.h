@@ -36,6 +36,8 @@ rk_aiq_user_api_acnrV30_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, const rk_ai
 XCamReturn
 rk_aiq_user_api_acnrV30_GetStrength(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_cnr_strength_v30_t *pStrength);
 
+XCamReturn
+rk_aiq_user_api_acnrV30_GetInfo(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_cnr_info_v30_t *pInfo);
 
 RKAIQ_END_DECLARE
 

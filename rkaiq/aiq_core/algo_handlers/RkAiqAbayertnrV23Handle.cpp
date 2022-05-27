@@ -152,6 +152,26 @@ XCamReturn RkAiqAbayertnrV23HandleInt::getStrength(rk_aiq_bayertnr_strength_v23_
     return ret;
 }
 
+XCamReturn RkAiqAbayertnrV23HandleInt::getInfo(rk_aiq_bayertnr_info_v23_t *pInfo) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if(pInfo->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_abayertnrV23_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        rk_aiq_uapi_abayertnrV23_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+
 XCamReturn RkAiqAbayertnrV23HandleInt::prepare() {
     ENTER_ANALYZER_FUNCTION();
 

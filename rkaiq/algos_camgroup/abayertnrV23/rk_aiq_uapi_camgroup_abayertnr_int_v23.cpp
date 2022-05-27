@@ -102,3 +102,21 @@ rk_aiq_uapi_camgroup_abayertnrV23_GetStrength(const RkAiqAlgoContext *ctx,
 
     return XCAM_RETURN_NO_ERROR;
 }
+
+
+XCamReturn
+rk_aiq_uapi_camgroup_abayertnrV23_GetInfo(const RkAiqAlgoContext* ctx,
+        rk_aiq_bayertnr_info_v23_t* pInfo) {
+
+    CamGroup_AbayertnrV23_Contex_t *pGroupCtx = (CamGroup_AbayertnrV23_Contex_t *)ctx;
+    Abayertnr_Context_V23_t* pCtx = pGroupCtx->abayertnr_contex_v23;
+
+    pInfo->iso = pCtx->stExpInfo.arIso[pCtx->stExpInfo.hdr_mode];
+
+
+    pInfo->expo_info = pCtx->stExpInfo;
+    return XCAM_RETURN_NO_ERROR;
+}
+
+
+

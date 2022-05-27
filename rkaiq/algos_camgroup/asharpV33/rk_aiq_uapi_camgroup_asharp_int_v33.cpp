@@ -107,3 +107,17 @@ rk_aiq_uapi_camgroup_asharpV33_GetStrength(const RkAiqAlgoContext *ctx,
 
     return XCAM_RETURN_NO_ERROR;
 }
+
+XCamReturn rk_aiq_uapi_camgroup_asharpV33_GetInfo(const RkAiqAlgoContext* ctx,
+        rk_aiq_sharp_info_v33_t* pInfo) {
+
+    CamGroup_AsharpV33_Contex_t *pGroupCtx = (CamGroup_AsharpV33_Contex_t *)ctx;
+    Asharp_Context_V33_t* pCtx = pGroupCtx->asharp_contex_v33;
+
+    pInfo->iso = pAsharpCtx->stExpInfo.arIso[pAsharpCtx->stExpInfo.hdr_mode];
+
+
+    pInfo->expo_info = pAsharpCtx->stExpInfo;
+    return XCAM_RETURN_NO_ERROR;
+}
+

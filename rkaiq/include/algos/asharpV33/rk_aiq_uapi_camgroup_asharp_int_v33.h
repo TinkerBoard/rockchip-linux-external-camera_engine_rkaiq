@@ -42,4 +42,8 @@ XCamReturn rk_aiq_uapi_camgroup_asharpV33_SetStrength(const RkAiqAlgoContext* ct
 
 XCamReturn rk_aiq_uapi_camgroup_asharpV33_GetStrength(const RkAiqAlgoContext* ctx, rk_aiq_sharp_strength_v33_t* pStrength);
 
+
+XCamReturn rk_aiq_uapi_camgroup_asharpV33_GetInfo(const RkAiqAlgoContext* ctx,
+        rk_aiq_sharp_info_v33_t* pInfo);
+
 #endif

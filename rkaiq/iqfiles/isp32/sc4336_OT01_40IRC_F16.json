@@ -1136,7 +1136,7 @@
 								}
 							},
 							"ALut3D":	{
-								"damp_en":	1,
+								"damp_en":	0,
 								"lutAll":	[{
 										"name":	"D65",
 										"awbGain":	[1.65055, 1.51472],

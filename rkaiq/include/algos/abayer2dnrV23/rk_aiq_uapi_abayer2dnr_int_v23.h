@@ -47,6 +47,9 @@ rk_aiq_uapi_abayer2dnrV23_GetStrength(const RkAiqAlgoContext *ctx,
                                       rk_aiq_bayer2dnr_strength_v23_t* pStrength);
 
 
+XCamReturn
+rk_aiq_uapi_abayer2dnrV23_GetInfo(const RkAiqAlgoContext* ctx,
+                                  rk_aiq_bayer2dnr_info_v23_t* pInfo);
 
 
 

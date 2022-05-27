@@ -98,6 +98,19 @@ rk_aiq_uapi_aynrV22_GetLumaSFStrength(const RkAiqAlgoContext *ctx,
     return XCAM_RETURN_NO_ERROR;
 }
 
+XCamReturn
+rk_aiq_uapi_aynrV22_GetInfo(const RkAiqAlgoContext* ctx,
+                            rk_aiq_ynr_info_v22_t* pInfo) {
+
+    Aynr_Context_V22_t* pCtx = (Aynr_Context_V22_t*)ctx;
+
+    pInfo->iso = pCtx->stExpInfo.arIso[pCtx->stExpInfo.hdr_mode];
+
+
+    pInfo->expo_info = pCtx->stExpInfo;
+    return XCAM_RETURN_NO_ERROR;
+}
+
 
 #endif
 

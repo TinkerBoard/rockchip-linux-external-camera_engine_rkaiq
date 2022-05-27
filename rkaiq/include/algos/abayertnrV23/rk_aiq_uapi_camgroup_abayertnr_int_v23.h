@@ -29,4 +29,8 @@ XCamReturn
 rk_aiq_uapi_camgroup_abayertnrV23_GetStrength(const RkAiqAlgoContext *ctx,
         rk_aiq_bayertnr_strength_v23_t* pStrength);
 
+XCamReturn
+rk_aiq_uapi_camgroup_abayertnrV23_GetInfo(const RkAiqAlgoContext* ctx,
+        rk_aiq_bayertnr_info_v23_t* pInfo);
+
 #endif

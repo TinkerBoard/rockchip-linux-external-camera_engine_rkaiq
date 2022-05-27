@@ -36,7 +36,9 @@ rk_aiq_user_api2_abayer2dnrV23_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, cons
 XCamReturn
 rk_aiq_user_api2_abayer2dnrV23_GetStrength(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_bayer2dnr_strength_v23_t *pStrength);
 
-
+XCamReturn
+rk_aiq_user_api2_abayer2dnrV23_GetInfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                       rk_aiq_bayer2dnr_info_v23_t* pInfo) ;
 
 
 

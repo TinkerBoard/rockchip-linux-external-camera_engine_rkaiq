@@ -74,6 +74,8 @@ Aynr_result_V22_t ynr_select_params_by_ISO_V22(RK_YNR_Params_V22_t *pParams, RK_
     int highIso = 50;
     int minIso = 50;
     int maxIso = 50;
+    int isoLevelLow = 0;
+    int isoLevelHig = 0;
 
     for(int i = 0; i < RK_YNR_V22_MAX_ISO_NUM - 1; i++) {
 #ifndef RK_SIMULATOR_HW
@@ -87,6 +89,8 @@ Aynr_result_V22_t ynr_select_params_by_ISO_V22(RK_YNR_Params_V22_t *pParams, RK_
             ratio = (iso - lowIso ) / (float)(highIso - lowIso);
             pParamLo = &pParams->arYnrParamsISO[i];
             pParamHi = &pParams->arYnrParamsISO[i + 1];
+            isoLevelLow = i;
+            isoLevelHig = i + 1;
             break;
         }
     }
@@ -103,18 +107,24 @@ Aynr_result_V22_t ynr_select_params_by_ISO_V22(RK_YNR_Params_V22_t *pParams, RK_
         ratio = 0;
         pParamLo = &pParams->arYnrParamsISO[0];
         pParamHi = &pParams->arYnrParamsISO[1];
+        isoLevelLow = 0;
+        isoLevelHig = 1;
     }
 
     if(iso > maxIso) {
         ratio = 1;
-        pParamLo = &pParams->arYnrParamsISO[RK_YNR_V22_MAX_ISO_NUM - 1];
-        pParamHi = &pParams->arYnrParamsISO[RK_YNR_V22_MAX_ISO_NUM];
+        pParamLo = &pParams->arYnrParamsISO[RK_YNR_V22_MAX_ISO_NUM - 2];
+        pParamHi = &pParams->arYnrParamsISO[RK_YNR_V22_MAX_ISO_NUM - 1];
+        isoLevelLow = RK_YNR_V22_MAX_ISO_NUM - 2;
+        isoLevelHig = RK_YNR_V22_MAX_ISO_NUM - 1;
     }
 
 
     LOGD_ANR("oyyf %s:%d  iso:%d low:%d hight:%d ratio:%f iso_index:%d \n", __FUNCTION__, __LINE__,
              iso, lowIso, highIso, ratio, cur_iso_idx);
 
+    pExpInfo->isoLevelLow = isoLevelLow;
+    pExpInfo->isoLevelHig = isoLevelHig;
     //global gain local gain cfg
     pSelect->ynr_global_gain_alpha = ratio * (pParamHi->ynr_global_gain_alpha - pParamLo->ynr_global_gain_alpha) + pParamLo->ynr_global_gain_alpha;
     pSelect->ynr_global_gain       = ratio * (pParamHi->ynr_global_gain - pParamLo->ynr_global_gain) + pParamLo->ynr_global_gain;

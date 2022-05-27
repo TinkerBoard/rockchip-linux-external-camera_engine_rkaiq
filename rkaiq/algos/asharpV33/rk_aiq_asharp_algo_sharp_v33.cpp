@@ -108,6 +108,8 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(RK_SHARP_Params_V33_t* pParam
     LOGD_ASHARP("%s:%d iso:%d gainlow:%d gian_high:%d\n", __FUNCTION__, __LINE__, iso, gain_high,
                 gain_high);
 
+    pExpInfo->isoLevelLow = gain_low;
+    pExpInfo->isoLevelHig = gain_high;
     pSelect->enable = pParams->enable;
 
     pSelect->Center_Mode    = pParams->Center_Mode;

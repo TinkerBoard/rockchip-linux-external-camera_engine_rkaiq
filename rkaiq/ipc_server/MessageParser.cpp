@@ -163,8 +163,8 @@ void MessageParser::process() {
     end_index = 0;
 
     // Check if a new packet, if so, copy it and erase all ahead data
-    old_pkt = findValidSection2(&raw_stream[0], raw_stream.size(), &start_index,
-                                &end_index);
+    old_pkt = findValidSection2(raw_stream.size() > 0 ? &raw_stream[0] : NULL,
+                                raw_stream.size(), &start_index, &end_index);
     // if found full packet
     if (old_pkt && mCallBackFunc) {
       mCallBackFunc(pri, old_pkt, RKAIQ_MESSAGE_OLD);

@@ -37,6 +37,8 @@ public:
         mNewStrength.percent = 1.0;
         memset(&mCurAtt, 0x00, sizeof(mCurAtt));
         memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+        memset(&mCurInfo, 0x00, sizeof(mCurInfo));
+        memset(&mNewInfo, 0x00, sizeof(mNewInfo));
     };
     virtual ~RkAiqAynrV22HandleInt() {
         RkAiqHandle::deInit();
@@ -53,6 +55,8 @@ public:
     XCamReturn setStrength(const rk_aiq_ynr_strength_v22_t* pStrength);
     XCamReturn getStrength(rk_aiq_ynr_strength_v22_t* pStrength);
 
+    XCamReturn getInfo(rk_aiq_ynr_info_v22_t* pInfo);
+
 protected:
     virtual void init();
     virtual void deInit() {
@@ -66,6 +70,9 @@ private:
     rk_aiq_ynr_strength_v22_t mCurStrength;
     rk_aiq_ynr_strength_v22_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
+    rk_aiq_ynr_info_v22_t mCurInfo;
+    rk_aiq_ynr_info_v22_t mNewInfo;
+    mutable std::atomic<bool> updateInfo;
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAynrV22HandleInt);

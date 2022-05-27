@@ -109,6 +109,8 @@ AcnrV30_result_t cnr_select_params_by_ISO_V30(RK_CNR_Params_V30_t *pParams, RK_C
              __FUNCTION__, __LINE__,
              iso, isoGainHigh, isoGainLow);
 
+    pExpInfo->isoLevelLow = isoIndexLow;
+    pExpInfo->isoLevelHig = isoIndexHigh;
     RK_CNR_Params_V30_Select_t *pLowISO = &pParams->CnrParamsISO[isoIndexLow];
     RK_CNR_Params_V30_Select_t *pHighISO = &pParams->CnrParamsISO[isoIndexHigh];
 

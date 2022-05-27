@@ -74,15 +74,7 @@ typedef enum Abayertnr_ParamMode_V23_e {
     ABAYERTNRV23_PARAM_MODE_MAX                                      /**< max */
 } Abayertnr_ParamMode_V23_t;
 
-typedef struct Abayertnr_ExpInfo_V23_s {
-    int hdr_mode;
-    float arTime[3];
-    float arAGain[3];
-    float arDGain[3];
-    int   arIso[3];
-    int   snr_mode;
-    float blc_ob_predgain;
-} Abayertnr_ExpInfo_V23_t;
+
 
 #if 0
 typedef struct RK_Bayertnr_Params_V23_Select_s
@@ -201,6 +193,7 @@ typedef struct rk_aiq_bayertnr_strength_v23_s {
     float percent;
     bool strength_enable;
 } rk_aiq_bayertnr_strength_v23_t;
+
 
 
 //RKAIQ_END_DECLARE

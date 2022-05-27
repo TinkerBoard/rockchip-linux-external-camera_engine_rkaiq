@@ -838,7 +838,7 @@ public:
     virtual XCamReturn updateConfig(bool needSync);
     XCamReturn setAttrib(const rk_aiq_gain_attrib_v2_t *att);
     XCamReturn getAttrib(rk_aiq_gain_attrib_v2_t *att);
-
+    XCamReturn getInfo(rk_aiq_gain_info_v2_t *pInfo);
 private:
     // TODO
     rk_aiq_gain_attrib_v2_t mCurAtt;
@@ -874,7 +874,7 @@ public:
     XCamReturn getAttrib(rk_aiq_ynr_attrib_v22_t *att);
     XCamReturn setStrength(const rk_aiq_ynr_strength_v22_t *pStrength);
     XCamReturn getStrength(rk_aiq_ynr_strength_v22_t *pStrength);
-
+    XCamReturn getInfo(rk_aiq_ynr_info_v22_t *pInfo);
 protected:
 
 private:
@@ -913,6 +913,7 @@ public:
     XCamReturn getAttrib(rk_aiq_cnr_attrib_v30_t *att);
     XCamReturn setStrength(const rk_aiq_cnr_strength_v30_t *pStrength);
     XCamReturn getStrength(rk_aiq_cnr_strength_v30_t *pStrength);
+    XCamReturn getInfo(rk_aiq_cnr_info_v30_t *pInfo);
 protected:
 
 private:
@@ -953,6 +954,7 @@ public:
     XCamReturn getAttrib(rk_aiq_bayer2dnr_attrib_v23_t *att);
     XCamReturn setStrength(const rk_aiq_bayer2dnr_strength_v23_t *pStrength);
     XCamReturn getStrength(rk_aiq_bayer2dnr_strength_v23_t *pStrength);
+    XCamReturn getInfo(rk_aiq_bayer2dnr_info_v23_t *pInfo);
 protected:
 
 private:
@@ -1021,6 +1023,7 @@ public:
     XCamReturn getAttrib(rk_aiq_bayertnr_attrib_v23_t *att);
     XCamReturn setStrength(const rk_aiq_bayertnr_strength_v23_t *pStrength);
     XCamReturn getStrength(rk_aiq_bayertnr_strength_v23_t *pStrength);
+    XCamReturn getInfo(rk_aiq_bayertnr_info_v23_t *pInfo);
 
 protected:
 
@@ -1060,6 +1063,7 @@ public:
     XCamReturn getAttrib(rk_aiq_sharp_attrib_v33_t *att);
     XCamReturn setStrength(const rk_aiq_sharp_strength_v33_t *pStrength);
     XCamReturn getStrength(rk_aiq_sharp_strength_v33_t *pStrength);
+    XCamReturn getInfo(rk_aiq_sharp_info_v33_t *pStrength);
 
 protected:
 

@@ -31,6 +31,9 @@ rk_aiq_uapi_aynrV22_GetLumaSFStrength(const RkAiqAlgoContext *ctx,
                                       rk_aiq_ynr_strength_v22_t* pStrength);
 
 
+XCamReturn
+rk_aiq_uapi_aynrV22_GetInfo(const RkAiqAlgoContext* ctx,
+                            rk_aiq_ynr_info_v22_t* pInfo);
 
 
 

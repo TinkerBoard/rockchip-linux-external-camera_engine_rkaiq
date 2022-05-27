@@ -63,6 +63,9 @@ Abayer2dnr_result_V23_t bayer2dnr_select_params_by_ISO_V23(RK_Bayer2dnr_Params_V
         }
     }
 
+    pExpInfo->isoLevelLow = isoLevelLow;
+    pExpInfo->isoLevelHig = isoLevelHig;
+
     RK_Bayer2dnrV23_Params_Select_t *pLowISO = &pParams->Bayer2dnrParamsISO[isoLevelLow];
     RK_Bayer2dnrV23_Params_Select_t *pHighISO = &pParams->Bayer2dnrParamsISO[isoLevelHig];
 

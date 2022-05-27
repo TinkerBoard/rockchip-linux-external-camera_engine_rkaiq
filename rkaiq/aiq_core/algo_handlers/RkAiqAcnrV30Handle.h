@@ -37,6 +37,8 @@ public:
         mNewStrength.percent = 1.0;
         memset(&mCurAtt, 0x00, sizeof(mCurAtt));
         memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+        memset(&mCurInfo, 0x00, sizeof(mCurInfo));
+        memset(&mNewInfo, 0x00, sizeof(mNewInfo));
     };
     virtual ~RkAiqAcnrV30HandleInt() {
         RkAiqHandle::deInit();
@@ -52,6 +54,7 @@ public:
     XCamReturn getAttrib(rk_aiq_cnr_attrib_v30_t* att);
     XCamReturn setStrength(const rk_aiq_cnr_strength_v30_t* pStrength);
     XCamReturn getStrength(rk_aiq_cnr_strength_v30_t* pStrength);
+    XCamReturn getInfo(rk_aiq_cnr_info_v30_t* pInfo);
 
 protected:
     virtual void init();
@@ -66,6 +69,9 @@ private:
     rk_aiq_cnr_strength_v30_t mCurStrength;
     rk_aiq_cnr_strength_v30_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
+    rk_aiq_cnr_info_v30_t mCurInfo;
+    rk_aiq_cnr_info_v30_t mNewInfo;
+    mutable std::atomic<bool> updateInfo;
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAcnrV30HandleInt);

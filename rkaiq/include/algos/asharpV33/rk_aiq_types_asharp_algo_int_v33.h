@@ -92,17 +92,7 @@ typedef enum Asharp_ParamMode_V33_e {
     ASHARP_V33_PARAM_MODE_MAX          /**< max */
 } Asharp_ParamMode_V33_t;
 
-typedef struct Asharp_ExpInfo_V33_s {
-    int hdr_mode;
-    float arTime[3];
-    float arAGain[3];
-    float arDGain[3];
-    int arIso[3];
-    int snr_mode;
-    int rawWidth;
-    int rawHeight;
-    float blc_ob_predgain;
-} Asharp_ExpInfo_V33_t;
+
 
 #if 0
 // sharp params related to ISO
@@ -224,5 +214,8 @@ typedef struct rk_aiq_sharp_strength_v33_s {
     float percent;
     bool strength_enable;
 } rk_aiq_sharp_strength_v33_t;
+
+
+
 
 #endif

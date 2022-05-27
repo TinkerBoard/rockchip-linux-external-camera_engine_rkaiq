@@ -118,17 +118,7 @@ typedef enum AcnrV30_ParamMode_e {
     ACNRV30_PARAM_MODE_MAX                                      /**< max */
 } AcnrV30_ParamMode_t;
 
-typedef struct AcnrV30_ExpInfo_s {
-    int hdr_mode;
-    float arTime[3];
-    float arAGain[3];
-    float arDGain[3];
-    int   arIso[3];
-    int   snr_mode;
-    int rawWidth;
-    int rawHeight;
-    float blc_ob_predgain;
-} AcnrV30_ExpInfo_t;
+
 
 
 #if 0
@@ -236,6 +226,7 @@ typedef struct rk_aiq_cnr_strength_v30_s {
     float percent;
     bool strength_enable;
 } rk_aiq_cnr_strength_v30_t;
+
 
 
 //calibdb

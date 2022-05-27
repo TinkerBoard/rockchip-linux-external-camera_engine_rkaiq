@@ -163,5 +163,24 @@ XCamReturn RkAiqCamGroupAynrV22HandleInt::getStrength(rk_aiq_ynr_strength_v22_t 
 }
 #endif
 
+XCamReturn RkAiqCamGroupAynrV22HandleInt::getInfo(rk_aiq_ynr_info_v22_t *pInfo) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if(pInfo->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.unlock();
+        rk_aiq_uapi_aynrV22_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        rk_aiq_uapi_aynrV22_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
 #endif
 }  // namespace RkCam

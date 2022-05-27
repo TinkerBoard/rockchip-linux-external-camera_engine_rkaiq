@@ -30,4 +30,9 @@ rk_aiq_uapi_camgroup_acnrV30_GetChromaSFStrength(const RkAiqAlgoContext *ctx,
         rk_aiq_cnr_strength_v30_t *pStrength);
 
 
+XCamReturn
+rk_aiq_uapi_camgroup_acnrV30_GetInfo(const RkAiqAlgoContext* ctx,
+                                     rk_aiq_cnr_info_v30_t* pInfo);
+
+
 #endif

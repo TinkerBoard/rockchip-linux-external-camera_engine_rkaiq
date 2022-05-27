@@ -161,6 +161,22 @@ Again_result_V2_t gain_select_params_by_ISO_V2(RK_GAIN_Params_V2_t *pParams, RK_
         }
     }
 
+    if(isoGain > isoGainStd[RK_GAIN_V2_MAX_ISO_NUM - 1]) {
+        isoGainLow = isoGainStd[RK_GAIN_V2_MAX_ISO_NUM - 2];
+        isoGainHig = isoGainStd[RK_GAIN_V2_MAX_ISO_NUM - 1];
+        isoLevelLow = RK_GAIN_V2_MAX_ISO_NUM - 2;
+        isoLevelHig = RK_GAIN_V2_MAX_ISO_NUM - 1;
+    }
+
+    if(isoGain < isoGainStd[1]) {
+        isoGainLow = isoGainStd[0];
+        isoGainHig = isoGainStd[1];
+        isoLevelLow = 0;
+        isoLevelHig = 1;
+    }
+
+    pExpInfo->isoLevelLow = isoLevelLow;
+    pExpInfo->isoLevelHig = isoLevelHig;
     pSelect->hdrgain_ctrl_enable = pParams->hdrgain_ctrl_enable;
 
     pSelect->hdr_gain_scale_s = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->iso_params[isoLevelLow].hdr_gain_scale_s

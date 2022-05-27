@@ -27,17 +27,18 @@ typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 RKAIQ_BEGIN_DECLARE
 
 XCamReturn rk_aiq_user_api2_asharpV33_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                const rk_aiq_sharp_attrib_v33_t* attr);
+        const rk_aiq_sharp_attrib_v33_t* attr);
 
 XCamReturn rk_aiq_user_api2_asharpV33_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                rk_aiq_sharp_attrib_v33_t* attr);
+        rk_aiq_sharp_attrib_v33_t* attr);
 
 XCamReturn rk_aiq_user_api2_asharpV33_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                  const rk_aiq_sharp_strength_v33_t* pStrength);
+        const rk_aiq_sharp_strength_v33_t* pStrength);
 
 XCamReturn rk_aiq_user_api2_asharpV33_GetStrength(const rk_aiq_sys_ctx_t* sys_ctx,
-                                                  rk_aiq_sharp_strength_v33_t* pStrength);
-
+        rk_aiq_sharp_strength_v33_t* pStrength);
+XCamReturn rk_aiq_user_api2_asharpV33_GetInfo(const rk_aiq_sys_ctx_t* sys_ctx,
+        rk_aiq_sharp_info_v33_t* pInfo);
 RKAIQ_END_DECLARE
 
 #endif

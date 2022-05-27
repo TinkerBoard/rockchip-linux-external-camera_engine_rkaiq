@@ -84,6 +84,8 @@ Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(RK_Bayertnr_Params_V23_
              __FUNCTION__, __LINE__,
              isoGain, isoGainHig, isoGainLow);
 
+    pExpInfo->isoLevelLow = isoLevelLow;
+    pExpInfo->isoLevelHig = isoLevelHig;
     RK_Bayertnr_Params_V23_Select_t* pLowISO = &pParams->bayertnrParamISO[isoLevelLow];
     RK_Bayertnr_Params_V23_Select_t* pHighISO = &pParams->bayertnrParamISO[isoLevelHig];
 

@@ -28,6 +28,7 @@ XCamReturn rk_aiq_uapi_asharpV33_SetAttrib(RkAiqAlgoContext* ctx,
 
     pAsharpCtx->eMode = attr->eMode;
 
+    LOGE_ASHARP("mode:%d \n", attr->eMode);
     if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_AUTO) {
         pAsharpCtx->stAuto = attr->stAuto;
     } else if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_MANUAL) {
@@ -106,3 +107,18 @@ XCamReturn rk_aiq_uapi_asharpV33_GetStrength(const RkAiqAlgoContext* ctx,
 
     return XCAM_RETURN_NO_ERROR;
 }
+
+
+XCamReturn rk_aiq_uapi_asharpV33_GetInfo(const RkAiqAlgoContext* ctx,
+        rk_aiq_sharp_info_v33_t* pInfo) {
+
+    Asharp_Context_V33_t* pAsharpCtx = (Asharp_Context_V33_t*)ctx;
+
+    pInfo->iso = pAsharpCtx->stExpInfo.arIso[pAsharpCtx->stExpInfo.hdr_mode];
+
+
+    pInfo->expo_info = pAsharpCtx->stExpInfo;
+    return XCAM_RETURN_NO_ERROR;
+}
+
+
