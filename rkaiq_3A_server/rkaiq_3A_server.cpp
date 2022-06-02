@@ -285,23 +285,22 @@ void *engine_thread(void *arg)
     }
 
     init_engine(media_info);
+    subscrible_stream_event(media_info, isp_fd, true);
 
     for (;;) {
-        subscrible_stream_event(media_info, isp_fd, true);
+        start_engine(media_info);
         DBG("%s: wait stream start event...\n", media_info->mdev_path);
         wait_stream_event(isp_fd, CIFISP_V4L2_EVENT_STREAM_START, -1);
         DBG("%s: wait stream start event success ...\n", media_info->mdev_path);
-
-        start_engine(media_info);
 
         DBG("%s: wait stream stop event...\n", media_info->mdev_path);
         wait_stream_event(isp_fd, CIFISP_V4L2_EVENT_STREAM_STOP, -1);
         DBG("%s: wait stream stop event success ...\n", media_info->mdev_path);
 
         stop_engine(media_info);
-        subscrible_stream_event(media_info, isp_fd, false);
     }
 
+    subscrible_stream_event(media_info, isp_fd, false);
     deinit_engine(media_info);
     close(isp_fd);
 
