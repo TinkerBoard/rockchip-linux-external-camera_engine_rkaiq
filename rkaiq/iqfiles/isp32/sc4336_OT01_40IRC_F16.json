@@ -6712,7 +6712,7 @@
 						"cac_v11":	{
 							"SettingPara":	{
 								"enable":	1,
-								"psf_path":	"cac_map_hw_2560x1440.bin",
+								"psf_path":	"CAC_sc4336_OT01_40IRC_F16/cac_map_hw_2560x1440.bin",
 								"psf_shift_bits":	2,
 								"center_en":	0,
 								"center_x":	0,
