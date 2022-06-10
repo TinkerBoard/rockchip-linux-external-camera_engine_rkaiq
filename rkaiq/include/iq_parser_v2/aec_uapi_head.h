@@ -30,21 +30,37 @@
 #define ISP2_HIST_BINNUM_MAX  ((RAWHIST_BIN_N_MAX > SIHIST_BIN_N_MAX) ? RAWHIST_BIN_N_MAX : SIHIST_BIN_N_MAX)
 
 typedef struct Aec_AeRange_uapi_s {
+    // M4_NUMBER_DESC("Min", "f32", M4_RANGE(0,65535), "0.003", M4_DIGIT(6),M4_HIDE(0))
     float Min;
+    // M4_NUMBER_DESC("Max", "f32", M4_RANGE(0,65535), "0.003", M4_DIGIT(6),M4_HIDE(0))
     float Max;
 } Aec_AeRange_uapi_t;
 
 typedef struct Aec_LinAeRange_uapi_s {
+    // M4_STRUCT_DESC("TimeRange", "normal_ui_style")
     Aec_AeRange_uapi_t stExpTimeRange;
+
+    // M4_STRUCT_DESC("GainRange", "normal_ui_style")
     Aec_AeRange_uapi_t stGainRange;
+
+    // M4_STRUCT_DESC("IspDGainRange", "normal_ui_style",M4_HIDE(1))
     Aec_AeRange_uapi_t stIspDGainRange;
+
+    // M4_STRUCT_DESC("PIrisRange", "normal_ui_style",M4_HIDE(1))
     Aec_AeRange_uapi_t stPIrisRange;
 } Aec_LinAeRange_uapi_t;
 
 typedef struct Aec_HdrAeRange_uapi_s {
+    // M4_STRUCT_LIST_DESC("TimeRange",  M4_SIZE(1,3), "normal_ui_style")
     Aec_AeRange_uapi_t stExpTimeRange[3];
+
+    // M4_STRUCT_LIST_DESC("GainRange", M4_SIZE(1,3), "normal_ui_style")
     Aec_AeRange_uapi_t stGainRange[3];
+
+    // M4_STRUCT_LIST_DESC("IspDGainRange",  M4_SIZE(1,3), "normal_ui_style",M4_HIDE(1))
     Aec_AeRange_uapi_t stIspDGainRange[3];
+
+    // M4_STRUCT_DESC("PIrisRange", "normal_ui_style",M4_HIDE(1))
     Aec_AeRange_uapi_t stPIrisRange;
 } Aec_HdrAeRange_uapi_t;
 
@@ -129,32 +145,62 @@ typedef struct __uapi_expsw_attr_uapi_s {
     Aec_uapi_advanced_attr_uapi_t stAdvanced;
 } uapi_expsw_attr_t;
 
-typedef struct uapi_expinfo {
-    // M4_BOOL_DESC("IsConverged", "0",M4_HIDE(1))
-    bool              IsConverged;
-    // M4_BOOL_DESC("IsExpMax", "0",M4_HIDE(1))
-    bool              IsExpMax;
+typedef struct uapi_linaeinfo_s {
     // M4_NUMBER_DESC("LumaDeviation", "f32", M4_RANGE(-256,256), "0.0", M4_DIGIT(3),M4_HIDE(1))
     float             LumaDeviation;
-    // M4_ARRAY_DESC("HdrLumaDeviation", "f32", M4_SIZE(1,3), M4_RANGE(-256,256), "0.0", M4_DIGIT(3), M4_DYNAMIC(0), M4_HIDE(1))
-    float             HdrLumaDeviation[3];
+
     // M4_NUMBER_DESC("MeanLuma", "f32", M4_RANGE(0,256), "0.0", M4_DIGIT(2))
     float             MeanLuma;
-    // M4_ARRAY_DESC("HdrMeanLuma", "f32", M4_SIZE(1,3), M4_RANGE(0,256), "0.0", M4_DIGIT(2), M4_DYNAMIC(0))
-    float             HdrMeanLuma[3];
-    // M4_STRUCT_DESC("CurExpInfo", "normal_ui_style");
-    RKAiqAecExpInfo_t CurExpInfo;
 
-    // M4_NUMBER_DESC("Piris", "u16", M4_RANGE(0,1024), "0", M4_DIGIT(0),M4_HIDE(1))
-    unsigned short    Piris;
+    // M4_STRUCT_DESC("LinAeRange", "normal_ui_style")
+    Aec_LinAeRange_uapi_t LinAeRange; // result LinAerange
 
-    // M4_NUMBER_DESC("LinePeriodsPerField", "f32", M4_RANGE(0,65535), "0", M4_DIGIT(2),M4_HIDE(1))
+    // M4_STRUCT_DESC("LinearExp", "normal_ui_style")
+    RkAiqExpRealParam_t LinearExp;
+
+} uapi_linaeinfo_t;
+
+typedef struct uapi_hdraeinfo_s {
+    // M4_ARRAY_DESC("HdrLumaDeviation", "f32", M4_SIZE(1,3), M4_RANGE(-256,256), "0.0", M4_DIGIT(3), M4_DYNAMIC(0), M4_HIDE(1))
+    float             HdrLumaDeviation[3];
+
+    // M4_NUMBER_DESC("Frm0Luma", "f32", M4_RANGE(0,256), "0.0", M4_DIGIT(2))
+    float             Frm0Luma;
+
+    // M4_NUMBER_DESC("Frm1Luma", "f32", M4_RANGE(0,256), "0.0", M4_DIGIT(2))
+    float             Frm1Luma;
+
+    // M4_NUMBER_DESC("Frm2Luma", "f32", M4_RANGE(0,256), "0.0", M4_DIGIT(2))
+    float             Frm2Luma;
+
+    // M4_STRUCT_DESC("HdrAeRange", "normal_ui_style")
+    Aec_HdrAeRange_uapi_t HdrAeRange; // result HdrAerange
+
+    // M4_STRUCT_LIST_DESC("HdrExp",  M4_SIZE(1,3), "normal_ui_style")
+    RkAiqExpRealParam_t HdrExp[3];
+} uapi_hdraeinfo_t;
+
+
+typedef struct uapi_expinfo_s {
+    // M4_BOOL_DESC("IsConverged", "0")
+    bool              IsConverged;
+
+    // M4_BOOL_DESC("IsExpMax", "0")
+    bool              IsExpMax;
+
+    // M4_STRUCT_DESC("LinAeInfo", "normal_ui_style")
+    uapi_linaeinfo_t  LinAeInfo;
+
+    // M4_STRUCT_DESC("HdrAeInfo", "normal_ui_style")
+    uapi_hdraeinfo_t  HdrAeInfo;
+
+    // M4_NUMBER_DESC("LinePeriodsPerField", "f32", M4_RANGE(0,65535), "0", M4_DIGIT(2))
     float             LinePeriodsPerField;
 
-    // M4_NUMBER_DESC("PixelPeriodsPerLine", "f32", M4_RANGE(0,65535), "0", M4_DIGIT(2),M4_HIDE(1))
+    // M4_NUMBER_DESC("PixelPeriodsPerLine", "f32", M4_RANGE(0,65535), "0", M4_DIGIT(2))
     float             PixelPeriodsPerLine;
 
-    // M4_NUMBER_DESC("PixelClockFreqMHZ", "f32", M4_RANGE(0,4096), "0", M4_DIGIT(2),M4_HIDE(1))
+    // M4_NUMBER_DESC("PixelClockFreqMHZ", "f32", M4_RANGE(0,4096), "0", M4_DIGIT(2))
     float             PixelClockFreqMHZ;
 
     // M4_NUMBER_DESC("GlobalEnvLv", "f32", M4_RANGE(0,65535), "0", M4_DIGIT(2),M4_HIDE(1))

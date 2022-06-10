@@ -58,7 +58,7 @@ typedef struct Blc_ob_dataV32_s {
     // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
     float* ISO;
     int ISO_len;
-    // M4_ARRAY_DESC("isp_ob_Offset", "f32", M4_SIZE(1,100), M4_RANGE(0,511), "0",M4_DIGIT(2), M4_DYNAMIC(1))
+    // M4_ARRAY_DESC("isp_ob_Offset", "f32", M4_SIZE(1,100), M4_RANGE(0,511), "0",M4_DIGIT(4), M4_DYNAMIC(1))
     float* isp_ob_Offset;
     int isp_ob_Offset_len;
     // M4_ARRAY_DESC("isp_ob_preDgain", "f32", M4_SIZE(1,100), M4_RANGE(0,256), "1",M4_DIGIT(2), M4_DYNAMIC(1))

@@ -67,6 +67,106 @@ AblcResult_V32_t AblcOBJsonParamInit_V32(AblcOBParams_V32_t* pParams,
     return res;
 }
 
+AblcResult_V32_t AblcRefJsonParamInit_V32(AblcRefParams_V32_t* pBlcRefPara, CalibDbV2_Bayer2dnrV23_Calib_t* stBayer2dnrCalib) {
+    LOG1_ABLC("%s:enter!\n", __FUNCTION__);
+
+    AblcResult_V32_t ret = ABLC_V32_RET_SUCCESS;
+    // initial checks
+    DCT_ASSERT(pBlcRefPara != NULL);
+    DCT_ASSERT(stBayer2dnrCalib != NULL);
+
+    if (pBlcRefPara->len != stBayer2dnrCalib->Blc_Ref_len) {
+
+        if (pBlcRefPara->iso) free(pBlcRefPara->iso);
+        if (pBlcRefPara->Reference_r) free(pBlcRefPara->Reference_r);
+        if (pBlcRefPara->Reference_gr) free(pBlcRefPara->Reference_gr);
+        if (pBlcRefPara->Reference_gb) free(pBlcRefPara->Reference_gb);
+        if (pBlcRefPara->Reference_b) free(pBlcRefPara->Reference_b);
+
+        pBlcRefPara->len = stBayer2dnrCalib->Blc_Ref_len;
+        pBlcRefPara->iso = (float*)malloc(sizeof(float) * (stBayer2dnrCalib->Blc_Ref_len));
+        pBlcRefPara->Reference_r   =
+            (float*)malloc(sizeof(float) * (stBayer2dnrCalib->Blc_Ref_len));
+        pBlcRefPara->Reference_gr   =
+            (float*)malloc(sizeof(float) * (stBayer2dnrCalib->Blc_Ref_len));
+        pBlcRefPara->Reference_gb   =
+            (float*)malloc(sizeof(float) * (stBayer2dnrCalib->Blc_Ref_len));
+        pBlcRefPara->Reference_b   =
+            (float*)malloc(sizeof(float) * (stBayer2dnrCalib->Blc_Ref_len));
+    }
+
+    for (int j = 0; j < pBlcRefPara->len; j++) {
+        pBlcRefPara->iso[j] = stBayer2dnrCalib->Blc_Ref[j].iso;
+        pBlcRefPara->Reference_r[j] = stBayer2dnrCalib->Blc_Ref[j].Reference_r;
+        pBlcRefPara->Reference_gr[j] = stBayer2dnrCalib->Blc_Ref[j].Reference_gr;
+        pBlcRefPara->Reference_gb[j] = stBayer2dnrCalib->Blc_Ref[j].Reference_gb;
+        pBlcRefPara->Reference_b[j] = stBayer2dnrCalib->Blc_Ref[j].Reference_b;
+    }
+    LOGD_ABLC("%s(%d): blc ref init done \n", __FUNCTION__, __LINE__);
+
+    LOG1_ABLC("%s:exit!\n", __FUNCTION__);
+    return ret;
+}
+
+AblcResult_V32_t AblcV32_IQParams_Check(AblcParams_V32_t* pBLC0Params, AblcOBParams_V32_t* pBLCOBParams,AblcRefParams_V32_t* pBlcRef) {
+    AblcResult_V32_t ret = ABLC_V32_RET_SUCCESS;
+
+     if (pBLC0Params == NULL) {
+        LOGE_ABLC("%s(%d): NULL pointer\n", __FUNCTION__, __LINE__);
+        return ABLC_V32_RET_NULL_POINTER;
+    }
+
+    if (pBLCOBParams == NULL) {
+        LOGE_ABLC("%s(%d): NULL pointer\n", __FUNCTION__, __LINE__);
+        return ABLC_V32_RET_NULL_POINTER;
+    }
+
+    if (pBlcRef == NULL) {
+        LOGE_ABLC("%s(%d): NULL pointer\n", __FUNCTION__, __LINE__);
+        return ABLC_V32_RET_NULL_POINTER;
+    }
+
+    float blc_r_caculate;
+    float blc_gr_caculate;
+    float blc_gb_caculate;
+    float blc_b_caculate;
+    float diff;
+
+    if (pBlcRef->len) {
+        for (int i = 0; i < pBLC0Params->len; i++) {
+            blc_r_caculate = pBLC0Params->blc_r[i] - pBLCOBParams->ob_offset[i];
+            blc_gr_caculate = pBLC0Params->blc_gr[i] - pBLCOBParams->ob_offset[i];
+            blc_gb_caculate = pBLC0Params->blc_gb[i] - pBLCOBParams->ob_offset[i];
+            blc_b_caculate = pBLC0Params->blc_b[i] - pBLCOBParams->ob_offset[i];
+
+	    diff = ((pBlcRef->Reference_r[i] - blc_r_caculate) > 0 ) ? (pBlcRef->Reference_r[i] - blc_r_caculate) : ( blc_r_caculate -pBlcRef->Reference_r[i]);
+            if (diff > 0.01){
+                LOGE_ABLC("BLC0_r-ob_offset not equal to the blc Reference_r in iso(%d) Reference_r=%.4f, blc_r_caculate=%.4f\n",
+                          int(pBlcRef->iso[i]), pBlcRef->Reference_r[i], blc_r_caculate);
+            }
+
+	    diff = ((pBlcRef->Reference_gr[i] - blc_gr_caculate) > 0 ) ? (pBlcRef->Reference_gr[i] - blc_gr_caculate) : ( blc_gr_caculate -pBlcRef->Reference_gr[i]);
+            if (diff > 0.01) {
+                LOGE_ABLC("BLC0_gr-ob_offset not equal to the blc Reference_gr in iso(%d) Reference_gr=%.4f, blc_gr_caculate=%.4f\n, cur-blc-gr=%.4f",
+                          int(pBlcRef->iso[i]), pBlcRef->Reference_gr[i], blc_gr_caculate, pBLC0Params->blc_gr[i]);
+            }
+
+	    diff = ((pBlcRef->Reference_gb[i] - blc_gb_caculate) > 0 ) ? (pBlcRef->Reference_gb[i] - blc_gb_caculate) : ( blc_gb_caculate -pBlcRef->Reference_gb[i]);
+            if (diff > 0.01) {
+                LOGE_ABLC("BLC0_gb-ob_offset not equal to the blc Reference_gb in iso(%d) Reference_gb=%.4f, blc_gb_caculate=%.4f\n",
+                          int(pBlcRef->iso[i]), pBlcRef->Reference_gb[i], blc_gb_caculate);
+            }
+
+	    diff = ((pBlcRef->Reference_b[i] - blc_b_caculate) > 0 ) ? (pBlcRef->Reference_b[i] - blc_b_caculate) : ( blc_b_caculate -pBlcRef->Reference_b[i]);
+            if (diff > 0.01) {
+                LOGE_ABLC("BLC0_b-ob_offset not equal to the blc Reference_b in iso(%d) Reference_b=%.4f, blc_b_caculate=%.4f\n",
+                          int(pBlcRef->iso[i]), pBlcRef->Reference_b[i], blc_b_caculate);
+            }
+        }
+    }
+
+    return ret;
+}
 AblcResult_V32_t Ablc_Select_Params_By_ISO_V32(AblcParams_V32_t* pParams, AblcSelect_V32_t* pSelect,
                                                AblcExpInfo_V32_t* pExpInfo) {
     LOG1_ABLC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
@@ -326,6 +426,11 @@ AblcResult_V32_t AblcV32ParamsUpdate(AblcContext_V32_t* pAblcCtx, CalibDbV2_Blc_
         BlcOBNewMalloc(&pAblcCtx->stBlcOBParams, &pCalibDb->BlcObPara);
         AblcOBJsonParamInit_V32(&pAblcCtx->stBlcOBParams, &pCalibDb->BlcObPara);
     }
+    // blc_ref
+    if (CHECK_ISP_HW_V32()) {
+        AblcRefJsonParamInit_V32(&pAblcCtx->stBlcRefParams, &pAblcCtx->stBayer2dnrCalib);
+    }
+
     return ret;
     LOGD_ABLC("%s:exit!\n", __FUNCTION__);
 }
@@ -354,7 +459,10 @@ AblcResult_V32_t AblcV32Init(AblcContext_V32_t** ppAblcCtx, CamCalibDbV2Context_
     CalibDbV2_Blc_V32_t* ablc_calib =
         (CalibDbV2_Blc_V32_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ablcV32_calib));
 
-    memcpy(&pAblcCtx->stBlcCalib, ablc_calib, sizeof(pAblcCtx->stBlcCalib));
+    CalibDbV2_Bayer2dnrV23_t *bayernr_v23 = (CalibDbV2_Bayer2dnrV23_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, bayer2dnr_v23));
+
+    pAblcCtx->stBayer2dnrCalib = bayernr_v23->CalibPara;
+    pAblcCtx->stBlcCalib = *ablc_calib;
     AblcV32ParamsUpdate(pAblcCtx, ablc_calib);
 
     LOG1_ABLC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
@@ -395,6 +503,17 @@ AblcResult_V32_t AblcV32Release(AblcContext_V32_t* pAblcCtx) {
     if (pAblcCtx->stBlcOBParams.ob_offset) free(pAblcCtx->stBlcOBParams.ob_offset);
 
     if (pAblcCtx->stBlcOBParams.ob_predgain) free(pAblcCtx->stBlcOBParams.ob_predgain);
+
+    // BLC_REF
+    if (pAblcCtx->stBlcRefParams.iso) free(pAblcCtx->stBlcRefParams.iso);
+
+    if (pAblcCtx->stBlcRefParams.Reference_b) free(pAblcCtx->stBlcRefParams.Reference_b);
+
+    if (pAblcCtx->stBlcRefParams.Reference_gb) free(pAblcCtx->stBlcRefParams.Reference_gb);
+
+    if (pAblcCtx->stBlcRefParams.Reference_gr) free(pAblcCtx->stBlcRefParams.Reference_gr);
+
+    if (pAblcCtx->stBlcRefParams.Reference_r) free(pAblcCtx->stBlcRefParams.Reference_r);
 
     memset(pAblcCtx, 0x00, sizeof(AblcContext_V32_t));
     free(pAblcCtx);

@@ -1830,9 +1830,13 @@ Isp20Params::convertAiqLscToIsp20Params(T& isp_cfg,
 
     if(lsc.lsc_en) {
         isp_cfg.module_ens |= ISP2X_MODULE_LSC;
+        isp_cfg.module_en_update |= ISP2X_MODULE_LSC;
+        isp_cfg.module_cfg_update |= ISP2X_MODULE_LSC;
+    } else {
+        isp_cfg.module_ens &= ~ISP2X_MODULE_LSC;
+        isp_cfg.module_en_update |= ISP2X_MODULE_LSC;
+        isp_cfg.module_cfg_update &= ~ISP2X_MODULE_LSC;
     }
-    isp_cfg.module_en_update |= ISP2X_MODULE_LSC;
-    isp_cfg.module_cfg_update |= ISP2X_MODULE_LSC;
 
 #if defined (RKAIQ_HAVE_LSC_V2) || defined (RKAIQ_HAVE_LSC_V3)
     struct isp3x_lsc_cfg *  cfg = &isp_cfg.others.lsc_cfg;

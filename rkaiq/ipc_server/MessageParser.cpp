@@ -316,7 +316,7 @@ RkAiqSocketPacket *MessageParser::findValidSection2(uint8_t *buffer, int len,
   remain_size = len - skip_size;
 
   // Check if contains packet information
-  if (remain_size < (int)sizeof(RkAiqSocketPacket_t)) {
+  if (remain_size < ((int)sizeof(RkAiqSocketPacket) - sizeof(void*))) {
     LOGE("Not a complete packet [%d], wait more...\n", len);
     return nullptr;
   }

@@ -155,13 +155,19 @@
 								},
 								"AecSpeed":	{
 									"SmoothEn":	1,
-									"DyDampEn":	1,
 									"DampOver":	0.15,
 									"DampUnder":	0.45,
 									"DampDark2Bright":	0.15,
-									"DampBright2Dark":	0.45
+									"DampBright2Dark":	0.45,
+									"DyDamp":	{
+										"DyDampEn":	1,
+										"SlowOPType":	"RK_AIQ_OP_MODE_AUTO",
+										"SlowRange":	10,
+										"SlowDamp":	0.95
+									}
 								},
-								"AecDelayFrmNum":	{
+								"AecDelay":	{
+									"DelayType":	"DELAY_TYPE_FRAME",
 									"BlackDelay":	2,
 									"WhiteDelay":	2
 								},
@@ -2594,6 +2600,7 @@
 								"SettingByIso":	[{
 										"iso":	50,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2604,13 +2611,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	100,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2621,13 +2629,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2638,13 +2647,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2655,13 +2665,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2672,13 +2683,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	1600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2689,13 +2701,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	3200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2706,13 +2719,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	6400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2723,13 +2737,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	12800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2740,13 +2755,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	25600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2757,13 +2773,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	51200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2774,13 +2791,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	102400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2791,13 +2809,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	204800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2808,13 +2827,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	409600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2825,10 +2845,10 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}],
 								"SettingByIso_len":	14
 							}
@@ -4053,7 +4073,87 @@
 											}],
 										"Calib_ISO_len":	13
 									}],
-								"Setting_len":	2
+								"Setting_len":	2,
+								"Blc_Ref":	[{
+										"iso":	50,
+										"Reference_r":	252,
+										"Reference_gr":	252,
+										"Reference_gb":	252,
+										"Reference_b":	252
+									}, {
+										"iso":	100,
+										"Reference_r":	252,
+										"Reference_gr":	252,
+										"Reference_gb":	252.0625,
+										"Reference_b":	252.0625
+									}, {
+										"iso":	200,
+										"Reference_r":	252.125,
+										"Reference_gr":	252,
+										"Reference_gb":	252,
+										"Reference_b":	22.0625
+									}, {
+										"iso":	400,
+										"Reference_r":	244,
+										"Reference_gr":	244,
+										"Reference_gb":	244.0625,
+										"Reference_b":	244.125
+									}, {
+										"iso":	800,
+										"Reference_r":	235.875,
+										"Reference_gr":	236.0625,
+										"Reference_gb":	236.125,
+										"Reference_b":	236
+									}, {
+										"iso":	1600,
+										"Reference_r":	223.6875,
+										"Reference_gr":	223.75,
+										"Reference_gb":	224.375,
+										"Reference_b":	224.1875
+									}, {
+										"iso":	3200,
+										"Reference_r":	196.6875,
+										"Reference_gr":	195.9375,
+										"Reference_gb":	195.9375,
+										"Reference_b":	195.4375
+									}, {
+										"iso":	6400,
+										"Reference_r":	196.6875,
+										"Reference_gr":	195.9375,
+										"Reference_gb":	195.9375,
+										"Reference_b":	195.4375
+									}, {
+										"iso":	12800,
+										"Reference_r":	196.6875,
+										"Reference_gr":	195.9375,
+										"Reference_gb":	195.9375,
+										"Reference_b":	195.4375
+									}, {
+										"iso":	25600,
+										"Reference_r":	196.6875,
+										"Reference_gr":	195.9375,
+										"Reference_gb":	195.9375,
+										"Reference_b":	195.4375
+									}, {
+										"iso":	51200,
+										"Reference_r":	196.6875,
+										"Reference_gr":	195.9375,
+										"Reference_gb":	195.9375,
+										"Reference_b":	195.4375
+									}, {
+										"iso":	102400,
+										"Reference_r":	196.6875,
+										"Reference_gr":	195.9375,
+										"Reference_gb":	195.9375,
+										"Reference_b":	195.4375
+									}, {
+										"iso":	204800,
+										"Reference_r":	196.6875,
+										"Reference_gr":	195.9375,
+										"Reference_gb":	195.9375,
+										"Reference_b":	195.4375
+									}],
+								"Blc_Ref_len":	13
 							},
 							"TuningPara":	{
 								"enable":	1,

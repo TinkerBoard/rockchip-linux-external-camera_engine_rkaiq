@@ -124,7 +124,7 @@ static XCamReturn Damping(const float damp,                        /**< damping 
 
     if ( (pUndamped != NULL) && (pDamped != NULL) )
     {
-        const float f = 16 - damp;
+        const float f = 1 - damp;
 
         /* calc. damped lut */
         for(int i = 0; i < 729; i++ )
@@ -242,27 +242,34 @@ XCamReturn Alut3dAutoConfig
     }
 
         //(4) damp: when damp enable && not 1st frame && damp coef >0 && mode unchange(AUTO)
-    if (hAlut3d->calibV2_lut3d->ALut3D.damp_en && (hAlut3d->swinfo.count > 1) && (hAlut3d->swinfo.awbIIRDampCoef > 0.0) && (hAlut3d->swinfo.invarMode)) {
-        if ((!hAlut3d->swinfo.lut3dConverged) || hAlut3d->update || hAlut3d->updateAtt ) {
-
-            ret = Damping(hAlut3d->swinfo.awbIIRDampCoef, &hAlut3d->restinfo.UndampLut,
-                            &hAlut3d->lut3d_hw_conf);
-            hAlut3d->swinfo.lut3dConverged =
-                !(memcmp(hAlut3d->mCurAtt.stManual.look_up_table_r, hAlut3d->lut3d_hw_conf.look_up_table_r,
-                sizeof(hAlut3d->lut3d_hw_conf.look_up_table_r)) ||
-                memcmp(hAlut3d->mCurAtt.stManual.look_up_table_g, hAlut3d->lut3d_hw_conf.look_up_table_g,
-                sizeof(hAlut3d->lut3d_hw_conf.look_up_table_g)) ||
-                memcmp(hAlut3d->mCurAtt.stManual.look_up_table_b, hAlut3d->lut3d_hw_conf.look_up_table_b,
-                sizeof(hAlut3d->lut3d_hw_conf.look_up_table_b)));
-            LOGD_A3DLUT("DampCoef = %f, damp lutB[7] = %d, lut converge: %d\n", hAlut3d->swinfo.awbIIRDampCoef, hAlut3d->lut3d_hw_conf.look_up_table_b[7],
-                        hAlut3d->swinfo.lut3dConverged);
-        }
-
-    } else {
+    if ((!hAlut3d->calibV2_lut3d->ALut3D.damp_en) && ((hAlut3d->swinfo.count <= 1) || hAlut3d->update)) {
         hAlut3d->swinfo.lut3dConverged = true;
         memcpy(hAlut3d->lut3d_hw_conf.look_up_table_r, hAlut3d->restinfo.UndampLut.look_up_table_r, sizeof(hAlut3d->lut3d_hw_conf.look_up_table_r));
         memcpy(hAlut3d->lut3d_hw_conf.look_up_table_g, hAlut3d->restinfo.UndampLut.look_up_table_g, sizeof(hAlut3d->lut3d_hw_conf.look_up_table_g));
         memcpy(hAlut3d->lut3d_hw_conf.look_up_table_b, hAlut3d->restinfo.UndampLut.look_up_table_b, sizeof(hAlut3d->lut3d_hw_conf.look_up_table_b));
+    } else if (hAlut3d->calibV2_lut3d->ALut3D.damp_en && ((hAlut3d->swinfo.count <= 1) || (hAlut3d->swinfo.invarMode == 0))) {
+
+        hAlut3d->swinfo.lut3dConverged = true;
+        memcpy(hAlut3d->lut3d_hw_conf.look_up_table_r, hAlut3d->restinfo.UndampLut.look_up_table_r, sizeof(hAlut3d->lut3d_hw_conf.look_up_table_r));
+        memcpy(hAlut3d->lut3d_hw_conf.look_up_table_g, hAlut3d->restinfo.UndampLut.look_up_table_g, sizeof(hAlut3d->lut3d_hw_conf.look_up_table_g));
+        memcpy(hAlut3d->lut3d_hw_conf.look_up_table_b, hAlut3d->restinfo.UndampLut.look_up_table_b, sizeof(hAlut3d->lut3d_hw_conf.look_up_table_b));
+
+    } else if (hAlut3d->calibV2_lut3d->ALut3D.damp_en && (hAlut3d->swinfo.awbIIRDampCoef > 0.0) && ((!hAlut3d->swinfo.lut3dConverged) || hAlut3d->update) ) {
+
+        ret = Damping(hAlut3d->swinfo.awbIIRDampCoef, &hAlut3d->restinfo.UndampLut,
+                        &hAlut3d->lut3d_hw_conf);
+        hAlut3d->swinfo.lut3dConverged =
+            !(memcmp(hAlut3d->mCurAtt.stManual.look_up_table_r, hAlut3d->lut3d_hw_conf.look_up_table_r,
+            sizeof(hAlut3d->lut3d_hw_conf.look_up_table_r)) ||
+            memcmp(hAlut3d->mCurAtt.stManual.look_up_table_g, hAlut3d->lut3d_hw_conf.look_up_table_g,
+            sizeof(hAlut3d->lut3d_hw_conf.look_up_table_g)) ||
+            memcmp(hAlut3d->mCurAtt.stManual.look_up_table_b, hAlut3d->lut3d_hw_conf.look_up_table_b,
+            sizeof(hAlut3d->lut3d_hw_conf.look_up_table_b)));
+        LOGD_A3DLUT("DampCoef = %f, damp lutB[7] = %d, lut converge: %d, count = %d\n", hAlut3d->swinfo.awbIIRDampCoef, hAlut3d->lut3d_hw_conf.look_up_table_b[7],
+                    hAlut3d->swinfo.lut3dConverged, hAlut3d->swinfo.count);
+
+    } else {
+        hAlut3d->swinfo.lut3dConverged = true;
     }
 
 

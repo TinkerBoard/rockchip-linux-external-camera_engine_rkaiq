@@ -17,6 +17,10 @@
 
 rkaiq/include/iq_parser_v2/j2s/j2s_generated.h
 rkaiq/include/iq_parser_v2/j2s/j2s_generated_template_json.h
+rkaiq/algos/ae/linux/rv1106/aarch64
+rkaiq/algos/af/linux/rv1106/aarch64
+rkaiq/algos/awb/linux/rv1106/aarch64
+rkaiq/algos/asd/linux/rv1106/aarch64
 rkaiq/algos/a3dlut/linux/
 rkaiq/algos/abayer2dnrV23/linux/
 rkaiq/algos/abayertnrV23/linux/

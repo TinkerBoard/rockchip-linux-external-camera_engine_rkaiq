@@ -500,8 +500,6 @@ void GetDehazeParamsV12(CalibDbDehazeV12_t* pCalibV12, RkAiqAdehazeProcResult_t*
                     : (pProcRes->ProcResV12.cfg_tmax - level_diff * DEHAZE_DEFAULT_CFG_TMAX_STEP);
         }
         pProcRes->ProcResV12.cfg_wt = LIMIT_VALUE_UNSIGNED(pProcRes->ProcResV12.cfg_wt, BIT_8_MAX);
-        pProcRes->ProcResV12.cfg_air =
-            LIMIT_VALUE_UNSIGNED(pProcRes->ProcResV12.cfg_air, BIT_8_MAX);
         pProcRes->ProcResV12.cfg_tmax =
             LIMIT_VALUE_UNSIGNED(pProcRes->ProcResV12.cfg_tmax, BIT_10_MAX);
     }

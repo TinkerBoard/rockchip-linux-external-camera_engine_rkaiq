@@ -10,7 +10,7 @@
 			"GainRange_len":	7
 		},
 		"Time2Reg":	{
-			"fCoeff":	[0, 0, 2, 0.5]
+			"fCoeff":	[0, 0, 1, 0.5]
 		},
 		"CISGainSet":	{
 			"CISAgainRange":	{
@@ -154,14 +154,20 @@
 									}
 								},
 								"AecSpeed":	{
-									"DyDampEn":	1,
 									"SmoothEn":	1,
 									"DampOver":	0.15,
 									"DampUnder":	0.45,
 									"DampDark2Bright":	0.15,
-									"DampBright2Dark":	0.45
+									"DampBright2Dark":	0.45,
+									"DyDamp":	{
+										"DyDampEn":	1,
+										"SlowOPType":	"RK_AIQ_OP_MODE_AUTO",
+										"SlowRange":	10,
+										"SlowDamp":	0.95
+									}
 								},
-								"AecDelayFrmNum":	{
+								"AecDelay":	{
+									"DelayType":	"DELAY_TYPE_FRAME",
 									"BlackDelay":	2,
 									"WhiteDelay":	2
 								},
@@ -1008,7 +1014,7 @@
 								},
 								"aCcmCof":	[{
 										"name":	"A",
-										"awbGain":	[1.2201, 2.7660],
+										"awbGain":	[1.2201, 2.766],
 										"minDist":	0.05,
 										"matrixUsed":	["A_100", "A_74"],
 										"matrixUsed_len":	2,
@@ -1207,7 +1213,7 @@
 										}
 									}, {
 										"name":	"A",
-										"awbGain":	[1.2201, 2.7660],
+										"awbGain":	[1.2201, 2.766],
 										"gain_alpha":	{
 											"gain":	[1, 2, 4, 8, 16, 32, 64, 128, 256],
 											"alpha":	[1, 1, 1, 1, 1, 1, 1, 1, 1]
@@ -1847,7 +1853,7 @@
 						"colorAsGrey":	{
 							"param":	{
 								"enable":	0,
-								"skip_frame": 10
+								"skip_frame":	10
 							}
 						},
 						"lsc_v2":	{
@@ -2457,7 +2463,87 @@
 											}],
 										"Calib_ISO_len":	13
 									}],
-								"Setting_len":	2
+								"Setting_len":	2,
+								"Blc_Ref":	[{
+										"iso":	50,
+										"Reference_r":	0.187,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0.187
+									}, {
+										"iso":	100,
+										"Reference_r":	0.313,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0.313
+									}, {
+										"iso":	200,
+										"Reference_r":	0.063,
+										"Reference_gr":	0.125,
+										"Reference_gb":	0.125,
+										"Reference_b":	0.063
+									}, {
+										"iso":	400,
+										"Reference_r":	0,
+										"Reference_gr":	0.125,
+										"Reference_gb":	0.125,
+										"Reference_b":	0
+									}, {
+										"iso":	800,
+										"Reference_r":	0,
+										"Reference_gr":	0.187,
+										"Reference_gb":	0.187,
+										"Reference_b":	0
+									}, {
+										"iso":	1600,
+										"Reference_r":	0.063,
+										"Reference_gr":	0.062,
+										"Reference_gb":	0.125,
+										"Reference_b":	0.062
+									}, {
+										"iso":	3200,
+										"Reference_r":	0.25,
+										"Reference_gr":	0,
+										"Reference_gb":	0.062,
+										"Reference_b":	0.187
+									}, {
+										"iso":	6400,
+										"Reference_r":	0.125,
+										"Reference_gr":	0,
+										"Reference_gb":	0.063,
+										"Reference_b":	0.063
+									}, {
+										"iso":	12800,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0.125,
+										"Reference_b":	0.188
+									}, {
+										"iso":	25600,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0.125,
+										"Reference_b":	0.188
+									}, {
+										"iso":	51200,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0.125,
+										"Reference_b":	0.188
+									}, {
+										"iso":	102400,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0.125,
+										"Reference_b":	0.188
+									}, {
+										"iso":	204800,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0.125,
+										"Reference_b":	0.188
+									}],
+								"Blc_Ref_len":	13
 							},
 							"TuningPara":	{
 								"enable":	1,
@@ -7145,6 +7231,7 @@
 								"SettingByIso":	[{
 										"iso":	50,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7162,6 +7249,7 @@
 									}, {
 										"iso":	100,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7179,6 +7267,7 @@
 									}, {
 										"iso":	200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7196,6 +7285,7 @@
 									}, {
 										"iso":	400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7213,6 +7303,7 @@
 									}, {
 										"iso":	800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7230,6 +7321,7 @@
 									}, {
 										"iso":	1600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7247,6 +7339,7 @@
 									}, {
 										"iso":	3200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7264,6 +7357,7 @@
 									}, {
 										"iso":	6400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7281,6 +7375,7 @@
 									}, {
 										"iso":	12800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7298,6 +7393,7 @@
 									}, {
 										"iso":	25600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7315,6 +7411,7 @@
 									}, {
 										"iso":	51200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7332,6 +7429,7 @@
 									}, {
 										"iso":	102400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7349,6 +7447,7 @@
 									}, {
 										"iso":	204800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7366,6 +7465,7 @@
 									}, {
 										"iso":	409600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -7460,7 +7560,8 @@
 										"SpotlightLumaRatio":	[0.3, 0.5, 0.8],
 										"SpotlightBlkCnt":	[0.2, 0.5, 0.25],
 										"SkipHighPassGain":	0
-									}
+									},
+									"FineSearchStep":	4
 								},
 								"video_contrast_af":	{
 									"enable":	0,
@@ -7518,7 +7619,8 @@
 										"SpotlightHighlightRatio":	0.014,
 										"SpotlightLumaRatio":	[0.3, 0.5, 0.8],
 										"SpotlightBlkCnt":	[0.2, 0.5, 0.25]
-									}
+									},
+									"FineSearchStep":	4
 								},
 								"laser_af":	{
 									"enable":	0,

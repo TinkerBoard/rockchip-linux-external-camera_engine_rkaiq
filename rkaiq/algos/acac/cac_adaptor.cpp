@@ -64,6 +64,11 @@ static const uint8_t CacPsfKernelWordSizeInMemory =
     DIV_ROUND_UP((CacPsfKernelSize - 1) * BITS_PER_BYTE, BITS_PER_WORD);
 static const uint8_t CacPsfBufferCount = CAC_PSF_BUF_NUM;
 
+template<class T>
+static constexpr const T& CacClamp( const T& v, const T& lo, const T& hi ) {
+    return v < lo ? lo : hi < v ? hi : v;
+}
+
 static inline bool IsIspBigMode(uint32_t width, uint32_t height, bool is_multi_sensor) {
     if (is_multi_sensor || width > IspBigModeWidthLimit || width * height > IspBigModeSizeLimit) {
         return true;
@@ -273,21 +278,22 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcac* config) {
     if (lut_manger_ == nullptr) {
         lut_manger_ =
             std::unique_ptr<LutBufferManager>(new LutBufferManager(lut_config, config->mem_ops));
-    }
-    if (current_lut_.size() == 0) {
         lut_manger_->ImportHwBuffers(0);
-        auto* buf = lut_manger_->GetFreeHwBuffer(0);
-        XCAM_ASSERT(buf != nullptr);
-        current_lut_.emplace_back(buf);
-#if (RKAIQ_HAVE_CAC_V03 || RKAIQ_HAVE_CAC_V10) && defined(ISP_HW_V30)
         if (config->is_multi_isp) {
             lut_manger_->ImportHwBuffers(1);
-            auto* buf = lut_manger_->GetFreeHwBuffer(1);
-            XCAM_ASSERT(buf != nullptr);
-            current_lut_.emplace_back(buf);
         }
-#endif
     }
+    current_lut_.clear();
+    auto* buf = lut_manger_->GetFreeHwBuffer(0);
+    XCAM_ASSERT(buf != nullptr);
+    current_lut_.emplace_back(buf);
+#if (RKAIQ_HAVE_CAC_V03 || RKAIQ_HAVE_CAC_V10) && defined(ISP_HW_V30)
+    if (config->is_multi_isp) {
+        auto* buf = lut_manger_->GetFreeHwBuffer(1);
+        XCAM_ASSERT(buf != nullptr);
+        current_lut_.emplace_back(buf);
+    }
+#endif
     XCAM_ASSERT(current_lut_.size() == (uint32_t)(config->is_multi_isp + 1));
 
 #if !RKAIQ_HAVE_CAC_V03
@@ -464,6 +470,9 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
 
     if (attr_->op_mode == RKAIQ_CAC_API_OPMODE_MANUAL) {
         for (i = 0; i < RKCAC_STRENGTH_TABLE_LEN; i++) {
+            float strength = attr_->manual_param.global_strength > 0
+                                 ? attr_->manual_param.global_strength
+                                 : attr_->manual_param.strength_table[i];
             output->config[0].strength[i] = ROUND_F(attr_->manual_param.strength_table[i] * (1 << RKCAC_STRENGTH_FIX_BITS));
             output->config[0].strength[i] =
                 output->config[0].strength[i] > 2047 ? 2047 : output->config[0].strength[i];
@@ -473,27 +482,33 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
         output->config[0].clip_g_mode    = attr_->manual_param.clip_g_mode;
         output->config[0].neg_clip0_en   = attr_->manual_param.neg_clip0_enable;
         output->config[0].edge_detect_en = attr_->manual_param.edge_detect_en;
-        output->config[0].flat_thed_b = attr_->manual_param.flat_thed_b;
-            //ROUND_F(attr_->manual_param.flat_thed_b * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
-        output->config[0].flat_thed_r = attr_->manual_param.flat_thed_r;
-            //ROUND_F(attr_->manual_param.flat_thed_r * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
-        output->config[0].offset_r = attr_->manual_param.offset_r;
+        output->config[0].flat_thed_b = ROUND_F(attr_->manual_param.flat_thed_b * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+        output->config[0].flat_thed_r = ROUND_F(attr_->manual_param.flat_thed_r * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+        output->config[0].offset_r = CacClamp<uint32_t>(attr_->manual_param.offset_r, 0, 1 << 16);
             //ROUND_F(attr_->manual_param.offset_r);
-        output->config[0].offset_b = attr_->manual_param.offset_b;
+        output->config[0].offset_b = CacClamp<uint32_t>(attr_->manual_param.offset_b, 0, 1 << 16);
             //ROUND_F(attr_->manual_param.offset_b);
         output->config[0].expo_thed_b =
-            (!attr_->manual_param.expo_det_b_en << 20) | MIN(attr_->manual_param.expo_thed_b, 0xfffff);
+            (!attr_->manual_param.expo_det_b_en << 20) | CacClamp<uint32_t>(attr_->manual_param.expo_thed_b, 0, 0xfffff);
         output->config[0].expo_thed_r =
-            (!attr_->manual_param.expo_det_r_en << 20) | MIN(attr_->manual_param.expo_thed_r,  0xfffff);
-        output->config[0].expo_adj_b = attr_->manual_param.expo_adj_b & 0xfffff;
-        output->config[0].expo_adj_r = attr_->manual_param.expo_adj_r & 0xfffff;
+            (!attr_->manual_param.expo_det_r_en << 20) | CacClamp<uint32_t>(attr_->manual_param.expo_thed_r, 0, 0xfffff);
+        output->config[0].expo_adj_b = CacClamp<uint32_t>(attr_->manual_param.expo_adj_b, 0, 0xfffff);
+        output->config[0].expo_adj_r = CacClamp<uint32_t>(attr_->manual_param.expo_adj_r, 0, 0xfffff);
         output->enable = attr_->enable;
 #endif
     } else if (attr_->op_mode == RKAIQ_CAC_API_OPMODE_AUTO) {
         float strength[RKCAC_STRENGTH_TABLE_LEN] = {1.0f};
+        float strenth_low = 0.0;
+        float strenth_high = 0.0;
         for (i = 0; i < RKCAC_STRENGTH_TABLE_LEN; i++) {
-            strength[i] = INTERP_CAC(attr_->auto_params[gain_low].strength_table[i],
-                                     attr_->auto_params[gain_high].strength_table[i], ratio);
+            strenth_low = attr_->auto_params[gain_low].global_strength > 0
+                ? attr_->auto_params[gain_low].global_strength
+                : attr_->auto_params[gain_low].strength_table[i];
+            strenth_high = attr_->auto_params[gain_high].global_strength > 0
+                ? attr_->auto_params[gain_high].global_strength
+                : attr_->auto_params[gain_high].strength_table[i];
+            strength[i] = INTERP_CAC(strenth_low,
+                                     strenth_high, ratio);
             output->config[0].strength[i] = ROUND_F(strength[i] * (1 << RKCAC_STRENGTH_FIX_BITS));
             output->config[0].strength[i] =
                 output->config[0].strength[i] > 2047 ? 2047 : output->config[0].strength[i];
@@ -514,21 +529,19 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
 
         float flat_thed_b             = INTERP_CAC(attr_->auto_params[gain_low].flat_thed_b,
                                        attr_->auto_params[gain_high].flat_thed_b, ratio);
-        output->config[0].flat_thed_b = ROUND_F(flat_thed_b);
-            // ROUND_F(flat_thed_b * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+        output->config[0].flat_thed_b = ROUND_F(flat_thed_b * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
 
         float flat_thed_r             = INTERP_CAC(attr_->auto_params[gain_low].flat_thed_r,
                                        attr_->auto_params[gain_high].flat_thed_r, ratio);
-        output->config[0].flat_thed_r = ROUND_F(flat_thed_r);
-            // ROUND_F(flat_thed_r * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
+        output->config[0].flat_thed_r = ROUND_F(flat_thed_r * (1 << RKCAC_EDGE_DETECT_FIX_BITS));
 
         float offset_b             = INTERP_CAC(attr_->auto_params[gain_low].offset_b,
                                     attr_->auto_params[gain_high].offset_b, ratio);
-        output->config[0].offset_b = ROUND_F(offset_b);
+        output->config[0].offset_b = CacClamp<uint32_t>(ROUND_F(input->hdr_ratio * offset_b), 0, 1 << 16);
 
         float offset_r             = INTERP_CAC(attr_->auto_params[gain_low].offset_r,
                                     attr_->auto_params[gain_high].offset_r, ratio);
-        output->config[0].offset_r = ROUND_F(offset_r);
+        output->config[0].offset_r = CacClamp<uint32_t>(ROUND_F(input->hdr_ratio * offset_r), 0, 1 << 16);
 
         int exp_det_r_en = INTERP_CAC(attr_->auto_params[gain_low].expo_det_r_en,
                                        attr_->auto_params[gain_high].expo_det_r_en, ratio);
@@ -548,11 +561,11 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
         expo_adj_b = input->hdr_ratio * expo_adj_b;
         expo_adj_r = input->hdr_ratio * expo_adj_r;
         output->config[0].expo_thed_b =
-            (static_cast<int>(!exp_det_b_en) << 20) | MIN(expo_thed_b, 0xfffff);
+            (static_cast<int>(!exp_det_b_en) << 20) | CacClamp<uint32_t>(expo_thed_b, 0, 0xfffff);
         output->config[0].expo_thed_r =
-            (static_cast<int>(!exp_det_r_en) << 20) | MIN(expo_thed_r, 0xfffff);
-        output->config[0].expo_adj_b = MIN(expo_adj_b, 0xfffff);
-        output->config[0].expo_adj_r = MIN(expo_adj_r, 0xfffff);
+            (static_cast<int>(!exp_det_r_en) << 20) | CacClamp<uint32_t>(expo_thed_r, 0, 0xfffff);
+        output->config[0].expo_adj_b = CacClamp<uint32_t>(expo_adj_b, 0, 0xfffff);
+        output->config[0].expo_adj_r = CacClamp<uint32_t>(expo_adj_r, 0, 0xfffff);
 #endif
     }
 #endif

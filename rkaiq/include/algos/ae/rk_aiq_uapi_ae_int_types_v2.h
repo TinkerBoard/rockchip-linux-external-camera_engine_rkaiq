@@ -27,12 +27,15 @@ typedef CalibDb_AeFrmRateAttrV2_t Uapi_AeFpsAttrV2_t;
 
 typedef CalibDb_AntiFlickerAttrV2_t Uapi_AntiFlickerV2_t;
 
+typedef CalibDb_DelayTypeV2_t Uapi_DelayTypeV2_t;
+
 typedef struct Uapi_AeAttrV2_s {
 
     Uapi_AeSpeedV2_t           stAeSpeed;
     //DelayFrmNum
-    uint8_t                  BlackDelayFrame;
-    uint8_t                  WhiteDelayFrame;
+    Uapi_DelayTypeV2_t         DelayType;
+    uint8_t                    BlackDelay;
+    uint8_t                    WhiteDelay;
     //Auto/Fixed fps
     Uapi_AeFpsAttrV2_t         stFrmRate;
     Uapi_AntiFlickerV2_t       stAntiFlicker;
@@ -176,24 +179,55 @@ typedef struct Uapi_ExpWin_s {
  * @brief   ISP2.0/2.1 AEC API ExpQueryInfo Params
  */
 /*****************************************************************************/
+
+typedef struct Uapi_LinAeInfo_s {
+    // M4_NUMBER_DESC("LumaDeviation", "f32", M4_RANGE(-256,256), "0.0", M4_DIGIT(3),M4_HIDE(1))
+    float             LumaDeviation;
+
+    // M4_NUMBER_DESC("MeanLuma", "f32", M4_RANGE(0,256), "0.0", M4_DIGIT(2))
+    float             MeanLuma;
+
+    // M4_STRUCT_DESC("LinAeRange", "normal_ui_style")
+    Aec_LinAeRange_t  LinAeRange;
+
+    // M4_STRUCT_DESC("LinearExp", "normal_ui_style")
+    RkAiqExpRealParam_t LinearExp;
+
+} Uapi_LinAeInfo_t;
+
+typedef struct Uapi_HdrAeInfo_s {
+    // M4_ARRAY_DESC("HdrLumaDeviation", "f32", M4_SIZE(1,3), M4_RANGE(-256,256), "0.0", M4_DIGIT(3), M4_DYNAMIC(0), M4_HIDE(1))
+    float             HdrLumaDeviation[3];
+
+    // M4_NUMBER_DESC("Frm0Luma", "f32", M4_RANGE(0,256), "0.0", M4_DIGIT(2))
+    float             Frm0Luma;
+
+    // M4_NUMBER_DESC("Frm1Luma", "f32", M4_RANGE(0,256), "0.0", M4_DIGIT(2))
+    float             Frm1Luma;
+
+    // M4_NUMBER_DESC("Frm2Luma", "f32", M4_RANGE(0,256), "0.0", M4_DIGIT(2))
+    float             Frm2Luma;
+
+    // M4_STRUCT_DESC("HdrAeRange", "normal_ui_style")
+    Aec_HdrAeRange_t    HdrAeRange;
+
+    // M4_STRUCT_DESC("HdrExp", "normal_ui_style")
+    RkAiqExpRealParam_t HdrExp[3];
+} Uapi_HdrAeInfo_t;
+
+
 typedef struct Uapi_ExpQueryInfo_s {
     // M4_BOOL_DESC("IsConverged", "0",M4_HIDE(1))
     bool              IsConverged;
+
     // M4_BOOL_DESC("IsExpMax", "0",M4_HIDE(1))
     bool              IsExpMax;
-    // M4_NUMBER_DESC("LumaDeviation", "f32", M4_RANGE(-256,256), "0.0", M4_DIGIT(3),M4_HIDE(1))
-    float             LumaDeviation;
-    // M4_ARRAY_DESC("HdrLumaDeviation", "f32", M4_SIZE(1,3), M4_RANGE(-256,256), "0.0", M4_DIGIT(3), M4_DYNAMIC(0), M4_HIDE(1))
-    float             HdrLumaDeviation[3];
-    // M4_NUMBER_DESC("MeanLuma", "f32", M4_RANGE(0,256), "0.0", M4_DIGIT(2))
-    float             MeanLuma;
-    // M4_ARRAY_DESC("HdrMeanLuma", "f32", M4_SIZE(1,3), M4_RANGE(0,256), "0.0", M4_DIGIT(2), M4_DYNAMIC(0))
-    float             HdrMeanLuma[3];
-    // M4_STRUCT_DESC("CurExpInfo", "normal_ui_style");
-    RKAiqAecExpInfo_t CurExpInfo;
 
-    // M4_NUMBER_DESC("Piris", "u16", M4_RANGE(0,1024), "0", M4_DIGIT(0),M4_HIDE(1))
-    unsigned short    Piris;
+    // M4_STRUCT_DESC("LinAeInfo", "normal_ui_style")
+    Uapi_LinAeInfo_t  LinAeInfo;
+
+    // M4_STRUCT_DESC("HdrAeInfo", "normal_ui_style")
+    Uapi_HdrAeInfo_t  HdrAeInfo;
 
     // M4_NUMBER_DESC("LinePeriodsPerField", "f32", M4_RANGE(0,65535), "0", M4_DIGIT(2),M4_HIDE(1))
     float             LinePeriodsPerField;

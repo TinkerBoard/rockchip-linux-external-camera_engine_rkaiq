@@ -119,7 +119,7 @@ rk_smart_ir_runOnce(rk_smart_ir_ctx_t* ctx, rk_smart_ir_result_t* result)
         SMARTIR_LOG("Ae converge:%d, EnvL:%0.3f,HlPdf:%f, llPdf:%0.3f, meanluma:%0.3f\n",
                exp_info.IsConverged, exp_info.GlobalEnvLv,
                exp_info.HighLightROIPdf, exp_info.LowLightROIPdf,
-               exp_info.MeanLuma);
+               exp_info.LinAeInfo.MeanLuma);
     } else
         return XCAM_RETURN_ERROR_FAILED;
 

@@ -48,10 +48,33 @@ typedef struct CalibDbV2_Bayer2dnrV23_C_Set_s {
 
 } CalibDbV2_Bayer2dnrV23_C_Set_t;
 
+typedef struct CalibDbV2_BlcV32_calib_s {
+
+    // M4_NUMBER_MARK_DESC("iso", "f32", M4_RANGE(50, 204800), "50", M4_DIGIT(1), "index1")
+    float iso;
+
+    // M4_NUMBER_DESC("Reference_r", "f32", M4_RANGE(-512,512), "256.0", M4_DIGIT(4))
+    float Reference_r;
+
+    // M4_NUMBER_DESC("Reference_gr", "f32", M4_RANGE(-512,512), "256.0", M4_DIGIT(4))
+    float Reference_gr;
+
+    // M4_NUMBER_DESC("Reference_gb", "f32", M4_RANGE(-512,512), "256.0", M4_DIGIT(4))
+    float Reference_gb;
+
+    // M4_NUMBER_DESC("Reference_b", "f32", M4_RANGE(-512,512), "256.0", M4_DIGIT(4))
+    float Reference_b;
+
+} CalibDbV2_BlcV32_calib_t;
+
 typedef struct CalibDbV2_Bayer2dnrV23_Calib_s {
     // M4_STRUCT_LIST_DESC("Setting", M4_SIZE_DYNAMIC, "double_index_list")
     CalibDbV2_Bayer2dnrV23_C_Set_t *Setting;
     int Setting_len;
+
+    // M4_STRUCT_LIST_DESC("Blc_Ref", M4_SIZE_DYNAMIC, "index1")
+    CalibDbV2_BlcV32_calib_t *Blc_Ref;
+    int Blc_Ref_len;
 } CalibDbV2_Bayer2dnrV23_Calib_t;
 
 typedef struct CalibDbV2_Bayer2dnrV23_gain_s {

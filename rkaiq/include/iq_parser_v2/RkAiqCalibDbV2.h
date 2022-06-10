@@ -39,6 +39,12 @@ struct cJSON;
 
 namespace RkCam {
 
+typedef struct __map_index {
+  void *dst_offset;
+  void *ptr_offset;
+  size_t len;
+} map_index_t;
+
 typedef std::shared_ptr<std::list<std::string>> ModuleNameList;
 typedef std::shared_ptr<std::list<RkAiqAlgoType_t>> AlgoList;
 
@@ -60,6 +66,7 @@ public:
     static int CamCalibDbCamgroupFree(CamCalibDbCamgroup_t* calib_camgroup);
 
     static CamCalibDbProj_t *json2calibproj(const char *jsfile);
+    static CamCalibDbProj_t *bin2calibproj(const char *binfile);
     static CamCalibDbV2Context_t *json2calib(const char *jsfile);
     static CamCalibDbV2Context_t *cjson2calib(cJSON *json);
 
@@ -105,6 +112,9 @@ public:
                                          const char* patch_str);
 
     static int FreeCalibByJ2S(void* ctx);
+
+    static void *loadWholeFile(const char *fpath, size_t *fsize);
+    static int parseBinStructMap(uint8_t *data, size_t len);
 
 private:
     static std::map<std::string, CamCalibDbProj_t *> mCalibDbsMap;

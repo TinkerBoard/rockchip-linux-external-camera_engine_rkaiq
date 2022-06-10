@@ -142,13 +142,19 @@
 								},
 								"AecSpeed":	{
 									"SmoothEn":	1,
-									"DyDampEn":	1,
 									"DampOver":	0.15,
 									"DampUnder":	0.45,
 									"DampDark2Bright":	0.15,
-									"DampBright2Dark":	0.45
+									"DampBright2Dark":	0.45,
+									"DyDamp":	{
+										"DyDampEn":	1,
+										"SlowOPType":	"RK_AIQ_OP_MODE_AUTO",
+										"SlowRange":	10,
+										"SlowDamp":	0.95
+									}
 								},
-								"AecDelayFrmNum":	{
+								"AecDelay":	{
+									"DelayType":	"DELAY_TYPE_FRAME",
 									"BlackDelay":	2,
 									"WhiteDelay":	2
 								},
@@ -2229,7 +2235,8 @@
 										"SpotlightLumaRatio":	[0.3, 0.5, 0.8],
 										"SpotlightBlkCnt":	[0.2, 0.5, 0.25],
 										"SkipHighPassGain":	0
-									}
+									},
+									"FineSearchStep":	4
 								},
 								"video_contrast_af":	{
 									"enable":	0,
@@ -2287,7 +2294,8 @@
 										"SpotlightHighlightRatio":	0.014,
 										"SpotlightLumaRatio":	[0.3, 0.5, 0.8],
 										"SpotlightBlkCnt":	[0.2, 0.5, 0.25]
-									}
+									},
+									"FineSearchStep":	4
 								},
 								"laser_af":	{
 									"enable":	0,
@@ -2579,6 +2587,7 @@
 								"SettingByIso":	[{
 										"iso":	50,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2589,13 +2598,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	100,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2606,13 +2616,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2623,13 +2634,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2640,13 +2652,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2657,13 +2670,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	1600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2674,13 +2688,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	3200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2691,13 +2706,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	6400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2708,13 +2724,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	12800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2725,13 +2742,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	25600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2742,13 +2760,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	51200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2759,13 +2778,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	102400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2776,13 +2796,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	204800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2793,13 +2814,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	409600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2810,10 +2832,10 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}],
 								"SettingByIso_len":	14
 							}
@@ -4038,7 +4060,87 @@
 											}],
 										"Calib_ISO_len":	13
 									}],
-								"Setting_len":	2
+								"Setting_len":	2,
+								"Blc_Ref":	[{
+										"iso":	50,
+										"Reference_r":	64.0625,
+										"Reference_gr":	64.0625,
+										"Reference_gb":	63.8125,
+										"Reference_b":	60.1875
+									}, {
+										"iso":	100,
+										"Reference_r":	60.125,
+										"Reference_gr":	60.0625,
+										"Reference_gb":	59.6875,
+										"Reference_b":	60.3125
+									}, {
+										"iso":	200,
+										"Reference_r":	60.125,
+										"Reference_gr":	60,
+										"Reference_gb":	59.4375,
+										"Reference_b":	56.5
+									}, {
+										"iso":	400,
+										"Reference_r":	53.3125,
+										"Reference_gr":	53,
+										"Reference_gb":	51.875,
+										"Reference_b":	49.8125
+									}, {
+										"iso":	800,
+										"Reference_r":	39.875,
+										"Reference_gr":	42.875,
+										"Reference_gb":	45.125,
+										"Reference_b":	44.25
+									}, {
+										"iso":	1600,
+										"Reference_r":	39.875,
+										"Reference_gr":	42.875,
+										"Reference_gb":	45.125,
+										"Reference_b":	44.25
+									}, {
+										"iso":	3200,
+										"Reference_r":	39.875,
+										"Reference_gr":	42.875,
+										"Reference_gb":	45.125,
+										"Reference_b":	44.25
+									}, {
+										"iso":	6400,
+										"Reference_r":	39.875,
+										"Reference_gr":	42.875,
+										"Reference_gb":	45.125,
+										"Reference_b":	44.25
+									}, {
+										"iso":	12800,
+										"Reference_r":	39.875,
+										"Reference_gr":	42.875,
+										"Reference_gb":	45.125,
+										"Reference_b":	44.25
+									}, {
+										"iso":	25600,
+										"Reference_r":	39.875,
+										"Reference_gr":	42.875,
+										"Reference_gb":	45.125,
+										"Reference_b":	44.25
+									}, {
+										"iso":	51200,
+										"Reference_r":	39.875,
+										"Reference_gr":	42.875,
+										"Reference_gb":	45.125,
+										"Reference_b":	44.25
+									}, {
+										"iso":	102400,
+										"Reference_r":	39.875,
+										"Reference_gr":	42.875,
+										"Reference_gb":	45.125,
+										"Reference_b":	44.25
+									}, {
+										"iso":	204800,
+										"Reference_r":	39.875,
+										"Reference_gr":	42.875,
+										"Reference_gb":	45.125,
+										"Reference_b":	44.25
+									}],
+								"Blc_Ref_len":	13
 							},
 							"TuningPara":	{
 								"enable":	1,
@@ -7786,13 +7888,19 @@
 								},
 								"AecSpeed":	{
 									"SmoothEn":	1,
-									"DyDampEn":	1,
 									"DampOver":	0.15,
 									"DampUnder":	0.45,
 									"DampDark2Bright":	0.15,
-									"DampBright2Dark":	0.45
+									"DampBright2Dark":	0.45,
+									"DyDamp":	{
+										"DyDampEn":	1,
+										"SlowOPType":	"RK_AIQ_OP_MODE_AUTO",
+										"SlowRange":	10,
+										"SlowDamp":	0.95
+									}
 								},
-								"AecDelayFrmNum":	{
+								"AecDelay":	{
+									"DelayType":	"DELAY_TYPE_FRAME",
 									"BlackDelay":	2,
 									"WhiteDelay":	2
 								},
@@ -10455,6 +10563,7 @@
 								"SettingByIso":	[{
 										"iso":	50,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10465,13 +10574,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	100,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10482,13 +10592,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10499,13 +10610,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10516,13 +10628,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10533,13 +10646,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	1600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10550,13 +10664,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	3200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10567,13 +10682,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	6400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10584,13 +10700,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	12800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10601,13 +10718,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	25600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10618,13 +10736,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	51200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10635,13 +10754,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	102400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10652,13 +10772,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	204800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10669,13 +10790,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}, {
 										"iso":	409600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10686,10 +10808,10 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1048580,
-										"expo_thed_r":	1048580,
-										"expo_adj_b":	1048580,
-										"expo_adj_r":	1048580
+										"expo_thed_b":	4090,
+										"expo_thed_r":	4090,
+										"expo_adj_b":	4090,
+										"expo_adj_r":	4090
 									}],
 								"SettingByIso_len":	14
 							}

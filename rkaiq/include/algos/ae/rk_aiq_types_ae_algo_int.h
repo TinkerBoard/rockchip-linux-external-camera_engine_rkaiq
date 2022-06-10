@@ -47,7 +47,6 @@
 
 
 #define MAX_HDR_FRAMENUM  (3)
-#define AEC_AFPS_MASK (1 << 0)
 /*****************************************************************************/
 /**
  * @brief   The number of mean and hist.

@@ -155,13 +155,19 @@
 								},
 								"AecSpeed":	{
 									"SmoothEn":	1,
-									"DyDampEn":	1,
 									"DampOver":	0.15,
 									"DampUnder":	0.45,
 									"DampDark2Bright":	0.15,
-									"DampBright2Dark":	0.45
+									"DampBright2Dark":	0.45,
+									"DyDamp":	{
+										"DyDampEn":	1,
+										"SlowOPType":	"RK_AIQ_OP_MODE_AUTO",
+										"SlowRange":	10,
+										"SlowDamp":	0.95
+									}
 								},
-								"AecDelayFrmNum":	{
+								"AecDelay":	{
+									"DelayType":	"DELAY_TYPE_FRAME",
 									"BlackDelay":	2,
 									"WhiteDelay":	2
 								},
@@ -1760,7 +1766,7 @@
 						"colorAsGrey":	{
 							"param":	{
 								"enable":	0,
-								"skip_frame": 10
+								"skip_frame":	10
 							}
 						},
 						"aldch":	{
@@ -2065,84 +2071,84 @@
 									"color_deviate_en":	0,
 									"enh_luma_en":	0,
 									"EnhanceData":	[{
-										"CtrlData":	0,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.1,
-										"enhance_chroma":	1.1
-									}, {
-										"CtrlData":	0.005,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.1,
-										"enhance_chroma":	1.1
-									}, {
-										"CtrlData":	0.01,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.05,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.1,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.15,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.2,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.3,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.4,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.5,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.6,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.8,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	1,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}]
+											"CtrlData":	0,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.1,
+											"enhance_chroma":	1.1
+										}, {
+											"CtrlData":	0.005,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.1,
+											"enhance_chroma":	1.1
+										}, {
+											"CtrlData":	0.01,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.05,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.1,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.15,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.2,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.3,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.4,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.5,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.6,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.8,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	1,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}]
 								},
 								"hist_setting":	{
 									"en":	0,
@@ -2157,7 +2163,7 @@
 												"CtrlData":	0.005,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											},{
+											}, {
 												"CtrlData":	0.01,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
@@ -2165,7 +2171,7 @@
 												"CtrlData":	0.05,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											},{
+											}, {
 												"CtrlData":	0.1,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
@@ -2173,7 +2179,7 @@
 												"CtrlData":	0.15,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											},{
+											}, {
 												"CtrlData":	0.2,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
@@ -2181,7 +2187,7 @@
 												"CtrlData":	0.3,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											},{
+											}, {
 												"CtrlData":	0.4,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
@@ -2189,7 +2195,7 @@
 												"CtrlData":	0.5,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											},{
+											}, {
 												"CtrlData":	0.6,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
@@ -2425,14 +2431,14 @@
 									"pdWidth":	508,
 									"pdHeight":	760,
 									"pdConfdMwinFactor":	3,
-									"pdStepRatio":	[1.0, 1.0, 1.0, 0.9, 0.8, 0.7, 0.7],
+									"pdStepRatio":	[1, 1, 1, 0.9, 0.8, 0.7, 0.7],
 									"pdStepDefocus":	[32, 64, 96, 128, 160, 192, 224],
 									"pdIsoPara":	[{
-											"iso": 50,
+											"iso":	50,
 											"pdNoiseFactor":	0.315,
 											"pdConfdRatio1":	1,
 											"pdConfdRatio2":	1,
-											"pdNoiseBias":		1.3,
+											"pdNoiseBias":	1.3,
 											"pdConfdThresh":	0.4,
 											"defocusPdThresh":	12,
 											"stablePdRatio":	0.125,
@@ -2440,14 +2446,14 @@
 											"stableCntRatio":	1.5,
 											"noconfCntThresh":	4,
 											"fineSearchTbl":	[{
-												"confidence":	0.5,
-												"range":	0,
-												"stepPos":	1
-											}, {
-												"confidence":	0,
-												"range":	4,
-												"stepPos":	1
-											}],
+													"confidence":	0.5,
+													"range":	0,
+													"stepPos":	1
+												}, {
+													"confidence":	0,
+													"range":	4,
+													"stepPos":	1
+												}],
 											"fineSearchTbl_len":	2
 										}],
 									"pdIsoPara_len":	1
@@ -2698,6 +2704,7 @@
 								"SettingByIso":	[{
 										"iso":	50,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2708,13 +2715,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	100,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2725,13 +2733,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2742,13 +2751,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2759,13 +2769,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2776,13 +2787,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	1600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2793,13 +2805,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	3200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2810,13 +2823,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	6400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2827,13 +2841,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	12800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2844,13 +2859,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	25600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2861,13 +2877,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	51200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2878,13 +2895,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	102400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2895,13 +2913,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	204800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2912,13 +2931,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	409600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -2929,10 +2949,10 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}],
 								"SettingByIso_len":	14
 							}
@@ -4157,7 +4177,87 @@
 											}],
 										"Calib_ISO_len":	13
 									}],
-								"Setting_len":	2
+								"Setting_len":	2,
+								"Blc_Ref":	[{
+										"iso":	50,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	100,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	200,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	400,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	800,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	1600,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	3200,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	6400,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	12800,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	25600,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	51200,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	102400,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}, {
+										"iso":	204800,
+										"Reference_r":	0,
+										"Reference_gr":	0,
+										"Reference_gb":	0,
+										"Reference_b":	0
+									}],
+								"Blc_Ref_len":	13
 							},
 							"TuningPara":	{
 								"enable":	1,
@@ -4185,7 +4285,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	100,
 												"gauss_guide":	0,
@@ -4206,7 +4306,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	200,
 												"gauss_guide":	0,
@@ -4227,7 +4327,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	400,
 												"gauss_guide":	0,
@@ -4248,7 +4348,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	800,
 												"gauss_guide":	0,
@@ -4269,7 +4369,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	1600,
 												"gauss_guide":	1,
@@ -4290,7 +4390,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	3200,
 												"gauss_guide":	1,
@@ -4311,7 +4411,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	6400,
 												"gauss_guide":	1,
@@ -4332,7 +4432,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	12800,
 												"gauss_guide":	1,
@@ -4353,7 +4453,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	25600,
 												"gauss_guide":	1,
@@ -4374,7 +4474,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	51200,
 												"gauss_guide":	1,
@@ -4395,7 +4495,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	102400,
 												"gauss_guide":	0,
@@ -4416,7 +4516,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	204800,
 												"gauss_guide":	0,
@@ -4437,7 +4537,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}],
 										"Tuning_ISO_len":	13
 									}, {
@@ -4463,7 +4563,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	100,
 												"gauss_guide":	0,
@@ -4484,7 +4584,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	200,
 												"gauss_guide":	0,
@@ -4505,7 +4605,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	400,
 												"gauss_guide":	0,
@@ -4526,7 +4626,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	800,
 												"gauss_guide":	0,
@@ -4547,7 +4647,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	1600,
 												"gauss_guide":	1,
@@ -4568,7 +4668,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	3200,
 												"gauss_guide":	1,
@@ -4589,7 +4689,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	6400,
 												"gauss_guide":	1,
@@ -4610,7 +4710,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	12800,
 												"gauss_guide":	1,
@@ -4631,7 +4731,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	25600,
 												"gauss_guide":	1,
@@ -4652,7 +4752,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	51200,
 												"gauss_guide":	1,
@@ -4673,7 +4773,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	102400,
 												"gauss_guide":	0,
@@ -4694,7 +4794,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	204800,
 												"gauss_guide":	0,
@@ -4715,7 +4815,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}],
 										"Tuning_ISO_len":	13
 									}],
@@ -7905,13 +8005,19 @@
 								},
 								"AecSpeed":	{
 									"SmoothEn":	1,
-									"DyDampEn":	1,
 									"DampOver":	0.15,
 									"DampUnder":	0.45,
 									"DampDark2Bright":	0.15,
-									"DampBright2Dark":	0.45
+									"DampBright2Dark":	0.45,
+									"DyDamp":	{
+										"DyDampEn":	1,
+										"SlowOPType":	"RK_AIQ_OP_MODE_AUTO",
+										"SlowRange":	10,
+										"SlowDamp":	0.95
+									}
 								},
-								"AecDelayFrmNum":	{
+								"AecDelay":	{
+									"DelayType":	"DELAY_TYPE_FRAME",
 									"BlackDelay":	2,
 									"WhiteDelay":	2
 								},
@@ -9557,7 +9663,7 @@
 						"colorAsGrey":	{
 							"param":	{
 								"enable":	0,
-								"skip_frame": 10
+								"skip_frame":	10
 							}
 						},
 						"aldch":	{
@@ -9853,84 +9959,84 @@
 									"color_deviate_en":	0,
 									"enh_luma_en":	0,
 									"EnhanceData":	[{
-										"CtrlData":	0,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.1,
-										"enhance_chroma":	1.1
-									}, {
-										"CtrlData":	0.005,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.1,
-										"enhance_chroma":	1.1
-									}, {
-										"CtrlData":	0.01,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.05,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.1,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.15,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.2,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.3,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.4,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.5,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.6,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	0.8,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}, {
-										"CtrlData":	1,
-										"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
-										"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"enhance_value":	1.2,
-										"enhance_chroma":	1.2
-									}]
+											"CtrlData":	0,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.1,
+											"enhance_chroma":	1.1
+										}, {
+											"CtrlData":	0.005,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.1,
+											"enhance_chroma":	1.1
+										}, {
+											"CtrlData":	0.01,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.05,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.1,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.15,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.2,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.3,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.4,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.5,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.6,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	0.8,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}, {
+											"CtrlData":	1,
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
+											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"enhance_value":	1.2,
+											"enhance_chroma":	1.2
+										}]
 								},
 								"hist_setting":	{
 									"en":	0,
@@ -9945,7 +10051,7 @@
 												"CtrlData":	0.005,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											},{
+											}, {
 												"CtrlData":	0.01,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
@@ -9953,7 +10059,7 @@
 												"CtrlData":	0.05,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											},{
+											}, {
 												"CtrlData":	0.1,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
@@ -9961,7 +10067,7 @@
 												"CtrlData":	0.15,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											},{
+											}, {
 												"CtrlData":	0.2,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
@@ -9969,7 +10075,7 @@
 												"CtrlData":	0.3,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											},{
+											}, {
 												"CtrlData":	0.4,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
@@ -9977,7 +10083,7 @@
 												"CtrlData":	0.5,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											},{
+											}, {
 												"CtrlData":	0.6,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
@@ -10213,14 +10319,14 @@
 									"pdWidth":	508,
 									"pdHeight":	760,
 									"pdConfdMwinFactor":	3,
-									"pdStepRatio":	[1.0, 1.0, 1.0, 0.9, 0.8, 0.7, 0.7],
+									"pdStepRatio":	[1, 1, 1, 0.9, 0.8, 0.7, 0.7],
 									"pdStepDefocus":	[32, 64, 96, 128, 160, 192, 224],
 									"pdIsoPara":	[{
-											"iso": 50,
+											"iso":	50,
 											"pdNoiseFactor":	0.315,
 											"pdConfdRatio1":	1,
 											"pdConfdRatio2":	1,
-											"pdNoiseBias":		1.3,
+											"pdNoiseBias":	1.3,
 											"pdConfdThresh":	0.4,
 											"defocusPdThresh":	12,
 											"stablePdRatio":	0.125,
@@ -10228,14 +10334,14 @@
 											"stableCntRatio":	1.5,
 											"noconfCntThresh":	4,
 											"fineSearchTbl":	[{
-												"confidence":	0.5,
-												"range":	0,
-												"stepPos":	1
-											}, {
-												"confidence":	0,
-												"range":	4,
-												"stepPos":	1
-											}],
+													"confidence":	0.5,
+													"range":	0,
+													"stepPos":	1
+												}, {
+													"confidence":	0,
+													"range":	4,
+													"stepPos":	1
+												}],
 											"fineSearchTbl_len":	2
 										}],
 									"pdIsoPara_len":	1
@@ -10576,6 +10682,7 @@
 								"SettingByIso":	[{
 										"iso":	50,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10586,13 +10693,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	100,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10603,13 +10711,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10620,13 +10729,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10637,13 +10747,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10654,13 +10765,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	1600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10671,13 +10783,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	3200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10688,13 +10801,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	6400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10705,13 +10819,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	12800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10722,13 +10837,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	25600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10739,13 +10855,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	51200,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10756,13 +10873,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	102400,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10773,13 +10891,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	204800,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10790,13 +10909,14 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}, {
 										"iso":	409600,
 										"bypass":	0,
+										"global_strength":	0,
 										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"clip_g_mode":	"RKAIQ_CAC_CLIP_G_MODE_MINIMAL",
 										"neg_clip0_enable":	1,
@@ -10807,10 +10927,10 @@
 										"offset_r":	0,
 										"expo_det_r_en":	1,
 										"expo_det_b_en":	1,
-										"expo_thed_b":	1.04858e+006,
-										"expo_thed_r":	1.04858e+006,
-										"expo_adj_b":	1.04858e+006,
-										"expo_adj_r":	1.04858e+006
+										"expo_thed_b":	4095,
+										"expo_thed_r":	4095,
+										"expo_adj_b":	4095,
+										"expo_adj_r":	4095
 									}],
 								"SettingByIso_len":	14
 							}
@@ -12063,7 +12183,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	100,
 												"gauss_guide":	0,
@@ -12084,7 +12204,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	200,
 												"gauss_guide":	0,
@@ -12105,7 +12225,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	400,
 												"gauss_guide":	0,
@@ -12126,7 +12246,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	800,
 												"gauss_guide":	0,
@@ -12147,7 +12267,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	1600,
 												"gauss_guide":	1,
@@ -12168,7 +12288,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	3200,
 												"gauss_guide":	1,
@@ -12189,7 +12309,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	6400,
 												"gauss_guide":	1,
@@ -12210,7 +12330,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	12800,
 												"gauss_guide":	1,
@@ -12231,7 +12351,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	25600,
 												"gauss_guide":	1,
@@ -12252,7 +12372,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	51200,
 												"gauss_guide":	1,
@@ -12273,7 +12393,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	102400,
 												"gauss_guide":	0,
@@ -12294,7 +12414,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	204800,
 												"gauss_guide":	0,
@@ -12315,7 +12435,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}],
 										"Tuning_ISO_len":	13
 									}, {
@@ -12341,7 +12461,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	100,
 												"gauss_guide":	0,
@@ -12362,7 +12482,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	200,
 												"gauss_guide":	0,
@@ -12383,7 +12503,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	400,
 												"gauss_guide":	0,
@@ -12404,7 +12524,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	800,
 												"gauss_guide":	0,
@@ -12425,7 +12545,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	1600,
 												"gauss_guide":	1,
@@ -12446,7 +12566,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	3200,
 												"gauss_guide":	1,
@@ -12467,7 +12587,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	6400,
 												"gauss_guide":	1,
@@ -12488,7 +12608,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	12800,
 												"gauss_guide":	1,
@@ -12509,7 +12629,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	25600,
 												"gauss_guide":	1,
@@ -12530,7 +12650,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	51200,
 												"gauss_guide":	1,
@@ -12551,7 +12671,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	102400,
 												"gauss_guide":	0,
@@ -12572,7 +12692,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}, {
 												"iso":	204800,
 												"gauss_guide":	0,
@@ -12593,7 +12713,7 @@
 												},
 												"hdr_dgain_scale_m":	1,
 												"hdr_dgain_scale_s":	1,
-												"trans_datmax":	1.04858e+006
+												"trans_datmax":	1048580
 											}],
 										"Tuning_ISO_len":	13
 									}],

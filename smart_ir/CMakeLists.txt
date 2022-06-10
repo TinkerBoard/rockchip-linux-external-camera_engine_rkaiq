@@ -61,4 +61,5 @@ link_directories("${RK_AIQ_LIB_DIR}")
 add_library(smartIr STATIC ${SMARTIR_SRC})
 target_link_libraries(smartIr ${RK_AIQ_LIB})
 
+install(DIRECTORY include/ DESTINATION include/rkaiq/smartIr FILES_MATCHING PATTERN "*.h")
 install(FILES ${CMAKE_LIBRARY_PATH}/libsmartIr.a DESTINATION lib)

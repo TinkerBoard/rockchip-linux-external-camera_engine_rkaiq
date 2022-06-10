@@ -68,6 +68,15 @@ typedef struct AblcParams_V32_s {
     float* blc_b;
 } AblcParams_V32_t;
 
+typedef struct AblcRefParams_V32_s {
+    int len;
+    float* iso;
+    float* Reference_r;
+    float* Reference_gr;
+    float* Reference_gb;
+    float* Reference_b;
+} AblcRefParams_V32_t;
+
 typedef struct AblcSelect_V32_s {
     bool enable;
     short int blc_r;

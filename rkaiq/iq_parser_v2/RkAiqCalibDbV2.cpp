@@ -16,6 +16,7 @@
 #include "RkAiqCalibDbV2.h"
 
 #include <fstream>
+#include <sys/stat.h>
 
 #include "RkAiqCalibDbV2Helper.h"
 #include "cJSON_Utils.h"
@@ -232,6 +233,27 @@ CamCalibDbProj_t *RkAiqCalibDbV2::json2calibproj(const char *jsfile) {
     return calibproj;
 }
 
+CamCalibDbProj_t *RkAiqCalibDbV2::bin2calibproj(const char *binfile) {
+    CamCalibDbProj_t *calibproj = NULL;
+    char* bin_buff = NULL;
+    size_t bin_size = 0;
+    int ret = -1;
+
+    bin_buff = (char*)loadWholeFile(binfile, &bin_size);
+    if (!bin_buff) {
+        return NULL;
+    }
+
+    ret = parseBinStructMap((uint8_t*)bin_buff, bin_size);
+    if (ret) {
+        return NULL;
+    }
+
+    calibproj = (CamCalibDbProj_t*) bin_buff;
+
+    return calibproj;
+}
+
 CamCalibDbCamgroup_t* RkAiqCalibDbV2::createCalibDbCamgroup(const char *jsfile) {
     j2s_ctx ctx;
     int ret = -1;
@@ -366,6 +388,7 @@ cJSON *RkAiqCalibDbV2::calib2cjson(const CamCalibDbV2Context_t *calib) {
 
 CamCalibDbProj_t *RkAiqCalibDbV2::createCalibDbProj(const char *jsfile) {
     std::map<std::string, CamCalibDbProj_t *>::iterator it;
+    CamCalibDbProj_t *calibproj = NULL;
     std::string str(jsfile);
     const std::lock_guard<std::mutex> lock(RkAiqCalibDbV2::calib_mutex);
 
@@ -374,12 +397,15 @@ CamCalibDbProj_t *RkAiqCalibDbV2::createCalibDbProj(const char *jsfile) {
         XCAM_LOG_INFO("use cached calibdb for %s!", jsfile);
         return it->second;
     } else {
-        if (0 != access(jsfile, F_OK)) {
-            XCAM_LOG_ERROR("access %s failed!", jsfile);
+        std::string binfile = str.substr(0, str.find_last_of(".")) + ".bin";
+        if (0 == access(jsfile, F_OK)) {
+            calibproj = json2calibproj(jsfile);
+        } else if (0 == access(binfile.c_str(), F_OK)) {
+            calibproj = bin2calibproj(binfile.c_str());
+        } else {
+            XCAM_LOG_ERROR("access %s && %s failed!", jsfile, binfile.c_str());
             return nullptr;
         }
-
-        CamCalibDbProj_t *calibproj = json2calibproj(jsfile);
 
         if (calibproj) {
             mCalibDbsMap[str] = calibproj;
@@ -2576,6 +2602,62 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
     CalibDbV2_GainV2_t* gain_v2 = (CalibDbV2_GainV2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, gain_v2));
     if (gain_v2) CamCalibDbFreeGainV2Ctx(gain_v2);
 #endif
+
+    return 0;
+}
+
+void* RkAiqCalibDbV2::loadWholeFile(const char *fpath, size_t *fsize)
+{
+    struct stat st;
+    void* buf;
+    int fd;
+
+    if (!fpath || (0 != ::stat(fpath, &st))) {
+        LOGE("load bin file error!\n");
+        return NULL;
+    }
+
+    fd = open(fpath, O_RDONLY);
+    if (fd < 0) {
+        LOGE("failed to open: '%s'\n", fpath);
+        return NULL;
+    }
+
+    buf = malloc(st.st_size);
+    if (!buf) {
+        LOGE("read file oom!\n");
+        close(fd);
+        return NULL;
+    }
+
+    if (read(fd, buf, st.st_size) != st.st_size) {
+        LOGE("failed to read: '%s'\n", fpath);
+        free(buf);
+        close(fd);
+        return NULL;
+    }
+
+    *fsize = st.st_size;
+
+    close(fd);
+
+    return buf;
+}
+
+int RkAiqCalibDbV2::parseBinStructMap(uint8_t *data, size_t len)
+{
+    size_t map_len = *(size_t *)(data + (len - sizeof(size_t)));
+    size_t map_offset = *(size_t *)(data + (len - sizeof(size_t) * 2));
+    size_t map_index = 0;
+    map_index_t *map_addr = NULL;
+
+    map_addr = (map_index_t *)(data + map_offset);
+
+    for (map_index = 0; map_index < map_len; map_index++) {
+      map_index_t tmap = (map_addr[map_index]);
+      void** dst_obj_addr = (void**)(data + (size_t)tmap.dst_offset);
+      *dst_obj_addr = data + (uintptr_t)tmap.ptr_offset;
+    }
 
     return 0;
 }

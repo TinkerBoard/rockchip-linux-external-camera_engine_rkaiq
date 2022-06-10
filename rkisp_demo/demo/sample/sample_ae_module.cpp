@@ -491,8 +491,10 @@ static int  sample_set_ae_delay(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sy
     expSwAttr.sync.sync_mode = sync;
     expSwAttr.sync.done = false;
     //set ae delay
-    expSwAttr.stAuto.BlackDelayFrame = 10;
-    expSwAttr.stAuto.WhiteDelayFrame = 15;
+
+    expSwAttr.stAuto.DelayType = DELAY_TYPE_FRAME;
+    expSwAttr.stAuto.BlackDelay = 10;
+    expSwAttr.stAuto.WhiteDelay = 15;
 
     ret = rk_aiq_user_api2_ae_setExpSwAttr(ctx, expSwAttr);
 

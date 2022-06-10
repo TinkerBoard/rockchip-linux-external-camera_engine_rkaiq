@@ -420,10 +420,21 @@
  * - CAC: correct HDR ratio value
  * - 3DLUT: Fix a few issues
  * - NR/SHARP: Support tools ui controls
+ * v4.0x9.9-rc1
+ * - Fix CPU stalled when LSC dynamic on and off
+ * - Fix ISP Stream stopped if switching CAC of to on
+ * - FIx 3DLUT damp issue
+ * - Correct DRC value range
+ * - Correct CAC HDR ratio
+ * - Optimize CAC tuning UX
+ * - Add check BLC0 calibration value
+ * - Support IQ json2bin feature
+ * - Support new IQ gc2093
+ * - Support get 3A stats when tuning
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.8"
-#define RK_AIQ_RELEASE_DATE "2022-05-30 for rv1106 SDK release"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.9-rc1"
+#define RK_AIQ_RELEASE_DATE "2022-06-10"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

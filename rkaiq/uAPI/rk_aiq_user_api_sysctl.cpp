@@ -784,7 +784,8 @@ void
 rk_aiq_uapi_sysctl_release3AStatsRef(const rk_aiq_sys_ctx_t* ctx,
                                      rk_aiq_isp_stats_t *stats)
 {
-    RKAIQ_API_SMART_LOCK(ctx);
+    // blocked API, add lock ?
+    // RKAIQ_API_SMART_LOCK(ctx);
     ctx->_analyzer->release3AStatsRef(stats);
 }
 

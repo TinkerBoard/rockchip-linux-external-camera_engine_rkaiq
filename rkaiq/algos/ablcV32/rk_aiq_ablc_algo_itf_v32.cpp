@@ -72,8 +72,12 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
         CalibDbV2_Blc_V32_t* calibv2_ablc_calib = (CalibDbV2_Blc_V32_t*)(CALIBDBV2_GET_MODULE_PTR(
                     (void*)(pCfgParam->com.u.prepare.calibv2), ablcV32_calib));
 
+        void *pCalibDbV2 = (void*)(pCfgParam->com.u.prepare.calibv2);
+        CalibDbV2_Bayer2dnrV23_t *bayernr_v23 = (CalibDbV2_Bayer2dnrV23_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDbV2, bayer2dnr_v23));
+        pAblcCtx->stBayer2dnrCalib = bayernr_v23->CalibPara;
+
         LOGE_ABLC("%s: Ablc Reload Para!\n", __FUNCTION__);
-        memcpy(&pAblcCtx->stBlcCalib, calibv2_ablc_calib, sizeof(pAblcCtx->stBlcCalib));
+        pAblcCtx->stBlcCalib = *calibv2_ablc_calib;
         pAblcCtx->isUpdateParam = true;
         pAblcCtx->isReCalculate |= 1;
     }
@@ -82,20 +86,6 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
     return result;
 }
 
-static XCamReturn pre_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
-    LOG1_ABLC("%s: (enter)\n", __FUNCTION__);
-    XCamReturn result           = XCAM_RETURN_NO_ERROR;
-    AblcContext_V32_t* pAblcCtx = (AblcContext_V32_t*)inparams->ctx;
-
-    if (pAblcCtx->isUpdateParam) {
-        AblcV32ParamsUpdate(pAblcCtx, &pAblcCtx->stBlcCalib);
-        pAblcCtx->isReCalculate |= 1;
-        pAblcCtx->isUpdateParam = false;
-    }
-
-    LOG1_ABLC("%s: (exit)\n", __FUNCTION__);
-    return result;
-}
 
 static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
     XCamReturn result = XCAM_RETURN_NO_ERROR;
@@ -109,11 +99,6 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     AblcExpInfo_V32_t stExpInfo;
     memset(&stExpInfo, 0x00, sizeof(AblcExpInfo_V32_t));
 
-    if (pAblcCtx->isUpdateParam) {
-        AblcV32ParamsUpdate(pAblcCtx, &pAblcCtx->stBlcCalib);
-        pAblcCtx->isReCalculate |= 1;
-        pAblcCtx->isUpdateParam = false;
-    }
 
     stExpInfo.hdr_mode = 0;
     for (int i = 0; i < 3; i++) {
@@ -131,6 +116,15 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     } else if (pAblcProcParams->hdr_mode == RK_AIQ_ISP_HDR_MODE_3_FRAME_HDR ||
                pAblcProcParams->hdr_mode == RK_AIQ_ISP_HDR_MODE_3_LINE_HDR) {
         stExpInfo.hdr_mode = 2;
+    }
+
+    if (pAblcCtx->isUpdateParam) {
+        AblcV32ParamsUpdate(pAblcCtx, &pAblcCtx->stBlcCalib);
+        // blc0 check
+        if ( stExpInfo.hdr_mode == 0)
+            AblcV32_IQParams_Check(&pAblcCtx->stBlc0Params, &pAblcCtx->stBlcOBParams, &pAblcCtx->stBlcRefParams);
+        pAblcCtx->isReCalculate |= 1;
+        pAblcCtx->isUpdateParam = false;
     }
 
     RKAiqAecExpInfo_t* curExp = pAblcProcParams->com.u.proc.curExp;

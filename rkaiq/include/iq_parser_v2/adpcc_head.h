@@ -28,68 +28,68 @@ RKAIQ_BEGIN_DECLARE
 #define CALIBDB_ADPCC_PDAF_KNOTS_NUM          16
 
 typedef struct CalibDb_Dpcc_set_RK_V20_s {
-    // M4_ARRAY_DESC("RK_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("RK_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char RK_enable[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("rb_sw_mindis", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("rb_sw_mindis", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char rb_sw_mindis[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("g_sw_mindis", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("g_sw_mindis", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char g_sw_mindis[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("sw_dis_scale_min", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("sw_dis_scale_min", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char sw_dis_scale_min[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("sw_dis_scale_max", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("sw_dis_scale_max", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char sw_dis_scale_max[CALIBDB_ADPCC_KNOTS_NUM];
 } CalibDb_Dpcc_set_RK_V20_t;
 
 typedef struct CalibDb_Dpcc_set_LC_V20_s {
-    // M4_ARRAY_DESC("LC_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("LC_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char LC_enable[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("rb_line_thr", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,8,8,8]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("rb_line_thr", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char rb_line_thr[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("g_line_thr", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,8,8,8]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("g_line_thr", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char g_line_thr[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("rb_line_mad_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,4,4,4]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("rb_line_mad_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char rb_line_mad_fac[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("g_line_mad_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,4,4,4]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("g_line_mad_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char g_line_mad_fac[CALIBDB_ADPCC_KNOTS_NUM];
 } CalibDb_Dpcc_set_LC_V20_t;
 
 typedef struct CalibDb_Dpcc_set_PG_V20_s {
-    // M4_ARRAY_DESC("PG_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("PG_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char PG_enable[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("rb_pg_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,4,4,4]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("rb_pg_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char rb_pg_fac[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("g_pg_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3,3,3]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("g_pg_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char g_pg_fac[CALIBDB_ADPCC_KNOTS_NUM];
 } CalibDb_Dpcc_set_PG_V20_t;
 
 typedef struct CalibDb_Dpcc_set_RND_V20_s {
-    // M4_ARRAY_DESC("RND_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("RND_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char RND_enable[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("rb_rnd_thr", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,8,8,8]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("rb_rnd_thr", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char rb_rnd_thr[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("g_rnd_thr", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,8,8,8]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("g_rnd_thr", "u8", M4_SIZE(1,13),  M4_RANGE(0, 255), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char g_rnd_thr[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("rb_rnd_offs", "u8", M4_SIZE(1,13),  M4_RANGE(0, 3), "[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3,3,3]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("rb_rnd_offs", "u8", M4_SIZE(1,13),  M4_RANGE(0, 3), "[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char rb_rnd_offs[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("g_rnd_offs", "u8", M4_SIZE(1,13),  M4_RANGE(0, 3), "[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3,3,3]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("g_rnd_offs", "u8", M4_SIZE(1,13),  M4_RANGE(0, 3), "[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char g_rnd_offs[CALIBDB_ADPCC_KNOTS_NUM];
 } CalibDb_Dpcc_set_RND_V20_t;
 
 typedef struct CalibDb_Dpcc_set_RG_V20_s {
-    // M4_ARRAY_DESC("RG_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("RG_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char RG_enable[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("rb_rg_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,8,8,8]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("rb_rg_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char rb_rg_fac[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("g_rg_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,8,8,8]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("g_rg_fac", "u8", M4_SIZE(1,13),  M4_RANGE(0, 63), "[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char g_rg_fac[CALIBDB_ADPCC_KNOTS_NUM];
 } CalibDb_Dpcc_set_RG_V20_t;
 
 typedef struct CalibDb_Dpcc_set_RO_V20_s {
-    // M4_ARRAY_DESC("RO_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("RO_enable", "u8", M4_SIZE(1,13),  M4_RANGE(0, 1), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char RO_enable[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("rb_ro_lim", "u8", M4_SIZE(1,13),  M4_RANGE(0, 3), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("rb_ro_lim", "u8", M4_SIZE(1,13),  M4_RANGE(0, 3), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char rb_ro_lim[CALIBDB_ADPCC_KNOTS_NUM];
-    // M4_ARRAY_DESC("g_ro_lim", "u8", M4_SIZE(1,13),  M4_RANGE(0, 3), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1]", M4_DIGIT(0), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("g_ro_lim", "u8", M4_SIZE(1,13),  M4_RANGE(0, 3), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned char g_ro_lim[CALIBDB_ADPCC_KNOTS_NUM];
 } CalibDb_Dpcc_set_RO_V20_t;
 
