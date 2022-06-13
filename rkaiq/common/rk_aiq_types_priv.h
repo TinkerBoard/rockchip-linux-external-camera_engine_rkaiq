@@ -590,34 +590,29 @@ enum rk_aiq_core_analyze_type_e {
     RK_AIQ_CORE_ANALYZE_AMFNR,
     RK_AIQ_CORE_ANALYZE_AYNR,
     RK_AIQ_CORE_ANALYZE_AWB,
+    RK_AIQ_CORE_ANALYZE_DHAZ,
     RK_AIQ_CORE_ANALYZE_GRP0,
     RK_AIQ_CORE_ANALYZE_GRP1,
     RK_AIQ_CORE_ANALYZE_AF,
     RK_AIQ_CORE_ANALYZE_EIS,
     RK_AIQ_CORE_ANALYZE_ORB,
     RK_AIQ_CORE_ANALYZE_MAX,
-    RK_AIQ_CORE_ANALYZE_ALL                             = 0xffffffff,
+    RK_AIQ_CORE_ANALYZE_ALL = 0xffffffff,
 };
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
-static const char* AnalyzerGroupType2Str[32]    = {
-    [RK_AIQ_CORE_ANALYZE_MEAS]                  = "GRP_MEAS",
-    [RK_AIQ_CORE_ANALYZE_OTHER]                 = "GRP_OTHER",
-    [RK_AIQ_CORE_ANALYZE_AMD]                   = "GRP_AMD",
-    [RK_AIQ_CORE_ANALYZE_THUMBNAILS]            = "GRP_THUMBNAILS",
-    [RK_AIQ_CORE_ANALYZE_LSC]                   = "GRP_LSC",
-    [RK_AIQ_CORE_ANALYZE_AE]                    = "GRP_AE",
-    [RK_AIQ_CORE_ANALYZE_AMFNR]                 = "GRP_AMFNR",
-    [RK_AIQ_CORE_ANALYZE_AYNR]                  = "GRP_AYNR",
-    [RK_AIQ_CORE_ANALYZE_AWB]                   = "GRP_AWB",
-    [RK_AIQ_CORE_ANALYZE_GRP0]                  = "GRP0",
-    [RK_AIQ_CORE_ANALYZE_GRP1]                  = "GRP1",
-    [RK_AIQ_CORE_ANALYZE_AF]                    = "AF",
-    [RK_AIQ_CORE_ANALYZE_EIS]                   = "EIS",
-    [RK_AIQ_CORE_ANALYZE_ORB]                   = "ORB",
+static const char* AnalyzerGroupType2Str[32] = {
+    [RK_AIQ_CORE_ANALYZE_MEAS] = "GRP_MEAS",   [RK_AIQ_CORE_ANALYZE_OTHER] = "GRP_OTHER",
+    [RK_AIQ_CORE_ANALYZE_AMD] = "GRP_AMD",     [RK_AIQ_CORE_ANALYZE_THUMBNAILS] = "GRP_THUMBNAILS",
+    [RK_AIQ_CORE_ANALYZE_LSC] = "GRP_LSC",     [RK_AIQ_CORE_ANALYZE_AE] = "GRP_AE",
+    [RK_AIQ_CORE_ANALYZE_AMFNR] = "GRP_AMFNR", [RK_AIQ_CORE_ANALYZE_AYNR] = "GRP_AYNR",
+    [RK_AIQ_CORE_ANALYZE_AWB] = "GRP_AWB",     [RK_AIQ_CORE_ANALYZE_DHAZ] = "DHAZ",
+    [RK_AIQ_CORE_ANALYZE_GRP0] = "GRP0",       [RK_AIQ_CORE_ANALYZE_GRP1] = "GRP1",
+    [RK_AIQ_CORE_ANALYZE_AF] = "AF",           [RK_AIQ_CORE_ANALYZE_EIS] = "EIS",
+    [RK_AIQ_CORE_ANALYZE_ORB] = "ORB",
 };
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop

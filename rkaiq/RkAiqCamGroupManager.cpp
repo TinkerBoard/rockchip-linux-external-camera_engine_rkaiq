@@ -43,48 +43,47 @@
 namespace RkCam {
 
 const static struct RkAiqAlgoDesCommExt g_camgroup_algos[] = {
-    { &g_RkIspAlgoDescCamgroupAe.common, RK_AIQ_CORE_ANALYZE_AE, 0, 2, 0, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAe.common, RK_AIQ_CORE_ANALYZE_AE, 0, 2, 0, {0, 0}},
 #if defined(ISP_HW_V32)
-    { &g_RkIspAlgoDescCamgroupAblcV32.common, RK_AIQ_CORE_ANALYZE_GRP0, 32, 32, 32, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAblcV32.common, RK_AIQ_CORE_ANALYZE_GRP0, 32, 32, 32, {0, 0}},
 #else
-    { &g_RkIspAlgoDescCamgroupAblc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAblc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
 #endif
-    { &g_RkIspAlgoDescCamgroupAwb.common, RK_AIQ_CORE_ANALYZE_AWB, 1, 1, 0, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAlsc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAccm.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupA3dlut.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAwb.common, RK_AIQ_CORE_ANALYZE_AWB, 1, 1, 0, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAlsc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAccm.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupA3dlut.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
     /* dpcc group algo is not mandatory now */
     //{ &g_RkIspAlgoDescCamgroupAdpcc.common, RK_AIQ_CORE_ANALYZE_AWB, 0, 0, 0, {0, 0}},
-    { & g_RkIspAlgoDescCamgroupAdhaz.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 1, 0, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAdhaz.common, RK_AIQ_CORE_ANALYZE_DHAZ, 0, 1, 0, {0, 0}},
     /* gamma group algo is not mandatory now */
     //{ &g_RkIspAlgoDescamgroupAgamma.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 0, 0 , {0, 0}},
-    { & g_RkIspAlgoDescCamgroupAdrc.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 1, 0, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAdrc.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 1, 0, {0, 0}},
     //{ &g_RkIspAlgoDescCamgroupAmerge.common, RK_AIQ_CORE_ANALYZE_GRP0, 0, 0, 0, {0, 0}},
 #if defined(ISP_HW_V30)
-    { &g_RkIspAlgoDescCamgroupAynrV3.common, RK_AIQ_CORE_ANALYZE_OTHER, 3, 3, 3, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAcnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAbayertnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAbayer2dnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAsharpV4.common, RK_AIQ_CORE_ANALYZE_OTHER, 4, 4, 4, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAgainV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAynrV3.common, RK_AIQ_CORE_ANALYZE_OTHER, 3, 3, 3, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAcnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAbayertnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAbayer2dnrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAsharpV4.common, RK_AIQ_CORE_ANALYZE_OTHER, 4, 4, 4, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAgainV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
 #endif
 #if defined(ISP_HW_V21)
-    { &g_RkIspAlgoDescCamgroupAynrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAcnr.common, RK_AIQ_CORE_ANALYZE_OTHER, 1, 1, 1, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAbayernrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAsharpV3.common, RK_AIQ_CORE_ANALYZE_OTHER, 3, 3, 3, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAynrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAcnr.common, RK_AIQ_CORE_ANALYZE_OTHER, 1, 1, 1, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAbayernrV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAsharpV3.common, RK_AIQ_CORE_ANALYZE_OTHER, 3, 3, 3, {0, 0}},
 #endif
 #if defined(ISP_HW_V32)
-    { &g_RkIspAlgoDescCamgroupAynrV22.common, RK_AIQ_CORE_ANALYZE_OTHER, 22, 22, 22, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAcnrV30.common, RK_AIQ_CORE_ANALYZE_OTHER, 30, 30, 30, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAbayertnrV23.common, RK_AIQ_CORE_ANALYZE_OTHER, 23, 23, 23, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAbayer2dnrV23.common, RK_AIQ_CORE_ANALYZE_OTHER, 23, 23, 23, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAsharpV33.common, RK_AIQ_CORE_ANALYZE_OTHER, 33, 33, 33, {0, 0}},
-    { &g_RkIspAlgoDescCamgroupAgainV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAynrV22.common, RK_AIQ_CORE_ANALYZE_OTHER, 22, 22, 22, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAcnrV30.common, RK_AIQ_CORE_ANALYZE_OTHER, 30, 30, 30, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAbayertnrV23.common, RK_AIQ_CORE_ANALYZE_OTHER, 23, 23, 23, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAbayer2dnrV23.common, RK_AIQ_CORE_ANALYZE_OTHER, 23, 23, 23, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAsharpV33.common, RK_AIQ_CORE_ANALYZE_OTHER, 33, 33, 33, {0, 0}},
+    {&g_RkIspAlgoDescCamgroupAgainV2.common, RK_AIQ_CORE_ANALYZE_OTHER, 2, 2, 2, {0, 0}},
 #endif
 
-
-    { NULL, RK_AIQ_CORE_ANALYZE_ALL, 0, 0, 0, {0, 0}},
+    {NULL, RK_AIQ_CORE_ANALYZE_ALL, 0, 0, 0, {0, 0}},
 };
 
 bool

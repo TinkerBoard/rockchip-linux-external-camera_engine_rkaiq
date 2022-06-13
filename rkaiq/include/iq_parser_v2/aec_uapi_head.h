@@ -67,8 +67,9 @@ typedef struct Aec_HdrAeRange_uapi_s {
 typedef struct Uapi_AeAttrV2_uapi_s {
     CalibDb_AeSpeedV2_t stAeSpeed;
     // DelayFrmNum
-    uint8_t BlackDelayFrame;
-    uint8_t WhiteDelayFrame;
+    CalibDb_DelayTypeV2_t      DelayType;
+    uint8_t                    BlackDelay;
+    uint8_t                    WhiteDelay;
     // Auto/Fixed fps
     CalibDb_AeFrmRateAttrV2_t stFrmRate;
     CalibDb_AntiFlickerAttrV2_t stAntiFlicker;

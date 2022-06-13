@@ -30,6 +30,7 @@ int getAcpAttrib(rk_aiq_sys_ctx_t* ctx, char* data);
 int enqueueRkRawFile(rk_aiq_sys_ctx_t* ctx, char* data);
 int get3AStats(rk_aiq_sys_ctx_t* ctx, char* data);
 int get3AStatsBlk(rk_aiq_sys_ctx_t* ctx, char* data);
+int writeAwbIn(rk_aiq_sys_ctx_t* ctx, char* data);
 #endif
 
 

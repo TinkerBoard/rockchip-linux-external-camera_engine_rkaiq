@@ -524,6 +524,8 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
 
     mAlogsComSharedParams.init = true;
     analyzeInternal(RK_AIQ_CORE_ANALYZE_ALL);
+    freeSharebuf(RK_AIQ_CORE_ANALYZE_GRP1);
+
     mAlogsComSharedParams.init = false;
 
     mState = RK_AIQ_CORE_STATE_PREPARED;
@@ -532,6 +534,7 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
 
     return XCAM_RETURN_NO_ERROR;
 }
+
 
 SmartPtr<RkAiqFullParamsProxy>
 RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e type)
@@ -601,6 +604,78 @@ RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e type)
     EXIT_ANALYZER_FUNCTION();
 
     return aiqParamProxy;
+}
+
+XCamReturn RkAiqCore::freeSharebuf(uint64_t grpId) {
+    RkAiqAlgosGroupShared_t* shared = nullptr;
+    uint64_t grpMask = grpId2GrpMask(grpId);
+    if (!getGroupSharedParams(grpMask, shared)) {
+        if (shared) {
+            if (shared->aecStatsBuf) {
+                shared->aecStatsBuf->unref(shared->aecStatsBuf);
+                shared->aecStatsBuf = nullptr;
+            }
+            if (shared->awbStatsBuf) {
+                shared->awbStatsBuf->unref(shared->awbStatsBuf);
+                shared->awbStatsBuf = nullptr;
+            }
+            if (shared->afStatsBuf) {
+                shared->afStatsBuf->unref(shared->afStatsBuf);
+                shared->afStatsBuf = nullptr;
+            }
+            if (shared->ispStats) {
+                shared->ispStats->unref(shared->ispStats);
+                shared->ispStats = nullptr;
+            }
+            if (shared->tx) {
+                shared->tx->unref(shared->tx);
+                shared->tx = nullptr;
+            }
+            if (shared->sp) {
+                shared->sp->unref(shared->sp);
+                shared->sp = nullptr;
+            }
+            if (shared->ispGain) {
+                shared->ispGain->unref(shared->ispGain);
+                shared->ispGain = nullptr;
+            }
+            if (shared->kgGain) {
+                shared->kgGain->unref(shared->kgGain);
+                shared->kgGain = nullptr;
+            }
+            if (shared->wrGain) {
+                shared->wrGain->unref(shared->wrGain);
+                shared->wrGain = nullptr;
+            }
+            if (shared->orbStats) {
+                shared->orbStats->unref(shared->orbStats);
+                shared->orbStats = nullptr;
+            }
+            if (shared->nrImg) {
+                shared->nrImg->unref(shared->nrImg);
+                shared->nrImg = nullptr;
+            }
+            if (shared->pdafStatsBuf) {
+                shared->pdafStatsBuf->unref(shared->pdafStatsBuf);
+                shared->pdafStatsBuf = nullptr;
+            }
+            if (shared->res_comb.ae_pre_res) {
+                shared->res_comb.ae_pre_res->unref(shared->res_comb.ae_pre_res);
+                shared->res_comb.ae_pre_res = nullptr;
+            }
+            if (shared->res_comb.ae_proc_res) {
+                shared->res_comb.ae_proc_res->unref(shared->res_comb.ae_proc_res);
+                shared->res_comb.ae_proc_res = nullptr;
+            }
+            if (shared->res_comb.awb_proc_res) {
+                shared->res_comb.awb_proc_res->unref(shared->res_comb.awb_proc_res);
+                shared->res_comb.awb_proc_res = nullptr;
+            }
+
+            return XCAM_RETURN_NO_ERROR;
+        }
+    }
+    return XCAM_RETURN_NO_ERROR;
 }
 
 XCamReturn

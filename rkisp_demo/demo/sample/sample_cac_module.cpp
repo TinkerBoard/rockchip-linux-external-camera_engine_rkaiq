@@ -256,8 +256,8 @@ static void sample_cac_v11_dump_attr(const rkaiq_cac_v11_api_attr_t* attr) {
     printf("\t clip_g_mode : %d\n", param->clip_g_mode);
     printf("\t neg_clip0_enable : %d\n", param->neg_clip0_enable);
     printf("\t edge_detect_en : %d\n", param->edge_detect_en);
-    printf("\t flat_thed_b : %u\n", param->flat_thed_b);
-    printf("\t flat_thed_r : %u \n", param->flat_thed_r);
+    printf("\t flat_thed_b : %f\n", param->flat_thed_b);
+    printf("\t flat_thed_r : %f \n", param->flat_thed_r);
     printf("\t offset_b : %u\n", param->offset_b);
     printf("\t offset_r : %u\n", param->offset_r);
     printf("\t expo_det_b_en : %d\n", param->expo_det_b_en);

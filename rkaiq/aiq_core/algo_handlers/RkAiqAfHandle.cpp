@@ -404,8 +404,14 @@ XCamReturn RkAiqAfHandleInt::processing() {
 #endif
 
     ret = RkAiqHandle::processing();
-    if (ret) {
-        RKAIQCORE_CHECK_RET(ret, "af handle processing failed");
+    if (ret < 0) {
+        LOGE_ANALYZER("af handle processing failed ret %d", ret);
+        mProcResShared = NULL;
+        return ret;
+    } else if (ret == XCAM_RETURN_BYPASS) {
+        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
+        mProcResShared = NULL;
+        return ret;
     }
 
     RkAiqAfStats* xAfStats = nullptr;
@@ -437,7 +443,15 @@ XCamReturn RkAiqAfHandleInt::processing() {
 #else
     ret = des->processing(mProcInParam, (RkAiqAlgoResCom*)af_proc_res_int);
 #endif
-    RKAIQCORE_CHECK_RET(ret, "af algo processing failed");
+    if (ret < 0) {
+        LOGE_ANALYZER("af algo processing failed ret %d", ret);
+        mProcResShared = NULL;
+        return ret;
+    } else if (ret == XCAM_RETURN_BYPASS) {
+        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
+        mProcResShared = NULL;
+        return ret;
+    }
 
 #if 1
     af_proc_res_int->id = shared->frameId;
@@ -583,6 +597,8 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
 #if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
     cur_params->mAfParams = params->mAfParams;
 #endif
+
+    mProcResShared = NULL;
 
     EXIT_ANALYZER_FUNCTION();
 

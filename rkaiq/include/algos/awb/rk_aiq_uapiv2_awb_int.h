@@ -139,6 +139,10 @@ XCamReturn
 rk_aiq_uapiV2_awb_WriteInput(RkAiqAlgoContext *ctx,
                           const rk_aiq_uapiV2_awb_wrtIn_attr_t &attr,
                           bool need_sync);
+XCamReturn
+rk_aiq_uapiV2_awb_SetFstFrWbgain(RkAiqAlgoContext *ctx,
+                          const rk_aiq_wb_gain_t &wbgain,
+                          bool need_sync);
 
 #endif
 

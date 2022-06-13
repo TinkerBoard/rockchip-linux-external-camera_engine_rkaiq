@@ -381,6 +381,7 @@ public:
         XCamVideoBuffer* aecStatsBuf;
         XCamVideoBuffer* awbStatsBuf;
         XCamVideoBuffer* afStatsBuf;
+        XCamVideoBuffer* adehazeStatsBuf;
         XCamVideoBuffer* sp;
         XCamVideoBuffer* ispGain;
         XCamVideoBuffer* kgGain;
@@ -409,6 +410,7 @@ public:
             aecStatsBuf = nullptr;
             awbStatsBuf = nullptr;
             afStatsBuf = nullptr;
+            adehazeStatsBuf = nullptr;
             orbStats = nullptr;
             nrImg       = nullptr;
             pdafStatsBuf = nullptr;
@@ -441,6 +443,7 @@ protected:
     // in analyzer thread
     XCamReturn analyze(const SmartPtr<VideoBuffer> &buffer);
     SmartPtr<RkAiqFullParamsProxy> analyzeInternal(enum rk_aiq_core_analyze_type_e type);
+    XCamReturn freeSharebuf(uint64_t grpId);
     XCamReturn prepare(enum rk_aiq_core_analyze_type_e type);
     XCamReturn preProcess(enum rk_aiq_core_analyze_type_e type);
     XCamReturn processing(enum rk_aiq_core_analyze_type_e type);

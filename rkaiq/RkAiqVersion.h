@@ -431,10 +431,19 @@
  * - Support IQ json2bin feature
  * - Support new IQ gc2093
  * - Support get 3A stats when tuning
+ * v4.0x9.9-rc2
+ * - Support fast ae/awb
+ * - Support convert iq from json to bin
+ * - CCM/3DLUT use pre-dgain
+ * - AWB fixes two issues about wbgain
+ * - IQ update SC500AI for isp32
+ * - Optimze SmartIR
+ * - Fix crashed in GrpMsgHdl thread
+ * - Dehaze support hist semiauto mode
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.9-rc1"
-#define RK_AIQ_RELEASE_DATE "2022-06-10"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.9-rc2"
+#define RK_AIQ_RELEASE_DATE "2022-06-27"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

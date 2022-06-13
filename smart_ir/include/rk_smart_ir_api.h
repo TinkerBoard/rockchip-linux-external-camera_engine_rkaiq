@@ -18,8 +18,7 @@
 #ifndef _RK_AIQ_SMART_IR_API_H_
 #define _RK_AIQ_SMART_IR_API_H_
 
-#include "common/rk_aiq_comm.h"
-#include "base/xcam_common.h"
+#include "common/rk_aiq_types.h"
 
 typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 typedef struct rk_smart_ir_ctx_s rk_smart_ir_ctx_t;
@@ -55,7 +54,7 @@ XCamReturn
 rk_smart_ir_config(rk_smart_ir_ctx_t* ctx, rk_smart_ir_params_t* config);
 
 XCamReturn
-rk_smart_ir_runOnce(rk_smart_ir_ctx_t* ctx, rk_smart_ir_result_t* result);
+rk_smart_ir_runOnce(rk_smart_ir_ctx_t* ctx, rk_aiq_isp_stats_t* stats_ref, rk_smart_ir_result_t* result);
 
 RKAIQ_END_DECLARE
 

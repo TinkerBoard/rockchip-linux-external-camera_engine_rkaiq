@@ -90,6 +90,15 @@ static RkAiqGrpCondition_t grp0Cond[] = {
 };
 static RkAiqGrpConditions_t grp0Conds = {grp_conds_array_info(grp0Cond)};
 
+static RkAiqGrpCondition_t grpDhazCond[] = {
+    [0] = {XCAM_MESSAGE_SOF_INFO_OK, 0},
+    [1] = {XCAM_MESSAGE_AE_PRE_RES_OK, 0},
+    [2] = {XCAM_MESSAGE_AE_PROC_RES_OK, 0},
+    [3] = {XCAM_MESSAGE_AEC_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
+    [4] = {XCAM_MESSAGE_ADEHAZE_STATS_OK, 0},
+};
+static RkAiqGrpConditions_t grpDhazConds = {grp_conds_array_info(grpDhazCond)};
+
 static RkAiqGrpCondition_t grp1Cond[] = {
     [0] = {XCAM_MESSAGE_SOF_INFO_OK, 0},
     [1] = {XCAM_MESSAGE_AWB_PROC_RES_OK, 0},
@@ -132,7 +141,7 @@ static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
     { &g_RkIspAlgoDescAcac.common,          RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,    grp0Conds          },
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
-    { &g_RkIspAlgoDescAdhaz.common,         RK_AIQ_CORE_ANALYZE_GRP0,   0, 1, 0,    grp0Conds          },
+    { &g_RkIspAlgoDescAdhaz.common,         RK_AIQ_CORE_ANALYZE_DHAZ,   0, 1, 0,    grpDhazConds          },
 #endif
 #if RKAIQ_HAVE_BAYER2DNR_V2
     { &g_RkIspAlgoDescAbayer2dnrV2.common,  RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,    grp0Conds          },

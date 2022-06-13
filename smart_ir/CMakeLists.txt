@@ -58,8 +58,11 @@ message(${LIBRARY_OUTPUT_PATH})
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 link_directories("${RK_AIQ_LIB_DIR}")
-add_library(smartIr STATIC ${SMARTIR_SRC})
+add_library(smartIr SHARED ${SMARTIR_SRC})
 target_link_libraries(smartIr ${RK_AIQ_LIB})
 
+add_library(smartIr_static STATIC ${SMARTIR_SRC})
+
 install(DIRECTORY include/ DESTINATION include/rkaiq/smartIr FILES_MATCHING PATTERN "*.h")
-install(FILES ${CMAKE_LIBRARY_PATH}/libsmartIr.a DESTINATION lib)
+install(FILES ${CMAKE_LIBRARY_PATH}/libsmartIr.so DESTINATION lib)
+install(FILES ${CMAKE_LIBRARY_PATH}/libsmartIr_static.a DESTINATION lib RENAME libsmartIr.a)

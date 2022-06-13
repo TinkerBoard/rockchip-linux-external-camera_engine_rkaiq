@@ -800,7 +800,6 @@ rk_aiq_user_api2_awb_GetMultiWindowAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_ai
 #endif
 }
 
-
 XCamReturn
 rk_aiq_user_api2_awb_getStrategyResult(const rk_aiq_sys_ctx_t* sys_ctx, rk_tool_awb_strategy_result_t *attr)
 {
@@ -942,5 +941,24 @@ rk_aiq_user_api2_awb_WriteAwbIn(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_a
 #endif
 }
 
+XCamReturn
+rk_aiq_user_api2_awb_SetFFWbgainAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uapiV2_awb_ffwbgain_attr_t attr)
+{
+    CHECK_USER_API_ENABLE2(sys_ctx);
+    CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
+    RKAIQ_API_SMART_LOCK(sys_ctx);
+
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+        return XCAM_RETURN_ERROR_FAILED;
+    } else {
+        RkAiqAwbHandleInt* algo_handle =
+            algoHandle<RkAiqAwbHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AWB);
+
+        if (algo_handle) {
+            return algo_handle->setFFWbgainAttrib(attr);
+        }
+    }
+    return XCAM_RETURN_NO_ERROR;
+}
 
 RKAIQ_END_DECLARE

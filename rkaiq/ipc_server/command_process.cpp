@@ -437,6 +437,13 @@ int ProcessCommand(rk_aiq_sys_ctx_t* ctx, RkAiqSocketPacket *dataRecv, RkAiqSock
         dataReply->commandResult = get3AStatsBlk(ctx, dataReply->data);
         break;
     }
+    case ENUM_ID_AIQ_UAPI2_AWB_WRITEAWBIN:
+    {
+        dataReply->commandResult = writeAwbIn(ctx, dataRecv->data);
+        dataReply->data = NULL;
+        dataReply->dataSize = 0;
+        break;
+    }
     default:
         LOGE("AIQ IPC UNKNOWN CMD: %d\n", dataRecv->commandID);
         return -1;

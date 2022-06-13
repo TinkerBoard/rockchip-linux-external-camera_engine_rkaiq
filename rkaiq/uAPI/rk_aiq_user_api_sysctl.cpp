@@ -48,6 +48,8 @@ RKAIQ_BEGIN_DECLARE
 
 int g_rkaiq_isp_hw_ver = 0;
 
+static void _set_fast_aewb_as_init(rk_aiq_sys_ctx_t* ctx);
+
 rk_aiq_sys_ctx_t* get_next_ctx(const rk_aiq_sys_ctx_t* ctx)
 {
     if (ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP)
@@ -465,9 +467,12 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
     ctx->_rkAiqManager->setAiqCalibDb(&calibdbv2_ctx);
 
     ret = ctx->_rkAiqManager->init();
-    ctx->_socket->Process(ctx);
     if (ret)
         goto error;
+
+    ctx->_socket->Process(ctx);
+
+    _set_fast_aewb_as_init(ctx);
 
     ctx->ctx_type = CTX_TYPE_USER_MAIN;
     ctx->next_ctx = new rk_aiq_sys_ctx_t();
@@ -1395,4 +1400,57 @@ int rk_aiq_uapi_sysctl_switch_scene(const rk_aiq_sys_ctx_t* sys_ctx,
     }
 
     return XCAM_RETURN_NO_ERROR;
+}
+
+static XCamReturn
+_get_fast_aewb_from_drv(std::string& sensor_name, rkisp32_thunderboot_resmem_head& fastAeAwbInfo)
+{
+    std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator it;
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if ((it = CamHwIsp20::mSensorHwInfos.find(sensor_name)) == CamHwIsp20::mSensorHwInfos.end()) {
+        LOGE_CAMHW_SUBM(ISP20HW_SUBM, "can't find sensor %s", sensor_name.c_str());
+        return XCAM_RETURN_ERROR_SENSOR;
+    }
+    rk_sensor_full_info_t *s_info = it->second.ptr();
+    SmartPtr<V4l2SubDevice> IspCoreDev = new V4l2SubDevice(s_info->isp_info->isp_dev_path);
+    IspCoreDev->open();
+
+    if (IspCoreDev->io_control(RKISP_CMD_GET_TB_HEAD_V32, &fastAeAwbInfo) < 0)
+        ret = XCAM_RETURN_ERROR_FAILED;
+
+    IspCoreDev->close();
+
+    return ret;
+}
+
+static void _set_fast_aewb_as_init(rk_aiq_sys_ctx_t* ctx)
+{
+    rkisp32_thunderboot_resmem_head fastAeAwbInfo;
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    std::string sensor_name(ctx->_sensor_entity_name);
+    ret = _get_fast_aewb_from_drv(sensor_name, fastAeAwbInfo);
+    if (ret == XCAM_RETURN_NO_ERROR) {
+        // set initial wb
+        rk_aiq_uapiV2_awb_ffwbgain_attr_t attr;
+
+        attr.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
+        attr.sync.done = false;
+        attr.wggain.rgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_red / 256.0f;
+        attr.wggain.grgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_green_r / 256.0f;
+        attr.wggain.gbgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_green_b / 256.0f;
+        attr.wggain.bgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_blue / 256.0f;
+        rk_aiq_user_api2_awb_SetFFWbgainAttrib(ctx, attr);
+
+        // set initial exposure
+        Uapi_LinExpAttrV2_t LinExpAttr;
+        ret = rk_aiq_user_api2_ae_getLinExpAttr(ctx,&LinExpAttr);
+
+        LinExpAttr.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
+        LinExpAttr.sync.done = false;
+        LinExpAttr.Params.InitExp.InitTimeValue = (float)fastAeAwbInfo.head.exp_time[0] / (1 << 16);
+        LinExpAttr.Params.InitExp.InitGainValue = (float)fastAeAwbInfo.head.exp_gain[0] / (1 << 16);
+
+        ret = rk_aiq_user_api2_ae_setLinExpAttr(ctx,LinExpAttr);
+    }
 }

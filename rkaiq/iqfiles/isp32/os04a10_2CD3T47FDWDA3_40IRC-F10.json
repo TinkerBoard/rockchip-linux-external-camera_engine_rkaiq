@@ -232,7 +232,7 @@
 								"DySetpoint":	{
 									"ExpLevel":	[0, 0.1, 0.3, 0.5, 1.5, 2],
 									"ExpLevel_len":	6,
-									"DySetpoint":	[55, 55, 50, 45, 45, 40],
+									"DySetpoint":	[45, 45, 45, 35, 35, 35],
 									"DySetpoint_len":	6
 								},
 								"BackLightCtrl":	{
@@ -1876,7 +1876,7 @@
 								}
 							},
 							"ALut3D":	{
-								"damp_en":	0,
+								"damp_en":	1,
 								"lutAll":	[{
 										"name":	"Normal",
 										"awbGain":	[1, 1],
@@ -1896,7 +1896,7 @@
 						"adehaze_calib_v12":	{
 							"DehazeTuningPara":	{
 								"Enable":	1,
-								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
+								"CtrlDataType":	"CTRLDATATYPE_ISO",
 								"cfg_alpha":	0,
 								"ByPassThr":	0,
 								"dehaze_setting":	{
@@ -1935,8 +1935,8 @@
 								},
 								"enhance_setting":	{
 									"en":	1,
-									"color_deviate_en":	0,
-									"enh_luma_en":	0,
+									"color_deviate_en":	1,
+									"enh_luma_en":	1,
 									"EnhanceData":	[{
 											"CtrlData":	0,
 											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
@@ -1989,25 +1989,25 @@
 											"CtrlData":	0.4,
 											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-											"enhance_value":	1.2,
+											"enhance_value":	1,
 											"enhance_chroma":	1.2
 										}, {
 											"CtrlData":	0.5,
 											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-											"enhance_value":	1.2,
+											"enhance_value":	1,
 											"enhance_chroma":	1.2
 										}, {
 											"CtrlData":	0.6,
 											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-											"enhance_value":	1.2,
+											"enhance_value":	1,
 											"enhance_chroma":	1.2
 										}, {
 											"CtrlData":	0.8,
 											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 											"enh_luma":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-											"enhance_value":	1.2,
+											"enhance_value":	1,
 											"enhance_chroma":	1.2
 										}, {
 											"CtrlData":	1,
@@ -2074,7 +2074,13 @@
 												"CtrlData":	1,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											}]
+											}],
+										"semiauto_curve":	{
+											"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+											"clim0":	[2, 2, 2, 2, 2, 2, 2, 32, 2, 2, 2, 2, 2],
+											"clim1":	[2, 2, 2, 2, 2, 2, 2, 32, 2, 2, 2, 2, 2],
+											"dark_th":	[64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64]
+											}
 									},
 									"HistData":	{
 										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
@@ -2094,7 +2100,7 @@
 								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"DrcGain":	{
 									"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-									"DrcGain":	[2, 1.5, 1.5, 1.5, 1.5, 1.5, 1, 1, 1, 1, 1, 1, 1],
+									"DrcGain":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 									"Alpha":	[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
 									"Clip":	[16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
 								},
@@ -3064,7 +3070,7 @@
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
 												"wgt_mge_mode":	1,
-												"wgt_use_mode":	0
+												"wgt_use_mode":	1
 											}, {
 												"iso":	100,
 												"hi_enable":	1,
@@ -3234,7 +3240,7 @@
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
 												"wgt_mge_mode":	1,
-												"wgt_use_mode":	0
+												"wgt_use_mode":	1
 											}, {
 												"iso":	3200,
 												"hi_enable":	1,
@@ -3268,7 +3274,7 @@
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
 												"wgt_mge_mode":	1,
-												"wgt_use_mode":	0
+												"wgt_use_mode":	1
 											}, {
 												"iso":	6400,
 												"hi_enable":	1,
@@ -3302,7 +3308,7 @@
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
 												"wgt_mge_mode":	1,
-												"wgt_use_mode":	0
+												"wgt_use_mode":	1
 											}, {
 												"iso":	12800,
 												"hi_enable":	1,
@@ -3336,7 +3342,7 @@
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
 												"wgt_mge_mode":	1,
-												"wgt_use_mode":	0
+												"wgt_use_mode":	1
 											}, {
 												"iso":	25600,
 												"hi_enable":	0,
@@ -3745,9 +3751,9 @@
 												"hi_filter_thed0":	0,
 												"hi_filter_thed1":	4095,
 												"hi_wgt_comp":	0.16,
-												"lo_clipwgt":	0.03215,
+												"lo_clipwgt":	0.045,
 												"lo_filter_rat0":	1,
-												"lo_filter_thed0":	0,
+												"lo_filter_thed0":	45,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	1
 											}, {
@@ -3758,9 +3764,9 @@
 												"lo_gslum_en":	1,
 												"hi_med_en":	1,
 												"hi_gslum_en":	1,
-												"lo_filter_strength":	0.9,
+												"lo_filter_strength":	1,
 												"hi_filter_strength":	0.7,
-												"hi_filter_rat0":	0.5,
+												"hi_filter_rat0":	0,
 												"hi_filter_rat1":	0,
 												"global_pk_en":	0,
 												"global_pksq":	1024,
@@ -3777,11 +3783,11 @@
 												"hi_filter_filt_bay":	0,
 												"hi_filter_filt_mode":	4,
 												"hi_filter_thed0":	0,
-												"hi_filter_thed1":	4095,
+												"hi_filter_thed1":	2000,
 												"hi_wgt_comp":	0.16,
-												"lo_clipwgt":	0.016,
-												"lo_filter_rat0":	1.1,
-												"lo_filter_thed0":	20,
+												"lo_clipwgt":	0.065,
+												"lo_filter_rat0":	1,
+												"lo_filter_thed0":	50,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	1
 											}, {
@@ -3794,7 +3800,7 @@
 												"hi_gslum_en":	1,
 												"lo_filter_strength":	0.8,
 												"hi_filter_strength":	0.7,
-												"hi_filter_rat0":	0.7,
+												"hi_filter_rat0":	0,
 												"hi_filter_rat1":	0.3,
 												"global_pk_en":	0,
 												"global_pksq":	512,
@@ -3804,23 +3810,23 @@
 												"guass_guide_coeff1":	8,
 												"guass_guide_coeff2":	16,
 												"guass_guide_coeff3":	8,
-												"hi_guass":	1,
+												"hi_guass":	0,
 												"kl_guass":	0,
 												"hi_filter_abs_ctrl":	0,
 												"hi_filter_filt_avg":	0,
 												"hi_filter_filt_bay":	0,
 												"hi_filter_filt_mode":	4,
 												"hi_filter_thed0":	0,
-												"hi_filter_thed1":	4095,
+												"hi_filter_thed1":	1800,
 												"hi_wgt_comp":	0.16,
-												"lo_clipwgt":	0.016,
+												"lo_clipwgt":	0.042,
 												"lo_filter_rat0":	1.2,
-												"lo_filter_thed0":	0,
+												"lo_filter_thed0":	50,
 												"wgt_mge_mode":	1,
 												"wgt_use_mode":	1
 											}, {
 												"iso":	51200,
-												"hi_enable":	0,
+												"hi_enable":	1,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
@@ -3845,16 +3851,16 @@
 												"hi_filter_filt_bay":	0,
 												"hi_filter_filt_mode":	4,
 												"hi_filter_thed0":	0,
-												"hi_filter_thed1":	4095,
+												"hi_filter_thed1":	2500,
 												"hi_wgt_comp":	0.16,
-												"lo_clipwgt":	0.004,
-												"lo_filter_rat0":	1.3,
+												"lo_clipwgt":	0.05,
+												"lo_filter_rat0":	1.2,
 												"lo_filter_thed0":	0,
 												"wgt_mge_mode":	1,
-												"wgt_use_mode":	0
+												"wgt_use_mode":	1
 											}, {
 												"iso":	102400,
-												"hi_enable":	1,
+												"hi_enable":	0,
 												"lo_med_en":	1,
 												"lo_gsbay_en":	1,
 												"lo_gslum_en":	1,
@@ -3885,7 +3891,7 @@
 												"lo_filter_rat0":	1,
 												"lo_filter_thed0":	0,
 												"wgt_mge_mode":	1,
-												"wgt_use_mode":	0
+												"wgt_use_mode":	1
 											}, {
 												"iso":	204800,
 												"hi_enable":	1,
@@ -4625,7 +4631,7 @@
 												"gauss_guide":	1,
 												"filter_strength":	1,
 												"edgesofts":	1,
-												"ratio":	0.01,
+												"ratio":	0,
 												"weight":	0.8,
 												"gain_bypass":	0,
 												"gain_scale":	2.5,
@@ -5379,7 +5385,7 @@
 												"global_gain_alpha":	0,
 												"local_gain_scale":	1,
 												"global_gain_thumb":	1,
-												"global_gain_alpha_thumb":	0,
+												"global_gain_alpha_thumb":	8,
 												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
 												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
@@ -5408,16 +5414,16 @@
 												"local_gain_scale":	1,
 												"global_gain_thumb":	1,
 												"global_gain_alpha_thumb":	0,
-												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
+												"gain_adj_strength_ratio":	[1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
 												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
 												"iso":	12800,
 												"down_scale_x":	8,
 												"down_scale_y":	6,
-												"thumb_sigma":	0.01,
+												"thumb_sigma":	0.05,
 												"thumb_bf_ratio":	1,
-												"chroma_filter_strength":	0.02,
+												"chroma_filter_strength":	0.1,
 												"chroma_filter_wgt_clip":	7,
 												"anti_chroma_ghost":	0.0313,
 												"chroma_filter_uv_gain":	0.333,
@@ -5443,9 +5449,9 @@
 												"iso":	25600,
 												"down_scale_x":	8,
 												"down_scale_y":	6,
-												"thumb_sigma":	0.01,
+												"thumb_sigma":	0.04,
 												"thumb_bf_ratio":	1,
-												"chroma_filter_strength":	0.05,
+												"chroma_filter_strength":	0.12,
 												"chroma_filter_wgt_clip":	8,
 												"anti_chroma_ghost":	0.03,
 												"chroma_filter_uv_gain":	0.333,
@@ -5464,7 +5470,7 @@
 												"local_gain_scale":	1,
 												"global_gain_thumb":	1,
 												"global_gain_alpha_thumb":	0,
-												"gain_adj_strength_ratio":	[1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
+												"gain_adj_strength_ratio":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
 												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
@@ -5473,7 +5479,7 @@
 												"down_scale_y":	6,
 												"thumb_sigma":	0.04,
 												"thumb_bf_ratio":	1,
-												"chroma_filter_strength":	0.04,
+												"chroma_filter_strength":	0.1,
 												"chroma_filter_wgt_clip":	10,
 												"anti_chroma_ghost":	0.0313,
 												"chroma_filter_uv_gain":	0.2,
@@ -5489,10 +5495,10 @@
 												"saturation_adj_ratio":	0,
 												"global_gain":	1,
 												"global_gain_alpha":	0,
-												"local_gain_scale":	0.1,
+												"local_gain_scale":	1,
 												"global_gain_thumb":	1,
 												"global_gain_alpha_thumb":	8,
-												"gain_adj_strength_ratio":	[1, 0.7, 0.5, 0.3, 0.2, 0.1, 0.1, 0.09, 0.07, 0.05, 0.03, 0.02, 0.02],
+												"gain_adj_strength_ratio":	[0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02],
 												"thumb_filter_wgt_coeff":	[1, 1, 1, 1],
 												"gaus_coeff":	[48, 28, 6, 28, 17, 4]
 											}, {
@@ -5740,10 +5746,10 @@
 												"low_bi_weight":	0.2,
 												"hi_bf_scale":	1,
 												"hi_gain_alpha":	1,
-												"hi_center_weight":	0.8,
+												"hi_center_weight":	0.5,
 												"hi_weight_offset":	0.0498,
 												"hi_min_sigma":	0.0068,
-												"hi_nr_weight":	0.5,
+												"hi_nr_weight":	0.8,
 												"hi_filter_coeff1_1":	7,
 												"hi_filter_coeff1_2":	6,
 												"hi_filter_coeff1_3":	3,
@@ -6583,8 +6589,8 @@
 												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
-												"ynr_adjust_thresh":	0.1,
-												"ynr_adjust_scale":	2,
+												"ynr_adjust_thresh":	0.2,
+												"ynr_adjust_scale":	2.5,
 												"lumaPara":	{
 													"lo_lumaPoint":	[0, 32, 64, 128, 192, 256],
 													"lo_ratio":	[2, 2, 2, 2, 2, 2],
@@ -6626,8 +6632,8 @@
 												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
-												"ynr_adjust_thresh":	0.1,
-												"ynr_adjust_scale":	2.15,
+												"ynr_adjust_thresh":	0.2,
+												"ynr_adjust_scale":	8,
 												"lumaPara":	{
 													"lo_lumaPoint":	[0, 32, 64, 128, 192, 256],
 													"lo_ratio":	[1, 1, 1, 1, 1, 1],
@@ -6670,22 +6676,22 @@
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
 												"ynr_adjust_thresh":	0.1,
-												"ynr_adjust_scale":	2,
+												"ynr_adjust_scale":	8,
 												"lumaPara":	{
 													"lo_lumaPoint":	[0, 32, 64, 128, 192, 256],
 													"lo_ratio":	[1, 1, 1, 1, 1, 1],
 													"hi_lumaPoint":	[0, 32, 64, 128, 192, 256],
 													"hi_ratio":	[1, 1, 1, 1, 1, 1]
 												},
-												"low_bf1":	1,
-												"low_bf2":	2,
-												"low_thred_adj":	2,
+												"low_bf1":	4,
+												"low_bf2":	4,
+												"low_thred_adj":	4,
 												"low_peak_supress":	0.5,
 												"low_edge_adj_thresh":	7,
 												"low_lbf_weight_thresh":	0.25,
 												"low_center_weight":	0.2,
 												"low_dist_adj":	1,
-												"low_weight":	0.5,
+												"low_weight":	0.3,
 												"low_filt1_strength":	0.7,
 												"low_filt2_strength":	0.85,
 												"low_bi_weight":	0.4,
@@ -6694,7 +6700,7 @@
 												"hi_center_weight":	0.5,
 												"hi_weight_offset":	0.05,
 												"hi_min_sigma":	0.01,
-												"hi_nr_weight":	0.8,
+												"hi_nr_weight":	0.4,
 												"hi_filter_coeff1_1":	7,
 												"hi_filter_coeff1_2":	6,
 												"hi_filter_coeff1_3":	3,
@@ -6712,8 +6718,8 @@
 												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
-												"ynr_adjust_thresh":	0.3,
-												"ynr_adjust_scale":	1,
+												"ynr_adjust_thresh":	0.1,
+												"ynr_adjust_scale":	8,
 												"lumaPara":	{
 													"lo_lumaPoint":	[0, 32, 64, 128, 192, 256],
 													"lo_ratio":	[1, 1, 1, 1, 1, 1],
@@ -6728,7 +6734,7 @@
 												"low_lbf_weight_thresh":	0.25,
 												"low_center_weight":	0.2,
 												"low_dist_adj":	2,
-												"low_weight":	0.5,
+												"low_weight":	0.3,
 												"low_filt1_strength":	0.7,
 												"low_filt2_strength":	0.85,
 												"low_bi_weight":	0.92,
@@ -6737,7 +6743,7 @@
 												"hi_center_weight":	0.02,
 												"hi_weight_offset":	0.1,
 												"hi_min_sigma":	0.02,
-												"hi_nr_weight":	0.47,
+												"hi_nr_weight":	0.5,
 												"hi_filter_coeff1_1":	7,
 												"hi_filter_coeff1_2":	6,
 												"hi_filter_coeff1_3":	3,
@@ -7606,8 +7612,8 @@
 												"global_gain_alpha":	0,
 												"local_gainscale":	1,
 												"global_hf_clip_pos":	0,
-												"noiseclip_strength":	0,
-												"enhance_bit":	2,
+												"noiseclip_strength":	1,
+												"enhance_bit":	4,
 												"noiseclip_mode":	1,
 												"noise_sigma_clip":	2,
 												"gain_adj_sharp_strength":	[1, 0.9, 0.7, 0.5, 0.3, 0.2, 0.2, 0.2, 0.1, 0.1, 0.1, 0.1, 0.05, 0.001],
@@ -7632,22 +7638,22 @@
 												"iso":	12800,
 												"exgain_bypass":	0,
 												"pbf_gain":	0,
-												"pbf_ratio":	0,
+												"pbf_ratio":	0.5,
 												"pbf_add":	16,
 												"gaus_ratio":	0,
-												"sharp_ratio":	3,
+												"sharp_ratio":	2,
 												"bf_gain":	0,
-												"bf_ratio":	0,
+												"bf_ratio":	0.5,
 												"bf_add":	16,
 												"global_gain":	1,
 												"global_gain_alpha":	0,
 												"local_gainscale":	1,
 												"global_hf_clip_pos":	0,
 												"noiseclip_strength":	1,
-												"enhance_bit":	2,
+												"enhance_bit":	7,
 												"noiseclip_mode":	1,
-												"noise_sigma_clip":	2,
-												"gain_adj_sharp_strength":	[1, 1, 0.2, 0.2, 0.2, 0.2, 0.15, 0.15, 0.1, 0.1, 0.1, 0.07, 0.05, 0.001],
+												"noise_sigma_clip":	9,
+												"gain_adj_sharp_strength":	[1, 1, 0.7, 0.4, 0.2, 0.2, 0.15, 0.15, 0.1, 0.1, 0.1, 0.07, 0.05, 0.001],
 												"dis_adj_sharp_strength":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
@@ -7681,7 +7687,7 @@
 												"local_gainscale":	1,
 												"global_hf_clip_pos":	0,
 												"noiseclip_strength":	2,
-												"enhance_bit":	5,
+												"enhance_bit":	7,
 												"noiseclip_mode":	1,
 												"noise_sigma_clip":	3,
 												"gain_adj_sharp_strength":	[2, 1.5, 1.3, 1.1, 0.5, 0.3, 0.2, 0.2, 0.1, 0.1, 0.1, 0.07, 0.05, 0.001],
@@ -7716,7 +7722,7 @@
 												"global_gain":	1,
 												"global_gain_alpha":	0,
 												"local_gainscale":	1,
-												"global_hf_clip_pos":	1,
+												"global_hf_clip_pos":	0,
 												"noiseclip_strength":	1,
 												"enhance_bit":	6,
 												"noiseclip_mode":	0,
@@ -8643,7 +8649,7 @@
 							"GammaTuningPara":	{
 								"Gamma_en":	1,
 								"Gamma_out_offset":	0,
-								"Gamma_curve":	[0, 7, 15, 23, 30, 38, 46, 53, 61, 76, 92, 107, 122, 153, 183, 213, 243, 302, 359, 416, 470, 572, 664, 745, 813, 923, 1009, 1088, 1164, 1309, 1444, 1561, 1661, 1830, 1978, 2113, 2232, 2440, 2628, 2810, 2988, 3152, 3307, 3453, 3592, 3725, 3851, 3974, 4095]
+								"Gamma_curve":	[0, 7, 15, 22, 30, 37, 45, 53, 61, 76, 91, 106, 122, 152, 182, 211, 238, 281, 315, 342, 365, 407, 446, 485, 524, 607, 689, 761, 829, 971, 1108, 1223, 1320, 1494, 1652, 1806, 1957, 2243, 2502, 2728, 2933, 3125, 3306, 3473, 3623, 3757, 3877, 3988, 4095]
 							}
 						},
 						"ablcV32_calib":	{
@@ -8949,13 +8955,13 @@
 								"c_ce_gaus_coe":	[64, 32, 16],
 								"g_interp":	{
 									"iso":	[50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 51200, 102400, 204800],
-									"debayer_clip_en":	[0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+									"debayer_clip_en":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 									"debayer_gain_offset":	[4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095],
-									"debayer_max_ratio":	[4, 4, 4, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1]
+									"debayer_max_ratio":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 								},
 								"g_drctwgt":	{
 									"iso":	[50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 51200, 102400, 204800],
-									"debayer_hf_offset":	[4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096],
+									"debayer_hf_offset":	[1024, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096],
 									"debayer_thed0":	[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
 									"debayer_thed1":	[6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
 									"debayer_dist_scale":	[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
@@ -8963,7 +8969,7 @@
 								},
 								"g_filter":	{
 									"iso":	[50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 51200, 102400, 204800],
-									"debayer_gfilter_en":	[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+									"debayer_gfilter_en":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 									"debayer_gfilter_offset":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 								},
 								"c_filter":	{
@@ -9593,7 +9599,7 @@
 								}
 							},
 							"ALut3D":	{
-								"damp_en":	0,
+								"damp_en":	1,
 								"lutAll":	[{
 										"name":	"Normal",
 										"awbGain":	[1, 1],
@@ -9614,7 +9620,7 @@
 							"DehazeTuningPara":	{
 								"Enable":	1,
 								"CtrlDataType":	"CTRLDATATYPE_ISO",
-								"cfg_alpha":	0,
+								"cfg_alpha":	1,
 								"ByPassThr":	0,
 								"dehaze_setting":	{
 									"en":	0,
@@ -9643,11 +9649,11 @@
 										"cfg_wt":	[0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8],
 										"cfg_air":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210],
 										"cfg_tmax":	[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
-										"dc_weitcur":	[0.02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-										"bf_weight":	[0.2, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-										"range_sigma":	[0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14],
-										"space_sigma_pre":	[0.7, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14],
-										"space_sigma_cur":	[0.8, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14]
+										"dc_weitcur":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+										"bf_weight":	[1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+										"range_sigma":	[0.0325, 0.0625, 0.08, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14],
+										"space_sigma_pre":	[1, 1, 1, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14],
+										"space_sigma_cur":	[1, 1, 1, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14]
 									}
 								},
 								"enhance_setting":	{
@@ -9656,16 +9662,16 @@
 									"enh_luma_en":	0,
 									"EnhanceData":	[{
 											"CtrlData":	50,
-											"enhance_curve":	[32, 64, 128, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023, 1023],
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 											"enh_luma":	[1.2, 1.2, 1.2, 1.2, 1.3, 1.3, 1.4, 1.5, 1.5, 1.6, 1.6, 1.7, 1.8, 1.8, 1.8, 1.8, 1.8],
-											"enhance_value":	1.5,
+											"enhance_value":	1.9,
 											"enhance_chroma":	1.2
 										}, {
 											"CtrlData":	100,
-											"enhance_curve":	[64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023, 1023],
+											"enhance_curve":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 705, 768, 832, 896, 960, 1023],
 											"enh_luma":	[1.2, 1.2, 1.2, 1.2, 1.3, 1.3, 1.4, 1.5, 1.5, 1.6, 1.6, 1.7, 1.8, 1.8, 1.8, 1.8, 1.8],
-											"enhance_value":	1.5,
-											"enhance_chroma":	1.4
+											"enhance_value":	1.9,
+											"enhance_chroma":	1.2
 										}, {
 											"CtrlData":	200,
 											"enhance_curve":	[64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023, 1023],
@@ -9736,71 +9742,77 @@
 								},
 								"hist_setting":	{
 									"en":	0,
-									"hist_para_en":	1,
+									"hist_para_en":	0,
 									"hist_wr":	{
-										"mode":	"HIST_WR_MANUAL",
+										"mode":	"HIST_WR_AUTO",
 										"manual_curve":	[{
-												"CtrlData":	0,
+												"CtrlData":	50,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	0.005,
+												"CtrlData":	100,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	0.01,
+												"CtrlData":	200,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	0.05,
+												"CtrlData":	400,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	0.1,
+												"CtrlData":	800,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	0.15,
+												"CtrlData":	1600,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	0.2,
+												"CtrlData":	3200,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	0.3,
+												"CtrlData":	6400,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	0.4,
+												"CtrlData":	12800,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	0.5,
+												"CtrlData":	25600,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	0.6,
+												"CtrlData":	51200,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	0.8,
+												"CtrlData":	102400,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
 											}, {
-												"CtrlData":	1,
+												"CtrlData":	204800,
 												"curve_x":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023],
 												"curve_y":	[0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1023]
-											}]
+											}],
+										"semiauto_curve":	{
+											"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+											"clim0":	[2, 2, 2, 2, 2, 2, 2, 32, 2, 2, 2, 2, 2],
+											"clim1":	[2, 2, 2, 2, 2, 2, 2, 32, 2, 2, 2, 2, 2],
+											"dark_th":	[64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64]
+											}
 									},
 									"HistData":	{
-										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
+										"CtrlData":	[50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 51200, 102400, 204800],
 										"hist_gratio":	[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
 										"hist_th_off":	[64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64],
 										"hist_k":	[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
 										"hist_min":	[0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015, 0.015],
 										"hist_scale":	[0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09],
-										"cfg_gratio":	[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+										"cfg_gratio":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.8, 0.8, 0.8]
 									}
 								}
 							}
@@ -9811,7 +9823,7 @@
 								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"DrcGain":	{
 									"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-									"DrcGain":	[1.3, 1.3, 1.3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+									"DrcGain":	[1, 1, 1, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.5, 1.5, 1.5, 1.5],
 									"Alpha":	[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
 									"Clip":	[16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
 								},
@@ -9831,25 +9843,25 @@
 										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"LocalWeit":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 										"LocalAutoEnable":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-										"LocalAutoWeit":	[0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08],
+										"LocalAutoWeit":	[0.0375, 0.0375, 0.0375, 0.0375, 0.0375, 0.0375, 0.0375, 0.0375, 0.0375, 0.0375, 0.0375, 0.0375, 0.0375],
 										"GlobalContrast":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-										"LoLitContrast":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+										"LoLitContrast":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0.4, 0.4, 0.5, 0.5]
 									},
 									"MotionData":	{
 										"MotionCoef":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
-										"MotionStr":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+										"MotionStr":	[0.2, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 1, 1, 1, 1, 1]
 									},
-									"curPixWeit":	0.05,
-									"preFrameWeit":	0.9,
+									"curPixWeit":	0.2,
+									"preFrameWeit":	0.5,
 									"Range_force_sgm":	0,
-									"Range_sgm_cur":	0.3884,
-									"Range_sgm_pre":	0.3967,
+									"Range_sgm_cur":	0.2,
+									"Range_sgm_pre":	0.2,
 									"Space_sgm_cur":	4068,
 									"Space_sgm_pre":	3968
 								},
 								"CompressSetting":	{
-									"Mode":	"COMPRESS_AUTO",
-									"Manual_curve":	[0, 800, 1200, 1588, 2063, 2515, 2944, 3353, 3744, 4473, 5139, 5751, 6316, 6838, 7322, 7772, 8192]
+									"Mode":	"COMPRESS_MANUAL",
+									"Manual_curve":	[0, 815, 1467, 1999, 2444, 2825, 3157, 3455, 3727, 4226, 4700, 5178, 5682, 6226, 6820, 7474, 8192]
 								},
 								"Scale_y":	[0, 2, 20, 76, 193, 381, 631, 772, 919, 1066, 1211, 1479, 1700, 1863, 1968, 2024, 2048],
 								"ByPassThr":	0,
@@ -10759,7 +10771,7 @@
 												"lo_filter_strength":	1,
 												"hi_filter_strength":	1,
 												"hi_filter_rat0":	0,
-												"hi_filter_rat1":	0.7,
+												"hi_filter_rat1":	1,
 												"global_pk_en":	0,
 												"global_pksq":	1024,
 												"soft_threshold_ratio":	0,
@@ -10775,7 +10787,7 @@
 												"hi_filter_filt_bay":	0,
 												"hi_filter_filt_mode":	4,
 												"hi_filter_thed0":	30,
-												"hi_filter_thed1":	0,
+												"hi_filter_thed1":	1000,
 												"hi_wgt_comp":	0.16,
 												"lo_clipwgt":	0.04,
 												"lo_filter_rat0":	1,
@@ -13355,8 +13367,8 @@
 												"ynr_thumb_mix_cur_en":	0,
 												"ynr_global_gain_alpha":	0,
 												"ynr_global_gain":	1,
-												"ynr_adjust_thresh":	0.3,
-												"ynr_adjust_scale":	0.01,
+												"ynr_adjust_thresh":	0.2,
+												"ynr_adjust_scale":	0.3,
 												"lumaPara":	{
 													"lo_lumaPoint":	[0, 32, 64, 128, 192, 256],
 													"lo_ratio":	[1, 1, 1, 1, 1, 1],
@@ -13364,23 +13376,23 @@
 													"hi_ratio":	[1, 1, 1, 1, 1, 1]
 												},
 												"low_bf1":	0.5,
-												"low_bf2":	0.5,
-												"low_thred_adj":	0.5,
+												"low_bf2":	1,
+												"low_thred_adj":	1,
 												"low_peak_supress":	0.5,
 												"low_edge_adj_thresh":	7,
 												"low_lbf_weight_thresh":	0.25,
 												"low_center_weight":	0.4,
 												"low_dist_adj":	8,
-												"low_weight":	0.5,
+												"low_weight":	0.1,
 												"low_filt1_strength":	0.7,
 												"low_filt2_strength":	0.85,
 												"low_bi_weight":	0.2,
-												"hi_bf_scale":	0.5,
-												"hi_gain_alpha":	1,
+												"hi_bf_scale":	0.9,
+												"hi_gain_alpha":	0.7,
 												"hi_center_weight":	0.8,
-												"hi_weight_offset":	0.0498,
-												"hi_min_sigma":	0.0568,
-												"hi_nr_weight":	0.9,
+												"hi_weight_offset":	0.05,
+												"hi_min_sigma":	0.0268,
+												"hi_nr_weight":	0.6,
 												"hi_filter_coeff1_1":	7,
 												"hi_filter_coeff1_2":	6,
 												"hi_filter_coeff1_3":	3,
@@ -13414,16 +13426,16 @@
 												"low_lbf_weight_thresh":	0.25,
 												"low_center_weight":	0.35,
 												"low_dist_adj":	8,
-												"low_weight":	0.5,
+												"low_weight":	0,
 												"low_filt1_strength":	0.7,
 												"low_filt2_strength":	0.85,
-												"low_bi_weight":	0.2,
+												"low_bi_weight":	0,
 												"hi_bf_scale":	1,
-												"hi_gain_alpha":	1,
-												"hi_center_weight":	0.8,
+												"hi_gain_alpha":	0.61,
+												"hi_center_weight":	0.2,
 												"hi_weight_offset":	0.0498,
-												"hi_min_sigma":	0.0068,
-												"hi_nr_weight":	0.5,
+												"hi_min_sigma":	0.0268,
+												"hi_nr_weight":	0.7,
 												"hi_filter_coeff1_1":	7,
 												"hi_filter_coeff1_2":	6,
 												"hi_filter_coeff1_3":	3,
@@ -13457,12 +13469,12 @@
 												"low_lbf_weight_thresh":	0.25,
 												"low_center_weight":	0.3,
 												"low_dist_adj":	8,
-												"low_weight":	0.5,
+												"low_weight":	0.31,
 												"low_filt1_strength":	0.7,
 												"low_filt2_strength":	0.85,
 												"low_bi_weight":	0.2,
 												"hi_bf_scale":	1,
-												"hi_gain_alpha":	1,
+												"hi_gain_alpha":	0.6,
 												"hi_center_weight":	0.8,
 												"hi_weight_offset":	0.0498,
 												"hi_min_sigma":	0.0068,
@@ -14478,7 +14490,7 @@
 							"Version":	"V33",
 							"TuningPara":	{
 								"enable":	1,
-								"kernel_sigma_enable":	0,
+								"kernel_sigma_enable":	1,
 								"Center_Mode":	0,
 								"Setting":	[{
 										"SNR_Mode":	"LSNR",
@@ -14486,28 +14498,28 @@
 										"Tuning_ISO":	[{
 												"iso":	50,
 												"exgain_bypass":	0,
-												"pbf_gain":	0.5,
-												"pbf_ratio":	0,
-												"pbf_add":	0,
+												"pbf_gain":	1,
+												"pbf_ratio":	0.5,
+												"pbf_add":	40,
 												"gaus_ratio":	0,
-												"sharp_ratio":	14,
+												"sharp_ratio":	6,
 												"bf_gain":	0.5,
 												"bf_ratio":	0,
 												"bf_add":	0,
 												"global_gain":	1,
 												"global_gain_alpha":	0,
 												"local_gainscale":	1,
-												"global_hf_clip_pos":	0,
+												"global_hf_clip_pos":	2,
 												"noiseclip_strength":	0,
 												"enhance_bit":	0,
-												"noiseclip_mode":	0,
-												"noise_sigma_clip":	0,
-												"gain_adj_sharp_strength":	[0.8, 0.8, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
+												"noiseclip_mode":	1,
+												"noise_sigma_clip":	4,
+												"gain_adj_sharp_strength":	[1, 1, 0.9, 0.7, 0.5, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3],
 												"dis_adj_sharp_strength":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],
 													"luma_sigma":	[8, 12, 16, 16, 24, 20, 16, 16],
-													"hf_clip":	[0, 64, 128, 256, 384, 640, 896, 896]
+													"hf_clip":	[0, 64, 128, 256, 384, 640, 896, 1023]
 												},
 												"kernel_para":	{
 													"prefilter_coeff":	[0.2042, 0.1238, 0.0751],
@@ -14515,7 +14527,7 @@
 													"hfBilateralFilter_coeff":	[0.2042, 0.1238, 0.0751]
 												},
 												"kernel_sigma":	{
-													"prefilter_sigma":	1,
+													"prefilter_sigma":	0.6,
 													"GaussianFilter_sigma":	1.2,
 													"GaussianFilter_radius":	2,
 													"hfBilateralFilter_sigma":	1
@@ -14539,7 +14551,7 @@
 												"enhance_bit":	2,
 												"noiseclip_mode":	0,
 												"noise_sigma_clip":	1023,
-												"gain_adj_sharp_strength":	[1, 0.9, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
+												"gain_adj_sharp_strength":	[1, 0.9, 0.7, 0.6, 0.5, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3],
 												"dis_adj_sharp_strength":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 												"luma_para":	{
 													"luma_point":	[0, 64, 128, 256, 384, 640, 896, 1024],

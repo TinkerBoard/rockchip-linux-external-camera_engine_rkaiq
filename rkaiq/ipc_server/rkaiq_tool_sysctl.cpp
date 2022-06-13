@@ -162,3 +162,15 @@ int get3AStatsBlk(rk_aiq_sys_ctx_t* ctx, char* data)
       return -1;
     }
 }
+
+int writeAwbIn(rk_aiq_sys_ctx_t* ctx, char* data)
+{
+    static int call_cnt = 0;
+    rk_aiq_uapiV2_awb_wrtIn_attr_t attr;
+    memset(&attr,0,sizeof(rk_aiq_uapiV2_awb_wrtIn_attr_t));
+    attr.en = true;
+    attr.mode = 1; // 1 means rgb ,0 means raw
+    attr.call_cnt = call_cnt++;
+    sprintf(attr.path,"/tmp");
+    return rk_aiq_user_api2_awb_WriteAwbIn(ctx, attr);
+}

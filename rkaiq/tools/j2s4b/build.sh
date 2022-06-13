@@ -53,9 +53,11 @@ cd $BUILD_DIR || exit
 # build cross
 if [ "$BUILD_CROSS" = true ] ; then
     echo "start build cross paltform"
-    cmake -DCMAKE_TOOLCHAIN_FILE=toolchainfile.cmake -DCMAKE_INSTALL_PREFIX=./release ../
+    cmake -DCMAKE_TOOLCHAIN_FILE=toolchainfile.cmake \
+        -DCMAKE_INSTALL_PREFIX=./release ../
 else
-    cmake -DCMAKE_INSTALL_PREFIX=./release ../
+    cmake -DCMAKE_INSTALL_PREFIX=./release -DROOT_PROJ_BIN_DIR:STRING="../../build/linux/output/arm" \
+        -DRKAIQ_IQFILES_DIR:STRING="../../iqfiles/isp32"  ../
 fi
 
 make -j8

@@ -48,6 +48,8 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
         memset(&mNewWbAwbWbGainAdjustAttr, 0, sizeof(mNewWbAwbWbGainAdjustAttr));
         memset(&mNewWbAwbWbGainOffsetAttr, 0, sizeof(mNewWbAwbWbGainOffsetAttr));
         memset(&mNewWbAwbMultiWindowAttr, 0, sizeof(mNewWbAwbMultiWindowAttr));
+        memset(&mCurFFWbgainAttr, 0, sizeof(mCurFFWbgainAttr));
+        memset(&mNewFFWbgainAttr, 0, sizeof(mNewFFWbgainAttr));
         updateWbV20Attr             = false;
         updateWbOpModeAttr          = false;
         updateWbMwbAttr             = false;
@@ -55,6 +57,7 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
         updateWbAwbWbGainAdjustAttr = false;
         updateWbAwbWbGainOffsetAttr = false;
         updateWbAwbMultiWindowAttr  = false;
+        updateFFWbgainAttr = false;
     };
     virtual ~RkAiqAwbHandleInt() {
             freeWbGainAdjustAttrib(&mNewWbAwbWbGainAdjustAttr);
@@ -92,6 +95,7 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
     XCamReturn getWbAwbWbGainOffsetAttrib(rk_aiq_uapiV2_wb_awb_wbGainOffset_t* att);
     XCamReturn setWbAwbMultiWindowAttrib(rk_aiq_uapiV2_wb_awb_mulWindow_t att);
     XCamReturn getWbAwbMultiWindowAttrib(rk_aiq_uapiV2_wb_awb_mulWindow_t* att);
+    XCamReturn setFFWbgainAttrib(rk_aiq_uapiV2_awb_ffwbgain_attr_t att);
     XCamReturn getAlgoStat(rk_tool_awb_stat_res_full_t *awb_stat_algo);
     XCamReturn getStrategyResult(rk_tool_awb_strategy_result_t *awb_strategy_result);
     XCamReturn mallocAndCopyWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wbGainAdjust_t* dst,const rk_aiq_uapiV2_wb_awb_wbGainAdjust_t *src);
@@ -118,6 +122,8 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
     rk_aiq_uapiV2_wb_awb_wbGainOffset_t mNewWbAwbWbGainOffsetAttr;
     rk_aiq_uapiV2_wb_awb_mulWindow_t mCurWbAwbMultiWindowAttr;
     rk_aiq_uapiV2_wb_awb_mulWindow_t mNewWbAwbMultiWindowAttr;
+    rk_aiq_uapiV2_awb_ffwbgain_attr_t mCurFFWbgainAttr;
+    rk_aiq_uapiV2_awb_ffwbgain_attr_t mNewFFWbgainAttr;
     mutable std::atomic<bool> updateWbV20Attr;
     mutable std::atomic<bool> updateWbOpModeAttr;
     mutable std::atomic<bool> updateWbMwbAttr;
@@ -125,6 +131,7 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
     mutable std::atomic<bool> updateWbAwbWbGainAdjustAttr;
     mutable std::atomic<bool> updateWbAwbWbGainOffsetAttr;
     mutable std::atomic<bool> updateWbAwbMultiWindowAttr;
+    mutable std::atomic<bool> updateFFWbgainAttr;
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAwbHandleInt);

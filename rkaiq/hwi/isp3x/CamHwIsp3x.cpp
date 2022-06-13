@@ -289,11 +289,12 @@ CamHwIsp3x::setIspConfig()
             /* use the latest */
             SmartLock locker (_isp_params_cfg_mutex);
             if (!_effecting_ispparam_map.empty()) {
+                SmartPtr<RkAiqIspEffParamsProxy>& last_param = _effecting_ispparam_map.rbegin()->second;
+                LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %u awb params for frame %u !\n", frameId,
+                                (_effecting_ispparam_map.rbegin())->first);
                 if (getParamsForEffMap(frameId))
                     _effecting_ispparam_map[frameId]->data()->result.awb_cfg_v3x =
-                        (_effecting_ispparam_map.rbegin())->second->data()->result.awb_cfg_v3x;
-                LOGW_CAMHW_SUBM(ISP20HW_SUBM, "use frame %d awb params for frame %d !\n",
-                                frameId, (_effecting_ispparam_map.rbegin())->first);
+                        last_param->data()->result.awb_cfg_v3x;
             } else {
                 LOGW_CAMHW_SUBM(ISP20HW_SUBM, "get awb params from 3a result failed for frame %d !\n", frameId);
             }

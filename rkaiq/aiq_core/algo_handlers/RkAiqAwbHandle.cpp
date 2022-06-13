@@ -18,7 +18,7 @@
 #include "RkAiqAblcHandle.h"
 #include "RkAiqCore.h"
 #include "awb/rk_aiq_uapiv2_awb_int.h"
-
+#include "smart_buffer_priv.h"
 
 namespace RkCam {
 
@@ -94,6 +94,12 @@ XCamReturn RkAiqAwbHandleInt::updateConfig(bool needSync) {
         rk_aiq_uapiV2_awb_SetAwbMultiwindow(mAlgoCtx, mCurWbAwbMultiWindowAttr.multiWindw, false);
         updateWbAwbMultiWindowAttr = false;
         sendSignal(mCurWbAwbMultiWindowAttr.sync.sync_mode);
+    }
+    if (updateFFWbgainAttr) {
+        mCurFFWbgainAttr   = mNewFFWbgainAttr;
+        rk_aiq_uapiV2_awb_SetFstFrWbgain(mAlgoCtx, mCurFFWbgainAttr.wggain, false);
+        updateFFWbgainAttr = false;
+        sendSignal(mCurFFWbgainAttr.sync.sync_mode);
     }
     if (needSync) mCfgMutex.unlock();
 
@@ -389,7 +395,7 @@ XCamReturn RkAiqAwbHandleInt::getAwbV20Attrib(rk_aiq_uapiV2_wbV20_awb_attrib_t* 
     return ret;
 }
 
-XCamReturn RkAiqAwbHandleInt::mallocAndCopyWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wbGainAdjust_t* dst, 
+XCamReturn RkAiqAwbHandleInt::mallocAndCopyWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wbGainAdjust_t* dst,
     const rk_aiq_uapiV2_wb_awb_wbGainAdjust_t *src)
 {
     ENTER_ANALYZER_FUNCTION();
@@ -653,6 +659,37 @@ XCamReturn RkAiqAwbHandleInt::getWbAwbMultiWindowAttrib(rk_aiq_uapiV2_wb_awb_mul
     return ret;
 }
 
+XCamReturn RkAiqAwbHandleInt::setFFWbgainAttrib(rk_aiq_uapiV2_awb_ffwbgain_attr_t att) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    mCfgMutex.lock();
+
+    // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
+    // if something changed, set att to mNewAtt, and
+    // the new params will be effective later when updateConfig
+    // called by RkAiqCore
+    bool isChanged = false;
+    if (att.sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
+        memcmp(&mNewFFWbgainAttr, &att, sizeof(att)))
+        isChanged = true;
+    else if (att.sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
+             memcmp(&mCurFFWbgainAttr, &att, sizeof(att)))
+        isChanged = true;
+
+    // if something changed
+    if (isChanged) {
+        mNewFFWbgainAttr   = att;
+        updateFFWbgainAttr = true;
+        waitSignal(att.sync.sync_mode);
+    }
+
+    mCfgMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
 XCamReturn RkAiqAwbHandleInt::prepare() {
     ENTER_ANALYZER_FUNCTION();
 
@@ -753,9 +790,14 @@ XCamReturn RkAiqAwbHandleInt::processing() {
         awb_proc_int->ablcProcResVaid = true;
 #endif
     ret = RkAiqHandle::processing();
-
-    if (ret) {
-        RKAIQCORE_CHECK_RET(ret, "awb handle processing failed");
+    if (ret < 0) {
+        LOGE_ANALYZER("awb handle processing failed ret %d", ret);
+        mProcResShared = NULL;
+        return ret;
+    } else if (ret == XCAM_RETURN_BYPASS) {
+        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
+        mProcResShared = NULL;
+        return ret;
     }
 
     if (!sharedCom->init) {
@@ -772,9 +814,31 @@ XCamReturn RkAiqAwbHandleInt::processing() {
 #else
     ret = des->processing(mProcInParam, (RkAiqAlgoResCom*)awb_proc_res_int);
 #endif
-    RKAIQCORE_CHECK_BYPASS(ret, "awb algo processing failed");
+    if (ret < 0) {
+        LOGE_ANALYZER("awb algo processing failed ret %d", ret);
+        mProcResShared = NULL;
+        return ret;
+    } else if (ret == XCAM_RETURN_BYPASS) {
+        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
+        ret = XCAM_RETURN_NO_ERROR;
+        mProcResShared = NULL;
+    }
 
-    if (mPostShared) {
+    if (mAiqCore->mAlogsComSharedParams.init) {
+        RkAiqCore::RkAiqAlgosGroupShared_t* grpShared = nullptr;
+        uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_GRP1);
+        if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
+            if (grpShared) {
+                SmartPtr<BufferProxy> procResProxy = new BufferProxy(mProcResShared);
+                procResProxy->set_sequence(0);
+
+                if (procResProxy.ptr()) {
+                    XCamVideoBuffer* xCamAwbProcRes = convert_to_XCamVideoBuffer(procResProxy);
+                    grpShared->res_comb.awb_proc_res = xCamAwbProcRes;
+                }
+            }
+        }
+    } else if (mPostShared) {
         SmartPtr<BufferProxy> msg_data = new BufferProxy(mProcResShared);
         msg_data->set_sequence(shared->frameId);
         SmartPtr<XCamMessage> msg =
@@ -834,6 +898,7 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
 
     if (!awb_com) {
         LOGD_ANALYZER("no awb result");
+        mProcResShared = NULL;
         return XCAM_RETURN_NO_ERROR;
     }
 
@@ -908,6 +973,8 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
 #else
     cur_params->mAwbGainParams = params->mAwbGainParams;
 #endif
+
+    mProcResShared = NULL;
 
     EXIT_ANALYZER_FUNCTION();
 

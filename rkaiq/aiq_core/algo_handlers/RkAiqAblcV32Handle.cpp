@@ -179,8 +179,14 @@ XCamReturn RkAiqAblcV32HandleInt::processing() {
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     ret = RkAiqHandle::processing();
-    if (ret) {
-        RKAIQCORE_CHECK_RET(ret, "ablcV32 handle processing failed");
+    if (ret < 0) {
+        LOGE_ANALYZER("ablcV32 handle processing failed ret %d", ret);
+        mProcResShared = NULL;
+        return ret;
+    } else if (ret == XCAM_RETURN_BYPASS) {
+        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
+        mProcResShared = NULL;
+        return ret;
     }
 
     ablc_proc_int->iso      = sharedCom->iso;
@@ -188,7 +194,15 @@ XCamReturn RkAiqAblcV32HandleInt::processing() {
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, (RkAiqAlgoResCom*)(&mProcResShared->result));
-    RKAIQCORE_CHECK_RET(ret, "ablcV32 algo processing failed");
+    if (ret < 0) {
+        LOGE_ANALYZER("ablcV32 algo processing failed ret %d", ret);
+        mProcResShared = NULL;
+        return ret;
+    } else if (ret == XCAM_RETURN_BYPASS) {
+        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
+        mProcResShared = NULL;
+        return ret;
+    }
 
     if (mAiqCore->mAlogsComSharedParams.init) {
         RkAiqCore::RkAiqAlgosGroupShared_t* grpShared = nullptr;
@@ -214,7 +228,7 @@ XCamReturn RkAiqAblcV32HandleInt::processing() {
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
-}
+    }
 
 XCamReturn RkAiqAblcV32HandleInt::postProcess() {
     ENTER_ANALYZER_FUNCTION();
@@ -259,6 +273,7 @@ XCamReturn RkAiqAblcV32HandleInt::genIspResult(RkAiqFullParams* params,
 
     if (!ablc_com) {
         LOGE_ANALYZER("no ablcV32 result");
+        mProcResShared = NULL;
         return XCAM_RETURN_NO_ERROR;
     }
 
@@ -280,6 +295,8 @@ XCamReturn RkAiqAblcV32HandleInt::genIspResult(RkAiqFullParams* params,
     }
 
     cur_params->mBlcV32Params = params->mBlcV32Params;
+
+    mProcResShared = NULL;
 
     EXIT_ANALYZER_FUNCTION();
 

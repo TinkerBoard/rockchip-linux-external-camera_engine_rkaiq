@@ -116,6 +116,23 @@ add_custom_target(
 	DEPENDS j2s_generated_optim
     )
 
+#########################################################
+#                    BUILD BINARY IQ FILES              #
+#########################################################
+add_custom_target(
+    j2s4b
+    COMMAND ${CMAKE_COMMAND}
+    -DROOT_PROJ_BIN_DIR:STRING=${CMAKE_BINARY_DIR}
+    -DRKAIQ_IQFILES_DIR:STRING="${CMAKE_SOURCE_DIR}/iqfiles/isp32"
+    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE:PATH="${CMAKE_BINARY_DIR}/bin"
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+    -B"host_tool"
+    -H"${CMAKE_SOURCE_DIR}/tools/j2s4b"
+    COMMAND ${CMAKE_COMMAND} --build host_tool
+    COMMAND ${CMAKE_COMMAND} --install host_tool
+	DEPENDS j2s_parser
+    )
+
 SET(IQ_PARSERV2_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/j2s/cJSON.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/j2s/cJSON_Utils.cpp

@@ -13,6 +13,7 @@
 #include "include/uAPI2/rk_aiq_user_api2_adpcc.h"
 #include "include/uAPI2/rk_aiq_user_api2_helper.h"
 #include "include/uAPI2/rk_aiq_user_api2_sysctl.h"
+#include "include/uAPI2/rk_aiq_user_api2_awb.h"
 #include "rk_aiq_user_api2_ae.h"
 #include "rk_aiq_user_api_ae.h"
 #include "rkaiq_tool_ae.h"
@@ -323,6 +324,7 @@ enum
   ENUM_ID_AIQ_UAPI_START = 0X1F00,
   ENUM_ID_AIQ_UAPI_SYSCTL_GET3ASTATS,
   ENUM_ID_AIQ_UAPI_SYSCTL_GET3ASTATSBLK,
+  ENUM_ID_AIQ_UAPI2_AWB_WRITEAWBIN,
   ENUM_ID_AIQ_UAPI_END,
 };
 

@@ -907,6 +907,17 @@ static int sample_awb_WriteAwbIn(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_s
 
     return 0;
 }
+static int sample_awb_setFFWbgain(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mode_sync_e sync)
+{
+    rk_aiq_uapiV2_awb_ffwbgain_attr_t attr;
+    memset(&attr,0,sizeof(rk_aiq_uapiV2_awb_ffwbgain_attr_t));
+    attr.wggain={1.0,1.0,1.0,1.0};
+    rk_aiq_user_api2_awb_SetFFWbgainAttrib(ctx, attr);
+    printf("setFFWbgain \n\n");
+
+    return 0;
+}
+
 //#if rk356x || rk3588
 static void sample_awb1_usage()
 {
@@ -1384,6 +1395,9 @@ XCamReturn sample_awb32_module(const void *arg)
                 sample_awb_getMwbAttr(ctx);
             case 'Y':
                 sample_awb_WriteAwbIn(ctx, RK_AIQ_UAPI_MODE_ASYNC);
+                break;
+            case 'Z':
+                sample_awb_setFFWbgain(ctx, RK_AIQ_UAPI_MODE_DEFAULT);
                 break;
             default:
                 break;

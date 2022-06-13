@@ -353,8 +353,9 @@ typedef struct Enhance_Setting_V12_s {
 } Enhance_Setting_V12_t;
 
 typedef enum HistWrMode_e {
-    HIST_WR_AUTO   = 0,
-    HIST_WR_MANUAL = 1,
+    HIST_WR_AUTO     = 0,
+    HIST_WR_MANUAL   = 1,
+    HIST_WR_SEMIAUTO = 2,
 } HistWrMode_t;
 
 typedef struct Manual_curve_s {
@@ -366,11 +367,24 @@ typedef struct Manual_curve_s {
     int curve_y[DHAZ_V12_HIST_WR_CURVE_NUM];
 } Manual_curve_t;
 
+typedef struct hist_wr_semiauto_s {
+    // M4_ARRAY_DESC("CtrlData", "f32", M4_SIZE(1,13), M4_RANGE(0,10000000), "[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float CtrlData[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("clim0", "f32", M4_SIZE(1,13), M4_RANGE(0.1,32), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float clim0[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("clim1", "f32", M4_SIZE(1,13), M4_RANGE(0.1,32), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",M4_DIGIT(4), M4_DYNAMIC(0), 0)
+    float clim1[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_DESC("dark_th", "f32", M4_SIZE(1,13), M4_RANGE(0,1023), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",M4_DIGIT(0), M4_DYNAMIC(0), 0)
+    float dark_th[DHAZ_CTRL_DATA_STEP_MAX];
+} hist_wr_semiauto_t;
+
 typedef struct HistWr_s {
     // M4_ENUM_DESC("mode", "HistWrMode_t", "HIST_WR_MANUAL")
     HistWrMode_t mode;
     // M4_STRUCT_LIST_DESC("manual_curve", M4_SIZE(1,13), "normal_ui_style")
     Manual_curve_t manual_curve[DHAZ_CTRL_DATA_STEP_MAX];
+    // M4_ARRAY_TABLE_DESC("semiauto_curve", "array_table_ui","none")
+    hist_wr_semiauto_t semiauto_curve;
 } HistWr_t;
 
 typedef struct Hist_setting_V12_s {

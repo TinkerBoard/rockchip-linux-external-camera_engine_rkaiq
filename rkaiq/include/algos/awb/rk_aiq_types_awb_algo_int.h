@@ -262,5 +262,10 @@ typedef struct rk_aiq_uapiV2_awb_wrtIn_attr_s {
     int call_cnt;
 } rk_aiq_uapiV2_awb_wrtIn_attr_t;
 
+typedef struct rk_aiq_uapiV2_awb_ffwbgain_attr_s{
+    rk_aiq_uapi_sync_t sync;
+    rk_aiq_wb_gain_t wggain;
+}rk_aiq_uapiV2_awb_ffwbgain_attr_t;
+
 #endif
 

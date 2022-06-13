@@ -42,13 +42,13 @@ class RkAiqAnalyzeGroupMsgHdlThread;
 
 // TODO(Cody): This is just workaround for current implementation
 //using MessageHandleWrapper = std::function<XCamReturn(const std::list<SmartPtr<XCamMessage>>&)>;
-typedef std::function<XCamReturn(std::vector<SmartPtr<XCamMessage>>&, uint32_t, uint64_t)>
+typedef std::function<XCamReturn(std::list<SmartPtr<XCamMessage>>&, uint32_t, uint64_t)>
     MessageHandleWrapper;
 
 class RkAiqAnalyzerGroup {
  public:
     struct GroupMessage {
-        std::vector<SmartPtr<XCamMessage>> msgList;
+        std::list<SmartPtr<XCamMessage>> msgList;
         uint64_t msg_flags;
     };
 
@@ -144,10 +144,10 @@ class RkAiqAnalyzeGroupManager {
     }
 
  protected:
-    XCamReturn groupMessageHandler(std::vector<SmartPtr<XCamMessage>>& msgs, uint32_t id,
+    XCamReturn groupMessageHandler(std::list<SmartPtr<XCamMessage>>& msgs, uint32_t id,
                                    uint64_t grpId);
 #if defined(RKAIQ_HAVE_THUMBNAILS)
-    XCamReturn thumbnailsGroupMessageHandler(std::vector<SmartPtr<XCamMessage>>& msgs, uint32_t id,
+    XCamReturn thumbnailsGroupMessageHandler(std::list<SmartPtr<XCamMessage>>& msgs, uint32_t id,
                                              uint64_t grpId);
 #endif
  private:

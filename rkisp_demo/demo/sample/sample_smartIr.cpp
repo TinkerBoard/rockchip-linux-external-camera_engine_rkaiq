@@ -125,20 +125,34 @@ static void* switch_ir_thread(void* args)
 {
     sample_smartIr_t* smartIr_ctx = &g_sample_smartIr_ctx;
     rk_smart_ir_result_t ir_res;
+    rk_aiq_isp_stats_t *stats_ref = NULL;
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     while (!smartIr_ctx->tquit) {
-        rk_smart_ir_runOnce(smartIr_ctx->ir_ctx, &ir_res);
-        if (ir_res.status == RK_SMART_IR_STATUS_DAY) {
-            switch_to_day();
-        } else if (ir_res.status == RK_SMART_IR_STATUS_NIGHT) {
-            switch_to_night();
+        ret = rk_aiq_uapi2_sysctl_get3AStatsBlk(smartIr_ctx->aiq_ctx, &stats_ref, -1);
+        if (ret == XCAM_RETURN_NO_ERROR && stats_ref != NULL) {
+            rk_smart_ir_runOnce(smartIr_ctx->ir_ctx, stats_ref, &ir_res);
+
+            rk_aiq_uapi2_sysctl_release3AStatsRef(smartIr_ctx->aiq_ctx, stats_ref);
+
+            if (ir_res.status == RK_SMART_IR_STATUS_DAY) {
+                switch_to_day();
+            } else if (ir_res.status == RK_SMART_IR_STATUS_NIGHT) {
+                switch_to_night();
+            } else {
+
+            }
+            printf("SAMPLE_SMART_IR: switch to %s\n",
+                   ir_res.status == RK_SMART_IR_STATUS_DAY ? "DAY" : "Night");
         } else {
-
+            if (ret == XCAM_RETURN_NO_ERROR) {
+                printf("aiq has stopped !\n");
+            } else if (ret == XCAM_RETURN_ERROR_TIMEOUT) {
+                printf("aiq timeout!\n");
+            } else if (ret == XCAM_RETURN_ERROR_FAILED) {
+                printf("aiq failed!\n");
+            }
         }
-
-        printf("SAMPLE_SMART_IR: switch to %s\n",
-               ir_res.status == RK_SMART_IR_STATUS_DAY ? "DAY" : "Night");
-        usleep(30*1000);
     }
 
     return NULL;

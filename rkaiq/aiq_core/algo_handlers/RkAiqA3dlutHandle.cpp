@@ -226,6 +226,14 @@ XCamReturn RkAiqA3dlutHandleInt::processing() {
         LOGE("fail to get sensor gain form AE module,use default value ");
     }
 
+#if RKAIQ_HAVE_BLC_V32
+    if (shared->res_comb.ablcV32_proc_res.blc_ob_enable) {
+        if (shared->res_comb.ablcV32_proc_res.isp_ob_predgain >= 1.0f) {
+            a3dlut_proc_int->sensorGain *=  shared->res_comb.ablcV32_proc_res.isp_ob_predgain;
+        }
+    }
+#endif
+
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
     RKAIQCORE_CHECK_RET(ret, "a3dlut algo processing failed");

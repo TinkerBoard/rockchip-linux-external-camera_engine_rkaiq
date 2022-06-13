@@ -166,11 +166,22 @@ typedef struct mManual_curve_s {
     int curve_y[DHAZ_V12_HIST_WR_CURVE_NUM];
 } mManual_curve_t;
 
+typedef struct mhist_wr_semiauto_s {
+    // M4_NUMBER_DESC("clim0", "f32", M4_RANGE(0.1,32), "1", M4_DIGIT(4))
+    float clim0;
+    // M4_NUMBER_DESC("clim1", "f32", M4_RANGE(0.1,32), "1", M4_DIGIT(4))
+    float clim1;
+    // M4_NUMBER_DESC("dark_th", "f32", M4_RANGE(0,1023), "1", M4_DIGIT(0))
+    float dark_th;
+} mhist_wr_semiauto_t;
+
 typedef struct mHistWr_s {
     // M4_ENUM_DESC("mode", "HistWrMode_t", "HIST_WR_MANUAL")
     HistWrMode_t mode;
     // M4_STRUCT_DESC("manual_curve", "normal_ui_style")
     mManual_curve_t manual_curve;
+    // M4_STRUCT_DESC("semiauto_curve", "normal_ui_style")
+    mhist_wr_semiauto_t semiauto_curve;
 } mHistWr_t;
 
 typedef struct mHist_setting_v12_s {

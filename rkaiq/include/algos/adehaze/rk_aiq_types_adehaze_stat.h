@@ -49,6 +49,7 @@ typedef struct dehaze_stats_v10_s {
 } dehaze_stats_v10_t;
 
 typedef struct rkisp_adehaze_stats_s {
+    bool stats_true;
 #if RKAIQ_HAVE_DEHAZE_V10
     dehaze_stats_v10_t dehaze_stats_v10;
 #endif

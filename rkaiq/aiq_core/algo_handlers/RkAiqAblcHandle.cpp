@@ -185,8 +185,14 @@ XCamReturn RkAiqAblcHandleInt::processing() {
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     ret = RkAiqHandle::processing();
-    if (ret) {
-        RKAIQCORE_CHECK_RET(ret, "ablc handle processing failed");
+    if (ret < 0) {
+        LOGE_ANALYZER("ablc handle processing failed ret %d", ret);
+        mProcResShared = NULL;
+        return ret;
+    } else if (ret == XCAM_RETURN_BYPASS) {
+        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
+        mProcResShared = NULL;
+        return ret;
     }
 
     ablc_proc_int->iso      = sharedCom->iso;
@@ -194,7 +200,16 @@ XCamReturn RkAiqAblcHandleInt::processing() {
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, (RkAiqAlgoResCom*)(&mProcResShared->result));
-    RKAIQCORE_CHECK_RET(ret, "ablc algo processing failed");
+    if (ret < 0) {
+        LOGE_ANALYZER("ablc algo processing failed ret %d", ret);
+        mProcResShared = NULL;
+        return ret;
+    } else if (ret == XCAM_RETURN_BYPASS) {
+        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
+        mProcResShared = NULL;
+        return ret;
+    }
+
 
     if (mAiqCore->mAlogsComSharedParams.init) {
         RkAiqCore::RkAiqAlgosGroupShared_t* grpShared = nullptr;
@@ -267,6 +282,7 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
 
     if (!ablc_com) {
         LOGD_ANALYZER("no ablc result");
+        mProcResShared = NULL;
         return XCAM_RETURN_NO_ERROR;
     }
 
@@ -292,6 +308,8 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
 #else
     cur_params->mBlcParams = params->mBlcParams;
 #endif
+
+    mProcResShared = NULL;
 
     EXIT_ANALYZER_FUNCTION();
 

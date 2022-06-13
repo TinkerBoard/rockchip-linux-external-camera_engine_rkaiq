@@ -759,6 +759,10 @@ set_target_properties(rkaiq_tmp PROPERTIES FOLDER "rk_aiq")
 set_target_properties(rkaiq_tmp PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 add_dependencies(rkaiq_tmp j2s_parser)
 
+if (RKAIQ_BUILD_BINARY_IQ)
+    add_dependencies(rkaiq_tmp j2s4b)
+endif()
+
 add_library(rkaiq SHARED ${RK_AIQ_SRC})
 set_target_properties(rkaiq PROPERTIES FOLDER "rk_aiq")
 set_target_properties(rkaiq PROPERTIES CLEAN_DIRECT_OUTPUT 1)
