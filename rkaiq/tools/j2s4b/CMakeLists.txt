@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_C_FLAGS -m32)
@@ -15,7 +15,8 @@ add_compile_options(-Wno-unused-variable
     -fno-strict-aliasing)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(GitVersion)
+include(GetGitVersion)
+get_git_version(GIT_VERSION)
 
 PROJECT(j2s4b)
 
@@ -48,8 +49,10 @@ set(CXX_SRCS
     src/j2s4b/j2s4b_utils.cpp
     src/main.cpp)
 
+add_definitions(-DGIT_VERSION="${GIT_VERSION}")
+
 ADD_EXECUTABLE(j2s4b ${CXX_SRCS})
-add_version_info(TARGET j2s4b)
+set_target_properties(j2s4b PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 
 foreach(IQPATH ${RKAIQ_IQFILES})
     string(REGEX MATCH "${RKAIQ_IQFILES_DIR}/.*" SHORT_NAME ${IQPATH})
@@ -61,6 +64,7 @@ foreach(IQPATH ${RKAIQ_IQFILES})
         ALL
         COMMAND j2s4b ${IQPATH} ${TAGT_NAME}
         BYPRODUCTS ${TAGT_NAME}
+        DEPENDS j2s4b
         )
     install(PROGRAMS "${CMAKE_BINARY_DIR}/${TAGT_NAME}" DESTINATION usr/share/iqfiles)
 endforeach()

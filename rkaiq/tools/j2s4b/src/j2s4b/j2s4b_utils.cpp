@@ -19,16 +19,6 @@
 
 using namespace RkCam;
 
-typedef struct {
-  void *ptr;
-  bool freeable;
-} j2s_ptr;
-
-typedef struct {
-  int num_data;
-  j2s_ptr *data;
-} j2s_priv_data;
-
 #define J2S_POOL_SIZE (1024 * 1024)
 
 int j2s_alloc_map_record(j2s_ctx *ctx, void *dst, void *ptr) {
@@ -133,24 +123,7 @@ void j2s_init(j2s_ctx *ctx) {
 }
 
 void j2s_deinit(j2s_ctx *ctx) {
-  j2s_priv_data *priv = (j2s_priv_data *)ctx->priv;
-
-  for (int i = 0; priv && i < priv->num_data; i++) {
-    j2s_ptr *data = &priv->data[i];
-    if (!data->ptr || !data->freeable)
-      continue;
-
-    /* Always free the cache file buf */
-    if (ctx->manage_data ||
-        (char *)data->ptr + sizeof(*ctx) == (char *)ctx->objs)
-      free(data->ptr);
-  }
-
-  if (priv) {
-    if (priv->data)
-      free(priv->data);
-    free(priv);
-  }
+  DBG("J2S deinit: %p\n", ctx);
 }
 
 int j2s_json_file_to_struct(j2s_ctx *ctx, const char *file, const char *name,

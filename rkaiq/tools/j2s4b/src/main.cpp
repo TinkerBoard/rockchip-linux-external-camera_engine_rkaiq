@@ -18,7 +18,6 @@
 
 #include "cJSON.h"
 #include "cJSON_Utils.h"
-#include "j2s4b-GitVersion.h"
 #include "j2s4b/j2s.h"
 #include "stdint.h"
 #include "stdio.h"
@@ -110,14 +109,13 @@ int show_usage(int argc, char *argv[]) {
     printf("Rockchip json iq to binary tool\n");
     printf("Copyright (C) Rockchip 2022\n");
     printf("Convert json iqfiles to binary format.\n");
-    printf("- build branch: %s\n", j2s4b::version_branch());
-    printf("- build hash: %s\n", j2s4b::version_shorthash());
+    printf("- build hash: %s\n", GIT_VERSION);
     printf("- build date: %s\n", __DATE__);
     printf("- magic code: %d\n", ctx.magic);
     printf("\nUsage:\n\t%s <input json> <output bin>\n\n", argv[0]);
     printf("\e[33mexample: %s sc4336.json sc4336.bin\e[0m\n\n", argv[0]);
     printf("Notice:\e[31m YOUR AIQ LIBRARY VERSION MUST MATCH %s \e[0m\n",
-           j2s4b::version_shorthash());
+           GIT_VERSION);
     printf("       \e[31m Or will lead to unpredictable errors!\e[0m\n");
     ret = -1;
   }

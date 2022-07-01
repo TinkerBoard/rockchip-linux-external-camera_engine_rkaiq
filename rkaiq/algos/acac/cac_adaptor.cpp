@@ -283,9 +283,12 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcac* config) {
             lut_manger_->ImportHwBuffers(1);
         }
     }
-    current_lut_.clear();
     auto* buf = lut_manger_->GetFreeHwBuffer(0);
-    XCAM_ASSERT(buf != nullptr);
+    if (buf == nullptr) {
+        LOGW_ACAC("No buffer available, maybe only one buffer ?!");
+        return XCAM_RETURN_NO_ERROR;
+    }
+    current_lut_.clear();
     current_lut_.emplace_back(buf);
 #if (RKAIQ_HAVE_CAC_V03 || RKAIQ_HAVE_CAC_V10) && defined(ISP_HW_V30)
     if (config->is_multi_isp) {

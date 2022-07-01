@@ -100,9 +100,8 @@ static RkAiqGrpCondition_t grpDhazCond[] = {
     [0] = {XCAM_MESSAGE_SOF_INFO_OK, 0},
     [1] = {XCAM_MESSAGE_AE_PRE_RES_OK, 0},
     [2] = {XCAM_MESSAGE_AE_PROC_RES_OK, 0},
-    [3] = {XCAM_MESSAGE_AEC_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
-    [4] = {XCAM_MESSAGE_BLC_V32_PROC_RES_OK, 0},
-    [5] = {XCAM_MESSAGE_ADEHAZE_STATS_OK, 0},
+    [3] = {XCAM_MESSAGE_BLC_V32_PROC_RES_OK, 0},
+    [4] = {XCAM_MESSAGE_ADEHAZE_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
 };
 static RkAiqGrpConditions_t grpDhazConds = {grp_conds_array_info(grpDhazCond)};
 

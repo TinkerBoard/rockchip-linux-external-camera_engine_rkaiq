@@ -714,7 +714,24 @@
 										"defaultDayGainHigh":	[1.98169, 1, 1, 1.54786],
 										"xyType2Enable":	1
 									}],
-								"lightSources_len":	7
+								"lightSources_len":	7,
+								"earlierAwbAct":	{
+									"enable":	1,
+									"mode":	"CALIB_AWB_EARLACT_XYREG_AUTO",
+									"xyRegion":	[{
+										"normal":	[0,0,0,0],
+										"big":	[0,0,0,0]
+									},{
+										"normal":	[0,0,0,0],
+										"big":	[0,0,0,0]
+									},{
+										"normal":	[0,0,0,0],
+										"big":	[0,0,0,0]
+									},{
+										"normal":	[0,0,0,0],
+										"big":	[0,0,0,0]
+									}]
+								}
 							},
 							"autoExtPara":	{
 								"lightSourceForFirstFrame":	"D50",
@@ -8431,7 +8448,24 @@
 										"defaultDayGainHigh":	[1.98169, 1, 1, 1.54786],
 										"xyType2Enable":	1
 									}],
-								"lightSources_len":	7
+								"lightSources_len":	7,
+								"earlierAwbAct":	{
+									"enable":	1,
+									"mode":	"CALIB_AWB_EARLACT_XYREG_AUTO",
+									"xyRegion":	[{
+										"normal":	[0,0,0,0],
+										"big":	[0,0,0,0]
+									},{
+										"normal":	[0,0,0,0],
+										"big":	[0,0,0,0]
+									},{
+										"normal":	[0,0,0,0],
+										"big":	[0,0,0,0]
+									},{
+										"normal":	[0,0,0,0],
+										"big":	[0,0,0,0]
+									}]
+								}
 							},
 							"autoExtPara":	{
 								"lightSourceForFirstFrame":	"D50",

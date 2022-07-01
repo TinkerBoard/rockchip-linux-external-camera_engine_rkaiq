@@ -4829,6 +4829,7 @@ void CamHwIsp20::allocMemResource(uint8_t id, void *ops_ctx, void *config, void 
         ldchbuf_size.module_id = ISP3X_MODULE_LDCH;
         ldchbuf_size.meas_width = share_mem_cfg->alloc_param.width;
         ldchbuf_size.meas_height = share_mem_cfg->alloc_param.height;
+        ldchbuf_size.buf_cnt = ISP2X_MESH_BUF_NUM;
         ret = isp20->mIspCoreDev->io_control(RKISP_CMD_SET_MESHBUF_SIZE, &ldchbuf_size);
         if (ret < 0) {
             LOGE_CAMHW_SUBM(ISP20HW_SUBM, "alloc ldch buf failed!");
@@ -4905,6 +4906,7 @@ void CamHwIsp20::allocMemResource(uint8_t id, void *ops_ctx, void *config, void 
         cacbuf_size.module_id = ISP3X_MODULE_CAC;
         cacbuf_size.meas_width = share_mem_cfg->alloc_param.width;
         cacbuf_size.meas_height = share_mem_cfg->alloc_param.height;
+        cacbuf_size.buf_cnt = 1;
         ret = isp20->mIspCoreDev->io_control(RKISP_CMD_SET_MESHBUF_SIZE, &cacbuf_size);
         if (ret < 0) {
             LOGE_CAMHW_SUBM(ISP20HW_SUBM, "alloc cac buf failed!");
@@ -4922,7 +4924,7 @@ void CamHwIsp20::allocMemResource(uint8_t id, void *ops_ctx, void *config, void 
         }
         rk_aiq_cac_share_mem_info_t* mem_info_array =
             (rk_aiq_cac_share_mem_info_t*)(isp20->_cac_drv_mem_ctx.mem_info);
-        for (int i = 0; i < ISP3X_MESH_BUF_NUM; i++) {
+        for (int i = 0; i < cacbuf_size.buf_cnt; i++) {
             mem_info_array[offset + i].map_addr =
                 mmap(NULL, cacbuf_info.buf_size[i], PROT_READ | PROT_WRITE, MAP_SHARED, cacbuf_info.buf_fd[i], 0);
             if (MAP_FAILED == mem_info_array[offset + i].map_addr) {

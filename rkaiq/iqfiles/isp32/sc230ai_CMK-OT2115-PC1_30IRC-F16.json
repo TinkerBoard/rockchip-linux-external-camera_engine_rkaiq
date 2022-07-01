@@ -733,7 +733,24 @@
 										"defaultDayGainHigh":	[2.10327172279358, 1, 1, 1.60566771030426],
 										"xyType2Enable":	1
 									}],
-								"lightSources_len":	7
+								"lightSources_len":	7,
+								"earlierAwbAct":	{
+									"enable":	1,
+									"mode":	"CALIB_AWB_EARLACT_XYREG_FIXED",
+									"xyRegion":	[{
+										"normal":	[-116,240,79,-98],
+										"big":	[-140,240,109,-121]
+									},{
+										"normal":	[-459,-138,51,-70],
+										"big":	[-459,-138,76,-114]
+									},{
+										"normal":	[-992,-459,107,-122],
+										"big":	[-993,-459,128,-148]
+									},{
+										"normal":	[-1648,-992,42,-60],
+										"big":	[-1648,-992,56,-74]
+									}]
+								}
 							},
 							"autoExtPara":	{
 								"lightSourceForFirstFrame":	"D50",

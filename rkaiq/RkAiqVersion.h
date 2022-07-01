@@ -440,10 +440,15 @@
  * - Optimze SmartIR
  * - Fix crashed in GrpMsgHdl thread
  * - Dehaze support hist semiauto mode
+ * v4.0x9.9-rc3
+ * - Dehaze fix stats effect delay
+ * - AWB add new strategy to optimzie fast awb
+ * - CAC reduce buffer count
+ * - j2s4b fix compile error on old system
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.9-rc2"
-#define RK_AIQ_RELEASE_DATE "2022-06-27"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.9-rc3"
+#define RK_AIQ_RELEASE_DATE "2022-07-07"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

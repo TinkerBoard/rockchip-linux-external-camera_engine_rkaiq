@@ -104,7 +104,6 @@ void *j2s_alloc_data(j2s_ctx *ctx, size_t size);
 
 int j2s_alloc_map_record(j2s_ctx *ctx, void *dst, void *ptr);
 
-int j2s_add_data(j2s_ctx *ctx, void *ptr, bool freeable);
 void j2s_release_data(j2s_ctx *ctx, void *ptr);
 
 /* Init/deinit j2s_ctx */
