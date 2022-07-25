@@ -233,6 +233,48 @@ CamCalibDbProj_t *RkAiqCalibDbV2::json2calibproj(const char *jsfile) {
     return calibproj;
 }
 
+CamCalibDbProj_t *RkAiqCalibDbV2::json2calibproj(const char *jstr, size_t len) {
+    j2s_ctx ctx;
+    cJSON* base_json = NULL;
+    int ret = -1;
+
+    if (!jstr || !len) {
+      return nullptr;
+    }
+
+    base_json = cJSON_Parse(jstr);
+    if (!base_json) {
+      return nullptr;
+    }
+
+    j2s_init(&ctx);
+    ctx.format_json = false;
+    ctx.manage_data = false;
+
+    if (!RkAiqSceneManager::mergeMultiSceneIQ(base_json)) {
+      cJSON_Delete(base_json);
+      j2s_deinit(&ctx);
+      return nullptr;
+    }
+
+    CamCalibDbProj_t *calibproj = CamCalibDbProjAlloc();
+
+    ret = j2s_json_to_struct(&ctx, base_json, NULL, calibproj);
+    cJSON_Delete(base_json);
+    j2s_deinit(&ctx);
+
+    if (ret) {
+        CamCalibDbProjFree(calibproj);
+        return nullptr;
+    }
+
+#ifdef IQ_DEBUG
+    calibproj2json("/tmp/iq_dump.json", calibproj);
+#endif
+
+    return calibproj;
+}
+
 CamCalibDbProj_t *RkAiqCalibDbV2::bin2calibproj(const char *binfile) {
     CamCalibDbProj_t *calibproj = NULL;
     char* bin_buff = NULL;
@@ -245,6 +287,23 @@ CamCalibDbProj_t *RkAiqCalibDbV2::bin2calibproj(const char *binfile) {
     }
 
     ret = parseBinStructMap((uint8_t*)bin_buff, bin_size);
+    if (ret) {
+        return NULL;
+    }
+
+    calibproj = (CamCalibDbProj_t*) bin_buff;
+
+    return calibproj;
+}
+
+CamCalibDbProj_t *RkAiqCalibDbV2::bin2calibproj(const void *bin_buff, size_t len) {
+    CamCalibDbProj_t *calibproj = NULL;
+    int ret = -1;
+
+    if (!bin_buff || !len)
+        return NULL;
+
+    ret = parseBinStructMap((uint8_t*)bin_buff, len);
     if (ret) {
         return NULL;
     }
@@ -416,6 +475,22 @@ CamCalibDbProj_t *RkAiqCalibDbV2::createCalibDbProj(const char *jsfile) {
             return nullptr;
         }
     }
+}
+
+CamCalibDbProj_t *RkAiqCalibDbV2::createCalibDbProj(const void *bin_buff,
+                                                    size_t len) {
+  CamCalibDbProj_t *calibproj = NULL;
+  const std::lock_guard<std::mutex> lock(RkAiqCalibDbV2::calib_mutex);
+
+  calibproj = bin2calibproj(bin_buff, len);
+
+  if (calibproj) {
+    XCAM_LOG_INFO("create calibdb from buffer success.");
+    return calibproj;
+  }
+
+  XCAM_LOG_ERROR("parse binary iq buffer failed.");
+  return nullptr;
 }
 
 void RkAiqCalibDbV2::releaseCalibDbProj() {
@@ -1127,7 +1202,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeAwbV32Ctx(CalibDbV2_Wb_Para_V32_t* awb)
 
     if (autoPara->lightSources) {
         for (int i = 0; i < autoPara->lightSources_len; i++) {
-            CalibDbV2_Awb_Light_V21_t* lightSource = autoPara->lightSources + i;
+            CalibDbV2_Awb_Light_V32_t* lightSource = autoPara->lightSources + i;
             calib_free(lightSource->name);
         }
         calib_free(autoPara->lightSources);
@@ -1176,14 +1251,14 @@ int RkAiqCalibDbV2::CamCalibDbFreeAwbV32Ctx(CalibDbV2_Wb_Para_V32_t* awb)
     if (runInterval->intervalValue)
         calib_free(runInterval->intervalValue);
 
-    CalibDbV2_Awb_GainAdjust_t* wbGainAdjust = &autoExtPara->wbGainAdjust;
+    CalibDbV2_Awb_GainAdjust2_t* wbGainAdjust = &autoExtPara->wbGainAdjust;
     if (wbGainAdjust->lutAll) {
         for (int i = 0; i < wbGainAdjust->lutAll_len; i++) {
-            CalibDbV2_Awb_Cct_Lut_Cfg_Lv_t *lutAll = wbGainAdjust->lutAll + i;
-            if (lutAll->ct_lut_out)
-                calib_free(lutAll->ct_lut_out);
-            if (lutAll->cri_lut_out)
-                calib_free(lutAll->cri_lut_out);
+            CalibDbV2_Awb_Cct_Lut_Cfg_Lv2_t *lutAll = wbGainAdjust->lutAll + i;
+            if (lutAll->rgct_lut_out)
+                calib_free(lutAll->rgct_lut_out);
+            if (lutAll->bgcri_lut_out)
+                calib_free(lutAll->bgcri_lut_out);
         }
         calib_free(wbGainAdjust->lutAll);
     }

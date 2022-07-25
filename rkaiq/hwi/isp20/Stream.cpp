@@ -139,8 +139,9 @@ XCamReturn RkPollThread::start ()
 
 XCamReturn RkPollThread::stop ()
 {
-    XCAM_LOG_INFO ("RkPollThread %s:%s stop", get_name(),
-                   _dev.ptr() ? _dev->get_device_name() : _subdev->get_device_name());
+    XCAM_LOG_INFO("RkPollThread %s:%s stop", get_name(),
+                  _dev.ptr() ? _dev->get_device_name()
+                             : (_subdev.ptr() ? _subdev->get_device_name() : "null"));
     if (_poll_stop_fd[1] != -1) {
         char buf = 0xf;  // random value to write to flush fd.
         unsigned int size = write(_poll_stop_fd[1], &buf, sizeof(char));

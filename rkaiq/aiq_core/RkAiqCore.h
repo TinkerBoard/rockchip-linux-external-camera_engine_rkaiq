@@ -34,6 +34,7 @@
 #include "RkAiqResourceTranslator.h"
 #include "MessageBus.h"
 #include "common/panorama_stitchingApp.h"
+#include "rk_aiq.h"
 
 using namespace XCam;
 namespace RkCam {
@@ -439,6 +440,13 @@ public:
 
     XCamReturn updateCalib(enum rk_aiq_core_analyze_type_e type);
 
+    void setTbInfo(rk_aiq_tb_info_t& info) {
+        mTbInfo = info;
+    }
+
+    rk_aiq_tb_info_t* getTbInfo(void) {
+        return &mTbInfo;
+    }
 protected:
     // in analyzer thread
     XCamReturn analyze(const SmartPtr<VideoBuffer> &buffer);
@@ -677,6 +685,7 @@ private:
     XCamReturn notifyUpdate(uint64_t mask);
     XCamReturn waitUpdateDone();
     uint64_t groupUpdateMask;
+    rk_aiq_tb_info_t mTbInfo;
 };
 
 }

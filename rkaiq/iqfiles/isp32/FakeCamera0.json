@@ -460,7 +460,7 @@
 										"B_Channel_len":	13
 									}
 								},
-								"lscBypassEnable":	0,
+								"lscBypass":	0,
 								"uvDetectionEnable":	1,
 								"xyDetectionEnable":	1,
 								"yuvDetectionEnable":	1,
@@ -500,37 +500,72 @@
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_XY",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_XY",
 										"mode":	"CALIB_AWB_ETR_LIGHT_SOUR_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}],
 								"wpDiffLumaWeight":	{
 									"enable":	1,
@@ -593,7 +628,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"CWF",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_INDOOR",
@@ -616,7 +656,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"D50",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_AMBIGUITY",
@@ -639,7 +684,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"D65",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_OUTDOOR",
@@ -662,7 +712,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"D75",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_OUTDOOR",
@@ -685,7 +740,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"HZ",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_INDOOR",
@@ -708,7 +768,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"TL84",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_INDOOR",
@@ -731,7 +796,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}],
 								"lightSources_len":	7,
 								"earlierAwbAct":	{
@@ -788,38 +858,16 @@
 								},
 								"wbGainAdjust":	{
 									"enable":	0,
+									"ctrlDataSelt":	"AWB_CTRL_DATA_LV",
+									"adjDataSelt":	"AWB_GAIN_ADJ_DATA_GAIN",
 									"lutAll":	[{
-											"lumaValue":	128,
-											"ct_grid_num":	7,
-											"cri_grid_num":	9,
-											"ct_in_range":	[2000, 8000],
-											"cri_in_range":	[-1, 1],
-											"ct_lut_out":	[2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000],
-											"ct_lut_out_len":	63,
-											"cri_lut_out":	[-1, -1, -1, -1, -1, -1, -1, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, 0, 0, 0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 1, 1, 1, 1, 1, 1, 1],
-											"cri_lut_out_len":	63
-										}, {
-											"lumaValue":	8192,
-											"ct_grid_num":	7,
-											"cri_grid_num":	9,
-											"ct_in_range":	[2000, 8000],
-											"cri_in_range":	[-1, 1],
-											"ct_lut_out":	[2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000],
-											"ct_lut_out_len":	63,
-											"cri_lut_out":	[-1, -1, -1, -1, -1, -1, -1, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, 0, 0, 0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 1, 1, 1, 1, 1, 1, 1],
-											"cri_lut_out_len":	63
-										}, {
-											"lumaValue":	65536,
-											"ct_grid_num":	7,
-											"cri_grid_num":	9,
-											"ct_in_range":	[2000, 8000],
-											"cri_in_range":	[-1, 1],
-											"ct_lut_out":	[2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000],
-											"ct_lut_out_len":	63,
-											"cri_lut_out":	[-1, -1, -1, -1, -1, -1, -1, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, 0, 0, 0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 1, 1, 1, 1, 1, 1, 1],
-											"cri_lut_out_len":	63
+											"ctlData":	128,
+											"rgct_in_ds":	[0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2],
+											"bgcri_in_ds":	[4.2, 3.9, 3.6, 3.3, 3, 2.7, 2.4, 2.1, 1.8, 1.5, 1.2],
+											"rgct_lut_out":	[0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2],
+											"bgcri_lut_out":	[4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.6, 3.6, 3.6, 3.6, 3.6, 3.6, 3.6, 3.6, 3.6, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2]
 										}],
-									"lutAll_len":	3
+									"lutAll_len":	1
 								},
 								"wbGainDaylightClip":	{
 									"enable":	0,
@@ -8333,7 +8381,7 @@
 										"B_Channel_len":	13
 									}
 								},
-								"lscBypassEnable":	0,
+								"lscBypass":	0,
 								"uvDetectionEnable":	1,
 								"xyDetectionEnable":	1,
 								"yuvDetectionEnable":	1,
@@ -8373,37 +8421,72 @@
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_XY",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_XY",
 										"mode":	"CALIB_AWB_ETR_LIGHT_SOUR_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}, {
 										"domain":	"CALIB_AWB_EXTRA_RANGE_DOMAIN_UV",
 										"mode":	"CALIB_AWB_EXCLUDE_WP_MODE",
 										"region":	[0, 0, 0, 0],
-										"weightInculde":	0
+										"weightInculde":	{
+											"lumaValue":	[0],
+											"lumaValue_len":	1,
+											"weight":	[0],
+											"weight_len":	1
+										}
 									}],
 								"wpDiffLumaWeight":	{
 									"enable":	1,
@@ -8466,7 +8549,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"CWF",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_INDOOR",
@@ -8489,7 +8577,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"D50",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_AMBIGUITY",
@@ -8512,7 +8605,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"D65",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_OUTDOOR",
@@ -8535,7 +8633,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"D75",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_OUTDOOR",
@@ -8558,7 +8661,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"HZ",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_INDOOR",
@@ -8581,7 +8689,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"TL84",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_INDOOR",
@@ -8604,7 +8717,12 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[2.06225, 1, 1, 2.6536],
 										"defaultDayGainHigh":	[1.77768, 1, 1, 1.88893],
-										"xyType2Enable":	1
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}],
 								"lightSources_len":	7,
 								"earlierAwbAct":	{
@@ -8661,38 +8779,16 @@
 								},
 								"wbGainAdjust":	{
 									"enable":	0,
+									"ctrlDataSelt":	"AWB_CTRL_DATA_LV",
+									"adjDataSelt":	"AWB_GAIN_ADJ_DATA_GAIN",
 									"lutAll":	[{
-											"lumaValue":	128,
-											"ct_grid_num":	7,
-											"cri_grid_num":	9,
-											"ct_in_range":	[2000, 8000],
-											"cri_in_range":	[-1, 1],
-											"ct_lut_out":	[2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000],
-											"ct_lut_out_len":	63,
-											"cri_lut_out":	[-1, -1, -1, -1, -1, -1, -1, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, 0, 0, 0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 1, 1, 1, 1, 1, 1, 1],
-											"cri_lut_out_len":	63
-										}, {
-											"lumaValue":	8192,
-											"ct_grid_num":	7,
-											"cri_grid_num":	9,
-											"ct_in_range":	[2000, 8000],
-											"cri_in_range":	[-1, 1],
-											"ct_lut_out":	[2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000],
-											"ct_lut_out_len":	63,
-											"cri_lut_out":	[-1, -1, -1, -1, -1, -1, -1, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, 0, 0, 0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 1, 1, 1, 1, 1, 1, 1],
-											"cri_lut_out_len":	63
-										}, {
-											"lumaValue":	65536,
-											"ct_grid_num":	7,
-											"cri_grid_num":	9,
-											"ct_in_range":	[2000, 8000],
-											"cri_in_range":	[-1, 1],
-											"ct_lut_out":	[2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 2000, 3000, 4000, 5000, 6000, 7000, 8000],
-											"ct_lut_out_len":	63,
-											"cri_lut_out":	[-1, -1, -1, -1, -1, -1, -1, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.75, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25, 0, 0, 0, 0, 0, 0, 0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 1, 1, 1, 1, 1, 1, 1],
-											"cri_lut_out_len":	63
+											"ctlData":	128,
+											"rgct_in_ds":	[0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2],
+											"bgcri_in_ds":	[4.2, 3.9, 3.6, 3.3, 3, 2.7, 2.4, 2.1, 1.8, 1.5, 1.2],
+											"rgct_lut_out":	[0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2, 0.8, 1.1, 1.4, 1.7, 2, 2.3, 2.6, 2.9, 3.2],
+											"bgcri_lut_out":	[4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.6, 3.6, 3.6, 3.6, 3.6, 3.6, 3.6, 3.6, 3.6, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2]
 										}],
-									"lutAll_len":	3
+									"lutAll_len":	1
 								},
 								"wbGainDaylightClip":	{
 									"enable":	0,

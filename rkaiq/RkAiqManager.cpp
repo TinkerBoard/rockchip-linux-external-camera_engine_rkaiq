@@ -520,12 +520,30 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
 
     if (hwres->_buf_type == ISP_POLL_3A_STATS) {
         ret = mRkAiqAnalyzer->pushStats(hwres);
+        if (mTbInfo.is_pre_aiq) {
+            uint32_t seq = hwres.dynamic_cast_ptr<VideoBuffer>()->get_sequence();
+            if (seq == 0) {
+                LOGI("<TB> hwResCb stats %d", seq);
+                struct timespec tp;
+                clock_gettime(CLOCK_MONOTONIC_RAW, &tp);
+
+                SmartPtr<CamHwIsp20> mCamHwIsp20 = mCamHw.dynamic_cast_ptr<CamHwIsp20>();
+                SmartPtr<ispHwEvt_t> hw_evt      = mCamHwIsp20->make_ispHwEvt(
+                    0, V4L2_EVENT_FRAME_SYNC, tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec);
+                LOGI("<TB> push sof %d", seq);
+                mRkAiqAnalyzer->pushEvts(hw_evt);
+            }
+        }
 #ifdef ISP_HW_V20
     } else if (hwres->_buf_type == ISP_POLL_LUMA) {
         if (mRkLumaAnalyzer.ptr())
             ret = mRkLumaAnalyzer->pushStats(hwres);
 #endif
     } else if (hwres->_buf_type == ISP_POLL_PARAMS) {
+        rk_aiq_err_msg_t msg;
+        msg.err_code = XCAM_RETURN_BYPASS;
+        if (mTbInfo.is_pre_aiq && mErrCb)
+            (*mErrCb)(&msg);
     } else if (hwres->_buf_type == ISPP_POLL_NR_STATS) {
         ret = mRkAiqAnalyzer->pushStats(hwres);
     } else if (hwres->_buf_type == ISP_POLL_SOF) {

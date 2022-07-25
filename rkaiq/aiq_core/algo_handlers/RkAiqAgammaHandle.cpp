@@ -103,7 +103,7 @@ XCamReturn RkAiqAgammaHandleInt::getAttribV10(rk_aiq_gamma_v10_attr_t* att) {
         mCfgMutex.unlock();
     } else {
         if (updateAtt) {
-            memcpy(att, &mNewAttV10, sizeof(updateAtt));
+            memcpy(att, &mNewAttV10, sizeof(rk_aiq_gamma_v10_attr_t));
             att->sync.done = false;
         } else {
             rk_aiq_uapi_agamma_v10_GetAttrib(mAlgoCtx, att);
@@ -160,7 +160,7 @@ XCamReturn RkAiqAgammaHandleInt::getAttribV11(rk_aiq_gamma_v11_attr_t* att) {
         mCfgMutex.unlock();
     } else {
         if (updateAtt) {
-            memcpy(att, &mNewAttV11, sizeof(updateAtt));
+            memcpy(att, &mNewAttV11, sizeof(rk_aiq_gamma_v11_attr_t));
             att->sync.done = false;
         } else {
             rk_aiq_uapi_agamma_v11_GetAttrib(mAlgoCtx, att);

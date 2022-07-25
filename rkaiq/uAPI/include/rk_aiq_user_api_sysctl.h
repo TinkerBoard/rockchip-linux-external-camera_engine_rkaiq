@@ -58,6 +58,17 @@ rk_aiq_uapi_sysctl_preInit(const char* sns_ent_name,
 XCamReturn
 rk_aiq_uapi_sysctl_preInit_scene(const char* sns_ent_name, const char *main_scene,
                              const char *sub_scene);
+/**
+ * @brief set thunder boot info to aiq
+ *
+ * @param sns_ent_name sensor name
+ * @param is_pre_aiq is pre-customer aiq
+ *
+ * @return 0 if no error
+ */
+XCamReturn
+rk_aiq_uapi_sysctl_preInit_tb_info(const char* sns_ent_name,
+                           const rk_aiq_tb_info_t* info);
 
 /*!
  * \brief initialze aiq control system context

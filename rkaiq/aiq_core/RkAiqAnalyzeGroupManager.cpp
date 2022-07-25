@@ -109,6 +109,9 @@ bool RkAiqAnalyzerGroup::msgHandle(const SmartPtr<XCamMessage>& msg) {
     }
 
     uint32_t delayCnt = getMsgDelayCnt(msg->msg_id);
+    if (msg->frame_id == 0 && getAiqCore()->getTbInfo()->is_pre_aiq) {
+        delayCnt = 0;
+    }
     uint32_t userId = msg->frame_id + delayCnt;
     GroupMessage& msgWrapper = mGroupMsgMap[userId];
 
@@ -358,7 +361,7 @@ XCamReturn RkAiqAnalyzeGroupManager::groupMessageHandler(std::list<SmartPtr<XCam
                 if (vdBufMsg.ptr()) {
                     shared->res_comb.ablc_proc_res =
                         ((RkAiqAlgoProcResAblc*)vdBufMsg.ptr()->msg->map())->ablc_proc_res;
-                    LOGE_ANALYZER_SUBM(
+                    LOGD_ANALYZER_SUBM(
                         ANALYZER_SUBM, "camId: %d, group: %s: id: %d, blc_r: %d, blc1_r: %d",
                         mAiqCore->mAlogsComSharedParams.mCamPhyId, AnalyzerGroupType2Str[grpId],
                         vdBufMsg.ptr()->msg->get_sequence(), shared->res_comb.ablc_proc_res.blc_r,
@@ -370,7 +373,7 @@ XCamReturn RkAiqAnalyzeGroupManager::groupMessageHandler(std::list<SmartPtr<XCam
                 if (vdBufMsg.ptr()) {
                     shared->res_comb.ablcV32_proc_res =
                         ((RkAiqAlgoProcResAblcV32*)vdBufMsg.ptr()->msg->map())->ablcV32_proc_res;
-                    LOGE_ANALYZER_SUBM(
+                    LOGD_ANALYZER_SUBM(
                         ANALYZER_SUBM,
                         "camId: %d, group: %s: id: %d, ob_offset: %d, ob_predgain: %f",
                         mAiqCore->mAlogsComSharedParams.mCamPhyId, AnalyzerGroupType2Str[grpId],

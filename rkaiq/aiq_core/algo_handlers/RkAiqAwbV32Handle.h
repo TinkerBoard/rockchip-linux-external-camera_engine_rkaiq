@@ -44,8 +44,6 @@ class RkAiqAwbV32HandleInt : public RkAiqAwbHandleInt {
         updateWriteAwbInputAttr = false;
     };
     virtual ~RkAiqAwbV32HandleInt() {
-        freeWbGainAdjustAttrib(&mNewWbV32Attr.stAuto.wbGainAdjust);
-        freeWbGainAdjustAttrib(&mCurWbV32Attr.stAuto.wbGainAdjust);
         RkAiqAwbHandleInt::deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);

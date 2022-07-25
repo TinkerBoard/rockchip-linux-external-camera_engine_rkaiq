@@ -62,11 +62,14 @@ public:
 
 public:
     static CamCalibDbProj_t *createCalibDbProj(const char *jsfile);
+    static CamCalibDbProj_t *createCalibDbProj(const void *bin_buff, size_t len);
     static CamCalibDbCamgroup_t* createCalibDbCamgroup(const char *jsfile);
     static int CamCalibDbCamgroupFree(CamCalibDbCamgroup_t* calib_camgroup);
 
     static CamCalibDbProj_t *json2calibproj(const char *jsfile);
+    static CamCalibDbProj_t *json2calibproj(const char *jstr, size_t len);
     static CamCalibDbProj_t *bin2calibproj(const char *binfile);
+    static CamCalibDbProj_t *bin2calibproj(const void *bin_buff, size_t len);
     static CamCalibDbV2Context_t *json2calib(const char *jsfile);
     static CamCalibDbV2Context_t *cjson2calib(cJSON *json);
 

@@ -50,10 +50,10 @@ void CamHwIsp32::gen_full_isp_params(const struct isp32_isp_params_cfg* update_p
     int i = 0;
 
     ENTER_CAMHW_FUNCTION();
+
     for (; i <= RK_ISP2X_MAX_ID; i++)
         if (update_params->module_en_update & (1LL << i)) {
-            if ((full_params->module_ens & (1LL << i)) != (update_params->module_ens & (1LL << i)))
-                *module_en_update_partial |= 1LL << i;
+            *module_en_update_partial |= 1LL << i;
             full_params->module_en_update |= 1LL << i;
             // clear old bit value
             full_params->module_ens &= ~(1LL << i);

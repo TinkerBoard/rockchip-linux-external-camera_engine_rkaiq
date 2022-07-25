@@ -837,7 +837,7 @@ static int sample_awb_awbv32_setAllAttr(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi
     rk_aiq_user_api2_awbV32_GetAllAttrib(ctx, &attr);
     //modify
     attr.sync.sync_mode = sync;
-    attr.stAuto.wbGainAdjust.enable = !attr.stAuto.wbGainAdjust.enable;
+    attr.stAuto.wbGainOffset.enable = !attr.stAuto.wbGainOffset.enable;
     //set
     rk_aiq_user_api2_awbV32_SetAllAttrib(ctx, attr);
     printf("set Awbv32 AllAttr\n\n");
@@ -855,8 +855,6 @@ static int sample_awb_awbv32_getAllAttr(const rk_aiq_sys_ctx_t* ctx)
     printf("\t bypass = %d\n", attr.byPass);
     printf("\t mode = %s\n", (attr.mode > 0 ? "auto" : "manual"));
     if (attr.mode > 0) {
-        printf("\t wbGainAdjustEn = %s\n",
-                            (attr.stAuto.wbGainAdjust.enable > 0 ? "true" : "false"));
         printf("\t wbGainOffset = {%s,[%f,%f,%f,%f]}\n\n",
                             (attr.stAuto.wbGainOffset.enable > 0 ? "true" : "false"),
                             attr.stAuto.wbGainOffset.offset[0],

@@ -127,7 +127,7 @@ IspParamsAssembler::queue_locked(SmartPtr<cam3aResult>& result)
 #endif
     // exception case 1 : wrong result frame_id
     if (frame_id == (uint32_t)(-1) ||
-        (mLatestReadyFrmId != (uint32_t)(-1) && frame_id <= mLatestReadyFrmId)) {
+        ((frame_id != 0) && (mLatestReadyFrmId != (uint32_t)(-1) && frame_id <= mLatestReadyFrmId))) {
         // merged to the oldest one
         bool found = false;
         for (const auto& iter : mParamsMap) {
@@ -174,7 +174,7 @@ IspParamsAssembler::queue_locked(SmartPtr<cam3aResult>& result)
 
     if (ready) {
         mReadyNums++;
-        if (mLatestReadyFrmId == (uint32_t)(-1) || frame_id > mLatestReadyFrmId)
+        if (mLatestReadyFrmId == (uint32_t)(-1) || (frame_id == 0) || (frame_id > mLatestReadyFrmId))
             mLatestReadyFrmId = frame_id;
         else {
             // impossible case

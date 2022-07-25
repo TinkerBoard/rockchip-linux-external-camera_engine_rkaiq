@@ -50,6 +50,22 @@ rk_aiq_uapi2_sysctl_preInit_scene(const char* sns_ent_name, const char *main_sce
     return rk_aiq_uapi_sysctl_preInit_scene(sns_ent_name, main_scene, sub_scene);
 }
 
+XCamReturn
+rk_aiq_uapi2_sysctl_preInit_tb_info(const char* sns_ent_name,
+                           const rk_aiq_tb_info_t* info)
+{
+    return rk_aiq_uapi_sysctl_preInit_tb_info(sns_ent_name, info);
+}
+
+XCamReturn
+rk_aiq_uapi2_sysctl_preInit_iq_addr(const char* sns_ent_name, void *addr, size_t len)
+{
+    g_rk_aiq_sys_preinit_cfg_map[sns_ent_name].iq_buffer.addr = addr;
+    g_rk_aiq_sys_preinit_cfg_map[sns_ent_name].iq_buffer.len = len;
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
 rk_aiq_sys_ctx_t*
 rk_aiq_uapi2_sysctl_init(const char* sns_ent_name,
                         const char* config_file_dir,

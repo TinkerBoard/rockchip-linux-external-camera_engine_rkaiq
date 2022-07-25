@@ -67,6 +67,16 @@ typedef enum rk_aiq_cam_type_e {
     RK_AIQ_CAM_TYPE_GROUP,
 } rk_aiq_cam_type_t;
 
+typedef struct rk_aiq_iq_buffer_info_s {
+    void *addr;
+    size_t len;
+} rk_aiq_iq_buffer_info_t;
+
+typedef struct rk_aiq_tb_info_s {
+    uint16_t magic;
+    bool is_pre_aiq;
+} rk_aiq_tb_info_t;
+
 XCAM_END_DECLARE
 
 #endif

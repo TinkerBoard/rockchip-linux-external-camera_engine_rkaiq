@@ -50,6 +50,7 @@ typedef struct rk_aiq_sys_ctx_s {
     struct RkAiqHwInfo _hw_info;
     int _use_fakecam;
     rk_aiq_raw_prop_t _raw_prop;
+    FILE* _lock_file;
 } rk_aiq_sys_ctx_t;
 
 typedef struct rk_aiq_camgroup_ctx_s {

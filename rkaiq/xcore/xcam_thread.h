@@ -36,7 +36,7 @@ public:
     bool stop ();
     bool is_running ();
     const char *get_name () const {
-        return _name;
+        return _name ? "noname" : _name;
     }
 
 protected:

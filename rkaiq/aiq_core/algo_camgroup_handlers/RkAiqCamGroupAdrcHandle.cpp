@@ -87,7 +87,7 @@ XCamReturn RkAiqCamGroupAdrcHandleInt::getAttribV10(drcAttrV10_t* att) {
         mCfgMutex.unlock();
     } else {
         if (updateAtt) {
-            memcpy(att, &mNewAttV10, sizeof(updateAtt));
+            memcpy(att, &mNewAttV10, sizeof(drcAttrV10_t));
             att->sync.done = false;
         } else {
             rk_aiq_uapi_adrc_v10_GetAttrib(mAlgoCtx, att);
@@ -137,7 +137,7 @@ XCamReturn RkAiqCamGroupAdrcHandleInt::getAttribV11(drcAttrV11_t* att) {
         mCfgMutex.unlock();
     } else {
         if (updateAtt) {
-            memcpy(att, &mNewAttV11, sizeof(updateAtt));
+            memcpy(att, &mNewAttV11, sizeof(drcAttrV11_t));
             att->sync.done = false;
         } else {
             rk_aiq_uapi_adrc_v11_GetAttrib(mAlgoCtx, att);
@@ -187,7 +187,7 @@ XCamReturn RkAiqCamGroupAdrcHandleInt::getAttribV12(drcAttrV12_t* att) {
         mCfgMutex.unlock();
     } else {
         if (updateAtt) {
-            memcpy(att, &mNewAttV12, sizeof(updateAtt));
+            memcpy(att, &mNewAttV12, sizeof(drcAttrV12_t));
             att->sync.done = false;
         } else {
             rk_aiq_uapi_adrc_v12_GetAttrib(mAlgoCtx, att);

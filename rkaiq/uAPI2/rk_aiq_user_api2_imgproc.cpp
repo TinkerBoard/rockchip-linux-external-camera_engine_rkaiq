@@ -1119,12 +1119,19 @@ XCamReturn rk_aiq_uapi2_setDrcLocalTMO(const rk_aiq_sys_ctx_t* ctx, float LocalW
     RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcLocalTMO failed in get attrib!");
     attr_v10.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
     attr_v10.sync.done      = false;
-    attr_v10.opMode         = DRC_OPMODE_AUTO;
-    for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
-        attr_v10.stAuto.DrcTuningPara.LocalTMOSetting.LocalTMOData.LocalWeit[i] = LocalWeit;
-        attr_v10.stAuto.DrcTuningPara.LocalTMOSetting.LocalTMOData.GlobalContrast[i] =
-            GlobalContrast;
-        attr_v10.stAuto.DrcTuningPara.LocalTMOSetting.LocalTMOData.LoLitContrast[i] = LoLitContrast;
+
+    if (attr_v10.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
+            attr_v10.stAuto.DrcTuningPara.LocalTMOSetting.LocalTMOData.LocalWeit[i] = LocalWeit;
+            attr_v10.stAuto.DrcTuningPara.LocalTMOSetting.LocalTMOData.GlobalContrast[i] =
+                GlobalContrast;
+            attr_v10.stAuto.DrcTuningPara.LocalTMOSetting.LocalTMOData.LoLitContrast[i] =
+                LoLitContrast;
+        }
+    } else if (attr_v10.opMode == DRC_OPMODE_MANUAL) {
+        attr_v10.stManual.LocalTMOSetting.LocalTMOData.LocalWeit      = LocalWeit;
+        attr_v10.stManual.LocalTMOSetting.LocalTMOData.GlobalContrast = GlobalContrast;
+        attr_v10.stManual.LocalTMOSetting.LocalTMOData.LoLitContrast  = LoLitContrast;
     }
     ret = rk_aiq_user_api2_adrc_v10_SetAttrib(ctx, &attr_v10);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcLocalTMO failed!");
@@ -1239,13 +1246,22 @@ XCamReturn rk_aiq_uapi2_setDrcLocalData(const rk_aiq_sys_ctx_t* ctx, float Local
     RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcLocalData failed!");
     attr_v11.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
     attr_v11.sync.done      = false;
-    attr_v11.opMode         = DRC_OPMODE_AUTO;
-    for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
-        attr_v11.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalWeit[i]       = LocalWeit;
-        attr_v11.stAuto.DrcTuningPara.LocalSetting.LocalData.GlobalContrast[i]  = GlobalContrast;
-        attr_v11.stAuto.DrcTuningPara.LocalSetting.LocalData.LoLitContrast[i]   = LoLitContrast;
-        attr_v11.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoEnable[i] = LocalAutoEnable;
-        attr_v11.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoWeit[i]   = LocalAutoWeit;
+
+    if (attr_v11.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
+            attr_v11.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalWeit[i]      = LocalWeit;
+            attr_v11.stAuto.DrcTuningPara.LocalSetting.LocalData.GlobalContrast[i] = GlobalContrast;
+            attr_v11.stAuto.DrcTuningPara.LocalSetting.LocalData.LoLitContrast[i]  = LoLitContrast;
+            attr_v11.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoEnable[i] =
+                LocalAutoEnable;
+            attr_v11.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoWeit[i] = LocalAutoWeit;
+        }
+    } else if (attr_v11.opMode == DRC_OPMODE_MANUAL) {
+        attr_v11.stManual.LocalSetting.LocalData.LocalWeit       = LocalWeit;
+        attr_v11.stManual.LocalSetting.LocalData.GlobalContrast  = GlobalContrast;
+        attr_v11.stManual.LocalSetting.LocalData.LoLitContrast   = LoLitContrast;
+        attr_v11.stManual.LocalSetting.LocalData.LocalAutoEnable = LocalAutoEnable;
+        attr_v11.stManual.LocalSetting.LocalData.LocalAutoWeit   = LocalAutoWeit;
     }
     ret = rk_aiq_user_api2_adrc_v11_SetAttrib(ctx, &attr_v11);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
@@ -1257,13 +1273,21 @@ XCamReturn rk_aiq_uapi2_setDrcLocalData(const rk_aiq_sys_ctx_t* ctx, float Local
     RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcLocalData failed!");
     attr_v12.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
     attr_v12.sync.done      = false;
-    attr_v12.opMode         = DRC_OPMODE_AUTO;
-    for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
-        attr_v12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalWeit[i]       = LocalWeit;
-        attr_v12.stAuto.DrcTuningPara.LocalSetting.LocalData.GlobalContrast[i]  = GlobalContrast;
-        attr_v12.stAuto.DrcTuningPara.LocalSetting.LocalData.LoLitContrast[i]   = LoLitContrast;
-        attr_v12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoEnable[i] = LocalAutoEnable;
-        attr_v12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoWeit[i]   = LocalAutoWeit;
+    if (attr_v12.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
+            attr_v12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalWeit[i]      = LocalWeit;
+            attr_v12.stAuto.DrcTuningPara.LocalSetting.LocalData.GlobalContrast[i] = GlobalContrast;
+            attr_v12.stAuto.DrcTuningPara.LocalSetting.LocalData.LoLitContrast[i]  = LoLitContrast;
+            attr_v12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoEnable[i] =
+                LocalAutoEnable;
+            attr_v12.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoWeit[i] = LocalAutoWeit;
+        }
+    } else if (attr_v12.opMode == DRC_OPMODE_MANUAL) {
+        attr_v12.stManual.LocalSetting.LocalData.LocalWeit       = LocalWeit;
+        attr_v12.stManual.LocalSetting.LocalData.GlobalContrast  = GlobalContrast;
+        attr_v12.stManual.LocalSetting.LocalData.LoLitContrast   = LoLitContrast;
+        attr_v12.stManual.LocalSetting.LocalData.LocalAutoEnable = LocalAutoEnable;
+        attr_v12.stManual.LocalSetting.LocalData.LocalAutoWeit   = LocalAutoWeit;
     }
     ret = rk_aiq_user_api2_adrc_v12_SetAttrib(ctx, &attr_v12);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
@@ -1346,9 +1370,13 @@ XCamReturn rk_aiq_uapi2_setDrcHiLit(const rk_aiq_sys_ctx_t* ctx, float Strength)
     RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcHiLit failed!");
     attr_v10.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
     attr_v10.sync.done      = false;
-    attr_v10.opMode         = DRC_OPMODE_AUTO;
-    for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++)
-        attr_v10.stAuto.DrcTuningPara.HiLight.Strength[i] = Strength;
+
+    if (attr_v10.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++)
+            attr_v10.stAuto.DrcTuningPara.HiLight.Strength[i] = Strength;
+    } else if (attr_v10.opMode == DRC_OPMODE_MANUAL) {
+        attr_v10.stManual.HiLight.Strength = Strength;
+    }
     ret = rk_aiq_user_api2_adrc_v10_SetAttrib(ctx, &attr_v10);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcHiLit failed!");
 #endif
@@ -1359,9 +1387,13 @@ XCamReturn rk_aiq_uapi2_setDrcHiLit(const rk_aiq_sys_ctx_t* ctx, float Strength)
     RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcHiLit failed!");
     attr_v11.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
     attr_v11.sync.done      = false;
-    attr_v11.opMode         = DRC_OPMODE_AUTO;
-    for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++)
-        attr_v11.stAuto.DrcTuningPara.HiLight.Strength[i] = Strength;
+
+    if (attr_v11.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++)
+            attr_v11.stAuto.DrcTuningPara.HiLight.Strength[i] = Strength;
+    } else if (attr_v11.opMode == DRC_OPMODE_MANUAL) {
+        attr_v11.stManual.HiLight.Strength = Strength;
+    }
     ret = rk_aiq_user_api2_adrc_v11_SetAttrib(ctx, &attr_v11);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcHiLit failed!");
 #endif
@@ -1372,9 +1404,13 @@ XCamReturn rk_aiq_uapi2_setDrcHiLit(const rk_aiq_sys_ctx_t* ctx, float Strength)
     RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcHiLit failed!");
     attr_v12.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
     attr_v12.sync.done      = false;
-    attr_v12.opMode         = DRC_OPMODE_AUTO;
-    for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++)
-        attr_v12.stAuto.DrcTuningPara.HiLight.HiLightData.Strength[i] = Strength;
+
+    if (attr_v12.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++)
+            attr_v12.stAuto.DrcTuningPara.HiLight.HiLightData.Strength[i] = Strength;
+    } else if (attr_v12.opMode == DRC_OPMODE_MANUAL) {
+        attr_v12.stManual.HiLight.HiLightData.Strength = Strength;
+    }
     ret = rk_aiq_user_api2_adrc_v12_SetAttrib(ctx, &attr_v12);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcHiLit failed!");
 #endif
@@ -1459,11 +1495,17 @@ XCamReturn rk_aiq_uapi2_setDrcGain(const rk_aiq_sys_ctx_t* ctx, float Gain, floa
     RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcGain failed!");
     attr_v10.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
     attr_v10.sync.done      = false;
-    attr_v10.opMode         = DRC_OPMODE_AUTO;
-    for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
-        attr_v10.stAuto.DrcTuningPara.DrcGain.DrcGain[i] = Gain;
-        attr_v10.stAuto.DrcTuningPara.DrcGain.Alpha[i]   = Alpha;
-        attr_v10.stAuto.DrcTuningPara.DrcGain.Clip[i]    = Clip;
+
+    if (attr_v10.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
+            attr_v10.stAuto.DrcTuningPara.DrcGain.DrcGain[i] = Gain;
+            attr_v10.stAuto.DrcTuningPara.DrcGain.Alpha[i]   = Alpha;
+            attr_v10.stAuto.DrcTuningPara.DrcGain.Clip[i]    = Clip;
+        }
+    } else if (attr_v10.opMode == DRC_OPMODE_MANUAL) {
+        attr_v10.stManual.DrcGain.DrcGain = Gain;
+        attr_v10.stManual.DrcGain.Alpha   = Alpha;
+        attr_v10.stManual.DrcGain.Clip    = Clip;
     }
     ret = rk_aiq_user_api2_adrc_v10_SetAttrib(ctx, &attr_v10);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
@@ -1475,11 +1517,17 @@ XCamReturn rk_aiq_uapi2_setDrcGain(const rk_aiq_sys_ctx_t* ctx, float Gain, floa
     RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcGain failed!");
     attr_v11.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
     attr_v11.sync.done      = false;
-    attr_v11.opMode         = DRC_OPMODE_AUTO;
-    for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
-        attr_v11.stAuto.DrcTuningPara.DrcGain.DrcGain[i] = Gain;
-        attr_v11.stAuto.DrcTuningPara.DrcGain.Alpha[i]   = Alpha;
-        attr_v11.stAuto.DrcTuningPara.DrcGain.Clip[i]    = Clip;
+
+    if (attr_v11.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
+            attr_v11.stAuto.DrcTuningPara.DrcGain.DrcGain[i] = Gain;
+            attr_v11.stAuto.DrcTuningPara.DrcGain.Alpha[i]   = Alpha;
+            attr_v11.stAuto.DrcTuningPara.DrcGain.Clip[i]    = Clip;
+        }
+    } else if (attr_v11.opMode == DRC_OPMODE_MANUAL) {
+        attr_v11.stManual.DrcGain.DrcGain = Gain;
+        attr_v11.stManual.DrcGain.Alpha   = Alpha;
+        attr_v11.stManual.DrcGain.Clip    = Clip;
     }
     ret = rk_aiq_user_api2_adrc_v11_SetAttrib(ctx, &attr_v11);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
@@ -1491,11 +1539,17 @@ XCamReturn rk_aiq_uapi2_setDrcGain(const rk_aiq_sys_ctx_t* ctx, float Gain, floa
     RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcGain failed!");
     attr_v12.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
     attr_v12.sync.done      = false;
-    attr_v12.opMode         = DRC_OPMODE_AUTO;
-    for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
-        attr_v12.stAuto.DrcTuningPara.DrcGain.DrcGain[i] = Gain;
-        attr_v12.stAuto.DrcTuningPara.DrcGain.Alpha[i]   = Alpha;
-        attr_v12.stAuto.DrcTuningPara.DrcGain.Clip[i]    = Clip;
+
+    if (attr_v12.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
+            attr_v12.stAuto.DrcTuningPara.DrcGain.DrcGain[i] = Gain;
+            attr_v12.stAuto.DrcTuningPara.DrcGain.Alpha[i]   = Alpha;
+            attr_v12.stAuto.DrcTuningPara.DrcGain.Clip[i]    = Clip;
+        }
+    } else if (attr_v12.opMode == DRC_OPMODE_MANUAL) {
+        attr_v12.stManual.DrcGain.DrcGain = Gain;
+        attr_v12.stManual.DrcGain.Alpha   = Alpha;
+        attr_v12.stManual.DrcGain.Clip    = Clip;
     }
     ret = rk_aiq_user_api2_adrc_v12_SetAttrib(ctx, &attr_v12);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");

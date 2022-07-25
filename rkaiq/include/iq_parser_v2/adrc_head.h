@@ -82,7 +82,7 @@ typedef enum CompressMode_e {
 typedef struct Compress_s {
     // M4_ENUM_DESC("Mode", "CompressMode_t", "COMPRESS_AUTO")
     CompressMode_t Mode;
-    // M4_ARRAY_MARK_DESC("Manual_curve", "u32", M4_SIZE(1,17),  M4_RANGE(0, 8192), "[0, 558, 1087, 1588, 2063, 2515, 2944, 3353, 3744, 4473, 5139, 5751, 6316, 6838, 7322, 7772, 8192]", M4_DIGIT(0), M4_DYNAMIC(0), "curve_table")
+    // M4_ARRAY_MARK_DESC("Manual_curve", "u32", M4_SIZE(1,17),  M4_RANGE(0, 8192), "[0, 558, 1087, 1588, 2063, 2515, 2944, 3353, 3744, 4473, 5139, 5751, 6316, 6838, 7322, 7772, 8192]", M4_DIGIT(0), M4_DYNAMIC(0), "drc_compress_curve")
     uint16_t       Manual_curve[ADRC_Y_NUM];
 } Compress_t;
 

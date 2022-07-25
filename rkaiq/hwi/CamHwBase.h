@@ -29,6 +29,8 @@
 #include "FlashLight.h"
 #endif
 
+#include "rk_aiq.h"
+
 using namespace XCam;
 
 namespace RkCam {
@@ -143,6 +145,9 @@ public:
     }
     virtual int getCamPhyId() { return mCamPhyId;}
     virtual void setGroupMode(bool bGroup, bool bMain) { mIsGroupMode = bGroup; mIsMain = bMain;}
+    virtual void setTbInfo(rk_aiq_tb_info_t& info) {
+        mTbInfo = info;
+    }
     HwResListener* mHwResLintener;
 protected:
     SmartPtr<V4l2Device> mIsppFecParamsDev;
@@ -165,6 +170,7 @@ protected:
     int mCamPhyId;
     bool mIsGroupMode;
     bool mIsMain;
+    rk_aiq_tb_info_t mTbInfo;
 private:
     XCAM_DEAD_COPY (CamHwBase);
 };

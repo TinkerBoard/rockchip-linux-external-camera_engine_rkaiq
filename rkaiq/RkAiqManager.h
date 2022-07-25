@@ -145,6 +145,9 @@ public:
         mHwEvtCbCtx = evt_cb_ctx;
         mHwEvtCb = hwevt_cb;
     };
+    void setTbInfo(rk_aiq_tb_info_t& info) {
+        mTbInfo = info;
+    }
     void setCamHw(SmartPtr<ICamHw>& camhw);
     void setCamPhyId(int phyId) {mCamPhyId = phyId;}
     int getCamPhyId() { return mCamPhyId;}
@@ -229,6 +232,7 @@ private:
     rk_aiq_hwevt_cb mHwEvtCb;
     void* mHwEvtCbCtx;
     const char* mSnsEntName;
+    rk_aiq_tb_info_t mTbInfo;
 #ifdef RKAIQ_ENABLE_PARSER_V1
     const CamCalibDbContext_t* mCalibDb;
 #endif

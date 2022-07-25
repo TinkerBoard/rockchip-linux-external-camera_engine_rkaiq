@@ -23,6 +23,7 @@
 #include "rk_aiq_types.h"
 #include "rk_aiq_pool.h"
 #include "RkAiqCalibDbV2Helper.h"
+#include "rk_aiq.h"
 
 namespace RkCam {
 
@@ -136,6 +137,7 @@ public:
 #if RKAIQ_HAVE_PDAF
     virtual bool get_pdaf_support() = 0;
 #endif
+    virtual void setTbInfo(rk_aiq_tb_info_t& info) = 0;
 private:
     XCAM_DEAD_COPY (ICamHw);
 };

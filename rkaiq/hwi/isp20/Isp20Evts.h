@@ -50,8 +50,8 @@ public:
     virtual uint8_t *map () {return NULL;}
     virtual bool unmap () {return false;}
 
-    uint32_t sequence;
-    uint32_t expDelay;
+    uint32_t sequence = (uint32_t)(-1);
+    uint32_t expDelay = 2;
 
 private:
     // XCAM_DEAD_COPY(Isp20Evt);

@@ -1748,13 +1748,13 @@ RkAiqCore::events_analyze(const SmartPtr<ispHwEvt_t> &evts)
     const SmartPtr<Isp20Evt> isp20Evts =
         evts.dynamic_cast_ptr<Isp20Evt>();
     uint32_t sequence = isp20Evts->sequence;
-    if (sequence == 0)
+    if (sequence == (uint32_t)(-1))
         return ret;
 
     uint32_t id = 0, maxId = 0;
     if (sequence > 0)
         id = mLastAnalyzedId + 1 > sequence ? mLastAnalyzedId + 1 : sequence;
-    maxId = sequence + isp20Evts->expDelay - 1;
+    maxId = sequence == 0 ? 0 : sequence + isp20Evts->expDelay - 1;
 
     LOGD_ANALYZER("camId:%d, sequence(%d), expDelay(%d), id(%d), maxId(%d)",
                   mAlogsComSharedParams.mCamPhyId,

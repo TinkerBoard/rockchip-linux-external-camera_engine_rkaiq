@@ -219,6 +219,8 @@ typedef struct rk_tool_awb_illInf_s {
     float prob_dis;
     // M4_ARRAY_DESC("prob_LV", "f32", M4_SIZE(1,1), M4_RANGE(0,1), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float prob_LV;
+    // M4_ARRAY_DESC("weight", "f32", M4_SIZE(1,1), M4_RANGE(0,1), "1", M4_DIGIT(4), M4_DYNAMIC(0))
+    float weight;
     // M4_ARRAY_DESC("spatialGainValue", "f32", M4_SIZE(1,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float spatialGainValue[RK_TOOL_AWB_CHANNEL_MAX];
     // M4_ARRAY_DESC("prob_WPNO", "f32", M4_SIZE(1,1), M4_RANGE(0,1), "1", M4_DIGIT(4), M4_DYNAMIC(0))

@@ -310,6 +310,29 @@ char* rk_aiq_uapi2_sysctl_readiq(const rk_aiq_sys_ctx_t* sys_ctx, char* param);
 XCamReturn
 rk_aiq_uapi2_sysctl_preInit_scene(const char* sns_ent_name, const char *main_scene,
                                   const char *sub_scene);
+/**
+ * @brief set thunder boot info to aiq
+ *
+ * @param sns_ent_name sensor name
+ * @param is_pre_aiq is pre-customer aiq
+ *
+ * @return 0 if no error
+ */
+XCamReturn
+rk_aiq_uapi2_sysctl_preInit_tb_info(const char* sns_ent_name,
+                           const rk_aiq_tb_info_t* info);
+
+/**
+ * @brief preInit the addr of IQ
+ *
+ * @param sns_ent_name
+ * @param addr
+ * @param len
+ *
+ * @return 0 if no error
+ */
+XCamReturn
+rk_aiq_uapi2_sysctl_preInit_iq_addr(const char* sns_ent_name, void *addr, size_t len);
 
 typedef struct rk_aiq_ctx_camInfo_s {
     const char* sns_ent_nm;

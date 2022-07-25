@@ -445,10 +445,19 @@
  * - AWB add new strategy to optimzie fast awb
  * - CAC reduce buffer count
  * - j2s4b fix compile error on old system
+ * v4.0x9.9-rc4
+ * - AWB: update a few tool struct
+ * - DRC/DEHAZE: fix a few API issues
+ * - ThunderBoot(TB): support trigger first frame twice
+ * - TB: Use flock to make aiq run as a single instance
+ * - IQ: add sc3338, gc4023, update sc230ai, os04a10
+ * - API: add set IQ bin by buffer, add set TB info
+ * - API: update AWB struct, users need to rebuild APP
+ * - HWI: Fix a few issues
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.9-rc3"
-#define RK_AIQ_RELEASE_DATE "2022-07-07"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.9-rc4"
+#define RK_AIQ_RELEASE_DATE "2022-07-25"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

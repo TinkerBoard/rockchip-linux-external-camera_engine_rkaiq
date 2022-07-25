@@ -240,7 +240,7 @@ typedef struct rk_aiq_uapiV2_wbV32_awb_mulWindow_s {
 } rk_aiq_uapiV2_wbV32_awb_mulWindow_t;
 
 typedef struct rk_aiq_uapiV2_wbV32_awb_attrib_s {
-    rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjust;
+    //rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjust;
     CalibDbV2_Awb_gain_offset_cfg_t wbGainOffset;
     rk_aiq_uapiV2_wbV32_awb_mulWindow_t  multiWindow;
 } rk_aiq_uapiV2_wbV32_awb_attrib_t;

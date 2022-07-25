@@ -132,10 +132,10 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
     ldchCtx->camCoeff.a2 = calib_ldch->coefficient[1];
     ldchCtx->camCoeff.a3 = calib_ldch->coefficient[2];
     ldchCtx->camCoeff.a4 = calib_ldch->coefficient[3];
-    LOGE_ALDCH("(%s) len light center(%.16f, %.16f)\n",
+    LOGD_ALDCH("(%s) len light center(%.16f, %.16f)\n",
             __FUNCTION__,
             ldchCtx->camCoeff.cx, ldchCtx->camCoeff.cy);
-    LOGE_ALDCH("(%s) len coefficient(%.16f, %.16f, %.16f, %.16f)\n",
+    LOGD_ALDCH("(%s) len coefficient(%.16f, %.16f, %.16f, %.16f)\n",
             __FUNCTION__,
             ldchCtx->camCoeff.a0, ldchCtx->camCoeff.a2,
             ldchCtx->camCoeff.a3, ldchCtx->camCoeff.a4);
@@ -150,19 +150,19 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
     ldchCtx->map13p3_en     = 0;
     memcpy(ldchCtx->bicubic, default_bic_table, sizeof( default_bic_table));
 
-    LOGE_ALDCH("bic table0: 0x%x, table1: 0x%x, table2: 0x%x, table3: 0x%x,",
+    LOGD_ALDCH("bic table0: 0x%x, table1: 0x%x, table2: 0x%x, table3: 0x%x,",
                *(uint32_t *)ldchCtx->bicubic,
                *(uint32_t *)(ldchCtx->bicubic + 4),
                *(uint32_t *)(ldchCtx->bicubic + 8),
                *(uint32_t *)(ldchCtx->bicubic + 12));
-    LOGE_ALDCH("bic table4: 0x%x, table5: 0x%x, table6: 0x%x, table7: 0x%x,",
+    LOGD_ALDCH("bic table4: 0x%x, table5: 0x%x, table6: 0x%x, table7: 0x%x,",
                *(uint32_t *)(ldchCtx->bicubic + 16),
                *(uint32_t *)(ldchCtx->bicubic + 20),
                *(uint32_t *)(ldchCtx->bicubic + 24),
                *(uint32_t *)(ldchCtx->bicubic + 28));
-    LOGE_ALDCH("bic table8: 0x%x, bic_mode_en: %d", *(uint32_t *)(ldchCtx->bicubic + 32), ldchCtx->bic_mode_en);
+    LOGD_ALDCH("bic table8: 0x%x, bic_mode_en: %d", *(uint32_t *)(ldchCtx->bicubic + 32), ldchCtx->bic_mode_en);
 
-    LOGE_ALDCH("ldch en %d, meshfile: %s, correct_level-max: %d-%d from xml file",
+    LOGD_ALDCH("ldch en %d, meshfile: %s, correct_level-max: %d-%d from xml file",
                calib_ldch->ldch_en,
                ldchCtx->meshfile,
                ldchCtx->correct_level,

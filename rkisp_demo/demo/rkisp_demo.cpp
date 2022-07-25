@@ -2050,6 +2050,10 @@ static void rkisp_routine(demo_context_t *ctx)
 
     if (ctx->rkaiq) {
         XCamReturn ret = XCAM_RETURN_NO_ERROR;
+        rk_aiq_tb_info_t tb_info;
+        tb_info.magic = sizeof(rk_aiq_tb_info_t) - 2;
+        tb_info.is_pre_aiq = false;
+        ret = rk_aiq_uapi2_sysctl_preInit_tb_info(sns_entity_name, &tb_info);
         if (work_mode == RK_AIQ_WORKING_MODE_NORMAL)
             ret = rk_aiq_uapi2_sysctl_preInit_scene(sns_entity_name, "normal", "day");
         else

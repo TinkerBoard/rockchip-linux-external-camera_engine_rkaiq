@@ -42,6 +42,8 @@
 #include "mediactl-priv.h"
 #include "tools.h"
 
+#include "xcam_log.h"
+
 /* -----------------------------------------------------------------------------
  * Graph access
  */
@@ -86,7 +88,7 @@ struct media_entity *media_get_entity_by_name(struct media_device *media,
         }
 	}
 
-    printf("media get entity by name: %s is null\n", name);
+    LOGW("media get entity by name: %s is null\n", name);
 	return NULL;
 }
 

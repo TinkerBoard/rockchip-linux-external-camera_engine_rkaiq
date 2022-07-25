@@ -1527,7 +1527,8 @@ CamHwIsp20::poll_buffer_ready (SmartPtr<VideoBuffer> &buf)
     if (buf->_buf_type == ISP_POLL_3A_STATS) {
         // stats is comming, means that next params should be ready
         if (mNoReadBack) {
-            mParamsAssembler->forceReady(buf->get_sequence() + 1);
+            if (buf->get_sequence() > 0)
+                mParamsAssembler->forceReady(buf->get_sequence() + 1);
             // set all ready params to drv
             while (_state == CAM_HW_STATE_STARTED &&
                     mParamsAssembler->ready()) {
@@ -1539,11 +1540,20 @@ CamHwIsp20::poll_buffer_ready (SmartPtr<VideoBuffer> &buf)
     } else if (buf->_buf_type == ISP_POLL_PARAMS) {
         const SmartPtr<V4l2BufferProxy> v4lbuf = buf.dynamic_cast_ptr<V4l2BufferProxy>();
         struct isp2x_isp_params_cfg* data = (struct isp2x_isp_params_cfg*)(v4lbuf->get_v4l2_userptr());
+        static int frame_id0_cnt = 0;
+        if (mTbInfo.is_pre_aiq) {
+            if (data->frame_id == 0) {
+                ++frame_id0_cnt;
+            }
+            LOGD("<TB> poll param id %d cnt %d", data->frame_id, frame_id0_cnt);
+        }
         {
             SmartLock locker (_isp_params_cfg_mutex);
             _module_cfg_update_frome_drv |= data->module_cfg_update;
         }
-        return XCAM_RETURN_NO_ERROR;
+        if (!mTbInfo.is_pre_aiq || frame_id0_cnt < 2) {
+            return XCAM_RETURN_NO_ERROR;
+        }
     }
     return CamHwBase::poll_buffer_ready(buf);
 }

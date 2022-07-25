@@ -105,7 +105,7 @@ XCamReturn RkAiqAmergeHandleInt::getAttribV10(mergeAttrV10_t* att) {
         mCfgMutex.unlock();
     } else {
         if (updateAtt) {
-            memcpy(att, &mNewAttV10, sizeof(updateAtt));
+            memcpy(att, &mNewAttV10, sizeof(mergeAttrV10_t));
             att->sync.done = false;
         } else {
             rk_aiq_uapi_amerge_v10_GetAttrib(mAlgoCtx, att);
@@ -161,7 +161,7 @@ XCamReturn RkAiqAmergeHandleInt::getAttribV11(mergeAttrV11_t* att) {
         mCfgMutex.unlock();
     } else {
         if (updateAtt) {
-            memcpy(att, &mNewAttV11, sizeof(updateAtt));
+            memcpy(att, &mNewAttV11, sizeof(mergeAttrV11_t));
             att->sync.done = false;
         } else {
             rk_aiq_uapi_amerge_v11_GetAttrib(mAlgoCtx, att);
@@ -217,7 +217,7 @@ XCamReturn RkAiqAmergeHandleInt::getAttribV12(mergeAttrV12_t* att) {
         mCfgMutex.unlock();
     } else {
         if (updateAtt) {
-            memcpy(att, &mNewAttV12, sizeof(updateAtt));
+            memcpy(att, &mNewAttV12, sizeof(mergeAttrV12_t));
             att->sync.done = false;
         } else {
             rk_aiq_uapi_amerge_v12_GetAttrib(mAlgoCtx, att);
