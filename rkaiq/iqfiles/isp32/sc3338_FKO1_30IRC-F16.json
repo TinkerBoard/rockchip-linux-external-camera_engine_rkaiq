@@ -33,7 +33,7 @@
 		},
 		"CISTimeSet":	{
 			"Linear":	{
-				"CISTimeRegMin":	1,
+				"CISTimeRegMin":	2,
 				"CISLinTimeRegMaxFac":	{
 					"fCoeff":	[1, 8]
 				},
@@ -1905,13 +1905,13 @@
 						},
 						"ie":	{
 							"param":	{
-								"enable":	0,
-								"mode":	0
+								"enable":	1,
+								"mode":	1
 							}
 						},
 						"colorAsGrey":	{
 							"param":	{
-								"enable":	0,
+								"enable":	1,
 								"skip_frame":	10
 							}
 						},
