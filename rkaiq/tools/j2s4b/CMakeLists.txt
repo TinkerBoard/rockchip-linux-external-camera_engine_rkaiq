@@ -68,4 +68,5 @@ foreach(IQPATH ${RKAIQ_IQFILES})
         )
     install(PROGRAMS "${CMAKE_BINARY_DIR}/${TAGT_NAME}" DESTINATION usr/share/iqfiles)
 endforeach()
+install(TARGETS j2s4b RUNTIME DESTINATION host)
 
