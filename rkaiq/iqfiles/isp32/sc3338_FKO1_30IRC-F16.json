@@ -111,7 +111,7 @@
 			}
 		},
 		"CISMinFps":	10,
-		"CISFlip":	0
+		"CISFlip":	3
 	},
 	"module_calib":	{
 		"sensor_module":	{
@@ -1905,13 +1905,13 @@
 						},
 						"ie":	{
 							"param":	{
-								"enable":	1,
-								"mode":	1
+								"enable":	0,
+								"mode":	0
 							}
 						},
 						"colorAsGrey":	{
 							"param":	{
-								"enable":	1,
+								"enable":	0,
 								"skip_frame":	10
 							}
 						},
@@ -9701,13 +9701,13 @@
 						},
 						"ie":	{
 							"param":	{
-								"enable":	0,
-								"mode":	0
+								"enable":	1,
+								"mode":	1
 							}
 						},
 						"colorAsGrey":	{
 							"param":	{
-								"enable":	1,
+								"enable":	0,
 								"skip_frame":	10
 							}
 						},
