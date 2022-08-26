@@ -154,7 +154,9 @@ static calibdb_ctx_member_offset_info_t info_CamCalibDbV2ContextIsp32_t[] = {
     {"aldch", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(aldch)},
     {"adpcc_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(adpcc_calib)},
     {"ie", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(ie)},
+#if RKAIQ_HAVE_ASD_V10
     {"cpsl", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(cpsl)},
+#endif
     {"cproc", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(cproc)},
     {"amerge_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(amerge_calib_v12)},
     {"adrc_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP32(adrc_calib_v12)},

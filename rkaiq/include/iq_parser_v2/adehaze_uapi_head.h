@@ -53,17 +53,17 @@ typedef struct mDehaze_setting_v11_s {
     bool en;
     // M4_BOOL_DESC("air_lc_en", "1")
     bool air_lc_en;
-    // M4_NUMBER_DESC("stab_fnum", "f32", M4_RANGE(0,31), "8.0", M4_DIGIT(4))
+    // M4_NUMBER_DESC("stab_fnum", "f32", M4_RANGE(0,31), "8", M4_DIGIT(0))
     float stab_fnum;
-    // M4_NUMBER_DESC("sigma", "f32", M4_RANGE(0,255), "6.0", M4_DIGIT(4))
+    // M4_NUMBER_DESC("sigma", "f32", M4_RANGE(1,255), "255", M4_DIGIT(0))
     float sigma;
     // M4_NUMBER_DESC("wt_sigma", "f32", M4_RANGE(0,256), "8.0", M4_DIGIT(4))
     float wt_sigma;
-    // M4_NUMBER_DESC("air_sigma", "f32", M4_RANGE(0,255), "120.0", M4_DIGIT(4))
+    // M4_NUMBER_DESC("air_sigma", "f32", M4_RANGE(4,1024), "120.0", M4_DIGIT(4))
     float air_sigma;
-    // M4_NUMBER_DESC("tmax_sigma", "f32", M4_RANGE(0,1), "0.0100", M4_DIGIT(4))
+    // M4_NUMBER_DESC("tmax_sigma", "f32", M4_RANGE(0.0004,1), "0.0100", M4_DIGIT(4))
     float tmax_sigma;
-    // M4_NUMBER_DESC("pre_wet", "f32", M4_RANGE(0,1), "0.0100", M4_DIGIT(4))
+    // M4_NUMBER_DESC("pre_wet", "f32", M4_RANGE(0,16), "8", M4_DIGIT(0))
     float pre_wet;
     // M4_STRUCT_DESC("DehazeData", "normal_ui_style")
     mDehazeDataV11_t DehazeData;

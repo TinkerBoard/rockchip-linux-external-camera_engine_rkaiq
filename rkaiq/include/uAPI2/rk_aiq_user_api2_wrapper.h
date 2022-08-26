@@ -148,6 +148,12 @@ XCamReturn rk_aiq_set_acsm_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
 XCamReturn rk_aiq_get_acsm_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
                                        Csm_Param_t* manual);
 
+XCamReturn rk_aiq_set_ablc_manual_attr(const rk_aiq_sys_ctx_t *sys_ctx,
+        ablc_uapi_manual_t *manual);
+
+XCamReturn rk_aiq_get_ablc_manual_attr(const rk_aiq_sys_ctx_t *sys_ctx,
+        ablc_uapi_manual_t *manual);
+
 XCamReturn rk_aiq_set_asharp_manual_attr(const rk_aiq_sys_ctx_t *sys_ctx,
         asharp_uapi_manual_t *manual);
 
@@ -194,6 +200,10 @@ rk_aiq_set_again_manual_attr(const rk_aiq_sys_ctx_t *sys_ctx,
 XCamReturn
 rk_aiq_get_again_manual_attr(const rk_aiq_sys_ctx_t *sys_ctx,
                              again_uapi_manual_t *manual);
+
+XCamReturn
+rk_aiq_get_ablc_info(const rk_aiq_sys_ctx_t *sys_ctx,
+                     ablc_uapi_info_t *info);
 
 XCamReturn
 rk_aiq_get_abayertnr_info(const rk_aiq_sys_ctx_t *sys_ctx,

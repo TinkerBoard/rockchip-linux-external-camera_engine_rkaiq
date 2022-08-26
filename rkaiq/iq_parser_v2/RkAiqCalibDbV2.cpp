@@ -1463,11 +1463,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeDpccCtx(CalibDbV2_Dpcc_t* dpcc)
     return 0;
 }
 
-int RkAiqCalibDbV2::CamCalibDbFreeCpslCtx(CalibDbV2_Cpsl_t* cpsl)
-{
-    return 0;
-}
-
 #if RKAIQ_HAVE_ORB_V1
 int RkAiqCalibDbV2::CamCalibDbFreeOrbCtx(CalibDbV2_Orb_t* orb)
 {
@@ -2513,9 +2508,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeSceneCtx(void* scene_ctx) {
         (CalibDbV2_Dpcc_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, adpcc_calib));
     if (adpcc_calib)
         CamCalibDbFreeDpccCtx(adpcc_calib);
-
-    CalibDbV2_Cpsl_t* cpsl = (CalibDbV2_Cpsl_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, cpsl));
-    if (cpsl) CamCalibDbFreeCpslCtx(cpsl);
 
 #if RKAIQ_HAVE_ORB_V1
     CalibDbV2_Orb_t* orb = (CalibDbV2_Orb_t*)(CALIBDBV2_GET_MODULE_PTR((void*)ctx, orb));

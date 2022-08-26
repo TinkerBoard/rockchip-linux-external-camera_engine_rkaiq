@@ -33,4 +33,7 @@ XCamReturn rk_aiq_uapi_ablc_V32_GetAttrib(const RkAiqAlgoContext* ctx,
                                          rk_aiq_blc_attrib_V32_t* attr);
 
 XCamReturn rk_aiq_uapi_ablc_V32_GetProc(const RkAiqAlgoContext* ctx, AblcProc_V32_t* ProcRes);
+
+XCamReturn rk_aiq_uapi_ablc_V32_GetInfo(const RkAiqAlgoContext* ctx, rk_aiq_blc_info_v32_t* pInfo);
+
 #endif

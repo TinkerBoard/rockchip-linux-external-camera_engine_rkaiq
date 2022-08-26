@@ -454,10 +454,17 @@
  * - API: add set IQ bin by buffer, add set TB info
  * - API: update AWB struct, users need to rebuild APP
  * - HWI: Fix a few issues
+ * v4.0x9.9-rc5
+ * - DRC/DEHAZE/AE: Fix a few issues
+ * - TB: Fix offline AWB issues
+ * - Multi-Cam: Fix AE stats lost in mutli-cam case
+ * - FakeSensor: Fix 8bit raw simualtion
+ * - IQ: Update sc230ai/sc3338/gc2093/sc031gs
+ * - IQ Bin: Reduce binary size
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.9-rc4"
-#define RK_AIQ_RELEASE_DATE "2022-07-25"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.9-rc5"
+#define RK_AIQ_RELEASE_DATE "2022-09-07"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

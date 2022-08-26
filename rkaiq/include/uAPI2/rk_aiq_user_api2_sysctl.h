@@ -339,6 +339,17 @@ typedef struct rk_aiq_ctx_camInfo_s {
     int sns_camPhyId;
 } rk_aiq_ctx_camInfo_t;
 
+/**
+ * @brief preInit the addr of CamCalibProj
+ *
+ * @param sns_ent_name
+ * @param addr
+ *
+ * @return 0 if no error
+ */
+XCamReturn
+rk_aiq_uapi2_sysctl_preInit_calibproj(const char* sns_ent_name, void *addr);
+
 XCamReturn
 rk_aiq_uapi2_sysctl_getCamInfos(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ctx_camInfo_t* camInfo);
 

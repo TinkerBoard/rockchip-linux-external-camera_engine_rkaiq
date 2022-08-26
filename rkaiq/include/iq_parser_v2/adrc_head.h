@@ -109,8 +109,6 @@ typedef struct CalibDbV2_Adrc_V10_s {
     bool  OutPutLongFrame;  
     // M4_NUMBER_DESC("IIR_frame", "u8", M4_RANGE(1,1000), "16", M4_DIGIT(0))
     int IIR_frame; 
-    // M4_NUMBER_DESC("Tolerance", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3))
-    float Tolerance;
     // M4_NUMBER_DESC("damp", "f32", M4_RANGE(0,1), "0.9", M4_DIGIT(3))
     float damp;
 } CalibDbV2_Adrc_V10_t;
@@ -178,8 +176,6 @@ typedef struct CalibDbV2_Adrc_V11_s {
     bool  OutPutLongFrame;  
     // M4_NUMBER_DESC("IIR_frame", "u8", M4_RANGE(1,1000), "16", M4_DIGIT(0))
     int IIR_frame; 
-    // M4_NUMBER_DESC("Tolerance", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3))
-    float                  Tolerance;
     // M4_NUMBER_DESC("damp", "f32", M4_RANGE(0,1), "0.9", M4_DIGIT(3))
     float damp;
 } CalibDbV2_Adrc_V11_t;
@@ -263,8 +259,6 @@ typedef struct CalibDbV2_Adrc_V12_s {
     bool OutPutLongFrame;  
     // M4_NUMBER_DESC("IIR_frame", "u8", M4_RANGE(1,1000), "16", M4_DIGIT(0))
     int IIR_frame;  
-    // M4_NUMBER_DESC("Tolerance", "f32", M4_RANGE(0,1), "0", M4_DIGIT(3))
-    float Tolerance;
     // M4_NUMBER_DESC("damp", "f32", M4_RANGE(0,1), "0.9", M4_DIGIT(3))
     float damp;
 } CalibDbV2_Adrc_V12_t;

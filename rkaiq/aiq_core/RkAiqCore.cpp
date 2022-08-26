@@ -261,7 +261,9 @@ RkAiqCore::init(const char* sns_ent_name, const CamCalibDbContext_t* aiqCalib,
     }
     LOGI_ANALYZER("mCustomEnAlgosMask: 0x%" PRIx64 "\n", mCustomEnAlgosMask);
     addDefaultAlgos(mAlgosDesArray);
+#if RKAIQ_HAVE_ASD_V10
     initCpsl();
+#endif
     newAiqParamsPool();
     newAiqGroupAnayzer();
 #if RKAIQ_HAVE_PDAF
@@ -428,10 +430,12 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
     mAlogsComSharedParams.spAlignedHeight = mSpAlignedHeight;
     CalibDbV2_ColorAsGrey_t *colorAsGrey =
         (CalibDbV2_ColorAsGrey_t*)CALIBDBV2_GET_MODULE_PTR((void*)(mAlogsComSharedParams.calibv2), colorAsGrey);
-
+#if RKAIQ_HAVE_ASD_V10
     CalibDbV2_Cpsl_t* calibv2_cpsl_db =
         (CalibDbV2_Cpsl_t*)CALIBDBV2_GET_MODULE_PTR((void*)(mAlogsComSharedParams.calibv2), cpsl);
-
+#else
+    CalibDbV2_Cpsl_t* calibv2_cpsl_db = NULL;
+#endif
 #if defined(RKAIQ_HAVE_THUMBNAILS)
     CalibDbV2_Thumbnails_t* thumbnails_config_db =
         (CalibDbV2_Thumbnails_t*)CALIBDBV2_GET_MODULE_PTR((void*)(mAlogsComSharedParams.calibv2), thumbnails);
@@ -496,7 +500,7 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
         if (colorAsGrey->param.enable) {
             mAlogsComSharedParams.gray_mode = true;
             mGrayMode = RK_AIQ_GRAY_MODE_ON;
-        } else if (calibv2_cpsl_db->param.enable) {
+        } else if (calibv2_cpsl_db && calibv2_cpsl_db->param.enable) {
             mGrayMode = RK_AIQ_GRAY_MODE_CPSL;
             mAlogsComSharedParams.gray_mode =
                 mAlogsComSharedParams.fill_light_on && calibv2_cpsl_db->param.force_gray;
@@ -1538,12 +1542,14 @@ RkAiqCore::cacheIspStatsToList(SmartPtr<RkAiqAecStatsProxy>& aecStat,
 {
     SmartLock locker (ispStatsListMutex);
     SmartPtr<RkAiqStatsProxy> stats = NULL;
-    if (mAiqStatsPool.ptr() && mAiqStatsPool->has_free_items()) {
+    if (!mAiqStatsPool.ptr()) return;
+
+    if (mAiqStatsPool->has_free_items()) {
         stats = mAiqStatsPool->get_item();
     } else {
-        if(mAiqStatsCachedList.empty()) {
+        if (mAiqStatsCachedList.empty()) {
             LOGW_ANALYZER("no free or cached stats, user may hold all stats buf !");
-            return ;
+            return;
         }
         stats = mAiqStatsCachedList.front();
         mAiqStatsCachedList.pop_front();
@@ -2285,19 +2291,24 @@ XCamReturn RkAiqCore::calibTuning(const CamCalibDbV2Context_t* aiqCalib,
     std::for_each(std::begin(*change_name_list), std::end(*change_name_list),
     [this](const std::string & name) {
         if (!name.compare(0, 4, "cpsl", 0, 4)) {
+#if RKAIQ_HAVE_ASD_V10
             initCpsl();
+#endif
         } else if (!name.compare(0, 11, "colorAsGrey", 0, 11)) {
             CalibDbV2_ColorAsGrey_t* colorAsGrey =
                 (CalibDbV2_ColorAsGrey_t*)CALIBDBV2_GET_MODULE_PTR(
                     (void*)(mAlogsComSharedParams.calibv2), colorAsGrey);
-
+#if RKAIQ_HAVE_ASD_V10
             CalibDbV2_Cpsl_t* calibv2_cpsl_db = (CalibDbV2_Cpsl_t*)CALIBDBV2_GET_MODULE_PTR(
                 (void*)(mAlogsComSharedParams.calibv2), cpsl);
+#else
+            CalibDbV2_Cpsl_t* calibv2_cpsl_db = NULL;
+#endif
 
             if (colorAsGrey->param.enable) {
                 mGrayMode                       = RK_AIQ_GRAY_MODE_ON;
                 mAlogsComSharedParams.gray_mode = true;
-            } else if (calibv2_cpsl_db->param.enable) {
+            } else if (calibv2_cpsl_db && calibv2_cpsl_db->param.enable) {
                 mGrayMode = RK_AIQ_GRAY_MODE_CPSL;
                 mAlogsComSharedParams.gray_mode =
                     mAlogsComSharedParams.fill_light_on && calibv2_cpsl_db->param.force_gray;

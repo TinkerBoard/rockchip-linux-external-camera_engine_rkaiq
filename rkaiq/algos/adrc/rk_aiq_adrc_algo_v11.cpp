@@ -243,23 +243,6 @@ void AdrcDampingV11(NextData_t* pNextData, CurrData_t* pCurrData, int FrameID,
     LOG1_ATMO("%s:Enter!\n", __FUNCTION__);
 
     if (FrameID && pNextData->FrameNumber == pCurrData->FrameNumber) {
-        float diff = 0.0;
-        bool enDamp;
-
-        if (CtrlDataType == CTRLDATATYPE_ENVLV) {
-            diff = ABS(pNextData->AEData.EnvLv - pCurrData->AEData.EnvLv);
-            if (pCurrData->AEData.EnvLv != ENVLVMIN) diff = diff / pCurrData->AEData.EnvLv;
-        } else if (CtrlDataType == CTRLDATATYPE_ISO) {
-            diff = ABS(pNextData->AEData.ISO - pCurrData->AEData.ISO);
-            diff = diff / pCurrData->AEData.ISO;
-        }
-        if (diff < pNextData->Others.Tolerance)
-            enDamp = false;
-        else
-            enDamp = true;
-
-        // get finnal cfg data by damp
-        if (enDamp) {
             pNextData->HandleData.Drc_v11.DrcGain =
                 pNextData->Others.damp * pNextData->HandleData.Drc_v11.DrcGain +
                 (1 - pNextData->Others.damp) * pCurrData->HandleData.Drc_v11.DrcGain;
@@ -284,7 +267,6 @@ void AdrcDampingV11(NextData_t* pNextData, CurrData_t* pCurrData, int FrameID,
             pNextData->HandleData.Drc_v11.LoLitContrast =
                 pNextData->Others.damp * pNextData->HandleData.Drc_v11.LoLitContrast +
                 (1 - pNextData->Others.damp) * pCurrData->HandleData.Drc_v11.LoLitContrast;
-        }
     }
 
     LOG1_ATMO("%s:Eixt!\n", __FUNCTION__);
@@ -547,14 +529,15 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
             pAdrcCtx->drcAttrV11.stAuto.DrcTuningPara.Edge_Weit, NORMALIZE_MAX, NORMALIZE_MIN);
         pAdrcCtx->NextData.Others.IIR_frame = LIMIT_VALUE(
             pAdrcCtx->drcAttrV11.stAuto.DrcTuningPara.IIR_frame, IIRFRAMEMAX, IIRFRAMEMIN);
-        pAdrcCtx->NextData.Others.Tolerance = LIMIT_VALUE(
-            pAdrcCtx->drcAttrV11.stAuto.DrcTuningPara.Tolerance, NORMALIZE_MAX, NORMALIZE_MIN);
         pAdrcCtx->NextData.Others.damp = LIMIT_VALUE(pAdrcCtx->drcAttrV11.stAuto.DrcTuningPara.damp,
                                                      NORMALIZE_MAX, NORMALIZE_MIN);
 
         // damp
-        AdrcDampingV11(&pAdrcCtx->NextData, &pAdrcCtx->CurrData, pAdrcCtx->FrameID,
-                       pAdrcCtx->drcAttrV11.stAuto.DrcTuningPara.CtrlDataType);
+        if (0 != memcmp(&pAdrcCtx->CurrData.HandleData, &pAdrcCtx->NextData.HandleData,
+                        sizeof(DrcHandleData_t))) {
+            AdrcDampingV11(&pAdrcCtx->NextData, &pAdrcCtx->CurrData, pAdrcCtx->FrameID,
+                           pAdrcCtx->drcAttrV11.stAuto.DrcTuningPara.CtrlDataType);
+        }
     } else if (pAdrcCtx->drcAttrV11.opMode == DRC_OPMODE_MANUAL) {
         // update drc gain
         pAdrcCtx->NextData.HandleData.Drc_v11.DrcGain =
@@ -655,9 +638,12 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
     pAdrcCtx->CurrData.ApiMode      = pAdrcCtx->drcAttrV11.opMode;
     pAdrcCtx->CurrData.FrameNumber  = pAdrcCtx->FrameNumber;
     if (0 != memcmp(&pAdrcCtx->CurrData.HandleData, &pAdrcCtx->NextData.HandleData,
-                    sizeof(DrcHandleData_t)))
+                    sizeof(DrcHandleData_t))) {
         memcpy(&pAdrcCtx->CurrData.HandleData, &pAdrcCtx->NextData.HandleData,
                sizeof(DrcHandleData_t));
+        pAdrcCtx->isDampStable = false;
+    } else
+        pAdrcCtx->isDampStable = true;
 
     LOG1_ATMO("%s:exit!\n", __FUNCTION__);
 }
@@ -820,6 +806,12 @@ bool AdrcByPassTuningProcessing(AdrcContext_t* pAdrcCtx, AecPreResult_t AecHdrPr
     bool bypass = false;
     float diff  = 0.0;
 
+    // get current EnvLv from AecPreRes
+    AdrcGetEnvLvV11(pAdrcCtx, AecHdrPreResult);
+
+    // motion coef
+    pAdrcCtx->NextData.MotionCoef = MOVE_COEF_DEFAULT;
+
     if (pAdrcCtx->FrameID <= 2)
         bypass = false;
     else if (pAdrcCtx->drcAttrV11.opMode != pAdrcCtx->CurrData.ApiMode)
@@ -827,16 +819,6 @@ bool AdrcByPassTuningProcessing(AdrcContext_t* pAdrcCtx, AecPreResult_t AecHdrPr
     else if (pAdrcCtx->drcAttrV11.opMode == DRC_OPMODE_MANUAL)
         bypass = !pAdrcCtx->ifReCalcStManual;
     else if (pAdrcCtx->drcAttrV11.opMode == DRC_OPMODE_AUTO) {
-        // get current EnvLv from AecPreRes
-        AdrcGetEnvLvV11(pAdrcCtx, AecHdrPreResult);
-
-        // motion coef
-        pAdrcCtx->NextData.MotionCoef = MOVE_COEF_DEFAULT;
-
-        // transfer ae data to CurrHandle
-        pAdrcCtx->NextData.AEData.EnvLv =
-            LIMIT_VALUE(pAdrcCtx->NextData.AEData.EnvLv, NORMALIZE_MAX, NORMALIZE_MIN);
-
         if (pAdrcCtx->drcAttrV11.stAuto.DrcTuningPara.CtrlDataType == CTRLDATATYPE_ENVLV) {
             diff = pAdrcCtx->CurrData.AEData.EnvLv - pAdrcCtx->NextData.AEData.EnvLv;
             if (pAdrcCtx->CurrData.AEData.EnvLv == 0.0) {

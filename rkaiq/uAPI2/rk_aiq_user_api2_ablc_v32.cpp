@@ -115,6 +115,49 @@ rk_aiq_user_api2_ablcV32_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_blc_a
 
     return XCAM_RETURN_NO_ERROR;
 }
+
+
+XCamReturn
+rk_aiq_user_api2_ablcV32_GetInfo(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_blc_info_v32_t* pInfo)
+{
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    RKAIQ_API_SMART_LOCK(sys_ctx);
+
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+
+        RkAiqCamGroupAblcV32HandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupAblcV32HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ABLC);
+        if (algo_handle) {
+            LOGD_ABLC("%s:%d !!!!!!!!!!!!!group!!!!!!!!\n", __FUNCTION__, __LINE__);
+            return algo_handle->getAttrib(attr);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx)
+                    continue;
+                LOGD_ABLC("%s:%d !!!!!!!!!!!!!multi single!!!!!!!!\n", __FUNCTION__, __LINE__);
+                RkAiqAblcV32HandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAblcV32HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_ABLC);
+                if (singleCam_algo_handle)
+                    ret = singleCam_algo_handle->getInfo(pInfo);
+            }
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif
+    } else {
+        RkAiqAblcV32HandleInt* algo_handle =
+            algoHandle<RkAiqAblcV32HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ABLC);
+        LOGD_ABLC("%s:%d !!!!!!!!!!!!! single!!!!!!!!\n", __FUNCTION__, __LINE__);
+        if (algo_handle) {
+            return algo_handle->getInfo(pInfo);
+        }
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
 #else
 
 XCamReturn
@@ -129,6 +172,11 @@ rk_aiq_user_api2_ablcV32_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_blc_a
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
+XCamReturn
+rk_aiq_user_api2_ablcV32_GetInfo(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_blc_info_v32_t* pInfo)
+{
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
 #endif
 
 RKAIQ_END_DECLARE

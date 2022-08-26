@@ -178,7 +178,9 @@ static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
 #if RKAIQ_HAVE_WDR_V1
     { &g_RkIspAlgoDescAwdr.common,      RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,  otherGrpCondsV21 },
 #endif
+#if RKAIQ_HAVE_ASD_V10
     { &g_RkIspAlgoDescAsd.common,       RK_AIQ_CORE_ANALYZE_GRP0,   0, 0, 0,  grp0Conds        },
+#endif
     { NULL,                             RK_AIQ_CORE_ANALYZE_ALL,    0, 0, 0,  {0, 0}           },
     // clang-format on
 };

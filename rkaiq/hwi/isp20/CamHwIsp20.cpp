@@ -1551,7 +1551,7 @@ CamHwIsp20::poll_buffer_ready (SmartPtr<VideoBuffer> &buf)
             SmartLock locker (_isp_params_cfg_mutex);
             _module_cfg_update_frome_drv |= data->module_cfg_update;
         }
-        if (!mTbInfo.is_pre_aiq || frame_id0_cnt < 2) {
+        if (!mTbInfo.is_pre_aiq || frame_id0_cnt < 1) {
             return XCAM_RETURN_NO_ERROR;
         }
     }

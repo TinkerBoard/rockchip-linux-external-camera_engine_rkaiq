@@ -113,7 +113,7 @@ typedef struct CalibDbV2_Cac_V11_TuningPara_s {
 typedef struct CalibDbV2_Cac_SettingPara_s {
     // M4_BOOL_DESC("enable", "0")
     bool enable;
-    // M4_STRING_DESC("psf_path", M4_SIZE(1,255), M4_RANGE(0, 255), "/etc/iqfiles/cac_map.bin", M4_DYNAMIC(0))
+    // M4_STRING_DESC("psf_path", M4_SIZE(1,1), M4_RANGE(0, 255), "/etc/iqfiles/cac_map.bin", M4_DYNAMIC(0))
     char psf_path[RKCAC_MAX_PATH_LEN];
     // M4_NUMBER_DESC("psf_shift_bits", "u8", M4_RANGE(0,10), "2", M4_DIGIT(0),M4_HIDE(0))
     uint8_t psf_shift_bits;

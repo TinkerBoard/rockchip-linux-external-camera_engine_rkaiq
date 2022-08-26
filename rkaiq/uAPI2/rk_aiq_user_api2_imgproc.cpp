@@ -3184,12 +3184,6 @@ XCamReturn rk_aiq_uapi2_getCCMMode(const rk_aiq_sys_ctx_t* ctx, opMode_t* mode)
     memset(&attr, 0, sizeof(attr));
     IMGPROC_FUNC_ENTER
     ret = rk_aiq_user_api2_accm_GetAttrib(ctx, &attr);
-#elif RKAIQ_HAVE_CCM_V2
-    rk_aiq_ccm_v2_attrib_t attr;
-    memset(&attr, 0, sizeof(attr));
-    IMGPROC_FUNC_ENTER
-    ret = rk_aiq_user_api2_accm_v2_GetAttrib(ctx, &attr);
-#endif
     RKAIQ_IMGPROC_CHECK_RET(ret, "getCCMMode failed!");
     if (attr.mode == RK_AIQ_CCM_MODE_AUTO) {
         *mode = OP_AUTO;
@@ -3198,6 +3192,20 @@ XCamReturn rk_aiq_uapi2_getCCMMode(const rk_aiq_sys_ctx_t* ctx, opMode_t* mode)
     } else {
         *mode = OP_INVAL;
     }
+#elif RKAIQ_HAVE_CCM_V2
+    rk_aiq_ccm_v2_attrib_t attr;
+    memset(&attr, 0, sizeof(attr));
+    IMGPROC_FUNC_ENTER
+    ret = rk_aiq_user_api2_accm_v2_GetAttrib(ctx, &attr);
+    RKAIQ_IMGPROC_CHECK_RET(ret, "getCCMMode failed!");
+    if (attr.mode == RK_AIQ_CCM_MODE_AUTO) {
+        *mode = OP_AUTO;
+    } else if (attr.mode == RK_AIQ_CCM_MODE_MANUAL) {
+        *mode = OP_MANUAL;
+    } else {
+        *mode = OP_INVAL;
+    }
+#endif
     IMGPROC_FUNC_EXIT
     return ret;
 }

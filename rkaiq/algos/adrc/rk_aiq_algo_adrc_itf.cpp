@@ -156,24 +156,6 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
     bool Enable = DrcEnableSetting(pAdrcCtx);
 
-    // get ae pre res and bypass_tuning_params
-    XCamVideoBuffer* xCamAePreRes = pAdrcParams->com.u.proc.res_comb->ae_pre_res;
-    RkAiqAlgoPreResAe* pAEPreRes  = NULL;
-    if (xCamAePreRes) {
-        pAEPreRes            = (RkAiqAlgoPreResAe*)xCamAePreRes->map(xCamAePreRes);
-        bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcCtx, pAEPreRes->ae_pre_res_rk);
-    } else {
-        if (!(pAdrcCtx->FrameID))
-            return XCAM_RETURN_NO_ERROR;
-        else {
-            AecPreResult_t AecHdrPreResult;
-            memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
-            bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcCtx, AecHdrPreResult);
-            bypass_tuning_params = false;
-            LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
-        }
-    }
-
     if (Enable) {
         //get Sensor Info
         XCamVideoBuffer* xCamAeProcRes = pAdrcParams->com.u.proc.res_comb->ae_proc_res;
@@ -312,6 +294,24 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             pAdrcCtx->NextData.AEData.L2M_Ratio = 1.0;
         }
 
+        // get ae pre res and bypass_tuning_params
+        XCamVideoBuffer* xCamAePreRes = pAdrcParams->com.u.proc.res_comb->ae_pre_res;
+        RkAiqAlgoPreResAe* pAEPreRes  = NULL;
+        if (xCamAePreRes) {
+            pAEPreRes            = (RkAiqAlgoPreResAe*)xCamAePreRes->map(xCamAePreRes);
+            bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcCtx, pAEPreRes->ae_pre_res_rk);
+        } else {
+            if (!(pAdrcCtx->FrameID))
+                return XCAM_RETURN_NO_ERROR;
+            else {
+                AecPreResult_t AecHdrPreResult;
+                memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
+                bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcCtx, AecHdrPreResult);
+                bypass_tuning_params = false;
+                LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
+            }
+        }
+
         // get bypass_expo_params
         if (pAdrcCtx->NextData.AEData.L2S_Ratio >= 1 && pAdrcCtx->NextData.AEData.L2M_Ratio >= 1) {
             if (pAdrcCtx->FrameID <= 2)
@@ -333,10 +333,10 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         }
 
         // get tuning paras
-        if (!bypass_tuning_params) AdrcTuningParaProcessing(pAdrcCtx);
+        if (!bypass_tuning_params || !pAdrcCtx->isDampStable) AdrcTuningParaProcessing(pAdrcCtx);
 
         // get expo related paras
-        if (!bypass_expo_params) AdrcExpoParaProcessing(pAdrcCtx);
+        if (!bypass_expo_params || !pAdrcCtx->isDampStable) AdrcExpoParaProcessing(pAdrcCtx);
 
     } else {
         LOGD_ATMO("%s: Drc Enable is OFF, Bypass Drc !!! \n", __func__);

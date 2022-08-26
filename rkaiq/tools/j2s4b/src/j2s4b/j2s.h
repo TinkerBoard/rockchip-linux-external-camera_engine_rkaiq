@@ -17,6 +17,7 @@
 
 #include "cJSON.h"
 #include "common.h"
+#include "BinRecord.hpp"
 
 typedef struct {
   char name[MAX_NAME];
@@ -51,11 +52,13 @@ typedef struct {
   int16_t num_value;   /* Number of enum values */
 } __attribute__((packed)) j2s_enum;
 
+#if 0
 typedef struct __map_index {
   void *dst_offset;
   void *ptr_offset;
   size_t len;
 } map_index_t;
+#endif
 
 typedef struct _j2s_pool {
   uint8_t *data;
@@ -100,9 +103,9 @@ typedef struct {
 } __attribute__((packed)) j2s_ctx;
 
 /* Helpers for alloc/free ptr */
-void *j2s_alloc_data(j2s_ctx *ctx, size_t size);
+void *j2s_alloc_data(j2s_ctx *ctx, size_t size, size_t* real_size);
 
-int j2s_alloc_map_record(j2s_ctx *ctx, void *dst, void *ptr);
+int j2s_alloc_map_record(j2s_ctx *ctx, void *dst, void *ptr, size_t len);
 
 void j2s_release_data(j2s_ctx *ctx, void *ptr);
 

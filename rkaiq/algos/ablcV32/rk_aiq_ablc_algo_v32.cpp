@@ -228,6 +228,9 @@ AblcResult_V32_t Ablc_Select_Params_By_ISO_V32(AblcParams_V32_t* pParams, AblcSe
         }
     }
 
+    pExpInfo->isoLevelHig = isoHighlevel;
+    pExpInfo->isoLevelLow = isoLowlevel;
+
     pSelect->enable = pParams->enable;
 
     pSelect->blc_r =

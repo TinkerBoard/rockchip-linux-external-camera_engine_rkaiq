@@ -1483,10 +1483,10 @@ void Isp32Params::convertAiqBlcToIsp32Params(struct isp32_isp_params_cfg& isp_cf
         isp_cfg.others.bls_cfg.bls1_val.gb = CLIP((int)(blc.blc1_gb * blc.isp_ob_predgain), 0, 32767);
         isp_cfg.others.bls_cfg.bls1_val.b  = CLIP((int)(blc.blc1_b * blc.isp_ob_predgain), 0, 32767);
     } else {
-        isp_cfg.others.bls_cfg.bls1_val.r  = blc.blc1_r;
-        isp_cfg.others.bls_cfg.bls1_val.gr = blc.blc1_gr;
-        isp_cfg.others.bls_cfg.bls1_val.gb = blc.blc1_gb;
-        isp_cfg.others.bls_cfg.bls1_val.b  = blc.blc1_b;
+        isp_cfg.others.bls_cfg.bls1_val.r  = (int)blc.blc1_r;
+        isp_cfg.others.bls_cfg.bls1_val.gr = (int)blc.blc1_gr;
+        isp_cfg.others.bls_cfg.bls1_val.gb = (int)blc.blc1_gb;
+        isp_cfg.others.bls_cfg.bls1_val.b  = (int)blc.blc1_b;
     }
 
     // TODO bls1 params
@@ -1494,7 +1494,7 @@ void Isp32Params::convertAiqBlcToIsp32Params(struct isp32_isp_params_cfg& isp_cf
 
     // blc_ob
 
-    isp_cfg.others.bls_cfg.isp_ob_offset   = CLIP(blc.isp_ob_offset, 0, 511);
+    isp_cfg.others.bls_cfg.isp_ob_offset   = CLIP((int)blc.isp_ob_offset, 0, 511);
     isp_cfg.others.bls_cfg.isp_ob_predgain = CLIP((int)(blc.isp_ob_predgain * (1 << 8)), 0, 65535);
     isp_cfg.others.bls_cfg.isp_ob_max      = CLIP(blc.isp_ob_max, 0, 1048575);
 

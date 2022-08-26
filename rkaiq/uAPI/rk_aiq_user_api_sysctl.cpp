@@ -50,7 +50,7 @@ RKAIQ_BEGIN_DECLARE
 
 int g_rkaiq_isp_hw_ver = 0;
 
-static void _set_fast_aewb_as_init(rk_aiq_sys_ctx_t* ctx);
+static void _set_fast_aewb_as_init(const rk_aiq_sys_ctx_t* ctx, rk_aiq_working_mode_t mode);
 
 rk_aiq_sys_ctx_t* get_next_ctx(const rk_aiq_sys_ctx_t* ctx)
 {
@@ -114,9 +114,15 @@ typedef struct rk_aiq_sys_preinit_cfg_s {
     std::string sub_scene;
     rk_aiq_hwevt_cb hwevt_cb;
     void* hwevt_cb_ctx;
+    void* calib_proj;
     rk_aiq_sys_preinit_cfg_s() {
+        mode = RK_AIQ_WORKING_MODE_NORMAL;
+        force_iq_file = "";
+        main_scene = "";
+        sub_scene = "";
         hwevt_cb = NULL;
         hwevt_cb_ctx = NULL;
+        calib_proj = NULL;
         iq_buffer.addr = NULL;
         iq_buffer.len = 0;
         tb_info.magic = sizeof(rk_aiq_tb_info_t) - 2;
@@ -170,7 +176,7 @@ rk_aiq_uapi_sysctl_preInit_scene(const char* sns_ent_name, const char *main_scen
 
 XCamReturn
 rk_aiq_uapi_sysctl_preInit_tb_info(const char* sns_ent_name,
-                           const rk_aiq_tb_info_t* info)
+                                   const rk_aiq_tb_info_t* info)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
@@ -277,6 +283,7 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
     char lock_path[255];
     int  lock_res = 0;
     std::map<std::string, rk_aiq_sys_preinit_cfg_t>::iterator it;
+    void* calib_proj = NULL;
 
     XCAM_ASSERT(sns_ent_name);
 
@@ -320,31 +327,35 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
     if (strstr(sns_ent_name, "FakeCamera") || ctx->_use_fakecam) {
         //ctx->_camHw = new FakeCamHwIsp20();
 #ifdef RKAIQ_ENABLE_FAKECAM
-        if (s_info->isp_hw_ver == 4)
+        if (s_info->isp_hw_ver == 4) {
 #ifdef ISP_HW_V20
             ctx->_camHw = new FakeCamHwIsp20 ();
+            ctx->_analyzer = new RkAiqCore(0);
 #else
             XCAM_ASSERT(0);
 #endif
-        else if (s_info->isp_hw_ver == 5)
+        } else if (s_info->isp_hw_ver == 5) {
 #ifdef ISP_HW_V21
             ctx->_camHw = new FakeCamHwIsp21 ();
+            ctx->_analyzer = new RkAiqCore(1);
 #else
             XCAM_ASSERT(0);
 #endif
-        else if (s_info->isp_hw_ver == 6)
+        } else if (s_info->isp_hw_ver == 6) {
 #ifdef ISP_HW_V30
             ctx->_camHw = new FakeCamHwIsp3x ();
+            ctx->_analyzer = new RkAiqCore(3);
 #else
             XCAM_ASSERT(0);
 #endif
-        else if (s_info->isp_hw_ver == 7)
+        } else if (s_info->isp_hw_ver == 7) {
 #ifdef ISP_HW_V32
             ctx->_camHw = new FakeCamHwIsp32 ();
+            ctx->_analyzer = new RkAiqCore(4);
 #else
             XCAM_ASSERT(0);
 #endif
-        else {
+        } else {
             LOGE("do not support this isp hw version %d !", s_info->isp_hw_ver);
             goto error;
         }
@@ -404,6 +415,9 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
                 sprintf(config_file, "%s/%s", config_file_dir, it->second.force_iq_file.c_str());
                 LOGI("use user sepcified iq file %s", config_file);
                 user_spec_iq = true;
+            } else if (it->second.calib_proj) {
+                calib_proj = it->second.calib_proj;
+                LOGI("use external CamCalibDbProj: %p", calib_proj);
             } else {
                 user_hdr_mode = it->second.mode;
                 LOGI("selected by user sepcified hdr mode %d", user_hdr_mode);
@@ -496,7 +510,9 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
     CamCalibDbV2Context_t calibdbv2_ctx;
     xcam_mem_clear (calibdbv2_ctx);
 
-    if (iq_buffer.addr && iq_buffer.len > 0)
+    if (calib_proj)
+        ctx->_calibDbProj = (CamCalibDbProj_t*)calib_proj;
+    else if (iq_buffer.addr && iq_buffer.len > 0)
         ctx->_calibDbProj = RkAiqCalibDbV2::createCalibDbProj(iq_buffer.addr, iq_buffer.len);
     else
         ctx->_calibDbProj = RkAiqCalibDbV2::createCalibDbProj(config_file);
@@ -530,8 +546,6 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
         goto error;
 
     ctx->_socket->Process(ctx);
-
-    _set_fast_aewb_as_init(ctx);
 
     ctx->ctx_type = CTX_TYPE_USER_MAIN;
     ctx->next_ctx = new rk_aiq_sys_ctx_t();
@@ -619,6 +633,7 @@ rk_aiq_uapi_sysctl_prepare(const rk_aiq_sys_ctx_t* ctx,
     RKAIQ_API_SMART_LOCK(ctx);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    _set_fast_aewb_as_init(ctx, mode);
 
     ret = ctx->_rkAiqManager->prepare(width, height, mode);
     RKAIQSYS_CHECK_RET(ret, ret, "prepare failed !");
@@ -1488,7 +1503,7 @@ _get_fast_aewb_from_drv(std::string& sensor_name, rkisp32_thunderboot_resmem_hea
     return ret;
 }
 
-static void _set_fast_aewb_as_init(rk_aiq_sys_ctx_t* ctx)
+static void _set_fast_aewb_as_init(const rk_aiq_sys_ctx_t* ctx, rk_aiq_working_mode_t mode)
 {
     rkisp32_thunderboot_resmem_head fastAeAwbInfo;
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -1500,21 +1515,48 @@ static void _set_fast_aewb_as_init(rk_aiq_sys_ctx_t* ctx)
 
         attr.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
         attr.sync.done = false;
-        attr.wggain.rgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_red / 256.0f;
-        attr.wggain.grgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_green_r / 256.0f;
-        attr.wggain.gbgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_green_b / 256.0f;
-        attr.wggain.bgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_blue / 256.0f;
+      
+        // TODO: check last expmode(Linear/Hdr),use hdr_mode in head
+
+        if( mode == RK_AIQ_WORKING_MODE_NORMAL) {
+            attr.wggain.rgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.awb1_gain_r / (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.awb1_gain_gr;
+            attr.wggain.grgain = 1.0f;
+            attr.wggain.gbgain = 1.0f;
+            attr.wggain.bgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.awb1_gain_b / (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.awb1_gain_gb;
+        } else {
+            attr.wggain.rgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_red / (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_green_r;
+            attr.wggain.grgain = 1.0f;
+            attr.wggain.gbgain = 1.0f;
+            attr.wggain.bgain = (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_blue / (float)fastAeAwbInfo.cfg.others.awb_gain_cfg.gain0_green_b;
+        }
+
         rk_aiq_user_api2_awb_SetFFWbgainAttrib(ctx, attr);
 
         // set initial exposure
-        Uapi_LinExpAttrV2_t LinExpAttr;
-        ret = rk_aiq_user_api2_ae_getLinExpAttr(ctx,&LinExpAttr);
+        if( mode == RK_AIQ_WORKING_MODE_NORMAL) {
+            Uapi_LinExpAttrV2_t LinExpAttr;
+            ret = rk_aiq_user_api2_ae_getLinExpAttr(ctx, &LinExpAttr);
 
-        LinExpAttr.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
-        LinExpAttr.sync.done = false;
-        LinExpAttr.Params.InitExp.InitTimeValue = (float)fastAeAwbInfo.head.exp_time[0] / (1 << 16);
-        LinExpAttr.Params.InitExp.InitGainValue = (float)fastAeAwbInfo.head.exp_gain[0] / (1 << 16);
+            LinExpAttr.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
+            LinExpAttr.sync.done = false;
+            LinExpAttr.Params.InitExp.InitTimeValue = (float)fastAeAwbInfo.head.exp_time[0] / (1 << 16);
+            LinExpAttr.Params.InitExp.InitGainValue = (float)fastAeAwbInfo.head.exp_gain[0] / (1 << 16);
 
-        ret = rk_aiq_user_api2_ae_setLinExpAttr(ctx,LinExpAttr);
+            ret = rk_aiq_user_api2_ae_setLinExpAttr(ctx, LinExpAttr);
+        } else {
+            Uapi_HdrExpAttrV2_t HdrExpAttr;
+            ret = rk_aiq_user_api2_ae_getHdrExpAttr(ctx, &HdrExpAttr);
+
+            HdrExpAttr.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
+            HdrExpAttr.sync.done = false;
+            HdrExpAttr.Params.InitExp.InitTimeValue[0] = (float)fastAeAwbInfo.head.exp_time[0] / (1 << 16);
+            HdrExpAttr.Params.InitExp.InitGainValue[0] = (float)fastAeAwbInfo.head.exp_gain[0] / (1 << 16);
+            HdrExpAttr.Params.InitExp.InitTimeValue[1] = (float)fastAeAwbInfo.head.exp_time[1] / (1 << 16);
+            HdrExpAttr.Params.InitExp.InitGainValue[1] = (float)fastAeAwbInfo.head.exp_gain[1] / (1 << 16);
+            HdrExpAttr.Params.InitExp.InitTimeValue[2] = (float)fastAeAwbInfo.head.exp_time[2] / (1 << 16);
+            HdrExpAttr.Params.InitExp.InitGainValue[2] = (float)fastAeAwbInfo.head.exp_gain[2] / (1 << 16);
+
+            ret = rk_aiq_user_api2_ae_setHdrExpAttr(ctx, HdrExpAttr);
+        }
     }
 }

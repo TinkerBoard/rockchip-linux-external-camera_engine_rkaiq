@@ -156,6 +156,10 @@ IspParamsAssembler::queue_locked(SmartPtr<cam3aResult>& result)
                         mLatestReadyFrmId);
         frame_id = 0;
         result->setId(0);
+    } else if (frame_id == (uint32_t)(-1)) {
+        LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "type:%s, frame_id == -1 &&  mLatestReadyFrmId == %d ",
+                        Cam3aResultType2Str[type], mLatestReadyFrmId);
+        return ret;
     }
 
     mParamsMap[frame_id].params.push_back(result);
@@ -414,10 +418,10 @@ struct ConvertAeHelper {
         memcpy(&cfg.meas.yuvae, &aec_meas.yuvae, sizeof(aec_meas.yuvae));
     }
 
-    template <typename U                          = T,
-              typename std::enable_if<!(std::is_same<U, struct isp2x_isp_params_cfg>::value ||
-                                        std::is_same<U, struct isp21_isp_params_cfg>::value),
-                                      bool>::type = false>
+    template < typename U                          = T,
+               typename std::enable_if < !(std::is_same<U, struct isp2x_isp_params_cfg>::value ||
+                                           std::is_same<U, struct isp21_isp_params_cfg>::value),
+                                         bool >::type = false >
     void copyYuvAeCfg(U& cfg, const rk_aiq_isp_aec_meas_t& aec_meas) {}
 
     template < typename U                          = T,
@@ -428,10 +432,10 @@ struct ConvertAeHelper {
         memcpy(&cfg.meas.sihst, &hist_meas.sihist, sizeof(hist_meas.sihist));
     }
 
-    template <typename U                          = T,
-              typename std::enable_if<!(std::is_same<U, struct isp2x_isp_params_cfg>::value ||
-                                        std::is_same<U, struct isp21_isp_params_cfg>::value),
-                                      bool>::type = false>
+    template < typename U                          = T,
+               typename std::enable_if < !(std::is_same<U, struct isp2x_isp_params_cfg>::value ||
+                                           std::is_same<U, struct isp21_isp_params_cfg>::value),
+                                         bool >::type = false >
     void copyAeHistCfg(U& cfg, const rk_aiq_isp_hist_meas_t& hist_meas) {}
 };
 
@@ -439,6 +443,7 @@ template <class T>
 void Isp20Params::convertAiqAeToIsp20Params(T& isp_cfg, const rk_aiq_isp_aec_meas_t& aec_meas) {
     /* ae update */
     if(/*aec_meas.ae_meas_en*/1) {
+#if 0
         if(_working_mode == RK_AIQ_WORKING_MODE_NORMAL) { // normal
             switch(aec_meas.rawae0.rawae_sel) {
             case 0:
@@ -471,7 +476,11 @@ void Isp20Params::convertAiqAeToIsp20Params(T& isp_cfg, const rk_aiq_isp_aec_mea
             isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWAE1_ID;
             isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWAE2_ID;
         }
-
+#else
+        isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWAE0_ID;
+        isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWAE1_ID;
+        isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWAE2_ID;
+#endif
         isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWAE3_ID;
         isp_cfg.module_ens |= 1LL << RK_ISP2X_YUVAE_ID;
 
@@ -549,6 +558,7 @@ Isp20Params::convertAiqHistToIsp20Params
 {
     /* hist update */
     if(/*hist_meas.hist_meas_en*/1) {
+#if 0
         if(_working_mode == RK_AIQ_WORKING_MODE_NORMAL) { // normal
             switch(hist_meas.ae_swap) {
             case 0:
@@ -582,7 +592,11 @@ Isp20Params::convertAiqHistToIsp20Params
             isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWHIST1_ID;
             isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWHIST2_ID;
         }
-
+#else
+        isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWHIST0_ID;
+        isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWHIST1_ID;
+        isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWHIST2_ID;
+#endif
         isp_cfg.module_ens |= 1LL << RK_ISP2X_RAWHIST3_ID;
         isp_cfg.module_ens |= 1LL << RK_ISP2X_SIHST_ID;
 

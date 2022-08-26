@@ -199,6 +199,7 @@ typedef struct NextData_s {
 typedef struct AdrcContext_s {
     bool ifReCalcStAuto;
     bool ifReCalcStManual;
+    bool isDampStable;
 #if RKAIQ_HAVE_DRC_V10
     drcAttrV10_t drcAttrV10;
 #endif

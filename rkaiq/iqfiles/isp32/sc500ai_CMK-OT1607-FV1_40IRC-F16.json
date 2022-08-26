@@ -1469,8 +1469,7 @@
 									"Space_sgm_pre":	3968
 								},
 								"OutPutLongFrame":	0,
-								"Scale_y":	[0, 2, 20, 76, 193, 381, 631, 772, 919, 1066, 1211, 1479, 1700, 1863, 1968, 2024, 2048],
-								"Tolerance":	0
+								"Scale_y":	[0, 2, 20, 76, 193, 381, 631, 772, 919, 1066, 1211, 1479, 1700, 1863, 1968, 2024, 2048]
 							}
 						},
 						"agamma_calib_v11":	{
@@ -1490,11 +1489,11 @@
 									"en":	0,
 									"air_lc_en":	1,
 									"stab_fnum":	8,
-									"sigma":	6,
+									"sigma":	255,
 									"wt_sigma":	8,
 									"air_sigma":	120,
 									"tmax_sigma":	0.01,
-									"pre_wet":	0.01,
+									"pre_wet":	8,
 									"DehazeData":	{
 										"CtrlData":	[50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 51200, 102400, 204800],
 										"air_max":	[250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250],
@@ -7552,13 +7551,13 @@
 									"pdIsoPara":	[{
 											"defocusPdThresh":	12,
 											"fineSearchTbl":	[{
-													"confidence":	0.5,
-													"range":	0,
-													"stepPos":	1
-												}, {
-													"confidence":	0,
+													"confidence":	512,
 													"range":	4,
 													"stepPos":	1
+												}, {
+													"confidence":	256,
+													"range":	8,
+													"stepPos":	2
 												}],
 											"fineSearchTbl_len":	2,
 											"iso":	50,
@@ -8418,7 +8417,6 @@
 								"Edge_Weit":	0.02,
 								"OutPutLongFrame":	0,
 								"IIR_frame":	2,
-								"Tolerance":	0,
 								"damp":	0.9
 							}
 						},
@@ -8439,11 +8437,11 @@
 									"en":	0,
 									"air_lc_en":	1,
 									"stab_fnum":	8,
-									"sigma":	6,
+									"sigma":	255,
 									"wt_sigma":	8,
 									"air_sigma":	120,
 									"tmax_sigma":	0.01,
-									"pre_wet":	0.01,
+									"pre_wet":	8,
 									"DehazeData":	{
 										"CtrlData":	[50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 51200, 102400, 204800],
 										"dc_min_th":	[64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64],
@@ -14311,8 +14309,7 @@
 									"Space_sgm_pre":	3968
 								},
 								"OutPutLongFrame":	0,
-								"Scale_y":	[0, 2, 20, 76, 193, 381, 631, 772, 919, 1066, 1211, 1479, 1700, 1863, 1968, 2024, 2048],
-								"Tolerance":	0
+								"Scale_y":	[0, 2, 20, 76, 193, 381, 631, 772, 919, 1066, 1211, 1479, 1700, 1863, 1968, 2024, 2048]
 							}
 						},
 						"agamma_calib_v11":	{
@@ -14355,8 +14352,8 @@
 										"yhist_th":	[249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249]
 									},
 									"en":	0,
-									"pre_wet":	0.01,
-									"sigma":	6,
+									"pre_wet":	8,
+									"sigma":	255,
 									"stab_fnum":	8,
 									"tmax_sigma":	0.01,
 									"wt_sigma":	8

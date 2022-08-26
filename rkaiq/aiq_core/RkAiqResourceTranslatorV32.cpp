@@ -101,10 +101,10 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
         bls1_val.b  = 0;
     }
     //awb1_gain have adapted to the range of bls1_lvl
-    awb1_gain_r  = awb_gain_cfg->awb1_gain_r;
-    awb1_gain_gr = awb_gain_cfg->awb1_gain_gr;
-    awb1_gain_gb = awb_gain_cfg->awb1_gain_gb;
-    awb1_gain_b  = awb_gain_cfg->awb1_gain_b;
+    awb1_gain_r  = MAX(256, awb_gain_cfg->awb1_gain_r);
+    awb1_gain_gr = MAX(256, awb_gain_cfg->awb1_gain_gr);
+    awb1_gain_gb = MAX(256, awb_gain_cfg->awb1_gain_gb);
+    awb1_gain_b  = MAX(256, awb_gain_cfg->awb1_gain_b);
 
 #ifdef AE_STATS_DEBUG
     LOGE("bls1[%d-%d-%d-%d]", bls1_val.r, bls1_val.gr, bls1_val.gb, bls1_val.b);
@@ -585,7 +585,7 @@ XCamReturn RkAiqResourceTranslatorV32::translateAfStats(const SmartPtr<VideoBuff
                   stats->frame_id, stats->meas_type);
 
     statsInt->af_stats_valid =
-            (stats->meas_type >> 6) & (0x01) ? true : false;
+        (stats->meas_type >> 6) & (0x01) ? true : false;
     if (!statsInt->af_stats_valid)
         return XCAM_RETURN_BYPASS;
 
@@ -608,10 +608,10 @@ XCamReturn RkAiqResourceTranslatorV32::translateAfStats(const SmartPtr<VideoBuff
     LOGE("bls0[%d-%d]", bls_cfg->fixed_val.gr, bls_cfg->fixed_val.gb);
     LOGE("bls1[%d-%d]", bls_cfg->bls1_val.gr, bls_cfg->bls1_val.gb);
     LOGE("isp_ob_offset, isp_ob_max, isp_ob_predgain [%d-%d-%d]",
-        bls_cfg->isp_ob_offset, bls_cfg->isp_ob_max, bls_cfg->isp_ob_predgain);
+         bls_cfg->isp_ob_offset, bls_cfg->isp_ob_max, bls_cfg->isp_ob_predgain);
     LOGE("awb0_gain[%d-%d], awb1_gain[%d-%d]",
-        awb_gain_cfg->gain0_green_b, awb_gain_cfg->gain0_green_r,
-        awb_gain_cfg->gain1_green_b, awb_gain_cfg->gain1_green_r);
+         awb_gain_cfg->gain0_green_b, awb_gain_cfg->gain0_green_r,
+         awb_gain_cfg->gain1_green_b, awb_gain_cfg->gain1_green_r);
     LOGE("comp_bls %d", comp_bls);
 #endif
 

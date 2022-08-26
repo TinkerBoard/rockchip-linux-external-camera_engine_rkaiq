@@ -153,24 +153,6 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
     bool Enable = DrcEnableSetting(pAdrcGrpCtx);
 
-    // get ae pre res and bypass_tuning_params
-    XCamVideoBuffer* xCamAePreRes = pAdrcGrpParams->camgroupParmasArray[0]->aec._aePreRes;
-    RkAiqAlgoPreResAe* pAEPreRes  = NULL;
-    if (xCamAePreRes) {
-        pAEPreRes            = (RkAiqAlgoPreResAe*)xCamAePreRes->map(xCamAePreRes);
-        bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcGrpCtx, pAEPreRes->ae_pre_res_rk);
-    } else {
-        if (!(pAdrcGrpCtx->FrameID))
-            return XCAM_RETURN_NO_ERROR;
-        else {
-            AecPreResult_t AecHdrPreResult;
-            memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
-            bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcGrpCtx, AecHdrPreResult);
-            bypass_tuning_params = false;
-            LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
-        }
-    }
-
     if (Enable) {
         // get LongFrmMode
         XCamVideoBuffer* xCamAeProcRes = pAdrcGrpParams->camgroupParmasArray[0]->aec._aeProcRes;
@@ -394,11 +376,31 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             bypass_expo_params = true;
         }
 
+        // get ae pre res and bypass_tuning_params
+        XCamVideoBuffer* xCamAePreRes = pAdrcGrpParams->camgroupParmasArray[0]->aec._aePreRes;
+        RkAiqAlgoPreResAe* pAEPreRes  = NULL;
+        if (xCamAePreRes) {
+            pAEPreRes = (RkAiqAlgoPreResAe*)xCamAePreRes->map(xCamAePreRes);
+            bypass_tuning_params =
+                AdrcByPassTuningProcessing(pAdrcGrpCtx, pAEPreRes->ae_pre_res_rk);
+        } else {
+            if (!(pAdrcGrpCtx->FrameID))
+                return XCAM_RETURN_NO_ERROR;
+            else {
+                AecPreResult_t AecHdrPreResult;
+                memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
+                bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcGrpCtx, AecHdrPreResult);
+                bypass_tuning_params = false;
+                LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
+            }
+        }
+
         // get tuning paras
-        if (!bypass_tuning_params) AdrcTuningParaProcessing(pAdrcGrpCtx);
+        if (!bypass_tuning_params || !pAdrcGrpCtx->isDampStable)
+            AdrcTuningParaProcessing(pAdrcGrpCtx);
 
         // expo para process
-        if (!bypass_expo_params) AdrcExpoParaProcessing(pAdrcGrpCtx);
+        if (!bypass_expo_params || !pAdrcGrpCtx->isDampStable) AdrcExpoParaProcessing(pAdrcGrpCtx);
     } else {
         LOGD_ATMO("%s: Group Drc Enable is OFF, Bypass Drc !!! \n", __func__);
     }

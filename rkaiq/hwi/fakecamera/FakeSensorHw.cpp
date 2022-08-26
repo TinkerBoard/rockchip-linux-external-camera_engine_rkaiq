@@ -26,6 +26,18 @@ static uint32_t rk_format_to_media_format(rk_aiq_format_t format)
 {
     uint32_t pixelformat = -1;
     switch (format) {
+    case RK_PIX_FMT_SBGGR8:
+        pixelformat = MEDIA_BUS_FMT_SBGGR8_1X8;
+        break;
+    case RK_PIX_FMT_SRGGB8:
+        pixelformat = MEDIA_BUS_FMT_SRGGB8_1X8;
+        break;
+    case RK_PIX_FMT_SGBRG8:
+        pixelformat = MEDIA_BUS_FMT_SGBRG8_1X8;
+        break;
+    case RK_PIX_FMT_SGRBG8:
+        pixelformat = MEDIA_BUS_FMT_SGRBG8_1X8;
+        break;
     case RK_PIX_FMT_SBGGR10:
         pixelformat = MEDIA_BUS_FMT_SBGGR10_1X10;
         break;

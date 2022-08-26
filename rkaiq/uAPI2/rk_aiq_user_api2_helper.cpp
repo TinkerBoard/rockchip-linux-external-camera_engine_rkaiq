@@ -120,12 +120,14 @@ __RKAIQUAPI_CALLER(Cgc_Param_t);
 __RKAIQUAPI_CALLER(Csm_Param_t);
 
 #if ISP_HW_V32
+__RKAIQUAPI_CALLER(ablc_uapi_manual_t);
 __RKAIQUAPI_CALLER(asharp_uapi_manual_t);
 __RKAIQUAPI_CALLER(abayer2dnr_uapi_manual_t);
 __RKAIQUAPI_CALLER(abayertnr_uapi_manual_t);
 __RKAIQUAPI_CALLER(aynr_uapi_manual_t);
 __RKAIQUAPI_CALLER(acnr_uapi_manual_t);
 __RKAIQUAPI_CALLER(again_uapi_manual_t);
+__RKAIQUAPI_CALLER(ablc_uapi_info_t);
 __RKAIQUAPI_CALLER(abayertnr_uapi_info_t);
 __RKAIQUAPI_CALLER(abayer2dnr_uapi_info_t);
 __RKAIQUAPI_CALLER(aynr_uapi_info_t);
@@ -242,6 +244,8 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
                          rk_aiq_set_acsm_manual_attr, rk_aiq_get_acsm_manual_attr),
 
 #if ISP_HW_V32
+    __RKAIQUAPI_DESC_DEF("/uapi/0/ablc_uapi/manual", ablc_uapi_manual_t,
+                         rk_aiq_set_ablc_manual_attr, rk_aiq_get_ablc_manual_attr),
     __RKAIQUAPI_DESC_DEF("/uapi/0/asharp_uapi/manual", asharp_uapi_manual_t,
                          rk_aiq_set_asharp_manual_attr, rk_aiq_get_asharp_manual_attr),
     __RKAIQUAPI_DESC_DEF("/uapi/0/abayer2dnr_uapi/manual", abayer2dnr_uapi_manual_t,
@@ -254,6 +258,9 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
                          rk_aiq_set_acnr_manual_attr, rk_aiq_get_acnr_manual_attr),
     __RKAIQUAPI_DESC_DEF("/uapi/0/again_uapi/manual", again_uapi_manual_t,
                          rk_aiq_set_again_manual_attr, rk_aiq_get_again_manual_attr),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/ablc_uapi/info", ablc_uapi_info_t,
+                         NULL, rk_aiq_get_ablc_info),
 
     __RKAIQUAPI_DESC_DEF("/uapi/0/abayertnr_uapi/info", abayertnr_uapi_info_t,
                          NULL, rk_aiq_get_abayertnr_info),

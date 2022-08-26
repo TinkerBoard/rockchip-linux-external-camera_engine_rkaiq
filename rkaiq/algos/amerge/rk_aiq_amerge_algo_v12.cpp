@@ -542,11 +542,11 @@ void AmergeExpoProcessing(AmergeContext_t* pAmergeCtx, MergeExpoData_t* pExpoDat
 
     // merge v11 add
     if (pAmergeCtx->NextData.HandleData.Merge_v12.BaseFrm == BASEFRAME_SHORT) {
-        float Coef = pAmergeCtx->NextData.HandleData.Merge_v12.MDCurve_Coef / SHORT_MODE_COEF_MAX;
+        float Coef = pAmergeCtx->NextData.HandleData.Merge_v12.MDCurve_Coef * SHORT_MODE_COEF_MAX;
         float sw_hdrmge_ms_thd0 = pAmergeCtx->NextData.HandleData.Merge_v12.MDCurve_ms_thd0;
         float sw_hdrmge_lm_thd0 = pAmergeCtx->NextData.HandleData.Merge_v12.MDCurve_lm_thd0;
-        float sw_hdrmge_ms_thd1 = 1024.0f * pow(100.0f * Coef * pExpoData->SGain, 0.5f);
-        float sw_hdrmge_lm_thd1 = 1024.0f * pow(100.0f * Coef * pExpoData->MGain, 0.5f);
+        float sw_hdrmge_ms_thd1 = pow(100.0f * Coef * pExpoData->SGain, 0.5f);
+        float sw_hdrmge_lm_thd1 = pow(100.0f * Coef * pExpoData->MGain, 0.5f);
         float sw_hdrmge_ms_scl  = (sw_hdrmge_ms_thd1 == sw_hdrmge_ms_thd0)
                                      ? 0.0f
                                      : (1.0f / (sw_hdrmge_ms_thd1 - sw_hdrmge_ms_thd0));

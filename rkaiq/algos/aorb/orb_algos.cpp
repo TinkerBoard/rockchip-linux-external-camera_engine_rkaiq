@@ -677,12 +677,15 @@ int elimate_affine_transform(ORBList* matched_keypoints, double homography[9])
             k++;
         }
         LOGE_ORB("valid matched keypoints %d less than 6", i);
-        return -2;
+        ret = -2;
+        goto out;
+        //return -2;
     }
 
     ret = affine_fit(from_pts, to_pts, i, 2, homography);
     //work_end("calc-affine");
 
+out:
     free(from_pts);
     free(to_pts);
     free(distanceArray);

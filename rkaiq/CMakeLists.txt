@@ -142,7 +142,6 @@ include_directories(
     )
 
 set(ALGO_HANDLE_SRC
-    aiq_core/algo_handlers/RkAiqAsdHandle.cpp
     aiq_core/algo_handlers/RkAiqAwbHandle.cpp
     )
 
@@ -497,6 +496,11 @@ if (RKAIQ_HAVE_AIE_V10)
     list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAieHandle.cpp)
 endif()
 
+if (RKAIQ_HAVE_ASD_V10)
+    add_compile_options(-DRKAIQ_HAVE_ASD_V10=1)
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAsdHandle.cpp)
+endif()
+
 set(AIQ_CORE_SRC
     ${ALGO_HANDLE_SRC}
     aiq_core/RkAiqHandle.cpp
@@ -774,7 +778,6 @@ target_link_libraries(rkaiq
     rkaiq_tmp
     rkaiq_ae
     rkaiq_awb
-    rkaiq_asd
     ${OPENCV_LIBS}
     ${OPENCV_3RDPARTY_LIBS}
     ${GENMESH_LIBS}
@@ -787,7 +790,6 @@ list(APPEND RK_AIQ_STATIC_LIB_ARS
     ${STATIC_LIB_PREFIX}rkaiq_tmp${STATIC_LIB_SUFFIX}
     ${STATIC_LIB_PREFIX}rkaiq_ae${STATIC_LIB_SUFFIX}
     ${STATIC_LIB_PREFIX}rkaiq_awb${STATIC_LIB_SUFFIX}
-    ${STATIC_LIB_PREFIX}rkaiq_asd${STATIC_LIB_SUFFIX}
     )
 
 if (RKAIQ_HAVE_YNR_V2)
@@ -1193,6 +1195,14 @@ target_link_libraries(rkaiq
     rkaiq_acp
     )
 list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_acp${STATIC_LIB_SUFFIX})
+endif()
+
+if (RKAIQ_HAVE_ASD_V10)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_asd
+    )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_asd${STATIC_LIB_SUFFIX})
 endif()
 
 if (LIBDL_FOUND)

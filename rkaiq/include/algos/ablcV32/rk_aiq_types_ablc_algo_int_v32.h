@@ -18,6 +18,7 @@
 #include "RkAiqCalibDbTypes.h"
 #include "ablcV32/rk_aiq_types_ablc_algo_v32.h"
 #include "ablc_head_V32.h"
+#include "ablc_uapi_head_v32.h"
 
 #define ABLC_V32_RECALCULATE_DELTE_ISO (10)
 
@@ -77,13 +78,6 @@ typedef struct AblcRefParams_V32_s {
     float* Reference_b;
 } AblcRefParams_V32_t;
 
-typedef struct AblcSelect_V32_s {
-    bool enable;
-    short int blc_r;
-    short int blc_gr;
-    short int blc_gb;
-    short int blc_b;
-} AblcSelect_V32_t;
 
 typedef struct AblcOBParams_V32_s {
     bool enable;
@@ -93,11 +87,6 @@ typedef struct AblcOBParams_V32_s {
     float* ob_predgain;
 } AblcOBParams_V32_t;
 
-typedef struct AblcOBSelect_V32_s {
-    bool enable;
-    short int ob_offset;
-    float ob_predgain;
-} AblcOBSelect_V32_t;
 
 typedef AblcSelect_V32_t AblcManualAttr_V32_t;
 typedef AblcOBSelect_V32_t AblcManualOBAttr_V32_t;
@@ -133,12 +122,5 @@ typedef struct rk_aiq_blc_attrib_V32_s {
     AblcManualOBAttr_V32_t stBlcOBManual;
 } rk_aiq_blc_attrib_V32_t;
 
-typedef struct AblcExpInfo_V32_s {
-    int hdr_mode;
-    float arTime[3];
-    float arAGain[3];
-    float arDGain[3];
-    int arIso[3];
-} AblcExpInfo_V32_t;
 
 #endif

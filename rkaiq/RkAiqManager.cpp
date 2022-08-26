@@ -519,20 +519,29 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (hwres->_buf_type == ISP_POLL_3A_STATS) {
-        ret = mRkAiqAnalyzer->pushStats(hwres);
         if (mTbInfo.is_pre_aiq) {
-            uint32_t seq = hwres.dynamic_cast_ptr<VideoBuffer>()->get_sequence();
-            if (seq == 0) {
-                LOGI("<TB> hwResCb stats %d", seq);
+            static int cnt = 0;
+            uint32_t seq = -1;
+            seq = hwres.dynamic_cast_ptr<VideoBuffer>()->get_sequence();
+            if (seq == 0 && cnt == 0) {
+                LOGD("<TB> tb hwResCb stats %d\n", seq);
                 struct timespec tp;
                 clock_gettime(CLOCK_MONOTONIC_RAW, &tp);
 
-                SmartPtr<CamHwIsp20> mCamHwIsp20 = mCamHw.dynamic_cast_ptr<CamHwIsp20>();
-                SmartPtr<ispHwEvt_t> hw_evt      = mCamHwIsp20->make_ispHwEvt(
-                    0, V4L2_EVENT_FRAME_SYNC, tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec);
-                LOGI("<TB> push sof %d", seq);
+                SmartPtr<CamHwIsp20> mCamHwIsp20 =
+                    mCamHw.dynamic_cast_ptr<CamHwIsp20>();
+                SmartPtr<ispHwEvt_t> hw_evt = mCamHwIsp20->make_ispHwEvt(
+                    0, V4L2_EVENT_FRAME_SYNC,
+                    tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec);
+                LOGD("<TB> push sof %d\n", seq);
                 mRkAiqAnalyzer->pushEvts(hw_evt);
             }
+
+            if (cnt == 0) ret = mRkAiqAnalyzer->pushStats(hwres);
+
+            cnt++;
+        } else {
+            ret = mRkAiqAnalyzer->pushStats(hwres);
         }
 #ifdef ISP_HW_V20
     } else if (hwres->_buf_type == ISP_POLL_LUMA) {
@@ -670,16 +679,16 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
         results_list.push_back(aiqParams->mFocusParams);
     }
 
-    if (aiqParams->mCpslParams.ptr()) {
-        aiqParams->mCpslParams->setType(RESULT_TYPE_CPSL_PARAM);
-        results_list.push_back(aiqParams->mCpslParams);
-    }
 #define APPLY_ANALYZER_RESULT(lc, BC) \
     if (aiqParams->m##lc##Params.ptr()) { \
         aiqParams->m##lc##Params->setType(RESULT_TYPE_##BC##_PARAM); \
         aiqParams->m##lc##Params->setId(aiqParams->m##lc##Params->data()->frame_id); \
         results_list.push_back(aiqParams->m##lc##Params); \
     } \
+
+#if RKAIQ_HAVE_ASD_V10
+    APPLY_ANALYZER_RESULT(Cpsl, CPSL);
+#endif
 
 #if RKAIQ_HAVE_AE_V1
     APPLY_ANALYZER_RESULT(Aec, AEC);

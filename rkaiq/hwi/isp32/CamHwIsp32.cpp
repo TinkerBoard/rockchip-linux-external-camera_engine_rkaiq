@@ -366,6 +366,20 @@ XCamReturn CamHwIsp32::setIspConfig() {
                   isp_params->others.bls_cfg.isp_ob_predgain,
                   isp_params->others.bls_cfg.isp_ob_max);
 
+        if (mTbInfo.is_pre_aiq) {
+            static bool not_skip_first = true;
+            if (frameId == 0 && not_skip_first) {
+                not_skip_first = false;
+                mIspParamsDev->return_buffer_to_pool(v4l2buf);
+                return XCAM_RETURN_NO_ERROR;
+            }
+            isp_params->module_en_update =
+                _full_active_isp32_params.module_en_update;
+            isp_params->module_cfg_update =
+                _full_active_isp32_params.module_cfg_update;
+            isp_params->module_cfg_update &= ~ISP2X_MODULE_RAWAWB;
+        }
+
         if (mIspParamsDev->queue_buffer(v4l2buf) != 0) {
             LOGE_CAMHW_SUBM(ISP20HW_SUBM,
                             "RKISP1: failed to ioctl VIDIOC_QBUF for index %d, %d %s.\n", buf_index,

@@ -84,7 +84,9 @@ SmartBufferPriv::SmartBufferPriv (const SmartPtr<VideoBuffer> &buf)
     this->get_bo = SmartBufferPriv::buf_get_bo;
     this->notify = NULL;
     this->pUserContext = NULL;
+#ifndef NDEBUG
     buf_type_to_str(buf->_buf_type, this->nameStr);
+#endif
 
 }
 
@@ -128,7 +130,9 @@ SmartBufferPriv::buf_ref (XCamVideoBuffer *data)
 {
     SmartBufferPriv *buf = (SmartBufferPriv*) data;
     XCAM_ASSERT (buf->_ref);
+#ifndef NDEBUG
     XCAM_LOG_DEBUG ("%s: buf ref called, fd %d", buf->nameStr, buf_get_fd(data));
+#endif
     if (buf->_ref)
         buf->_ref->ref ();
 }
@@ -145,7 +149,9 @@ SmartBufferPriv::buf_unref (XCamVideoBuffer *data)
             XCamVideoBufferRK* upper_data = (XCamVideoBufferRK*)data;
             if (upper_data->notify)
                 upper_data->notify (upper_data->pUserContext, data);
+#ifndef NDEBUG
             XCAM_LOG_DEBUG ("%s: buf released, fd %d", buf->nameStr, buf_get_fd(data));
+#endif
             delete buf;
         }
     }

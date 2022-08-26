@@ -23,7 +23,7 @@
 #include "xcam_mutex.h"
 
 namespace RkCam {
-
+#if RKAIQ_HAVE_ASD_V10
 class RkAiqAsdHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAsdHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
@@ -50,7 +50,7 @@ class RkAiqAsdHandleInt : virtual public RkAiqHandle {
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAsdHandleInt);
 };
-
+#endif
 }  // namespace RkCam
 
 #endif

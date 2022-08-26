@@ -5,6 +5,7 @@ set(CMAKE_C_FLAGS -m32)
 set(CMAKE_CXX_FLAGS -m32)
 set(CMAKE_EXE_LINKER_FLAGS "-static")
 
+add_compile_options(-std=c++11)
 add_compile_options(-fPIC -Wall -Wno-error -O0 -g)
 add_compile_options(-Wno-unused-variable
     -Wno-unused-but-set-variable
@@ -45,6 +46,8 @@ include_directories(
 set(CXX_SRCS
     ${ROOT_PROJ_DIR}/iq_parser_v2/j2s/cJSON.cpp
     ${ROOT_PROJ_DIR}/iq_parser_v2/j2s/cJSON_Utils.cpp
+    src/j2s4b/BinRecord.cpp
+    src/j2s4b/RkAiqsceneManager.cpp
     src/j2s4b/j2s.cpp
     src/j2s4b/j2s4b_utils.cpp
     src/main.cpp)
@@ -68,5 +71,4 @@ foreach(IQPATH ${RKAIQ_IQFILES})
         )
     install(PROGRAMS "${CMAKE_BINARY_DIR}/${TAGT_NAME}" DESTINATION usr/share/iqfiles)
 endforeach()
-install(TARGETS j2s4b RUNTIME DESTINATION host)
 

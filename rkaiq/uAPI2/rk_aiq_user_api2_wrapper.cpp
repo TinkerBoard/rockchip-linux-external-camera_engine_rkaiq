@@ -30,6 +30,7 @@
 #include "uAPI/include/rk_aiq_user_api_sysctl.h"
 #include "uAPI2/rk_aiq_user_api2_acsm.h"
 #include "uAPI2/rk_aiq_user_api2_acgc.h"
+#include "uAPI2/rk_aiq_user_api2_ablc_v32.h"
 
 int rk_aiq_uapi_sysctl_swWorkingModeDyn2(const rk_aiq_sys_ctx_t *ctx,
         work_mode_t *mode) {
@@ -518,6 +519,59 @@ XCamReturn rk_aiq_get_acsm_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
     return ret;
 }
 
+XCamReturn rk_aiq_set_ablc_manual_attr(const rk_aiq_sys_ctx_t *sys_ctx, ablc_uapi_manual_t *manual) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+#if ISP_HW_V32
+    rk_aiq_blc_attrib_V32_t blc_attr_v32;
+    memset(&blc_attr_v32, 0, sizeof(rk_aiq_blc_attrib_V32_t));
+    if (manual->AblcOPMode == RK_AIQ_OP_MODE_AUTO)
+        blc_attr_v32.eMode = ABLC_V32_OP_MODE_AUTO;
+    else if (manual->AblcOPMode == RK_AIQ_OP_MODE_INVALID)
+        blc_attr_v32.eMode = ABLC_V32_OP_MODE_OFF;
+    else if (manual->AblcOPMode == RK_AIQ_OP_MODE_MANUAL)
+        blc_attr_v32.eMode = ABLC_V32_OP_MODE_MANUAL;
+    else if (manual->AblcOPMode == RK_AIQ_OP_MODE_MAX)
+        blc_attr_v32.eMode = ABLC_V32_OP_MODE_MAX;
+    else
+        blc_attr_v32.eMode = ABLC_V32_OP_MODE_AUTO;
+
+    memcpy(&blc_attr_v32.stBlc0Manual, &manual->blc0_para, sizeof(blc_attr_v32.stBlc0Manual));
+    memcpy(&blc_attr_v32.stBlc1Manual, &manual->blc1_para, sizeof(blc_attr_v32.stBlc1Manual));
+    memcpy(&blc_attr_v32.stBlcOBManual, &manual->blc_ob_para, sizeof(blc_attr_v32.stBlcOBManual));
+
+    ret = rk_aiq_user_api2_ablcV32_SetAttrib(sys_ctx, &blc_attr_v32);
+#endif
+
+    return ret;
+}
+
+XCamReturn rk_aiq_get_ablc_manual_attr(const rk_aiq_sys_ctx_t *sys_ctx, ablc_uapi_manual_t* manual) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#if ISP_HW_V32
+    rk_aiq_blc_attrib_V32_t blc_attr_v32;
+    memset(&blc_attr_v32, 0, sizeof(rk_aiq_blc_attrib_V32_t));
+    ret = rk_aiq_user_api2_ablcV32_GetAttrib(sys_ctx, &blc_attr_v32);
+
+    if (blc_attr_v32.eMode == ABLC_V32_OP_MODE_AUTO)
+        manual->AblcOPMode = RK_AIQ_OP_MODE_AUTO;
+    else if (blc_attr_v32.eMode == ABLC_V32_OP_MODE_OFF)
+        manual->AblcOPMode = RK_AIQ_OP_MODE_MANUAL;
+    else if (blc_attr_v32.eMode ==ABLC_V32_OP_MODE_MANUAL)
+        manual->AblcOPMode = RK_AIQ_OP_MODE_MANUAL;
+    else if (blc_attr_v32.eMode == ABLC_V32_OP_MODE_MAX)
+        manual->AblcOPMode = RK_AIQ_OP_MODE_MAX;
+    else
+        manual->AblcOPMode = RK_AIQ_OP_MODE_AUTO;
+
+    memcpy(&manual->blc0_para, &blc_attr_v32.stBlc0Manual, sizeof(manual->blc0_para));
+    memcpy(&manual->blc1_para, &blc_attr_v32.stBlc1Manual, sizeof(manual->blc1_para));
+    memcpy(&manual->blc_ob_para, &blc_attr_v32.stBlcOBManual, sizeof(manual->blc_ob_para));
+#endif
+
+    return ret;
+}
+
 XCamReturn rk_aiq_set_asharp_manual_attr(const rk_aiq_sys_ctx_t *sys_ctx,
         asharp_uapi_manual_t *manual) {
     XCamReturn res = XCAM_RETURN_NO_ERROR;
@@ -826,6 +880,19 @@ XCamReturn rk_aiq_get_again_manual_attr(const rk_aiq_sys_ctx_t *sys_ctx,
         manual->AgainOpMode = RK_AIQ_OP_MODE_MAX;
     else
         manual->AgainOpMode = RK_AIQ_OP_MODE_AUTO;
+#endif
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
+rk_aiq_get_ablc_info(const rk_aiq_sys_ctx_t *sys_ctx,
+                     ablc_uapi_info_t* pInfo) {
+
+#if ISP_HW_V32
+    rk_aiq_blc_info_v32_t ablc_info_v23;
+    rk_aiq_user_api2_ablcV32_GetInfo(sys_ctx, &ablc_info_v23);
+    pInfo->iso = ablc_info_v23.iso;
+    pInfo->expo_info = ablc_info_v23.expo_info;
 #endif
     return XCAM_RETURN_NO_ERROR;
 }

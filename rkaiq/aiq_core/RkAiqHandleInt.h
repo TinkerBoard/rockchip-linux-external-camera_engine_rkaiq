@@ -93,7 +93,9 @@
 #include "algo_handlers/RkAiqAorbHandle.h"
 #include "algo_handlers/RkAiqArawnrHandle.h"
 #include "algo_handlers/RkAiqArawnrV2Handle.h"
+#if RKAIQ_HAVE_ASD_V10
 #include "algo_handlers/RkAiqAsdHandle.h"
+#endif
 #include "algo_handlers/RkAiqAsharpHandle.h"
 #include "algo_handlers/RkAiqAsharpV3Handle.h"
 #include "algo_handlers/RkAiqAsharpV4Handle.h"

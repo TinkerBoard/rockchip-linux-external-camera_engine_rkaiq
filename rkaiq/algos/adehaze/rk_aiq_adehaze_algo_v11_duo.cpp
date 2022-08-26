@@ -139,7 +139,7 @@ void stManuGetDehazeParamsV11duo(mDehazeAttrV11_t* pStManu, RkAiqAdehazeProcResu
     pProcRes->ProcResV11duo.cfg_tmax =
         ClipValueV11Duo(pStManu->dehaze_setting.DehazeData.cfg_tmax, 0, 10);
     pProcRes->ProcResV11duo.range_sima =
-        ClipValueV11Duo(pStManu->dehaze_setting.DehazeData.range_sigma, 0, 9);
+        ClipValueV11Duo(pStManu->dehaze_setting.DehazeData.range_sigma, 0, 8);
     pProcRes->ProcResV11duo.space_sigma_cur =
         ClipValueV11Duo(pStManu->dehaze_setting.DehazeData.space_sigma_cur, 0, 8);
     pProcRes->ProcResV11duo.space_sigma_pre =
@@ -149,13 +149,28 @@ void stManuGetDehazeParamsV11duo(mDehazeAttrV11_t* pStManu, RkAiqAdehazeProcResu
     pProcRes->ProcResV11duo.dc_weitcur =
         ClipValueV11Duo(pStManu->dehaze_setting.DehazeData.dc_weitcur, 0, 8);
     pProcRes->ProcResV11duo.stab_fnum    = ClipValueV11Duo(pStManu->dehaze_setting.stab_fnum, 5, 0);
-    pProcRes->ProcResV11duo.iir_sigma    = ClipValueV11Duo(pStManu->dehaze_setting.sigma, 8, 0);
-    pProcRes->ProcResV11duo.iir_wt_sigma = ClipValueV11Duo(pStManu->dehaze_setting.wt_sigma, 8, 3);
-    pProcRes->ProcResV11duo.iir_air_sigma =
-        ClipValueV11Duo(pStManu->dehaze_setting.air_sigma, 8, 0);
-    pProcRes->ProcResV11duo.iir_tmax_sigma =
-        ClipValueV11Duo(pStManu->dehaze_setting.tmax_sigma, 0, 10);
-    pProcRes->ProcResV11duo.iir_pre_wet = ClipValueV11Duo(pStManu->dehaze_setting.pre_wet, 0, 4);
+    if (pStManu->dehaze_setting.sigma)
+        pProcRes->ProcResV11duo.iir_sigma =
+            LIMIT_VALUE(int(256.0f / pStManu->dehaze_setting.sigma), 255, 0);
+    else
+        pProcRes->ProcResV11duo.iir_sigma = 0x1;
+    if (pStManu->dehaze_setting.wt_sigma >= 0.0f)
+        pProcRes->ProcResV11duo.iir_wt_sigma =
+            LIMIT_VALUE(int(1024.0f / (8.0f * pStManu->dehaze_setting.wt_sigma + 0.5f)), 0x7ff, 0);
+    else
+        pProcRes->ProcResV11duo.iir_wt_sigma = 0x7ff;
+    if (pStManu->dehaze_setting.air_sigma)
+        pProcRes->ProcResV11duo.iir_air_sigma =
+            LIMIT_VALUE(int(1024.0f / pStManu->dehaze_setting.air_sigma), 255, 0);
+    else
+        pProcRes->ProcResV11duo.iir_air_sigma = 0x8;
+    if (pStManu->dehaze_setting.tmax_sigma)
+        pProcRes->ProcResV11duo.iir_tmax_sigma =
+            LIMIT_VALUE(int(1.0f / pStManu->dehaze_setting.tmax_sigma), 0x7ff, 0);
+    else
+        pProcRes->ProcResV11duo.iir_tmax_sigma = 0x5f;
+    pProcRes->ProcResV11duo.iir_pre_wet =
+        LIMIT_VALUE(int(pStManu->dehaze_setting.pre_wet - 1.0f), 15, 0);
     pProcRes->ProcResV11duo.gaus_h0     = DEHAZE_GAUS_H4;
     pProcRes->ProcResV11duo.gaus_h1     = DEHAZE_GAUS_H1;
     pProcRes->ProcResV11duo.gaus_h2     = DEHAZE_GAUS_H0;
@@ -319,7 +334,7 @@ void GetDehazeParamsV11duo(CalibDbDehazeV11_t* pCalibV11Duo, RkAiqAdehazeProcRes
     pProcRes->ProcResV11duo.range_sima =
         DehazeLinearInterpV11Duo(pCalibV11Duo->dehaze_setting.DehazeData.CtrlData,
                                  pCalibV11Duo->dehaze_setting.DehazeData.range_sigma, CtrlValue, 0,
-                                 9, DHAZ_CTRL_DATA_STEP_MAX);
+                                 8, DHAZ_CTRL_DATA_STEP_MAX);
     pProcRes->ProcResV11duo.space_sigma_cur =
         DehazeLinearInterpV11Duo(pCalibV11Duo->dehaze_setting.DehazeData.CtrlData,
                                  pCalibV11Duo->dehaze_setting.DehazeData.space_sigma_cur, CtrlValue,
@@ -338,15 +353,28 @@ void GetDehazeParamsV11duo(CalibDbDehazeV11_t* pCalibV11Duo, RkAiqAdehazeProcRes
                                  8, DHAZ_CTRL_DATA_STEP_MAX);
     pProcRes->ProcResV11duo.stab_fnum =
         ClipValueV11Duo(pCalibV11Duo->dehaze_setting.stab_fnum, 5, 0);
-    pProcRes->ProcResV11duo.iir_sigma = ClipValueV11Duo(pCalibV11Duo->dehaze_setting.sigma, 8, 0);
-    pProcRes->ProcResV11duo.iir_wt_sigma =
-        ClipValueV11Duo(pCalibV11Duo->dehaze_setting.wt_sigma, 8, 3);
-    pProcRes->ProcResV11duo.iir_air_sigma =
-        ClipValueV11Duo(pCalibV11Duo->dehaze_setting.air_sigma, 8, 0);
-    pProcRes->ProcResV11duo.iir_tmax_sigma =
-        ClipValueV11Duo(pCalibV11Duo->dehaze_setting.tmax_sigma, 0, 10);
+    if (pCalibV11Duo->dehaze_setting.sigma)
+        pProcRes->ProcResV11duo.iir_sigma =
+            LIMIT_VALUE(int(256.0f / pCalibV11Duo->dehaze_setting.sigma), 255, 0);
+    else
+        pProcRes->ProcResV11duo.iir_sigma = 0x1;
+    if (pCalibV11Duo->dehaze_setting.wt_sigma >= 0.0f)
+        pProcRes->ProcResV11duo.iir_wt_sigma = LIMIT_VALUE(
+            int(1024.0f / (8.0f * pCalibV11Duo->dehaze_setting.wt_sigma + 0.5f)), 0x7ff, 0);
+    else
+        pProcRes->ProcResV11duo.iir_wt_sigma = 0x7ff;
+    if (pCalibV11Duo->dehaze_setting.air_sigma)
+        pProcRes->ProcResV11duo.iir_air_sigma =
+            LIMIT_VALUE(int(1024.0f / pCalibV11Duo->dehaze_setting.air_sigma), 255, 0);
+    else
+        pProcRes->ProcResV11duo.iir_air_sigma = 0x8;
+    if (pCalibV11Duo->dehaze_setting.tmax_sigma)
+        pProcRes->ProcResV11duo.iir_tmax_sigma =
+            LIMIT_VALUE(int(1.0f / pCalibV11Duo->dehaze_setting.tmax_sigma), 0x7ff, 0);
+    else
+        pProcRes->ProcResV11duo.iir_tmax_sigma = 0x5f;
     pProcRes->ProcResV11duo.iir_pre_wet =
-        ClipValueV11Duo(pCalibV11Duo->dehaze_setting.pre_wet, 0, 4);
+        LIMIT_VALUE(int(pCalibV11Duo->dehaze_setting.pre_wet - 1.0f), 15, 0);
     pProcRes->ProcResV11duo.gaus_h0 = DEHAZE_GAUS_H4;
     pProcRes->ProcResV11duo.gaus_h1 = DEHAZE_GAUS_H1;
     pProcRes->ProcResV11duo.gaus_h2 = DEHAZE_GAUS_H0;
@@ -647,7 +675,7 @@ XCamReturn GetDehazeLocalGainSettingV11(RkAiqAdehazeProcResult_t* pProcRes,
             // get sigma_lut
             int tmp = 0;
             for (int i = 0; i < DHAZ_V11_SIGMA_LUT_NUM; i++) {
-                tmp = LIMIT_VALUE(noiseSigma[i], BIT_10_MAX, BIT_MIN);
+                tmp = LIMIT_VALUE(8.0f * noiseSigma[i], BIT_10_MAX, BIT_MIN);
                 pProcRes->ProcResV11duo.sigma_lut[i] = tmp;
             }
 
@@ -704,7 +732,7 @@ XCamReturn GetManuDehazeLocalGainSettingV11Duo(RkAiqAdehazeProcResult_t* pProcRe
     // get sigma_lut
     int tmp = 0;
     for (int i = 0; i < DHAZ_V11_SIGMA_LUT_NUM; i++) {
-        tmp                                  = LIMIT_VALUE(noiseSigma[i], BIT_10_MAX, BIT_MIN);
+        tmp = LIMIT_VALUE(8.0f * noiseSigma[i], BIT_10_MAX, BIT_MIN);
         pProcRes->ProcResV11duo.sigma_lut[i] = tmp;
     }
 

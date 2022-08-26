@@ -23,6 +23,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_DPCC_V1
 XCamReturn rk_aiq_user_api2_adpcc_SetAttrib(const rk_aiq_sys_ctx_t *sys_ctx,
                                             rk_aiq_dpcc_attrib_V20_t *attr) {
   XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -106,5 +107,18 @@ XCamReturn rk_aiq_user_api2_adpcc_GetAttrib(const rk_aiq_sys_ctx_t *sys_ctx,
 
   return (ret);
 }
+#else
+
+XCamReturn rk_aiq_user_api2_adpcc_SetAttrib(const rk_aiq_sys_ctx_t *sys_ctx,
+                                            rk_aiq_dpcc_attrib_V20_t *attr) {
+    return XCAM_RETURN_ERROR_FAILED;
+}
+
+XCamReturn rk_aiq_user_api2_adpcc_GetAttrib(const rk_aiq_sys_ctx_t *sys_ctx,
+                                            rk_aiq_dpcc_attrib_V20_t *attr) {
+    return XCAM_RETURN_ERROR_FAILED;
+}
+
+#endif  // RKAIQ_HAVE_DPCC_V1
 
 RKAIQ_END_DECLARE

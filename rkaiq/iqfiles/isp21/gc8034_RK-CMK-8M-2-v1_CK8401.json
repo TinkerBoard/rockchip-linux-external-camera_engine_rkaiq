@@ -979,11 +979,11 @@
 									"en":	0,
 									"air_lc_en":	1,
 									"stab_fnum":	8,
-									"sigma":	6,
+									"sigma":	255,
 									"wt_sigma":	8,
 									"air_sigma":	120,
 									"tmax_sigma":	0.01,
-									"pre_wet":	0.01,
+									"pre_wet":	8,
 									"DehazeData":	{
 										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"dc_min_th":	[64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64],
@@ -1269,7 +1269,6 @@
 								"Edge_Weit":	0.0627451,
 								"OutPutLongFrame":	0,
 								"IIR_frame":	16,
-								"Tolerance":	0,
 								"damp":	0.9
 							}
 						},

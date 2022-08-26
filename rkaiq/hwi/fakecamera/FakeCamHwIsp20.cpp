@@ -121,6 +121,21 @@ FakeCamHwIsp20::init_mipi_devices(rk_sensor_full_info_t *s_info)
      * rawwr0_path is always connected to _mipi_tx_devs[1], and rawwr1_path is always
      * connected to _mipi_tx_devs[0]
      */
+    int cnt = 1;
+    if (get_workingg_mode() == RK_AIQ_WORKING_MODE_NORMAL) {
+        cnt = 1;
+    } else if (get_workingg_mode() == RK_AIQ_ISP_HDR_MODE_2_FRAME_HDR ||
+               get_workingg_mode() == RK_AIQ_ISP_HDR_MODE_2_LINE_HDR) {
+        cnt = 2;
+    } else if (get_workingg_mode() == RK_AIQ_ISP_HDR_MODE_3_FRAME_HDR ||
+               get_workingg_mode() == RK_AIQ_ISP_HDR_MODE_3_LINE_HDR) {
+        cnt = 3;
+    } else {
+        LOGE_CAMHW_SUBM(FAKECAM_SUBM, "failed to set hdr mode to %d", get_workingg_mode());
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+
+
     //short frame
     _mipi_tx_devs[0] = new FakeV4l2Device ();
     _mipi_tx_devs[0]->open();
@@ -130,25 +145,29 @@ FakeCamHwIsp20::init_mipi_devices(rk_sensor_full_info_t *s_info)
     _mipi_rx_devs[0] = new V4l2Device (s_info->isp_info->rawrd2_s_path);//rkisp_rawrd2_s
     _mipi_rx_devs[0]->open();
     _mipi_rx_devs[0]->set_mem_type(_rx_memory_type);
-    //mid frame
-    _mipi_tx_devs[1] = new FakeV4l2Device ();
-    _mipi_tx_devs[1]->open();
-    _mipi_tx_devs[1]->set_mem_type(_tx_memory_type);
-    _mipi_tx_devs[1]->set_buf_type(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+    if (cnt > 1) {
+        // mid frame
+        _mipi_tx_devs[1] = new FakeV4l2Device();
+        _mipi_tx_devs[1]->open();
+        _mipi_tx_devs[1]->set_mem_type(_tx_memory_type);
+        _mipi_tx_devs[1]->set_buf_type(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 
-    _mipi_rx_devs[1] = new V4l2Device (s_info->isp_info->rawrd0_m_path);//rkisp_rawrd0_m
-    _mipi_rx_devs[1]->open();
-    _mipi_rx_devs[1]->set_mem_type(_rx_memory_type);
-    //long frame
-    _mipi_tx_devs[2] = new FakeV4l2Device ();
-    _mipi_tx_devs[2]->open();
-    _mipi_tx_devs[2]->set_mem_type(_tx_memory_type);
-    _mipi_tx_devs[2]->set_buf_type(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+        _mipi_rx_devs[1] = new V4l2Device(s_info->isp_info->rawrd0_m_path);  // rkisp_rawrd0_m
+        _mipi_rx_devs[1]->open();
+        _mipi_rx_devs[1]->set_mem_type(_rx_memory_type);
+        if (cnt > 2) {
+            // long frame
+            _mipi_tx_devs[2] = new FakeV4l2Device();
+            _mipi_tx_devs[2]->open();
+            _mipi_tx_devs[2]->set_mem_type(_tx_memory_type);
+            _mipi_tx_devs[2]->set_buf_type(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 
-    _mipi_rx_devs[2] = new V4l2Device (s_info->isp_info->rawrd1_l_path);//rkisp_rawrd1_l
-    _mipi_rx_devs[2]->open();
-    _mipi_rx_devs[2]->set_mem_type(_rx_memory_type);
-    for (int i = 0; i < 3; i++) {
+            _mipi_rx_devs[2] = new V4l2Device(s_info->isp_info->rawrd1_l_path);  // rkisp_rawrd1_l
+            _mipi_rx_devs[2]->open();
+            _mipi_rx_devs[2]->set_mem_type(_rx_memory_type);
+        }
+    }
+    for (int i = 0; i < cnt; i++) {
         if (_linked_to_isp) {
             if (_rawbuf_type == RK_AIQ_RAW_FILE) {
                 _mipi_tx_devs[0]->set_use_type(2);

@@ -144,11 +144,8 @@ struct RefCountedVideoBuffer {
     }
 
     RefCountedVideoBuffer(const RefCountedVideoBuffer& other) {
-        if (this->buffer != other.buffer) {
-            this->buffer->unref(this->buffer);
-            this->buffer = other.buffer;
-            this->buffer->ref(this->buffer);
-        }
+        this->buffer = other.buffer;
+        this->buffer->ref(this->buffer);
     }
 
     RefCountedVideoBuffer& operator=(const RefCountedVideoBuffer& other) {
@@ -162,13 +159,8 @@ struct RefCountedVideoBuffer {
     }
 
     RefCountedVideoBuffer(RefCountedVideoBuffer&& other) {
-        if (this->buffer != other.buffer) {
-            this->buffer->unref(this->buffer);
-            this->buffer = other.buffer;
-            // this->buffer->ref(this->buffer);
-            // other.buffer->unref(other.buffer);
-            other.buffer = nullptr;
-        }
+        this->buffer = other.buffer;
+        other.buffer = nullptr;
     }
 
     RefCountedVideoBuffer& operator=(RefCountedVideoBuffer&& other) {

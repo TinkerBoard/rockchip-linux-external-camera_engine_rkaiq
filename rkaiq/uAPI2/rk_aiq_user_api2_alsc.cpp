@@ -23,6 +23,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
+#if RKAIQ_HAVE_LSC_V1 || RKAIQ_HAVE_LSC_V2 || RKAIQ_HAVE_LSC_V3
 XCamReturn rk_aiq_user_api2_alsc_SetAttrib(const rk_aiq_sys_ctx_t *sys_ctx,
                                            rk_aiq_lsc_attrib_t attr) {
   XCamReturn ret = XCAM_RETURN_NO_ERROR;
@@ -147,5 +148,24 @@ rk_aiq_user_api2_alsc_QueryLscInfo(const rk_aiq_sys_ctx_t *sys_ctx,
 
   return XCAM_RETURN_NO_ERROR;
 }
+
+#else
+
+XCamReturn rk_aiq_user_api2_alsc_SetAttrib(const rk_aiq_sys_ctx_t *sys_ctx,
+                                           rk_aiq_lsc_attrib_t attr) {
+    return XCAM_RETURN_ERROR_FAILED;
+}
+
+XCamReturn rk_aiq_user_api2_alsc_GetAttrib(const rk_aiq_sys_ctx_t *sys_ctx,
+                                           rk_aiq_lsc_attrib_t *attr) {
+    return XCAM_RETURN_ERROR_FAILED;
+}
+
+XCamReturn rk_aiq_user_api2_alsc_QueryLscInfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                              rk_aiq_lsc_querry_info_t* lsc_querry_info) {
+    return XCAM_RETURN_ERROR_FAILED;
+}
+
+#endif  // RKAIQ_HAVE_LSC_V1 || RKAIQ_HAVE_LSC_V2 || RKAIQ_HAVE_LSC_V3
 
 RKAIQ_END_DECLARE

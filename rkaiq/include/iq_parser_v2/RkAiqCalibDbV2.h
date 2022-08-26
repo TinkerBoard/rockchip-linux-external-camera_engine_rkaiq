@@ -142,7 +142,6 @@ private:
     static int CamCalibDbFreeDehazeV20Ctx(CalibDbV2_dehaze_v10_t* dehaze);
     static int CamCalibDbFreeDpccCtx(CalibDbV2_Dpcc_t* dpcc);
     static int CamCalibDbFreeTmoCtx(CalibDbV2_tmo_t* tmo);
-    static int CamCalibDbFreeCpslCtx(CalibDbV2_Cpsl_t* cpsl);
 #if RKAIQ_HAVE_ORB_V1
     static int CamCalibDbFreeOrbCtx(CalibDbV2_Orb_t* orb);
 #endif

@@ -26,6 +26,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <string>
+#include "RkAiqsceneManager.h"
 
 long read_file_all(void **rdata, const char *filename) {
   FILE *f = NULL;
@@ -134,6 +135,8 @@ int main(int argc, char *argv[]) {
   void *bin_file_data = NULL;
   size_t bin_file_size = 0;
   cJSON *root_json = NULL;
+  cJSON *base_json = NULL;
+  cJSON *full_json = NULL;
 
   if (0 != show_usage(argc, argv)) {
     return 0;
@@ -150,7 +153,15 @@ int main(int argc, char *argv[]) {
   printf("[root] struct info:[%s][%d]\n", root_struct->name,
          root_struct->child_index);
 
-  j2s_json_to_bin_root(&j2s4b_ctx, RkCam::cJSON_Parse((char *)file_data),
+  base_json = RkCam::cJSON_Parse((char *)file_data);
+  if (!base_json) {
+    return -1;
+  }
+
+  RkAiqsceneManager::mergeMultiSceneIQ(base_json);
+  full_json = RkCam::cJSON_Parse(RkCam::cJSON_Print(base_json));
+
+  j2s_json_to_bin_root(&j2s4b_ctx, full_json,
                        &struct_ptr, root_size, argv[2]);
 
   j2s_deinit(&j2s4b_ctx);
@@ -171,6 +182,14 @@ int main(int argc, char *argv[]) {
   printf("[done] ...\n");
 
   j2s_deinit(&j2s4b_ctx);
+
+  if (base_json) {
+    RkCam::cJSON_Delete(base_json);
+  }
+
+  if (full_json) {
+    RkCam::cJSON_Delete(full_json);
+  }
 
   return 0;
 }

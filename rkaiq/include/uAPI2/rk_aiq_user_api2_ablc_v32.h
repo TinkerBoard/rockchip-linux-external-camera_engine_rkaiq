@@ -28,7 +28,8 @@ XCamReturn
 rk_aiq_user_api2_ablcV32_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_blc_attrib_V32_t *attr);
 XCamReturn
 rk_aiq_user_api2_ablcV32_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_blc_attrib_V32_t *attr);
-
+XCamReturn
+rk_aiq_user_api2_ablcV32_GetInfo(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_blc_info_v32_t* pInfo);
 RKAIQ_END_DECLARE
 
 #endif

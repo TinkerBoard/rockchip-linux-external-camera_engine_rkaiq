@@ -91,5 +91,6 @@
 #cmakedefine01 RKAIQ_HAVE_DPCC_V1
 #cmakedefine01 RKAIQ_HAVE_ACP_V10
 #cmakedefine01 RKAIQ_HAVE_AIE_V10
+#cmakedefine01 RKAIQ_HAVE_ASD_V10
 
 #endif /* RKAIQ_CONFIG_H */

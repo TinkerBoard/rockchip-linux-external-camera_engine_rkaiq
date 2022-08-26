@@ -356,7 +356,7 @@ void stManuGetDehazeParamsV12(mDehazeAttrV12_t* pStManu, RkAiqAdehazeProcResult_
     pProcRes->ProcResV12.cfg_tmax =
         ClipValueV12(pStManu->dehaze_setting.DehazeData.cfg_tmax, 0, 10);
     pProcRes->ProcResV12.range_sima =
-        ClipValueV12(pStManu->dehaze_setting.DehazeData.range_sigma, 0, 9);
+        ClipValueV12(pStManu->dehaze_setting.DehazeData.range_sigma, 0, 8);
     pProcRes->ProcResV12.space_sigma_cur =
         ClipValueV12(pStManu->dehaze_setting.DehazeData.space_sigma_cur, 0, 8);
     pProcRes->ProcResV12.space_sigma_pre =
@@ -366,11 +366,28 @@ void stManuGetDehazeParamsV12(mDehazeAttrV12_t* pStManu, RkAiqAdehazeProcResult_
     pProcRes->ProcResV12.dc_weitcur =
         ClipValueV12(pStManu->dehaze_setting.DehazeData.dc_weitcur, 0, 8);
     pProcRes->ProcResV12.stab_fnum      = ClipValueV12(pStManu->dehaze_setting.stab_fnum, 5, 0);
-    pProcRes->ProcResV12.iir_sigma      = ClipValueV12(pStManu->dehaze_setting.sigma, 8, 0);
-    pProcRes->ProcResV12.iir_wt_sigma   = ClipValueV12(pStManu->dehaze_setting.wt_sigma, 8, 3);
-    pProcRes->ProcResV12.iir_air_sigma  = ClipValueV12(pStManu->dehaze_setting.air_sigma, 8, 0);
-    pProcRes->ProcResV12.iir_tmax_sigma = ClipValueV12(pStManu->dehaze_setting.tmax_sigma, 0, 10);
-    pProcRes->ProcResV12.iir_pre_wet    = ClipValueV12(pStManu->dehaze_setting.pre_wet, 0, 4);
+    if (pStManu->dehaze_setting.sigma)
+        pProcRes->ProcResV12.iir_sigma =
+            LIMIT_VALUE(int(256.0f / pStManu->dehaze_setting.sigma), 255, 0);
+    else
+        pProcRes->ProcResV12.iir_sigma = 0x1;
+    if (pStManu->dehaze_setting.wt_sigma >= 0.0f)
+        pProcRes->ProcResV12.iir_wt_sigma =
+            LIMIT_VALUE(int(1024.0f / (8.0f * pStManu->dehaze_setting.wt_sigma + 0.5f)), 0x7ff, 0);
+    else
+        pProcRes->ProcResV12.iir_wt_sigma = 0x7ff;
+    if (pStManu->dehaze_setting.air_sigma)
+        pProcRes->ProcResV12.iir_air_sigma =
+            LIMIT_VALUE(int(1024.0f / pStManu->dehaze_setting.air_sigma), 255, 0);
+    else
+        pProcRes->ProcResV12.iir_air_sigma = 0x8;
+    if (pStManu->dehaze_setting.tmax_sigma)
+        pProcRes->ProcResV12.iir_tmax_sigma =
+            LIMIT_VALUE(int(1.0f / pStManu->dehaze_setting.tmax_sigma), 0x7ff, 0);
+    else
+        pProcRes->ProcResV12.iir_tmax_sigma = 0x5f;
+    pProcRes->ProcResV12.iir_pre_wet =
+        LIMIT_VALUE(int(pStManu->dehaze_setting.pre_wet - 1.0f), 15, 0);
     pProcRes->ProcResV12.gaus_h0        = DEHAZE_GAUS_H4;
     pProcRes->ProcResV12.gaus_h1        = DEHAZE_GAUS_H1;
     pProcRes->ProcResV12.gaus_h2        = DEHAZE_GAUS_H0;
@@ -566,8 +583,8 @@ void GetDehazeParamsV12(CalibDbDehazeV12_t* pCalibV12, RkAiqAdehazeProcResult_t*
                                         pCalibV12->dehaze_setting.DehazeData.CtrlData,
                                         pCalibV12->dehaze_setting.DehazeData.cfg_tmax, CtrlValue, 0, 10, DHAZ_CTRL_DATA_STEP_MAX);
     pProcRes->ProcResV12.range_sima = DehazeLinearInterpV12(
-                                          pCalibV12->dehaze_setting.DehazeData.CtrlData,
-                                          pCalibV12->dehaze_setting.DehazeData.range_sigma, CtrlValue, 0, 9, DHAZ_CTRL_DATA_STEP_MAX);
+        pCalibV12->dehaze_setting.DehazeData.CtrlData,
+        pCalibV12->dehaze_setting.DehazeData.range_sigma, CtrlValue, 0, 8, DHAZ_CTRL_DATA_STEP_MAX);
     pProcRes->ProcResV12.space_sigma_cur =
         DehazeLinearInterpV12(pCalibV12->dehaze_setting.DehazeData.CtrlData,
                               pCalibV12->dehaze_setting.DehazeData.space_sigma_cur, CtrlValue, 0, 8,
@@ -583,11 +600,28 @@ void GetDehazeParamsV12(CalibDbDehazeV12_t* pCalibV12, RkAiqAdehazeProcResult_t*
                                           pCalibV12->dehaze_setting.DehazeData.CtrlData,
                                           pCalibV12->dehaze_setting.DehazeData.dc_weitcur, CtrlValue, 0, 8, DHAZ_CTRL_DATA_STEP_MAX);
     pProcRes->ProcResV12.stab_fnum      = ClipValueV12(pCalibV12->dehaze_setting.stab_fnum, 5, 0);
-    pProcRes->ProcResV12.iir_sigma      = ClipValueV12(pCalibV12->dehaze_setting.sigma, 8, 0);
-    pProcRes->ProcResV12.iir_wt_sigma   = ClipValueV12(pCalibV12->dehaze_setting.wt_sigma, 8, 3);
-    pProcRes->ProcResV12.iir_air_sigma  = ClipValueV12(pCalibV12->dehaze_setting.air_sigma, 8, 0);
-    pProcRes->ProcResV12.iir_tmax_sigma = ClipValueV12(pCalibV12->dehaze_setting.tmax_sigma, 0, 10);
-    pProcRes->ProcResV12.iir_pre_wet    = ClipValueV12(pCalibV12->dehaze_setting.pre_wet, 0, 4);
+    if (pCalibV12->dehaze_setting.sigma)
+        pProcRes->ProcResV12.iir_sigma =
+            LIMIT_VALUE(int(256.0f / pCalibV12->dehaze_setting.sigma), 255, 0);
+    else
+        pProcRes->ProcResV12.iir_sigma = 0x1;
+    if (pCalibV12->dehaze_setting.wt_sigma >= 0.0f)
+        pProcRes->ProcResV12.iir_wt_sigma = LIMIT_VALUE(
+            int(1024.0f / (8.0f * pCalibV12->dehaze_setting.wt_sigma + 0.5f)), 0x7ff, 0);
+    else
+        pProcRes->ProcResV12.iir_wt_sigma = 0x7ff;
+    if (pCalibV12->dehaze_setting.air_sigma)
+        pProcRes->ProcResV12.iir_air_sigma =
+            LIMIT_VALUE(int(1024.0f / pCalibV12->dehaze_setting.air_sigma), 255, 0);
+    else
+        pProcRes->ProcResV12.iir_air_sigma = 0x8;
+    if (pCalibV12->dehaze_setting.tmax_sigma)
+        pProcRes->ProcResV12.iir_tmax_sigma =
+            LIMIT_VALUE(int(1.0f / pCalibV12->dehaze_setting.tmax_sigma), 0x7ff, 0);
+    else
+        pProcRes->ProcResV12.iir_tmax_sigma = 0x5f;
+    pProcRes->ProcResV12.iir_pre_wet =
+        LIMIT_VALUE(int(pCalibV12->dehaze_setting.pre_wet - 1.0f), 15, 0);
     pProcRes->ProcResV12.gaus_h0        = DEHAZE_GAUS_H4;
     pProcRes->ProcResV12.gaus_h1        = DEHAZE_GAUS_H1;
     pProcRes->ProcResV12.gaus_h2        = DEHAZE_GAUS_H0;
@@ -974,7 +1008,7 @@ XCamReturn GetDehazeLocalGainSettingV12(RkAiqAdehazeProcResult_t* pProcRes,
             // get sigma_lut
             int tmp = 0;
             for (int i = 0; i < DHAZ_V12_SIGMA_LUT_NUM; i++) {
-                tmp                               = LIMIT_VALUE(noiseSigma[i], BIT_10_MAX, BIT_MIN);
+                tmp = LIMIT_VALUE(8.0f * noiseSigma[i], BIT_10_MAX, BIT_MIN);
                 pProcRes->ProcResV12.sigma_lut[i] = tmp;
             }
 
@@ -1030,7 +1064,7 @@ XCamReturn GetManuDehazeLocalGainSettingV12(RkAiqAdehazeProcResult_t* pProcRes,
     // get sigma_lut
     int tmp = 0;
     for (int i = 0; i < DHAZ_V12_SIGMA_LUT_NUM; i++) {
-        tmp                               = LIMIT_VALUE(noiseSigma[i], BIT_10_MAX, BIT_MIN);
+        tmp                               = LIMIT_VALUE(8.0f * noiseSigma[i], BIT_10_MAX, BIT_MIN);
         pProcRes->ProcResV12.sigma_lut[i] = tmp;
     }
 

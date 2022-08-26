@@ -47,6 +47,7 @@
 #include "cnr_uapi_head_v30.h"
 #include "sharp_uapi_head_v33.h"
 #include "gain_uapi_head_v2.h"
+#include "ablc_uapi_head_v32.h"
 #endif
 
 #ifdef __cplusplus
@@ -176,6 +177,40 @@ typedef struct __aiq_measure_info {
     uapi_wbV32_log_t wb_log;
 } aiq_measure_info_t;
 #endif
+
+typedef struct __ablc_uapi_manual {
+    // M4_ENUM_DESC("OPMOde", "RKAiqOPMode_uapi_t","RK_AIQ_OP_MODE_AUTO")
+    RKAiqOPMode_t AblcOPMode;
+
+#if defined(ISP_HW_V32)
+    // M4_STRUCT_DESC("blc0_para", "normal_ui_style")
+    AblcSelect_V32_t blc0_para;
+
+    // M4_STRUCT_DESC("blc1_para", "normal_ui_style")
+    AblcSelect_V32_t blc1_para;
+
+    // M4_STRUCT_DESC("blc_ob_para", "normal_ui_style")
+    AblcOBSelect_V32_t blc_ob_para;
+#endif
+} ablc_uapi_manual_t;
+
+typedef struct __alb_uapi_info {
+    // M4_NUMBER_DESC("iso", "u32", M4_RANGE(0, 204800), "50", M4_DIGIT(0), "0", "0")
+    int iso;
+#if defined(ISP_HW_V32)
+    // M4_ARRAY_TABLE_DESC("expo_info", "normal_ui_style", "none", "0", "0")
+    AblcExpInfo_V32_t expo_info;
+#endif
+} ablc_uapi_info_t;
+
+typedef struct __ablc_uapi {
+#if defined(ISP_HW_V32)
+    // M4_STRUCT_DESC("manual", "normal_ui_style")
+    ablc_uapi_manual_t manual;
+    // M4_STRUCT_DESC("info", "normal_ui_style")
+    ablc_uapi_info_t info;
+#endif
+} ablc_uapi_t;
 
 typedef struct __abayertnr_uapi_manual {
     // M4_ENUM_DESC("OPMode", "RKAiqOPMode_uapi_t","RK_AIQ_OP_MODE_AUTO")
@@ -396,6 +431,8 @@ typedef struct __aiq_uapi_t {
     // M4_STRUCT_DESC("SystemCtl", "normal_ui_style")
     RkaiqSysCtl_t system;
 
+    // M4_STRUCT_DESC("ablc_uapi_t", "normal_ui_style")
+    ablc_uapi_t ablc_uapi;
     // M4_STRUCT_DESC("abayertnr_uapi", "normal_ui_style")
     abayertnr_uapi_t abayertnr_uapi;
     // M4_STRUCT_DESC("abayer2dnr_uapi", "normal_ui_style")

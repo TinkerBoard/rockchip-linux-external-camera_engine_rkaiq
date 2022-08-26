@@ -46,6 +46,7 @@ public:
     XCamReturn setAttrib(const rk_aiq_blc_attrib_V32_t* att);
     XCamReturn getAttrib(rk_aiq_blc_attrib_V32_t* att);
     XCamReturn getProcRes(AblcProc_V32_t* ProcRes);
+    XCamReturn getInfo(rk_aiq_blc_info_v32_t* pInfo);
 
 protected:
     virtual void init();
