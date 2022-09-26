@@ -14286,7 +14286,7 @@
 										"Strength":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 									}
 								},
-								"IIR_frame":	1,
+								"IIR_frame":	2,
 								"LocalSetting":	{
 									"curPixWeit":	0.2,
 									"LocalData":	{

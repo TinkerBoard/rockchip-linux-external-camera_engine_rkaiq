@@ -410,21 +410,24 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             "Over//////////////////////////////////////////// \n",
             __func__);
 
-        pAdrcGrpCtx->CurrData.Enable = pAdrcGrpCtx->NextData.Enable;
-        pAdrcGrpCtx->ifReCalcStAuto   = false;
-        pAdrcGrpCtx->ifReCalcStManual = false;
         // output ProcRes
         for (int i = 0; i < pAdrcGrpProcRes->arraySize; i++) {
-            pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->bDrcEn = Enable;
             pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->update =
-                !bypass_tuning_params || !bypass_expo_params;
-            if (pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->update)
+                !bypass_tuning_params || !bypass_expo_params || pAdrcGrpCtx->ifReCalcStAuto ||
+                pAdrcGrpCtx->ifReCalcStManual || !pAdrcGrpCtx->isDampStable;
+            if (pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->update) {
+                pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->bDrcEn = Enable;
                 memcpy(&pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->DrcProcRes,
                        &pAdrcGrpCtx->AdrcProcRes.DrcProcRes, sizeof(DrcProcRes_t));
+            }
         }
 
-    LOG1_ATMO("%s:Exit!\n", __FUNCTION__);
-    return XCAM_RETURN_NO_ERROR;
+        pAdrcGrpCtx->CurrData.Enable  = pAdrcGrpCtx->NextData.Enable;
+        pAdrcGrpCtx->ifReCalcStAuto   = false;
+        pAdrcGrpCtx->ifReCalcStManual = false;
+
+        LOG1_ATMO("%s:Exit!\n", __FUNCTION__);
+        return XCAM_RETURN_NO_ERROR;
 }
 
 RkAiqAlgoDescription g_RkIspAlgoDescCamgroupAdrc = {

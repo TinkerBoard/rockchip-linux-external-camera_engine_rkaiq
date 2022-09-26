@@ -732,29 +732,9 @@ XCamReturn RkAiqAeHandleInt::preProcess() {
 
     RkAiqAlgoPreAe* ae_pre_int        = (RkAiqAlgoPreAe*)mPreInParam;
     bool postMsg = true;
-
-    if (mDes->id == 0) {
-        mPreResShared = new RkAiqAlgoPreResAeIntShared();
-        if (!mPreResShared.ptr()) {
-            LOGE("new ae mPreOutParam failed, bypass!");
-            return XCAM_RETURN_BYPASS;
-        }
-    }
-
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-
-    ret = RkAiqHandle::preProcess();
-    if (ret < 0) {
-        LOGE_ANALYZER("ae handle preProcess failed ret %d", ret);
-        mPreResShared = NULL;
-        return ret;
-    } else if (ret == XCAM_RETURN_BYPASS) {
-        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
-        mPreResShared = NULL;
-        return ret;
-    }
 
     RkAiqAecStats* xAecStats = nullptr;
     if (shared->aecStatsBuf) {
@@ -766,7 +746,29 @@ XCamReturn RkAiqAeHandleInt::preProcess() {
     if ((!xAecStats || !xAecStats->aec_stats_valid) && !sharedCom->init) {
         LOGW("no aec stats, ignore!");
         mPreResShared = NULL;
+        mProcResShared = NULL;
         return XCAM_RETURN_BYPASS;
+    }
+
+    if (mDes->id == 0) {
+        mPreResShared = new RkAiqAlgoPreResAeIntShared();
+        if (!mPreResShared.ptr()) {
+            LOGE("new ae mPreOutParam failed, bypass!");
+            return XCAM_RETURN_BYPASS;
+        }
+    }
+
+    ret = RkAiqHandle::preProcess();
+    if (ret < 0) {
+        LOGE_ANALYZER("ae handle preProcess failed ret %d", ret);
+        mPreResShared = NULL;
+        mProcResShared = NULL;
+        return ret;
+    } else if (ret == XCAM_RETURN_BYPASS) {
+        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
+        mPreResShared = NULL;
+        mProcResShared = NULL;
+        return ret;
     }
 
     ae_pre_int->aecStatsBuf = shared->aecStatsBuf;
@@ -777,10 +779,12 @@ XCamReturn RkAiqAeHandleInt::preProcess() {
         if (ret < 0) {
             LOGE_ANALYZER("ae handle pre_process failed ret %d", ret);
             mPreResShared = NULL;
+            mProcResShared = NULL;
             return ret;
         } else if (ret == XCAM_RETURN_BYPASS) {
             LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
             mPreResShared = NULL;
+            mProcResShared = NULL;
             return ret;
         }
     }
@@ -804,34 +808,9 @@ XCamReturn RkAiqAeHandleInt::processing() {
 
     RkAiqAlgoProcAe* ae_proc_int        = (RkAiqAlgoProcAe*)mProcInParam;
     bool postMsg = true;
-
-    if (mDes->id == 0) {
-        mProcResShared = new RkAiqAlgoProcResAeIntShared();
-        if (!mProcResShared.ptr()) {
-            LOGE("new ae mProcOutParam failed, bypass!");
-            return XCAM_RETURN_BYPASS;
-        }
-    }
-
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    AeInstanceConfig_t* pAeInstConfig           = (AeInstanceConfig_t*)mAlgoCtx;
-
-    mLockAebyAfMutex.lock();
-    pAeInstConfig->lockaebyaf = lockaebyaf;
-    mLockAebyAfMutex.unlock();
-
-    ret = RkAiqHandle::processing();
-    if (ret < 0) {
-        LOGE_ANALYZER("ae handle processing failed ret %d", ret);
-        mProcResShared = NULL;
-        return ret;
-    } else if (ret == XCAM_RETURN_BYPASS) {
-        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
-        mProcResShared = NULL;
-        return ret;
-    }
 
     RkAiqAecStats* xAecStats = nullptr;
     if (shared->aecStatsBuf) {
@@ -843,7 +822,36 @@ XCamReturn RkAiqAeHandleInt::processing() {
     if ((!xAecStats || !xAecStats->aec_stats_valid) && !sharedCom->init) {
         LOGW("no aec stats, ignore!");
         mPreResShared = NULL;
+        mProcResShared = NULL;
         return XCAM_RETURN_BYPASS;
+    }
+
+    if (mDes->id == 0) {
+        mProcResShared = new RkAiqAlgoProcResAeIntShared();
+        if (!mProcResShared.ptr()) {
+            LOGE("new ae mProcOutParam failed, bypass!");
+            mPreResShared = NULL;
+            return XCAM_RETURN_BYPASS;
+        }
+    }
+
+    AeInstanceConfig_t* pAeInstConfig           = (AeInstanceConfig_t*)mAlgoCtx;
+
+    mLockAebyAfMutex.lock();
+    pAeInstConfig->lockaebyaf = lockaebyaf;
+    mLockAebyAfMutex.unlock();
+
+    ret = RkAiqHandle::processing();
+    if (ret < 0) {
+        LOGE_ANALYZER("ae handle processing failed ret %d", ret);
+        mPreResShared = NULL;
+        mProcResShared = NULL;
+        return ret;
+    } else if (ret == XCAM_RETURN_BYPASS) {
+        LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
+        mPreResShared = NULL;
+        mProcResShared = NULL;
+        return ret;
     }
 
     // TODO config common ae processing params
@@ -854,10 +862,12 @@ XCamReturn RkAiqAeHandleInt::processing() {
         ret = des->processing(mProcInParam, (RkAiqAlgoResCom*)(&mProcResShared->result));
         if (ret < 0) {
             LOGE_ANALYZER("ae algo processing failed ret %d", ret);
+            mPreResShared = NULL;
             mProcResShared = NULL;
             return ret;
         } else if (ret == XCAM_RETURN_BYPASS) {
             LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
+            mPreResShared = NULL;
             mProcResShared = NULL;
             return ret;
         }
@@ -925,9 +935,24 @@ XCamReturn RkAiqAeHandleInt::postProcess() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    RkAiqAecStats* xAecStats = nullptr;
+    if (shared->aecStatsBuf) {
+        xAecStats = (RkAiqAecStats*)shared->aecStatsBuf->map(shared->aecStatsBuf);
+        if (!xAecStats) LOGE_AEC("aec stats is null");
+    } else {
+        LOGW_AEC("the xcamvideobuffer of aec stats is null");
+    }
+    if ((!xAecStats || !xAecStats->aec_stats_valid) && !sharedCom->init) {
+        LOGW("no aec stats, ignore!");
+        mPreResShared = NULL;
+        mProcResShared = NULL;
+        return XCAM_RETURN_BYPASS;
+    }
     ret = RkAiqHandle::postProcess();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "ae handle postProcess failed");
+        mPreResShared = NULL;
+        mProcResShared = NULL;
         return ret;
     }
 
@@ -948,13 +973,20 @@ XCamReturn RkAiqAeHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    if (!mProcResShared.ptr())
+    if (!mProcResShared.ptr()) {
+        params->mExposureParams = NULL;
+        params->mAecParams      = NULL;
+        params->mHistParams     = NULL;
         return XCAM_RETURN_NO_ERROR;
+    }
     RkAiqAlgoProcResAe* ae_proc                 = &mProcResShared->result;
     RkAiqAlgoPostResAe* ae_post                 = (RkAiqAlgoPostResAe*)mPostOutParam;
     if (!ae_proc) {
         mPreResShared = NULL;
         mProcResShared = NULL;
+        params->mExposureParams = NULL;
+        params->mAecParams      = NULL;
+        params->mHistParams     = NULL;
         LOGD_ANALYZER("no ae_proc result");
         return XCAM_RETURN_NO_ERROR;
     }
@@ -962,6 +994,9 @@ XCamReturn RkAiqAeHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     if (!ae_post) {
         mPreResShared = NULL;
         mProcResShared = NULL;
+        params->mExposureParams = NULL;
+        params->mAecParams      = NULL;
+        params->mHistParams     = NULL;
         LOGD_ANALYZER("no ae_post result");
         return XCAM_RETURN_NO_ERROR;
     }

@@ -126,8 +126,11 @@ IspParamsAssembler::queue_locked(SmartPtr<cam3aResult>& result)
     }
 #endif
     // exception case 1 : wrong result frame_id
-    if (frame_id == (uint32_t)(-1) ||
-        ((frame_id != 0) && (mLatestReadyFrmId != (uint32_t)(-1) && frame_id <= mLatestReadyFrmId))) {
+    if (frame_id == (uint32_t)(-1)) {
+        LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "type:%s, frame_id == -1 &&  mLatestReadyFrmId == %d ",
+                        Cam3aResultType2Str[type], mLatestReadyFrmId);
+        return ret;
+    } else if (((frame_id != 0) && (mLatestReadyFrmId != (uint32_t)(-1) && frame_id <= mLatestReadyFrmId))) {
         // merged to the oldest one
         bool found = false;
         for (const auto& iter : mParamsMap) {
@@ -156,10 +159,6 @@ IspParamsAssembler::queue_locked(SmartPtr<cam3aResult>& result)
                         mLatestReadyFrmId);
         frame_id = 0;
         result->setId(0);
-    } else if (frame_id == (uint32_t)(-1)) {
-        LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "type:%s, frame_id == -1 &&  mLatestReadyFrmId == %d ",
-                        Cam3aResultType2Str[type], mLatestReadyFrmId);
-        return ret;
     }
 
     mParamsMap[frame_id].params.push_back(result);
@@ -282,7 +281,7 @@ IspParamsAssembler::forceReady(uint32_t force_frame_id)
     for (auto& item : mParamsMap) {
         frame_id = item.first;
         if (frame_id < force_frame_id) {
-            if (!mParamsMap[frame_id].ready) {
+            if (!mParamsMap[frame_id].ready && 0 != mParamsMap[frame_id].flags) {
                 // print missing params
                 std::string missing_conds;
                 for (auto cond : mCondMaskMap) {

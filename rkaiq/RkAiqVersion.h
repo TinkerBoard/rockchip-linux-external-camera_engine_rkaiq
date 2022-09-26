@@ -461,10 +461,15 @@
  * - FakeSensor: Fix 8bit raw simualtion
  * - IQ: Update sc230ai/sc3338/gc2093/sc031gs
  * - IQ Bin: Reduce binary size
+ * v4.0x9.9
+ * - AEC: Fix params wrong if stats invalid
+ * - j2s4b: Fix installation step on low version cmake
+ * - IQ: jx_k17: Fix wrong enum value for hdr line mode
+ * - DRC: fix some issues, and modify IIR frame value
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.9-rc5"
-#define RK_AIQ_RELEASE_DATE "2022-09-07"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.9"
+#define RK_AIQ_RELEASE_DATE "2022-09-26"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

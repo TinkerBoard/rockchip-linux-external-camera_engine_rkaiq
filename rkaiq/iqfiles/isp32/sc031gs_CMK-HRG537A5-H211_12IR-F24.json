@@ -1468,7 +1468,7 @@
 								"ByPassThr":	0,
 								"Edge_Weit":	1,
 								"OutPutLongFrame":	0,
-								"IIR_frame":	16,
+								"IIR_frame":	2,
 								"damp":	0.9
 							}
 						},

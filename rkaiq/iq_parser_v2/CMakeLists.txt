@@ -129,7 +129,7 @@ add_custom_target(
     -B"host_tool"
     -H"${CMAKE_SOURCE_DIR}/tools/j2s4b"
     COMMAND ${CMAKE_COMMAND} --build host_tool
-    COMMAND ${CMAKE_COMMAND} --install host_tool
+    COMMAND make -C host_tool install
 	DEPENDS j2s_parser
     )
 

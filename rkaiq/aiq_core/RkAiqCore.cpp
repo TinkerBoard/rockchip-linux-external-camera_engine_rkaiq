@@ -1832,7 +1832,8 @@ RkAiqCore::prepare(enum rk_aiq_core_analyze_type_e type)
 {
     ENTER_ANALYZER_FUNCTION();
 
-    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    XCamReturn ret = XCAM_RETURN_BYPASS;
+    XCamReturn ret2 = XCAM_RETURN_BYPASS;
 
     std::vector<SmartPtr<RkAiqHandle>>& algo_list =
         mRkAiqCoreGroupManager->getGroupAlgoList(type);
@@ -1841,10 +1842,13 @@ RkAiqCore::prepare(enum rk_aiq_core_analyze_type_e type)
         RkAiqHandle* curHdl = algoHdl.ptr();
         while (curHdl) {
             if (curHdl->getEnable()) {
-                ret = curHdl->updateConfig(true);
-                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d updateConfig failed", curHdl->getAlgoType());
-                ret = curHdl->prepare();
-                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d processing failed", curHdl->getAlgoType());
+                ret2 = curHdl->updateConfig(true);
+                RKAIQCORE_CHECK_BYPASS(ret2, "algoHdl %d updateConfig failed", curHdl->getAlgoType());
+                ret2 = curHdl->prepare();
+                RKAIQCORE_CHECK_BYPASS(ret2, "algoHdl %d processing failed", curHdl->getAlgoType());
+                if (ret2 == XCAM_RETURN_NO_ERROR) {
+                    ret = XCAM_RETURN_NO_ERROR;
+                }
             }
             curHdl = curHdl->getNextHdl();
         }
@@ -1860,7 +1864,8 @@ RkAiqCore::preProcess(enum rk_aiq_core_analyze_type_e type)
 {
     ENTER_ANALYZER_FUNCTION();
 
-    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    XCamReturn ret = XCAM_RETURN_BYPASS;
+    XCamReturn ret2 = XCAM_RETURN_BYPASS;
 
     std::vector<SmartPtr<RkAiqHandle>>& algo_list =
                                         mRkAiqCoreGroupManager->getGroupAlgoList(type);
@@ -1869,10 +1874,13 @@ RkAiqCore::preProcess(enum rk_aiq_core_analyze_type_e type)
         RkAiqHandle* curHdl = algoHdl.ptr();
         while (curHdl) {
             if (curHdl->getEnable()) {
-                ret = curHdl->updateConfig(true);
-                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d updateConfig failed", curHdl->getAlgoType());
-                ret = curHdl->preProcess();
-                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d processing failed", curHdl->getAlgoType());
+                ret2 = curHdl->updateConfig(true);
+                RKAIQCORE_CHECK_BYPASS(ret2, "algoHdl %d updateConfig failed", curHdl->getAlgoType());
+                ret2 = curHdl->preProcess();
+                RKAIQCORE_CHECK_BYPASS(ret2, "algoHdl %d processing failed", curHdl->getAlgoType());
+                if (ret2 == XCAM_RETURN_NO_ERROR) {
+                    ret = XCAM_RETURN_NO_ERROR;
+                }
             }
             curHdl = curHdl->getNextHdl();
         }
@@ -1880,7 +1888,7 @@ RkAiqCore::preProcess(enum rk_aiq_core_analyze_type_e type)
 
     EXIT_ANALYZER_FUNCTION();
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -1888,7 +1896,8 @@ RkAiqCore::processing(enum rk_aiq_core_analyze_type_e type)
 {
     ENTER_ANALYZER_FUNCTION();
 
-    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    XCamReturn ret = XCAM_RETURN_BYPASS;
+    XCamReturn ret2 = XCAM_RETURN_BYPASS;
 
     std::vector<SmartPtr<RkAiqHandle>>& algo_list =
                                         mRkAiqCoreGroupManager->getGroupAlgoList(type);
@@ -1897,8 +1906,11 @@ RkAiqCore::processing(enum rk_aiq_core_analyze_type_e type)
         RkAiqHandle* curHdl = algoHdl.ptr();
         while (curHdl) {
             if (curHdl->getEnable()) {
-                ret = curHdl->processing();
-                RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d processing failed", curHdl->getAlgoType());
+                ret2 = curHdl->processing();
+                RKAIQCORE_CHECK_BYPASS(ret2, "algoHdl %d processing failed", curHdl->getAlgoType());
+                if (ret2 == XCAM_RETURN_NO_ERROR) {
+                    ret = XCAM_RETURN_NO_ERROR;
+                }
             }
             curHdl = curHdl->getNextHdl();
         }
@@ -1907,7 +1919,7 @@ RkAiqCore::processing(enum rk_aiq_core_analyze_type_e type)
 
     EXIT_ANALYZER_FUNCTION();
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -1915,21 +1927,25 @@ RkAiqCore::postProcess(enum rk_aiq_core_analyze_type_e type)
 {
     ENTER_ANALYZER_FUNCTION();
 
-    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    XCamReturn ret = XCAM_RETURN_BYPASS;
+    XCamReturn ret2 = XCAM_RETURN_BYPASS;
 
     std::vector<SmartPtr<RkAiqHandle>>& algo_list =
                                         mRkAiqCoreGroupManager->getGroupAlgoList(type);
 
     for (auto& algoHdl : algo_list) {
         if (algoHdl.ptr() && algoHdl->getEnable()) {
-            ret = algoHdl->postProcess();
-            RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d postProcess failed", algoHdl->getAlgoType());
+            ret2 = algoHdl->postProcess();
+            RKAIQCORE_CHECK_BYPASS(ret2, "algoHdl %d postProcess failed", algoHdl->getAlgoType());
+            if (ret2 == XCAM_RETURN_NO_ERROR) {
+                ret = XCAM_RETURN_NO_ERROR;
+            }
         }
     }
 
     EXIT_ANALYZER_FUNCTION();
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn

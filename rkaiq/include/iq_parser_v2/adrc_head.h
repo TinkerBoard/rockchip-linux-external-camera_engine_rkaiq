@@ -107,7 +107,7 @@ typedef struct CalibDbV2_Adrc_V10_s {
     float Edge_Weit; 
     // M4_BOOL_DESC("OutPutLongFrame", "0")
     bool  OutPutLongFrame;  
-    // M4_NUMBER_DESC("IIR_frame", "u8", M4_RANGE(1,1000), "16", M4_DIGIT(0))
+    // M4_NUMBER_DESC("IIR_frame", "u8", M4_RANGE(1,1000), "2", M4_DIGIT(0))
     int IIR_frame; 
     // M4_NUMBER_DESC("damp", "f32", M4_RANGE(0,1), "0.9", M4_DIGIT(3))
     float damp;
@@ -174,7 +174,7 @@ typedef struct CalibDbV2_Adrc_V11_s {
     float Edge_Weit; 
     // M4_BOOL_DESC("OutPutLongFrame", "0")
     bool  OutPutLongFrame;  
-    // M4_NUMBER_DESC("IIR_frame", "u8", M4_RANGE(1,1000), "16", M4_DIGIT(0))
+    // M4_NUMBER_DESC("IIR_frame", "u8", M4_RANGE(1,1000), "2", M4_DIGIT(0))
     int IIR_frame; 
     // M4_NUMBER_DESC("damp", "f32", M4_RANGE(0,1), "0.9", M4_DIGIT(3))
     float damp;
@@ -257,7 +257,7 @@ typedef struct CalibDbV2_Adrc_V12_s {
     float Edge_Weit;  
     // M4_BOOL_DESC("OutPutLongFrame", "0")
     bool OutPutLongFrame;  
-    // M4_NUMBER_DESC("IIR_frame", "u8", M4_RANGE(1,1000), "16", M4_DIGIT(0))
+    // M4_NUMBER_DESC("IIR_frame", "u8", M4_RANGE(1,1000), "2", M4_DIGIT(0))
     int IIR_frame;  
     // M4_NUMBER_DESC("damp", "f32", M4_RANGE(0,1), "0.9", M4_DIGIT(3))
     float damp;

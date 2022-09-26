@@ -346,15 +346,19 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         "Over//////////////////////////////////////////// \n",
         __func__);
 
-    pAdrcCtx->CurrData.Enable = pAdrcCtx->NextData.Enable;
-    pAdrcCtx->ifReCalcStAuto   = false;
-    pAdrcCtx->ifReCalcStManual = false;
     // output ProcRes
-    pAdrcProcRes->AdrcProcRes.update = !bypass_tuning_params || !bypass_expo_params;
-    pAdrcProcRes->AdrcProcRes.bDrcEn = Enable;
-    if (pAdrcProcRes->AdrcProcRes.update)
+    pAdrcProcRes->AdrcProcRes.update = !bypass_tuning_params || !bypass_expo_params ||
+                                       pAdrcCtx->ifReCalcStAuto || pAdrcCtx->ifReCalcStManual ||
+                                       !pAdrcCtx->isDampStable;
+    if (pAdrcProcRes->AdrcProcRes.update) {
+        pAdrcProcRes->AdrcProcRes.bDrcEn = Enable;
         memcpy(&pAdrcProcRes->AdrcProcRes.DrcProcRes, &pAdrcCtx->AdrcProcRes.DrcProcRes,
                sizeof(DrcProcRes_t));
+    }
+
+    pAdrcCtx->CurrData.Enable  = pAdrcCtx->NextData.Enable;
+    pAdrcCtx->ifReCalcStAuto   = false;
+    pAdrcCtx->ifReCalcStManual = false;
 
     LOG1_ATMO("%s:Exit!\n", __FUNCTION__);
     return XCAM_RETURN_NO_ERROR;

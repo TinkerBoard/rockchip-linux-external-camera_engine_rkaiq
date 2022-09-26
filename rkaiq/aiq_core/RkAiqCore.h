@@ -52,10 +52,10 @@ namespace RkCam {
 
 #define RKAIQCORE_CHECK_RET_NULL(ret, format, ...) \
     do { \
-        if (ret < 0) { \
+        if ((ret) < 0) { \
             LOGE_ANALYZER(format, ##__VA_ARGS__); \
             return NULL; \
-        } else if (ret == XCAM_RETURN_BYPASS) { \
+        } else if ((ret) == XCAM_RETURN_BYPASS) { \
             LOGW_ANALYZER("bypass !", __FUNCTION__, __LINE__); \
             return NULL; \
         } \
@@ -63,12 +63,11 @@ namespace RkCam {
 
 #define RKAIQCORE_CHECK_BYPASS(ret, format, ...) \
     do { \
-        if (ret < 0) { \
+        if ((ret) < 0) { \
             LOGE_ANALYZER(format, ##__VA_ARGS__); \
             return ret; \
-        } else if (ret == XCAM_RETURN_BYPASS) { \
+        } else if ((ret) == XCAM_RETURN_BYPASS) { \
             LOGW_ANALYZER("bypass !", __FUNCTION__, __LINE__); \
-            ret = XCAM_RETURN_NO_ERROR; \
         } \
     } while (0)
 
