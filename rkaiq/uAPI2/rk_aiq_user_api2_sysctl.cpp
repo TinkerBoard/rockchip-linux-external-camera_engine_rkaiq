@@ -167,6 +167,13 @@ rk_aiq_uapi2_sysctl_getStaticMetas(const char* sns_ent_name, rk_aiq_static_info_
     return rk_aiq_uapi_sysctl_getStaticMetas(sns_ent_name, static_info);
 }
 
+
+XCamReturn
+rk_aiq_uapi2_sysctl_enumStaticMetasByPhyId(int index, rk_aiq_static_info_t* static_info)
+{
+    return rk_aiq_uapi_sysctl_enumStaticMetasByPhyId(index, static_info);
+}
+
 XCamReturn
 rk_aiq_uapi2_sysctl_enumStaticMetas(int index, rk_aiq_static_info_t* static_info)
 {

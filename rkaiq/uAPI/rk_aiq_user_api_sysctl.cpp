@@ -712,6 +712,29 @@ rk_aiq_uapi_sysctl_getStaticMetas(const char* sns_ent_name, rk_aiq_static_info_t
 }
 
 XCamReturn
+rk_aiq_uapi_sysctl_enumStaticMetasByPhyId(int index, rk_aiq_static_info_t* static_info)
+{
+    if (!static_info)
+        return XCAM_RETURN_ERROR_FAILED;
+
+    if (!g_rk_aiq_init_lib) {
+        rk_aiq_init_lib();
+        g_rk_aiq_init_lib = true;
+    }
+#ifdef RK_SIMULATOR_HW
+    /* nothing to do now*/
+    static_info = NULL;
+#else
+    rk_aiq_static_info_t* tmp =  CamHwIsp20::getStaticCamHwInfoByPhyId(NULL, index);
+    if (tmp)
+        memcpy(static_info, tmp, sizeof(rk_aiq_static_info_t));
+    else
+        return XCAM_RETURN_ERROR_OUTOFRANGE;
+#endif
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
 rk_aiq_uapi_sysctl_enumStaticMetas(int index, rk_aiq_static_info_t* static_info)
 {
     if (!static_info)

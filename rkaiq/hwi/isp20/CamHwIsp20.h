@@ -89,6 +89,7 @@ public:
     virtual void getShareMemOps(isp_drv_share_mem_ops_t** mem_ops) override;
     uint64_t getIspModuleEnState()  override;
 
+    static rk_aiq_static_info_t* getStaticCamHwInfoByPhyId(const char* sns_ent_name, uint16_t index = 0);
     static rk_aiq_static_info_t* getStaticCamHwInfo(const char* sns_ent_name, uint16_t index = 0);
     static XCamReturn clearStaticCamHwInfo();
     static XCamReturn initCamHwInfos();

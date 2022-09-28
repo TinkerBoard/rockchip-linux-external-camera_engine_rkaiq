@@ -916,6 +916,38 @@ CamHwIsp20::selectIqFile(const char* sns_ent_name, char* iqfile_name)
 #endif
 
 rk_aiq_static_info_t*
+CamHwIsp20::getStaticCamHwInfoByPhyId(const char* sns_ent_name, uint16_t index)
+{
+    if (sns_ent_name) {
+        std::string str(sns_ent_name);
+
+        auto it = mCamHwInfos.find(str);
+        if (it != mCamHwInfos.end()) {
+            LOGD_CAMHW_SUBM(ISP20HW_SUBM, "find camerainfo of %s!", sns_ent_name);
+            return it->second.ptr();
+        } else {
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "camerainfo of %s not fount!", sns_ent_name);
+        }
+    } else {
+        std::string index_str{"m"};
+        if (index < 10) {
+            index_str.append("0");
+        }
+        index_str.append(std::to_string(index));
+        auto it = std::find_if(
+            std::begin(mCamHwInfos), std::end(mCamHwInfos),
+            [&](const std::pair<std::string, SmartPtr<rk_aiq_static_info_t>>& info) -> bool {
+                return !info.first.compare(0, 3, index_str);
+            });
+        if (it != mCamHwInfos.end()) {
+            return it->second.ptr();
+        }
+    }
+
+    return NULL;
+}
+
+rk_aiq_static_info_t*
 CamHwIsp20::getStaticCamHwInfo(const char* sns_ent_name, uint16_t index)
 {
     if (sns_ent_name) {
