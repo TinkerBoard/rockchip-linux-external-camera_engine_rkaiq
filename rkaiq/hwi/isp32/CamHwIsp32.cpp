@@ -368,16 +368,19 @@ XCamReturn CamHwIsp32::setIspConfig() {
 
         if (mTbInfo.is_pre_aiq) {
             static bool not_skip_first = true;
+            static struct isp32_rawawb_meas_cfg awb_cfg;
             if (frameId == 0 && not_skip_first) {
                 not_skip_first = false;
+                awb_cfg = isp_params->meas.rawawb;
                 mIspParamsDev->return_buffer_to_pool(v4l2buf);
                 return XCAM_RETURN_NO_ERROR;
+            } else if (!not_skip_first) {
+                isp_params->meas.rawawb = awb_cfg;
             }
             isp_params->module_en_update =
                 _full_active_isp32_params.module_en_update;
             isp_params->module_cfg_update =
                 _full_active_isp32_params.module_cfg_update;
-            isp_params->module_cfg_update &= ~ISP2X_MODULE_RAWAWB;
         }
 
         if (mIspParamsDev->queue_buffer(v4l2buf) != 0) {

@@ -13,10 +13,9 @@ RawStreamProcUnit::RawStreamProcUnit ()
     _rawCap = NULL;
 }
 
-RawStreamProcUnit::RawStreamProcUnit (const rk_sensor_full_info_t *s_info, bool linked_to_isp)
-    : _is_multi_cam_conc(false)
-    , _first_trigger(true)
-{
+RawStreamProcUnit::RawStreamProcUnit(const rk_sensor_full_info_t* s_info, bool linked_to_isp,
+                                     int tx_buf_cnt)
+    : _is_multi_cam_conc(false), _first_trigger(true) {
     _raw_proc_thread = new RawProcThread(this);
     _PollCallback = NULL;
     _rawCap = NULL;
@@ -40,11 +39,21 @@ RawStreamProcUnit::RawStreamProcUnit (const rk_sensor_full_info_t *s_info, bool 
     }
     for (int i = 0; i < 3; i++) {
         if (linked_to_isp) {
-            if (_dev[i].ptr())
-                _dev[i]->set_buffer_count(ISP_TX_BUF_NUM);
+            if (_dev[i].ptr()) {
+                if (tx_buf_cnt > 0) {
+                    _dev[i]->set_buffer_count(tx_buf_cnt);
+                } else {
+                    _dev[i]->set_buffer_count(ISP_TX_BUF_NUM);
+                }
+            }
         } else {
-            if (_dev[i].ptr())
-                _dev[i]->set_buffer_count(VIPCAP_TX_BUF_NUM);
+            if (_dev[i].ptr()) {
+                if (tx_buf_cnt > 0) {
+                    _dev[i]->set_buffer_count(tx_buf_cnt);
+                } else {
+                    _dev[i]->set_buffer_count(VIPCAP_TX_BUF_NUM);
+                }
+            }
         }
         if (_dev[i].ptr())
             _dev[i]->set_buf_sync (true);

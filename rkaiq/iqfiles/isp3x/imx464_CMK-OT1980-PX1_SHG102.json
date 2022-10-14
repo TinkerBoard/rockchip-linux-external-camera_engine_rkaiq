@@ -2051,7 +2051,7 @@
 								"damp":	0.9
 							}
 						},
-"af_v30":	{
+						"af_v30":	{
 							"TuningPara":	{
 								"af_mode":	"CalibDbV2_AFMODE_CONT_PICTURE",
 								"win_h_offs":	0,
@@ -2075,17 +2075,20 @@
 									"enable":	1,
 									"Afss":	"CalibDbV2_AFSS_ADAPTIVE_RANGE",
 									"FullDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
-									"FullRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
-									"FullRangeTbl_len":	9,
+									"FullRangeTbl":	[0, 4, 64],
 									"AdaptiveDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"AdaptRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"AdaptRangeTbl_len":	9,
+									"FineSearchStep":	[4, 4, 4, 4, 4, 4, 4, 4, 4],
+									"FineSearchStep_len":	9,
+									"SkipCurveFitGain":	1,
 									"TrigThers":	[0.075],
 									"TrigThers_len":	1,
 									"TrigThersFv":	[0],
 									"TrigThersFv_len":	1,
-									"LumaTrigThers":	1,
-									"ExpTrigThers":	1,
+									"LumaTrigThers":	0.05,
+									"ExpTrigThers":	0.03,
+									"ChangedFrames":	10,
 									"StableThers":	0.02,
 									"StableFrames":	3,
 									"StableTime":	200,
@@ -2099,15 +2102,15 @@
 									"OutFocusPos":	64,
 									"WeightEnable":	0,
 									"Weight":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-									"SearchPauseLumaEnable":	0,
-									"SearchPauseLumaThers":	0,
-									"SearchLumaStableFrames":	0,
-									"SearchLumaStableThers":	0,
+									"SearchPauseLumaEnable":	1,
+									"SearchPauseLumaThers":	0.05,
+									"SearchLumaStableFrames":	3,
+									"SearchLumaStableThers":	0.02,
 									"Stage1QuickFoundThers":	0.04,
 									"Stage2QuickFoundThers":	0.2,
 									"FlatValue":	0,
-									"PointLightLumaTh":	3000,
-									"PointLightCntTh":	300,
+									"PointLightLumaTh":	912,
+									"PointLightCntTh":	20,
 									"ZoomCfg":	{
 										"QuickFoundThersZoomIdx":	[0],
 										"QuickFoundThersZoomIdx_len":	1,
@@ -2122,24 +2125,31 @@
 										"StopStep":	[0],
 										"StopStep_len":	1,
 										"SkipHighPassZoomIdx":	0,
-										"SkipHighPassGain":	0
+										"SkipHighPassGain":	0,
+										"SpotlightBlkCnt":	[0.2, 0.5, 0.25],
+										"SpotlightHighlightRatio":	0.014,
+										"SpotlightLumaRatio":	[0.3, 0.5, 0.8],
+										"SwitchDirZoomIdx":	0
 									}
 								},
 								"video_contrast_af":	{
 									"enable":	1,
 									"Afss":	"CalibDbV2_AFSS_ADAPTIVE_RANGE",
 									"FullDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
-									"FullRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
-									"FullRangeTbl_len":	9,
+									"FullRangeTbl":	[0, 4, 64],
 									"AdaptiveDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"AdaptRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"AdaptRangeTbl_len":	9,
+									"FineSearchStep":	[4, 4, 4, 4, 4, 4, 4, 4, 4],
+									"FineSearchStep_len":	9,
+									"SkipCurveFitGain":	1,
 									"TrigThers":	[0.15],
 									"TrigThers_len":	1,
 									"TrigThersFv":	[0],
 									"TrigThersFv_len":	1,
-									"LumaTrigThers":	1,
-									"ExpTrigThers":	1,
+									"LumaTrigThers":	0.05,
+									"ExpTrigThers":	0.03,
+									"ChangedFrames":	10,
 									"StableThers":	0.02,
 									"StableFrames":	20,
 									"StableTime":	200,
@@ -2153,15 +2163,15 @@
 									"OutFocusPos":	64,
 									"WeightEnable":	0,
 									"Weight":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-									"SearchPauseLumaEnable":	0,
-									"SearchPauseLumaThers":	0,
-									"SearchLumaStableFrames":	0,
-									"SearchLumaStableThers":	0,
+									"SearchPauseLumaEnable":	1,
+									"SearchPauseLumaThers":	0.05,
+									"SearchLumaStableFrames":	3,
+									"SearchLumaStableThers":	0.02,
 									"Stage1QuickFoundThers":	0.04,
 									"Stage2QuickFoundThers":	0.2,
 									"FlatValue":	0,
-									"PointLightLumaTh":	3000,
-									"PointLightCntTh":	300,
+									"PointLightLumaTh":	912,
+									"PointLightCntTh":	20,
 									"ZoomCfg":	{
 										"QuickFoundThersZoomIdx":	[0],
 										"QuickFoundThersZoomIdx_len":	1,
@@ -2176,7 +2186,11 @@
 										"StopStep":	[0],
 										"StopStep_len":	1,
 										"SkipHighPassZoomIdx":	0,
-										"SkipHighPassGain":	0
+										"SkipHighPassGain":	0,
+										"SpotlightBlkCnt":	[0.2, 0.5, 0.25],
+										"SpotlightHighlightRatio":	0.014,
+										"SpotlightLumaRatio":	[0.3, 0.5, 0.8],
+										"SwitchDirZoomIdx":	0
 									}
 								},
 								"laser_af":	{
@@ -2187,49 +2201,113 @@
 								"pdaf":	{
 									"enable":	0,
 									"pdVsCdDebug":	0,
+									"pdDumpDebug":	0,
+									"pdDumpMaxFrm":	300,
 									"pdDataBit":	10,
 									"pdBlkLevel":	64,
 									"pdSearchRadius":	3,
 									"pdMirrorInCalib":	1,
+									"pdVsImgoutMirror":	0,
+									"pdLRInDiffLine":	0,
 									"pdWidth":	508,
 									"pdHeight":	760,
+									"pdVerBinning":	0,
+									"pdFrmInValid":	1,
+									"pdDgainValid":	0,
+									"pdGainMapNormEn":	0,
+									"pdConfdMode":	0,
+									"pdNoiseSn":	0.207,
+									"pdNoiseRn":	[0.14, 2.8],
+									"pdNoisePn":	0.25,
+									"pdSatValRatio":	0.92,
+									"pdSatCntRatio":	0.06,
+									"pdDiscardRegionEn":	0,
+									"pdLessTextureRatio":	0.25,
+									"pdCalibInf": {
+										"pdGainMapW":	32,
+										"pdGainMapH":	32,
+										"pdDccMapW":	64,
+										"pdDccMapH":	64
+									},
+									"pdConfdMwinFactor":	3,
+									"pdCenterMinFv":	0,
+									"pdCenterMinRatio":	0,
+									"pdHighlightRatio":	0.5,
+									"pdStepRatio":	[1.0, 1.0, 1.0, 0.9, 0.8, 0.7, 0.7],
+									"pdStepDefocus":	[32, 64, 96, 128, 160, 192, 224],
 									"pdIsoPara":
 									[
 										{
-											"iso": 50,
-											"pdNoiseFactor":	0.15,
+											"iso": 6400,
+											"pdConfdRatio0":	1,
 											"pdConfdRatio1":	1,
 											"pdConfdRatio2":	1,
+											"pdConfdRatio3":	0,
 											"pdConfdThresh":	0.4,
-											"defocusPdThresh":	18,
+											"convergedInfPdThresh":	12,
+											"convergedMacPdThresh":	12,
+											"defocusInfPdThresh":	12,
+											"defocusMacPdThresh":	12,
 											"stablePdRatio":	0.125,
 											"stablePdOffset":	8,
 											"stableCntRatio":	1.5,
 											"noconfCntThresh":	4,
+											"roiBlkCntW":		3,
+											"roiBlkCntH":		3,
 											"fineSearchTbl":	[{
-												"confidence":	512,
-												"range":	4,
+												"confidence":	0.5,
+												"range":	0,
 												"stepPos":	1
 											}, {
-												"confidence":	256,
+												"confidence":	0,
+												"range":	4,
+												"stepPos":	1
+											}],
+											"fineSearchTbl_len":	2
+										},
+										{
+											"iso": 204800,
+											"pdConfdRatio0":	1,
+											"pdConfdRatio1":	1,
+											"pdConfdRatio2":	1,
+											"pdConfdRatio3":	0,
+											"pdConfdThresh":	0.4,
+											"convergedInfPdThresh":	12,
+											"convergedMacPdThresh":	12,
+											"defocusInfPdThresh":	12,
+											"defocusMacPdThresh":	12,
+											"stablePdRatio":	0.125,
+											"stablePdOffset":	8,
+											"stableCntRatio":	1.5,
+											"noconfCntThresh":	4,
+											"roiBlkCntW":		1,
+											"roiBlkCntH":		1,
+											"fineSearchTbl":	[{
+												"confidence":	0.5,
 												"range":	8,
 												"stepPos":	2
+											}, {
+												"confidence":	0,
+												"range":	16,
+												"stepPos":	4
 											}],
 											"fineSearchTbl_len":	2
 										}
 									],
-									"pdIsoPara_len":	1
+									"pdIsoPara_len":	2
 								},
 								"vcmcfg":	{
+									"max_logical_pos":	64,
 									"start_current":	-1,
 									"rated_current":	-1,
 									"step_mode":	-1,
-									"extra_delay":	0,
-									"posture_diff":	0.1
+									"extra_delay":	-20,
+									"posture_diff":	0.2
 								},
 								"zoomfocus_tbl":	{
 									"widemod_deviate":	10,
 									"telemod_deviate":	10,
+									"focus_backval":	0,
 									"zoom_move_dot":	[0],
 									"zoom_move_dot_len":	1,
 									"zoom_move_step":	[16],
@@ -2255,66 +2333,69 @@
 									"FocusSearchPlusRange":	[0],
 									"FocusSearchPlusRange_len":	1,
 									"FocusStage1Step":	1,
+									"QuickFndRate":	0.3,
+									"QuickFndMinFv":	200,
 									"searchZoomRange":	100,
 									"searchFocusRange":	100,
 									"searchEmax":	100,
 									"searchEavg":	100,
 									"IsZoomFocusRec":	0,
-									"ZoomFocusRecDir":	"/userdata"
+									"ZoomInfoDir":	"/userdata",
+									"ZoomInitIndex":	1
 								},
 								"zoom_meas":	[{
 										"zoom_idx":	0,
 										"measiso":	[{
 												"iso":	50,
-												"idx":	0,
-												"spotlt_scene_idx":	0
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	100,
-												"idx":	0,
-												"spotlt_scene_idx":	0
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	200,
-												"idx":	0,
-												"spotlt_scene_idx":	0
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	400,
-												"idx":	0,
-												"spotlt_scene_idx":	0
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	800,
-												"idx":	0,
-												"spotlt_scene_idx":	0
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	1600,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	3200,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	6400,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	12800,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	25600,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	51200,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	102400,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	204800,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}],
 										"measiso_len": 13
@@ -2324,15 +2405,21 @@
 										"tbl_idx":	0,
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
+										"v1fv_reliable":	0.2,
+										"v2fv_reliable":	0.2,
 										"v1_fir_sel":	1,
-										"v1_iir_coe":	[0, 503, 0, 0, 8, 0, 0, 9, 0],
-										"v1_fir_coe":	[-1997, 0, 1997],
-										"v2_iir_coe":	[476, 33, 34],
-										"v2_fir_coe":	[-985, 0, 985],
+										"v1_band":	[0.042, 0.14],
+										"v1_iir_coe":	[0, 483, 0, 0, 28, 0, 0, 28, 0],
+										"v1_fir_coe":	[-1186, 0, 1186],
+										"v2_band":	[0.042, 0.14],
+										"v2_iir_coe":	[483, 28, 28],
+										"v2_fir_coe":	[-1186, 0, 1186],
+										"h1_band":	[0.042, 0.14],
 										"h1_iir1_coe":	[512, 557, -276, 460, 0, -460],
-										"h1_iir2_coe":	[512, 870, -399, 37, 0, -37],
+										"h1_iir2_coe":	[100, 870, -399, 191, 0, -191],
+										"h2_band":	[0.042, 0.14],
 										"h2_iir1_coe":	[512, 557, -276, 460, 0, -460],
-										"h2_iir2_coe":	[512, 870, -399, 37, 0, -37],
+										"h2_iir2_coe":	[100, 870, -399, 191, 0, -191],
 										"ldg_en":	0,
 										"ve_ldg_lumth_l":	64,
 										"ve_ldg_gain_l":	28,
@@ -2348,22 +2435,29 @@
 										"ho_ldg_gslp_h":	1400,
 										"v_fv_thresh":	4,
 										"h_fv_thresh":	4,
-										"highlit_thresh":	912
+										"highlit_thresh":	912,
+										"v_fv_ratio":	0.5
 									},
 									{
 										"tbl_idx":	1,
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
+										"v1fv_reliable":	0.2,
+										"v2fv_reliable":	0.2,
 										"v1_fir_sel":	1,
-										"v1_iir_coe":	[0, 503, 0, 0, 8, 0, 0, 9, 0],
-										"v1_fir_coe":	[-1997, 0, 1997],
-										"v2_iir_coe":	[476, 33, 34],
-										"v2_fir_coe":	[-985, 0, 985],
-										"h1_iir1_coe":	[512, 811, -375, 266, 0, -266],
-										"h1_iir2_coe":	[250, 945, -448, 41, 0, -41],
-										"h2_iir1_coe":	[512, 557, -276, 460, 0, -460],
-										"h2_iir2_coe":	[512, 870, -399, 37, 0, -37],
-										"ldg_en":	0,
+										"v1_band":	[0.06, 0.15],
+										"v1_iir_coe":	[0, 473, 0, 0, 37, 0, 0, 37, 0],
+										"v1_fir_coe":	[-896, 0, 896],
+										"v2_band":	[0.06, 0.15],
+										"v2_iir_coe":	[473, 37, 37],
+										"v2_fir_coe":	[-896, 0, 896],
+										"h1_band":	[0.06, 0.15],
+										"h1_iir1_coe":	[512, 538, -305, 404, 0, -404],
+										"h1_iir2_coe":	[133, 821, -388, 141, 0, -141],
+										"h2_band":	[0.06, 0.15],
+										"h2_iir1_coe":	[512, 538, -305, 404, 0, -404],
+										"h2_iir2_coe":	[133, 821, -388, 141, 0, -141],
+										"ldg_en":	1,
 										"ve_ldg_lumth_l":	64,
 										"ve_ldg_gain_l":	28,
 										"ve_ldg_gslp_l":	1286,
@@ -2378,9 +2472,47 @@
 										"ho_ldg_gslp_h":	1400,
 										"v_fv_thresh":	4,
 										"h_fv_thresh":	4,
-										"highlit_thresh":	912
+										"highlit_thresh":	912,
+										"v_fv_ratio":	0.5
+									},
+									{
+										"tbl_idx":	2,
+										"afmThres":	4,
+										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
+										"v1fv_reliable":	0.2,
+										"v2fv_reliable":	0.2,
+										"v1_fir_sel":	1,
+										"v1_band":	[0.010, 0.040],
+										"v1_iir_coe":	[0, 503, 0, 0, 8, 0, 0, 9, 0],
+										"v1_fir_coe":	[-1997,   0,  1997],
+										"v2_band":	[0.010, 0.040],
+										"v2_iir_coe":	[503,     8,     9],
+										"v2_fir_coe":	[-1997,   0,  1997],
+										"h1_band":	[0.010, 0.040],
+										"h1_iir1_coe":	[71,   908,  -419,   511,     0,  -511],
+										"h1_iir2_coe":	[19,   989,  -480,   779,     0,  -779],
+										"h2_band":	[0.010, 0.040],
+										"h2_iir1_coe":	[71,   908,  -419,   511,     0,  -511],
+										"h2_iir2_coe":	[19,   989,  -480,   779,     0,  -779],
+										"ldg_en":	1,
+										"ve_ldg_lumth_l":	64,
+										"ve_ldg_gain_l":	28,
+										"ve_ldg_gslp_l":	1286,
+										"ve_ldg_lumth_h":	185,
+										"ve_ldg_gain_h":	8,
+										"ve_ldg_gslp_h":	1400,
+										"ho_ldg_lumth_l":	64,
+										"ho_ldg_gain_l":	28,
+										"ho_ldg_gslp_l":	1286,
+										"ho_ldg_lumth_h":	185,
+										"ho_ldg_gain_h":	8,
+										"ho_ldg_gslp_h":	1400,
+										"v_fv_thresh":	4,
+										"h_fv_thresh":	4,
+										"highlit_thresh":	912,
+										"v_fv_ratio":	0.5
 									}],
-								"meascfg_tbl_len":	2
+								"meascfg_tbl_len":	3
 							}
 						},
 						"amerge_calib_v11":
@@ -7959,7 +8091,7 @@
 								"damp":	0.9
 							}
 						},
-"af_v30":	{
+						"af_v30":	{
 							"TuningPara":	{
 								"af_mode":	"CalibDbV2_AFMODE_CONT_PICTURE",
 								"win_h_offs":	0,
@@ -7983,17 +8115,20 @@
 									"enable":	1,
 									"Afss":	"CalibDbV2_AFSS_ADAPTIVE_RANGE",
 									"FullDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
-									"FullRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
-									"FullRangeTbl_len":	9,
+									"FullRangeTbl":	[0, 4, 64],
 									"AdaptiveDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"AdaptRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"AdaptRangeTbl_len":	9,
+									"FineSearchStep":	[4, 4, 4, 4, 4, 4, 4, 4, 4],
+									"FineSearchStep_len":	9,
+									"SkipCurveFitGain":	1,
 									"TrigThers":	[0.075],
 									"TrigThers_len":	1,
 									"TrigThersFv":	[0],
 									"TrigThersFv_len":	1,
-									"LumaTrigThers":	1,
-									"ExpTrigThers":	1,
+									"LumaTrigThers":	0.05,
+									"ExpTrigThers":	0.03,
+									"ChangedFrames":	10,
 									"StableThers":	0.02,
 									"StableFrames":	3,
 									"StableTime":	200,
@@ -8007,15 +8142,15 @@
 									"OutFocusPos":	64,
 									"WeightEnable":	0,
 									"Weight":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-									"SearchPauseLumaEnable":	0,
-									"SearchPauseLumaThers":	0,
-									"SearchLumaStableFrames":	0,
-									"SearchLumaStableThers":	0,
+									"SearchPauseLumaEnable":	1,
+									"SearchPauseLumaThers":	0.05,
+									"SearchLumaStableFrames":	3,
+									"SearchLumaStableThers":	0.02,
 									"Stage1QuickFoundThers":	0.04,
 									"Stage2QuickFoundThers":	0.2,
 									"FlatValue":	0,
-									"PointLightLumaTh":	3000,
-									"PointLightCntTh":	300,
+									"PointLightLumaTh":	912,
+									"PointLightCntTh":	20,
 									"ZoomCfg":	{
 										"QuickFoundThersZoomIdx":	[0],
 										"QuickFoundThersZoomIdx_len":	1,
@@ -8030,24 +8165,31 @@
 										"StopStep":	[0],
 										"StopStep_len":	1,
 										"SkipHighPassZoomIdx":	0,
-										"SkipHighPassGain":	0
+										"SkipHighPassGain":	0,
+										"SpotlightBlkCnt":	[0.2, 0.5, 0.25],
+										"SpotlightHighlightRatio":	0.014,
+										"SpotlightLumaRatio":	[0.3, 0.5, 0.8],
+										"SwitchDirZoomIdx":	0
 									}
 								},
 								"video_contrast_af":	{
 									"enable":	1,
 									"Afss":	"CalibDbV2_AFSS_ADAPTIVE_RANGE",
 									"FullDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
-									"FullRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
-									"FullRangeTbl_len":	9,
+									"FullRangeTbl":	[0, 4, 64],
 									"AdaptiveDir":	"CalibDbV2_AF_ADAPTIVE_SEARCH",
 									"AdaptRangeTbl":	[0, 8, 16, 24, 32, 40, 48, 56, 64],
 									"AdaptRangeTbl_len":	9,
+									"FineSearchStep":	[4, 4, 4, 4, 4, 4, 4, 4, 4],
+									"FineSearchStep_len":	9,
+									"SkipCurveFitGain":	1,
 									"TrigThers":	[0.15],
 									"TrigThers_len":	1,
 									"TrigThersFv":	[0],
 									"TrigThersFv_len":	1,
-									"LumaTrigThers":	1,
-									"ExpTrigThers":	1,
+									"LumaTrigThers":	0.05,
+									"ExpTrigThers":	0.03,
+									"ChangedFrames":	10,
 									"StableThers":	0.02,
 									"StableFrames":	20,
 									"StableTime":	200,
@@ -8061,15 +8203,15 @@
 									"OutFocusPos":	64,
 									"WeightEnable":	0,
 									"Weight":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-									"SearchPauseLumaEnable":	0,
-									"SearchPauseLumaThers":	0,
-									"SearchLumaStableFrames":	0,
-									"SearchLumaStableThers":	0,
+									"SearchPauseLumaEnable":	1,
+									"SearchPauseLumaThers":	0.05,
+									"SearchLumaStableFrames":	3,
+									"SearchLumaStableThers":	0.02,
 									"Stage1QuickFoundThers":	0.04,
 									"Stage2QuickFoundThers":	0.2,
 									"FlatValue":	0,
-									"PointLightLumaTh":	3000,
-									"PointLightCntTh":	300,
+									"PointLightLumaTh":	912,
+									"PointLightCntTh":	20,
 									"ZoomCfg":	{
 										"QuickFoundThersZoomIdx":	[0],
 										"QuickFoundThersZoomIdx_len":	1,
@@ -8084,7 +8226,11 @@
 										"StopStep":	[0],
 										"StopStep_len":	1,
 										"SkipHighPassZoomIdx":	0,
-										"SkipHighPassGain":	0
+										"SkipHighPassGain":	0,
+										"SpotlightBlkCnt":	[0.2, 0.5, 0.25],
+										"SpotlightHighlightRatio":	0.014,
+										"SpotlightLumaRatio":	[0.3, 0.5, 0.8],
+										"SwitchDirZoomIdx":	0
 									}
 								},
 								"laser_af":	{
@@ -8093,18 +8239,115 @@
 									"distanceDot":	[0.2, 0.24, 0.34, 0.4, 0.66, 1, 3]
 								},
 								"pdaf":	{
-									"enable":	0
+									"enable":	0,
+									"pdVsCdDebug":	0,
+									"pdDumpDebug":	0,
+									"pdDumpMaxFrm":	300,
+									"pdDataBit":	10,
+									"pdBlkLevel":	64,
+									"pdSearchRadius":	3,
+									"pdMirrorInCalib":	1,
+									"pdVsImgoutMirror":	0,
+									"pdLRInDiffLine":	0,
+									"pdWidth":	508,
+									"pdHeight":	760,
+									"pdVerBinning":	0,
+									"pdFrmInValid":	1,
+									"pdDgainValid":	0,
+									"pdGainMapNormEn":	0,
+									"pdConfdMode":	0,
+									"pdNoiseSn":	0.207,
+									"pdNoiseRn":	[0.14, 2.8],
+									"pdNoisePn":	0.25,
+									"pdSatValRatio":	0.92,
+									"pdSatCntRatio":	0.06,
+									"pdDiscardRegionEn":	0,
+									"pdLessTextureRatio":	0.25,
+									"pdCalibInf": {
+										"pdGainMapW":	32,
+										"pdGainMapH":	32,
+										"pdDccMapW":	64,
+										"pdDccMapH":	64
+									},
+									"pdConfdMwinFactor":	3,
+									"pdCenterMinFv":	0,
+									"pdCenterMinRatio":	0,
+									"pdHighlightRatio":	0.5,
+									"pdStepRatio":	[1.0, 1.0, 1.0, 0.9, 0.8, 0.7, 0.7],
+									"pdStepDefocus":	[32, 64, 96, 128, 160, 192, 224],
+									"pdIsoPara":
+									[
+										{
+											"iso": 6400,
+											"pdConfdRatio0":	1,
+											"pdConfdRatio1":	1,
+											"pdConfdRatio2":	1,
+											"pdConfdRatio3":	0,
+											"pdConfdThresh":	0.4,
+											"convergedInfPdThresh":	12,
+											"convergedMacPdThresh":	12,
+											"defocusInfPdThresh":	12,
+											"defocusMacPdThresh":	12,
+											"stablePdRatio":	0.125,
+											"stablePdOffset":	8,
+											"stableCntRatio":	1.5,
+											"noconfCntThresh":	4,
+											"roiBlkCntW":		3,
+											"roiBlkCntH":		3,
+											"fineSearchTbl":	[{
+												"confidence":	0.5,
+												"range":	0,
+												"stepPos":	1
+											}, {
+												"confidence":	0,
+												"range":	4,
+												"stepPos":	1
+											}],
+											"fineSearchTbl_len":	2
+										},
+										{
+											"iso": 204800,
+											"pdConfdRatio0":	1,
+											"pdConfdRatio1":	1,
+											"pdConfdRatio2":	1,
+											"pdConfdRatio3":	0,
+											"pdConfdThresh":	0.4,
+											"convergedInfPdThresh":	12,
+											"convergedMacPdThresh":	12,
+											"defocusInfPdThresh":	12,
+											"defocusMacPdThresh":	12,
+											"stablePdRatio":	0.125,
+											"stablePdOffset":	8,
+											"stableCntRatio":	1.5,
+											"noconfCntThresh":	4,
+											"roiBlkCntW":		1,
+											"roiBlkCntH":		1,
+											"fineSearchTbl":	[{
+												"confidence":	0.5,
+												"range":	8,
+												"stepPos":	2
+											}, {
+												"confidence":	0,
+												"range":	16,
+												"stepPos":	4
+											}],
+											"fineSearchTbl_len":	2
+										}
+									],
+									"pdIsoPara_len":	2
 								},
 								"vcmcfg":	{
+									"max_logical_pos":	64,
 									"start_current":	-1,
 									"rated_current":	-1,
 									"step_mode":	-1,
-									"extra_delay":	0,
-									"posture_diff":	0.1
+									"extra_delay":	-20,
+									"posture_diff":	0.2
 								},
 								"zoomfocus_tbl":	{
 									"widemod_deviate":	10,
 									"telemod_deviate":	10,
+									"focus_backval":	0,
 									"zoom_move_dot":	[0],
 									"zoom_move_dot_len":	1,
 									"zoom_move_step":	[16],
@@ -8130,66 +8373,69 @@
 									"FocusSearchPlusRange":	[0],
 									"FocusSearchPlusRange_len":	1,
 									"FocusStage1Step":	1,
+									"QuickFndRate":	0.3,
+									"QuickFndMinFv":	200,
 									"searchZoomRange":	100,
 									"searchFocusRange":	100,
 									"searchEmax":	100,
 									"searchEavg":	100,
 									"IsZoomFocusRec":	0,
-									"ZoomFocusRecDir":	"/userdata"
+									"ZoomInfoDir":	"/userdata",
+									"ZoomInitIndex":	1
 								},
 								"zoom_meas":	[{
 										"zoom_idx":	0,
 										"measiso":	[{
 												"iso":	50,
-												"idx":	0,
-												"spotlt_scene_idx":	0
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	100,
-												"idx":	0,
-												"spotlt_scene_idx":	0
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	200,
-												"idx":	0,
-												"spotlt_scene_idx":	0
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	400,
-												"idx":	0,
-												"spotlt_scene_idx":	0
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	800,
-												"idx":	0,
-												"spotlt_scene_idx":	0
+												"idx":	1,
+												"spotlt_scene_idx":	1
 											}, {
 												"iso":	1600,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	3200,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	6400,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	12800,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	25600,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	51200,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	102400,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}, {
 												"iso":	204800,
-												"idx":	1,
+												"idx":	2,
 												"spotlt_scene_idx":	1
 											}],
 										"measiso_len": 13
@@ -8199,15 +8445,21 @@
 										"tbl_idx":	0,
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
+										"v1fv_reliable":	0.2,
+										"v2fv_reliable":	0.2,
 										"v1_fir_sel":	1,
-										"v1_iir_coe":	[0, 503, 0, 0, 8, 0, 0, 9, 0],
-										"v1_fir_coe":	[-1997, 0, 1997],
-										"v2_iir_coe":	[476, 33, 34],
-										"v2_fir_coe":	[-985, 0, 985],
+										"v1_band":	[0.042, 0.14],
+										"v1_iir_coe":	[0, 483, 0, 0, 28, 0, 0, 28, 0],
+										"v1_fir_coe":	[-1186, 0, 1186],
+										"v2_band":	[0.042, 0.14],
+										"v2_iir_coe":	[483, 28, 28],
+										"v2_fir_coe":	[-1186, 0, 1186],
+										"h1_band":	[0.042, 0.14],
 										"h1_iir1_coe":	[512, 557, -276, 460, 0, -460],
-										"h1_iir2_coe":	[512, 870, -399, 37, 0, -37],
+										"h1_iir2_coe":	[100, 870, -399, 191, 0, -191],
+										"h2_band":	[0.042, 0.14],
 										"h2_iir1_coe":	[512, 557, -276, 460, 0, -460],
-										"h2_iir2_coe":	[512, 870, -399, 37, 0, -37],
+										"h2_iir2_coe":	[100, 870, -399, 191, 0, -191],
 										"ldg_en":	0,
 										"ve_ldg_lumth_l":	64,
 										"ve_ldg_gain_l":	28,
@@ -8223,22 +8475,29 @@
 										"ho_ldg_gslp_h":	1400,
 										"v_fv_thresh":	4,
 										"h_fv_thresh":	4,
-										"highlit_thresh":	912
+										"highlit_thresh":	912,
+										"v_fv_ratio":	0.5
 									},
 									{
 										"tbl_idx":	1,
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
+										"v1fv_reliable":	0.2,
+										"v2fv_reliable":	0.2,
 										"v1_fir_sel":	1,
-										"v1_iir_coe":	[0, 503, 0, 0, 8, 0, 0, 9, 0],
-										"v1_fir_coe":	[-1997, 0, 1997],
-										"v2_iir_coe":	[476, 33, 34],
-										"v2_fir_coe":	[-985, 0, 985],
-										"h1_iir1_coe":	[512, 811, -375, 266, 0, -266],
-										"h1_iir2_coe":	[250, 945, -448, 41, 0, -41],
-										"h2_iir1_coe":	[512, 557, -276, 460, 0, -460],
-										"h2_iir2_coe":	[512, 870, -399, 37, 0, -37],
-										"ldg_en":	0,
+										"v1_band":	[0.06, 0.15],
+										"v1_iir_coe":	[0, 473, 0, 0, 37, 0, 0, 37, 0],
+										"v1_fir_coe":	[-896, 0, 896],
+										"v2_band":	[0.06, 0.15],
+										"v2_iir_coe":	[473, 37, 37],
+										"v2_fir_coe":	[-896, 0, 896],
+										"h1_band":	[0.06, 0.15],
+										"h1_iir1_coe":	[512, 538, -305, 404, 0, -404],
+										"h1_iir2_coe":	[133, 821, -388, 141, 0, -141],
+										"h2_band":	[0.06, 0.15],
+										"h2_iir1_coe":	[512, 538, -305, 404, 0, -404],
+										"h2_iir2_coe":	[133, 821, -388, 141, 0, -141],
+										"ldg_en":	1,
 										"ve_ldg_lumth_l":	64,
 										"ve_ldg_gain_l":	28,
 										"ve_ldg_gslp_l":	1286,
@@ -8253,9 +8512,47 @@
 										"ho_ldg_gslp_h":	1400,
 										"v_fv_thresh":	4,
 										"h_fv_thresh":	4,
-										"highlit_thresh":	912
+										"highlit_thresh":	912,
+										"v_fv_ratio":	0.5
+									},
+									{
+										"tbl_idx":	2,
+										"afmThres":	4,
+										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
+										"v1fv_reliable":	0.2,
+										"v2fv_reliable":	0.2,
+										"v1_fir_sel":	1,
+										"v1_band":	[0.010, 0.040],
+										"v1_iir_coe":	[0, 503, 0, 0, 8, 0, 0, 9, 0],
+										"v1_fir_coe":	[-1997,   0,  1997],
+										"v2_band":	[0.010, 0.040],
+										"v2_iir_coe":	[503,     8,     9],
+										"v2_fir_coe":	[-1997,   0,  1997],
+										"h1_band":	[0.010, 0.040],
+										"h1_iir1_coe":	[71,   908,  -419,   511,     0,  -511],
+										"h1_iir2_coe":	[19,   989,  -480,   779,     0,  -779],
+										"h2_band":	[0.010, 0.040],
+										"h2_iir1_coe":	[71,   908,  -419,   511,     0,  -511],
+										"h2_iir2_coe":	[19,   989,  -480,   779,     0,  -779],
+										"ldg_en":	1,
+										"ve_ldg_lumth_l":	64,
+										"ve_ldg_gain_l":	28,
+										"ve_ldg_gslp_l":	1286,
+										"ve_ldg_lumth_h":	185,
+										"ve_ldg_gain_h":	8,
+										"ve_ldg_gslp_h":	1400,
+										"ho_ldg_lumth_l":	64,
+										"ho_ldg_gain_l":	28,
+										"ho_ldg_gslp_l":	1286,
+										"ho_ldg_lumth_h":	185,
+										"ho_ldg_gain_h":	8,
+										"ho_ldg_gslp_h":	1400,
+										"v_fv_thresh":	4,
+										"h_fv_thresh":	4,
+										"highlit_thresh":	912,
+										"v_fv_ratio":	0.5
 									}],
-								"meascfg_tbl_len":	2
+								"meascfg_tbl_len":	3
 							}
 						},
 						"amerge_calib_v11":

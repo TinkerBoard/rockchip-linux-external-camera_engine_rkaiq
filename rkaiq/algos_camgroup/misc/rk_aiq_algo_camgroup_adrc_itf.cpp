@@ -136,7 +136,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     bool bypass_tuning_params                 = true;
     bool bypass_expo_params                   = true;
     AdrcContext_t* pAdrcGrpCtx = (AdrcContext_t*)inparams->ctx;
-    pAdrcGrpCtx->FrameID                    = inparams->frame_id > 2 ? (inparams->frame_id - 2) : 0;
+    pAdrcGrpCtx->FrameID                      = inparams->frame_id;
     RkAiqAlgoCamGroupProcIn* pAdrcGrpParams = (RkAiqAlgoCamGroupProcIn*)inparams;
     RkAiqAlgoCamGroupProcOut* pAdrcGrpProcRes = (RkAiqAlgoCamGroupProcOut*)outparams;
 
@@ -161,12 +161,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             pAEProcRes = (RkAiqAlgoProcResAe*)xCamAeProcRes->map(xCamAeProcRes);
             pAdrcGrpCtx->NextData.AEData.LongFrmMode = pAEProcRes->ae_proc_res_rk.LongFrmMode;
         } else {
-            if (!(pAdrcGrpCtx->FrameID))
-                return XCAM_RETURN_NO_ERROR;
-            else {
                 pAdrcGrpCtx->NextData.AEData.LongFrmMode = false;
                 LOGW_ATMO("%s: Ae Proc result is null!!!\n", __FUNCTION__);
-            }
         }
 
         // get eff expo
@@ -384,15 +380,11 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             bypass_tuning_params =
                 AdrcByPassTuningProcessing(pAdrcGrpCtx, pAEPreRes->ae_pre_res_rk);
         } else {
-            if (!(pAdrcGrpCtx->FrameID))
-                return XCAM_RETURN_NO_ERROR;
-            else {
                 AecPreResult_t AecHdrPreResult;
                 memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
                 bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcGrpCtx, AecHdrPreResult);
                 bypass_tuning_params = false;
                 LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
-            }
         }
 
         // get tuning paras

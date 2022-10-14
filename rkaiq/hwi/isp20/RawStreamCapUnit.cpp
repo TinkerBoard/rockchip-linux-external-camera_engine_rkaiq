@@ -9,10 +9,9 @@ RawStreamCapUnit::RawStreamCapUnit ()
 {
 }
 
-RawStreamCapUnit::RawStreamCapUnit (const rk_sensor_full_info_t *s_info, bool linked_to_isp)
-    :_skip_num(0)
-    ,_state(RAW_CAP_STATE_INVALID)
-{
+RawStreamCapUnit::RawStreamCapUnit(const rk_sensor_full_info_t* s_info, bool linked_to_isp,
+                                   int tx_buf_cnt)
+    : _skip_num(0), _state(RAW_CAP_STATE_INVALID) {
     /*
      * for _mipi_tx_devs, index 0 refer to short frame always, inedex 1 refer
      * to middle frame always, index 2 refert to long frame always.
@@ -64,11 +63,21 @@ RawStreamCapUnit::RawStreamCapUnit (const rk_sensor_full_info_t *s_info, bool li
     }
     for (int i = 0; i < 3; i++) {
         if (linked_to_isp) {
-            if (_dev[i].ptr())
-                _dev[i]->set_buffer_count(ISP_TX_BUF_NUM);
+            if (_dev[i].ptr()) {
+                if (tx_buf_cnt > 0) {
+                    _dev[i]->set_buffer_count(tx_buf_cnt);
+                } else {
+                    _dev[i]->set_buffer_count(ISP_TX_BUF_NUM);
+                }
+            }
         } else {
-            if (_dev[i].ptr())
-                _dev[i]->set_buffer_count(VIPCAP_TX_BUF_NUM);
+            if (_dev[i].ptr()) {
+                if (tx_buf_cnt > 0) {
+                    _dev[i]->set_buffer_count(tx_buf_cnt);
+                } else {
+                    _dev[i]->set_buffer_count(VIPCAP_TX_BUF_NUM);
+                }
+            }
         }
         if (_dev[i].ptr())
             _dev[i]->set_buf_sync (true);

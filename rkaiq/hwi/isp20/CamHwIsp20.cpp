@@ -33,8 +33,8 @@
 #include "IspParamsSplitter.h"
 
 namespace RkCam {
-std::map<std::string, SmartPtr<rk_aiq_static_info_t>> CamHwIsp20::mCamHwInfos;
-std::map<std::string, SmartPtr<rk_sensor_full_info_t>> CamHwIsp20::mSensorHwInfos;
+std::unordered_map<std::string, SmartPtr<rk_aiq_static_info_t>> CamHwIsp20::mCamHwInfos;
+std::unordered_map<std::string, SmartPtr<rk_sensor_full_info_t>> CamHwIsp20::mSensorHwInfos;
 rk_aiq_isp_hw_info_t CamHwIsp20::mIspHwInfos;
 rk_aiq_cif_hw_info_t CamHwIsp20::mCifHwInfos;
 bool CamHwIsp20::mIsMultiIspMode = false;
@@ -881,13 +881,13 @@ CamHwIsp20::selectIqFile(const char* sns_ent_name, char* iqfile_name)
 {
     if (!sns_ent_name || !iqfile_name)
         return XCAM_RETURN_ERROR_SENSOR;
-    std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator it;
     const struct rkmodule_base_inf* base_inf = NULL;
     const char *sensor_name, *module_name, *lens_name;
     char sensor_name_full[32];
     std::string str(sns_ent_name);
 
-    if ((it = CamHwIsp20::mSensorHwInfos.find(str)) == CamHwIsp20::mSensorHwInfos.end()) {
+    auto it = CamHwIsp20::mSensorHwInfos.find(str);
+    if (it == CamHwIsp20::mSensorHwInfos.end()) {
         LOGE_CAMHW_SUBM(ISP20HW_SUBM, "can't find sensor %s", sns_ent_name);
         return XCAM_RETURN_ERROR_SENSOR;
     }
@@ -918,12 +918,10 @@ CamHwIsp20::selectIqFile(const char* sns_ent_name, char* iqfile_name)
 rk_aiq_static_info_t*
 CamHwIsp20::getStaticCamHwInfo(const char* sns_ent_name, uint16_t index)
 {
-    std::map<std::string, SmartPtr<rk_aiq_static_info_t>>::iterator it;
-
     if (sns_ent_name) {
         std::string str(sns_ent_name);
 
-        it = mCamHwInfos.find(str);
+        auto it = mCamHwInfos.find(str);
         if (it != mCamHwInfos.end()) {
             LOGD_CAMHW_SUBM(ISP20HW_SUBM, "find camerainfo of %s!", sns_ent_name);
             return it->second.ptr();
@@ -933,7 +931,7 @@ CamHwIsp20::getStaticCamHwInfo(const char* sns_ent_name, uint16_t index)
     } else {
         if (index < mCamHwInfos.size()) {
             int i = 0;
-            for (it = mCamHwInfos.begin(); it != mCamHwInfos.end(); it++, i++) {
+            for (auto it = mCamHwInfos.begin(); it != mCamHwInfos.end(); it++, i++) {
                 if (i == index)
                     return it->second.ptr();
             }
@@ -1148,7 +1146,7 @@ media_unref:
         }
     }
 
-    std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator iter;
+    std::unordered_map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator iter;
     for(iter = CamHwIsp20::mSensorHwInfos.begin(); \
             iter != CamHwIsp20::mSensorHwInfos.end(); iter++) {
         LOGI_CAMHW_SUBM(ISP20HW_SUBM, "match the sensor_name(%s) media link\n", (iter->first).c_str());
@@ -1280,7 +1278,7 @@ CamHwIsp20::getBindedSnsEntNmByVd(const char* vd)
     if (!vd)
         return NULL;
 
-    std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator iter;
+    std::unordered_map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator iter;
     for(iter = CamHwIsp20::mSensorHwInfos.begin(); \
             iter != CamHwIsp20::mSensorHwInfos.end(); iter++) {
         SmartPtr<rk_sensor_full_info_t> s_full_info = iter->second;
@@ -1380,7 +1378,7 @@ CamHwIsp20::init(const char* sns_ent_name)
     ENTER_CAMHW_FUNCTION();
 
 
-    std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator it;
+    std::unordered_map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator it;
     if ((it = mSensorHwInfos.find(sensor_name)) == mSensorHwInfos.end()) {
         LOGE_CAMHW_SUBM(ISP20HW_SUBM, "can't find sensor %s", sns_ent_name);
         return XCAM_RETURN_ERROR_SENSOR;
@@ -1452,8 +1450,20 @@ CamHwIsp20::init(const char* sns_ent_name)
     mPdafStreamUnit = new PdafStreamProcUnit(ISP_POLL_PDAF_STATS);
     mPdafStreamUnit->set_devices(this);
 
-    mRawCapUnit = new RawStreamCapUnit(s_info, _linked_to_isp);
-    mRawProcUnit = new RawStreamProcUnit(s_info, _linked_to_isp);
+    auto buf_it = std::find_if(
+        std::begin(mDevBufCntMap), std::end(mDevBufCntMap),
+        [&](const std::pair<std::string, int>& buf_cnt_map) {
+            return (
+                !buf_cnt_map.first.compare("rkraw_tx") || !buf_cnt_map.first.compare("rkraw_rx") ||
+                !buf_cnt_map.first.compare(0, sizeof("stream_cif_mipi_id"), "stream_cif_mipi_id") ||
+                !buf_cnt_map.first.compare(0, sizeof("rkisp_rawwr"), "rkisp_rawwr"));
+        });
+    int buf_cnt = 0;
+    if (buf_it != mDevBufCntMap.end()) {
+        buf_cnt = buf_it->second;
+    }
+    mRawCapUnit  = new RawStreamCapUnit(s_info, _linked_to_isp, buf_cnt);
+    mRawProcUnit = new RawStreamProcUnit(s_info, _linked_to_isp, buf_cnt);
     mRawProcUnit->set_devices(mIspCoreDev, this);
     mRawCapUnit->set_devices(mIspCoreDev, this, mRawProcUnit.ptr());
     mRawProcUnit->setCamPhyId(mCamPhyId);
@@ -1502,7 +1512,7 @@ CamHwIsp20::deInit()
     if (mFlashLightIr.ptr())
         mFlashLightIr->deinit();
 
-    std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator it;
+    std::unordered_map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator it;
     if (strlen(sns_name) == 0 || (it = mSensorHwInfos.find(sns_name)) == mSensorHwInfos.end()) {
         LOGE_CAMHW_SUBM(ISP20HW_SUBM, "can't find sensor %s", strlen(sns_name) ? sns_name : "");
         return XCAM_RETURN_ERROR_SENSOR;
@@ -2163,10 +2173,14 @@ CamHwIsp20::setLensVcmCfg(struct rkmodule_inf& mod_info)
     ENTER_CAMHW_FUNCTION();
     SmartPtr<LensHw> lensHw = mLensDev.dynamic_cast_ptr<LensHw>();
     rk_aiq_lens_vcmcfg old_cfg, new_cfg;
+    int old_maxpos, new_maxpos;
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (lensHw.ptr()) {
         ret = lensHw->getLensVcmCfg(old_cfg);
+        if (ret != XCAM_RETURN_NO_ERROR)
+            return ret;
+        ret = lensHw->getLensVcmMaxlogpos(old_maxpos);
         if (ret != XCAM_RETURN_NO_ERROR)
             return ret;
 
@@ -2203,8 +2217,18 @@ CamHwIsp20::setLensVcmCfg(struct rkmodule_inf& mod_info)
             }
         }
 
-        if (memcmp(&new_cfg, &old_cfg, sizeof(new_cfg)) != 0) {
+        if ((new_cfg.start_ma != old_cfg.start_ma) ||
+            (new_cfg.rated_ma != old_cfg.rated_ma) ||
+            (new_cfg.step_mode != old_cfg.step_mode)) {
             ret = lensHw->setLensVcmCfg(new_cfg);
+        }
+
+        new_maxpos = old_maxpos;
+        if (vcmcfg->max_logical_pos > 0) {
+            new_maxpos = vcmcfg->max_logical_pos;
+        }
+        if (old_maxpos != new_maxpos) {
+            ret = lensHw->setLensVcmMaxlogpos(new_maxpos);
         }
     }
     EXIT_CAMHW_FUNCTION();
@@ -2378,7 +2402,7 @@ CamHwIsp20::prepare(uint32_t width, uint32_t height, int mode, int t_delay, int 
 
     Isp20Params::set_working_mode(_hdr_mode);
 
-    std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator it;
+    std::unordered_map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator it;
     if ((it = mSensorHwInfos.find(sns_name)) == mSensorHwInfos.end()) {
         LOGE_CAMHW_SUBM(ISP20HW_SUBM, "can't find sensor %s", sns_name);
         return XCAM_RETURN_ERROR_SENSOR;
@@ -2399,13 +2423,21 @@ CamHwIsp20::prepare(uint32_t width, uint32_t height, int mode, int t_delay, int 
     if (s_info->isp_info->isMultiplex)
         mNoReadBack = false;
 
+    if (mTbInfo.prd_type == RK_AIQ_PRD_TYPE_TB_DOORLOCK) {
+        mNoReadBack = true;
+    }
+
     LOGI_CAMHW_SUBM(ISP20HW_SUBM, "isp hw working mode: %s !", mNoReadBack ? "online" : "readback");
 
     //sof event
     if (!mIspSofStream.ptr()) {
-        if (mNoReadBack)
-            mIspSofStream = new RKSofEventStream(mIspCoreDev, ISP_POLL_SOF);
-        else {
+        if (mNoReadBack) {
+            if (mTbInfo.prd_type == RK_AIQ_PRD_TYPE_TB_DOORLOCK) {
+                mIspSofStream = new RKSofEventStream(_cif_csi2_sd, ISP_POLL_SOF);
+            } else {
+                mIspSofStream = new RKSofEventStream(mIspCoreDev, ISP_POLL_SOF);
+            }
+        } else {
             if (_linked_to_isp)
                 mIspSofStream = new RKSofEventStream(mIspCoreDev, ISP_POLL_SOF);
             else
@@ -2518,7 +2550,8 @@ CamHwIsp20::prepare(uint32_t width, uint32_t height, int mode, int t_delay, int 
 
     get_sensor_pdafinfo(s_info, &mPdafInfo);
     if (mPdafInfo.pdaf_support && pdaf->enable) {
-        mPdafStreamUnit->prepare(pdaf, &mPdafInfo);
+        mPdafInfo.pdaf_lrdiffline = pdaf->pdLRInDiffLine;
+        mPdafStreamUnit->prepare(&mPdafInfo);
     } else {
         mPdafInfo.pdaf_support = false;
     }
@@ -3649,8 +3682,8 @@ CamHwIsp20::getSensorModeData(const char* sns_ent_name,
     if (mLensSubdev.ptr())
         mLensSubdev->getLensModeData(sns_des.lens_des);
 
-    std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator iter_sns_info;
-    if ((iter_sns_info = mSensorHwInfos.find(sns_name)) == mSensorHwInfos.end()) {
+    auto iter_sns_info = mSensorHwInfos.find(sns_name);
+    if (iter_sns_info == mSensorHwInfos.end()) {
         LOGW_CAMHW_SUBM(ISP20HW_SUBM, "can't find sensor %s", sns_name);
     } else {
         struct rkmodule_inf *minfo = &(iter_sns_info->second->mod_info);
@@ -4916,7 +4949,7 @@ void CamHwIsp20::allocMemResource(uint8_t id, void *ops_ctx, void *config, void 
         cacbuf_size.module_id = ISP3X_MODULE_CAC;
         cacbuf_size.meas_width = share_mem_cfg->alloc_param.width;
         cacbuf_size.meas_height = share_mem_cfg->alloc_param.height;
-        cacbuf_size.buf_cnt = 1;
+        cacbuf_size.buf_cnt = share_mem_cfg->alloc_param.reserved[0];
         ret = isp20->mIspCoreDev->io_control(RKISP_CMD_SET_MESHBUF_SIZE, &cacbuf_size);
         if (ret < 0) {
             LOGE_CAMHW_SUBM(ISP20HW_SUBM, "alloc cac buf failed!");
@@ -5137,9 +5170,8 @@ CamHwIsp20::getFreeItem(uint8_t id, void *mem_ctx)
         if (mem_info_array == nullptr) return nullptr;
         do {
             for (idx = 0; idx < ISP3X_MESH_BUF_NUM; idx++) {
-                if (mem_info_array[offset + idx].map_addr) {
-                    if (mem_info_array[offset + idx].state &&
-                        (0 == mem_info_array[offset + idx].state[0])) {
+                if (mem_info_array[offset + idx].map_addr != nullptr) {
+                    if (-1 != mem_info_array[offset + idx].fd) {
                         return (void*)&mem_info_array[offset + idx];
                     }
                 }

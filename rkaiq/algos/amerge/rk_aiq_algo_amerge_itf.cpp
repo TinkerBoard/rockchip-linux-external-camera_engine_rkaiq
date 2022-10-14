@@ -137,7 +137,7 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
     bool bypass_expo_process   = true;
 
     AmergeContext_t* pAmergeCtx = (AmergeContext_t*)inparams->ctx;
-    pAmergeCtx->FrameID                    = inparams->frame_id > 2 ? (inparams->frame_id - 2) : 0;
+    pAmergeCtx->FrameID                    = inparams->frame_id;
     RkAiqAlgoProcAmerge* pAmergeParams = (RkAiqAlgoProcAmerge*)inparams;
     RkAiqAlgoProcResAmerge* pAmergeProcRes = (RkAiqAlgoProcResAmerge*)outparams;
 
@@ -153,14 +153,10 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
                 pAEProcRes->ae_proc_res_rk.LongFrmMode && (pAmergeCtx->FrameNumber != LINEAR_NUM);
         }
         else {
-            if (!(pAmergeCtx->FrameID))
-                return XCAM_RETURN_NO_ERROR;
-            else {
                 AecProcResult_t AeProcResult;
                 memset(&AeProcResult, 0x0, sizeof(AecProcResult_t));
-                LOGE_AMERGE("%s: Ae Proc result is null!!!\n", __FUNCTION__);
+                LOGW_AMERGE("%s: Ae Proc result is null!!!\n", __FUNCTION__);
                 pAmergeCtx->NextData.CtrlData.ExpoData.LongFrmMode = false;
-            }
         }
 
         //get ae pre res and proc
@@ -171,15 +167,11 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
             bypass_tuning_process = AmergeByPassProcessing(pAmergeCtx, pAEPreRes->ae_pre_res_rk);
         }
         else {
-            if (!(pAmergeCtx->FrameID))
-                return XCAM_RETURN_NO_ERROR;
-            else {
                 AecPreResult_t AecHdrPreResult;
                 memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
                 bypass_tuning_process = AmergeByPassProcessing(pAmergeCtx, AecHdrPreResult);
                 bypass_tuning_process = false;
-                LOGE_AMERGE("%s: ae Pre result is null!!!\n", __FUNCTION__);
-            }
+                LOGW_AMERGE("%s: ae Pre result is null!!!\n", __FUNCTION__);
         }
 
         //expo para process
@@ -198,6 +190,23 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
         pAmergeCtx->NextData.CtrlData.ExpoData.MExpo =
             pAmergeCtx->NextData.CtrlData.ExpoData.MGain *
             pAmergeParams->com.u.proc.nxtExp->HdrExp[1].exp_real_params.integration_time;
+        if (pAmergeCtx->NextData.CtrlData.ExpoData.SExpo < FLT_EPSILON) {
+            pAmergeCtx->NextData.CtrlData.ExpoData.SGain =
+                pAmergeParams->com.u.proc.curExp->HdrExp[0].exp_real_params.analog_gain *
+                pAmergeParams->com.u.proc.curExp->HdrExp[0].exp_real_params.digital_gain *
+                pAmergeParams->com.u.proc.curExp->HdrExp[0].exp_real_params.isp_dgain;
+            pAmergeCtx->NextData.CtrlData.ExpoData.MGain =
+                pAmergeParams->com.u.proc.curExp->HdrExp[1].exp_real_params.analog_gain *
+                pAmergeParams->com.u.proc.curExp->HdrExp[1].exp_real_params.digital_gain *
+                pAmergeParams->com.u.proc.curExp->HdrExp[1].exp_real_params.isp_dgain;
+
+            pAmergeCtx->NextData.CtrlData.ExpoData.SExpo =
+                pAmergeCtx->NextData.CtrlData.ExpoData.SGain *
+                pAmergeParams->com.u.proc.curExp->HdrExp[0].exp_real_params.integration_time;
+            pAmergeCtx->NextData.CtrlData.ExpoData.MExpo =
+                pAmergeCtx->NextData.CtrlData.ExpoData.MGain *
+                pAmergeParams->com.u.proc.curExp->HdrExp[1].exp_real_params.integration_time;
+        }
         if (pAmergeCtx->FrameNumber == HDR_2X_NUM) {
             pAmergeCtx->NextData.CtrlData.ExpoData.LExpo =
                 pAmergeCtx->NextData.CtrlData.ExpoData.MExpo;
@@ -207,6 +216,13 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
                 pAmergeParams->com.u.proc.nxtExp->HdrExp[2].exp_real_params.digital_gain *
                 pAmergeParams->com.u.proc.nxtExp->HdrExp[2].exp_real_params.isp_dgain *
                 pAmergeParams->com.u.proc.nxtExp->HdrExp[2].exp_real_params.integration_time;
+            if (pAmergeCtx->NextData.CtrlData.ExpoData.SExpo < FLT_EPSILON) {
+                pAmergeCtx->NextData.CtrlData.ExpoData.LExpo =
+                    pAmergeParams->com.u.proc.curExp->HdrExp[2].exp_real_params.analog_gain *
+                    pAmergeParams->com.u.proc.curExp->HdrExp[2].exp_real_params.digital_gain *
+                    pAmergeParams->com.u.proc.curExp->HdrExp[2].exp_real_params.isp_dgain *
+                    pAmergeParams->com.u.proc.curExp->HdrExp[2].exp_real_params.integration_time;
+            }
         }
         pAmergeCtx->NextData.CtrlData.ExpoData.ISO =
             pAmergeCtx->NextData.CtrlData.ExpoData.MGain * ISOMIN;
@@ -221,13 +237,13 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
                         pAmergeParams->com.u.proc.nxtExp->HdrExp[2].exp_real_params.digital_gain *
                         pAmergeParams->com.u.proc.nxtExp->HdrExp[2].exp_real_params.isp_dgain,
                     pAmergeParams->com.u.proc.nxtExp->HdrExp[2].exp_real_params.integration_time);
-        if (pAmergeCtx->NextData.CtrlData.ExpoData.SExpo > 0)
+        if (pAmergeCtx->NextData.CtrlData.ExpoData.SExpo > FLT_EPSILON)
             pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS =
                 pAmergeCtx->NextData.CtrlData.ExpoData.LExpo /
                 pAmergeCtx->NextData.CtrlData.ExpoData.SExpo;
         else
             LOGE_AMERGE("%s: Short frame for merge expo sync is ERROR!!!\n", __FUNCTION__);
-        if (pAmergeCtx->NextData.CtrlData.ExpoData.MExpo > 0)
+        if (pAmergeCtx->NextData.CtrlData.ExpoData.MExpo > FLT_EPSILON)
             pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM =
                 pAmergeCtx->NextData.CtrlData.ExpoData.LExpo /
                 pAmergeCtx->NextData.CtrlData.ExpoData.MExpo;
@@ -235,13 +251,13 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
             LOGE_AMERGE("%s: Middle frame for merge expo sync is ERROR!!!\n", __FUNCTION__);
         //clip for long frame mode
         if (pAmergeCtx->NextData.CtrlData.ExpoData.LongFrmMode) {
-            pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS = 1.0;
-            pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM = 1.0;
+            pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS = 1.0f;
+            pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM = 1.0f;
         }
 
         // get bypass_expo_process
-        if (pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS >= 1 &&
-            pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM >= 1) {
+        if (pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS >= 1.0f &&
+            pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM >= 1.0f) {
             if (pAmergeCtx->FrameID <= 2)
                 bypass_expo_process = false;
             else if (pAmergeCtx->ifReCalcStAuto || pAmergeCtx->ifReCalcStManual)

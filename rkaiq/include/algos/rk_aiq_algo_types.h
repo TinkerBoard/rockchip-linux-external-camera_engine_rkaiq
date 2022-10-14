@@ -76,6 +76,8 @@ typedef struct _RkAiqResComb {
     AblcProc_t       ablc_proc_res;
     AblcProc_V32_t   ablcV32_proc_res;
     bool             bayernr3d_en;
+    Aynr_ProcResult_V3_t aynrV3_proc_res;
+    Aynr_ProcResult_V22_t aynrV22_proc_res;
 } RkAiqResComb;
 
 // Ae
@@ -479,7 +481,13 @@ typedef struct _RkAiqAlgoProcAdhaz {
     int rawWidth;
     int iso;
     int hdr_mode;
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+    Aynr_ProcResult_V3_t aynrV3_proc_res;
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
     AblcProc_V32_t ablcV32_proc_res;
+    Aynr_ProcResult_V22_t aynrV22_proc_res;
+#endif
 } RkAiqAlgoProcAdhaz;
 
 typedef struct _RkAiqAlgoProcResAdhaz {

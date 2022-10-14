@@ -56,11 +56,6 @@
 #define YNR_ISO_CURVE_SECT_VALUE1   (1 << YNR_BIT_CALIB)
 #define YNR_CURVE_STEP             (16)
 
-typedef enum YnrSnrMode_e {
-    YNRSNRMODE_LSNR     = 0,
-    YNRSNRMODE_HSNR     = 1,
-} YnrSnrMode_t;
-
 typedef struct AdehazeExpInfo_s {
     int hdr_mode;
     float arTime[3];
@@ -79,7 +74,6 @@ typedef struct AdehazeAePreResV11_s {
     float EnvLv;
     float ISO;
     CtrlDataType_t CtrlDataType;
-    YnrSnrMode_t SnrMode;
     dehaze_api_mode_t ApiMode;
 } AdehazeAePreResV11_t;
 
@@ -100,13 +94,13 @@ typedef struct AdehazeHandle_s {
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
     adehaze_sw_v11_t AdehazeAtrrV11duo;
-    CalibDbV2_YnrV3_Calib_t YnrCalibParaV3;
+    float YnrProcResV3_sigma[YNR_V3_ISO_CURVE_POINT_NUM];
     AdehazeAePreResV11_t CurrDataV11duo;
     AdehazeAePreResV11_t PreDataV11duo;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
     adehaze_sw_v12_t AdehazeAtrrV12;
-    CalibDbV2_YnrV22_Calib_t YnrCalibParaV22;
+    float YnrProcResV22_sigma[YNR_V22_ISO_CURVE_POINT_NUM];
     AdehazeAePreResV11_t CurrDataV12;
     AdehazeAePreResV11_t PreDataV12;
     AblcProc_V32_t ablcV32_proc_res;

@@ -38,7 +38,6 @@ XCamReturn rk_aiq_uapi_adehaze_v11_SetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v
 
 #if RKAIQ_HAVE_DEHAZE_V11
     pAdehazeHandle->AdehazeAtrrV11.mode = attr->mode;
-    pAdehazeHandle->AdehazeAtrrV11.Info = attr->Info;
     if (attr->mode == DEHAZE_API_MANUAL) {
         memcpy(&pAdehazeHandle->AdehazeAtrrV11.stManual, &attr->stManual, sizeof(mDehazeAttrV11_t));
         pAdehazeHandle->ifReCalcStManual = true;
@@ -47,6 +46,19 @@ XCamReturn rk_aiq_uapi_adehaze_v11_SetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v
         memcpy(&pAdehazeHandle->AdehazeAtrrV11.stAuto, &attr->stAuto,
                sizeof(CalibDbV2_dehaze_v11_t));
         pAdehazeHandle->ifReCalcStAuto = true;
+    }
+
+    if (attr->Info.updateMDehazeStrth) {
+        pAdehazeHandle->AdehazeAtrrV11.Info.MDehazeStrth = attr->Info.MDehazeStrth;
+        attr->Info.updateMDehazeStrth                    = false;
+    }
+    if (attr->Info.updateMEnhanceStrth) {
+        pAdehazeHandle->AdehazeAtrrV11.Info.MEnhanceStrth = attr->Info.MEnhanceStrth;
+        attr->Info.updateMEnhanceStrth                    = false;
+    }
+    if (attr->Info.updateMEnhanceChromeStrth) {
+        pAdehazeHandle->AdehazeAtrrV11.Info.MEnhanceChromeStrth = attr->Info.MEnhanceChromeStrth;
+        attr->Info.updateMEnhanceChromeStrth                    = false;
     }
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
@@ -95,7 +107,6 @@ XCamReturn rk_aiq_uapi_adehaze_v12_SetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v
     AdehazeHandle_t* pAdehazeHandle = (AdehazeHandle_t*)ctx;
 
     pAdehazeHandle->AdehazeAtrrV12.mode = attr->mode;
-    pAdehazeHandle->AdehazeAtrrV12.Info = attr->Info;
     if (attr->mode == DEHAZE_API_MANUAL) {
         memcpy(&pAdehazeHandle->AdehazeAtrrV12.stManual, &attr->stManual, sizeof(mDehazeAttrV12_t));
         pAdehazeHandle->ifReCalcStManual = true;
@@ -104,6 +115,19 @@ XCamReturn rk_aiq_uapi_adehaze_v12_SetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v
         memcpy(&pAdehazeHandle->AdehazeAtrrV12.stAuto, &attr->stAuto,
                sizeof(CalibDbV2_dehaze_v12_t));
         pAdehazeHandle->ifReCalcStAuto = true;
+    }
+
+    if (attr->Info.updateMDehazeStrth) {
+        pAdehazeHandle->AdehazeAtrrV12.Info.MDehazeStrth = attr->Info.MDehazeStrth;
+        attr->Info.updateMDehazeStrth                    = false;
+    }
+    if (attr->Info.updateMEnhanceStrth) {
+        pAdehazeHandle->AdehazeAtrrV12.Info.MEnhanceStrth = attr->Info.MEnhanceStrth;
+        attr->Info.updateMEnhanceStrth                    = false;
+    }
+    if (attr->Info.updateMEnhanceChromeStrth) {
+        pAdehazeHandle->AdehazeAtrrV12.Info.MEnhanceChromeStrth = attr->Info.MEnhanceChromeStrth;
+        attr->Info.updateMEnhanceChromeStrth                    = false;
     }
 
     return ret;

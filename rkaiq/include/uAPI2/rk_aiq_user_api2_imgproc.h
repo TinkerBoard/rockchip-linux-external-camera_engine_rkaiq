@@ -370,6 +370,26 @@ XCamReturn rk_aiq_uapi2_getMHDRStrth(const rk_aiq_sys_ctx_t* ctx, bool *on, unsi
 /*
 *****************************
 *
+* Desc: set manual dehaze module enable
+*     enable/disable dehaze module function, including dehaze, enhance and hist
+*
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setDehazeModuleEnable(const rk_aiq_sys_ctx_t* ctx, bool on);
+
+/*
+*****************************
+*
+* Desc: set manual dehaze enable
+*     enable/disable dehaze function
+*
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setDehazeEnable(const rk_aiq_sys_ctx_t* ctx, bool on);
+
+/*
+*****************************
+*
 * Desc: set/get manual dehaze strength
 *     this function is active for dehaze is manual mode
 * Argument:
@@ -379,6 +399,16 @@ XCamReturn rk_aiq_uapi2_getMHDRStrth(const rk_aiq_sys_ctx_t* ctx, bool *on, unsi
 */
 XCamReturn rk_aiq_uapi2_setMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned int level);
 XCamReturn rk_aiq_uapi2_getMDehazeStrth(const rk_aiq_sys_ctx_t* ctx, unsigned int *level);
+
+/*
+*****************************
+*
+* Desc: set manual enhance enable
+*     enable/disable enhance function
+*
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setEnhanceEnable(const rk_aiq_sys_ctx_t* ctx, bool on);
 
 /*
 *****************************

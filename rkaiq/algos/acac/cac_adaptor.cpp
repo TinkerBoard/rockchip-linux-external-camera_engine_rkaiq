@@ -290,10 +290,17 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcac* config) {
     }
     current_lut_.clear();
     current_lut_.emplace_back(buf);
+    if (buf->State != LutBufferState::kInitial) {
+        LOGW_ACAC("Buffer in use, will not update lut!");
+        return XCAM_RETURN_NO_ERROR;
+    }
 #if (RKAIQ_HAVE_CAC_V03 || RKAIQ_HAVE_CAC_V10) && defined(ISP_HW_V30)
     if (config->is_multi_isp) {
         auto* buf = lut_manger_->GetFreeHwBuffer(1);
-        XCAM_ASSERT(buf != nullptr);
+        if (buf == nullptr) {
+            LOGW_ACAC("No buffer available, maybe only one buffer ?!");
+            return XCAM_RETURN_NO_ERROR;
+        }
         current_lut_.emplace_back(buf);
     }
 #endif
@@ -373,6 +380,12 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
     int max_iso_step = attr_->iso_cnt;
     int iso          = input->iso;
     LOGD_ACAC("%s : en %d valid: %d Enter", __func__, enable_, valid_);
+
+    if (current_lut_.empty()) {
+        valid_ = false;
+    } else {
+        valid_ = true;
+    }
 
     if (!enable_ || !valid_) {
         output->config[0].bypass_en = 1;

@@ -194,11 +194,11 @@ typedef struct isp_drv_share_mem_ops_s {
 } isp_drv_share_mem_ops_t;
 
 typedef struct rk_aiq_lut_share_mem_info_s {
-    int size;
-    void *map_addr;
-    void *addr;
-    int fd;
-    char *state;
+    int size{-1};
+    void *map_addr{nullptr};
+    void *addr{nullptr};
+    int fd{-1};
+    char *state{nullptr};
 } rk_aiq_lut_share_mem_info_t;
 
 typedef rk_aiq_lut_share_mem_info_t rk_aiq_ldch_share_mem_info_t;
@@ -407,6 +407,7 @@ typedef struct {
     uint32_t pdaf_height;
     uint32_t pdaf_pixelformat;
     uint32_t pdaf_code;
+    uint8_t pdaf_lrdiffline;
     char pdaf_vdev[DEV_PATH_LEN];
 } rk_sensor_pdaf_info_t;
 

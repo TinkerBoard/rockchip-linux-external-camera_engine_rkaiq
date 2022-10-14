@@ -160,16 +160,19 @@ XCamReturn RkAiqAdehazeHandleInt::processing() {
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
         memcpy(&adhaz_proc_int->stats.dehaze_stats_v11_duo,
                &xDehazeStats->adehaze_stats.dehaze_stats_v11_duo, sizeof(dehaze_stats_v11_duo_t));
+        adhaz_proc_int->aynrV3_proc_res = shared->res_comb.aynrV3_proc_res;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
         memcpy(&adhaz_proc_int->stats.dehaze_stats_v12,
                &xDehazeStats->adehaze_stats.dehaze_stats_v12, sizeof(dehaze_stats_v12_t));
+        adhaz_proc_int->ablcV32_proc_res = shared->res_comb.ablcV32_proc_res;
+        adhaz_proc_int->aynrV22_proc_res = shared->res_comb.aynrV22_proc_res;
+
 #endif
     }
     adhaz_proc_int->rawHeight = sharedCom->snsDes.isp_acq_height;
     adhaz_proc_int->rawWidth  = sharedCom->snsDes.isp_acq_width;
     adhaz_proc_int->hdr_mode = sharedCom->working_mode;
-    adhaz_proc_int->ablcV32_proc_res = shared->res_comb.ablcV32_proc_res;
 
     ret = RkAiqHandle::processing();
     if (ret) {

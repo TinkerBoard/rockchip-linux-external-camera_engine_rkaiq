@@ -35,6 +35,8 @@
 #include "FecParamStream.h"
 #include "thumbnails.h"
 
+#include <unordered_map>
+
 struct media_device;
 
 namespace RkCam {
@@ -205,10 +207,10 @@ protected:
     SmartPtr<V4l2SubDevice> _cif_csi2_sd;
     char sns_name[32];
 public:
-    static std::map<std::string, SmartPtr<rk_aiq_static_info_t>> mCamHwInfos;
+    static std::unordered_map<std::string, SmartPtr<rk_aiq_static_info_t>> mCamHwInfos;
     static rk_aiq_isp_hw_info_t mIspHwInfos;
     static rk_aiq_cif_hw_info_t mCifHwInfos;
-    static std::map<std::string, SmartPtr<rk_sensor_full_info_t>> mSensorHwInfos;
+    static std::unordered_map<std::string, SmartPtr<rk_sensor_full_info_t>> mSensorHwInfos;
 protected:
     static bool mIsMultiIspMode;
     static uint16_t mMultiIspExtendedPixel;

@@ -148,6 +148,9 @@ public:
     virtual void setTbInfo(rk_aiq_tb_info_t& info) {
         mTbInfo = info;
     }
+    virtual void setDevBufCnt(const std::map<std::string, int>& dev_buf_cnt_map) {
+        mDevBufCntMap = dev_buf_cnt_map;
+    }
     HwResListener* mHwResLintener;
 protected:
     SmartPtr<V4l2Device> mIsppFecParamsDev;
@@ -171,7 +174,9 @@ protected:
     bool mIsGroupMode;
     bool mIsMain;
     rk_aiq_tb_info_t mTbInfo;
-private:
+    std::map<std::string, int> mDevBufCntMap;
+
+ private:
     XCAM_DEAD_COPY (CamHwBase);
 };
 

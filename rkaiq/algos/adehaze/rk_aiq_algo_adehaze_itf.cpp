@@ -115,13 +115,6 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
         if (calibv2_adehaze_calib_V11_duo)
             memcpy(&pAdehazeHandle->AdehazeAtrrV11duo.stAuto, calibv2_adehaze_calib_V11_duo,
                    sizeof(CalibDbV2_dehaze_v11_t));
-
-        // dehaze local gain
-        CalibDbV2_YnrV3_t* calibv2_Ynr =
-            (CalibDbV2_YnrV3_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ynr_v3));
-        if (calibv2_Ynr)
-            memcpy(&pAdehazeHandle->YnrCalibParaV3, &calibv2_Ynr->CalibPara,
-                   sizeof(CalibDbV2_YnrV3_Calib_t));
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
         CalibDbV2_dehaze_v12_t* calibv2_adehaze_calib_V12 =
@@ -129,13 +122,6 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
         if (calibv2_adehaze_calib_V12)
             memcpy(&pAdehazeHandle->AdehazeAtrrV12.stAuto, calibv2_adehaze_calib_V12,
                    sizeof(CalibDbV2_dehaze_v12_t));
-
-        // dehaze local gain
-        CalibDbV2_YnrV22_t* ynr_v22 =
-            (CalibDbV2_YnrV22_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ynr_v22));
-        if (ynr_v22)
-            memcpy(&pAdehazeHandle->YnrCalibParaV22, &ynr_v22->CalibPara,
-                   sizeof(ynr_v22->CalibPara));
 #endif
     }
     pAdehazeHandle->ifReCalcStAuto = true;
@@ -154,14 +140,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
 
     LOGD_ADEHAZE("/*************************Adehaze Start******************/ \n");
 
-    ret = AdehazeGetCurrData(pAdehazeHandle, pProcPara);
-    if (ret == XCAM_RETURN_ERROR_PARAM) {
-        if (pAdehazeHandle->FrameID <= 2)
-            return XCAM_RETURN_NO_ERROR;
-        else {
-            LOGE_ADEHAZE("%s:PreResBuf is NULL!\n", __FUNCTION__);
-        }
-    }
+    AdehazeGetCurrData(pAdehazeHandle, pProcPara);
 #if RKAIQ_HAVE_DEHAZE_V12
     if (pAdehazeHandle->FrameNumber == LINEAR_NUM) {
         memcpy(&pAdehazeHandle->ablcV32_proc_res, &pProcPara->ablcV32_proc_res,
@@ -182,31 +161,6 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
 
     if (Enable) {
         AdehazeGetStats(pAdehazeHandle, &pProcPara->stats);
-
-#if RKAIQ_HAVE_DEHAZE_V11_DUO
-    // get ynr snr mode
-    if (pProcPara->com.u.proc.curExp->CISFeature.SNR == 0)
-        pAdehazeHandle->CurrDataV11duo.SnrMode = YNRSNRMODE_LSNR;
-    else if (pProcPara->com.u.proc.curExp->CISFeature.SNR == 1)
-        pAdehazeHandle->CurrDataV11duo.SnrMode = YNRSNRMODE_HSNR;
-    else {
-        LOGI_ADEHAZE("%s(%d) Adehaze Get Wrong Snr Mode!!!, Using LSNR Params \n", __func__,
-                     __LINE__);
-        pAdehazeHandle->CurrDataV11duo.SnrMode = YNRSNRMODE_LSNR;
-    }
-#endif
-#if RKAIQ_HAVE_DEHAZE_V12
-    // get ynr snr mode
-    if (pProcPara->com.u.proc.curExp->CISFeature.SNR == 0)
-        pAdehazeHandle->CurrDataV12.SnrMode = YNRSNRMODE_LSNR;
-    else if (pProcPara->com.u.proc.curExp->CISFeature.SNR == 1)
-        pAdehazeHandle->CurrDataV12.SnrMode = YNRSNRMODE_HSNR;
-    else {
-        LOGI_ADEHAZE("%s(%d) Adehaze Get Wrong Snr Mode!!!, Using LSNR Params \n", __func__,
-                     __LINE__);
-        pAdehazeHandle->CurrDataV12.SnrMode = YNRSNRMODE_LSNR;
-    }
-#endif
 
     // process
     if (!(pAdehazeHandle->byPassProc)) ret = AdehazeProcess(pAdehazeHandle);

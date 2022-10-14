@@ -34,7 +34,8 @@ class RawStreamProcUnit : public PollCallback
 {
 public:
     explicit RawStreamProcUnit      ();
-    explicit RawStreamProcUnit (const rk_sensor_full_info_t *s_info, bool linked_to_isp);
+    explicit RawStreamProcUnit(const rk_sensor_full_info_t* s_info, bool linked_to_isp,
+                               int tx_buf_cnt);
     virtual ~RawStreamProcUnit ();
     virtual XCamReturn start        (int mode);
     virtual XCamReturn stop         ();

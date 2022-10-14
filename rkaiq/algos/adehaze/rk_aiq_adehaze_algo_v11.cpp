@@ -102,7 +102,7 @@ int ClipValueV11(float posx, int BitInt, int BitFloat) {
 }
 
 void stManuGetDehazeParamsV11(mDehazeAttrV11_t* pStManu, RkAiqAdehazeProcResult_t* pProcRes,
-                              int rawWidth, int rawHeight) {
+                              int rawWidth, int rawHeight, unsigned int MDehazeStrth) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
 
     pProcRes->ProcResV11.air_lc_en =
@@ -169,6 +169,29 @@ void stManuGetDehazeParamsV11(mDehazeAttrV11_t* pStManu, RkAiqAdehazeProcResult_
     pProcRes->ProcResV11.gaus_h1        = DEHAZE_GAUS_H1;
     pProcRes->ProcResV11.gaus_h2        = DEHAZE_GAUS_H0;
 
+    // add for rk_aiq_uapi2_setMDehazeStrth
+    if (MDehazeStrth != DEHAZE_DEFAULT_LEVEL) {
+        pProcRes->ProcResV11.cfg_alpha = BIT_8_MAX;
+        unsigned int level_diff        = MDehazeStrth > DEHAZE_DEFAULT_LEVEL
+                                      ? (MDehazeStrth - DEHAZE_DEFAULT_LEVEL)
+                                      : (DEHAZE_DEFAULT_LEVEL - MDehazeStrth);
+        bool level_up = MDehazeStrth > DEHAZE_DEFAULT_LEVEL;
+        if (level_up) {
+            pProcRes->ProcResV11.cfg_wt += level_diff * DEHAZE_DEFAULT_CFG_WT_STEP;
+            pProcRes->ProcResV11.cfg_air += level_diff * DEHAZE_DEFAULT_CFG_AIR_STEP;
+            pProcRes->ProcResV11.cfg_tmax += level_diff * DEHAZE_DEFAULT_CFG_TMAX_STEP;
+        } else {
+            pProcRes->ProcResV11.cfg_wt -= level_diff * DEHAZE_DEFAULT_CFG_WT_STEP;
+            pProcRes->ProcResV11.cfg_air -= level_diff * DEHAZE_DEFAULT_CFG_AIR_STEP;
+            pProcRes->ProcResV11.cfg_tmax -= level_diff * DEHAZE_DEFAULT_CFG_TMAX_STEP;
+        }
+        pProcRes->ProcResV11.cfg_wt = LIMIT_VALUE(pProcRes->ProcResV11.cfg_wt, BIT_8_MAX, BIT_MIN);
+        pProcRes->ProcResV11.cfg_air =
+            LIMIT_VALUE(pProcRes->ProcResV11.cfg_air, BIT_8_MAX, BIT_MIN);
+        pProcRes->ProcResV11.cfg_tmax =
+            LIMIT_VALUE(pProcRes->ProcResV11.cfg_tmax, BIT_10_MAX, BIT_MIN);
+    }
+
     if (pProcRes->ProcResV11.dc_en && !(pProcRes->ProcResV11.enhance_en)) {
         if (pProcRes->ProcResV11.cfg_alpha == 255) {
             LOGD_ADEHAZE("%s cfg_alpha:1 cfg_air:%f cfg_tmax:%f cfg_wt:%f\n", __func__,
@@ -193,13 +216,46 @@ void stManuGetDehazeParamsV11(mDehazeAttrV11_t* pStManu, RkAiqAdehazeProcResult_
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
 }
 
-void stManuGetEnhanceParamsV11(mDehazeAttrV11_t* pStManu, RkAiqAdehazeProcResult_t* pProcRes) {
+void stManuGetEnhanceParamsV11(mDehazeAttrV11_t* pStManu, RkAiqAdehazeProcResult_t* pProcRes,
+                               unsigned int MEnhanceStrth, unsigned int MEnhanceChromeStrth) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
+    bool level_up           = false;
+    unsigned int level_diff = 0;
 
     pProcRes->ProcResV11.enhance_value =
         ClipValueV11(pStManu->enhance_setting.EnhanceData.enhance_value, 4, 10);
     pProcRes->ProcResV11.enhance_chroma =
         ClipValueV11(pStManu->enhance_setting.EnhanceData.enhance_chroma, 4, 10);
+
+    // add for rk_aiq_uapi2_setMEnhanceStrth
+    if (MEnhanceStrth != ENHANCE_DEFAULT_LEVEL) {
+        level_diff = MEnhanceStrth > ENHANCE_DEFAULT_LEVEL
+                         ? (MEnhanceStrth - ENHANCE_DEFAULT_LEVEL)
+                         : (ENHANCE_DEFAULT_LEVEL - MEnhanceStrth);
+        level_up = MEnhanceStrth > ENHANCE_DEFAULT_LEVEL;
+        if (level_up) {
+            pProcRes->ProcResV11.enhance_value += level_diff * ENHANCE_VALUE_DEFAULT_STEP;
+        } else {
+            pProcRes->ProcResV11.enhance_value -= level_diff * ENHANCE_VALUE_DEFAULT_STEP;
+        }
+        pProcRes->ProcResV11.enhance_value =
+            LIMIT_VALUE(pProcRes->ProcResV11.enhance_value, BIT_14_MAX, BIT_MIN);
+    }
+
+    // add for rk_aiq_uapi2_setMEnhanceChromeStrth
+    if (MEnhanceChromeStrth != ENHANCE_DEFAULT_LEVEL) {
+        level_diff = MEnhanceChromeStrth > ENHANCE_DEFAULT_LEVEL
+                         ? (MEnhanceChromeStrth - ENHANCE_DEFAULT_LEVEL)
+                         : (ENHANCE_DEFAULT_LEVEL - MEnhanceChromeStrth);
+        level_up = MEnhanceChromeStrth > ENHANCE_DEFAULT_LEVEL;
+        if (level_up) {
+            pProcRes->ProcResV11.enhance_chroma += level_diff * ENHANCE_VALUE_DEFAULT_STEP;
+        } else {
+            pProcRes->ProcResV11.enhance_chroma -= level_diff * ENHANCE_VALUE_DEFAULT_STEP;
+        }
+        pProcRes->ProcResV11.enhance_chroma =
+            LIMIT_VALUE(pProcRes->ProcResV11.enhance_chroma, BIT_14_MAX, BIT_MIN);
+    }
 
     for (int i = 0; i < DHAZ_V11_ENHANCE_CRUVE_NUM; i++)
         pProcRes->ProcResV11.enh_curve[i] = (int)(pStManu->enhance_setting.enhance_curve[i]);
@@ -256,9 +312,6 @@ void stManuGetHistParamsV11(mDehazeAttrV11_t* pStManu, RkAiqAdehazeProcResult_t*
 void GetDehazeParamsV11(CalibDbDehazeV11_t* pCalibV11, RkAiqAdehazeProcResult_t* pProcRes,
                         int rawWidth, int rawHeight, unsigned int MDehazeStrth, float CtrlValue) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
-
-    bool level_up           = false;
-    unsigned int level_diff = 0;
 
     pProcRes->ProcResV11.air_lc_en =
         pCalibV11->dehaze_setting.air_lc_en ? FUNCTION_ENABLE : FUNCTION_DISABLE;
@@ -357,9 +410,11 @@ void GetDehazeParamsV11(CalibDbDehazeV11_t* pCalibV11, RkAiqAdehazeProcResult_t*
 
     // add for rk_aiq_uapi2_setMDehazeStrth
     if (MDehazeStrth != DEHAZE_DEFAULT_LEVEL) {
-        level_diff = MDehazeStrth > DEHAZE_DEFAULT_LEVEL ? (MDehazeStrth - DEHAZE_DEFAULT_LEVEL)
-                                                         : (DEHAZE_DEFAULT_LEVEL - MDehazeStrth);
-        level_up = MDehazeStrth > DEHAZE_DEFAULT_LEVEL;
+        pProcRes->ProcResV11.cfg_alpha = BIT_8_MAX;
+        unsigned int level_diff        = MDehazeStrth > DEHAZE_DEFAULT_LEVEL
+                                      ? (MDehazeStrth - DEHAZE_DEFAULT_LEVEL)
+                                      : (DEHAZE_DEFAULT_LEVEL - MDehazeStrth);
+        bool level_up = MDehazeStrth > DEHAZE_DEFAULT_LEVEL;
         if (level_up) {
             pProcRes->ProcResV11.cfg_wt += level_diff * DEHAZE_DEFAULT_CFG_WT_STEP;
             pProcRes->ProcResV11.cfg_air += level_diff * DEHAZE_DEFAULT_CFG_AIR_STEP;
@@ -587,7 +642,7 @@ XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx, RKAiqAecExpInfo
         AdehazeGetEnvLvISO(pAdehazeCtx, pAEPreRes);
     } else {
         pAdehazeCtx->CurrDataV11.EnvLv = ENVLVMIN;
-        ret                            = XCAM_RETURN_ERROR_PARAM;
+        LOGW_ADEHAZE("%s:PreResBuf is NULL!\n", __FUNCTION__);
     }
 
     // get iso
@@ -602,7 +657,7 @@ XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx, RKAiqAecExpInfo
                                            pAeEffExpo->HdrExp[1].exp_real_params.isp_dgain * ISOMIN;
     } else {
         pAdehazeCtx->CurrDataV11.ISO   = ISOMIN;
-        ret                            = XCAM_RETURN_ERROR_PARAM;
+        LOGW_ADEHAZE("%s:AE cur expo is NULL!\n", __FUNCTION__);
     }
 
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);
@@ -620,24 +675,26 @@ XCamReturn AdehazeGetCurrData(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoProcAdhaz* 
         AdehazeGetEnvLvISO(pAdehazeCtx, pAEPreRes);
     } else {
         pAdehazeCtx->CurrDataV11.EnvLv = ENVLVMIN;
-        ret                            = XCAM_RETURN_ERROR_PARAM;
+        LOGW_ADEHAZE("%s:PreResBuf is NULL!\n", __FUNCTION__);
     }
 
     // get ISO
-    if (pProcPara->com.u.proc.nxtExp) {
-        if (pAdehazeCtx->FrameNumber == LINEAR_NUM)
+    if (pProcPara->com.u.proc.curExp) {
+        if (pAdehazeCtx->FrameNumber == LINEAR_NUM) {
             pAdehazeCtx->CurrDataV11.ISO =
-                pProcPara->com.u.proc.nxtExp->LinearExp.exp_real_params.analog_gain *
-                pProcPara->com.u.proc.nxtExp->LinearExp.exp_real_params.digital_gain *
-                pProcPara->com.u.proc.nxtExp->LinearExp.exp_real_params.isp_dgain * ISOMIN;
-        else if (pAdehazeCtx->FrameNumber == HDR_2X_NUM || pAdehazeCtx->FrameNumber == HDR_3X_NUM)
+                pProcPara->com.u.proc.curExp->LinearExp.exp_real_params.analog_gain *
+                pProcPara->com.u.proc.curExp->LinearExp.exp_real_params.digital_gain *
+                pProcPara->com.u.proc.curExp->LinearExp.exp_real_params.isp_dgain * ISOMIN;
+        } else if (pAdehazeCtx->FrameNumber == HDR_2X_NUM ||
+                   pAdehazeCtx->FrameNumber == HDR_3X_NUM) {
             pAdehazeCtx->CurrDataV11.ISO =
-                pProcPara->com.u.proc.nxtExp->HdrExp[1].exp_real_params.analog_gain *
-                pProcPara->com.u.proc.nxtExp->HdrExp[1].exp_real_params.digital_gain *
-                pProcPara->com.u.proc.nxtExp->HdrExp[1].exp_real_params.isp_dgain * ISOMIN;
+                pProcPara->com.u.proc.curExp->HdrExp[1].exp_real_params.analog_gain *
+                pProcPara->com.u.proc.curExp->HdrExp[1].exp_real_params.digital_gain *
+                pProcPara->com.u.proc.curExp->HdrExp[1].exp_real_params.isp_dgain * ISOMIN;
+        }
     } else {
         pAdehazeCtx->CurrDataV11.ISO = ISOMIN;
-        ret                          = XCAM_RETURN_ERROR_PARAM;
+        LOGW_ADEHAZE("%s:AE cur expo is NULL!\n", __FUNCTION__);
     }
 
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);
@@ -732,11 +789,14 @@ XCamReturn AdehazeProcess(AdehazeHandle_t* pAdehazeCtx) {
             (pAdehazeCtx->AdehazeAtrrV11.stManual.hist_setting.en &&
              !pAdehazeCtx->AdehazeAtrrV11.stManual.hist_setting.hist_para_en))
             stManuGetDehazeParamsV11(&pAdehazeCtx->AdehazeAtrrV11.stManual, &pAdehazeCtx->ProcRes,
-                                     pAdehazeCtx->width, pAdehazeCtx->height);
+                                     pAdehazeCtx->width, pAdehazeCtx->height,
+                                     pAdehazeCtx->AdehazeAtrrV11.Info.MDehazeStrth);
 
         // enhance setting
         if (pAdehazeCtx->AdehazeAtrrV11.stManual.enhance_setting.en)
-            stManuGetEnhanceParamsV11(&pAdehazeCtx->AdehazeAtrrV11.stManual, &pAdehazeCtx->ProcRes);
+            stManuGetEnhanceParamsV11(&pAdehazeCtx->AdehazeAtrrV11.stManual, &pAdehazeCtx->ProcRes,
+                                      pAdehazeCtx->AdehazeAtrrV11.Info.MEnhanceStrth,
+                                      pAdehazeCtx->AdehazeAtrrV11.Info.MEnhanceChromeStrth);
 
         // hist setting
         if (pAdehazeCtx->AdehazeAtrrV11.stManual.hist_setting.en)

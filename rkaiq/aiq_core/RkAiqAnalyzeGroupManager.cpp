@@ -382,6 +382,66 @@ XCamReturn RkAiqAnalyzeGroupManager::groupMessageHandler(std::list<SmartPtr<XCam
                         shared->res_comb.ablcV32_proc_res.isp_ob_predgain);
                 }
                 break;
+            case XCAM_MESSAGE_YNR_V3_PROC_RES_OK:
+                vdBufMsg = msg.dynamic_cast_ptr<RkAiqCoreVdBufMsg>();
+                if (vdBufMsg.ptr()) {
+                    shared->res_comb.aynrV3_proc_res =
+                        ((RkAiqAlgoProcResAynrV3*)vdBufMsg.ptr()->msg->map())->stAynrProcResult;
+                    LOGD_ANALYZER_SUBM(ANALYZER_SUBM,
+                                       "camId: %d, group: %s: id: %d, sigma: %f %f %f %f %f %f %f "
+                                       "%f %f %f %f %f %f %f %f %f %f ",
+                                       mAiqCore->mAlogsComSharedParams.mCamPhyId,
+                                       AnalyzerGroupType2Str[grpId],
+                                       vdBufMsg.ptr()->msg->get_sequence(),
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[0],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[1],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[2],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[3],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[4],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[5],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[6],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[7],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[8],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[9],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[10],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[11],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[12],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[13],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[14],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[15],
+                                       shared->res_comb.aynrV3_proc_res.stSelect.sigma[16]);
+                }
+                break;
+            case XCAM_MESSAGE_YNR_V22_PROC_RES_OK:
+                vdBufMsg = msg.dynamic_cast_ptr<RkAiqCoreVdBufMsg>();
+                if (vdBufMsg.ptr()) {
+                    shared->res_comb.aynrV22_proc_res =
+                        ((RkAiqAlgoProcResAynrV22*)vdBufMsg.ptr()->msg->map())->stAynrProcResult;
+                    LOGD_ANALYZER_SUBM(ANALYZER_SUBM,
+                                       "camId: %d, group: %s: id: %d, sigma: %f %f %f %f %f %f %f "
+                                       "%f %f %f %f %f %f %f %f %f %f ",
+                                       mAiqCore->mAlogsComSharedParams.mCamPhyId,
+                                       AnalyzerGroupType2Str[grpId],
+                                       vdBufMsg.ptr()->msg->get_sequence(),
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[0],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[1],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[2],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[3],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[4],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[5],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[6],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[7],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[8],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[9],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[10],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[11],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[12],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[13],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[14],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[15],
+                                       shared->res_comb.aynrV22_proc_res.stSelect.sigma[16]);
+                }
+                break;
             case XCAM_MESSAGE_ADEHAZE_STATS_OK:
                 vdBufMsg = msg.dynamic_cast_ptr<RkAiqCoreVdBufMsg>();
                 if (vdBufMsg.ptr())

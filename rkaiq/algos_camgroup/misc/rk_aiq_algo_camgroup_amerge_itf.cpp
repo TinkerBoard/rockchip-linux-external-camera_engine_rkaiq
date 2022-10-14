@@ -138,7 +138,7 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
     bool bypass_expo_process   = true;
 
     AmergeContext_t* pAmergeGrpCtx = (AmergeContext_t*)inparams->ctx;
-    pAmergeGrpCtx->FrameID         = inparams->frame_id > 2 ? (inparams->frame_id - 2) : 0;
+    pAmergeGrpCtx->FrameID                      = inparams->frame_id;
     RkAiqAlgoCamGroupProcIn* pAmergeGrpParams = (RkAiqAlgoCamGroupProcIn*)inparams;
     RkAiqAlgoCamGroupProcOut* pAmergeGrpProcRes = (RkAiqAlgoCamGroupProcOut*)outparams;
 
@@ -155,14 +155,10 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
                 (pAmergeGrpCtx->FrameNumber != LINEAR_NUM);
         }
         else {
-            if (!(pAmergeGrpCtx->FrameID))
-                return XCAM_RETURN_NO_ERROR;
-            else {
                 AecProcResult_t AeProcResult;
                 memset(&AeProcResult, 0x0, sizeof(AecProcResult_t));
-                LOGE_AMERGE("%s: Ae Proc result is null!!!\n", __FUNCTION__);
+                LOGW_AMERGE("%s: Ae Proc result is null!!!\n", __FUNCTION__);
                 pAmergeGrpCtx->NextData.CtrlData.ExpoData.LongFrmMode = false;
-            }
         }
 
         //get ae pre res and proc
@@ -173,15 +169,11 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
             bypass_tuning_process = AmergeByPassProcessing(pAmergeGrpCtx, pAEPreRes->ae_pre_res_rk);
         }
         else {
-            if (!(pAmergeGrpCtx->FrameID))
-                return XCAM_RETURN_NO_ERROR;
-            else {
                 AecPreResult_t AecHdrPreResult;
                 memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
                 bypass_tuning_process = AmergeByPassProcessing(pAmergeGrpCtx, AecHdrPreResult);
                 bypass_tuning_process = false;
-                LOGE_AMERGE("%s: ae Pre result is null!!!\n", __FUNCTION__);
-            }
+                LOGW_AMERGE("%s: ae Pre result is null!!!\n", __FUNCTION__);
         }
 
         //expo para process

@@ -466,10 +466,23 @@
  * - j2s4b: Fix installation step on low version cmake
  * - IQ: jx_k17: Fix wrong enum value for hdr line mode
  * - DRC: fix some issues, and modify IIR frame value
+ * v4.0x9.a-rc1
+ * - hwi: Export device buf count for user to config
+ * - Adrc, Amerge, adehaze: fix init expo bug
+ * - Adehaze: update functional api
+ * - Adehaze: use ynr proc res for dehaze local gain
+ * - aiq_core: transmit the proc result of YNR V22 and V3 to algos
+ * - aiq: support thunder boot for product doorlock
+ * - cac: Fix getting none lut buffers for thunder boot product
+ * - Use initial awb cfg for server of thunder boot product
+ * - iqfiles: Fix warning reported by jsonlint -s -W xxx.json
+ * - Revert "fakesensor: Open used tx/rx devs only"
+ * - hwi: Use unordered_map instead of map for  static infos
+ * - AF: merge isp3x modification
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.9"
-#define RK_AIQ_RELEASE_DATE "2022-09-26"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.a-rc1"
+#define RK_AIQ_RELEASE_DATE "2022-10-14"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

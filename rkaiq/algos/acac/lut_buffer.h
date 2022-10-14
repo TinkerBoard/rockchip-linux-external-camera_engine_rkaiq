@@ -80,6 +80,7 @@ class LutBufferManager {
         hw_config.mem_type           = MEM_TYPE_CAC;
         hw_config.alloc_param.width  = config_.Width;
         hw_config.alloc_param.height = config_.Height;
+        hw_config.alloc_param.reserved[0] = 1;
 
         mem_ops_->alloc_mem(isp_id, (void*)(mem_ops_), &hw_config, &mem_ctx_);
     }

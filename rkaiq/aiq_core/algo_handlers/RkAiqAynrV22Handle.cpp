@@ -223,7 +223,13 @@ XCamReturn RkAiqAynrV22HandleInt::processing() {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     RkAiqAlgoProcAynrV22* aynr_proc_int        = (RkAiqAlgoProcAynrV22*)mProcInParam;
-    RkAiqAlgoProcResAynrV22* aynr_proc_res_int = (RkAiqAlgoProcResAynrV22*)mProcOutParam;
+    if (mDes->id == 0) {
+        mProcResShared = new RkAiqAlgoProcResAynrV22IntShared();
+        if (!mProcResShared.ptr()) {
+            LOGE("new YNR(v22) mProcResShared failed, bypass!");
+            return XCAM_RETURN_BYPASS;
+        }
+    }
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
@@ -239,8 +245,16 @@ XCamReturn RkAiqAynrV22HandleInt::processing() {
     aynr_proc_int->stAblcV32_proc_res = shared->res_comb.ablcV32_proc_res;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
-    ret                       = des->processing(mProcInParam, mProcOutParam);
+    ret = des->processing(mProcInParam, (RkAiqAlgoResCom*)(&mProcResShared->result));
     RKAIQCORE_CHECK_RET(ret, "aynr algo processing failed");
+
+    if (!mAiqCore->mAlogsComSharedParams.init && mPostShared) {
+        SmartPtr<BufferProxy> msg_data = new BufferProxy(mProcResShared);
+        msg_data->set_sequence(shared->frameId);
+        SmartPtr<XCamMessage> msg =
+            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_YNR_V22_PROC_RES_OK, shared->frameId, msg_data);
+        mAiqCore->post_message(msg);
+    }
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -280,7 +294,8 @@ XCamReturn RkAiqAynrV22HandleInt::genIspResult(RkAiqFullParams* params,
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqAlgoProcResAynrV22* aynr_rk = (RkAiqAlgoProcResAynrV22*)mProcOutParam;
+    if (!mProcResShared.ptr()) return XCAM_RETURN_NO_ERROR;
+    RkAiqAlgoProcResAynrV22* aynr_rk = (RkAiqAlgoProcResAynrV22*)&mProcResShared->result;
 
     if (!aynr_rk) {
         LOGD_ANALYZER("no aynr result");

@@ -138,7 +138,9 @@ public:
     virtual bool get_pdaf_support() = 0;
 #endif
     virtual void setTbInfo(rk_aiq_tb_info_t& info) = 0;
-private:
+    virtual void setDevBufCnt(const std::map<std::string, int>& dev_buf_cnt_map) = 0;
+
+ private:
     XCAM_DEAD_COPY (ICamHw);
 };
 

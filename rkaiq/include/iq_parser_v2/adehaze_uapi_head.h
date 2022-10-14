@@ -120,8 +120,6 @@ typedef struct mDehazeAttrV11_s {
     mEnhance_setting_v11_t enhance_setting;
     // M4_STRUCT_DESC("hist_setting", "normal_ui_style")
     mHist_setting_v11_t hist_setting;
-    // M4_ARRAY_DESC("sigma_curve", "f32", M4_SIZE(1,5), M4_RANGE(-65535.0, 65535), "0.0", M4_DIGIT(6), M4_DYNAMIC(0))
-    double sigma_curve[5];
 } mDehazeAttrV11_t;
 
 typedef struct mDehazeAttrInfoV11_s {
@@ -129,10 +127,16 @@ typedef struct mDehazeAttrInfoV11_s {
     float ISO;
     // M4_NUMBER_DESC("EnvLv", "f32", M4_RANGE(0,1), "0", M4_DIGIT(6))
     float EnvLv;
+    // M4_BOOL_DESC("updateMDehazeStrth", "0", "1")
+    bool updateMDehazeStrth;
     // M4_NUMBER_DESC("MDehazeStrth", "u8", M4_RANGE(0,100), "50", M4_DIGIT(0))
     unsigned int MDehazeStrth;
+    // M4_BOOL_DESC("updateMEnhanceStrth", "0", "1")
+    bool updateMEnhanceStrth;
     // M4_NUMBER_DESC("MEnhanceStrth", "u8", M4_RANGE(0,100), "50", M4_DIGIT(0))
     unsigned int MEnhanceStrth;
+    // M4_BOOL_DESC("updateMEnhanceChromeStrth", "0", "1")
+    bool updateMEnhanceChromeStrth;
     // M4_NUMBER_DESC("MEnhanceChromeStrth", "u8", M4_RANGE(0,100), "50", M4_DIGIT(0))
     unsigned int MEnhanceChromeStrth;
 } mDehazeAttrInfoV11_t;
@@ -206,8 +210,6 @@ typedef struct mDehazeAttrV12_s {
     mEnhance_setting_v12_t enhance_setting;
     // M4_STRUCT_DESC("hist_setting", "normal_ui_style")
     mHist_setting_v12_t hist_setting;
-    // M4_ARRAY_DESC("sigma_curve", "f32", M4_SIZE(1,5), M4_RANGE(-65535.0, 65535), "0.0", M4_DIGIT(6), M4_DYNAMIC(0))
-    double sigma_curve[5];
 } mDehazeAttrV12_t;
 
 #endif /*__ADEHAZE_UAPI_HEAD_H__*/

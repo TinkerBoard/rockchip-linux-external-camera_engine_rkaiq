@@ -74,6 +74,12 @@ rk_aiq_uapi2_sysctl_preInit_calibproj(const char* sns_ent_name, void *addr)
     return XCAM_RETURN_NO_ERROR;
 }
 
+XCamReturn rk_aiq_uapi2_sysctl_preInit_devBufCnt(const char* sns_ent_name, const char* dev_ent,
+                                                 int buf_cnt) {
+
+    return rk_aiq_uapi_sysctl_preInit_devBufCnt(sns_ent_name, dev_ent, buf_cnt);
+}
+
 rk_aiq_sys_ctx_t*
 rk_aiq_uapi2_sysctl_init(const char* sns_ent_name,
                         const char* config_file_dir,

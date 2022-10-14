@@ -350,6 +350,20 @@ typedef struct rk_aiq_ctx_camInfo_s {
 XCamReturn
 rk_aiq_uapi2_sysctl_preInit_calibproj(const char* sns_ent_name, void *addr);
 
+
+/**
+ * @brief set device buffer count, currently only for raw tx/rx device
+ *
+ * @param sns_ent_name: Sensor entity name, can get from #rk_aiq_uapi2_sysctl_getBindedSnsEntNmByVd
+ * @param dev_ent: Device entity string, if equals "rkraw_tx" or "rkraw_rx", will set for all tx/rx devices
+ * @param buf_cnt: V4l2 buffer count for video device of entity #dev_ent
+ *
+ * @return XCAM_RETURN_NO_ERROR if no error, otherwise return values < 0
+ */
+XCamReturn
+rk_aiq_uapi2_sysctl_preInit_devBufCnt(const char* sns_ent_name, const char* dev_ent,
+                                      int buf_cnt);
+
 XCamReturn
 rk_aiq_uapi2_sysctl_getCamInfos(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ctx_camInfo_t* camInfo);
 

@@ -72,9 +72,16 @@ typedef struct rk_aiq_iq_buffer_info_s {
     size_t len;
 } rk_aiq_iq_buffer_info_t;
 
+typedef enum rk_aiq_prd_type_e {
+    RK_AIQ_PRD_TYPE_NORMAL,
+    RK_AIQ_PRD_TYPE_TB_BATIPC,
+    RK_AIQ_PRD_TYPE_TB_DOORLOCK,
+} rk_aiq_prd_type_t;
+
 typedef struct rk_aiq_tb_info_s {
     uint16_t magic;
     bool is_pre_aiq;
+    uint8_t prd_type;
 } rk_aiq_tb_info_t;
 
 XCAM_END_DECLARE

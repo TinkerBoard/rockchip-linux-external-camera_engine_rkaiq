@@ -401,6 +401,8 @@ public:
             xcam_mem_clear(nxtExp);
             xcam_mem_clear(res_comb.ablc_proc_res);
             xcam_mem_clear(res_comb.ablcV32_proc_res);
+            xcam_mem_clear(res_comb.aynrV22_proc_res);
+            xcam_mem_clear(res_comb.aynrV3_proc_res);
             ispStats = nullptr;
             sp = nullptr;
             ispGain = nullptr;
@@ -676,8 +678,6 @@ private:
     int mSpAlignedWidth;
     int mSpAlignedHeight;
     uint64_t mCustomEnAlgosMask;
-    bool mPdafSupport;
-
     // update calib for each group
     XCam::Mutex _update_mutex;
     XCam::Cond _update_done_cond;
@@ -685,6 +685,15 @@ private:
     XCamReturn waitUpdateDone();
     uint64_t groupUpdateMask;
     rk_aiq_tb_info_t mTbInfo;
+
+    bool mPdafSupport;
+    int64_t mFrmInterval = 30000LL;
+    int64_t mSofTime = 0LL;
+    int64_t mAfStatsTime;
+    int64_t mPdafStatsTime;
+    uint32_t mAfStatsFrmId;
+    SmartPtr<RkAiqAfStatsProxy> mAfStats;
+    SmartPtr<RkAiqPdafStatsProxy> mPdafStats;
 };
 
 }

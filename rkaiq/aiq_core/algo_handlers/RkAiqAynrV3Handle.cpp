@@ -220,7 +220,13 @@ XCamReturn RkAiqAynrV3HandleInt::processing() {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     RkAiqAlgoProcAynrV3* aynr_proc_int        = (RkAiqAlgoProcAynrV3*)mProcInParam;
-    RkAiqAlgoProcResAynrV3* aynr_proc_res_int = (RkAiqAlgoProcResAynrV3*)mProcOutParam;
+    if (mDes->id == 0) {
+        mProcResShared = new RkAiqAlgoProcResAynrV3IntShared();
+        if (!mProcResShared.ptr()) {
+            LOGE("new YNR(v3) mProcResShared failed, bypass!");
+            return XCAM_RETURN_BYPASS;
+        }
+    }
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
@@ -235,8 +241,16 @@ XCamReturn RkAiqAynrV3HandleInt::processing() {
     aynr_proc_int->hdr_mode = sharedCom->working_mode;
 
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
-    ret                       = des->processing(mProcInParam, mProcOutParam);
+    ret = des->processing(mProcInParam, (RkAiqAlgoResCom*)(&mProcResShared->result));
     RKAIQCORE_CHECK_RET(ret, "aynr algo processing failed");
+
+    if (!mAiqCore->mAlogsComSharedParams.init && mPostShared) {
+        SmartPtr<BufferProxy> msg_data = new BufferProxy(mProcResShared);
+        msg_data->set_sequence(shared->frameId);
+        SmartPtr<XCamMessage> msg =
+            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_YNR_V3_PROC_RES_OK, shared->frameId, msg_data);
+        mAiqCore->post_message(msg);
+    }
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -275,7 +289,8 @@ XCamReturn RkAiqAynrV3HandleInt::genIspResult(RkAiqFullParams* params,
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqAlgoProcResAynrV3* aynr_rk = (RkAiqAlgoProcResAynrV3*)mProcOutParam;
+    if (!mProcResShared.ptr()) return XCAM_RETURN_NO_ERROR;
+    RkAiqAlgoProcResAynrV3* aynr_rk = (RkAiqAlgoProcResAynrV3*)&mProcResShared->result;
 
     if (!aynr_rk) {
         LOGD_ANALYZER("no aynr result");

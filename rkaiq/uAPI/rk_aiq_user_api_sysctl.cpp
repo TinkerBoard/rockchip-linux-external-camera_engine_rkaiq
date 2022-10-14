@@ -127,9 +127,11 @@ typedef struct rk_aiq_sys_preinit_cfg_s {
         iq_buffer.len = 0;
         tb_info.magic = sizeof(rk_aiq_tb_info_t) - 2;
         tb_info.is_pre_aiq = false;
+        tb_info.prd_type = RK_AIQ_PRD_TYPE_NORMAL;
     };
     rk_aiq_iq_buffer_info_t iq_buffer;
     rk_aiq_tb_info_t tb_info;
+    std::map<std::string, int> dev_buf_cnt_map;
 } rk_aiq_sys_preinit_cfg_t;
 
 static std::map<std::string, rk_aiq_sys_preinit_cfg_t> g_rk_aiq_sys_preinit_cfg_map;
@@ -192,13 +194,28 @@ rk_aiq_uapi_sysctl_preInit_tb_info(const char* sns_ent_name,
              info->magic);
         return XCAM_RETURN_ERROR_PARAM;
     }
-    LOGI("Init tb info : magic %x, is_pre_aiq : %d", info->magic, info->is_pre_aiq);
+    LOGI("Init tb info : magic %x, is_pre_aiq : %d, prd_type : %d", info->magic, info->is_pre_aiq,
+         info->prd_type);
     g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].tb_info.is_pre_aiq = info->is_pre_aiq;
+    g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].tb_info.prd_type = info->prd_type;
 
     return (ret);
 
 }
 
+XCamReturn rk_aiq_uapi_sysctl_preInit_devBufCnt(const char* sns_ent_name, const char* dev_ent,
+                                                int buf_cnt) {
+    if (!sns_ent_name || !dev_ent) {
+        LOGE("Invalid input parameter");
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    std::string sns_ent_name_str(sns_ent_name);
+
+    g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].dev_buf_cnt_map[dev_ent] = buf_cnt;
+
+    return XCAM_RETURN_NO_ERROR;
+}
 
 static int rk_aiq_offline_init(rk_aiq_sys_ctx_t* ctx)
 {
@@ -405,6 +422,8 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
             ctx->_rkAiqManager->setHwEvtCb(it->second.hwevt_cb, it->second.hwevt_cb_ctx);
             ctx->_rkAiqManager->setTbInfo(it->second.tb_info);
             ctx->_camHw->setTbInfo(it->second.tb_info);
+            if (!it->second.dev_buf_cnt_map.empty())
+                ctx->_camHw->setDevBufCnt(it->second.dev_buf_cnt_map);
             ctx->_analyzer->setTbInfo(it->second.tb_info);
             if (it->second.iq_buffer.addr && it->second.iq_buffer.len > 0) {
                 iq_buffer.addr = it->second.iq_buffer.addr;
@@ -428,7 +447,7 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
             if (!it->second.sub_scene.empty())
                 sub_scene = it->second.sub_scene;
         } else {
-            rk_aiq_tb_info_t info{0, 0};
+            rk_aiq_tb_info_t info{0, false, RK_AIQ_PRD_TYPE_NORMAL};
             ctx->_rkAiqManager->setTbInfo(info);
             ctx->_camHw->setTbInfo(info);
             ctx->_analyzer->setTbInfo(info);
@@ -1484,10 +1503,10 @@ int rk_aiq_uapi_sysctl_switch_scene(const rk_aiq_sys_ctx_t* sys_ctx,
 static XCamReturn
 _get_fast_aewb_from_drv(std::string& sensor_name, rkisp32_thunderboot_resmem_head& fastAeAwbInfo)
 {
-    std::map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator it;
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    if ((it = CamHwIsp20::mSensorHwInfos.find(sensor_name)) == CamHwIsp20::mSensorHwInfos.end()) {
+    auto it = CamHwIsp20::mSensorHwInfos.find(sensor_name);
+    if (it == CamHwIsp20::mSensorHwInfos.end()) {
         LOGE_CAMHW_SUBM(ISP20HW_SUBM, "can't find sensor %s", sensor_name.c_str());
         return XCAM_RETURN_ERROR_SENSOR;
     }

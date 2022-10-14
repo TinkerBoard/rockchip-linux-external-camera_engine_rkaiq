@@ -63,7 +63,9 @@ protected:
         RkAiqHandle::deInit();
     };
 
-private:
+    SmartPtr<RkAiqAlgoProcResAynrV22IntShared> mProcResShared;
+
+ private:
     // TODO
     rk_aiq_ynr_attrib_v22_t mCurAtt;
     rk_aiq_ynr_attrib_v22_t mNewAtt;

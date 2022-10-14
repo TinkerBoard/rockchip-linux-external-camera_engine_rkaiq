@@ -38,12 +38,15 @@ static void sample_adehaze_usage()
         "\t 4) ADEHAZE:         test rk_aiq_user_api2_adehaze_v12_setSwAttrib DEHAZE_API_MANUAL "
         "Async.\n");
     printf("\t 5) ADEHAZE:         test rk_aiq_user_api2_adehaze_v12_getSwAttrib.\n");
-    printf("\t 6) ADEHAZE:         test rk_aiq_uapi2_getMDehazeStrth.\n");
-    printf("\t 7) ADEHAZE:         test rk_aiq_uapi2_setMDehazeStrth.\n");
-    printf("\t 8) ADEHAZE:         test rk_aiq_uapi2_getMEnhanceStrth.\n");
-    printf("\t 9) ADEHAZE:         test rk_aiq_uapi2_setMEnhanceStrth.\n");
-    printf("\t a) ADEHAZE:         test rk_aiq_uapi2_getMEnhanceChromeStrth.\n");
-    printf("\t b) ADEHAZE:         test rk_aiq_uapi2_setMEnhanceChromeStrth.\n");
+    printf("\t 6) ADEHAZE:         test rk_aiq_uapi2_setDehazeModuleEnable.\n");
+    printf("\t 7) ADEHAZE:         test rk_aiq_uapi2_setDehazeEnable.\n");
+    printf("\t 8) ADEHAZE:         test rk_aiq_uapi2_getMDehazeStrth.\n");
+    printf("\t 9) ADEHAZE:         test rk_aiq_uapi2_setMDehazeStrth.\n");
+    printf("\t a) ADEHAZE:         test rk_aiq_uapi2_setEnhanceEnable.\n");
+    printf("\t b) ADEHAZE:         test rk_aiq_uapi2_getMEnhanceStrth.\n");
+    printf("\t c) ADEHAZE:         test rk_aiq_uapi2_setMEnhanceStrth.\n");
+    printf("\t d) ADEHAZE:         test rk_aiq_uapi2_getMEnhanceChromeStrth.\n");
+    printf("\t e) ADEHAZE:         test rk_aiq_uapi2_setMEnhanceChromeStrth.\n");
     printf("\t q) ADEHAZE:         return to main sample screen.\n");
 
     printf("\n");
@@ -154,11 +157,6 @@ XCamReturn sample_adehaze_module(const void *arg)
             attr_v11.stManual.hist_setting.HistData.hist_scale  = 0.09;
             attr_v11.stManual.hist_setting.HistData.cfg_gratio  = 2;
 
-            attr_v11.stManual.sigma_curve[0] = -7.80229e-013;
-            attr_v11.stManual.sigma_curve[1] = -7.80229e-013;
-            attr_v11.stManual.sigma_curve[2] = -2.20431e-005;
-            attr_v11.stManual.sigma_curve[3] = 0.0298751;
-            attr_v11.stManual.sigma_curve[4] = 10.9382;
             rk_aiq_user_api2_adehaze_v11_setSwAttrib(ctx, &attr_v11);
             break;
         }
@@ -231,11 +229,6 @@ XCamReturn sample_adehaze_module(const void *arg)
             attr_v11.stManual.hist_setting.HistData.hist_scale  = 0.09;
             attr_v11.stManual.hist_setting.HistData.cfg_gratio  = 2;
 
-            attr_v11.stManual.sigma_curve[0] = -7.80229e-013;
-            attr_v11.stManual.sigma_curve[1] = -7.80229e-013;
-            attr_v11.stManual.sigma_curve[2] = -2.20431e-005;
-            attr_v11.stManual.sigma_curve[3] = 0.0298751;
-            attr_v11.stManual.sigma_curve[4] = 18.7607;
             rk_aiq_user_api2_adehaze_v11_setSwAttrib(ctx, &attr_v11);
             break;
         }
@@ -249,8 +242,6 @@ XCamReturn sample_adehaze_module(const void *arg)
             printf("\t MDehazeStrth: %d MEnhanceStrth:%d MEnhanceChromeStrth:%d\n\n",
                    attr_v11.Info.MDehazeStrth, attr_v11.Info.MEnhanceStrth,
                    attr_v11.Info.MEnhanceChromeStrth);
-            printf("\t sigma_curve[3]:%f sigma_curve[4]:%f\n\n", attr_v11.stManual.sigma_curve[3],
-                   attr_v11.stManual.sigma_curve[4]);
             break;
         }
         case '3': {
@@ -376,11 +367,6 @@ XCamReturn sample_adehaze_module(const void *arg)
             attr_v12.stManual.hist_setting.HistData.hist_scale  = 0.09;
             attr_v12.stManual.hist_setting.HistData.cfg_gratio  = 2;
 
-            attr_v12.stManual.sigma_curve[0] = -7.80229e-013;
-            attr_v12.stManual.sigma_curve[1] = -7.80229e-013;
-            attr_v12.stManual.sigma_curve[2] = -2.20431e-005;
-            attr_v12.stManual.sigma_curve[3] = 0.0298751;
-            attr_v12.stManual.sigma_curve[4] = 10.9382;
             rk_aiq_user_api2_adehaze_v12_setSwAttrib(ctx, &attr_v12);
             break;
         }
@@ -506,11 +492,6 @@ XCamReturn sample_adehaze_module(const void *arg)
             attr_v12.stManual.hist_setting.HistData.hist_scale  = 0.09;
             attr_v12.stManual.hist_setting.HistData.cfg_gratio  = 2;
 
-            attr_v12.stManual.sigma_curve[0] = -7.80229e-013;
-            attr_v12.stManual.sigma_curve[1] = -7.80229e-013;
-            attr_v12.stManual.sigma_curve[2] = -2.20431e-005;
-            attr_v12.stManual.sigma_curve[3] = 0.0298751;
-            attr_v12.stManual.sigma_curve[4] = 18.7607;
             rk_aiq_user_api2_adehaze_v12_setSwAttrib(ctx, &attr_v12);
             break;
         }
@@ -524,47 +505,66 @@ XCamReturn sample_adehaze_module(const void *arg)
             printf("\t MDehazeStrth: %d MEnhanceStrth:%d MEnhanceChromeStrth:%d\n\n",
                    attr_v12.Info.MDehazeStrth, attr_v12.Info.MEnhanceStrth,
                    attr_v12.Info.MEnhanceChromeStrth);
-            printf("\t sigma_curve[3]:%f sigma_curve[4]:%f\n\n", attr_v12.stManual.sigma_curve[3],
-                   attr_v12.stManual.sigma_curve[4]);
             break;
         }
         case '6': {
+            printf("\t ADEHAZE test rk_aiq_uapi2_setDehazeModuleEnable\n\n");
+            rk_aiq_uapi2_setDehazeModuleEnable(ctx, false);
+            break;
+        }
+        case '7': {
+            printf("\t ADEHAZE test rk_aiq_uapi2_setDehazeEnable\n\n");
+            rk_aiq_uapi2_setDehazeEnable(ctx, false);
+            break;
+        }
+        case '8': {
             printf("\t ADEHAZE test rk_aiq_uapi2_getMDehazeStrth\n\n");
             unsigned int level = 60;
             rk_aiq_uapi2_getMDehazeStrth(ctx, &level);
             printf("\t rk_aiq_uapi2_getMDehazeStrth level: %d\n\n", level);
             break;
         }
-        case '7': {
+        case '9': {
             printf("\t ADEHAZE test rk_aiq_uapi2_setMDehazeStrth\n\n");
+            rk_aiq_uapi2_setDehazeModuleEnable(ctx, true);
+            rk_aiq_uapi2_setDehazeEnable(ctx, true);
             unsigned int level = 70;
             rk_aiq_uapi2_setMDehazeStrth(ctx, level);
             printf("\t rk_aiq_uapi2_setMDehazeStrth level: %d\n\n", level);
             break;
         }
-        case '8': {
+        case 'a': {
+            printf("\t ADEHAZE test rk_aiq_uapi2_setEnhanceEnable\n\n");
+            rk_aiq_uapi2_setEnhanceEnable(ctx, false);
+            break;
+        }
+        case 'b': {
             printf("\t ADEHAZE test rk_aiq_uapi2_getMEnhanceStrth\n\n");
             unsigned int level = 60;
             rk_aiq_uapi2_getMEnhanceStrth(ctx, &level);
             printf("\t rk_aiq_uapi2_getMEnhanceStrth level: %d\n\n", level);
             break;
         }
-        case '9': {
+        case 'c': {
             printf("\t ADEHAZE test rk_aiq_uapi2_setMEnhanceStrth\n\n");
+            rk_aiq_uapi2_setDehazeModuleEnable(ctx, true);
+            rk_aiq_uapi2_setMEnhanceStrth(ctx, true);
             unsigned int level = 70;
             rk_aiq_uapi2_setMEnhanceStrth(ctx, level);
             printf("\t rk_aiq_uapi2_setMEnhanceStrth level: %d\n\n", level);
             break;
         }
-        case 'a': {
+        case 'd': {
             printf("\t ADEHAZE test rk_aiq_uapi2_getMEnhanceChromeStrth\n\n");
             unsigned int level = 60;
             rk_aiq_uapi2_getMEnhanceChromeStrth(ctx, &level);
             printf("\t rk_aiq_uapi2_getMEnhanceChromeStrth level: %d\n\n", level);
             break;
         }
-        case 'b': {
+        case 'e': {
             printf("\t ADEHAZE test rk_aiq_uapi2_setMEnhanceChromeStrth\n\n");
+            rk_aiq_uapi2_setDehazeModuleEnable(ctx, true);
+            rk_aiq_uapi2_setMEnhanceStrth(ctx, true);
             unsigned int level = 70;
             rk_aiq_uapi2_setMEnhanceChromeStrth(ctx, level);
             printf("\t rk_aiq_uapi2_setMEnhanceChromeStrth level: %d\n\n", level);
