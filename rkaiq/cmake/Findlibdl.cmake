@@ -14,7 +14,7 @@ find_library(LIBDL_LIBRARY
     lib64
     lib
 )
-find_package_handle_standard_args(LIBDL
+find_package_handle_standard_args(libdl
     DEFAULT_MSGS
     LIBDL_INCLUDE_DIR
     LIBDL_LIBRARY
@@ -24,7 +24,7 @@ mark_as_advanced(
     LIBDL_LIBRARY
 )
 
-if (LIBDL_FOUND)
+if (libdl_FOUND)
     set(LIBDL_LIBRARIES    ${LIBDL_LIBRARY})
     set(LIBDL_INCLUDE_DIRS ${LIBDL_INCLUDE_DIR})
     set(LIBDL_CFLAGS "-DHAS_LIBDL")

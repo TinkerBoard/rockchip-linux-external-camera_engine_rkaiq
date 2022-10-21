@@ -13,7 +13,7 @@ find_path(LIBRGA_INCLUDE_DIR
 find_library(LIBRGA_LIBRARY
     rga
 )
-find_package_handle_standard_args(LIBRGA
+find_package_handle_standard_args(librga
     DEFAULT_MSGS
     LIBRGA_INCLUDE_DIR
     LIBRGA_LIBRARY
@@ -23,7 +23,7 @@ mark_as_advanced(
     LIBRGA_LIBRARY
 )
 
-if(LIBRGA_FOUND)
+if(librga_FOUND)
 	get_filename_component(LIBRGA_LIBRARY_DIR "${LIBRGA_LIBRARY}" PATH)
 	set(LIBRGA_LIBRARIES    ${LIBRGA_LIBRARY})
 	set(LIBRGA_INCLUDE_DIRS ${LIBRGA_INCLUDE_DIR})

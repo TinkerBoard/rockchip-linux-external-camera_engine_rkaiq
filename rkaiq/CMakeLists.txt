@@ -8,7 +8,7 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
     add_definitions(-DBUILD_TYPE_DEBUG)
 endif()
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8...3.22)
 
 PROJECT(rk_aiq)
 
@@ -28,17 +28,17 @@ configure_file(
     )
 
 find_package(libdl QUIET)
-if (LIBDL_FOUND)
+if (libdl_FOUND)
     add_compile_options(${LIBDL_CFLAGS})
 endif()
 
 find_package(librga QUIET)
-if (LIBRGA_FOUND)
+if (librga_FOUND)
     add_compile_options(${LIBRGA_CFLAGS})
 endif()
 
 find_package(libdrm QUIET)
-if (LIBDRM_FOUND)
+if (libdrm_FOUND)
     add_compile_options(${LIBDRM_CFLAGS})
 endif()
 
@@ -647,7 +647,7 @@ set(XCORE_SRC
     xcore/smart_buffer_priv.cpp
     )
 
-if (LIBDRM_FOUND)
+if (libdrm_FOUND)
     set(XCORE_SRC
         ${XCORE_SRC}
         xcore/drm_device.cpp
@@ -1205,14 +1205,14 @@ target_link_libraries(rkaiq
 list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_asd${STATIC_LIB_SUFFIX})
 endif()
 
-if (LIBDL_FOUND)
+if (libdl_FOUND)
     target_link_libraries(rkaiq
         PRIVATE
         libdl::libdl
         )
 endif()
 
-if (LIBDRM_FOUND)
+if (libdrm_FOUND)
     target_link_libraries(rkaiq
         PRIVATE
         libdrm::libdrm

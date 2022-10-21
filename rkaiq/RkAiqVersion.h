@@ -479,10 +479,18 @@
  * - Revert "fakesensor: Open used tx/rx devs only"
  * - hwi: Use unordered_map instead of map for  static infos
  * - AF: merge isp3x modification
+ * v4.0x.a
+ * - iq_parser: increase the range of distortion params
+ * - algos: ldchV21: support for dynamic switching
+ * - rkisp_demo: update CompileOptions.cmake from rkaiq
+ * - iqfiles: update sc200ai json for Tonly
+ * - build: Enable build iq binrary remove unused RKPLATFORM
+ * - cmake: Change to compatible with cmake's future version
+ * - rkisp_demo: Fix build error on IPC sdk if drm enabled
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.a-rc1"
-#define RK_AIQ_RELEASE_DATE "2022-10-14"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.a"
+#define RK_AIQ_RELEASE_DATE "2022-10-26"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

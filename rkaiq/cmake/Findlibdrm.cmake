@@ -22,7 +22,7 @@ find_library(LIBDRM_LIBRARY
     drm
 )
 
-find_package_handle_standard_args(LIBDRM
+find_package_handle_standard_args(libdrm
     DEFAULT_MSGS
     LIBDRM_INCLUDE_DIR
     LIBDRM_LIBRARY
@@ -44,7 +44,7 @@ find_path(LIBDRM_ROCKCHIP_INCLUDE_DIR
 find_library(LIBDRM_ROCKCHIP_LIBRARY
     drm_rockchip
 )
-find_package_handle_standard_args(LIBDRM_ROCKCHIP
+find_package_handle_standard_args(libdrm_rockchip
     DEFAULT_MSGS
     LIBDRM_ROCKCHIP_INCLUDE_DIR
     LIBDRM_ROCKCHIP_LIBRARY
@@ -55,8 +55,8 @@ mark_as_advanced(
 )
 endif()
 
-if(LIBDRM_FOUND OR LIBDRM_ROCKCHIP_FOUND)
-    if(LIBDRM_ROCKCHIP_FOUND)
+if(libdrm_FOUND OR libdrm_rockchip_FOUND)
+    if(libdrm_rockchip_FOUND)
         set(LIBDRM_LIBRARIES    ${LIBDRM_LIBRARY};${LIBDRM_ROCKCHIP_LIBRARY})
         set(LIBDRM_INCLUDE_DIRS ${LIBDRM_ROCKCHIP_INCLUDE_DIR};${LIBDRM_XF86DRM_INCLUDE_DIR};${LIBDRM_INCLUDE_DIR})
         set(LIBDRM_CFLAGS "-DHAS_LIBDRM -DHAS_LIBDRM_ROCKCHIP")

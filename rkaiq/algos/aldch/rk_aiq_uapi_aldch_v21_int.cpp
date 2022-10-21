@@ -28,27 +28,18 @@ rk_aiq_uapi_aldch_v21_SetAttrib(RkAiqAlgoContext *ctx,
 {
     LDCHHandle_t ldch_contex = (LDCHHandle_t)ctx->hLDCH;
 
+    LOGD_ALDCH("attr en:%d, level:%d, bic_en:%d, zero_interp_en:%d, sample_avr_en:%d\n",
+            attr.en, attr.correct_level, attr.bic_mode_en,
+            attr.zero_interp_en, attr.sample_avr_en);
+
     if (!ldch_contex->ldch_en && !attr.en) {
         LOGE_ALDCH("failed, ldch is disalbed!");
         return XCAM_RETURN_ERROR_FAILED;
     }
 
     if (0 != memcmp(&ldch_contex->user_config, &attr, sizeof(rk_aiq_ldch_v21_attrib_t))) {
-        memcpy(&ldch_contex->user_config, &attr, sizeof(rk_aiq_ldch_v21_attrib_t));
-
-        SmartPtr<rk_aiq_ldch_v21_attrib_t> attrPtr = new rk_aiq_ldch_v21_attrib_t;
-        attrPtr->en             = ldch_contex->user_config.en;
-        attrPtr->correct_level  = ldch_contex->user_config.correct_level;
-        attrPtr->bic_mode_en    = ldch_contex->user_config.bic_mode_en;
-        attrPtr->zero_interp_en = ldch_contex->user_config.zero_interp_en;
-        attrPtr->sample_avr_en  = ldch_contex->user_config.sample_avr_en;
-        memcpy(attrPtr->bic_weight, ldch_contex->user_config.bic_weight, sizeof(attrPtr->bic_weight));
-
-        ldch_contex->aldchReadMeshThread->clear_attr();
-        ldch_contex->aldchReadMeshThread->push_attr(attrPtr);
-        LOGV_ALDCH("attr en:%d, level:%d, bic_en:%d, zero_interp_en:%d, sample_avr_en:%d\n",
-                   attr.en, attr.correct_level, attr.bic_mode_en,
-                   attr.zero_interp_en, attr.sample_avr_en);
+        memcpy(&ldch_contex->user_config, &attr, sizeof(attr));
+        ldch_contex->isAttribUpdated = true;
     }
 
     return XCAM_RETURN_NO_ERROR;
@@ -60,7 +51,7 @@ rk_aiq_uapi_aldch_v21_GetAttrib(const RkAiqAlgoContext *ctx,
 {
     LDCHHandle_t ldch_contex = (LDCHHandle_t)ctx->hLDCH;
 
-    memcpy(attr, &ldch_contex->user_config, sizeof(rk_aiq_ldch_v21_attrib_t));
+    memcpy(attr, &ldch_contex->user_config, sizeof(*attr));
 
     return XCAM_RETURN_NO_ERROR;
 }

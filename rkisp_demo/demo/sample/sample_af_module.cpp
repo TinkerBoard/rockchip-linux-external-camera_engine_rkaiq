@@ -535,6 +535,7 @@ XCamReturn sample_af_module(const void *arg)
         {
             case 'h':
                 sample_af_usage();
+                break;
             case '0':
                 sample_set_focus_automode(ctx);
                 break;

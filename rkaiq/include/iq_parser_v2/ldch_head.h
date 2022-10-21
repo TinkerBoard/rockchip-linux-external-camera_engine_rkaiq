@@ -33,9 +33,9 @@ typedef struct CalibDbV2_Ldch_Param_s {
     unsigned char correct_level;
 	// M4_NUMBER_DESC("correct_level_max", "u8", M4_RANGE(0,255), "255", M4_DIGIT(0))
     unsigned char correct_level_max;
-	// M4_ARRAY_DESC("light_center", "f64", M4_SIZE(1,2), M4_RANGE(-10000000000000000,10000000000000000), "0", M4_DIGIT(8), M4_DYNAMIC(0))
+	// M4_ARRAY_DESC("light_center", "f64", M4_SIZE(1,2), M4_RANGE(-10000000000000000,10000000000000000), "0", M4_DIGIT(20), M4_DYNAMIC(0))
     double light_center[2]; // light center
-	// M4_ARRAY_DESC("coefficient", "f64", M4_SIZE(1,4), M4_RANGE(-10000000000000000,10000000000000000), "0", M4_DIGIT(8), M4_DYNAMIC(0))
+	// M4_ARRAY_DESC("coefficient", "f64", M4_SIZE(1,4), M4_RANGE(-10000000000000000,10000000000000000), "0", M4_DIGIT(20), M4_DYNAMIC(0))
     double coefficient[4]; // the distortion coefficient of the fisheye lens
 } CalibDbV2_Ldch_Param_t;
 

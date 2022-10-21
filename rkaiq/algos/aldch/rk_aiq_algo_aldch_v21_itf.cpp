@@ -23,6 +23,7 @@
 #include "RkAiqCalibDbV2Helper.h"
 #include "xcam_log.h"
 #include "rk_aiq_ldch_generate_mesh.h"
+#include "aldch/rk_aiq_uapi_aldch_v21_int.h"
 
 
 RKAIQ_BEGIN_DECLARE
@@ -60,22 +61,30 @@ updateCalibConfig(RkAiqAlgoCom* params)
 
     if (calib_ldch->ldch_en) {
         if (!ldchCtx->ldch_en || calib_ldch->correct_level != hLDCH->correct_level) {
-            aiqGenLdchMeshInit(hLDCH);
+            if (aiqGenLdchMeshInit(hLDCH) != XCAM_RETURN_NO_ERROR) {
+                LOGE_ALDCH("Failed to init gen mesh");
+                return XCAM_RETURN_ERROR_FAILED;
+            }
+
             bool success = aiqGenMesh(hLDCH, calib_ldch->correct_level);
             if (!success) {
                 LOGE_ALDCH("lut is not exist");
+                if (ldchCtx->ldch_mem_info)
+                    ldchCtx->ldch_mem_info->state[0] = MESH_BUF_INIT;
                 return XCAM_RETURN_ERROR_PARAM;
             }
+
+            if (ldchCtx->ldch_mem_info)
+                hLDCH->ready_lut_mem_fd = ldchCtx->ldch_mem_info->fd;
         }
     }
 
-    ldchCtx->ldch_en = calib_ldch->ldch_en;
-    ldchCtx->correct_level = calib_ldch->correct_level;
-    ldchCtx->correct_level_max = calib_ldch->correct_level_max;
+    ldchCtx->user_config.en =  calib_ldch->ldch_en;
+    ldchCtx->user_config.correct_level = calib_ldch->correct_level;
 
-    ldchCtx->isAttribUpdated = true;
+    ldchCtx->isLutUpdated.store(true, std::memory_order_release);
 
-    LOGI_ALDCH("en(%d), level(%d-%d), coeff(%f, %f, %f, %f, %f, %f)",
+    LOGI_ALDCH("update calib en(%d), level(%d-%d), coeff(%f, %f, %f, %f, %f, %f)",
             calib_ldch->ldch_en,
             calib_ldch->correct_level,
             calib_ldch->correct_level_max,
@@ -114,8 +123,7 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
 #if GENMESH_ONLINE
     ctx->hLDCH->isAttribUpdated = false;
     ctx->hLDCH->aldchReadMeshThread = new RKAiqAldchThread(ctx->hLDCH);
-    /* ctx->hLDCH->aldchReadMeshThread->triger_start(); */
-    /* ctx->hLDCH->aldchReadMeshThread->start(); */
+    ctx->hLDCH->isLutUpdated.store(false, std::memory_order_release);
 #endif
 
     LDCHHandle_t ldchCtx = ctx->hLDCH;
@@ -150,6 +158,9 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
     ldchCtx->map13p3_en     = 0;
     memcpy(ldchCtx->bicubic, default_bic_table, sizeof( default_bic_table));
 
+    ldchCtx->last_lut_mem_fd = -1;
+    ldchCtx->ready_lut_mem_fd = -1;
+
     LOGD_ALDCH("bic table0: 0x%x, table1: 0x%x, table2: 0x%x, table3: 0x%x,",
                *(uint32_t *)ldchCtx->bicubic,
                *(uint32_t *)(ldchCtx->bicubic + 4),
@@ -180,6 +191,7 @@ destroy_context(RkAiqAlgoContext *context)
 #if GENMESH_ONLINE
     ldchCtx->aldchReadMeshThread->triger_stop();
     ldchCtx->aldchReadMeshThread->stop();
+    ldchCtx->aldchReadMeshThread->clear_attr();
 #endif
 
 #if GENMESH_ONLINE
@@ -207,29 +219,36 @@ prepare(RkAiqAlgoCom* params)
     ldchCtx->resource_path = rkaiqAldchConfig->resource_path;
     ldchCtx->share_mem_ops = rkaiqAldchConfig->mem_ops_ptr;
 
-    bool config_calib = !!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB);
-    if (config_calib) {
-        updateCalibConfig(params);
-        return XCAM_RETURN_NO_ERROR;
-    }
-
 #if GENMESH_ONLINE
     // process the new attrib set before prepare
     hLDCH->aldchReadMeshThread->triger_stop();
     hLDCH->aldchReadMeshThread->stop();
-    if (!hLDCH->aldchReadMeshThread->is_empty()) {
-        hLDCH->aldchReadMeshThread->clear_attr();
-        ldchCtx->isAttribUpdated = true;
+
+    bool config_calib = !!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB);
+    if (config_calib) {
+        if(updateCalibConfig(params) != XCAM_RETURN_NO_ERROR) {
+            LOGW_ALDCH("Failed to update calib config");
+        }
+
+        return XCAM_RETURN_NO_ERROR;
     }
 
-    if (ldchCtx->isAttribUpdated) {
+    if (!hLDCH->aldchReadMeshThread->is_empty()) {
+        hLDCH->aldchReadMeshThread->clear_attr();
+    }
+
+    if (ldchCtx->isLutUpdated.load(std::memory_order_acquire)) {
         ldchCtx->ldch_en            = ldchCtx->user_config.en;
         ldchCtx->correct_level      = ldchCtx->user_config.correct_level;
         ldchCtx->zero_interp_en     = ldchCtx->user_config.zero_interp_en;
         ldchCtx->sample_avr_en      = ldchCtx->user_config.sample_avr_en;
         ldchCtx->bic_mode_en        = ldchCtx->user_config.bic_mode_en;
-        ldchCtx->isAttribUpdated    = false;
         memcpy(ldchCtx->bicubic, ldchCtx->user_config.bic_weight, sizeof(ldchCtx->bicubic));
+
+        if (ldchCtx->ready_lut_mem_fd >= 0)
+            ldchCtx->last_lut_mem_fd = ldchCtx->ready_lut_mem_fd;
+
+        ldchCtx->isLutUpdated.store(false, std::memory_order_release);
     } else {
         ldchCtx->user_config.en = ldchCtx->ldch_en;
         ldchCtx->user_config.correct_level  = ldchCtx->correct_level;
@@ -239,19 +258,30 @@ prepare(RkAiqAlgoCom* params)
         memcpy(ldchCtx->user_config.bic_weight, ldchCtx->bicubic, sizeof(ldchCtx->bicubic));
     }
 
-    hLDCH->aldchReadMeshThread->triger_start();
-    hLDCH->aldchReadMeshThread->start();
-    if (!ldchCtx->ldch_en)
-        return XCAM_RETURN_NO_ERROR;
+    if (ldchCtx->ldch_en) {
+        if (aiqGenLdchMeshInit(ldchCtx) == XCAM_RETURN_NO_ERROR) {
+            bool success = aiqGenMesh(hLDCH, ldchCtx->correct_level);
+            if (!success) {
+                LOGW_ALDCH("lut is not exist");
+                if (ldchCtx->ldch_mem_info)
+                    ldchCtx->ldch_mem_info->state[0] = MESH_BUF_INIT;
+                ldchCtx->ldch_en = 0;
+            }
 
-    if (aiqGenLdchMeshInit(ldchCtx) == XCAM_RETURN_NO_ERROR) {
-        bool success = aiqGenMesh(hLDCH, ldchCtx->correct_level);
-        if (!success) {
-            LOGW_ALDCH("lut is not exist");
-            ldchCtx->ldch_en = 0;
+            if (ldchCtx->ldch_mem_info)
+                hLDCH->ready_lut_mem_fd = ldchCtx->ldch_mem_info->fd;
         }
     }
+
+    hLDCH->aldchReadMeshThread->triger_start();
+    hLDCH->aldchReadMeshThread->start();
 #else
+    bool config_calib = !!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB);
+    if (config_calib) {
+        updateCalibConfig(params);
+        return XCAM_RETURN_NO_ERROR;
+    }
+
     if (!ldchCtx->ldch_en)
         return XCAM_RETURN_NO_ERROR;
 
@@ -282,28 +312,50 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     RkAiqAlgoProcResAldchV21* ldchPreOut = (RkAiqAlgoProcResAldchV21*)outparams;
 
     if (inparams->u.proc.init) {
-        ldchPreOut->ldch_result.base.update = 1;
-    } else {
-        if (ldchCtx->isAttribUpdated) {
-            ldchCtx->isAttribUpdated = false;
-            ldchPreOut->ldch_result.base.update = 1;
-        } else {
-            ldchPreOut->ldch_result.base.update = 0;
-        }
+        if (ldchCtx->ready_lut_mem_fd >= 0)
+            ldchCtx->last_lut_mem_fd = ldchCtx->ready_lut_mem_fd;
+    } else if (ldchCtx->isLutUpdated.load(std::memory_order_acquire)) {
+        ldchCtx->ldch_en          = ldchCtx->user_config.en;
+        ldchCtx->correct_level    = ldchCtx->user_config.correct_level;
+        ldchCtx->zero_interp_en   = ldchCtx->user_config.zero_interp_en;
+        ldchCtx->sample_avr_en    = ldchCtx->user_config.sample_avr_en;
+        ldchCtx->bic_mode_en      = ldchCtx->user_config.bic_mode_en;
+        memcpy(ldchCtx->bicubic, ldchCtx->user_config.bic_weight, sizeof(ldchCtx->bicubic));
 
-        LOGV_ALDCH("en:%d, level:%d, h/v: %dx%x, interp_en:%d, avr_en:%d, bic_en:%d, update(%d)\n",
-                ldchCtx->ldch_en,
-                ldchCtx->correct_level,
-                ldchCtx->lut_h_size,
-                ldchCtx->lut_v_size,
-                ldchCtx->zero_interp_en,
-                ldchCtx->sample_avr_en,
-                ldchCtx->bic_mode_en,
-                ldchPreOut->ldch_result.base.update);
+        if (ldchCtx->ready_lut_mem_fd >= 0)
+            ldchCtx->last_lut_mem_fd = ldchCtx->ready_lut_mem_fd;
+        LOGD_ALDCH("update last_lut_mem_fd %d\n", ldchCtx->last_lut_mem_fd);
+
+        ldchCtx->isLutUpdated.store(false, std::memory_order_release);
+    } else if (ldchCtx->ldch_en && ldchCtx->last_lut_mem_fd >= 0) {
+        LOGV_ALDCH("use last lut mem fd: %d\n", ldchCtx->last_lut_mem_fd);
     }
 
-    if (ldchPreOut->ldch_result.base.update) {
-        ldchPreOut->ldch_result.base.sw_ldch_en = ldchCtx->ldch_en;
+    if (ldchCtx->isAttribUpdated) {
+        if (ldchCtx->user_config.en) {
+            SmartPtr<rk_aiq_ldch_v21_attrib_t> attrPtr = new rk_aiq_ldch_v21_attrib_t;
+            if (attrPtr.ptr()) {
+                memcpy(attrPtr.ptr(), &ldchCtx->user_config, sizeof(ldchCtx->user_config));
+
+                ldchCtx->aldchReadMeshThread->push_attr(attrPtr);
+                ldchCtx->isAttribUpdated = false;
+            } else {
+                LOGE_ALDCH("Failed to new ldch attr, don't update attrib\n");
+            }
+        } else {
+            ldchCtx->ldch_en = false;
+            ldchCtx->isAttribUpdated = false;
+        }
+    }
+
+    if (ldchCtx->ldch_en) {
+        if (ldchCtx->last_lut_mem_fd < 0) {
+            LOGE_ALDCH("no available ldch buf, lut fd: %d", ldchCtx->last_lut_mem_fd);
+            ldchPreOut->ldch_result.base.update = false;
+            return XCAM_RETURN_NO_ERROR;
+        }
+
+        ldchPreOut->ldch_result.base.lut_mapxy_buf_fd = ldchCtx->last_lut_mem_fd;
         ldchPreOut->ldch_result.base.lut_h_size = ldchCtx->lut_h_size;
         ldchPreOut->ldch_result.base.lut_v_size = ldchCtx->lut_v_size;
         ldchPreOut->ldch_result.base.lut_map_size = ldchCtx->lut_mapxy_size;
@@ -313,19 +365,20 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         ldchPreOut->ldch_result.sample_avr_en = ldchCtx->sample_avr_en;
         ldchPreOut->ldch_result.bic_mode_en = ldchCtx->bic_mode_en;
         memcpy(ldchPreOut->ldch_result.bicubic, ldchCtx->bicubic, sizeof(ldchCtx->bicubic));
-        if (ldchCtx->ldch_en) {
-            if (!ldchCtx->lut_mapxy || !ldchCtx->ldch_mem_info) {
-                LOGE_ALDCH("no available ldch buf, lut_mapxy: %p, ldch_mem_info: %p",
-                       ldchCtx->lut_mapxy, ldchCtx->ldch_mem_info);
-                ldchPreOut->ldch_result.base.update = 0;
-                return XCAM_RETURN_NO_ERROR;
-            }
-            ldchPreOut->ldch_result.base.lut_mapxy_buf_fd = ldchCtx->ldch_mem_info->fd;
-            ldchCtx->ldch_mem_info->state[0] = 1; //mark that this buf is using.
-        } else {
-            aiqGenLdchMeshDeInit(hLDCH);
-        }
     }
+
+    ldchPreOut->ldch_result.base.update = true;
+    ldchPreOut->ldch_result.base.sw_ldch_en = ldchCtx->ldch_en;
+
+    LOGV_ALDCH("en:%d, level:%d, h/v: %dx%x, interp_en:%d, avr_en:%d, bic_en:%d, lut fd: %d\n",
+            ldchCtx->ldch_en,
+            ldchCtx->correct_level,
+            ldchCtx->lut_h_size,
+            ldchCtx->lut_v_size,
+            ldchCtx->zero_interp_en,
+            ldchCtx->sample_avr_en,
+            ldchCtx->bic_mode_en,
+            ldchPreOut->ldch_result.base.lut_mapxy_buf_fd);
 
     return XCAM_RETURN_NO_ERROR;
 }
@@ -365,29 +418,36 @@ bool RKAiqAldchThread::loop()
 
     if (!attrib.ptr()) {
         LOGW_ALDCH("RKAiqAldchThread got empty attrib, stop thread");
-        return false;
+        return true;
     }
+
 #if GENMESH_ONLINE
-    if (attrib->en) {
-        if (!hLDCH->ldch_en || attrib->correct_level != hLDCH->correct_level) {
-            aiqGenLdchMeshInit(hLDCH);
+    if (!hLDCH->ldch_en || attrib->correct_level != hLDCH->correct_level) {
+        if (aiqGenLdchMeshInit(hLDCH) == XCAM_RETURN_NO_ERROR) {
             bool success = aiqGenMesh(hLDCH, attrib->correct_level);
             if (!success) {
                 LOGW_ALDCH("lut is not exist");
+                ret = XCAM_RETURN_ERROR_PARAM;
+                if (hLDCH->ldch_mem_info)
+                    hLDCH->ldch_mem_info->state[0] = MESH_BUF_INIT;
+                return true;
             }
+        } else {
+            LOGE_ALDCH("Failed to init gen mesh");
+            ret = XCAM_RETURN_ERROR_PARAM;
+            return true;
         }
     }
-
-    hLDCH->ldch_en          = hLDCH->user_config.en;
-    hLDCH->correct_level    = hLDCH->user_config.correct_level;
-    hLDCH->zero_interp_en   = hLDCH->user_config.zero_interp_en;
-    hLDCH->sample_avr_en    = hLDCH->user_config.sample_avr_en;
-    hLDCH->bic_mode_en      = hLDCH->user_config.bic_mode_en;
-    memcpy(hLDCH->bicubic, hLDCH->user_config.bic_weight, sizeof(hLDCH->bicubic));
 #endif
+
     if (ret == XCAM_RETURN_NO_ERROR) {
-        hLDCH->isAttribUpdated = true;
-        LOGV_ALDCH("ldch en(%d), level(%d)\n", hLDCH->ldch_en, hLDCH->correct_level);
+        if (hLDCH->ldch_mem_info)
+            hLDCH->ready_lut_mem_fd = hLDCH->ldch_mem_info->fd;
+        hLDCH->isLutUpdated.store(true, std::memory_order_release);
+
+        LOGD_ALDCH("ldch update attrib en(%d), level(%d), ready lut fd%d\n",
+                attrib->en, attrib->correct_level, hLDCH->ready_lut_mem_fd);
+
         return true;
     }
 
@@ -395,5 +455,5 @@ bool RKAiqAldchThread::loop()
 
     EXIT_ANALYZER_FUNCTION();
 
-    return false;
+    return true;
 }

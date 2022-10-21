@@ -1391,6 +1391,7 @@ XCamReturn sample_awb32_module(const void *arg)
                 sample_awb_getMwbAttr(ctx);
                 usleep(40 * 1000);
                 sample_awb_getMwbAttr(ctx);
+                break;
             case 'Y':
                 sample_awb_WriteAwbIn(ctx, RK_AIQ_UAPI_MODE_ASYNC);
                 break;

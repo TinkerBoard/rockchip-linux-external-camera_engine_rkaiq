@@ -4,7 +4,7 @@ if(NOT CMAKE_BUILD_TYPE)
         FORCE)
 endif()
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8...3.22)
 
 PROJECT(rkisp_demo)
 
@@ -15,13 +15,13 @@ include(CompileOptions)
 include(GNUInstallDirs)
 
 find_package(librga QUIET)
-if (LIBRGA_FOUND)
+if (librga_FOUND)
     add_compile_options(${LIBRGA_CFLAGS})
     add_compile_options(-DISPDEMO_ENABLE_RGA=1)
 endif()
 
 find_package(libdrm QUIET)
-if (LIBDRM_FOUND)
+if (libdrm_FOUND)
     add_compile_options(${LIBDRM_CFLAGS})
     add_compile_options(-DISPDEMO_ENABLE_DRM=1)
 endif()
@@ -82,7 +82,7 @@ include_directories(
 	${SMARTIR_INCLUDE_DIR}
     )
 
-if (LIBDRM_FOUND)
+if (libdrm_FOUND)
     aux_source_directory(demo DIR_SRCS)
     aux_source_directory(demo/drmDsp DRMDSP_DIR_SRCS)
     aux_source_directory(demo/sample SAMPLE_DIR_SRCS)
@@ -124,7 +124,7 @@ message(${LIBRARY_OUTPUT_PATH})
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-if (LIBDRM_FOUND)
+if (libdrm_FOUND)
 link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}"
 	"${PROJECT_SOURCE_DIR}/deps/lib" "${SMARTIR_INSTALLED_LIB_DIR}")
 else()
@@ -132,23 +132,21 @@ link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}"
 	"${SMARTIR_INSTALLED_LIB_DIR}")
 endif()
 add_executable(rkisp_demo ${DIR_SRCS})
-if (LIBDRM_FOUND)
+if (libdrm_FOUND)
 target_link_libraries(rkisp_demo rga drm ${RK_AIQ_LIB} ${IIO_LIBS}
 	${SMARTIR_LIB} pthread)
 else()
 target_link_libraries(rkisp_demo ${RK_AIQ_LIB} ${IIO_LIBS} ${SMARTIR_LIB} pthread)
 endif()
 
-if (LIBDRM_FOUND)
+if (libdrm_FOUND)
     target_link_libraries(rkisp_demo
-        PRIVATE
         libdrm::libdrm
         )
 endif()
 
-if (LIBRGA_FOUND)
+if (librga_FOUND)
     target_link_libraries(rkisp_demo
-        PRIVATE
         librga::librga
         )
 endif()

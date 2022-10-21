@@ -275,8 +275,6 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             }
             ldchPreOut->ldch_result.lut_mapxy_buf_fd = ldchCtx->ldch_mem_info->fd;
             ldchCtx->ldch_mem_info->state[0] = 1; //mark that this buf is using.
-        } else {
-            aiqGenLdchMeshDeInit(hLDCH);
         }
     }
 

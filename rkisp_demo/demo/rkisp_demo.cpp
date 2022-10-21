@@ -1623,6 +1623,7 @@ static void parse_args(int argc, char **argv, demo_context_t *ctx)
             break;
         case 'l':
             ctx->limit_range = 1;
+            break;
         case '1':
             strcpy(ctx->iqpath, optarg);
             break;

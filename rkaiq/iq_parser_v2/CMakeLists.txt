@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8...3.22)
 
 set(J2S_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/j2s/cJSON.cpp

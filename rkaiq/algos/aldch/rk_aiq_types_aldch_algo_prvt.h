@@ -69,11 +69,14 @@ typedef struct LDCHContext_s {
     int correct_level_max;
     const char* resource_path;
     std::atomic<bool> genLdchMeshInit;
+    int32_t last_lut_mem_fd;
+    int32_t ready_lut_mem_fd;
 
     struct CameraCoeff camCoeff;
     LdchParams ldchParams;
     LDCHState_t eState;
-    std::atomic<bool> isAttribUpdated;
+    bool isAttribUpdated;
+    std::atomic<bool> isLutUpdated;
 #if (RKAIQ_HAVE_LDCH_V21)
     rk_aiq_ldch_v21_cfg_t user_config;
 #else
