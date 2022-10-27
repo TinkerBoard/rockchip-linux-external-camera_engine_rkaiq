@@ -2394,6 +2394,7 @@ XCamReturn RkAiqCore::groupAnalyze(uint64_t grpId, const RkAiqAlgosGroupShared_t
 
     fullParam = analyzeInternal(static_cast<rk_aiq_core_analyze_type_e>(grpId));
     if (fullParam.ptr()) {
+        LOGD_ANALYZER("Group %s Calc Done\n", AnalyzerGroupType2Str[grpId]);
 #ifdef RKAIQ_ENABLE_CAMGROUP
         if (mCamGroupCoreManager)
             mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
@@ -2821,18 +2822,23 @@ RkAiqCore::handleAecStats(const SmartPtr<VideoBuffer> &buffer, SmartPtr<RkAiqAec
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     SmartPtr<RkAiqAecStatsProxy> aecStats = NULL;
 
-    if (mAiqAecStatsPool.ptr() && mAiqAecStatsPool->has_free_items()) {
+    if (!mAiqAecStatsPool.ptr()) {
+        return XCAM_RETURN_BYPASS;
+    } else if (mAiqAecStatsPool->has_free_items()) {
         aecStats = mAiqAecStatsPool->get_item();
     } else {
         LOGW_AEC("no free aecStats buffer!");
-        return XCAM_RETURN_BYPASS;
+        ret = XCAM_RETURN_BYPASS;
+        goto out;
     }
     ret = mTranslator->translateAecStats(buffer, aecStats);
     if (ret < 0) {
         LOGE_ANALYZER("translate aec stats failed!");
-        return XCAM_RETURN_BYPASS;
+        aecStats = NULL;
+        ret = XCAM_RETURN_BYPASS;
     }
 
+out:
     aecStat_ret = aecStats;
 
     uint32_t id = buffer->get_sequence();
@@ -2849,18 +2855,23 @@ RkAiqCore::handleAwbStats(const SmartPtr<VideoBuffer> &buffer, SmartPtr<RkAiqAwb
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     SmartPtr<RkAiqAwbStatsProxy> awbStats = NULL;
 
-    if (mAiqAwbStatsPool.ptr() && mAiqAwbStatsPool->has_free_items()) {
+    if (!mAiqAwbStatsPool.ptr()) {
+        return XCAM_RETURN_BYPASS;
+    } else if (mAiqAwbStatsPool->has_free_items()) {
         awbStats = mAiqAwbStatsPool->get_item();
     } else {
         LOGW_AWB("no free awbStats buffer!");
-        return XCAM_RETURN_BYPASS;
+        ret = XCAM_RETURN_BYPASS;
+        goto out;
     }
     ret = mTranslator->translateAwbStats(buffer, awbStats);
     if (ret < 0) {
         LOGE_ANALYZER("translate awb stats failed!");
-        return XCAM_RETURN_BYPASS;
+        awbStats = NULL;
+        ret = XCAM_RETURN_BYPASS;
     }
 
+out:
     awbStat_ret = awbStats;
 
     uint32_t id = buffer->get_sequence();
@@ -2868,7 +2879,7 @@ RkAiqCore::handleAwbStats(const SmartPtr<VideoBuffer> &buffer, SmartPtr<RkAiqAwb
             id, awbStats);
     post_message(msg);
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -2877,18 +2888,23 @@ RkAiqCore::handleAfStats(const SmartPtr<VideoBuffer> &buffer, SmartPtr<RkAiqAfSt
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     SmartPtr<RkAiqAfStatsProxy> afStats = NULL;
 
-    if (mAiqAfStatsPool.ptr() && mAiqAfStatsPool->has_free_items()) {
+    if (!mAiqAfStatsPool.ptr()) {
+        return XCAM_RETURN_BYPASS;
+    } else if (mAiqAfStatsPool->has_free_items()) {
         afStats = mAiqAfStatsPool->get_item();
     } else {
         LOGW_AF("no free afStats buffer!");
-        return XCAM_RETURN_BYPASS;
+        ret = XCAM_RETURN_BYPASS;
+        goto out;
     }
     ret = mTranslator->translateAfStats(buffer, afStats);
     if (ret < 0) {
         LOGE_ANALYZER("translate af stats failed!");
-        return XCAM_RETURN_BYPASS;
+        afStats = NULL;
+        ret = XCAM_RETURN_BYPASS;
     }
 
+out:
     afStat_ret = afStats;
     if (mPdafSupport) {
         mAfStats = afStats;
@@ -2911,7 +2927,7 @@ RkAiqCore::handleAfStats(const SmartPtr<VideoBuffer> &buffer, SmartPtr<RkAiqAfSt
         post_message(msg);
     }
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 #if RKAIQ_HAVE_PDAF
@@ -2954,48 +2970,58 @@ XCamReturn RkAiqCore::handleAtmoStats(const SmartPtr<VideoBuffer>& buffer,
                                       SmartPtr<RkAiqAtmoStatsProxy>& tmoStat) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    if (mAiqAtmoStatsPool.ptr() && mAiqAtmoStatsPool->has_free_items()) {
+    if (!mAiqAtmoStatsPool.ptr()) {
+        return XCAM_RETURN_BYPASS;
+    } else if (mAiqAtmoStatsPool->has_free_items()) {
         tmoStat = mAiqAtmoStatsPool->get_item();
     } else {
         LOGW_ATMO("no free atmoStats buffer!");
-        return XCAM_RETURN_BYPASS;
+        ret = XCAM_RETURN_BYPASS;
+        goto out;
     }
     ret = mTranslator->translateAtmoStats(buffer, tmoStat);
     if (ret < 0) {
         LOGE_ANALYZER("translate tmo stats failed!");
-        return XCAM_RETURN_BYPASS;
+        tmoStat = NULL;
+        ret = XCAM_RETURN_BYPASS;
     }
 
+out:
     uint32_t id = buffer->get_sequence();
     SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_ATMO_STATS_OK,
             id, tmoStat);
     post_message(msg);
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn RkAiqCore::handleAdehazeStats(const SmartPtr<VideoBuffer>& buffer,
         SmartPtr<RkAiqAdehazeStatsProxy>& dehazeStat) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    if (mAiqAdehazeStatsPool.ptr() && mAiqAdehazeStatsPool->has_free_items()) {
+    if (!mAiqAdehazeStatsPool.ptr()) {
+        return XCAM_RETURN_BYPASS;
+    } else if (mAiqAdehazeStatsPool->has_free_items()) {
         dehazeStat = mAiqAdehazeStatsPool->get_item();
     } else {
         LOGW_ADEHAZE("no free adehazeStats buffer!");
-        return XCAM_RETURN_BYPASS;
+        ret = XCAM_RETURN_BYPASS;
+        goto out;
     }
     ret = mTranslator->translateAdehazeStats(buffer, dehazeStat);
     if (ret < 0) {
         LOGE_ANALYZER("translate dehaze stats failed!");
-        return XCAM_RETURN_BYPASS;
+        dehazeStat = NULL;
+        ret = XCAM_RETURN_BYPASS;
     }
 
+out:
     uint32_t id = buffer->get_sequence();
     SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_ADEHAZE_STATS_OK,
             id, dehazeStat);
     post_message(msg);
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -3003,17 +3029,23 @@ RkAiqCore::handleOrbStats(const SmartPtr<VideoBuffer> &buffer)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     SmartPtr<RkAiqOrbStatsProxy> orbStats = NULL;
-    if (mAiqOrbStatsIntPool.ptr() && mAiqOrbStatsIntPool->has_free_items()) {
+    if (!mAiqOrbStatsIntPool.ptr()) {
+        return XCAM_RETURN_BYPASS;
+    } else if (mAiqOrbStatsIntPool->has_free_items()) {
         orbStats = mAiqOrbStatsIntPool->get_item();
     } else {
         LOGW_AORB("no free orbStats!");
-        return XCAM_RETURN_BYPASS;
+        ret = XCAM_RETURN_BYPASS;
+        goto out;
     }
 
     ret = mTranslator->translateOrbStats(buffer, orbStats);
-    if (ret)
+    if (ret) {
+        orbStats = NULL;
         return XCAM_RETURN_BYPASS;
+    }
 
+out:
     uint32_t id = buffer->get_sequence();
     orbStats->setId(id);
     orbStats->setType(RK_AIQ_SHARED_TYPE_ORB_STATS);

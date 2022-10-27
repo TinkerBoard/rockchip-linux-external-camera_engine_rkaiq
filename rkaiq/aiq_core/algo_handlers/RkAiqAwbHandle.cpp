@@ -891,15 +891,44 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
-    if (!mProcResShared.ptr())
-        return XCAM_RETURN_NO_ERROR;
+    if (!mProcResShared.ptr()) {
+#if defined(ISP_HW_V30)
+        params->mAwbV3xParams = cur_params->mAwbV3xParams;
+#elif defined(ISP_HW_V21)
+        params->mAwbV21Params = cur_params->mAwbV21Params;
+#elif defined(ISP_HW_V32)
+        params->mAwbV32Params = cur_params->mAwbV32Params;
+#else
+        params->mAwbParams = cur_params->mAwbParams;
+#endif
+#if defined(ISP_HW_V32)
+        params->mAwbGainV32Params = cur_params->mAwbGainV32Params;
+#else
+        params->mAwbGainParams = cur_params->mAwbGainParams;
+#endif
+        return XCAM_RETURN_BYPASS;
+    }
 
     RkAiqAlgoProcResAwb* awb_com                = &mProcResShared->result;
 
     if (!awb_com) {
         LOGD_ANALYZER("no awb result");
+#if defined(ISP_HW_V30)
+        params->mAwbV3xParams = cur_params->mAwbV3xParams;
+#elif defined(ISP_HW_V21)
+        params->mAwbV21Params = cur_params->mAwbV21Params;
+#elif defined(ISP_HW_V32)
+        params->mAwbV32Params = cur_params->mAwbV32Params;
+#else
+        params->mAwbParams = cur_params->mAwbParams;
+#endif
+#if defined(ISP_HW_V32)
+        params->mAwbGainV32Params = cur_params->mAwbGainV32Params;
+#else
+        params->mAwbGainParams = cur_params->mAwbGainParams;
+#endif
         mProcResShared = NULL;
-        return XCAM_RETURN_NO_ERROR;
+        return XCAM_RETURN_BYPASS;
     }
 
 #if defined(ISP_HW_V30)

@@ -524,7 +524,7 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
             uint32_t seq = -1;
             seq = hwres.dynamic_cast_ptr<VideoBuffer>()->get_sequence();
             if (seq == 0 && cnt == 0) {
-                LOGD("<TB> tb hwResCb stats %d\n", seq);
+                LOGE("<TB> tb hwResCb stats %d\n", seq);
                 struct timespec tp;
                 clock_gettime(CLOCK_MONOTONIC_RAW, &tp);
 
@@ -533,7 +533,7 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
                 SmartPtr<ispHwEvt_t> hw_evt = mCamHwIsp20->make_ispHwEvt(
                     0, V4L2_EVENT_FRAME_SYNC,
                     tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec);
-                LOGD("<TB> push sof %d\n", seq);
+                LOGE("<TB> push sof %d\n", seq);
                 mRkAiqAnalyzer->pushEvts(hw_evt);
             }
 
