@@ -57,7 +57,6 @@ namespace RkCam {
             return NULL; \
         } else if ((ret) == XCAM_RETURN_BYPASS) { \
             LOGW_ANALYZER("bypass !", __FUNCTION__, __LINE__); \
-            return NULL; \
         } \
     } while (0)
 
@@ -686,7 +685,7 @@ private:
     uint64_t groupUpdateMask;
     rk_aiq_tb_info_t mTbInfo;
 
-    bool mPdafSupport;
+    bool mPdafSupport{false};
     int64_t mFrmInterval = 30000LL;
     int64_t mSofTime = 0LL;
     int64_t mAfStatsTime;

@@ -490,8 +490,19 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
-    if (!mProcResShared.ptr())
-        return XCAM_RETURN_NO_ERROR;
+    if (!mProcResShared.ptr()) {
+        params->mFocusParams = NULL;
+#if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
+        params->mAfV32Params = cur_params->mAfV32Params;
+#endif
+#if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
+        params->mAfV3xParams = cur_params->mAfV3xParams;
+#endif
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
+        params->mAfParams = cur_params->mAfParams;
+#endif
+        return XCAM_RETURN_BYPASS;
+    }
 
     RkAiqAlgoProcResAf* af_com                  = &mProcResShared->result;
 
@@ -516,7 +527,18 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     memset(p_focus_param, 0, sizeof(rk_aiq_focus_params_t));
     if (!af_com) {
         LOGD_ANALYZER("no af result");
-        return XCAM_RETURN_NO_ERROR;
+        mProcResShared = NULL;
+        params->mFocusParams = NULL;
+#if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
+        params->mAfV32Params = cur_params->mAfV32Params;
+#endif
+#if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
+        params->mAfV3xParams = cur_params->mAfV3xParams;
+#endif
+#if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
+        params->mAfParams = cur_params->mAfParams;
+#endif
+        return XCAM_RETURN_BYPASS;
     }
 
     if (!this->getAlgoId()) {
