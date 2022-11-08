@@ -662,20 +662,32 @@ XCamReturn GetDehazeLocalGainSettingV11Duo(RkAiqAdehazeProcResult_t* pProcRes, f
         pProcRes->ProcResV11duo.sigma_idx[i] = (i + 1) * YNR_CURVE_STEP;
 
     // get sigma_lut
-    int tmp = 0;
-    for (int i = 0; i < DHAZ_V11_SIGMA_LUT_NUM; i++) {
-        tmp                                  = LIMIT_VALUE(8.0f * sigma[i], BIT_10_MAX, BIT_MIN);
-        pProcRes->ProcResV11duo.sigma_lut[i] = tmp;
+    float sigam_total = 0.0f;
+    for (int i = 0; i < DHAZ_V11_SIGMA_IDX_NUM; i++) sigam_total += sigma[i];
+
+    if (sigam_total < FLT_EPSILON) {
+        for (int i = 0; i < DHAZ_V11_SIGMA_IDX_NUM; i++)
+            pProcRes->ProcResV11duo.sigma_lut[i] = 0x200;
+    } else {
+        int tmp = 0;
+        for (int i = 0; i < DHAZ_V11_SIGMA_LUT_NUM; i++) {
+            tmp = LIMIT_VALUE(8.0f * sigma[i], BIT_10_MAX, BIT_MIN);
+            pProcRes->ProcResV11duo.sigma_lut[i] = tmp;
+        }
     }
 
-#if 0
-			LOGE_ADEHAZE("%s(%d) dehaze stManual sigma_curve(0~4): 0x%f 0x%f 0x%f 0x%f 0x%f\n", __func__, __LINE__, pstManu->sigma_curve[0], pstManu->sigma_curve[1],
-                         pstManu->sigma_curve[2], pstManu->sigma_curve[3], pstManu->sigma_curve[4]);
-            LOGE_ADEHAZE("%s(%d) dehaze local gain IDX(0~5): 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", __func__, __LINE__, pProcRes->ProcResV11duo.sigma_idx[0], pProcRes->ProcResV11duo.sigma_idx[1],
-                         pProcRes->ProcResV11duo.sigma_idx[2], pProcRes->ProcResV11duo.sigma_idx[3], pProcRes->ProcResV11duo.sigma_idx[4], pProcRes->ProcResV11duo.sigma_idx[5]);
-            LOGE_ADEHAZE("%s(%d) dehaze local gain LUT(0~5): 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", __func__, __LINE__, pProcRes->ProcResV11duo.sigma_lut[0], pProcRes->ProcResV11duo.sigma_lut[1],
-                         pProcRes->ProcResV11duo.sigma_lut[2], pProcRes->ProcResV11duo.sigma_lut[3], pProcRes->ProcResV11duo.sigma_lut[4], pProcRes->ProcResV11duo.sigma_lut[5]);
-#endif
+    LOGV_ADEHAZE("%s(%d) ynr sigma(0~5): %f %f %f %f %f %f\n", __func__, __LINE__, sigma[0],
+                 sigma[1], sigma[2], sigma[3], sigma[4], sigma[5]);
+    LOGV_ADEHAZE("%s(%d) dehaze local gain IDX(0~5): 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", __func__,
+                 __LINE__, pProcRes->ProcResV11duo.sigma_idx[0],
+                 pProcRes->ProcResV11duo.sigma_idx[1], pProcRes->ProcResV11duo.sigma_idx[2],
+                 pProcRes->ProcResV11duo.sigma_idx[3], pProcRes->ProcResV11duo.sigma_idx[4],
+                 pProcRes->ProcResV11duo.sigma_idx[5]);
+    LOGV_ADEHAZE("%s(%d) dehaze local gain LUT(0~5): 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", __func__,
+                 __LINE__, pProcRes->ProcResV11duo.sigma_lut[0],
+                 pProcRes->ProcResV11duo.sigma_lut[1], pProcRes->ProcResV11duo.sigma_lut[2],
+                 pProcRes->ProcResV11duo.sigma_lut[3], pProcRes->ProcResV11duo.sigma_lut[4],
+                 pProcRes->ProcResV11duo.sigma_lut[5]);
 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;
@@ -683,7 +695,6 @@ XCamReturn GetDehazeLocalGainSettingV11Duo(RkAiqAdehazeProcResult_t* pProcRes, f
 
 void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData) {
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
-    LOGV_ADEHAZE("%s: Adehaze RO data from register:\n", __FUNCTION__);
 
     pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_adp_air_base =
         ROData->dehaze_stats_v11_duo.dhaz_adp_air_base;
@@ -700,7 +711,7 @@ void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData
         pAdehazeCtx->stats.dehaze_stats_v11_duo.h_rgb_iir[i] =
             ROData->dehaze_stats_v11_duo.h_rgb_iir[i];
 
-    LOGV_ADEHAZE(
+    LOG1_ADEHAZE(
         "%s:  dhaz_adp_air_base:%d dhaz_adp_wt:%d dhaz_adp_gratio:%d dhaz_adp_tmax:%d "
         "dhaz_pic_sumh_left:%d dhaz_pic_sumh_right:%d\n",
         __FUNCTION__, pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_adp_air_base,
@@ -710,7 +721,7 @@ void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData
         pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_pic_sumh_left,
         pAdehazeCtx->stats.dehaze_stats_v11_duo.dhaz_pic_sumh_right);
     for (int i = 0; i < DHAZ_V11_HIST_WR_NUM; i++)
-        LOGV_ADEHAZE("%s:  h_rgb_iir[%d]:%d:\n", __FUNCTION__, i,
+        LOG1_ADEHAZE("%s:  h_rgb_iir[%d]:%d:\n", __FUNCTION__, i,
                      pAdehazeCtx->stats.dehaze_stats_v11_duo.h_rgb_iir[i]);
 
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);

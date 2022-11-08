@@ -407,7 +407,6 @@ void AdehazeEnhanceApiOffProcess(CalibDbV2_dehaze_v10_t* pCalib, RkAiqAdehazePro
 
 void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData) {
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
-    LOGV_ADEHAZE("%s: Adehaze RO data from register:\n", __FUNCTION__);
 
     pAdehazeCtx->stats.dehaze_stats_v10.dhaz_adp_air_base =
         ROData->dehaze_stats_v10.dhaz_adp_air_base;
@@ -420,17 +419,17 @@ void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData
         pAdehazeCtx->stats.dehaze_stats_v10.h_r_iir[i] = ROData->dehaze_stats_v10.h_r_iir[i];
     }
 
-    LOGV_ADEHAZE("%s:  dhaz_adp_air_base:%d dhaz_adp_wt:%d dhaz_adp_gratio:%d dhaz_adp_tmax:%d\n",
+    LOG1_ADEHAZE("%s:  dhaz_adp_air_base:%d dhaz_adp_wt:%d dhaz_adp_gratio:%d dhaz_adp_tmax:%d\n",
                  __FUNCTION__, pAdehazeCtx->stats.dehaze_stats_v10.dhaz_adp_air_base,
                  pAdehazeCtx->stats.dehaze_stats_v10.dhaz_adp_wt,
                  pAdehazeCtx->stats.dehaze_stats_v10.dhaz_adp_gratio,
                  pAdehazeCtx->stats.dehaze_stats_v10.dhaz_adp_tmax);
     for (int i = 0; i < ISP2X_DHAZ_HIST_IIR_NUM; i++) {
-        LOGV_ADEHAZE("%s:  h_b_iir[%d]:%d:\n", __FUNCTION__, i,
+        LOG1_ADEHAZE("%s:  h_b_iir[%d]:%d:\n", __FUNCTION__, i,
                      pAdehazeCtx->stats.dehaze_stats_v10.h_b_iir[i]);
-        LOGV_ADEHAZE("%s:  h_g_iir[%d]:%d:\n", __FUNCTION__, i,
+        LOG1_ADEHAZE("%s:  h_g_iir[%d]:%d:\n", __FUNCTION__, i,
                      pAdehazeCtx->stats.dehaze_stats_v10.h_g_iir[i]);
-        LOGV_ADEHAZE("%s:  h_r_iir[%d]:%d:\n", __FUNCTION__, i,
+        LOG1_ADEHAZE("%s:  h_r_iir[%d]:%d:\n", __FUNCTION__, i,
                      pAdehazeCtx->stats.dehaze_stats_v10.h_r_iir[i]);
     }
 

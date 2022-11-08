@@ -576,7 +576,6 @@ void AdehazeManuProcessV11(RkAiqAdehazeProcResult_t* pProcRes, mDehazeAttrV11_t*
 
 void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData) {
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
-    LOGV_ADEHAZE("%s: Adehaze RO data from register:\n", __FUNCTION__);
 
     pAdehazeCtx->stats.dehaze_stats_v11.dhaz_adp_air_base =
         ROData->dehaze_stats_v11.dhaz_adp_air_base;
@@ -586,13 +585,13 @@ void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData
     for (int i = 0; i < ISP21_DHAZ_HIST_IIR_NUM; i++)
         pAdehazeCtx->stats.dehaze_stats_v11.h_rgb_iir[i] = ROData->dehaze_stats_v11.h_rgb_iir[i];
 
-    LOGV_ADEHAZE("%s:  dhaz_adp_air_base:%d dhaz_adp_wt:%d dhaz_adp_gratio:%d dhaz_adp_tmax:%d\n",
+    LOG1_ADEHAZE("%s:  dhaz_adp_air_base:%d dhaz_adp_wt:%d dhaz_adp_gratio:%d dhaz_adp_tmax:%d\n",
                  __FUNCTION__, pAdehazeCtx->stats.dehaze_stats_v11.dhaz_adp_air_base,
                  pAdehazeCtx->stats.dehaze_stats_v11.dhaz_adp_wt,
                  pAdehazeCtx->stats.dehaze_stats_v11.dhaz_adp_gratio,
                  pAdehazeCtx->stats.dehaze_stats_v11.dhaz_adp_tmax);
     for (int i = 0; i < ISP21_DHAZ_HIST_IIR_NUM; i++)
-        LOGV_ADEHAZE("%s:  h_rgb_iir[%d]:%d:\n", __FUNCTION__, i,
+        LOG1_ADEHAZE("%s:  h_rgb_iir[%d]:%d:\n", __FUNCTION__, i,
                      pAdehazeCtx->stats.dehaze_stats_v11.h_rgb_iir[i]);
 
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);

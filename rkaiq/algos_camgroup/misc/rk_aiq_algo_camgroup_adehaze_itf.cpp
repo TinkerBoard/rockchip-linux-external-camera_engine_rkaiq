@@ -157,8 +157,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     // process
     if (!(pAdehazeGrpHandle->byPassProc)) ret = AdehazeProcess(pAdehazeGrpHandle);
     } else {
-        LOGD_ADEHAZE("%s: FrameID:%d Group Dehaze Enable is OFF, Bypass Dehaze !!! \n",
-                     pAdehazeGrpHandle->FrameID);
+        LOGD_ADEHAZE("Group Dehaze Enable is OFF, Bypass Dehaze !!! \n");
     }
 
     LOGD_ADEHAZE("/*************************Adehaze Group Over******************/ \n");
