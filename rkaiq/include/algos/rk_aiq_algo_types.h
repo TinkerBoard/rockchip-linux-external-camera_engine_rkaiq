@@ -477,16 +477,12 @@ typedef struct _RkAiqAlgoProcAdhaz {
 #ifdef RKAIQ_ENABLE_PARSER_V1
     const CamCalibDbContext_t *pCalibDehaze;
 #endif
-    int rawHeight;
-    int rawWidth;
-    int iso;
-    int hdr_mode;
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
-    Aynr_ProcResult_V3_t aynrV3_proc_res;
+    float sigma_v3[YNR_V3_ISO_CURVE_POINT_NUM];
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
-    AblcProc_V32_t ablcV32_proc_res;
-    Aynr_ProcResult_V22_t aynrV22_proc_res;
+    AdehazeOBResV12_t OBResV12;
+    float sigma_v22[YNR_V22_ISO_CURVE_POINT_NUM];
 #endif
 } RkAiqAlgoProcAdhaz;
 

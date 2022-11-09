@@ -139,16 +139,6 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     AdehazeGetCurrDataGroup(pAdehazeGrpHandle,
                             &pGrpProcPara->camgroupParmasArray[0]->aec._effAecExpInfo,
                             pGrpProcPara->camgroupParmasArray[0]->aec._aePreRes);
-#if RKAIQ_HAVE_DEHAZE_V12
-    if (pAdehazeGrpHandle->FrameNumber == LINEAR_NUM) {
-        // ablcV32_proc_res not ready for now
-        pAdehazeGrpHandle->ablcV32_proc_res.blc_ob_enable   = false;
-        pAdehazeGrpHandle->ablcV32_proc_res.isp_ob_predgain = 1.0f;
-        if (pAdehazeGrpHandle->ablcV32_proc_res.blc_ob_enable)
-            pAdehazeGrpHandle->CurrDataV12.ISO *=
-                pAdehazeGrpHandle->ablcV32_proc_res.isp_ob_predgain;
-    }
-#endif
     AdehazeByPassProcessing(pAdehazeGrpHandle);
 
     bool Enable = DehazeEnableSetting(pAdehazeGrpHandle);

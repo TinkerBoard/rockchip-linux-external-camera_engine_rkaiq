@@ -103,7 +103,6 @@ typedef struct AdehazeHandle_s {
     float YnrProcResV22_sigma[YNR_V22_ISO_CURVE_POINT_NUM];
     AdehazeAePreResV11_t CurrDataV12;
     AdehazeAePreResV11_t PreDataV12;
-    AblcProc_V32_t ablcV32_proc_res;
 #endif
     RkAiqAdehazeProcResult_t ProcRes;
     rkisp_adehaze_stats_t stats;

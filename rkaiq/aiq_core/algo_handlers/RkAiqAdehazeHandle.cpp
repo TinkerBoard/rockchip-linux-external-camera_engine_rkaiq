@@ -149,6 +149,7 @@ XCamReturn RkAiqAdehazeHandleInt::processing() {
         adhaz_proc_int->stats.stats_true = false;
     } else {
         adhaz_proc_int->stats.stats_true = true;
+
 #if RKAIQ_HAVE_DEHAZE_V10
         memcpy(&adhaz_proc_int->stats.dehaze_stats_v10,
                &xDehazeStats->adehaze_stats.dehaze_stats_v10, sizeof(dehaze_stats_v10_t));
@@ -160,19 +161,35 @@ XCamReturn RkAiqAdehazeHandleInt::processing() {
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
         memcpy(&adhaz_proc_int->stats.dehaze_stats_v11_duo,
                &xDehazeStats->adehaze_stats.dehaze_stats_v11_duo, sizeof(dehaze_stats_v11_duo_t));
-        adhaz_proc_int->aynrV3_proc_res = shared->res_comb.aynrV3_proc_res;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
         memcpy(&adhaz_proc_int->stats.dehaze_stats_v12,
                &xDehazeStats->adehaze_stats.dehaze_stats_v12, sizeof(dehaze_stats_v12_t));
-        adhaz_proc_int->ablcV32_proc_res = shared->res_comb.ablcV32_proc_res;
-        adhaz_proc_int->aynrV22_proc_res = shared->res_comb.aynrV22_proc_res;
-
 #endif
     }
-    adhaz_proc_int->rawHeight = sharedCom->snsDes.isp_acq_height;
-    adhaz_proc_int->rawWidth  = sharedCom->snsDes.isp_acq_width;
-    adhaz_proc_int->hdr_mode = sharedCom->working_mode;
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+#if RKAIQ_HAVE_YNR_V3
+    for (int i = 0; i < YNR_V3_ISO_CURVE_POINT_NUM; i++)
+        adhaz_proc_int->sigma_v3[i] = shared->res_comb.aynrV3_proc_res.stSelect.sigma[i];
+#else
+    for (int i = 0; i < YNR_V3_ISO_CURVE_POINT_NUM; i++) adhaz_proc_int->sigma_v3[i] = 0.0f;
+#endif
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+#if RKAIQ_HAVE_YNR_V22
+    for (int i = 0; i < YNR_V22_ISO_CURVE_POINT_NUM; i++)
+        adhaz_proc_int->sigma_v22[i] = shared->res_comb.aynrV22_proc_res.stSelect.sigma[i];
+#else
+    for (int i = 0; i < YNR_V22_ISO_CURVE_POINT_NUM; i++) adhaz_proc_int->sigma_v22[i] = 0.0f;
+#endif
+#if RKAIQ_HAVE_BLC_V32
+    adhaz_proc_int->OBResV12.blc_ob_enable   = shared->res_comb.ablcV32_proc_res.blc_ob_enable;
+    adhaz_proc_int->OBResV12.isp_ob_predgain = shared->res_comb.ablcV32_proc_res.isp_ob_predgain;
+#else
+    adhaz_proc_int->OBResV12.blc_ob_enable   = false;
+    adhaz_proc_int->OBResV12.isp_ob_predgain = 1.0f;
+#endif
+#endif
 
     ret = RkAiqHandle::processing();
     if (ret) {

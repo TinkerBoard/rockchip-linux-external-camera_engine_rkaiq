@@ -1105,6 +1105,9 @@ XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx, RKAiqAecExpInfo
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
     XCamReturn ret               = XCAM_RETURN_NO_ERROR;
 
+    // get ynr res
+    // todo
+
     // get EnvLv
     if (pAePreRes) {
         RkAiqAlgoPreResAe* pAEPreRes = (RkAiqAlgoPreResAe*)pAePreRes->map(pAePreRes);
@@ -1141,10 +1144,7 @@ XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx, RKAiqAecExpInfo
                                            pAeEffExpo->LinearExp.exp_real_params.digital_gain *
                                            pAeEffExpo->LinearExp.exp_real_params.isp_dgain * ISOMIN;
             // ablcV32_proc_res not ready for now
-            pAdehazeCtx->ablcV32_proc_res.blc_ob_enable   = false;
-            pAdehazeCtx->ablcV32_proc_res.isp_ob_predgain = 1.0f;
-            if (pAdehazeCtx->ablcV32_proc_res.blc_ob_enable)
-                pAdehazeCtx->CurrDataV12.ISO *= pAdehazeCtx->ablcV32_proc_res.isp_ob_predgain;
+            // todo
         } else if (pAdehazeCtx->FrameNumber == HDR_2X_NUM ||
                    pAdehazeCtx->FrameNumber == HDR_3X_NUM) {
             pAdehazeCtx->CurrDataV12.ISO = pAeEffExpo->HdrExp[1].exp_real_params.analog_gain *
@@ -1166,7 +1166,7 @@ XCamReturn AdehazeGetCurrData(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoProcAdhaz* 
 
     // get ynr res
     for (int i = 0; i < YNR_V22_ISO_CURVE_POINT_NUM; i++)
-        pAdehazeCtx->YnrProcResV22_sigma[i] = pProcPara->aynrV22_proc_res.stSelect.sigma[i];
+        pAdehazeCtx->YnrProcResV22_sigma[i] = pProcPara->sigma_v22[i];
 
     // get EnvLv
     XCamVideoBuffer* xCamAePreRes = pProcPara->com.u.proc.res_comb->ae_pre_res;
@@ -1204,6 +1204,13 @@ XCamReturn AdehazeGetCurrData(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoProcAdhaz* 
                 pProcPara->com.u.proc.curExp->LinearExp.exp_real_params.analog_gain *
                 pProcPara->com.u.proc.curExp->LinearExp.exp_real_params.digital_gain *
                 pProcPara->com.u.proc.curExp->LinearExp.exp_real_params.isp_dgain * ISOMIN;
+
+            if (pProcPara->OBResV12.blc_ob_enable && pProcPara->OBResV12.isp_ob_predgain < 1.0f) {
+                LOGE_ADEHAZE("%s: ob_enable ON , and ob_predgain[%f]<1.0f!!!\n", __FUNCTION__,
+                             pProcPara->OBResV12.isp_ob_predgain);
+            }
+            if (pProcPara->OBResV12.blc_ob_enable && pProcPara->OBResV12.isp_ob_predgain >= 1.0f)
+                pAdehazeCtx->CurrDataV12.ISO *= pProcPara->OBResV12.isp_ob_predgain;
         } else if (pAdehazeCtx->FrameNumber == HDR_2X_NUM ||
                    pAdehazeCtx->FrameNumber == HDR_3X_NUM) {
             pAdehazeCtx->CurrDataV12.ISO =

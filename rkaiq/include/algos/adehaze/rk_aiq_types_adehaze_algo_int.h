@@ -32,6 +32,11 @@
 #define ENHANCE_VALUE_DEFAULT_STEP   (80)
 #define ENH_LUMA_DEFAULT_STEP        (5)
 
+typedef struct AdehazeOBResV12_s {
+    bool blc_ob_enable;
+    float isp_ob_predgain;
+} AdehazeOBResV12_t;
+
 typedef enum dehaze_api_mode_s {
     DEHAZE_API_AUTO   = 0, /**< run atuo mode */
     DEHAZE_API_MANUAL = 1, /**< run manual mode*/

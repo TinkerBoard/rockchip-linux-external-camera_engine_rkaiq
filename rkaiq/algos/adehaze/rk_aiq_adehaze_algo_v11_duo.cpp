@@ -732,6 +732,9 @@ XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx, RKAiqAecExpInfo
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
     XCamReturn ret               = XCAM_RETURN_NO_ERROR;
 
+    // get ynr res
+    // todo
+
     // get EnvLv
     if (pAePreRes) {
         RkAiqAlgoPreResAe* pAEPreRes = (RkAiqAlgoPreResAe*)pAePreRes->map(pAePreRes);
@@ -788,7 +791,7 @@ XCamReturn AdehazeGetCurrData(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoProcAdhaz* 
 
     // get ynr res
     for (int i = 0; i < YNR_V3_ISO_CURVE_POINT_NUM; i++)
-        pAdehazeCtx->YnrProcResV3_sigma[i] = pProcPara->aynrV3_proc_res.stSelect.sigma[i];
+        pAdehazeCtx->YnrProcResV3_sigma[i] = pProcPara->sigma_v3[i];
 
     // get EnvLv
     XCamVideoBuffer* xCamAePreRes = pProcPara->com.u.proc.res_comb->ae_pre_res;
