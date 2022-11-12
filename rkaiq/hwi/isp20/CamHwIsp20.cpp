@@ -1555,7 +1555,7 @@ CamHwIsp20::poll_buffer_ready (SmartPtr<VideoBuffer> &buf)
             if (data->frame_id == 0) {
                 ++frame_id0_cnt;
             }
-            LOGE("<TB> poll param id %d cnt %d", data->frame_id, frame_id0_cnt);
+            LOGD("<TB> poll param id %d cnt %d", data->frame_id, frame_id0_cnt);
         }
         {
             SmartLock locker (_isp_params_cfg_mutex);

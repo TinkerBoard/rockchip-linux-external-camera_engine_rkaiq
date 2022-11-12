@@ -372,7 +372,6 @@ XCamReturn CamHwIsp32::setIspConfig() {
             if (frameId == 0 && not_skip_first) {
                 not_skip_first = false;
                 awb_cfg = isp_params->meas.rawawb;
-                LOGE_ANALYZER("<TB> Skip config id(%d)'s isp params", frameId);
                 mIspParamsDev->return_buffer_to_pool(v4l2buf);
                 return XCAM_RETURN_NO_ERROR;
             } else if (!not_skip_first) {
@@ -382,10 +381,6 @@ XCamReturn CamHwIsp32::setIspConfig() {
                 _full_active_isp32_params.module_en_update;
             isp_params->module_cfg_update =
                 _full_active_isp32_params.module_cfg_update;
-            LOGE_ANALYZER("<TB> Config id(%d)'s isp params, ens %x ens_up %x, cfg_up %x", frameId,
-                          isp_params->module_ens,
-                          isp_params->module_en_update,
-                          isp_params->module_cfg_update);
         }
 
         if (mIspParamsDev->queue_buffer(v4l2buf) != 0) {
