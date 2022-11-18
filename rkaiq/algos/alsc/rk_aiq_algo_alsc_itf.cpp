@@ -37,6 +37,8 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
     }
     AlscInit(&ctx->alsc_para, cfg->calibv2);
     *context = ctx;
+    alsc_handle_t hAlsc = (alsc_handle_t)ctx->alsc_para;
+    hAlsc->eState = ALSC_STATE_INITIALIZED;
     LOG1_ALSC( "%s: (exit)\n", __FUNCTION__);
     return XCAM_RETURN_NO_ERROR;
 }
@@ -63,13 +65,28 @@ prepare(RkAiqAlgoCom* params)
 
     sprintf(hAlsc->cur_res.name, "%dx%d", para->com.u.prepare.sns_op_width,
             para->com.u.prepare.sns_op_height );
+    hAlsc->cur_res.width = para->com.u.prepare.sns_op_width;
+    hAlsc->cur_res.height = para->com.u.prepare.sns_op_height;
+
     hAlsc->alscSwInfo.prepare_type = params->u.prepare.conf_type;
-   if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )){
-       hAlsc->calibLscV2 =
+    if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )){
+        hAlsc->calibLscV2 =
             (CalibDbV2_LSC_t*)(CALIBDBV2_GET_MODULE_PTR(para->com.u.prepare.calibv2, lsc_v2));
-   }
+    }
+
+    if (hAlsc->eState == ALSC_STATE_INITIALIZED) {
+        alscGetOtpInfo(params);
+    }
+
+    if(hAlsc->eState == ALSC_STATE_INITIALIZED || \
+       !!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_CHANGERES) || \
+       !!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_CHANGECAMS)) {
+        convertSensorLscOTP(&hAlsc->cur_res, &hAlsc->otpGrad, para->alsc_sw_info.bayerPattern);
+    }
+
     AlscPrepare((alsc_handle_t)(params->ctx->alsc_para));
 
+    hAlsc->eState = ALSC_STATE_STOPPED;
     LOG1_ALSC( "%s: (exit)\n", __FUNCTION__);
     return XCAM_RETURN_NO_ERROR;
 }
@@ -120,6 +137,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #endif
 
     LOG1_ALSC( "%s: (exit)\n", __FUNCTION__);
+    hAlsc->eState = ALSC_STATE_RUNNING;
     return XCAM_RETURN_NO_ERROR;
 }
 

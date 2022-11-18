@@ -7291,7 +7291,7 @@
 						"cac_v11":	{
 							"SettingPara":	{
 								"enable":	1,
-								"psf_path":	"/userdata/cac_map_hw_1920x1080.bin",
+								"psf_path":	"./CAC_sc200ai_CMK-OT2115-PC1_30IRC-F16/cac_map_hw_1920x1080.bin",
 								"psf_shift_bits":	2,
 								"center_en":	0,
 								"center_x":	0,
@@ -14893,7 +14893,7 @@
 						"cac_v11":	{
 							"SettingPara":	{
 								"enable":	0,
-								"psf_path":	"/data/cac_fake_map_sigma3_20x12x34.bin",
+								"psf_path":	"./CAC_sc200ai_CMK-OT2115-PC1_30IRC-F16/cac_map_hw_1920x1080.bin",
 								"psf_shift_bits":	2,
 								"center_en":	0,
 								"center_x":	0,

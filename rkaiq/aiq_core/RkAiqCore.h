@@ -364,6 +364,7 @@ public:
             mCamPhyId = -1;
             multi_isp_extended_pixels = 0;
             is_multi_isp_mode = false;
+            snsDes.otp_lsc = nullptr;
         }
     } RkAiqAlgosComShared_t;
 

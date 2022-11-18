@@ -10,7 +10,7 @@
 			"GainRange_len":	7
 		},
 		"Time2Reg":	{
-			"fCoeff":	[0, 0, 1, 0.5]
+			"fCoeff":	  [0, 0, 1, 0.5]
 		},
 		"CISGainSet":	{
 			"CISAgainRange":	{
@@ -805,20 +805,20 @@
 									}],
 								"lightSources_len":	7,
 								"earlierAwbAct":	{
-									"enable":	0,
+									"enable":	1,
 									"mode":	"CALIB_AWB_EARLACT_XYREG_AUTO",
 									"xyRegion":	[{
-											"normal":	[0, 0, 0, 0],
-											"big":	[0, 0, 0, 0]
+											"normal":	[-138, 316, 83, -155],
+											"big":	[-138, 316, 113, -200]
 										}, {
-											"normal":	[0, 0, 0, 0],
-											"big":	[0, 0, 0, 0]
+											"normal":	[-476, -138, 107, -189],
+											"big":	[-476, -138, 154, -253]
 										}, {
-											"normal":	[0, 0, 0, 0],
-											"big":	[0, 0, 0, 0]
+											"normal":	[-967, -476, 73, -176],
+											"big":	[-967, -476, 88, -176]
 										}, {
-											"normal":	[0, 0, 0, 0],
-											"big":	[0, 0, 0, 0]
+											"normal":	[-1626, -967, 92, -116],
+											"big":	[-1626, -967, 123, -116]
 										}]
 								}
 							},
@@ -8213,7 +8213,7 @@
 						},
 						"wb_v32":	{
 							"control":	{
-								"byPass":	0,
+								"byPass":	1,
 								"mode":	"CALIB_WB_MODE_AUTO"
 							},
 							"manualPara":	{
@@ -8592,22 +8592,23 @@
 									}],
 								"lightSources_len":	7,
 								"earlierAwbAct":	{
-									"enable":	0,
+									"enable":	1,
 									"mode":	"CALIB_AWB_EARLACT_XYREG_AUTO",
 									"xyRegion":	[{
-											"normal":	[0, 0, 0, 0],
-											"big":	[0, 0, 0, 0]
+											"normal":	[-138, 316, 83, -155],
+											"big":	[-138, 316, 113, -200]
 										}, {
-											"normal":	[0, 0, 0, 0],
-											"big":	[0, 0, 0, 0]
+											"normal":	[-476, -138, 107, -189],
+											"big":	[-476, -138, 154, -253]
 										}, {
-											"normal":	[0, 0, 0, 0],
-											"big":	[0, 0, 0, 0]
+											"normal":	[-967, -476, 73, -176],
+											"big":	[-967, -476, 88, -176]
 										}, {
-											"normal":	[0, 0, 0, 0],
-											"big":	[0, 0, 0, 0]
+											"normal":	[-1626, -967, 92, -116],
+											"big":	[-1626, -967, 123, -116]
 										}]
 								}
+
 							},
 							"autoExtPara":	{
 								"lightSourceForFirstFrame":	"D50",
@@ -8831,7 +8832,7 @@
 						},
 						"ccm_calib_v2":	{
 							"control":	{
-								"enable":	1,
+								"enable":	0,
 								"mode":	"CALIB_CCM_MODE_AUTO",
 								"wbgain_tolerance":	0,
 								"gain_tolerance":	0.2
@@ -9714,7 +9715,7 @@
 							"alscCoef":	{
 								"damp_enable":	1,
 								"illAll":	[{
-										"usedForCase":	0,
+										"usedForCase":	2,
 										"name":	"A",
 										"wbGain":	[1.03612005710602, 2.88381552696228],
 										"tableUsed":	[{
@@ -9728,7 +9729,7 @@
 										"vig":	[100, 90, 80, 70],
 										"vig_len":	4
 									}, {
-										"usedForCase":	0,
+										"usedForCase":	2,
 										"name":	"CWF",
 										"wbGain":	[1.48089611530304, 2.54157686233521],
 										"tableUsed":	[{
@@ -9742,7 +9743,7 @@
 										"vig":	[100, 90, 80, 70],
 										"vig_len":	4
 									}, {
-										"usedForCase":	0,
+										"usedForCase":	2,
 										"name":	"D50",
 										"wbGain":	[1.48003029823303, 1.91774296760559],
 										"tableUsed":	[{
@@ -9756,7 +9757,7 @@
 										"vig":	[100, 90, 80, 70],
 										"vig_len":	4
 									}, {
-										"usedForCase":	0,
+										"usedForCase":	2,
 										"name":	"D65",
 										"wbGain":	[1.68962478637695, 1.60487174987793],
 										"tableUsed":	[{
@@ -9770,7 +9771,7 @@
 										"vig":	[100, 90, 80, 70],
 										"vig_len":	4
 									}, {
-										"usedForCase":	0,
+										"usedForCase":	2,
 										"name":	"D75",
 										"wbGain":	[1.80047643184662, 1.45678293704987],
 										"tableUsed":	[{
@@ -9784,7 +9785,7 @@
 										"vig":	[100, 90, 80, 70],
 										"vig_len":	4
 									}, {
-										"usedForCase":	0,
+										"usedForCase":	2,
 										"name":	"HZ",
 										"wbGain":	[0.859157502651215, 3.3889262676239],
 										"tableUsed":	[{
@@ -9798,7 +9799,7 @@
 										"vig":	[100, 90, 80, 70],
 										"vig_len":	4
 									}, {
-										"usedForCase":	0,
+										"usedForCase":	2,
 										"name":	"TL84",
 										"wbGain":	[1.26704728603363, 2.50455188751221],
 										"tableUsed":	[{
@@ -9812,7 +9813,7 @@
 										"vig":	[100, 90, 80, 70],
 										"vig_len":	4
 									}, {
-										"usedForCase":	0,
+										"usedForCase":	2,
 										"name":	"GRAY",
 										"wbGain":	[1, 1],
 										"tableUsed":	[{

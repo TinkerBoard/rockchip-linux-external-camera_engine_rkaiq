@@ -140,6 +140,7 @@ typedef struct _RkAiqAlgoProcAwb {
     AblcProc_t ablcProcRes;
     AblcProc_V32_t ablcProcResV32;
     bool ablcProcResVaid;
+    struct rkmodule_awb_inf *awb_otp;
 } RkAiqAlgoProcAwb;
 
 typedef struct _RkAiqAlgoProcResAwb {
@@ -741,6 +742,7 @@ typedef struct _RkAiqAlgoProcResAldchV21 {
 // alsc
 typedef struct _RkAiqAlgoConfigAlsc {
     RkAiqAlgoCom com;
+    alsc_sw_info_t alsc_sw_info;
 } RkAiqAlgoConfigAlsc;
 
 typedef struct _RkAiqAlgoProcAlsc {

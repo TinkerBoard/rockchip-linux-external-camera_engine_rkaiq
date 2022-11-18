@@ -64,7 +64,7 @@ void CamHwIsp32::gen_full_isp_params(const struct isp32_isp_params_cfg* update_p
     for (i = 0; i <= RK_ISP2X_MAX_ID; i++) {
         if (update_params->module_cfg_update & (1LL << i)) {
 #define CHECK_UPDATE_PARAMS(dst, src)           \
-    if (memcmp(&dst, &src, sizeof(dst)) == 0) { \
+    if (memcmp(&dst, &src, sizeof(dst)) == 0 && !mTbInfo.is_pre_aiq) { \
         continue;                               \
     }                                           \
     *module_cfg_update_partial |= 1LL << i;     \

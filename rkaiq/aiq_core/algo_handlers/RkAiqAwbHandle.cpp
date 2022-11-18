@@ -789,6 +789,9 @@ XCamReturn RkAiqAwbHandleInt::processing() {
         awb_proc_int->ablcProcResV32= shared->res_comb.ablcV32_proc_res;
         awb_proc_int->ablcProcResVaid = true;
 #endif
+    // for otp awb
+    awb_proc_int->awb_otp = &sharedCom->snsDes.otp_awb;
+
     ret = RkAiqHandle::processing();
     if (ret < 0) {
         LOGE_ANALYZER("awb handle processing failed ret %d", ret);

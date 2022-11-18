@@ -479,7 +479,7 @@
  * - Revert "fakesensor: Open used tx/rx devs only"
  * - hwi: Use unordered_map instead of map for  static infos
  * - AF: merge isp3x modification
- * v4.0x.a
+ * v4.0x9.a
  * - iq_parser: increase the range of distortion params
  * - algos: ldchV21: support for dynamic switching
  * - rkisp_demo: update CompileOptions.cmake from rkaiq
@@ -487,10 +487,17 @@
  * - build: Enable build iq binrary remove unused RKPLATFORM
  * - cmake: Change to compatible with cmake's future version
  * - rkisp_demo: Fix build error on IPC sdk if drm enabled
+ * v4.0x9.b-rc1
+ * - AWB/LSC: Support OTP feature
+ * - TB/IQ: Modify CAC path for sc200ai
+ * - TB/IQ: Fix greenish of first frame for gc2093
+ * - DEHAZE: Fix null stats issue
+ * - DEHAZE: Deal with no ynr sigma case which causes maze artifict
+ * - HWI: Handle exceptions caused by no stats
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.a"
-#define RK_AIQ_RELEASE_DATE "2022-10-26"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.b-rc1"
+#define RK_AIQ_RELEASE_DATE "2022-11-18"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

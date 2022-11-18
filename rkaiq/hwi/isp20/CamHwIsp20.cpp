@@ -3687,10 +3687,11 @@ CamHwIsp20::getSensorModeData(const char* sns_ent_name,
         LOGW_CAMHW_SUBM(ISP20HW_SUBM, "can't find sensor %s", sns_name);
     } else {
         struct rkmodule_inf *minfo = &(iter_sns_info->second->mod_info);
-        if (minfo->awb.flag)
+        if (minfo->awb.flag) {
             memcpy(&sns_des.otp_awb, &minfo->awb, sizeof(minfo->awb));
-        else
-            minfo->awb.flag = 0;
+        } else {
+            sns_des.otp_awb.flag = 0;
+        }
 
         if (minfo->lsc.flag)
             sns_des.otp_lsc = &minfo->lsc;
