@@ -33,10 +33,10 @@ typedef enum RK_SMART_IR_STATUS_E {
 typedef struct rk_smart_ir_params_s {
     float d2n_envL_th;
     float n2d_envL_th;
-    float RG_gain_max;
-    float RG_gain_min;
-    float BG_gain_max;
-    float BG_gain_min;
+    float rggain_base;
+    float bggain_base;
+    float awbgain_rad;
+    float awbgain_dis;
     uint16_t switch_cnts_th;
 } rk_smart_ir_params_t;
 

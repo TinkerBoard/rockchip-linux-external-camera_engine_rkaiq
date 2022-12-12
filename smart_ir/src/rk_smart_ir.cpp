@@ -15,6 +15,8 @@
  *
  */
 
+#include <stdio.h>
+#include "math.h"
 #include "rk_smart_ir_api.h"
 #include "uAPI2/rk_aiq_user_api2_ae.h"
 #include "uAPI2/rk_aiq_user_api2_awb.h"
@@ -48,12 +50,12 @@ rk_smart_ir_init(const rk_aiq_sys_ctx_t* ctx)
     if (ir_ctx) {
         memset(ir_ctx, 0, sizeof(rk_smart_ir_ctx_t));
         ir_ctx->aiq_ctx = ctx;
-        ir_ctx->ir_configs.d2n_envL_th = 0.007f;
-        ir_ctx->ir_configs.n2d_envL_th = 1.0f;
-        ir_ctx->ir_configs.BG_gain_max = 1.08f;
-        ir_ctx->ir_configs.BG_gain_min = 0.98f;
-        ir_ctx->ir_configs.RG_gain_max = 1.07f;
-        ir_ctx->ir_configs.RG_gain_min = 1.0f;
+        ir_ctx->ir_configs.d2n_envL_th = 0.04f;
+        ir_ctx->ir_configs.n2d_envL_th = 0.2f;
+        ir_ctx->ir_configs.rggain_base = 1.0f;
+        ir_ctx->ir_configs.bggain_base = 1.0f;
+        ir_ctx->ir_configs.awbgain_rad = 0.1f;
+        ir_ctx->ir_configs.awbgain_dis = 0.3f;
         ir_ctx->cur_working_mode = -1;
     }
 
@@ -89,12 +91,12 @@ rk_smart_ir_config(rk_smart_ir_ctx_t* ctx, rk_smart_ir_params_t* config)
 
     SMARTIR_LOG("ir configs: \n"
              "d2n_envL_th: %0.3f, n2d_envL_th: %0.3f\n"
-             "BG_gain_max: %0.3f, BG_gain_min: %0.3f\n"
-             "RG_gain_max: %0.3f, RG_gain_min: %0.3f\n"
+             "rggain_base: %0.3f, bggain_base: %0.3f\n"
+             "awbgain_rad: %0.3f, awbgain_dis: %0.3f\n"
              "switch_cnts_th: %d",
             config->d2n_envL_th, config->n2d_envL_th,
-            config->BG_gain_max, config->BG_gain_min,
-            config->RG_gain_max, config->RG_gain_min,
+            config->rggain_base, config->bggain_base,
+            config->awbgain_rad, config->awbgain_dis,
             config->switch_cnts_th);
     SMARTIR_LOG("%s: (exit)\n", __FUNCTION__ );
 
@@ -107,11 +109,11 @@ enum RK_SMART_IR_ALGO_RESULT_e {
     RK_SMART_IR_ALGO_RESULT_NIGHT,
 };
 
-#define RK_SMART_IR_BLK_NUM_D2N_THRES (0.8 * RK_AIQ_AWB_GRID_NUM_TOTAL) // 200
-#define RK_SMART_IR_BLK_NUM_N2D_THRES (0.1 * RK_AIQ_AWB_GRID_NUM_TOTAL) // 22
+#define RK_SMART_IR_BLK_NUM_D2N_THRES (0.8 * RK_AIQ_AWB_GRID_NUM_TOTAL)
+#define RK_SMART_IR_BLK_NUM_N2D_THRES (0.6 * RK_AIQ_AWB_GRID_NUM_TOTAL)
 
 static int
-_rk_smart_ir_day_or_night(rk_smart_ir_ctx_t* ctx, float envL, float RGgain, float BGgain)
+_rk_smart_ir_day_or_night(rk_smart_ir_ctx_t* ctx, float envL, float distance)
 {
     int ret = RK_SMART_IR_ALGO_RESULT_KEEP;
     rk_smart_ir_params_t* ir_configs = &ctx->ir_configs;
@@ -120,10 +122,7 @@ _rk_smart_ir_day_or_night(rk_smart_ir_ctx_t* ctx, float envL, float RGgain, floa
         ret = RK_SMART_IR_ALGO_RESULT_NIGHT;
     } else if (envL > ctx->ir_configs.n2d_envL_th) {
         if (ctx->state == RK_SMART_IR_STATUS_NIGHT) {
-            if ((RGgain > ctx->ir_configs.RG_gain_min) &&
-                (RGgain < ctx->ir_configs.RG_gain_max) &&
-                (BGgain > ctx->ir_configs.BG_gain_min) &&
-                (BGgain < ctx->ir_configs.BG_gain_max)) {
+            if (distance < ctx->ir_configs.awbgain_dis) {
                 ret = RK_SMART_IR_ALGO_RESULT_NIGHT;
             } else {
                 ret = RK_SMART_IR_ALGO_RESULT_DAY;
@@ -156,13 +155,50 @@ rk_smart_ir_runOnce(rk_smart_ir_ctx_t* ctx, rk_aiq_isp_stats_t* stats_ref, rk_sm
     int blk_res[3];
     memset(blk_res, 0, sizeof(blk_res));
     if (stats_ref->awb_hw_ver == 4) { //isp32
-        double Rvalue = 0, Gvalue = 0,Bvalue = 0, wpNo = 0;
         float int_time = 0, again = 0, envL_blk = 0;
         int algo_status = 0;
+        double Rvalue_blk = 0, Gvalue_blk = 0, Bvalue_blk = 0, Yvalue_blk = 0;
+        float RGgain_blk = 0, BGgain_blk = 0;
+        float all_RGgain = 0.0f, all_BGgain = 0.0f, all_Dis = 0.0f;
+        float part_RGgain = 0.0f, part_BGgain = 0.0f, part_Dis = 0.0f;
+        float dis_tmp = 0;
+        int cnt = 0;
+        Uapi_ExpQueryInfo_t exp_info;
+        rk_aiq_user_api2_ae_queryExpResInfo(ctx->aiq_ctx, &exp_info);
+
         for (int i = 0; i < RK_AIQ_AWB_GRID_NUM_TOTAL; i++) {
-           Rvalue = stats_ref->awb_stats_v32.blockResult[i].Rvalue;
-           Gvalue = stats_ref->awb_stats_v32.blockResult[i].Gvalue;
-           Bvalue = stats_ref->awb_stats_v32.blockResult[i].Bvalue;
+            Rvalue_blk = stats_ref->awb_stats_v32.blockResult[i].Rvalue;
+            Gvalue_blk = stats_ref->awb_stats_v32.blockResult[i].Gvalue;
+            Bvalue_blk = stats_ref->awb_stats_v32.blockResult[i].Bvalue;
+            Yvalue_blk = stats_ref->aec_stats.ae_data.chn[0].rawae_big.channely_xy[i];
+            RGgain_blk = Rvalue_blk / Gvalue_blk;
+            BGgain_blk = Bvalue_blk / Gvalue_blk;
+            all_RGgain += RGgain_blk / RK_AIQ_AWB_GRID_NUM_TOTAL;
+            all_BGgain += BGgain_blk / RK_AIQ_AWB_GRID_NUM_TOTAL;
+            dis_tmp = pow(RGgain_blk - ctx->ir_configs.rggain_base, 2) +
+                        pow(BGgain_blk - ctx->ir_configs.bggain_base, 2);
+            dis_tmp = pow(dis_tmp, 0.5);
+            if (dis_tmp >= ctx->ir_configs.awbgain_rad /*&& Yvalue_blk > 10 && Yvalue_blk < 200*/) {
+                part_RGgain += RGgain_blk;
+                part_BGgain += BGgain_blk;
+                cnt++;
+            }
+        }
+
+        all_Dis = pow(all_RGgain - ctx->ir_configs.rggain_base, 2) +
+                    pow(all_BGgain - ctx->ir_configs.bggain_base, 2);
+        all_Dis = pow(all_Dis, 0.5);
+        if (cnt < 1)
+            cnt = 1;
+        part_Dis = pow(part_RGgain / cnt - ctx->ir_configs.rggain_base, 2) +
+                    pow(part_BGgain / cnt - ctx->ir_configs.bggain_base, 2);
+        part_Dis = pow(part_Dis, 0.5);
+
+        if (ctx->state == RK_SMART_IR_STATUS_NIGHT && !exp_info.IsConverged) {
+            ctx->switch_cnts = 0;
+        }
+
+        for (int i = 0; i < RK_AIQ_AWB_GRID_NUM_TOTAL; i++) {
            if (ctx->cur_working_mode  == RK_AIQ_WORKING_MODE_NORMAL) {
                int_time = stats_ref->aec_stats.ae_exp.LinearExp.exp_real_params.integration_time * 1000;
                again = stats_ref->aec_stats.ae_exp.LinearExp.exp_real_params.analog_gain;
@@ -177,32 +213,41 @@ rk_smart_ir_runOnce(rk_smart_ir_ctx_t* ctx, rk_aiq_isp_stats_t* stats_ref, rk_sm
                again = stats_ref->aec_stats.ae_exp.HdrExp[2].exp_real_params.analog_gain;
                envL_blk = stats_ref->aec_stats.ae_data.chn[2].rawae_big.channely_xy[i] / (int_time * again);
            }
-           //SMARTIR_LOG("blk[%d]:RGgain:%0.3f, BGgain:%0.3f, envL: %0.3f\n",
-           //            i , Rvalue/Gvalue, Bvalue/Gvalue, envL_blk);
-           algo_status = _rk_smart_ir_day_or_night(ctx, envL_blk, Rvalue/Gvalue, Bvalue/Gvalue);
+           algo_status = _rk_smart_ir_day_or_night(ctx, envL_blk, part_Dis);
            blk_res[algo_status]++;
            avg_envL += envL_blk;
         }
-
         avg_envL /= RK_AIQ_AWB_GRID_NUM_TOTAL;
 
         SMARTIR_LOG(">>> avg_envL:%0.3f, Cur:%s, Night:%d, Day:%d, keep:%d \n", avg_envL,
            ctx->state == RK_SMART_IR_STATUS_DAY ? "Day" : "Night",
            blk_res[2], blk_res[1], blk_res[0]);
-    }
 
-    if (ctx->state == RK_SMART_IR_STATUS_DAY) {
-         if (blk_res[RK_SMART_IR_ALGO_RESULT_NIGHT] > blk_res[RK_SMART_IR_ALGO_RESULT_DAY] &&
-             blk_res[RK_SMART_IR_ALGO_RESULT_NIGHT] > RK_SMART_IR_BLK_NUM_D2N_THRES)
-             ctx->switch_cnts++;
-         else
-             ctx->switch_cnts = 0;
-    } else {
-         if (blk_res[RK_SMART_IR_ALGO_RESULT_DAY] > blk_res[RK_SMART_IR_ALGO_RESULT_NIGHT] &&
-             blk_res[RK_SMART_IR_ALGO_RESULT_DAY] > RK_SMART_IR_BLK_NUM_N2D_THRES)
-             ctx->switch_cnts++;
-         else
-             ctx->switch_cnts = 0;
+        if (ctx->state == RK_SMART_IR_STATUS_DAY) {
+             if (blk_res[RK_SMART_IR_ALGO_RESULT_NIGHT] > blk_res[RK_SMART_IR_ALGO_RESULT_DAY] &&
+                 blk_res[RK_SMART_IR_ALGO_RESULT_NIGHT] > RK_SMART_IR_BLK_NUM_D2N_THRES)
+                 ctx->switch_cnts++;
+             else
+                 ctx->switch_cnts = 0;
+        } else {
+             if (blk_res[RK_SMART_IR_ALGO_RESULT_DAY] > blk_res[RK_SMART_IR_ALGO_RESULT_NIGHT] &&
+                 blk_res[RK_SMART_IR_ALGO_RESULT_DAY] > RK_SMART_IR_BLK_NUM_N2D_THRES)
+                 ctx->switch_cnts++;
+             else
+                 ctx->switch_cnts = 0;
+        }
+
+        SMARTIR_LOG("[SMARTIR]:FraID=%d,AEConv=%d,Luma=%0.4f,Exp=[%0.4f,%0.4f],AWBGain=[%0.4f,%0.4f],AllDis=%0.4f,PartDis=%0.4f,Blk=[%d,%d,%d],Cnts=%d,Cur=%s\n",
+            stats_ref->frame_id,
+            exp_info.IsConverged,
+            exp_info.LinAeInfo.MeanLuma,
+            exp_info.LinAeInfo.LinearExp.integration_time, exp_info.LinAeInfo.LinearExp.analog_gain,
+            all_RGgain, all_BGgain,
+            all_Dis,
+            part_Dis,
+            blk_res[0], blk_res[1], blk_res[2],
+            ctx->switch_cnts,
+            ctx->state == RK_SMART_IR_STATUS_DAY ? "Day" : "Night");
     }
 
 #if 0
