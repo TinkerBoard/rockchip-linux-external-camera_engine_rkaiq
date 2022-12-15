@@ -7,6 +7,7 @@ cmake_dependent_option(RKAIQ_ENABLE_ASAN "Build libraries/executable with addres
 cmake_dependent_option(RKAIQ_ENABLE_SIMULATOR "Build simulator for algos run on PC" OFF "WIN32" OFF)
 set(RKAIQ_ENABLE_PARSER_V1   FALSE CACHE INTERNAL "Build rkaiq's old xml parser")
 set(RKAIQ_ENABLE_CAMGROUP    FALSE CACHE INTERNAL "Build rkaiq's camera group algorithms")
+set(RKAIQ_ENABLE_LIBDRM      TRUE  CACHE INTERNAL "Build rkaiq with libdrm")
 set(RKAIQ_HAVE_FAKECAM       FALSE CACHE INTERNAL "Build rkaiq's Fake Cam")
 set(RKAIQ_HAVE_SPSTREAM      FALSE CACHE INTERNAL "Build rkaiq's SP Stream")
 set(RKAIQ_HAVE_THUMBNAILS    FALSE CACHE INTERNAL "Build rkaiq's Thumbnails Service")
