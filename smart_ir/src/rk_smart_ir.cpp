@@ -34,6 +34,48 @@ RKAIQ_BEGIN_DECLARE
 #define SMARTIR_LOG LOGD
 #endif
 
+#define SMARTIR_LOG_BITS (1ULL << 35) //reuse ASD
+static unsigned long long g_cam_engine_log_level = 0xff0;
+static bool g_smart_ir_log = false;
+
+bool xcam_get_enviroment_value(const char* variable, unsigned long long* value)
+{
+    if (!variable || !value) {
+
+        return false;
+    }
+
+    char* valueStr = getenv(variable);
+    if (valueStr) {
+        *value = strtoull(valueStr, nullptr, 16);
+
+        return true;
+    }
+
+    return false;
+}
+
+int xcam_get_log_level()
+{
+#ifdef ANDROID_OS
+    char property_value[PROPERTY_VALUE_MAX] = {0};
+
+    property_get("persist.vendor.rkisp.log", property_value, "0");
+    g_cam_engine_log_level = strtoull(property_value, nullptr, 16);
+
+#else
+    xcam_get_enviroment_value("persist_camera_engine_log",
+                              &g_cam_engine_log_level);
+#endif
+    printf("rkaiq log level %llx\n", g_cam_engine_log_level);
+
+    if (g_cam_engine_log_level & SMARTIR_LOG_BITS) {
+        g_smart_ir_log = true;
+    }
+
+    return 0;
+}
+
 typedef struct rk_smart_ir_ctx_s {
     const rk_aiq_sys_ctx_t* aiq_ctx;
     int cur_working_mode;
@@ -58,6 +100,7 @@ rk_smart_ir_init(const rk_aiq_sys_ctx_t* ctx)
         ir_ctx->ir_configs.awbgain_dis = 0.3f;
         ir_ctx->cur_working_mode = -1;
     }
+    xcam_get_log_level();
 
     SMARTIR_LOG("%s: (exit)\n", __FUNCTION__ );
     return ir_ctx;
@@ -89,15 +132,16 @@ rk_smart_ir_config(rk_smart_ir_ctx_t* ctx, rk_smart_ir_params_t* config)
     ctx->switch_cnts = 0;
     ctx->cur_working_mode = -1;
 
-    SMARTIR_LOG("ir configs: \n"
-             "d2n_envL_th: %0.3f, n2d_envL_th: %0.3f\n"
-             "rggain_base: %0.3f, bggain_base: %0.3f\n"
-             "awbgain_rad: %0.3f, awbgain_dis: %0.3f\n"
-             "switch_cnts_th: %d",
-            config->d2n_envL_th, config->n2d_envL_th,
-            config->rggain_base, config->bggain_base,
-            config->awbgain_rad, config->awbgain_dis,
-            config->switch_cnts_th);
+    if (g_smart_ir_log)
+        printf("[SMARTIR] ir configs: \n"
+                "\t d2n_envL_th: %0.3f, n2d_envL_th: %0.3f\n"
+                "\t rggain_base: %0.3f, bggain_base: %0.3f\n"
+                "\t awbgain_rad: %0.3f, awbgain_dis: %0.3f\n"
+                "\t switch_cnts_th: %d",
+                config->d2n_envL_th, config->n2d_envL_th,
+                config->rggain_base, config->bggain_base,
+                config->awbgain_rad, config->awbgain_dis,
+                config->switch_cnts_th);
     SMARTIR_LOG("%s: (exit)\n", __FUNCTION__ );
 
     return ret;
@@ -236,18 +280,18 @@ rk_smart_ir_runOnce(rk_smart_ir_ctx_t* ctx, rk_aiq_isp_stats_t* stats_ref, rk_sm
              else
                  ctx->switch_cnts = 0;
         }
-
-        SMARTIR_LOG("[SMARTIR]:FraID=%d,AEConv=%d,Luma=%0.4f,Exp=[%0.4f,%0.4f],AWBGain=[%0.4f,%0.4f],AllDis=%0.4f,PartDis=%0.4f,Blk=[%d,%d,%d],Cnts=%d,Cur=%s\n",
-            stats_ref->frame_id,
-            exp_info.IsConverged,
-            exp_info.LinAeInfo.MeanLuma,
-            exp_info.LinAeInfo.LinearExp.integration_time, exp_info.LinAeInfo.LinearExp.analog_gain,
-            all_RGgain, all_BGgain,
-            all_Dis,
-            part_Dis,
-            blk_res[0], blk_res[1], blk_res[2],
-            ctx->switch_cnts,
-            ctx->state == RK_SMART_IR_STATUS_DAY ? "Day" : "Night");
+        if (g_smart_ir_log)
+            printf("[SMARTIR] FraID=%d,AEConv=%d,Luma=%0.4f,Exp=[%0.4f,%0.4f],AWBGain=[%0.4f,%0.4f],AllDis=%0.4f,PartDis=%0.4f,Blk=[%d,%d,%d],Cnts=%d,Cur=%s\n",
+                    stats_ref->frame_id,
+                    exp_info.IsConverged,
+                    exp_info.LinAeInfo.MeanLuma,
+                    exp_info.LinAeInfo.LinearExp.integration_time, exp_info.LinAeInfo.LinearExp.analog_gain,
+                    all_RGgain, all_BGgain,
+                    all_Dis,
+                    part_Dis,
+                    blk_res[0], blk_res[1], blk_res[2],
+                    ctx->switch_cnts,
+                    ctx->state == RK_SMART_IR_STATUS_DAY ? "Day" : "Night");
     }
 
 #if 0
