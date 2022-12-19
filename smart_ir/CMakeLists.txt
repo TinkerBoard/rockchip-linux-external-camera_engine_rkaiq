@@ -10,9 +10,9 @@ PROJECT(smart_ir)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(BuildOptions)
-include(CompileOptions)
-include(GNUInstallDirs)
+# include(BuildOptions)
+# include(CompileOptions)
+# include(GNUInstallDirs)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
@@ -22,10 +22,34 @@ message("rkaiq src path" ${RK_AIQ_SOURCE_DIR})
 
 add_compile_options(-Os)
 add_compile_options(-fstack-protector-strong -D_FORTIFY_SOURCE=2)
+
+find_path(RKAIQ_INCLUDE_DIR
+    NAMES
+	rk_aiq.h
+    PATH
+	common
+	rkaiq/common
+)
+find_library(RKAIQ_LIBRARY_DIR
+	rkaiq
+)
+if(RKAIQ_INCLUDE_DIR AND RKAIQ_LIBRARY_DIR)
+set(RK_AIQ_INSTALLED_DIR ${RKAIQ_INCLUDE_DIR})
+set(RK_AIQ_LIB_DIR ${RKAIQ_LIBRARY_DIR})
+else()
 set(RK_AIQ_INSTALLED_DIR "${RK_AIQ_SOURCE_DIR}/build/linux/output/${ARCH}/installed" CACHE STRING "AIQ library installed dir")
 set(RK_AIQ_LIB_DIR ${RK_AIQ_INSTALLED_DIR}/lib)
+endif()
 message("rkaiq lib path" ${RK_AIQ_LIB_DIR})
 set(RK_AIQ_INCLUDE_DIR
+	${RK_AIQ_INSTALLED_DIR}/
+	${RK_AIQ_INSTALLED_DIR}/rkaiq/
+	${RK_AIQ_INSTALLED_DIR}/rkaiq/uAPI2
+	${RK_AIQ_INSTALLED_DIR}/rkaiq/xcore/
+	${RK_AIQ_INSTALLED_DIR}/rkaiq/algos/
+	${RK_AIQ_INSTALLED_DIR}/rkaiq/common/
+	${RK_AIQ_INSTALLED_DIR}/rkaiq/iq_parser/
+	${RK_AIQ_INSTALLED_DIR}/rkaiq/iq_parser_v2/
 	${RK_AIQ_INSTALLED_DIR}/include/
 	${RK_AIQ_INSTALLED_DIR}/include/rkaiq/
 	${RK_AIQ_INSTALLED_DIR}/include/rkaiq/uAPI2
