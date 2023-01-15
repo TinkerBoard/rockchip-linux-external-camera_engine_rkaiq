@@ -26,8 +26,6 @@
 
 RKAIQ_BEGIN_DECLARE
 
-#define RK_AIQ_ACCM_COLOR_GAIN_NUM 4
-
 typedef struct accm_sw_info_s {
     float sensorGain;
     float awbGain[2];
@@ -53,12 +51,11 @@ typedef struct rk_aiq_ccm_accm_attrib_s {
     rk_aiq_ccm_color_inhibition_t color_inhibition;
     rk_aiq_ccm_color_saturation_t color_saturation;
 } rk_aiq_ccm_accm_attrib_t;
+
 typedef struct rk_aiq_ccm_attrib_s {
     rk_aiq_uapi_sync_t sync;
     bool byPass;
-    // M4_ENUM_DESC("mode", "rk_aiq_ccm_op_mode_t", "RK_AIQ_CCM_MODE_AUTO");
     rk_aiq_ccm_op_mode_t mode;
-    // M4_STRUCT_DESC("stManual", "normal_ui_style")
     rk_aiq_ccm_mccm_attrib_t stManual;
     rk_aiq_ccm_accm_attrib_t stAuto;
 } rk_aiq_ccm_attrib_t;
@@ -66,9 +63,7 @@ typedef struct rk_aiq_ccm_attrib_s {
 typedef struct rk_aiq_ccm_v2_attrib_s {
     rk_aiq_uapi_sync_t sync;
     bool byPass;
-    // M4_ENUM_DESC("mode", "rk_aiq_ccm_op_mode_t", "RK_AIQ_CCM_MODE_AUTO");
     rk_aiq_ccm_op_mode_t mode;
-    // M4_STRUCT_DESC("stManual", "normal_ui_style")
     rk_aiq_ccm_mccm_attrib_v2_t stManual;
     rk_aiq_ccm_accm_attrib_t stAuto;
 } rk_aiq_ccm_v2_attrib_t;

@@ -24,7 +24,7 @@
 #include "rk_aiq_pool.h"
 #include "RkAiqCalibDbV2Helper.h"
 #include "rk_aiq.h"
-
+#include "rk_aiq_offline_raw.h"
 namespace RkCam {
 
 using namespace XCam;
@@ -139,8 +139,10 @@ public:
 #endif
     virtual void setTbInfo(rk_aiq_tb_info_t& info) = 0;
     virtual void setDevBufCnt(const std::map<std::string, int>& dev_buf_cnt_map) = 0;
-
- private:
+    virtual XCamReturn reset_hardware() = 0;
+    virtual XCamReturn rawReproc_genIspParams (uint32_t sequence, rk_aiq_frame_info_t *offline_finfo, int mode) = 0;
+    virtual XCamReturn rawReProc_prepare (uint32_t sequence, rk_aiq_frame_info_t *offline_finfo) = 0;
+private:
     XCAM_DEAD_COPY (ICamHw);
 };
 

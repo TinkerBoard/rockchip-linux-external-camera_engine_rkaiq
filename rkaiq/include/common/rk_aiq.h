@@ -20,6 +20,9 @@
 
 #include "base/xcam_common.h"
 #include "rk_aiq_types.h"
+#ifdef ANDROID_OS
+#include <functional>
+#endif
 
 XCAM_BEGIN_DECLARE
 
@@ -28,16 +31,24 @@ XCAM_BEGIN_DECLARE
 
 typedef enum rk_aiq_status_e {
     RK_AIQ_STATUS_VICAP_READY = 1,
+    RK_AIQ_STATUS_VICAP_RESET,
+    RK_AIQ_STATUS_VICAP_WITH_MULTI_CAM_RESET,
 } rk_aiq_status_t;
 
 typedef struct rk_aiq_metas_s {
     uint32_t frame_id;
 } rk_aiq_metas_t;
 
+typedef struct rk_aiq_multi_cam_s {
+    int multi_cam_id[8];
+    int cam_count;
+} rk_aiq_multi_cam_t;
+
 typedef struct rk_aiq_hwevt_s {
     int cam_id;
     int aiq_status;
     void* ctx;
+    rk_aiq_multi_cam_t multi_cam;
 } rk_aiq_hwevt_t;
 
 typedef enum rk_aiq_err_code {
@@ -59,7 +70,11 @@ typedef struct rk_aiq_ver_info_s{
 } rk_aiq_ver_info_t;
 
 typedef XCamReturn (*rk_aiq_error_cb)(rk_aiq_err_msg_t* err_msg);
+#ifdef ANDROID_OS
+typedef std::function<XCamReturn(rk_aiq_metas_t* metas)> rk_aiq_metas_cb;
+#else
 typedef XCamReturn (*rk_aiq_metas_cb)(rk_aiq_metas_t* metas);
+#endif
 typedef XCamReturn (*rk_aiq_hwevt_cb)(rk_aiq_hwevt_t* hwevt);
 
 typedef enum rk_aiq_cam_type_e {

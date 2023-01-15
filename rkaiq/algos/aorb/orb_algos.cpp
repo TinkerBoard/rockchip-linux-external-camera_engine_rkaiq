@@ -110,7 +110,7 @@ ORBList* get_roi_points_list (rk_aiq_orb_algo_stat_t* keypoints, orb_rect_t roi)
 }
 
 ORBList* matching(ORBList* roi_points_list, rk_aiq_orb_algo_stat_t* keypoints2, orb_rect_t roi) {
-    orb_matched_point_t keypoint = {0};
+    orb_matched_point_t keypoint{};
     ORBList* matched_list = initList(sizeof(orb_matched_point_t));
 
     for(Node* point = roi_points_list->start; point != NULL; point = point->next) {
@@ -230,7 +230,7 @@ void gaussian_elimination(double *input, int n)
 
 int get_trusted_four_points(ORBList* matched_keypoints, point_t src[4], point_t dst[4])
 {
-    point_t center = {0};
+    point_t center{};
 
     if (matched_keypoints->length < 4) {
         return -1;
@@ -326,8 +326,8 @@ int get_trusted_four_points(ORBList* matched_keypoints, point_t src[4], point_t 
 int find_homography_by_four_points(ORBList* matched_keypoints, double homography[9])
 {
     int ret = 0;
-    point_t src[4] = {0};
-    point_t dst[4] = {0};
+    point_t src[4]{};
+    point_t dst[4]{};
 
     ret = get_trusted_four_points(matched_keypoints, src, dst);
     if (ret < 0) {
@@ -481,7 +481,7 @@ int affine_fit(double fpt[][2], double tpt[][2], int length, int dim, double aff
     }
 
     // dim+1 x dim
-    double c[3][2] = {0};
+    double c[3][2]{};
     for(int j = 0; j < dim; j++) {
         for(int k = 0; k < (dim + 1); k++) {
             for(int i = 0; i < length; i++) {
@@ -492,7 +492,7 @@ int affine_fit(double fpt[][2], double tpt[][2], int length, int dim, double aff
     }
 
     // dim+1 x dim+1
-    double Q[3][3] = {0};
+    double Q[3][3]{};
     for(int k = 0; k < length; k++) {
         double qt[3] = {fpt[k][0], fpt[k][1], 1};
         for(int i = 0; i < (dim + 1); i++) {

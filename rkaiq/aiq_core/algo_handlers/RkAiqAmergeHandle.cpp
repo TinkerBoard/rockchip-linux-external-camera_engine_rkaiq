@@ -242,7 +242,6 @@ XCamReturn RkAiqAmergeHandleInt::prepare() {
     RkAiqAlgoConfigAmerge* amerge_config_int = (RkAiqAlgoConfigAmerge*)mConfig;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
-    // TODO
     amerge_config_int->rawHeight    = sharedCom->snsDes.isp_acq_height;
     amerge_config_int->rawWidth     = sharedCom->snsDes.isp_acq_width;
     amerge_config_int->working_mode = sharedCom->working_mode;

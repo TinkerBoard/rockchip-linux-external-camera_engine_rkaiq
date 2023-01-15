@@ -36,7 +36,7 @@ static XCamReturn groupAynrV22CreateCtx(RkAiqAlgoContext **context, const AlgoCt
     CamGroup_AynrV22_Contex_t *aynr_group_contex = NULL;
     AlgoCtxInstanceCfgCamGroup *cfgInt = (AlgoCtxInstanceCfgCamGroup*)cfg;
 
-    if(CHECK_ISP_HW_V220()) {
+    if(CHECK_ISP_HW_V32()) {
         aynr_group_contex = (CamGroup_AynrV22_Contex_t*)malloc(sizeof(CamGroup_AynrV22_Contex_t));
 #if AYNR_USE_JSON_FILE_V22
         Aynr_result_V22_t ret_v22 = AYNRV22_RET_SUCCESS;
@@ -80,7 +80,7 @@ static XCamReturn groupAynrV22DestroyCtx(RkAiqAlgoContext *context)
 
     CamGroup_AynrV22_Contex_t *aynr_group_contex = (CamGroup_AynrV22_Contex_t*)context;
 
-    if(CHECK_ISP_HW_V220()) {
+    if(CHECK_ISP_HW_V32()) {
         Aynr_result_V22_t ret_v22 = AYNRV22_RET_SUCCESS;
         ret_v22 = Aynr_Release_V22(aynr_group_contex->aynr_contex_v22);
         if(ret_v22 != AYNRV22_RET_SUCCESS) {
@@ -113,7 +113,7 @@ static XCamReturn groupAynrV22Prepare(RkAiqAlgoCom* params)
     CamGroup_AynrV22_Contex_t * aynr_group_contex = (CamGroup_AynrV22_Contex_t *)params->ctx;
     RkAiqAlgoCamGroupPrepare* para = (RkAiqAlgoCamGroupPrepare*)params;
 
-    if(CHECK_ISP_HW_V220()) {
+    if(CHECK_ISP_HW_V32()) {
         Aynr_Context_V22_t * aynr_contex_v22 = aynr_group_contex->aynr_contex_v22;
         if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
             // todo  update calib pars for surround view
@@ -240,14 +240,14 @@ static XCamReturn groupAynrV22Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
 
 
 
-    if(CHECK_ISP_HW_V220()) {
+    if(CHECK_ISP_HW_V32()) {
         Aynr_Context_V22_t * aynr_contex_v22 = aynr_group_contex->aynr_contex_v22;
         Aynr_ProcResult_V22_t stAynrResultV22;
         deltaIso = abs(stExpInfoV22.arIso[stExpInfoV22.hdr_mode] - aynr_contex_v22->stExpInfo.arIso[stExpInfoV22.hdr_mode]);
         if(deltaIso > AYNRV22_RECALCULATE_DELTA_ISO) {
             aynr_contex_v22->isReCalculate |= 1;
         }
-        if(stExpInfoV22.blc_ob_predgain != aynr_contex_v22->stExpInfoV23.blc_ob_predgain) {
+        if(stExpInfoV22.blc_ob_predgain != aynr_contex_v22->stExpInfo.blc_ob_predgain) {
             aynr_contex_v22->isReCalculate |= 1;
         }
         if(aynr_contex_v22->isReCalculate) {
@@ -265,6 +265,8 @@ static XCamReturn groupAynrV22Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
         Aynr_GetProcResult_V22(aynr_contex_v22, &stAynrResultV22);
         for (int i = 0; i < procResParaGroup->arraySize; i++) {
             *(procResParaGroup->camgroupParmasArray[i]->aynr._aynr_procRes_v22) = stAynrResultV22.stFix;
+            memcpy(procResParaGroup->camgroupParmasArray[i]->aynr_sigma._aynr_sigma_v22,
+                   stAynrResultV22.stSelect.sigma, sizeof(stAynrResultV22.stSelect.sigma));
         }
         aynr_contex_v22->isReCalculate = 0;
     }

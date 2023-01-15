@@ -29,6 +29,7 @@ RkAiqAnalyzerGroup::RkAiqAnalyzerGroup(RkAiqCore* aiqCore, enum rk_aiq_core_anal
                                        const uint64_t flag, const RkAiqGrpConditions_t* grpConds,
                                        const bool singleThrd)
     : mAiqCore(aiqCore), mGroupType(type), mDepsFlag(flag) {
+    mUserSetDelayCnts = INT8_MAX;
     if (grpConds)
         mGrpConds = *grpConds;
     if (!singleThrd) {
@@ -52,9 +53,9 @@ XCamReturn RkAiqAnalyzerGroup::start() {
 void RkAiqAnalyzerGroup::msgReduction(std::map<uint32_t, GroupMessage>& msgMap) {
     // TODO(Cody): Workaround for current implementation
     // Should let message thread handle the reduction
-    if (mGroupMsgMap.size() > 0) {
+    if (!mGroupMsgMap.empty()) {
         const auto originalSize = mGroupMsgMap.size();
-        const int numToErase    = originalSize - 3;
+        const int numToErase    = originalSize - 6;
         if (numToErase > 0) {
             int32_t unreadyFlag = mDepsFlag & ~mGroupMsgMap.begin()->second.msg_flags;
             // print missing params
@@ -68,8 +69,8 @@ void RkAiqAnalyzerGroup::msgReduction(std::map<uint32_t, GroupMessage>& msgMap) 
                 unreadyFlag >>= 1;
                 i++;
             }
-            LOGE_ANALYZER_SUBM(ANALYZER_SUBM,
-                    "camId:%d group(%s): id[%d] map size is %d, erase %d, element, missing conditions: %s",
+            LOGW_ANALYZER_SUBM(ANALYZER_SUBM,
+                    "camId: %d, group(%s): id[%d] map size is %d, erase %d, element, missing conditions: %s",
                     mAiqCore->mAlogsComSharedParams.mCamPhyId,
                     AnalyzerGroupType2Str[mGroupType], mGroupMsgMap.begin()->first,
                     originalSize, numToErase,
@@ -91,16 +92,25 @@ bool RkAiqAnalyzerGroup::pushMsg(const SmartPtr<XCamMessage>& msg) {
 }
 
 int8_t RkAiqAnalyzerGroup::getMsgDelayCnt(XCamMessageType &msg_id) {
-    uint32_t i = 0, delayCnt = 0;
+    uint32_t i = 0;
+    int8_t delayCnt = 0;
     for (i = 0; i < mGrpConds.size; i++) {
-        if (mGrpConds.conds[i].cond == msg_id)
-           return mGrpConds.conds[i].delay;
+        if (mGrpConds.conds[i].cond == msg_id) {
+            delayCnt = mGrpConds.conds[i].delay;
+            if (delayCnt != 0 && mUserSetDelayCnts != INT8_MAX)
+                delayCnt = mUserSetDelayCnts;
+           return delayCnt;
+        }
     }
 
     if (i == mGrpConds.size)
         LOGE_ANALYZER_SUBM(ANALYZER_SUBM, "don't match msgId(0x%x) in mGrpConds", msg_id);
 
     return 0;
+}
+
+void RkAiqAnalyzerGroup::setDelayCnts(int8_t delayCnts) {
+    mUserSetDelayCnts = delayCnts;
 }
 
 bool RkAiqAnalyzerGroup::msgHandle(const SmartPtr<XCamMessage>& msg) {
@@ -221,8 +231,6 @@ XCamReturn RkAiqAnalyzeGroupManager::setGrpDeps(rk_aiq_core_analyze_type_e group
             return XCAM_RETURN_NO_ERROR;
 
         res->second->setDepsFlag(new_deps);
-        mGroupMap[new_deps] = res->second;
-        mGroupMap.erase(old_deps);
         return XCAM_RETURN_NO_ERROR;
     }
 
@@ -534,26 +542,28 @@ void RkAiqAnalyzeGroupManager::parseAlgoGroup(const struct RkAiqAlgoDesCommExt* 
         for (size_t j = 0; j < algoDes[i].grpConds.size; j++)
             deps_flag |= 1ULL << algoDes[i].grpConds.conds[j].cond;
         rk_aiq_core_analyze_type_e group = algoDes[i].group;
-        mGroupAlgoListMap[group].push_back(*mAiqCore->getCurAlgoTypeHandle(algo_type));
-        mGroupAlgoListMap[RK_AIQ_CORE_ANALYZE_ALL].push_back(*mAiqCore->getCurAlgoTypeHandle(algo_type));
-        if (mGroupMap.count(deps_flag)) {
+        if (mAiqCore->getCurAlgoTypeHandle(algo_type)) {
+            mGroupAlgoListMap[group].push_back(*mAiqCore->getCurAlgoTypeHandle(algo_type));
+            mGroupAlgoListMap[RK_AIQ_CORE_ANALYZE_ALL].push_back(*mAiqCore->getCurAlgoTypeHandle(algo_type));
+        }
+        if (mGroupMap.count(group)) {
             continue;
         }
-        mGroupMap[deps_flag] = new RkAiqAnalyzerGroup(mAiqCore, group, deps_flag,
+        mGroupMap[group] = new RkAiqAnalyzerGroup(mAiqCore, group, deps_flag,
                                                       &algoDes[i].grpConds, mSingleThreadMode);
-        if (mSingleThreadMode) mMsgThrd->add_group(mGroupMap[deps_flag].ptr());
+        if (mSingleThreadMode) mMsgThrd->add_group(mGroupMap[group].ptr());
 #if defined(RKAIQ_HAVE_THUMBNAILS)
         if (group == RK_AIQ_CORE_ANALYZE_THUMBNAILS) {
-            mGroupMap[deps_flag]->setConcreteHandler(
+            mGroupMap[group]->setConcreteHandler(
                 std::bind(&RkAiqAnalyzeGroupManager::thumbnailsGroupMessageHandler, this,
                           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
         } else {
-            mGroupMap[deps_flag]->setConcreteHandler(
+            mGroupMap[group]->setConcreteHandler(
                 std::bind(&RkAiqAnalyzeGroupManager::groupMessageHandler, this,
                           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
         }
 #else
-        mGroupMap[deps_flag]->setConcreteHandler(
+        mGroupMap[group]->setConcreteHandler(
             std::bind(&RkAiqAnalyzeGroupManager::groupMessageHandler, this, std::placeholders::_1,
                       std::placeholders::_2, std::placeholders::_3));
 #endif
@@ -565,13 +575,16 @@ XCamReturn RkAiqAnalyzeGroupManager::handleMessage(const SmartPtr<XCamMessage> &
     //XCAM_STATIC_FPS_CALCULATION(HANDLEMSG, 100);
     if (mSingleThreadMode) {
         mMsgThrd->push_msg(msg);
-        LOGD_ANALYZER_SUBM(ANALYZER_SUBM, "Handle message(%s) id[%d]", MessageType2Str[msg->msg_id],
+        LOGD_ANALYZER_SUBM(ANALYZER_SUBM, "camId: %d, Handle message(%s) id[%d]",
+                           mAiqCore->mAlogsComSharedParams.mCamPhyId,
+                           MessageType2Str[msg->msg_id],
                            msg->frame_id);
     } else {
         for (auto& it : mGroupMap) {
-            if ((it.first & (1ULL << msg->msg_id)) != 0) {
-                LOGD_ANALYZER_SUBM(
-                    ANALYZER_SUBM, "Handle message(%s) id[%d] on group(%s), flags %" PRIx64 "",
+            if ((it.second->getDepsFlag() & (1ULL << msg->msg_id)) != 0) {
+                LOGD_ANALYZER_SUBM(ANALYZER_SUBM,
+                    "camId: %d, Handle message(%s) id[%d] on group(%s), flags %" PRIx64 "",
+                    mAiqCore->mAlogsComSharedParams.mCamPhyId,
                     MessageType2Str[msg->msg_id], msg->frame_id,
                     AnalyzerGroupType2Str[it.second->getType()], it.second->getDepsFlag());
 
@@ -580,6 +593,12 @@ XCamReturn RkAiqAnalyzeGroupManager::handleMessage(const SmartPtr<XCamMessage> &
         }
     }
     return XCAM_RETURN_NO_ERROR;
+}
+
+void RkAiqAnalyzeGroupManager::setDelayCnts(int delayCnts) {
+    for (auto& it : mGroupMap) {
+        it.second->setDelayCnts(delayCnts);
+    }
 }
 
 }  // namespace RkCam

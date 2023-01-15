@@ -35,13 +35,14 @@ class PdafBufferProxy : public V4l2BufferProxy
         memset(&pdaf_meas, 0, sizeof(pdaf_meas));
     }
     virtual ~PdafBufferProxy() {}
-	rk_aiq_isp_pdaf_meas_t pdaf_meas;
+    rk_aiq_isp_pdaf_meas_t pdaf_meas;
 protected:
     XCAM_DEAD_COPY (PdafBufferProxy);
 };
 
 class CamHwIsp20;
 class RKStream;
+class PdafStreamHelperThd;
 class PdafStreamProcUnit       : public PollCallback
 {
 public:
@@ -60,6 +61,9 @@ public:
 
     void set_devices(CamHwIsp20* camHw);
     XCamReturn prepare(rk_sensor_pdaf_info_t *pdaf_inf);
+    XCamReturn start_stream();
+    XCamReturn stop_stream();
+    XCamReturn deinit();
 protected:
     XCAM_DEAD_COPY (PdafStreamProcUnit);
 protected:
@@ -67,9 +71,57 @@ protected:
     SmartPtr<V4l2Device> mPdafDev;
     SmartPtr<RKPdafStream> mPdafStream;
     bool mStartFlag;
+    bool mStartStreamFlag;
     rk_aiq_isp_pdaf_meas_t mPdafMeas;
     int mBufType;
+    SmartPtr<PdafStreamHelperThd> mHelperThd;
+    XCam::Mutex mStreamMutex;
+};
 
+typedef struct _PdafStreamParam {
+    bool valid;
+    bool stream_flag;
+} PdafStreamParam;
+
+class PdafStreamHelperThd
+    : public XCam::Thread {
+public:
+    PdafStreamHelperThd(PdafStreamProcUnit *pdafstreamproc)
+        : Thread("PdafStreamHelperThd"), mPdafStreamProc(pdafstreamproc) {};
+    ~PdafStreamHelperThd() {
+        mAttrQueue.clear ();
+    };
+
+    void triger_stop() {
+        mAttrQueue.pause_pop ();
+    };
+
+    void triger_start() {
+        mAttrQueue.resume_pop ();
+    };
+
+    bool push_attr (const XCam::SmartPtr<PdafStreamParam> buffer) {
+        mAttrQueue.push (buffer);
+        return true;
+    };
+
+    bool is_empty () {
+        return mAttrQueue.is_empty();
+    };
+
+    void clear_attr () {
+        mAttrQueue.clear ();
+    };
+
+protected:
+    //virtual bool started ();
+    virtual void stopped () {
+        mAttrQueue.clear ();
+    };
+    virtual bool loop ();
+private:
+    PdafStreamProcUnit *mPdafStreamProc;
+    XCam::SafeList<PdafStreamParam> mAttrQueue;
 };
 
 }

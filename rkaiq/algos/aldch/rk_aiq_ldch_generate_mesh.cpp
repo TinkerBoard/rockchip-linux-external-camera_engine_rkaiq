@@ -27,29 +27,46 @@ RKAIQ_BEGIN_DECLARE
 
 static XCamReturn alloc_ldch_buf(LDCHContext_t* ldchCtx)
 {
-    LOGD_ALDCH("alloc ldch buf");
-    release_ldch_buf(ldchCtx);
-    rk_aiq_share_mem_config_t share_mem_config;
-    share_mem_config.alloc_param.width =  ldchCtx->dst_width;
-    share_mem_config.alloc_param.height = ldchCtx->dst_height;
-    share_mem_config.mem_type = MEM_TYPE_LDCH;
-    ldchCtx->share_mem_ops->alloc_mem(0, ldchCtx->share_mem_ops,
-                                      &share_mem_config,
-                                      &ldchCtx->share_mem_ctx);
+    if (!ldchCtx->hasAllocShareMem.load(std::memory_order_acquire)) {
+        LOGD_ALDCH("alloc ldch buf");
+        release_ldch_buf(ldchCtx);
+        rk_aiq_share_mem_config_t share_mem_config;
+        share_mem_config.alloc_param.width =  ldchCtx->dst_width;
+        share_mem_config.alloc_param.height = ldchCtx->dst_height;
+        share_mem_config.mem_type = MEM_TYPE_LDCH;
+        ldchCtx->share_mem_ops->alloc_mem(0, ldchCtx->share_mem_ops,
+                &share_mem_config,
+                &ldchCtx->share_mem_ctx);
+        if (ldchCtx->share_mem_ctx) {
+            ldchCtx->hasAllocShareMem.store(true, std::memory_order_release);
+        } else {
+            LOGE_ALDCH("Failed to alloc shared mem");
+            return XCAM_RETURN_ERROR_MEM;
+        }
+    }
+
     return XCAM_RETURN_NO_ERROR;
 }
 
 XCamReturn release_ldch_buf(LDCHContext_t* ldchCtx)
 {
-    LOGD_ALDCH("release ldch buf");
-    if (ldchCtx->share_mem_ctx)
-        ldchCtx->share_mem_ops->release_mem(0, ldchCtx->share_mem_ctx);
+    if (ldchCtx->hasAllocShareMem.load(std::memory_order_acquire)) {
+        LOGD_ALDCH("release ldch buf");
+        if (ldchCtx->share_mem_ctx)
+            ldchCtx->share_mem_ops->release_mem(0, ldchCtx->share_mem_ctx);
+        ldchCtx->hasAllocShareMem.store(false, std::memory_order_release);
+    }
 
     return XCAM_RETURN_NO_ERROR;
 }
 
-static XCamReturn get_ldch_buf(LDCHContext_t* ldchCtx)
+XCamReturn get_ldch_buf(LDCHContext_t* ldchCtx)
 {
+    if (alloc_ldch_buf(ldchCtx) != XCAM_RETURN_NO_ERROR) {
+        LOGE_ALDCH("Failed to alloc ldch buf\n");
+        return XCAM_RETURN_ERROR_MEM;
+    }
+
     ldchCtx->ldch_mem_info = (rk_aiq_ldch_share_mem_info_t *)
             ldchCtx->share_mem_ops->get_free_item(0, ldchCtx->share_mem_ctx);
     if (ldchCtx->ldch_mem_info == NULL || \
@@ -60,7 +77,25 @@ static XCamReturn get_ldch_buf(LDCHContext_t* ldchCtx)
     }
     ldchCtx->ldch_mem_info->state[0] = MESH_BUF_WAIT2CHIP; //mark that this buf is using.
 
+    LOGD_ALDCH("LDCH get buf: fd %d, addr %p, size %d",
+            ldchCtx->ldch_mem_info->fd,
+            ldchCtx->ldch_mem_info->addr,
+            ldchCtx->ldch_mem_info->size);
+
     return XCAM_RETURN_NO_ERROR;
+}
+
+void put_ldch_buf(LDCHContext_t* ldchCtx)
+{
+    if (ldchCtx->ldch_mem_info && ldchCtx->ldch_mem_info->state[0] == MESH_BUF_WAIT2CHIP) {
+        ldchCtx->ldch_mem_info->state[0] = MESH_BUF_INIT;
+        LOGD_ALDCH("LDCH put buf: fd %d, addr %p, size %d",
+                ldchCtx->ldch_mem_info->fd,
+                ldchCtx->ldch_mem_info->addr,
+                ldchCtx->ldch_mem_info->size);
+
+        ldchCtx->ldch_mem_info = NULL;
+    }
 }
 
 bool
@@ -70,6 +105,7 @@ read_mesh_from_file(LDCHContext_t* ldchCtx, const char* fileName)
     ofp = fopen(fileName, "rb");
     if (ofp != NULL) {
         unsigned short hpic, vpic, hsize, vsize, hstep, vstep = 0;
+        uint32_t lut_size = 0;
 
         fread(&hpic, sizeof(unsigned short), 1, ofp);
         fread(&vpic, sizeof(unsigned short), 1, ofp);
@@ -77,30 +113,31 @@ read_mesh_from_file(LDCHContext_t* ldchCtx, const char* fileName)
         fread(&vsize, sizeof(unsigned short), 1, ofp);
         fread(&hstep, sizeof(unsigned short), 1, ofp);
         fread(&vstep, sizeof(unsigned short), 1, ofp);
-        //fseek(ofp, 0, SEEK_SET);
+
+        lut_size = hsize * vsize *  sizeof(uint16_t);
         LOGW_ALDCH("lut info: [%d-%d-%d-%d-%d-%d]", hpic, vpic, hsize, vsize, hstep, vstep);
-
-        ldchCtx->lut_h_size = hsize;
-        ldchCtx->lut_v_size = vsize;
-        ldchCtx->lut_mapxy_size = ldchCtx->lut_h_size * ldchCtx->lut_v_size * sizeof(unsigned short);
-        alloc_ldch_buf(ldchCtx);
-        if (get_ldch_buf(ldchCtx) != XCAM_RETURN_NO_ERROR) {
-            LOGE_ALDCH("Failed to get ldch buf");
-            return false;
-        }
-        ldchCtx->lut_h_size = hsize / 2; //word unit
-
-        unsigned int num = fread(ldchCtx->ldch_mem_info->addr, 1, ldchCtx->lut_mapxy_size, ofp);
+        unsigned int num = fread(ldchCtx->ldch_mem_info->addr, 1, lut_size, ofp);
         fclose(ofp);
 
-        if (num != ldchCtx->lut_mapxy_size) {
-            ldchCtx->ldch_en = 0;
+        if (num != lut_size) {
             LOGE_ALDCH("mismatched lut calib file");
             return false;
         }
-        LOGW_ALDCH("check calib file, size: %d, num: %d", ldchCtx->lut_mapxy_size, num);
+
+        if (ldchCtx->src_width != hpic || ldchCtx->src_height != vpic) {
+            LOGE_ALDCH("mismatched lut pic resolution: src %dx%d, lut %dx%d",
+                    ldchCtx->src_width, ldchCtx->src_height, hpic, vpic);
+            return false;
+        }
+
+        ldchCtx->lut_h_size = hsize;
+        ldchCtx->lut_v_size = vsize;
+        ldchCtx->lut_mapxy_size = lut_size;
+        ldchCtx->lut_h_size = hsize / 2; //word unit
+
+        LOGW_ALDCH("check file, size: %d, num: %d", ldchCtx->lut_mapxy_size, num);
     } else {
-        LOGE_ALDCH("lut calib file %s not exist", fileName);
+        LOGE_ALDCH("lut file %s not exist", fileName);
         return false;
     }
 
@@ -140,7 +177,7 @@ XCamReturn aiqGenLdchMeshInit(LDCHContext_t* ldchCtx)
                ldchCtx->lut_v_size,
                ldchCtx->lut_mapxy_size ,
                ldchCtx->correct_level);
-    alloc_ldch_buf(ldchCtx);
+
     if (get_ldch_buf(ldchCtx) != XCAM_RETURN_NO_ERROR) {
         LOGE_ALDCH("Failed to get ldch buf\n");
         ret = XCAM_RETURN_ERROR_MEM;
@@ -180,7 +217,7 @@ bool aiqGenMesh(LDCHContext_t* ldchCtx, int32_t level)
         }
     }
 
-    if (!success)
+    if (!success && ldchCtx->ldch_mem_info)
         success = genLDCMeshNLevel(ldchCtx->ldchParams, ldchCtx->camCoeff,
                                    level, (uint16_t *)ldchCtx->ldch_mem_info->addr);
 

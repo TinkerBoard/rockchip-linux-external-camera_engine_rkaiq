@@ -164,7 +164,7 @@ XCamReturn RkAiqCamGroupAdehazeHandleInt::setAttribV12(const adehaze_sw_v12_t* a
     // called by RkAiqCore
 
     // if something changed
-    if (0 != memcmp(&mCurAttV12, &att, sizeof(adehaze_sw_v12_t))) {
+    if (0 != memcmp(&mCurAttV12, att, sizeof(mCurAttV12))) {
         mNewAttV12 = *att;
         updateAtt = true;
         waitSignal(att->sync.sync_mode);

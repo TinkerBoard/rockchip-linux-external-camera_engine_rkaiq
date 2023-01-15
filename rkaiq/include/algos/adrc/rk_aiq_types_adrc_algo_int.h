@@ -15,6 +15,11 @@
 #include "adrc_head.h"
 #include "adrc_uapi_head.h"
 
+typedef struct adrc_blcRes_V32_s {
+    bool blc_ob_enable;
+    float isp_ob_predgain;
+} adrc_blcRes_V32_t;
+
 typedef enum drc_OpMode_s {
     DRC_OPMODE_AUTO   = 0,  // run auto drc
     DRC_OPMODE_MANUAL = 1,  // run manual drc

@@ -37,7 +37,7 @@ static XCamReturn groupAgainV2CreateCtx(RkAiqAlgoContext **context, const AlgoCt
     AlgoCtxInstanceCfgCamGroup *cfgInt = (AlgoCtxInstanceCfgCamGroup*)cfg;
 
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V30()) {
         again_group_contex = (CamGroup_AgainV2_Contex_t*)malloc(sizeof(CamGroup_AgainV2_Contex_t));
 #if AGAIN_USE_JSON_FILE_V2
         Again_result_V2_t ret_v2 = AGAINV2_RET_SUCCESS;
@@ -81,7 +81,7 @@ static XCamReturn groupAgainV2DestroyCtx(RkAiqAlgoContext *context)
 
     CamGroup_AgainV2_Contex_t *again_group_contex = (CamGroup_AgainV2_Contex_t*)context;
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V30()) {
         Again_result_V2_t ret_v2 = AGAINV2_RET_SUCCESS;
         ret_v2 = Again_Release_V2(again_group_contex->again_contex_v2);
         if(ret_v2 != AGAINV2_RET_SUCCESS) {
@@ -114,9 +114,10 @@ static XCamReturn groupAgainV2Prepare(RkAiqAlgoCom* params)
     CamGroup_AgainV2_Contex_t * again_group_contex = (CamGroup_AgainV2_Contex_t *)params->ctx;
     RkAiqAlgoCamGroupPrepare* para = (RkAiqAlgoCamGroupPrepare*)params;
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
         Again_Context_V2_t * again_contex_v2 = again_group_contex->again_contex_v2;
-        if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
+        again_contex_v2->prepare_type = params->u.prepare.conf_type;
+        if (!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
 #if AGAIN_USE_JSON_FILE_V2
 #if 1
             void *pCalibDbV2 = (void*)(para->s_calibv2);
@@ -190,7 +191,7 @@ static XCamReturn groupAgainV2Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
         if((rk_aiq_working_mode_t)procParaGroup->working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
             stExpInfoV2.hdr_mode = 0;
             stExpInfoV2.arAGain[0] = pCurExp->LinearExp.exp_real_params.analog_gain;
-            stExpInfoV2.arDGain[0] = pCurExp->LinearExp.exp_real_params.digital_gain;
+            stExpInfoV2.arDGain[0] = pCurExp->LinearExp.exp_real_params.digital_gain * pCurExp->LinearExp.exp_real_params.isp_dgain;
             stExpInfoV2.arTime[0] = pCurExp->LinearExp.exp_real_params.integration_time;
             stExpInfoV2.arIso[0] = stExpInfoV2.arAGain[0] * stExpInfoV2.arDGain[0] * 50;
 
@@ -219,7 +220,7 @@ static XCamReturn groupAgainV2Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
 
 
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
         Again_Context_V2_t * again_contex_v2 = again_group_contex->again_contex_v2;
         Again_ProcResult_V2_t stAgainResultV2;
         deltaIso = abs(stExpInfoV2.arIso[stExpInfoV2.hdr_mode] - again_contex_v2->stExpInfo.arIso[stExpInfoV2.hdr_mode]);

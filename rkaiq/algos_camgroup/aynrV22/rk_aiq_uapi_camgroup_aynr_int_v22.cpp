@@ -8,7 +8,7 @@
 XCamReturn
 rk_aiq_uapi_camgroup_aynrV22_SetAttrib(RkAiqAlgoContext *ctx,
                                        const rk_aiq_ynr_attrib_v22_t *attr,
-                                       bool need_sync)
+                                       bool /* need_sync */)
 {
     LOGD_ANR("%s:%d\n", __FUNCTION__, __LINE__);
 

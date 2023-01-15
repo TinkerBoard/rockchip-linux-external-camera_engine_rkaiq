@@ -84,10 +84,12 @@ typedef struct rk_aiq_groupcam_result_s {
     uint8_t _validCamResBits;
     uint32_t _frameId;
     bool _ready;
+    uint32_t _refCnt;
     void reset() {
         _validCamResBits = 0;
         _ready = false;
         _frameId = -1;
+        _refCnt = 0;
         for (int i = 0; i < RK_AIQ_CAM_GROUP_MAX_CAMS; i++)
             _singleCamResultsStatus[i].reset();
     }
@@ -99,8 +101,10 @@ typedef struct rk_aiq_groupcam_sofsync_s {
     rk_aiq_groupcam_sofsync_s() {
         _validCamSofSyncBits = 0;
     }
+    uint32_t _refCnt;
     void reset() {
         _validCamSofSyncBits = 0;
+        _refCnt = 0;
         for (int i = 0; i < RK_AIQ_CAM_GROUP_MAX_CAMS; i++)
             _singleCamSofEvt[i] = NULL;
     }
@@ -129,11 +133,8 @@ public:
             :_gc_result(gc_result){};
         rk_aiq_groupcam_result_t* _gc_result;
     } rk_aiq_groupcam_result_wrapper_t;
+    bool sendFrame(rk_aiq_groupcam_result_t* gc_result);
 
-    bool sendFrame(rk_aiq_groupcam_result_t* gc_result) {
-        mMsgQueue.push(new rk_aiq_groupcam_result_wrapper_t(gc_result));
-        return true;
-    };
 protected:
     //virtual bool started ();
     virtual void stopped () {
@@ -145,6 +146,7 @@ private:
     SafeList<rk_aiq_groupcam_result_wrapper_t>  mMsgQueue;
 };
 
+typedef std::shared_ptr<std::list<std::string>> ModuleNameList;
 class RkAiqCamgroupHandle;
 class RkAiqCamGroupManager
 {
@@ -169,6 +171,13 @@ public:
     XCamReturn sofSync(RkAiqManager* aiqManager, SmartPtr<VideoBuffer>& sof_evt);
 
     XCamReturn setCamgroupCalib(CamCalibDbCamgroup_t* camgroup_calib);
+    // rk_aiq_camgroup_ctx_t
+    void setContainerCtx(void* group_ctx) {
+        mGroupCtx = group_ctx;
+    };
+    void* getContainerCtx() {
+        return mGroupCtx;
+    };
     // called after single cam aiq init
     XCamReturn init();
     // called only once
@@ -192,6 +201,9 @@ public:
     RkAiqAlgoContext* getEnabledAxlibCtx(const int algo_type);
     RkAiqAlgoContext* getAxlibCtx(const int algo_type, const int lib_id);
     RkAiqCamgroupHandle* getAiqCamgroupHandle(const int algo_type, const int lib_id);
+    XCamReturn calibTuning(const CamCalibDbV2Context_t* aiqCalib, ModuleNameList& change_name_list);
+    XCamReturn updateCalibDb(const CamCalibDbV2Context_t* newCalibDb);
+    XCamReturn rePrepare();
 
     void setVicapReady(rk_aiq_hwevt_t* hwevt);
     bool isAllVicapReady();
@@ -207,6 +219,7 @@ protected:
     SmartPtr<RkAiqCamGroupReprocTh> mCamGroupReprocTh;
     /* */
     Mutex mCamGroupApiSyncMutex;
+    Mutex mSofMutex;
     uint64_t mRequiredMsgsMask;
     uint64_t mRequiredAlgoResMask;
     uint8_t mRequiredCamsResMask;
@@ -251,6 +264,9 @@ protected:
     int mState;
     bool mInit;
     CamCalibDbCamgroup_t* mCamgroupCalib;
+    uint32_t mClearedSofId;
+    uint32_t mClearedResultId;
+
 protected:
     XCamReturn reProcess(rk_aiq_groupcam_result_t* gc_res);
     rk_aiq_groupcam_result_t* getGroupCamResult(uint32_t frameId, bool query_ready = true);
@@ -258,11 +274,23 @@ protected:
     void setSingleCamStatusReady(rk_aiq_singlecam_result_status_t* status, rk_aiq_groupcam_result_t* gc_result);
     void relayToHwi(rk_aiq_groupcam_result_t* gc_res);
     void clearGroupCamResult(uint32_t frameId);
+    void clearGroupCamResult_Locked(uint32_t frameId);
+    void putGroupCamResult(rk_aiq_groupcam_result_t* gc_res);
     void clearGroupCamSofsync(uint32_t frameId);
+    void clearGroupCamSofsync_Locked(uint32_t frameId);
+    void putGroupCamSofsync(rk_aiq_groupcam_sofsync_t* syncSof);
     void addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes);
     virtual SmartPtr<RkAiqCamgroupHandle> newAlgoHandle(RkAiqAlgoDesComm* algo, int hw_ver);
     SmartPtr<RkAiqCamgroupHandle> getDefAlgoTypeHandle(int algo_type);
+    XCamReturn syncSingleCamResultWithMaster(rk_aiq_groupcam_result_t* gc_res);
     std::map<int, SmartPtr<RkAiqCamgroupHandle>>* getAlgoTypeHandleMap(int algo_type);
+    void* mGroupCtx;
+private:
+    CamCalibDbV2Context_t mCalibv2;
+    bool needReprepare;
+    XCam::Mutex _update_mutex;
+    XCam::Cond _update_done_cond;
+    std::atomic<bool> _sync_sof_running;
 };
 
 } //namespace

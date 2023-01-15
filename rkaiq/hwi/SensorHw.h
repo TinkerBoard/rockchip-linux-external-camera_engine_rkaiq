@@ -25,7 +25,7 @@
 #include "rk_aiq_pool.h"
 #include "common/rk-camera-module.h"
 #include "v4l2_buffer_proxy.h"
-
+#include "rk_aiq_offline_raw.h"
 /************ BELOW FROM kernel/include/uapi/linux/rk-preisp.h ************/
 
 /* test hdr function */
@@ -127,6 +127,7 @@ public:
     virtual XCamReturn stop();
     virtual XCamReturn set_sync_mode(uint32_t mode);
 
+    virtual XCamReturn set_offline_effecting_exp_map(uint32_t sequence, rk_aiq_frame_info_t *offline_finfo);
     XCAM_DEAD_COPY (SensorHw);
 protected:
     Mutex _mutex;

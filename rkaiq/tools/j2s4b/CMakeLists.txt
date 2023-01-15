@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 2.8...3.22)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-set(CMAKE_C_FLAGS -m32)
-set(CMAKE_CXX_FLAGS -m32)
-set(CMAKE_EXE_LINKER_FLAGS "-static")
+if (RKAIQ_TARGET_ARCH STREQUAL "arm")
+    set(CMAKE_C_FLAGS -m32)
+    set(CMAKE_CXX_FLAGS -m32)
+    set(CMAKE_EXE_LINKER_FLAGS -m32)
+endif()
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
 
 add_compile_options(-std=c++11)
 add_compile_options(-fPIC -Wall -Wno-error -O0 -g)
@@ -55,7 +58,9 @@ set(CXX_SRCS
 add_definitions(-DGIT_VERSION="${GIT_VERSION}")
 
 ADD_EXECUTABLE(j2s4b ${CXX_SRCS})
+if (RKAIQ_TARGET_ARCH STREQUAL "arm")
 set_target_properties(j2s4b PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+endif()
 
 foreach(IQPATH ${RKAIQ_IQFILES})
     string(REGEX MATCH "${RKAIQ_IQFILES_DIR}/.*" SHORT_NAME ${IQPATH})

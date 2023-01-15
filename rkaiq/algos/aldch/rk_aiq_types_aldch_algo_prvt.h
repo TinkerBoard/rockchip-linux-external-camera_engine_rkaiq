@@ -52,6 +52,44 @@ typedef enum LDCHState_e {
     LDCH_STATE_MAX                                      /**< max */
 } LDCHState_t;
 
+class LutCache {
+ public:
+    LutCache() = delete;
+    explicit LutCache(size_t size)
+        : _addr(nullptr), _size(size) {}
+    LutCache(const LutCache&) = delete;
+    LutCache& operator=(const LutCache&) = delete;
+    ~LutCache() {
+        ReleaseBuffer();
+    }
+
+    void ReleaseBuffer() {
+        if (_addr) {
+            LOGV_ALDCH("release lut cache size: %d", _size);
+            xcam_free(_addr);
+            _addr = nullptr;
+        }
+    }
+
+    void* GetBuffer() {
+        if (!_addr) {
+            LOGV_ALDCH("malloc lut cache size: %d", _size);
+            _addr = xcam_malloc(_size);
+        }
+
+        return _addr;
+    }
+
+    size_t GetSize() {
+        LOGV_ALDCH("get lut cache size: %d", _size);
+        return _size;
+    }
+
+ private:
+    void*   _addr;
+    size_t  _size;
+};
+
 class RKAiqAldchThread;
 
 typedef struct LDCHContext_s {
@@ -69,7 +107,7 @@ typedef struct LDCHContext_s {
     int correct_level_max;
     const char* resource_path;
     std::atomic<bool> genLdchMeshInit;
-    int32_t last_lut_mem_fd;
+    int32_t update_lut_mem_fd;
     int32_t ready_lut_mem_fd;
 
     struct CameraCoeff camCoeff;
@@ -94,6 +132,9 @@ typedef struct LDCHContext_s {
     uint8_t force_map_en;
     uint8_t map13p3_en;
     uint8_t bicubic[ISP32_LDCH_BIC_NUM];
+
+    std::atomic<bool> hasAllocShareMem;
+    SmartPtr<LutCache> _lutCache;
 } LDCHContext_t;
 
 typedef struct LDCHContext_s* LDCHHandle_t;

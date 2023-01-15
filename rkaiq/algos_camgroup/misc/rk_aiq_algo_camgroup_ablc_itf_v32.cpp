@@ -81,7 +81,7 @@ prepare(RkAiqAlgoCom* params)
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
         CalibDbV2_Blc_V32_t* calibv2_ablc_calib =
-            (CalibDbV2_Blc_V32_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2), ablc_calib));
+            (CalibDbV2_Blc_V32_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(pCfgParam->s_calibv2), ablcV32_calib));
         memcpy(&pAblcCtx->stBlcCalib, calibv2_ablc_calib, sizeof(CalibDbV2_Blc_V32_t));
         pAblcCtx->isUpdateParam = true;
         pAblcCtx->isReCalculate |= 1;

@@ -29,7 +29,6 @@
 #include "RkAiqCalibDbV2Helper.h"
 #include "ablc_head.h"
 #include "ablc_head_V32.h"
-#include "config.h"
 #include "rk_aiq_algo_des.h"
 #include "sharp_head_v33.h"
 #include "xcam_log.h"

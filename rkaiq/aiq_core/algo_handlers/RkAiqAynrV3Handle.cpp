@@ -51,7 +51,7 @@ XCamReturn RkAiqAynrV3HandleInt::updateConfig(bool needSync) {
 
     if (updateStrength) {
         mCurStrength   = mNewStrength;
-        rk_aiq_uapi_aynrV3_SetLumaSFStrength(mAlgoCtx, mCurStrength.percent);
+        rk_aiq_uapi_aynrV3_SetLumaSFStrength(mAlgoCtx, &mCurStrength);
         sendSignal(mCurStrength.sync.sync_mode);
         updateStrength = false;
     }
@@ -151,17 +151,36 @@ XCamReturn RkAiqAynrV3HandleInt::getStrength(rk_aiq_ynr_strength_v3_t *pStrength
 
     if(pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.unlock();
-        rk_aiq_uapi_aynrV3_GetLumaSFStrength(mAlgoCtx, &pStrength->percent );
+        rk_aiq_uapi_aynrV3_GetLumaSFStrength(mAlgoCtx, pStrength);
         pStrength->sync.done = true;
         mCfgMutex.unlock();
     } else {
         if(updateStrength) {
-            pStrength->percent = mNewStrength.percent;
+            *pStrength = mNewStrength;
             pStrength->sync.done = false;
         } else {
-            rk_aiq_uapi_aynrV3_GetLumaSFStrength(mAlgoCtx, &pStrength->percent);
+            rk_aiq_uapi_aynrV3_GetLumaSFStrength(mAlgoCtx, pStrength);
             pStrength->sync.done = true;
         }
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqAynrV3HandleInt::getInfo(rk_aiq_ynr_info_v3_t *pInfo) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if(pInfo->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.unlock();
+        rk_aiq_uapi_aynrV3_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        rk_aiq_uapi_aynrV3_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
     }
 
     EXIT_ANALYZER_FUNCTION();
@@ -233,6 +252,7 @@ XCamReturn RkAiqAynrV3HandleInt::processing() {
 
     ret = RkAiqHandle::processing();
     if (ret) {
+        mProcResShared = NULL;
         RKAIQCORE_CHECK_RET(ret, "aynr handle processing failed");
     }
 
@@ -289,7 +309,10 @@ XCamReturn RkAiqAynrV3HandleInt::genIspResult(RkAiqFullParams* params,
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    if (!mProcResShared.ptr()) return XCAM_RETURN_NO_ERROR;
+    if (!mProcResShared.ptr()) {
+        params->mYnrV3xParams = cur_params->mYnrV3xParams;
+        return ret;
+    }
     RkAiqAlgoProcResAynrV3* aynr_rk = (RkAiqAlgoProcResAynrV3*)&mProcResShared->result;
 
     if (!aynr_rk) {

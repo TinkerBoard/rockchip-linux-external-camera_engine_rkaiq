@@ -224,15 +224,22 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
             } else {
                 stExpInfo.arDGain[0] = curExp->LinearExp.exp_real_params.digital_gain;
             }
+            if (curExp->LinearExp.exp_real_params.isp_dgain < 1.0) {
+                stExpInfo.isp_dgain[0] = 1.0;
+                LOGW_ASHARP("leanr mode isp_dgain is wrong, use 1.0 instead\n");
+            } else {
+                stExpInfo.isp_dgain[0] = curExp->LinearExp.exp_real_params.isp_dgain;
+            }
             if(stExpInfo.blc_ob_predgain < 1.0) {
                 stExpInfo.blc_ob_predgain = 1.0;
             }
             stExpInfo.arTime[0] = curExp->LinearExp.exp_real_params.integration_time;
-            stExpInfo.arIso[0]  = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * stExpInfo.blc_ob_predgain * 50;
-            LOGD_ASHARP("new snr mode:%d old:%d  gain:%f iso:%d time:%f\n",
+            stExpInfo.arIso[0]  = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * stExpInfo.blc_ob_predgain * 50 * stExpInfo.isp_dgain[0];
+            LOGD_ASHARP("new snr mode:%d old:%d  gain:%f isp_dgain:%f iso:%d time:%f\n",
                         stExpInfo.snr_mode,
                         pAsharpCtx->stExpInfo.snr_mode,
                         stExpInfo.arDGain[0],
+                        stExpInfo.isp_dgain[0],
                         stExpInfo.arIso[0],
                         stExpInfo.arTime[0]
                        );
@@ -246,16 +253,22 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
                 }
                 if (curExp->HdrExp[i].exp_real_params.digital_gain < 1.0) {
                     stExpInfo.arDGain[i] = 1.0;
-                } else {
                     LOGW_ASHARP("hdr mode dgain is wrong, use 1.0 instead\n");
+                } else {
                     stExpInfo.arDGain[i] = curExp->HdrExp[i].exp_real_params.digital_gain;
+                }
+                if (curExp->HdrExp[i].exp_real_params.isp_dgain < 1.0) {
+                    stExpInfo.isp_dgain[i] = 1.0;
+                    LOGW_ASHARP("hdr mode isp_dgain is wrong, use 1.0 instead\n");
+                } else {
+                    stExpInfo.arDGain[i] = curExp->HdrExp[i].exp_real_params.isp_dgain;
                 }
                 stExpInfo.blc_ob_predgain = 1.0;
                 stExpInfo.arTime[i] = curExp->HdrExp[i].exp_real_params.integration_time;
-                stExpInfo.arIso[i]  = stExpInfo.arAGain[i] * stExpInfo.arDGain[i] * 50;
+                stExpInfo.arIso[i]  = stExpInfo.arAGain[i] * stExpInfo.arDGain[i] * 50 * stExpInfo.arDGain[i];
 
-                LOGD_ASHARP("%s:%d index:%d again:%f dgain:%f time:%f iso:%d hdr_mode:%d\n",
-                            __FUNCTION__, __LINE__, i, stExpInfo.arAGain[i], stExpInfo.arDGain[i],
+                LOGD_ASHARP("%s:%d index:%d again:%f dgain:%f isp_dgain:%f time:%f iso:%d hdr_mode:%d\n",
+                            __FUNCTION__, __LINE__, i, stExpInfo.arAGain[i], stExpInfo.arDGain[i], stExpInfo.arDGain[i],
                             stExpInfo.arTime[i], stExpInfo.arIso[i], stExpInfo.hdr_mode);
             }
         }

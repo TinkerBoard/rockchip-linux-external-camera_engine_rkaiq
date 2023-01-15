@@ -15,11 +15,19 @@
  */
 #include "rk_aiq_user_api2_acac.h"
 
-#include "algos/acac/rk_aiq_types_acac_algo_int.h"
-#include "xcore/base/xcam_common.h"
+#include "Isp20_module_dbg.h"
 #include "aiq_core/algo_camgroup_handlers/RkAiqCamGroupAcacHandle.h"
+#include "aiq_core/algo_handlers/RkAiqAcacV11Handle.h"
+#include "algos/acac/rk_aiq_types_acac_algo_int.h"
+#include "common/rk_aiq.h"
+#include "uAPI/rk_aiq_api_private.h"
+#include "xcore/base/xcam_common.h"
 
 RKAIQ_BEGIN_DECLARE
+
+using namespace RkCam;
+
+typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 
 #ifdef RK_SIMULATOR_HW
 #define CHECK_USER_API_ENABLE
@@ -223,9 +231,9 @@ XCamReturn rk_aiq_user_api2_acac_v11_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
             for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
                 if (!camCtx) continue;
 
-                RkAiqAcacHandleInt* singleCam_algo_handle =
-                    algoHandle<RkAiqAcacHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_ACAC);
-                if (singleCam_algo_handle) return singleCam_algo_handle->setAttribV11(attr);
+                RkAiqAcacV11HandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAcacV11HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_ACAC);
+                if (singleCam_algo_handle) return singleCam_algo_handle->setAttrib(attr);
             }
         }
 #else

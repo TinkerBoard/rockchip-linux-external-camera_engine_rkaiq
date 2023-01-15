@@ -156,6 +156,7 @@ public:
     void setAiqCalibDb(const CamCalibDbContext_t* calibDb);
 #endif
     void setAiqCalibDb(const CamCalibDbV2Context_t* calibDb);
+    void unsetTuningCalibDb();
 #if defined(ISP_HW_V20)
     void setLumaAnalyzer(SmartPtr<RkLumaCore> analyzer);
 #endif
@@ -207,6 +208,8 @@ public:
     rk_aiq_working_mode_t getWorkingMode() {
         return mWorkingMode;
     }
+    uint32_t sensor_output_width;
+    uint32_t sensor_output_height;
 protected:
     XCamReturn applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results);
     XCamReturn swWorkingModeDyn(rk_aiq_working_mode_t mode);

@@ -119,6 +119,25 @@ XCamReturn RkAiqAblcHandleInt::getProcRes(AblcProc_t *ProcRes) {
     return ret;
 }
 
+XCamReturn RkAiqAblcHandleInt::getInfo(rk_aiq_ablc_info_t *pInfo) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if(pInfo->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_ablc_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        rk_aiq_uapi_ablc_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
 
 XCamReturn RkAiqAblcHandleInt::prepare() {
     ENTER_ANALYZER_FUNCTION();

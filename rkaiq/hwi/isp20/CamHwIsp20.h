@@ -39,6 +39,28 @@
 
 struct media_device;
 
+/*
+ * [sub modules]: use bits 4-11 to define the sub modules of each module, the
+ *     specific meaning of each bit is decided by the module itself. These bits
+ *     is designed to implement the sub module's log switch.
+
+ *  ----------------------------
+ * |    sub modules    |  bits  |
+ *  ----------------------------
+ * |  ISP20HW_SUBM     |  0x01  |
+ *  ----------------------------
+ * |  ISP20PARAM_SUBM  |  0x02  |
+ *  ----------------------------
+ * |  SENSOR_SUBM      |  0x04  |
+ *  ----------------------------
+ * |  FL_SUBM          |  0x08  |
+ *  ----------------------------
+ * |  LENS_SUBM        |  0x10  |
+ *  ----------------------------
+ * |  CAPTURERAW_SUBM  |  0x80  |
+ *  ----------------------------
+ */
+
 namespace RkCam {
 
 class IspParamsSplitter;
@@ -47,6 +69,23 @@ class IspParamsSplitter;
 
 #define MAX_PARAMS_QUEUE_SIZE           5
 #define ISP_PARAMS_EFFECT_DELAY_CNT     2
+#define CAM_INDEX_FOR_1608              8
+
+// FIXME: share 1608 data ptr(aiq/rawdata)
+typedef struct sensor_info_share_s {
+    RawStreamProcUnit*          raw_proc_unit[CAM_INDEX_FOR_1608];  // bind rx by camId
+    SmartPtr<RawStreamCapUnit>  raw_cap_unit;                       // save 1st tx obj addr
+    char                        reference_name[64];                 // save vicap name(for 1608)
+    rk_aiq_cif_info_t*          reference_mipi_cif;                 // vicap inf (for 1608)
+    // us: union_stream
+    int                         us_open_cnt;                        // for hwi open(1608)
+    int                         us_prepare_cnt;                     // for rawCap buffer manage(1608).
+    int                         us_stream_cnt;                      // mark cnt. on: ++, off: --
+    int                         us_stop_cnt;                        // last sensor stop
+    // tracking opened sensor num
+    int                         en_sns_num;                         // Record the number of open sensors
+    int                         first_en[CAM_INDEX_FOR_1608];       // set/get fmt for 1608 sensor
+} sensor_info_share_t;
 
 class CamHwIsp20
     : public CamHwBase, virtual public Isp20Params, public V4l2Device
@@ -89,8 +128,8 @@ public:
     virtual void getShareMemOps(isp_drv_share_mem_ops_t** mem_ops) override;
     uint64_t getIspModuleEnState()  override;
 
-    static rk_aiq_static_info_t* getStaticCamHwInfoByPhyId(const char* sns_ent_name, uint16_t index = 0);
     static rk_aiq_static_info_t* getStaticCamHwInfo(const char* sns_ent_name, uint16_t index = 0);
+    static rk_aiq_static_info_t* getStaticCamHwInfoByPhyId(const char* sns_ent_name, uint16_t index = 0);
     static XCamReturn clearStaticCamHwInfo();
     static XCamReturn initCamHwInfos();
     static XCamReturn selectIqFile(const char* sns_ent_name, char* iqfile_name);
@@ -99,6 +138,11 @@ public:
     // from PollCallback
     virtual XCamReturn poll_event_ready (uint32_t sequence, int type) override;
     virtual XCamReturn poll_event_failed (int64_t timestamp, const char *msg) override;
+    XCamReturn rawReproc_genIspParams (uint32_t sequence, rk_aiq_frame_info_t *offline_finfo, int mode) override;
+    XCamReturn rawReProc_prepare (uint32_t sequence, rk_aiq_frame_info_t *offline_finfo) override;
+    //fake sensor
+    static const char* rawReproc_preInit(const char* isp_driver, const char* offline_sns_ent_name);
+    XCamReturn rawReproc_deInit (const char* fakeSensor);
 
     XCamReturn getEffectiveIspParams(rkisp_effect_params_v20& ispParams, uint32_t frame_id) override;
     void setHdrGlobalTmoMode(uint32_t frame_id, bool mode);
@@ -135,6 +179,11 @@ public:
     }
     void notify_isp_stream_status(bool on);
     bool getParamsForEffMap(uint32_t frameId);
+    XCamReturn reset_hardware() override;
+
+    // FIXME: Set struct to static.
+    static sensor_info_share_t rk1608_share_inf;
+
 private:
     using V4l2Device::start;
 
@@ -198,6 +247,7 @@ protected:
     int _state;
     volatile bool _is_exit;
     bool _linked_to_isp;
+    bool _linked_to_1608;
     struct isp2x_isp_params_cfg _full_active_isp_params;
 #if defined(ISP_HW_V20)
     struct rkispp_params_cfg _full_active_ispp_params;
@@ -212,9 +262,13 @@ public:
     static rk_aiq_isp_hw_info_t mIspHwInfos;
     static rk_aiq_cif_hw_info_t mCifHwInfos;
     static std::unordered_map<std::string, SmartPtr<rk_sensor_full_info_t>> mSensorHwInfos;
+    static std::unordered_map<std::string, std::string> mFakeCameraName;
 protected:
     static bool mIsMultiIspMode;
     static uint16_t mMultiIspExtendedPixel;
+    // TODO: Sync 1608 sensor start streaming
+    static XCam::Mutex  _sync_1608_mutex;
+    static bool         _sync_1608_done;
     void gen_full_isp_params(const struct isp2x_isp_params_cfg* update_params,
                              struct isp2x_isp_params_cfg* full_params,
                                 uint64_t* module_en_update_partial,
@@ -332,7 +386,14 @@ protected:
     int _isp_stream_status;
 
     rk_sensor_pdaf_info_t mPdafInfo;
-    std::mutex mIspConfigLock;
+
+    Mutex     _stop_cond_mutex;
+
+    // TODO: Sync(1608 sensor) sdk hwEvt cb
+    XCam::Cond      _sync_done_cond;
+    XCamReturn      waitLastSensorDone();
+    XCamReturn pixFmt2Bpp(uint32_t pixFmt, int8_t& bpp);
+    uint32_t _curIspParamsSeq;
 };
 
 }

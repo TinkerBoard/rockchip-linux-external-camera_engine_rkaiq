@@ -38,7 +38,7 @@ XCamReturn RkAiqCamGroupAmergeHandleInt::updateConfig(bool needSync) {
         sendSignal(mCurAttV11.sync.sync_mode);
 #endif
 #if RKAIQ_HAVE_MERGE_V12
-        mCurAttV10 = mNewAttV12;
+        mCurAttV12 = mNewAttV12;
         rk_aiq_uapi_amerge_v12_SetAttrib(mAlgoCtx, &mCurAttV12, false);
         updateAtt = false;
         sendSignal(mCurAttV12.sync.sync_mode);
@@ -83,7 +83,7 @@ XCamReturn RkAiqCamGroupAmergeHandleInt::setAttribV10(const mergeAttrV10_t* att)
     return ret;
 }
 
-XCamReturn RkAiqCamGroupAmergeHandleInt::getAttribV1010(mergeAttrV10_t* att) {
+XCamReturn RkAiqCamGroupAmergeHandleInt::getAttribV10(mergeAttrV10_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;

@@ -105,6 +105,13 @@ list(APPEND DIR_SRCS ${AEDEMO_DIR_SRCS})
 
 #AUX_SOURCE_DIRECTORY(demo/awb_algo_demo AWBDEMO_DIR_SRCS)
 #list(APPEND DIR_SRCS ${AWBDEMO_DIR_SRCS})
+if (${ISP_HW_VERSION} STREQUAL "-DISP_HW_V32")
+    set(AWBDEMO_DIR_SRCS demo/awb_algo_demo/third_party_awbV32_algo.cpp)
+else()
+    set(AWBDEMO_DIR_SRCS demo/awb_algo_demo/third_party_awb_algo.cpp)
+endif()
+list(APPEND DIR_SRCS ${AWBDEMO_DIR_SRCS})
+
 
 AUX_SOURCE_DIRECTORY(demo/af_algo_demo AFDEMO_DIR_SRCS)
 list(APPEND DIR_SRCS ${AFDEMO_DIR_SRCS})

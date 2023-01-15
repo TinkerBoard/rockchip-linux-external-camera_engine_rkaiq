@@ -32,6 +32,11 @@ if (libdl_FOUND)
     add_compile_options(${LIBDL_CFLAGS})
 endif()
 
+if (RKAIQ_USE_RAWSTREAM_LIB)
+    message("USE_RAWSTREAM_LIB")
+    add_compile_options(-DUSE_RAWSTREAM_LIB)
+endif()
+
 find_package(librga QUIET)
 if (librga_FOUND)
     add_compile_options(${LIBRGA_CFLAGS})
@@ -150,6 +155,12 @@ set(ALGO_HANDLE_SRC
 if (RKAIQ_HAVE_YNR_V2)
     add_compile_options(-DRKAIQ_HAVE_YNR_V2=1)
     list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAynrV2Handle.cpp)
+endif()
+
+if (RKAIQ_HAVE_AWB_V20)
+    add_compile_options(-DRKAIQ_HAVE_AWB_V20=1)
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAwbHandle.cpp)
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqCustomAwbHandle.cpp)
 endif()
 
 if (RKAIQ_HAVE_AWB_V21)
@@ -513,6 +524,7 @@ set(AIQ_CORE_SRC
     aiq_core/RkAiqResourceTranslatorV21.cpp
     aiq_core/RkAiqResourceTranslatorV3x.cpp
     aiq_core/RkAiqResourceTranslatorV32.cpp
+    RkAiqCamProfiles.cpp
     )
 
 if (RKAIQ_ISP_VERSION STREQUAL "20")
@@ -701,6 +713,8 @@ if (RKAIQ_ENABLE_CAMGROUP)
 endif()
 
 set(RK_AIQ_STATIC_LIB_ARS)
+set(STATIC_LIB_PREFIX $<TARGET_FILE:)
+set(STATIC_LIB_SUFFIX >)
 
 if(GENMESH_ONLINE AND (RKAIQ_HAVE_LDCH_V10 OR RKAIQ_HAVE_LDCH_V21 OR RKAIQ_HAVE_FEC_V10))
     set(GENMESH_LIBS genMeshLib)
@@ -728,6 +742,8 @@ if (RKAIQ_HAVE_PDAF)
 endif()
 if (RKAIQ_HAVE_PDAF)
     set (PDAF_LIBS rkaiq_pdaf)
+	list(APPEND RK_AIQ_STATIC_LIB_ARS
+		${STATIC_LIB_PREFIX}rkaiq_pdaf${STATIC_LIB_SUFFIX})
 endif()
 
 # set output binary path
@@ -786,8 +802,6 @@ target_link_libraries(rkaiq
     ${MOTION_DETECT_LIBS}
     pthread)
 
-set(STATIC_LIB_PREFIX $<TARGET_FILE:)
-set(STATIC_LIB_SUFFIX >)
 list(APPEND RK_AIQ_STATIC_LIB_ARS
     ${STATIC_LIB_PREFIX}rkaiq_tmp${STATIC_LIB_SUFFIX}
     ${STATIC_LIB_PREFIX}rkaiq_ae${STATIC_LIB_SUFFIX}

@@ -1268,7 +1268,7 @@ int RkAiqCalibParser::ParseLscProfileArray
             }
             else
             {
-                strncpy(values[cnt], f, strlen(f));
+                strncpy(values[cnt], f, LSC_PROFILE_NAME);
                 values[cnt][strlen(f)] = '\0';
                 cnt++;
             }

@@ -337,3 +337,74 @@ rk_aiq_uapi2_sysctl_getWorkingMode(const rk_aiq_sys_ctx_t* ctx, rk_aiq_working_m
 
     return XCAM_RETURN_NO_ERROR;
 }
+
+int rk_aiq_uapi2_sysctl_tuning_enable(rk_aiq_sys_ctx_t* sys_ctx, bool enable)
+{
+    return rk_aiq_uapi_sysctl_tuning_enable(sys_ctx, enable);
+}
+
+XCamReturn
+rk_aiq_uapi2_sysctl_resetCam(const rk_aiq_sys_ctx_t* sys_ctx, int camId)
+{
+    RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if (!sys_ctx) {
+        LOGE("%s: sys_ctx is invalied\n", __func__);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+        LOGE("%s: not support for camgroup\n", __func__);
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+
+    ret = sys_ctx->_camHw->reset_hardware();
+    if (ret) {
+        LOGE("failed to reset hardware\n");
+    }
+
+    return ret;
+}
+
+void rk_aiq_uapi2_sysctl_rawReproc_genIspParams (rk_aiq_sys_ctx_t* sys_ctx,
+                                                 uint32_t sequence,
+                                                 rk_aiq_frame_info_t *next_frm_info,
+                                                 int mode)
+{
+    sys_ctx->_camHw->rawReproc_genIspParams(sequence, next_frm_info, mode);
+}
+
+const char*
+rk_aiq_uapi2_sysctl_rawReproc_preInit(const char* isp_driver,
+                                           const char* offline_sns_name,
+                                           rk_aiq_frame_info_t two_frm_exp_info[2])
+{
+    if (!g_rk_aiq_init_lib) {
+        rk_aiq_init_lib();
+        g_rk_aiq_init_lib = true;
+    }
+    const char* sns_name = NULL;
+    sns_name = CamHwIsp20::rawReproc_preInit(isp_driver, offline_sns_name);
+    if (sns_name) {
+        rk_aiq_frame_info_t exp_finfo = two_frm_exp_info[0];
+        LOGD("exp_finfo %d, %d, %f, %f\n",
+               exp_finfo.normal_gain_reg,
+               exp_finfo.normal_exp_reg,
+               exp_finfo.normal_exp,
+               exp_finfo.normal_gain);
+        std::string sns_ent_name = std::string(sns_name);
+        rk_aiq_sys_preinit_cfg_t cfg;
+        memcpy(cfg.frame_exp_info, two_frm_exp_info, sizeof(cfg.frame_exp_info));
+        g_rk_aiq_offline_raw_exp_map[sns_name] = cfg;
+    }
+
+    return sns_name;
+}
+
+void rk_aiq_uapi2_sysctl_setIspParamsDelayCnts(const rk_aiq_sys_ctx_t* sys_ctx, int8_t delay_cnts) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+    // TODO
+#endif
+    sys_ctx->_analyzer->setDelayCnts(delay_cnts);
+}

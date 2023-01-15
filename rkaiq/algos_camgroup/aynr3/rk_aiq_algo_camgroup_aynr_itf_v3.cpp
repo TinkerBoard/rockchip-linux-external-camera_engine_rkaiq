@@ -115,6 +115,7 @@ static XCamReturn groupAynrV3Prepare(RkAiqAlgoCom* params)
 
     if(CHECK_ISP_HW_V30()) {
         Aynr_Context_V3_t * aynr_contex_v3 = aynr_group_contex->aynr_contex_v3;
+        aynr_contex_v3->prepare_type = params->u.prepare.conf_type;
         if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
             // todo  update calib pars for surround view
 #if AYNR_USE_JSON_FILE_V3
@@ -188,7 +189,7 @@ static XCamReturn groupAynrV3Processing(const RkAiqAlgoCom* inparams, RkAiqAlgoR
         if((rk_aiq_working_mode_t)procParaGroup->working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
             stExpInfoV3.hdr_mode = 0;
             stExpInfoV3.arAGain[0] = pCurExp->LinearExp.exp_real_params.analog_gain;
-            stExpInfoV3.arDGain[0] = pCurExp->LinearExp.exp_real_params.digital_gain;
+            stExpInfoV3.arDGain[0] = pCurExp->LinearExp.exp_real_params.digital_gain * pCurExp->LinearExp.exp_real_params.isp_dgain;
             stExpInfoV3.arTime[0] = pCurExp->LinearExp.exp_real_params.integration_time;
             stExpInfoV3.arIso[0] = stExpInfoV3.arAGain[0] * stExpInfoV3.arDGain[0] * 50;
 
@@ -232,14 +233,18 @@ static XCamReturn groupAynrV3Processing(const RkAiqAlgoCom* inparams, RkAiqAlgoR
                 ret = XCAM_RETURN_ERROR_FAILED;
                 LOGE_ANR("%s: processing ANR failed (%d)\n", __FUNCTION__, ret);
             }
+            Aynr_GetProcResult_V3(aynr_contex_v3, &stAynrResultV3);
             stAynrResultV3.isNeedUpdate = true;
             LOGD_ANR("recalculate: %d delta_iso:%d \n ", aynr_contex_v3->isReCalculate, deltaIso);
         } else {
+            stAynrResultV3 = aynr_contex_v3->stProcResult;
             stAynrResultV3.isNeedUpdate = true;
         }
-        Aynr_GetProcResult_V3(aynr_contex_v3, &stAynrResultV3);
+
         for (int i = 0; i < procResParaGroup->arraySize; i++) {
-            *(procResParaGroup->camgroupParmasArray[i]->aynr._aynr_procRes_v3) = stAynrResultV3.stFix;
+            *(procResParaGroup->camgroupParmasArray[i]->aynr._aynr_procRes_v3._stFix) = stAynrResultV3.stFix;
+            memcpy(procResParaGroup->camgroupParmasArray[i]->aynr_sigma._aynr_sigma_v3,
+                   stAynrResultV3.stSelect.sigma, sizeof(stAynrResultV3.stSelect.sigma));
         }
         aynr_contex_v3->isReCalculate = 0;
     }

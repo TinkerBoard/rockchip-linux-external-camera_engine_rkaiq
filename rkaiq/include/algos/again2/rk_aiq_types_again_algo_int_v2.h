@@ -29,9 +29,9 @@
 #include "gain_head_v2.h"
 #include "gain_uapi_head_v2.h"
 
-
 //RKAIQ_BEGIN_DECLARE
 #define RK_GAIN_V2_MAX_ISO_NUM  CALIBDB_MAX_ISO_LEVEL
+
 
 #define AGAINV2_RECALCULATE_DELTA_ISO       (10)
 
@@ -93,12 +93,12 @@ typedef struct RK_GAIN_Select_V2_s
 
 } RK_GAIN_Select_V2_t;
 #endif
+
 typedef struct RK_GAIN_Params_V2_s
 {   bool hdrgain_ctrl_enable;
     int iso[RK_GAIN_V2_MAX_ISO_NUM];
     RK_GAIN_Select_V2_t iso_params[RK_GAIN_V2_MAX_ISO_NUM];
 } RK_GAIN_Params_V2_t;
-
 
 
 typedef struct Again_Manual_Attr_V2_s

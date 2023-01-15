@@ -72,7 +72,7 @@ static bool calibGetEnviromentPath(const char* variable, char* value)
 
     char* valueStr = getenv(variable);
     if (valueStr) {
-        strncpy(value, valueStr, CALIBDB_PATH_LEN - 1);
+        strncpy(value, valueStr, CALIBDB_PATH_LEN - 100 - 2);
         return true;
     }
     return false;
@@ -80,17 +80,17 @@ static bool calibGetEnviromentPath(const char* variable, char* value)
 
 static void getFilePathName(char* iqFile, char *location)
 {
-    char dir[CALIBDB_PATH_LEN];
-    char name[CALIBDB_PATH_LEN];
+    char dir[CALIBDB_PATH_LEN - 100 - 1];
+    char name[100 - 1 - 5];
     char *srcfile = strdup(iqFile);
     char *pstart = strrchr(srcfile, '/');
     char *pend = strrchr(srcfile, '.');
     *pend = '\0';
     strcpy(name, pstart + 1);
     if (calibGetEnviromentPath(CALIBDB_ENV_PATH_STR, dir)) {
-        snprintf(location, sizeof(dir), "%s/%s.bin", dir, name);
+        snprintf(location, CALIBDB_PATH_LEN, "%s/%s.bin", dir, name);
     } else {
-        snprintf(location, sizeof(dir), "%s.bin", srcfile);
+        snprintf(location, CALIBDB_PATH_LEN, "%s.bin", srcfile);
     }
     free(srcfile);
     LOGD("calibdb file is %s", location);
@@ -98,17 +98,17 @@ static void getFilePathName(char* iqFile, char *location)
 
 static void getFilePathName2(char* iqFile, char *newName)
 {
-    char dir[CALIBDB_PATH_LEN];
-    char name[CALIBDB_PATH_LEN];
+    char dir[CALIBDB_PATH_LEN - 100 - 1];
+    char name[100 - 1 - 10];
     char *srcfile = strdup(iqFile);
     char *pstart = strrchr(srcfile, '/');
     char *pend = strrchr(srcfile, '.');
     *pend = '\0';
     strcpy(name, pstart + 1);
     if (calibGetEnviromentPath(CALIBDB_ENV_PATH_STR, dir)) {
-        snprintf(newName, sizeof(dir), "%s/%s_write.xml", dir, name);
+        snprintf(newName, CALIBDB_PATH_LEN, "%s/%s_write.xml", dir, name);
     } else {
-        snprintf(newName, sizeof(dir), "%s_write.xml", srcfile);
+        snprintf(newName, CALIBDB_PATH_LEN, "%s_write.xml", srcfile);
     }
     free(srcfile);
     LOGD("calibdb file is %s", newName);

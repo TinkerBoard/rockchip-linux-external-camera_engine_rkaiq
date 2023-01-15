@@ -16,6 +16,10 @@
 #include "rk_aiq_user_api_anr.h"
 
 #include "algo_handlers/RkAiqAnrHandle.h"
+#include "algo_handlers/RkAiqArawnrHandle.h"
+#include "algo_handlers/RkAiqAmfnrHandle.h"
+#include "algo_handlers/RkAiqAynrHandle.h"
+#include "algo_handlers/RkAiqAcnrHandle.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -49,6 +53,8 @@ rk_aiq_user_api_anr_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_attrib_
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ACNR);
 
     RKAIQ_API_SMART_LOCK(sys_ctx);
+
+#if RKAIQ_HAVE_BAYERNR_V1
     RkAiqArawnrHandleInt* rawnr_algo_handle =
         algoHandle<RkAiqArawnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ARAWNR);
     if (rawnr_algo_handle) {
@@ -62,7 +68,9 @@ rk_aiq_user_api_anr_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_attrib_
         memcpy(&bayernr_attr.stManual.stSelect, &attr->stManual.stBayernrParamSelect, sizeof(bayernr_attr.stManual.stSelect));
         ret = rawnr_algo_handle->setAttrib(&bayernr_attr);
     }
+#endif
 
+#if RKAIQ_HAVE_MFNR_V1
     RkAiqAmfnrHandleInt* mfnr_algo_handle =
         algoHandle<RkAiqAmfnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
     if (mfnr_algo_handle) {
@@ -77,7 +85,9 @@ rk_aiq_user_api_anr_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_attrib_
         memcpy(&mfnr_attr.stManual.stSelect, &attr->stManual.stMfnrParamSelect, sizeof(mfnr_attr.stManual.stSelect));
         ret = mfnr_algo_handle->setAttrib(&mfnr_attr);
     }
+#endif
 
+#if RKAIQ_HAVE_YNR_V1
     RkAiqAynrHandleInt* ynr_algo_handle =
         algoHandle<RkAiqAynrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AYNR);
     if (ynr_algo_handle) {
@@ -91,7 +101,9 @@ rk_aiq_user_api_anr_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_attrib_
         memcpy(&ynr_attr.stManual.stSelect, &attr->stManual.stYnrParamSelect, sizeof(ynr_attr.stManual.stSelect));
         ret = ynr_algo_handle->setAttrib(&ynr_attr);
     }
+#endif
 
+#if RKAIQ_HAVE_CNR_V1
     RkAiqAcnrHandleInt* uvnr_algo_handle =
         algoHandle<RkAiqAcnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ACNR);
     if (uvnr_algo_handle) {
@@ -105,6 +117,8 @@ rk_aiq_user_api_anr_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_attrib_
         memcpy(&uvnr_attr.stManual.stSelect, &attr->stManual.stUvnrParamSelect, sizeof(uvnr_attr.stManual.stSelect));
         ret = uvnr_algo_handle->setAttrib(&uvnr_attr);
     }
+#endif
+
 #endif
 
     return ret;
@@ -124,6 +138,8 @@ rk_aiq_user_api_anr_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_attrib_
         ret = algo_handle->getAttrib(attr);
     }
 #else
+
+#if RKAIQ_HAVE_BAYERNR_V1
     RkAiqArawnrHandleInt* rawnr_algo_handle =
         algoHandle<RkAiqArawnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ARAWNR);
     if (rawnr_algo_handle) {
@@ -137,8 +153,9 @@ rk_aiq_user_api_anr_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_attrib_
         attr->stManual.bayernrEn = bayernr_attr.stManual.bayernrEn;
         memcpy(&attr->stManual.stBayernrParamSelect, &bayernr_attr.stManual.stSelect, sizeof(attr->stManual.stBayernrParamSelect));
     }
+#endif
 
-
+#if RKAIQ_HAVE_MFNR_V1
     RkAiqAmfnrHandleInt* mfnr_algo_handle =
         algoHandle<RkAiqAmfnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
     if (mfnr_algo_handle) {
@@ -153,8 +170,9 @@ rk_aiq_user_api_anr_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_attrib_
         attr->stManual.mfnrEn = mfnr_attr.stManual.mfnrEn;
         memcpy(&attr->stManual.stMfnrParamSelect, &mfnr_attr.stManual.stSelect, sizeof(attr->stManual.stMfnrParamSelect));
     }
+#endif
 
-
+#if RKAIQ_HAVE_YNR_V1
     RkAiqAynrHandleInt* ynr_algo_handle =
         algoHandle<RkAiqAynrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AYNR);
     if (ynr_algo_handle) {
@@ -168,8 +186,9 @@ rk_aiq_user_api_anr_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_attrib_
         attr->stManual.ynrEn = ynr_attr.stManual.ynrEn;
         memcpy(&attr->stManual.stYnrParamSelect, &ynr_attr.stManual.stSelect, sizeof(attr->stManual.stYnrParamSelect));
     }
+#endif
 
-
+#if RKAIQ_HAVE_CNR_V1
     RkAiqAcnrHandleInt* uvnr_algo_handle =
         algoHandle<RkAiqAcnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ACNR);
     if (uvnr_algo_handle) {
@@ -183,6 +202,7 @@ rk_aiq_user_api_anr_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_attrib_
         attr->stManual.uvnrEn = uvnr_attr.stManual.uvnrEn;
         memcpy(&attr->stManual.stUvnrParamSelect, &uvnr_attr.stManual.stSelect, sizeof(attr->stManual.stUvnrParamSelect));
     }
+#endif
 
 #endif
 
@@ -205,6 +225,7 @@ rk_aiq_user_api_anr_SetIQPara(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_IQPara_
     }
 #else
     printf("%s:%d\n", __FUNCTION__, __LINE__);
+#if RKAIQ_HAVE_BAYERNR_V1
     if(para->module_bits & (1 << ANR_MODULE_BAYERNR)) {
         RkAiqArawnrHandleInt* rawnr_algo_handle =
             algoHandle<RkAiqArawnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ARAWNR);
@@ -214,7 +235,9 @@ rk_aiq_user_api_anr_SetIQPara(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_IQPara_
             ret = rawnr_algo_handle->setIQPara(&bayernr_para);
         }
     }
+#endif
     printf("%s:%d\n", __FUNCTION__, __LINE__);
+#if RKAIQ_HAVE_MFNR_V1
     if(para->module_bits & (1 << ANR_MODULE_MFNR)) {
         RkAiqAmfnrHandleInt* mfnr_algo_handle =
             algoHandle<RkAiqAmfnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
@@ -224,7 +247,9 @@ rk_aiq_user_api_anr_SetIQPara(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_IQPara_
             ret = mfnr_algo_handle->setIQPara(&mfnr_para);
         }
     }
+#endif
     printf("%s:%d\n", __FUNCTION__, __LINE__);
+#if RKAIQ_HAVE_YNR_V1
     if(para->module_bits & (1 << ANR_MODULE_YNR)) {
         RkAiqAynrHandleInt* ynr_algo_handle =
             algoHandle<RkAiqAynrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AYNR);
@@ -234,7 +259,9 @@ rk_aiq_user_api_anr_SetIQPara(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_IQPara_
             ret = ynr_algo_handle->setIQPara(&ynr_para);
         }
     }
+#endif
     printf("%s:%d\n", __FUNCTION__, __LINE__);
+#if RKAIQ_HAVE_CNR_V1
     if(para->module_bits & (1 << ANR_MODULE_UVNR)) {
         RkAiqAcnrHandleInt* uvnr_algo_handle =
             algoHandle<RkAiqAcnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ACNR);
@@ -244,6 +271,7 @@ rk_aiq_user_api_anr_SetIQPara(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_IQPara_
             ret = uvnr_algo_handle->setIQPara(&uvnr_para);
         }
     }
+#endif
 
     printf("%s:%d\n", __FUNCTION__, __LINE__);
 #endif
@@ -266,6 +294,7 @@ rk_aiq_user_api_anr_GetIQPara(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_IQPara_
     }
 #else
     printf("rawnr\n");
+#if RKAIQ_HAVE_BAYERNR_V1
     RkAiqArawnrHandleInt* rawnr_algo_handle =
         algoHandle<RkAiqArawnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ARAWNR);
     if (rawnr_algo_handle) {
@@ -275,8 +304,10 @@ rk_aiq_user_api_anr_GetIQPara(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_IQPara_
         printf("rawnr2222\n");
         para->stBayernrPara = bayernr_para.stBayernrPara;
     }
+#endif
 
     printf("mfnr\n");
+#if RKAIQ_HAVE_MFNR_V1
     RkAiqAmfnrHandleInt* mfnr_algo_handle =
         algoHandle<RkAiqAmfnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
     if (mfnr_algo_handle) {
@@ -286,8 +317,10 @@ rk_aiq_user_api_anr_GetIQPara(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_IQPara_
         para->stMfnrPara = mfnr_para.stMfnrPara;
         printf("mfnr 2222\n");
     }
+#endif
 
     printf("ynr\n");
+#if RKAIQ_HAVE_YNR_V1
     RkAiqAynrHandleInt* ynr_algo_handle =
         algoHandle<RkAiqAynrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AYNR);
     if (ynr_algo_handle) {
@@ -295,8 +328,10 @@ rk_aiq_user_api_anr_GetIQPara(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_IQPara_
         ret = ynr_algo_handle->getIQPara(&ynr_para);
         para->stYnrPara = ynr_para.stYnrPara;
     }
+#endif
 
     printf("uvnr\n");
+#if RKAIQ_HAVE_CNR_V1
     RkAiqAcnrHandleInt* uvnr_algo_handle =
         algoHandle<RkAiqAcnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ACNR);
     if (uvnr_algo_handle) {
@@ -304,6 +339,7 @@ rk_aiq_user_api_anr_GetIQPara(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_nr_IQPara_
         ret = uvnr_algo_handle->getIQPara(&uvnr_para);
         para->stUvnrPara = uvnr_para.stUvnrPara;
     }
+#endif
 
     printf("exit\n");
 #endif
@@ -326,17 +362,23 @@ rk_aiq_user_api_anr_SetLumaSFStrength(const rk_aiq_sys_ctx_t* sys_ctx, float fPe
         ret = algo_handle->setLumaSFStrength(fPercnt);
     }
 #else
+
+#if RKAIQ_HAVE_BAYERNR_V1
     RkAiqArawnrHandleInt* rawnr_algo_handle =
         algoHandle<RkAiqArawnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ARAWNR);
     if (rawnr_algo_handle) {
         ret = rawnr_algo_handle->setStrength(fPercnt);
     }
+#endif
 
+#if RKAIQ_HAVE_YNR_V1
     RkAiqAynrHandleInt* ynr_algo_handle =
         algoHandle<RkAiqAynrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AYNR);
     if (ynr_algo_handle) {
         ret = ynr_algo_handle->setStrength(fPercnt);
     }
+#endif
+
 #endif
 
     return ret;
@@ -356,11 +398,13 @@ rk_aiq_user_api_anr_SetLumaTFStrength(const rk_aiq_sys_ctx_t* sys_ctx, float fPe
         ret = algo_handle->setLumaTFStrength(fPercnt);
     }
 #else
+#if RKAIQ_HAVE_MFNR_V1
     RkAiqAmfnrHandleInt* mfnr_algo_handle =
         algoHandle<RkAiqAmfnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
     if (mfnr_algo_handle) {
         ret = mfnr_algo_handle->setLumaStrength(fPercnt);
     }
+#endif
 #endif
 
     return ret;
@@ -380,11 +424,13 @@ rk_aiq_user_api_anr_GetLumaSFStrength(const rk_aiq_sys_ctx_t* sys_ctx, float *pP
         ret =  algo_handle->getLumaSFStrength(pPercnt);
     }
 #else
+#if RKAIQ_HAVE_BAYERNR_V1
     RkAiqArawnrHandleInt* rawnr_algo_handle =
         algoHandle<RkAiqArawnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ARAWNR);
     if (rawnr_algo_handle) {
         ret = rawnr_algo_handle->getStrength(pPercnt);
     }
+#endif
 
 #if 0
     RkAiqAynrHandleInt* ynr_algo_handle =
@@ -412,11 +458,13 @@ rk_aiq_user_api_anr_GetLumaTFStrength(const rk_aiq_sys_ctx_t* sys_ctx, float *pP
         ret = algo_handle->getLumaTFStrength(pPercnt);
     }
 #else
+#if RKAIQ_HAVE_MFNR_V1
     RkAiqAmfnrHandleInt* mfnr_algo_handle =
         algoHandle<RkAiqAmfnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
     if (mfnr_algo_handle) {
         ret = mfnr_algo_handle->getLumaStrength(pPercnt);
     }
+#endif
 #endif
 
     return ret;
@@ -436,11 +484,13 @@ rk_aiq_user_api_anr_SetChromaSFStrength(const rk_aiq_sys_ctx_t* sys_ctx, float f
         ret = algo_handle->setChromaSFStrength(fPercnt);
     }
 #else
+#if RKAIQ_HAVE_CNR_V1
     RkAiqAcnrHandleInt* uvnr_algo_handle =
         algoHandle<RkAiqAcnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ACNR);
     if (uvnr_algo_handle) {
         ret = uvnr_algo_handle->setStrength(fPercnt);
     }
+#endif
 #endif
 
     return ret;
@@ -460,11 +510,13 @@ rk_aiq_user_api_anr_SetChromaTFStrength(const rk_aiq_sys_ctx_t* sys_ctx, float f
         ret = algo_handle->setChromaTFStrength(fPercnt);
     }
 #else
+#if RKAIQ_HAVE_MFNR_V1
     RkAiqAmfnrHandleInt* mfnr_algo_handle =
         algoHandle<RkAiqAmfnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
     if (mfnr_algo_handle) {
         ret = mfnr_algo_handle->setChromaStrength(fPercnt);
     }
+#endif
 #endif
 
     return ret;
@@ -484,11 +536,13 @@ rk_aiq_user_api_anr_GetChromaSFStrength(const rk_aiq_sys_ctx_t* sys_ctx, float *
         ret = algo_handle->getChromaSFStrength(pPercnt);
     }
 #else
+#if RKAIQ_HAVE_CNR_V1
     RkAiqAcnrHandleInt* uvnr_algo_handle =
         algoHandle<RkAiqAcnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ACNR);
     if (uvnr_algo_handle) {
         ret = uvnr_algo_handle->getStrength(pPercnt);
     }
+#endif
 #endif
 
     return ret;
@@ -508,11 +562,13 @@ rk_aiq_user_api_anr_GetChromaTFStrength(const rk_aiq_sys_ctx_t* sys_ctx, float *
         ret = algo_handle->getChromaTFStrength(pPercnt);
     }
 #else
+#if RKAIQ_HAVE_MFNR_V1
     RkAiqAmfnrHandleInt* mfnr_algo_handle =
         algoHandle<RkAiqAmfnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
     if (mfnr_algo_handle) {
         ret = mfnr_algo_handle->getChromaStrength(pPercnt);
     }
+#endif
 #endif
 
     return ret;
@@ -532,11 +588,13 @@ rk_aiq_user_api_anr_SetRawnrSFStrength(const rk_aiq_sys_ctx_t* sys_ctx, float fP
         ret = algo_handle->setRawnrSFStrength(fPercnt);
     }
 #else
+#if RKAIQ_HAVE_BAYERNR_V1
     RkAiqArawnrHandleInt* rawnr_algo_handle =
         algoHandle<RkAiqArawnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ARAWNR);
     if (rawnr_algo_handle) {
         ret = rawnr_algo_handle->setStrength(fPercnt);
     }
+#endif
 #endif
 
     return ret;
@@ -556,11 +614,13 @@ rk_aiq_user_api_anr_GetRawnrSFStrength(const rk_aiq_sys_ctx_t* sys_ctx, float *p
         ret = algo_handle->getRawnrSFStrength(pPercnt);
     }
 #else
+#if RKAIQ_HAVE_BAYERNR_V1
     RkAiqArawnrHandleInt* rawnr_algo_handle =
         algoHandle<RkAiqArawnrHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ARAWNR);
     if (rawnr_algo_handle) {
         ret = rawnr_algo_handle->getStrength(pPercnt);
     }
+#endif
 #endif
 
     return XCAM_RETURN_NO_ERROR;

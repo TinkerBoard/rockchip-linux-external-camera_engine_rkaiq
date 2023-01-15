@@ -116,6 +116,8 @@ public:
 
     virtual XCamReturn start (bool prepared = false);
     virtual XCamReturn stop ();
+    virtual XCamReturn stop_streamoff ();
+    virtual XCamReturn stop_freebuffer ();
     XCamReturn prepare ();
 
     virtual int poll_event (int timeout_msec, int stop_fd);

@@ -213,13 +213,15 @@ typedef struct Uapi_HdrAeInfo_s {
 
     // M4_STRUCT_DESC("HdrExp", "normal_ui_style")
     RkAiqExpRealParam_t HdrExp[3];
+
 } Uapi_HdrAeInfo_t;
 
 
 typedef struct Uapi_ExpQueryInfo_s {
     // M4_BOOL_DESC("IsConverged", "0",M4_HIDE(1))
     bool              IsConverged;
-
+    // M4_BOOL_DESC("EnvChange", "0",M4_HIDE(1))
+    bool              EnvChange;
     // M4_BOOL_DESC("IsExpMax", "0",M4_HIDE(1))
     bool              IsExpMax;
 
@@ -249,6 +251,9 @@ typedef struct Uapi_ExpQueryInfo_s {
 
     // M4_NUMBER_DESC("LowLightROIPdf", "f32", M4_RANGE(0,1), "0", M4_DIGIT(2),M4_HIDE(1))
     float             LowLightROIPdf;
+
+    // M4_NUMBER_DESC("Fps", "f32", M4_RANGE(0,4096), "0", M4_DIGIT(2))
+    float             Fps;
 
 } Uapi_ExpQueryInfo_t;
 

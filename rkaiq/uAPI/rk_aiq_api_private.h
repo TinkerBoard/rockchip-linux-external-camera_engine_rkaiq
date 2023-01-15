@@ -36,6 +36,7 @@ typedef struct rk_aiq_sys_ctx_s {
     CamCalibDbContext_t *_calibDb;
 #endif
     int _isp_hw_ver;
+    bool _is_1608_sensor;  /*< for sensor sync mode verify. */
 
     SocketServer *  _socket;
     SmartPtr<Mutex> _apiMutex;
@@ -53,12 +54,22 @@ typedef struct rk_aiq_sys_ctx_s {
     FILE* _lock_file;
 } rk_aiq_sys_ctx_t;
 
+/**
+ * gcc-4.4.7 disallow typedef redefinition
+ * error: redefinition of typedef 'RKAiqAecExpInfo_t' with include/uAPI2/rk_aiq_user_api2_xxxx.h
+ */
+#ifndef RK_AIQ_SYS_CTX_T
+#define RK_AIQ_SYS_CTX_T
+typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
+#endif
+
 typedef struct rk_aiq_camgroup_ctx_s {
 #ifdef RKAIQ_ENABLE_CAMGROUP
     rk_aiq_cam_type_t cam_type;
     rk_aiq_sys_ctx_t* cam_ctxs_array[RK_AIQ_CAM_GROUP_MAX_CAMS];
     int sns_ids_array[RK_AIQ_CAM_GROUP_MAX_CAMS];
     int cam_ctxs_num;
+    int cam_1608_num;
     SmartPtr<RkAiqCamGroupManager> cam_group_manager;
     SmartPtr<Mutex> _apiMutex;
     CamCalibDbCamgroup_t* _camgroup_calib;
@@ -70,6 +81,8 @@ typedef struct rk_aiq_camgroup_ctx_s {
 
 
 rk_aiq_sys_ctx_t* get_next_ctx(const rk_aiq_sys_ctx_t* ctx);
+rk_aiq_camgroup_ctx_t* get_binded_group_ctx(const rk_aiq_sys_ctx_t* ctx);
+
 bool is_ctx_need_bypass(const rk_aiq_sys_ctx_t* ctx);
 void rk_aiq_ctx_set_tool_mode(const rk_aiq_sys_ctx_t* ctx, bool status);
 

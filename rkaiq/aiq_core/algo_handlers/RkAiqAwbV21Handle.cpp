@@ -81,6 +81,12 @@ XCamReturn RkAiqAwbV21HandleInt::updateConfig(bool needSync) {
         updateWbAwbMultiWindowAttr = false;
         sendSignal(mCurWbAwbMultiWindowAttr.sync.sync_mode);
     }
+    if (updateFFWbgainAttr) {
+        mCurFFWbgainAttr   = mNewFFWbgainAttr;
+        rk_aiq_uapiV2_awb_SetFstFrWbgain(mAlgoCtx, mCurFFWbgainAttr.wggain, false);
+        updateFFWbgainAttr = false;
+        sendSignal(mCurFFWbgainAttr.sync.sync_mode);
+    }
     if (needSync) mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();

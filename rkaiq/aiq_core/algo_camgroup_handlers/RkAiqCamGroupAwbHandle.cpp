@@ -60,6 +60,19 @@ XCamReturn RkAiqCamGroupAwbHandleInt::updateConfig(bool needSync) {
         updateWbAwbMultiWindowAttr = false;
         sendSignal(mCurWbAwbMultiWindowAttr.sync.sync_mode);
     }
+    // isp32
+    if (updateWbV32Attr) {
+        mCurWbV32Attr   = mNewWbV32Attr;
+        rk_aiq_uapiV2_camgroup_awbV32_SetAttrib(mAlgoCtx, mCurWbV32Attr, false);
+        updateWbV32Attr = false;
+        sendSignal(mCurWbV32Attr.sync.sync_mode);
+    }
+    if (updateWbV32AwbMultiWindowAttr) {
+        mCurWbV32AwbMultiWindowAttr   = mNewWbV32AwbMultiWindowAttr;
+        rk_aiq_uapiV2_camgroup_awbV32_SetAwbMultiwindow(mAlgoCtx, mCurWbV32AwbMultiWindowAttr, false);
+        updateWbV32AwbMultiWindowAttr = false;
+        sendSignal(mCurWbV32AwbMultiWindowAttr.sync.sync_mode);
+    }
 
     if (needSync) mCfgMutex.unlock();
 
@@ -462,5 +475,102 @@ XCamReturn RkAiqCamGroupAwbHandleInt::getStrategyResult(rk_tool_awb_strategy_res
     return ret;
 }
 
+XCamReturn RkAiqCamGroupAwbHandleInt::setWbV32AwbMultiWindowAttrib(rk_aiq_uapiV2_wbV32_awb_mulWindow_t att) {
+    ENTER_ANALYZER_FUNCTION();
 
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    mCfgMutex.lock();
+
+    // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
+    // if something changed, set att to mNewAtt, and
+    // the new params will be effective later when updateConfig
+    // called by RkAiqCore
+    bool isChanged = false;
+    if (att.sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
+        memcmp(&mNewWbV32AwbMultiWindowAttr, &att, sizeof(att)))
+        isChanged = true;
+    else if (att.sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
+            memcmp(&mNewWbV32AwbMultiWindowAttr, &att, sizeof(att)))
+        isChanged = true;
+
+    // if something changed
+    if (isChanged) {
+        mNewWbV32AwbMultiWindowAttr   = att;
+        updateWbV32AwbMultiWindowAttr = true;
+        waitSignal(att.sync.sync_mode);
+    }
+
+    mCfgMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqCamGroupAwbHandleInt::getWbV32AwbMultiWindowAttrib(rk_aiq_uapiV2_wbV32_awb_mulWindow_t* att) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapiV2_camgroup_awbV32_GetAwbMultiwindow(mAlgoCtx, att);
+        att->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        if (updateWbV32AwbMultiWindowAttr) {
+            memcpy(att, &mNewWbV32AwbMultiWindowAttr, sizeof(mNewWbV32AwbMultiWindowAttr));
+            att->sync.done = false;
+        } else {
+            rk_aiq_uapiV2_camgroup_awbV32_GetAwbMultiwindow(mAlgoCtx, att);
+            att->sync.sync_mode = mNewWbV32AwbMultiWindowAttr.sync.sync_mode;
+            att->sync.done      = true;
+        }
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqCamGroupAwbHandleInt::setWbV32Attrib(rk_aiq_uapiV2_wbV32_attrib_t att) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    mCfgMutex.lock();
+
+    if (0 != memcmp(&mNewWbV32Attr, &att, sizeof(att))) {
+        mNewWbV32Attr = att;
+        updateWbV32Attr = true;
+        waitSignal(att.sync.sync_mode);
+    }
+
+    mCfgMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqCamGroupAwbHandleInt::getWbV32Attrib(rk_aiq_uapiV2_wbV32_attrib_t* att) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        att->sync.done = true;
+        rk_aiq_uapiV2_camgroup_awbV32_GetAttrib(mAlgoCtx, att);
+        mCfgMutex.unlock();
+    } else {
+        if (updateWbV32Attr) {
+             memcpy(att, &mNewWbV32Attr, sizeof(mNewWbV32Attr));
+             att->sync.done = false;
+        } else {
+            rk_aiq_uapiV2_camgroup_awbV32_GetAttrib(mAlgoCtx, att);
+            att->sync.sync_mode = mNewWbV32Attr.sync.sync_mode;
+            att->sync.done = true;
+        }
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
 }  // namespace RkCam

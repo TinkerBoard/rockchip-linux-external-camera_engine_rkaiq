@@ -255,9 +255,6 @@ XCamReturn AccmConfig
             hAccm->mCurAtt.stManual = hAccm->mNewAtt.stManual;
     }
 
-    if (hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_AUTO){
-        hAccm->mCurAtt.byPass = !(hAccm->ccm_v1->control.enable);
-    }
     LOGD_ACCM("%s: byPass: %d  mode:%d \n", __FUNCTION__, hAccm->mCurAtt.byPass, hAccm->mCurAtt.mode);
     if(hAccm->mCurAtt.byPass != true && hAccm->accmSwInfo.grayMode != true) {
         hAccm->ccmHwConf.ccmEnable = true;
@@ -311,28 +308,25 @@ static XCamReturn UpdateCcmCalibV2ParaV1(accm_handle_t hAccm)
         return(ret);
     }
 
-    hAccm->mCurAtt.mode = (rk_aiq_ccm_op_mode_t)calib_ccm->control.mode;
-
+    if (hAccm->mCurAtt.mode == RK_AIQ_CCM_MODE_AUTO) {
 #if RKAIQ_ACCM_ILLU_VOTE
-    ReloadCCMCalibV2(hAccm, &calib_ccm->TuningPara);
+        ReloadCCMCalibV2(hAccm, &calib_ccm->TuningPara);
 #endif
 
-    ret = pCcmMatrixAll_init(hAccm, &calib_ccm->TuningPara);
+        ret = pCcmMatrixAll_init(hAccm, &calib_ccm->TuningPara);
 
-    hAccm->mCurAtt.byPass = !(calib_ccm->control.enable);
+        hAccm->mCurAtt.byPass = !(calib_ccm->control.enable);
 
-    hAccm->ccmHwConf.bound_bit = calib_ccm->lumaCCM.low_bound_pos_bit;
-    memcpy( hAccm->ccmHwConf.rgb2y_para, calib_ccm->lumaCCM.rgb2y_para,
-            sizeof(calib_ccm->lumaCCM.rgb2y_para));
-    memcpy( hAccm->ccmHwConf.alp_y, calib_ccm->lumaCCM.y_alpha_curve, sizeof(hAccm->ccmHwConf.alp_y));
+        hAccm->ccmHwConf.bound_bit = calib_ccm->lumaCCM.low_bound_pos_bit;
+        memcpy( hAccm->ccmHwConf.rgb2y_para, calib_ccm->lumaCCM.rgb2y_para,
+                sizeof(calib_ccm->lumaCCM.rgb2y_para));
+        memcpy( hAccm->ccmHwConf.alp_y, calib_ccm->lumaCCM.y_alpha_curve, sizeof(hAccm->ccmHwConf.alp_y));
 
-    // config manual ccm
-    memcpy(hAccm->mCurAtt.stManual.ccMatrix, calib_ccm->manualPara.ccMatrix, sizeof(calib_ccm->manualPara.ccMatrix));
-    memcpy(hAccm->mCurAtt.stManual.ccOffsets, calib_ccm->manualPara.ccOffsets, sizeof(calib_ccm->manualPara.ccOffsets));
-    memcpy(hAccm->mCurAtt.stManual.y_alpha_curve,  hAccm->ccmHwConf.alp_y, sizeof( hAccm->ccmHwConf.alp_y));
-    hAccm->mCurAtt.stManual.low_bound_pos_bit = hAccm->ccmHwConf.bound_bit;
-    hAccm->accmSwInfo.ccmConverged = false;
-    hAccm->calib_update = true;
+        // config manual ccm
+        hAccm->mCurAtt.stManual.low_bound_pos_bit = hAccm->ccmHwConf.bound_bit;
+        hAccm->accmSwInfo.ccmConverged = false;
+        hAccm->calib_update = true;
+    }
 
     ClearList(&hAccm->accmRest.problist);
 
@@ -377,6 +371,7 @@ XCamReturn AccmInit(accm_handle_t *hAccm, const CamCalibDbV2Context_t* calibv2)
 
     // todo whm --- CalibDbV2_Ccm_Para
     accm_context->ccm_v1 = calib_ccm;
+    accm_context->mCurAtt.mode = RK_AIQ_CCM_MODE_AUTO;
     ret = UpdateCcmCalibV2ParaV1(accm_context);
 
     for(int i = 0; i < RK_AIQ_ACCM_COLOR_GAIN_NUM; i++) {

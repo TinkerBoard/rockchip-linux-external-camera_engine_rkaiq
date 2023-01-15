@@ -44,7 +44,7 @@ AblcResult_V32_t AblcJsonParamInit_V32(AblcParams_V32_t* pParams,
 }
 
 AblcResult_V32_t AblcOBJsonParamInit_V32(AblcOBParams_V32_t* pParams,
-                                         AblcV32OBPara_t* pBlcOBCalibParams) {
+        AblcV32OBPara_t* pBlcOBCalibParams) {
     AblcResult_V32_t res = ABLC_V32_RET_SUCCESS;
 
     if (pParams == NULL || pBlcOBCalibParams == NULL) {
@@ -108,10 +108,10 @@ AblcResult_V32_t AblcRefJsonParamInit_V32(AblcRefParams_V32_t* pBlcRefPara, Cali
     return ret;
 }
 
-AblcResult_V32_t AblcV32_IQParams_Check(AblcParams_V32_t* pBLC0Params, AblcOBParams_V32_t* pBLCOBParams,AblcRefParams_V32_t* pBlcRef) {
+AblcResult_V32_t AblcV32_IQParams_Check(AblcParams_V32_t* pBLC0Params, AblcOBParams_V32_t* pBLCOBParams, AblcRefParams_V32_t* pBlcRef) {
     AblcResult_V32_t ret = ABLC_V32_RET_SUCCESS;
 
-     if (pBLC0Params == NULL) {
+    if (pBLC0Params == NULL) {
         LOGE_ABLC("%s(%d): NULL pointer\n", __FUNCTION__, __LINE__);
         return ABLC_V32_RET_NULL_POINTER;
     }
@@ -139,25 +139,25 @@ AblcResult_V32_t AblcV32_IQParams_Check(AblcParams_V32_t* pBLC0Params, AblcOBPar
             blc_gb_caculate = pBLC0Params->blc_gb[i] - pBLCOBParams->ob_offset[i];
             blc_b_caculate = pBLC0Params->blc_b[i] - pBLCOBParams->ob_offset[i];
 
-	    diff = ((pBlcRef->Reference_r[i] - blc_r_caculate) > 0 ) ? (pBlcRef->Reference_r[i] - blc_r_caculate) : ( blc_r_caculate -pBlcRef->Reference_r[i]);
-            if (diff > 0.01){
+            diff = ((pBlcRef->Reference_r[i] - blc_r_caculate) > 0 ) ? (pBlcRef->Reference_r[i] - blc_r_caculate) : ( blc_r_caculate - pBlcRef->Reference_r[i]);
+            if (diff > 0.01) {
                 LOGE_ABLC("BLC0_r-ob_offset not equal to the blc Reference_r in iso(%d) Reference_r=%.4f, blc_r_caculate=%.4f\n",
                           int(pBlcRef->iso[i]), pBlcRef->Reference_r[i], blc_r_caculate);
             }
 
-	    diff = ((pBlcRef->Reference_gr[i] - blc_gr_caculate) > 0 ) ? (pBlcRef->Reference_gr[i] - blc_gr_caculate) : ( blc_gr_caculate -pBlcRef->Reference_gr[i]);
+            diff = ((pBlcRef->Reference_gr[i] - blc_gr_caculate) > 0 ) ? (pBlcRef->Reference_gr[i] - blc_gr_caculate) : ( blc_gr_caculate - pBlcRef->Reference_gr[i]);
             if (diff > 0.01) {
                 LOGE_ABLC("BLC0_gr-ob_offset not equal to the blc Reference_gr in iso(%d) Reference_gr=%.4f, blc_gr_caculate=%.4f\n, cur-blc-gr=%.4f",
                           int(pBlcRef->iso[i]), pBlcRef->Reference_gr[i], blc_gr_caculate, pBLC0Params->blc_gr[i]);
             }
 
-	    diff = ((pBlcRef->Reference_gb[i] - blc_gb_caculate) > 0 ) ? (pBlcRef->Reference_gb[i] - blc_gb_caculate) : ( blc_gb_caculate -pBlcRef->Reference_gb[i]);
+            diff = ((pBlcRef->Reference_gb[i] - blc_gb_caculate) > 0 ) ? (pBlcRef->Reference_gb[i] - blc_gb_caculate) : ( blc_gb_caculate - pBlcRef->Reference_gb[i]);
             if (diff > 0.01) {
                 LOGE_ABLC("BLC0_gb-ob_offset not equal to the blc Reference_gb in iso(%d) Reference_gb=%.4f, blc_gb_caculate=%.4f\n",
                           int(pBlcRef->iso[i]), pBlcRef->Reference_gb[i], blc_gb_caculate);
             }
 
-	    diff = ((pBlcRef->Reference_b[i] - blc_b_caculate) > 0 ) ? (pBlcRef->Reference_b[i] - blc_b_caculate) : ( blc_b_caculate -pBlcRef->Reference_b[i]);
+            diff = ((pBlcRef->Reference_b[i] - blc_b_caculate) > 0 ) ? (pBlcRef->Reference_b[i] - blc_b_caculate) : ( blc_b_caculate - pBlcRef->Reference_b[i]);
             if (diff > 0.01) {
                 LOGE_ABLC("BLC0_b-ob_offset not equal to the blc Reference_b in iso(%d) Reference_b=%.4f, blc_b_caculate=%.4f\n",
                           int(pBlcRef->iso[i]), pBlcRef->Reference_b[i], blc_b_caculate);
@@ -168,7 +168,7 @@ AblcResult_V32_t AblcV32_IQParams_Check(AblcParams_V32_t* pBLC0Params, AblcOBPar
     return ret;
 }
 AblcResult_V32_t Ablc_Select_Params_By_ISO_V32(AblcParams_V32_t* pParams, AblcSelect_V32_t* pSelect,
-                                               AblcExpInfo_V32_t* pExpInfo) {
+        AblcExpInfo_V32_t* pExpInfo) {
     LOG1_ABLC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
 
     int isoLowlevel  = 0;
@@ -255,8 +255,8 @@ AblcResult_V32_t Ablc_Select_Params_By_ISO_V32(AblcParams_V32_t* pParams, AblcSe
 }
 
 AblcResult_V32_t Ablc_Select_OBParams_By_ISO_V32(AblcOBParams_V32_t* pParams,
-                                                 AblcOBSelect_V32_t* pSelect,
-                                                 AblcExpInfo_V32_t* pExpInfo) {
+        AblcOBSelect_V32_t* pSelect,
+        AblcExpInfo_V32_t* pExpInfo) {
     LOG1_ABLC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
 
     int isoLowlevel  = 0;
@@ -321,8 +321,8 @@ AblcResult_V32_t Ablc_Select_OBParams_By_ISO_V32(AblcOBParams_V32_t* pParams,
                   pExpInfo->hdr_mode);
         pSelect->enable      = pParams->enable;
         pSelect->ob_offset   = (short int)(ratio * (pParams->ob_offset[isoHighlevel] -
-                                                  pParams->ob_offset[isoLowlevel]) +
-                                         pParams->ob_offset[isoLowlevel]);
+                                           pParams->ob_offset[isoLowlevel]) +
+                                           pParams->ob_offset[isoLowlevel]);
         pSelect->ob_predgain = (float)(ratio * (pParams->ob_predgain[isoHighlevel] -
                                                 pParams->ob_predgain[isoLowlevel]) +
                                        pParams->ob_predgain[isoLowlevel]);
@@ -335,7 +335,7 @@ AblcResult_V32_t Ablc_Select_OBParams_By_ISO_V32(AblcOBParams_V32_t* pParams,
     }
 
     LOGD_ABLC(
-        "%s:(%d) ISO:%d  isoLowlevel:%d isoHighlevel:%d  isp_ob_offset: %d isp_ob_predgian %f  \n",
+        "%s:(%d) ISO:%d  isoLowlevel:%d isoHighlevel:%d  isp_ob_offset: %f isp_ob_predgian %f  \n",
         __FUNCTION__, __LINE__, isoValue, isoLowlevel, isoHighlevel, pSelect->ob_offset,
         pSelect->ob_predgain);
 
@@ -562,14 +562,14 @@ AblcResult_V32_t AblcV32Process(AblcContext_V32_t* pAblcCtx, AblcExpInfo_V32_t* 
         }
 
         ret = Ablc_Select_Params_By_ISO_V32(&pAblcCtx->stBlc1Params, &pAblcCtx->stBlc1Select,
-                                                pExpInfo);
+                                            pExpInfo);
         if (pAblcCtx->stBlc1Select.enable) {
-
+            //hdr won't use blc1
             pAblcCtx->ProcRes.blc1_enable = pAblcCtx->stBlc1Select.enable;
-            pAblcCtx->ProcRes.blc1_r      = pAblcCtx->stBlc1Select.blc_r;
-            pAblcCtx->ProcRes.blc1_gr     = pAblcCtx->stBlc1Select.blc_gr;
-            pAblcCtx->ProcRes.blc1_gb     = pAblcCtx->stBlc1Select.blc_gb;
-            pAblcCtx->ProcRes.blc1_b      = pAblcCtx->stBlc1Select.blc_b;
+            pAblcCtx->ProcRes.blc1_r      = pAblcCtx->stBlc1Select.blc_r * pExpInfo->isp_dgain[0];
+            pAblcCtx->ProcRes.blc1_gr     = pAblcCtx->stBlc1Select.blc_gr * pExpInfo->isp_dgain[0];
+            pAblcCtx->ProcRes.blc1_gb     = pAblcCtx->stBlc1Select.blc_gb * pExpInfo->isp_dgain[0];
+            pAblcCtx->ProcRes.blc1_b      = pAblcCtx->stBlc1Select.blc_b * pExpInfo->isp_dgain[0];
         } else {
             pAblcCtx->ProcRes.blc1_enable = false;
             pAblcCtx->ProcRes.blc1_r      = 0;
@@ -579,7 +579,7 @@ AblcResult_V32_t AblcV32Process(AblcContext_V32_t* pAblcCtx, AblcExpInfo_V32_t* 
         }
 
         ret = Ablc_Select_OBParams_By_ISO_V32(&pAblcCtx->stBlcOBParams,
-                                                &pAblcCtx->stBlcOBSelect, pExpInfo);
+                                              &pAblcCtx->stBlcOBSelect, pExpInfo);
         if (pAblcCtx->stBlcOBSelect.enable) {
             pAblcCtx->ProcRes.blc_ob_enable = pAblcCtx->stBlcOBSelect.enable;
             // isp_ob_offset algo result
@@ -603,10 +603,10 @@ AblcResult_V32_t AblcV32Process(AblcContext_V32_t* pAblcCtx, AblcExpInfo_V32_t* 
         pAblcCtx->ProcRes.blc_b  = pAblcCtx->stBlc0Manual.blc_b;
 
         pAblcCtx->ProcRes.blc1_enable = pAblcCtx->stBlc1Manual.enable;
-        pAblcCtx->ProcRes.blc1_r      = pAblcCtx->stBlc1Manual.blc_r;
-        pAblcCtx->ProcRes.blc1_gr     = pAblcCtx->stBlc1Manual.blc_gr;
-        pAblcCtx->ProcRes.blc1_gb     = pAblcCtx->stBlc1Manual.blc_gb;
-        pAblcCtx->ProcRes.blc1_b      = pAblcCtx->stBlc1Manual.blc_b;
+        pAblcCtx->ProcRes.blc1_r      = pAblcCtx->stBlc1Manual.blc_r * pExpInfo->isp_dgain[0];
+        pAblcCtx->ProcRes.blc1_gr     = pAblcCtx->stBlc1Manual.blc_gr * pExpInfo->isp_dgain[0];
+        pAblcCtx->ProcRes.blc1_gb     = pAblcCtx->stBlc1Manual.blc_gb * pExpInfo->isp_dgain[0];
+        pAblcCtx->ProcRes.blc1_b      = pAblcCtx->stBlc1Manual.blc_b * pExpInfo->isp_dgain[0];
 
         if (pAblcCtx->stBlcOBManual.enable) {
             pAblcCtx->ProcRes.blc_ob_enable = pAblcCtx->stBlcOBManual.enable;

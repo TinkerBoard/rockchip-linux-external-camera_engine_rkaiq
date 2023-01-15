@@ -19,7 +19,7 @@
 #include "ae/rk_aiq_types_ae_algo_int.h"
 #include "af/rk_aiq_types_af_algo_int.h"
 #include "rk_aiq_algo_types.h"
-#include "rk_aiq_types_amerge_hw.h"
+#include "amerge/rk_aiq_types_amerge_hw.h"
 #include "xcam_log.h"
 
 /********************also use for gamma, dehaze, tmo and drc*******************/
@@ -58,6 +58,8 @@
 #define BIT_10_MAX            (1023)
 #define BIT_14_MAX            (16383)
 #define RATIO_DEFAULT         (1.0f)
+#define LONG_FRAME_MODE_RATIO (1.0f)
+#define ISP_PREDGAIN_DEFAULT  (1.0f)
 #define LIMIT_VALUE(value,max_value,min_value)      (value > max_value? max_value : value < min_value ? min_value : value)
 #define LIMIT_VALUE_UNSIGNED(value, max_value) (value > max_value ? max_value : value)
 #define LIMIT_PARA(a,b,c,d,e)      (c+(a-e)*(b-c)/(d -e))
@@ -76,7 +78,7 @@ typedef enum FrameNumber_e {
 #define MOVECOEFMIN     (0.0)
 #define OECURVESMOOTHMAX     (200)
 #define OECURVESMOOTHMIN     (20)
-#define OECURVEOFFSETMAX     (300)
+#define OECURVEOFFSETMAX     (280)
 #define OECURVEOFFSETMIN     (108)
 #define MDCURVESMOOTHMAX     (200)
 #define MDCURVESMOOTHMIN     (20)
@@ -201,6 +203,7 @@ typedef struct AmergeNextData_s {
 } AmergeNextData_t;
 
 typedef struct AmergeContext_s {
+    bool isCapture;
     bool ifReCalcStAuto;
     bool ifReCalcStManual;
     bool SceneChange;

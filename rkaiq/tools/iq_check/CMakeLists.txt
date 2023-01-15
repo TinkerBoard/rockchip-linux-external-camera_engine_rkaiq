@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 2.8...3.22)
 
+if (ARCH STREQUAL "arm")
+    set(J2S_HOST_CFLAGS -m32 -std=gnu99 -malign-double)
+elseif (ARCH STREQUAL "aarch64")
+    set(J2S_HOST_CFLAGS -m64 -std=gnu99 -malign-double)
+endif()
+
 project(j2s)
 
 # ├── iq_check.c
@@ -58,7 +64,7 @@ add_custom_target(
 #########################################################
 add_custom_target(
     parser_tool
-    COMMAND gcc -std=c99 -DJ2S_ENABLE_DESC ${PROJECT_SOURCE_DIR}/src/parser.c -o parser ${ISP_HW_VERSION}
+    COMMAND gcc ${J2S_HOST_CFLAGS} -std=c99 -DJ2S_ENABLE_DESC ${PROJECT_SOURCE_DIR}/src/parser.c -o parser ${ISP_HW_VERSION}
     -I${ROOT_PROJ_DIR}/include/common
     -I${ROOT_PROJ_DIR}/include/iq_parser_v2
     -I${ROOT_PROJ_DIR}/include/iq_parser_v2/j2s
@@ -81,7 +87,7 @@ add_dependencies(j2s j2s_parser)
 #########################################################
 add_custom_target(
     dump_tool
-    COMMAND gcc -DJ2S_ENABLE_DESC ${ISP_HW_VERSION} -o dump ${J2S_SRC} ${ISP_HW_VERSION}
+    COMMAND gcc ${J2S_HOST_CFLAGS} -DJ2S_ENABLE_DESC ${ISP_HW_VERSION} -o dump ${J2S_SRC} ${ISP_HW_VERSION}
     ${PROJECT_SOURCE_DIR}/src/dump.c
     -I${ROOT_PROJ_DIR}/include/common
     -I${ROOT_PROJ_DIR}/include/iq_parser_v2

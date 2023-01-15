@@ -24,7 +24,7 @@
 #include "rk_aiq_types_adrc_hw.h"
 #include "xcam_log.h"
 
-#define GAINMIN                 (1)
+#define GAINMIN                 (1.0f)
 #define DRCGAINMAX     (8)
 #define DRCGAINMIN              (GAINMIN)
 #define CLIPMAX     (64.0)
@@ -51,7 +51,7 @@
 #define SW_DRC_OFFSET_POW2_FIX (8)
 #define SW_DRC_MOTION_SCL_FIX (0)
 #define SW_DRC_BILAT_WT_OFF_FIX (255)
-#define MAX_AE_DRC_GAIN (256)
+#define MAX_AE_DRC_GAIN         (256.0f)
 #define OB_PREDGAIN_MAX         (255.9)
 #define OB_PREDGAIN_MIN         (GAINMIN)
 #define GAS_T_MAX               (4)
@@ -197,6 +197,7 @@ typedef struct NextData_s {
 } NextData_t;
 
 typedef struct AdrcContext_s {
+    bool isCapture;
     bool ifReCalcStAuto;
     bool ifReCalcStManual;
     bool isDampStable;
@@ -208,7 +209,7 @@ typedef struct AdrcContext_s {
 #endif
 #if RKAIQ_HAVE_DRC_V12
     drcAttrV12_t drcAttrV12;
-    AblcProc_V32_t ablcV32_proc_res;
+    adrc_blcRes_V32_t ablcV32_proc_res;
 #endif
     AdrcState_t state;
     CurrData_t CurrData;

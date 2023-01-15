@@ -47,7 +47,7 @@ static XCamReturn AmergeCreateCtx(RkAiqAlgoContext **context, const AlgoCtxInsta
     ret = AmergeInit(&pAmergeGrpCtx, (CamCalibDbV2Context_t*)(instanc_int->s_calibv2));
 
     if (ret != XCAM_RETURN_NO_ERROR) {
-        LOGE_AMERGE("%s Amerge Init failed: %d", __FUNCTION__, ret);
+        LOGE_AMERGE("%s(%d) Amerge Init failed: %d", __FUNCTION__, __LINE__, ret);
         return(XCAM_RETURN_ERROR_FAILED);
     }
     *context = (RkAiqAlgoContext *)(pAmergeGrpCtx);
@@ -65,7 +65,7 @@ static XCamReturn AmergeDestroyCtx(RkAiqAlgoContext *context)
         AmergeContext_t* pAmergeGrpCtx = (AmergeContext_t*)context;
         ret = AmergeRelease(pAmergeGrpCtx);
         if (ret != XCAM_RETURN_NO_ERROR) {
-            LOGE_AMERGE("%s Amerge Release failed: %d", __FUNCTION__, ret);
+            LOGE_AMERGE("%s(%d) Amerge Release failed: %d", __FUNCTION__, __LINE__, ret);
             return(XCAM_RETURN_ERROR_FAILED);
         }
         context = NULL;
@@ -113,18 +113,20 @@ static XCamReturn AmergePrepare(RkAiqAlgoCom* params)
             memcpy(&pAmergeGrpCtx->mergeAttrV12.stAuto, calibv2_amerge_calib,
                    sizeof(CalibDbV2_merge_v12_t));
 #endif
+            pAmergeGrpCtx->ifReCalcStAuto = true;
+        } else if (params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_CHANGERES) {
+            pAmergeGrpCtx->isCapture = true;
         }
 
         if (/* !params->u.prepare.reconfig*/ true) {
             AmergeStop(pAmergeGrpCtx);  // stop firstly for re-preapre
             ret = AmergeStart(pAmergeGrpCtx);
             if (ret != XCAM_RETURN_NO_ERROR) {
-                LOGE_AMERGE("%s Amerge Start failed: %d\n", __FUNCTION__, ret);
+                LOGE_AMERGE("%s(%d) Amerge Start failed: %d\n", __FUNCTION__, __LINE__, ret);
                 return (XCAM_RETURN_ERROR_FAILED);
             }
         }
     }
-    pAmergeGrpCtx->ifReCalcStAuto = true;
 
     LOG1_AMERGE("%s:Exit!\n", __FUNCTION__);
     return(ret);
@@ -145,21 +147,25 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
     if (pAmergeGrpCtx->FrameNumber == HDR_2X_NUM || pAmergeGrpCtx->FrameNumber == HDR_3X_NUM) {
         LOGD_AMERGE("/#####################################Amerge Group Start#####################################/ \n");
 
-        // get LongFrmMode
-        XCamVideoBuffer* xCamAeProcRes = pAmergeGrpParams->camgroupParmasArray[0]->aec._aeProcRes;
-        RkAiqAlgoProcResAe* pAEProcRes = NULL;
-        if (xCamAeProcRes) {
-            pAEProcRes = (RkAiqAlgoProcResAe*)xCamAeProcRes->map(xCamAeProcRes);
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.LongFrmMode =
-                pAEProcRes->ae_proc_res_rk.LongFrmMode &&
-                (pAmergeGrpCtx->FrameNumber != LINEAR_NUM);
-        }
-        else {
+        if (pAmergeGrpCtx->isCapture) {
+            LOGD_AMERGE("%s: It's capturing, using pre frame params\n", __func__);
+            pAmergeGrpCtx->isCapture = false;
+        } else {
+            // get LongFrmMode
+            XCamVideoBuffer* xCamAeProcRes =
+                pAmergeGrpParams->camgroupParmasArray[0]->aec._aeProcRes;
+            RkAiqAlgoProcResAe* pAEProcRes = NULL;
+            if (xCamAeProcRes) {
+                pAEProcRes = (RkAiqAlgoProcResAe*)xCamAeProcRes->map(xCamAeProcRes);
+                pAmergeGrpCtx->NextData.CtrlData.ExpoData.LongFrmMode =
+                    pAEProcRes->ae_proc_res_rk.LongFrmMode &&
+                    (pAmergeGrpCtx->FrameNumber != LINEAR_NUM);
+            } else {
                 AecProcResult_t AeProcResult;
                 memset(&AeProcResult, 0x0, sizeof(AecProcResult_t));
                 LOGW_AMERGE("%s: Ae Proc result is null!!!\n", __FUNCTION__);
                 pAmergeGrpCtx->NextData.CtrlData.ExpoData.LongFrmMode = false;
-        }
+            }
 
         //get ae pre res and proc
         XCamVideoBuffer* xCamAePreRes = pAmergeGrpParams->camgroupParmasArray[0]->aec._aePreRes;
@@ -249,27 +255,28 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
                     pAmergeGrpParams->camgroupParmasArray[0]
                         ->aec._effAecExpInfo.HdrExp[2]
                         .exp_real_params.integration_time);
-        if (pAmergeGrpCtx->NextData.CtrlData.ExpoData.SExpo > 0)
+        if (pAmergeGrpCtx->NextData.CtrlData.ExpoData.SExpo > FLT_EPSILON)
             pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLS =
                 pAmergeGrpCtx->NextData.CtrlData.ExpoData.LExpo /
                 pAmergeGrpCtx->NextData.CtrlData.ExpoData.SExpo;
         else
-            LOGE_AMERGE("%s: Short frame for merge expo sync is ERROR!!!\n", __FUNCTION__);
-        if (pAmergeGrpCtx->NextData.CtrlData.ExpoData.MExpo > 0)
+            LOGE_AMERGE("%s(%d): Short frame for merge expo sync is ERROR!!!\n", __FUNCTION__,
+                        __LINE__);
+        if (pAmergeGrpCtx->NextData.CtrlData.ExpoData.MExpo > FLT_EPSILON)
             pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLM =
                 pAmergeGrpCtx->NextData.CtrlData.ExpoData.LExpo /
                 pAmergeGrpCtx->NextData.CtrlData.ExpoData.MExpo;
         else
-            LOGE_AMERGE("%s: Middle frame for merge expo sync is ERROR!!!\n", __FUNCTION__);
+            LOGE_AMERGE("%s(%d): Middle frame for merge expo sync is ERROR!!!\n", __FUNCTION__,
+                        __LINE__);
         //clip for long frame mode
         if (pAmergeGrpCtx->NextData.CtrlData.ExpoData.LongFrmMode) {
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLS = 1.0;
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLM = 1.0;
+            pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLS = LONG_FRAME_MODE_RATIO;
+            pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLM = LONG_FRAME_MODE_RATIO;
         }
 
-        // get bypass_expo_process
-        if (pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLS >= 1 &&
-            pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLM >= 1) {
+        if (pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLS >= RATIO_DEFAULT &&
+            pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLM >= RATIO_DEFAULT) {
             if (pAmergeGrpCtx->FrameID <= 2)
                 bypass_expo_process = false;
             else if (pAmergeGrpCtx->ifReCalcStAuto || pAmergeGrpCtx->ifReCalcStManual)
@@ -298,7 +305,9 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
             else
                 bypass_expo_process = true;
         } else {
-            LOGE_AMERGE("%s: AE ratio for drc expo sync is under one!!!\n", __FUNCTION__);
+            LOGE_AMERGE("%s(%d): AE RatioLS:%f RatioLM:%f for drc expo sync is under one!!!\n",
+                        __FUNCTION__, __LINE__, pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLS,
+                        pAmergeGrpCtx->NextData.CtrlData.ExpoData.RatioLM);
             bypass_expo_process = true;
         }
 
@@ -308,6 +317,11 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
         if (!bypass_expo_process)
             AmergeExpoProcessing(pAmergeGrpCtx, &pAmergeGrpCtx->NextData.CtrlData.ExpoData);
 
+        pAmergeGrpCtx->ifReCalcStAuto   = false;
+        pAmergeGrpCtx->ifReCalcStManual = false;
+        pAmergeGrpCtx->ProcRes.update   = !bypass_tuning_process || !bypass_expo_process;
+        }
+
         LOGD_AMERGE(
             "/#####################################Amerge Group "
             "Over#####################################/ \n");
@@ -316,10 +330,6 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
                     __FUNCTION__, pAmergeGrpCtx->FrameID);
     }
 
-    pAmergeGrpCtx->ifReCalcStAuto   = false;
-    pAmergeGrpCtx->ifReCalcStManual = false;
-
-    pAmergeGrpCtx->ProcRes.update = !bypass_tuning_process || !bypass_expo_process;
     for (int i = 0; i < pAmergeGrpProcRes->arraySize; i++) {
         pAmergeGrpProcRes->camgroupParmasArray[i]->_amergeConfig->update =
             pAmergeGrpCtx->ProcRes.update;

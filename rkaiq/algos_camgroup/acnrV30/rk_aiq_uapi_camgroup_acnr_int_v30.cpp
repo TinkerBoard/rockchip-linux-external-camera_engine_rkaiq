@@ -8,7 +8,7 @@
 XCamReturn
 rk_aiq_uapi_camgroup_acnrV30_SetAttrib(RkAiqAlgoContext *ctx,
                                        const rk_aiq_cnr_attrib_v30_t *attr,
-                                       bool need_sync)
+                                       bool /* need_sync */)
 {
     CamGroup_AcnrV30_Contex_t *pGroupCtx = (CamGroup_AcnrV30_Contex_t *)ctx;
     Acnr_Context_V30_t* pCtx = pGroupCtx->acnr_contex_v30;

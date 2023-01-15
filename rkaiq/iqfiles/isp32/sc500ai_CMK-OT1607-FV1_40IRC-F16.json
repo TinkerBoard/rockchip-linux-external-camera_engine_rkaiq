@@ -27,7 +27,7 @@
 			},
 			"CISIspDgainRange":	{
 				"Min":	1,
-				"Max":	1
+				"Max":	32
 			},
 			"CISHdrGainIndSetEn":	0
 		},
@@ -259,7 +259,7 @@
 								"Route":	{
 									"GainDot":	[1, 1, 4, 8, 15.5, 256],
 									"GainDot_len":	6,
-									"IspDGainDot":	[1, 1, 1, 1, 1, 2],
+									"IspDGainDot":	[1, 1, 1, 1, 1, 1],
 									"IspDGainDot_len":	6,
 									"PIrisDot":	[512, 512, 512, 512, 512, 512],
 									"PIrisDot_len":	6,
@@ -8063,7 +8063,7 @@
 									"TimeDot_len":	6,
 									"GainDot":	[1, 1, 4, 8, 16, 256],
 									"GainDot_len":	6,
-									"IspDGainDot":	[1, 1, 1, 1, 1, 2],
+									"IspDGainDot":	[1, 1, 1, 1, 1, 1],
 									"IspDGainDot_len":	6,
 									"PIrisDot":	[512, 512, 512, 512, 512, 512],
 									"PIrisDot_len":	6
@@ -13163,7 +13163,7 @@
 								"Route":	{
 									"GainDot":	[1, 1, 4, 8, 15.5, 768],
 									"GainDot_len":	6,
-									"IspDGainDot":	[1, 1, 1, 1, 1, 2],
+									"IspDGainDot":	[1, 1, 1, 1, 1, 1],
 									"IspDGainDot_len":	6,
 									"PIrisDot":	[512, 512, 512, 512, 512, 512],
 									"PIrisDot_len":	6,

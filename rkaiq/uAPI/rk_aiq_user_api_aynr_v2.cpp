@@ -15,8 +15,6 @@
  */
 #include "rk_aiq_user_api_aynr_v2.h"
 
-#include "config.h"
-
 #if RKAIQ_HAVE_YNR_V2
 #include "algo_handlers/RkAiqAynrV2Handle.h"
 #endif

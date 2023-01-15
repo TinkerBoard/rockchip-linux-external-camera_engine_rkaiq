@@ -45,14 +45,14 @@ private:
 #endif
 #if RKAIQ_HAVE_YNR_V22
     void convertAiqYnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-                                   rk_aiq_isp_ynr_v32_t& ynr);
+                                    rk_aiq_isp_ynr_v32_t& ynr);
 #endif
 #if RKAIQ_HAVE_CNR_V30
     void convertAiqUvnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                      rk_aiq_isp_cnr_v32_t& uvnr);
 #endif
-   void convertAiqAwbGainToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-            const rk_aiq_wb_gain_v32_t& awb_gain,  bool awb_gain_update);
+    void convertAiqAwbGainToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
+                                        const rk_aiq_wb_gain_v32_t& awb_gain,  bool awb_gain_update);
 #if RKAIQ_HAVE_AWB_V32
     void convertAiqAwbToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     const rk_aiq_isp_awb_meas_cfg_v32_t& awb_meas,
@@ -93,6 +93,7 @@ private:
 #endif
     void convertAiqAldchToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                       const rk_aiq_isp_ldch_v21_t& ldch_cfg);
+    void convertAiqExpIspDgainToIsp32Params(struct isp32_isp_params_cfg& isp_cfg, RKAiqAecExpInfo_t ae_exp);
 };
 
 }  // namespace RkCam

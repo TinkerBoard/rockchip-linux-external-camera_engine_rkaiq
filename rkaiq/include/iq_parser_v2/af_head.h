@@ -158,6 +158,11 @@ typedef struct CalibDbV2_Af_Contrast_s {
     // M4_NUMBER_DESC("OutFocusPos", "u16", M4_RANGE(0,65), "32", M4_DIGIT(0),M4_HIDE(0))
     unsigned short          OutFocusPos;                  /**< out of focus position*/
 
+    // M4_NUMBER_DESC("LowLumaValue", "f32", M4_RANGE(0,4095), "0", M4_DIGIT(3),M4_HIDE(0))
+    float                   LowLumaValue;                /**< low luma thr vlaue*/
+    // M4_NUMBER_DESC("LowLumaPos", "u16", M4_RANGE(0,1023), "64", M4_DIGIT(0),M4_HIDE(0))
+    unsigned short          LowLumaPos;                  /**< low luma focus position*/
+
     // M4_NUMBER_DESC("WeightEnable", "u8", M4_RANGE(0, 1), "0", M4_DIGIT(0),M4_HIDE(0))
     unsigned char           WeightEnable;
     // M4_ARRAY_DESC("Weight", "u16", M4_SIZE(15,15), M4_RANGE(0,65535), "0", M4_DIGIT(0), M4_DYNAMIC(0))
@@ -281,7 +286,7 @@ typedef struct CalibDbV2_Af_Pdaf_s {
     unsigned short pdWidth;
     // M4_NUMBER_DESC("pdHeight", "u16", M4_RANGE(0, 65535), "760", M4_DIGIT(0))
     unsigned short pdHeight;
-    // M4_NUMBER_DESC("pdVerBinning", "u8", M4_RANGE(0, 1), "0", M4_DIGIT(0))
+    // M4_NUMBER_DESC("pdVerBinning", "u8", M4_RANGE(0, 255), "0", M4_DIGIT(0))
     unsigned char pdVerBinning;
     // M4_NUMBER_DESC("pdFrmInValid", "u8", M4_RANGE(0, 4), "1", M4_DIGIT(0))
     unsigned char pdFrmInValid;
@@ -305,6 +310,8 @@ typedef struct CalibDbV2_Af_Pdaf_s {
     unsigned char pdDiscardRegionEn;
     // M4_NUMBER_DESC("pdLessTextureRatio", "f32", M4_RANGE(0,5), "0.25", M4_DIGIT(3),M4_HIDE(0))
     float pdLessTextureRatio;
+    // M4_NUMBER_DESC("pdTargetOffset", "s16", M4_RANGE(-4096,4096), "0", M4_DIGIT(0),M4_HIDE(0))
+    short pdTargetOffset;
     // M4_STRUCT_DESC("pdCalibInf", "normal_ui_style")
     CalibDbV2_Af_PdafCalibInf_t pdCalibInf;
     // M4_NUMBER_DESC("pdConfdMwinFactor", "u16", M4_RANGE(0,225), "3", M4_DIGIT(0),M4_HIDE(0))

@@ -290,7 +290,11 @@ XCamReturn RkAiqAdrcHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
-    adrc_proc_int->ablcV32_proc_res = shared->res_comb.ablcV32_proc_res;
+#if RKAIQ_HAVE_DRC_V12
+    adrc_proc_int->ablcV32_proc_res.blc_ob_enable = shared->res_comb.ablcV32_proc_res.blc_ob_enable;
+    adrc_proc_int->ablcV32_proc_res.isp_ob_predgain =
+        shared->res_comb.ablcV32_proc_res.isp_ob_predgain;
+#endif
 
     ret = RkAiqHandle::processing();
     if (ret) {

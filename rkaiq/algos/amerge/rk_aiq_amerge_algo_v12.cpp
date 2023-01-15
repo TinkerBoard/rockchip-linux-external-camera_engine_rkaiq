@@ -110,7 +110,7 @@ void AmergeGetEnvLv(AmergeContext_t* pAmergeCtx, AecPreResult_t AecHdrPreResult)
             pAmergeCtx->NextData.CtrlData.ExpoData.EnvLv = AecHdrPreResult.GlobalEnvLv[1];
             break;
         default:
-            LOGE_AMERGE("%s:  Wrong frame number in HDR mode!!!\n", __FUNCTION__);
+            LOGE_AMERGE("%s(%d): Wrong frame number in HDR mode!!!\n", __FUNCTION__, __LINE__);
             break;
     }
 
@@ -802,7 +802,7 @@ XCamReturn AmergeRelease(AmergeContext_t* pAmergeCtx) {
 
     result = AmergeStop(pAmergeCtx);
     if (result != XCAM_RETURN_NO_ERROR) {
-        LOGE_AMERGE("%s: Amerge Stop() failed!\n", __FUNCTION__);
+        LOGE_AMERGE("%s(%d): Amerge Stop() failed!\n", __FUNCTION__, __LINE__);
         return (result);
     }
 

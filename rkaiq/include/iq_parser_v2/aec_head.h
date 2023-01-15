@@ -169,8 +169,9 @@ typedef struct CalibDb_AeFrmRateAttrV2_s {
     // M4_BOOL_DESC("isFpsFix", "1")
     bool                    isFpsFix;
 
-    // M4_NUMBER_DESC("FpsValue", "f32", M4_RANGE(0,200), "0", M4_DIGIT(1),M4_HIDE(0))
+    // M4_NUMBER_DESC("FpsValue", "f32", M4_RANGE(0,1024), "0", M4_DIGIT(1),M4_HIDE(0))
     float                   FpsValue;
+
 } CalibDb_AeFrmRateAttrV2_t;
 
 typedef struct CalibDb_AntiFlickerAttrV2_s {
@@ -392,10 +393,10 @@ typedef struct CalibDb_AecBacklightV2_s {
     // M4_NUMBER_DESC("LumaDistTh", "f32", M4_RANGE(0,100), "10", M4_DIGIT(2),M4_HIDE(0))
     float                       LumaDistTh;//uint: %
 
-    // M4_NUMBER_DESC("LvLowTh", "f32", M4_RANGE(0,100), "7.5", M4_DIGIT(4),M4_HIDE(0))
+    // M4_NUMBER_DESC("LvLowTh", "f32", M4_RANGE(0,100), "0.3125", M4_DIGIT(4),M4_HIDE(0))
     float                       LvLowTh;
 
-    // M4_NUMBER_DESC("LvHighTh", "f32", M4_RANGE(0,100), "0.3125", M4_DIGIT(4),M4_HIDE(0))
+    // M4_NUMBER_DESC("LvHighTh", "f32", M4_RANGE(0,100), "7.5", M4_DIGIT(4),M4_HIDE(0))
     float                       LvHighTh;
 
     // M4_ARRAY_TABLE_DESC("BacklitSetPoint", "array_table_ui", M4_INDEX_DEFAULT)

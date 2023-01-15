@@ -107,5 +107,27 @@ rk_aiq_uapiV2_camgroup_awb_GetAlgoStat(const RkAiqAlgoContext *ctx,
 XCamReturn
 rk_aiq_uapiV2_camgroup_awb_GetStrategyResult(const RkAiqAlgoContext *ctx,
                             rk_tool_awb_strategy_result_t *awb_strategy_result);
+XCamReturn
+rk_aiq_uapiV2_camgroup_awbV32_SetAwbMultiwindow(RkAiqAlgoContext *ctx,
+                         const rk_aiq_uapiV2_wbV32_awb_mulWindow_t  &multiWindow,
+                         bool need_sync);
+XCamReturn
+rk_aiq_uapiV2_camgroup_awbV32_GetAwbMultiwindow(RkAiqAlgoContext *ctx,
+                         rk_aiq_uapiV2_wbV32_awb_mulWindow_t  *multiWindow);
+XCamReturn
+rk_aiq_uapiV2_camgroup_awbV32_SetAwbAttrib(RkAiqAlgoContext *ctx,
+                          const rk_aiq_uapiV2_wbV32_awb_attrib_t &attr,
+                          bool need_sync);
+XCamReturn
+rk_aiq_uapiV2_camgroup_awbV32_GetAwbAttrib(RkAiqAlgoContext *ctx,
+                          rk_aiq_uapiV2_wbV32_awb_attrib_t *attr);
+XCamReturn
+rk_aiq_uapiV2_camgroup_awbV32_SetAttrib(RkAiqAlgoContext *ctx,
+                          const rk_aiq_uapiV2_wbV32_attrib_t &attr,
+                          bool need_sync);
+XCamReturn
+rk_aiq_uapiV2_camgroup_awbV32_GetAttrib(RkAiqAlgoContext *ctx,
+                          rk_aiq_uapiV2_wbV32_attrib_t *attr);
+
 #endif
 

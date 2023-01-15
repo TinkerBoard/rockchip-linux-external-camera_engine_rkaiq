@@ -9,7 +9,7 @@
 XCamReturn
 rk_aiq_uapi_camgroup_abayer2dnrV23_SetAttrib(RkAiqAlgoContext *ctx,
         const rk_aiq_bayer2dnr_attrib_v23_t *attr,
-        bool need_sync)
+        bool /* need_sync */)
 {
     CamGroup_Abayer2dnrV23_Contex_t *pGroupCtx = (CamGroup_Abayer2dnrV23_Contex_t *)ctx;
     Abayer2dnr_Context_V23_t* pCtx = pGroupCtx->abayer2dnr_contex_v23;

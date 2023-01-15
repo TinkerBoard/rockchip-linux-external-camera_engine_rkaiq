@@ -115,6 +115,7 @@ static XCamReturn groupAbayertnrV2Prepare(RkAiqAlgoCom* params)
 
     if(CHECK_ISP_HW_V30()) {
         Abayertnr_Context_V2_t * abayertnr_contex_v2 = abayertnr_group_contex->abayertnr_contex_v2;
+        abayertnr_contex_v2->prepare_type = params->u.prepare.conf_type;
         if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
             // todo  update calib pars for surround view
 #if ABAYERTNR_USE_JSON_FILE_V2
@@ -186,7 +187,7 @@ static XCamReturn groupAbayertnrV2Processing(const RkAiqAlgoCom* inparams, RkAiq
         if((rk_aiq_working_mode_t)procParaGroup->working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
             stExpInfoV2.hdr_mode = 0;
             stExpInfoV2.arAGain[0] = pCurExp->LinearExp.exp_real_params.analog_gain;
-            stExpInfoV2.arDGain[0] = pCurExp->LinearExp.exp_real_params.digital_gain;
+            stExpInfoV2.arDGain[0] = pCurExp->LinearExp.exp_real_params.digital_gain * pCurExp->LinearExp.exp_real_params.isp_dgain;
             stExpInfoV2.arTime[0] = pCurExp->LinearExp.exp_real_params.integration_time;
             stExpInfoV2.arIso[0] = stExpInfoV2.arAGain[0] * stExpInfoV2.arDGain[0] * 50;
 
@@ -233,6 +234,7 @@ static XCamReturn groupAbayertnrV2Processing(const RkAiqAlgoCom* inparams, RkAiq
             stAbayertnrResultV2.isNeedUpdate = true;
             LOGD_ANR("recalculate: %d delta_iso:%d \n ", abayertnr_contex_v2->isReCalculate, deltaIso);
         } else {
+            stAbayertnrResultV2 = abayertnr_contex_v2->stProcResult;
             stAbayertnrResultV2.isNeedUpdate = true;
         }
         Abayertnr_GetProcResult_V2(abayertnr_contex_v2, &stAbayertnrResultV2);

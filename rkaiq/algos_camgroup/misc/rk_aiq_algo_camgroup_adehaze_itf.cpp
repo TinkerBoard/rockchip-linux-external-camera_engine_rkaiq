@@ -119,8 +119,10 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
             memcpy(&pAdehazeGrpHandle->AdehazeAtrrV12.stAuto, calibv2_adehaze_calib_V12,
                    sizeof(CalibDbV2_dehaze_v12_t));
 #endif
+        pAdehazeGrpHandle->ifReCalcStAuto = true;
+    } else if (params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_CHANGERES) {
+        pAdehazeGrpHandle->isCapture = true;
     }
-    pAdehazeGrpHandle->ifReCalcStAuto = true;
 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;
@@ -136,9 +138,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
 
     LOGD_ADEHAZE("/*************************Adehaze Group Start******************/ \n");
 
-    AdehazeGetCurrDataGroup(pAdehazeGrpHandle,
-                            &pGrpProcPara->camgroupParmasArray[0]->aec._effAecExpInfo,
-                            pGrpProcPara->camgroupParmasArray[0]->aec._aePreRes);
+    AdehazeGetCurrDataGroup(pAdehazeGrpHandle, pGrpProcPara->camgroupParmasArray[0]);
     AdehazeByPassProcessing(pAdehazeGrpHandle);
 
     bool Enable = DehazeEnableSetting(pAdehazeGrpHandle);
@@ -153,7 +153,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     LOGD_ADEHAZE("/*************************Adehaze Group Over******************/ \n");
 
     // proc res
-    pAdehazeGrpHandle->ProcRes.enable = Enable;
+    pAdehazeGrpHandle->ProcRes.enable = pAdehazeGrpHandle->ProcRes.enable;
     pAdehazeGrpHandle->ProcRes.update = !(pAdehazeGrpHandle->byPassProc);
 #if RKAIQ_HAVE_DEHAZE_V10
     pAdehazeGrpHandle->ProcRes.enable = true;

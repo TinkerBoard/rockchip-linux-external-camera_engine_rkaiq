@@ -33,6 +33,9 @@ XCamReturn AlscConfig(alsc_handle_t hAlsc);
 XCamReturn AlscPreProc(alsc_handle_t hAlsc);
 XCamReturn AlscProcessing(alsc_handle_t hAlsc);
 
+XCamReturn AlscAutoParamClone(alsc_handle_t hAlsc);
+XCamReturn AlscAutoParamFree(alsc_handle_t hAlsc);
+
 RKAIQ_END_DECLARE
 
 #endif

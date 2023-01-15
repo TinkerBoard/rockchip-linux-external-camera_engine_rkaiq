@@ -333,8 +333,6 @@ static XCamReturn UpdateCcmCalibV2ParaV2(accm_handle_t hAccm) {
         return (ret);
     }
 
-    hAccm->mCurAttV2.mode = (rk_aiq_ccm_op_mode_t)calib_ccm->control.mode;
-
 #if RKAIQ_ACCM_ILLU_VOTE
     ReloadCCMCalibV2(hAccm, &calib_ccm->TuningPara);
 #endif
@@ -434,6 +432,7 @@ XCamReturn AccmInit(accm_handle_t* hAccm, const CamCalibDbV2Context_t* calibv2) 
 
     // todo whm --- CalibDbV2_Ccm_Para_V2
     accm_context->ccm_v2 = calib_ccm;
+    accm_context->mCurAttV2.mode = RK_AIQ_CCM_MODE_AUTO;
     ret                  = UpdateCcmCalibV2ParaV2(accm_context);
 
     for (int i = 0; i < RK_AIQ_ACCM_COLOR_GAIN_NUM; i++) {

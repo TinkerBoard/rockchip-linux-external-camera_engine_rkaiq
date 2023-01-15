@@ -2,10 +2,12 @@
 #include "RawStreamProcUnit.h"
 #include "CaptureRawData.h"
 #include "CamHwIsp20.h"
+
 namespace RkCam {
 RawStreamProcUnit::RawStreamProcUnit ()
-: _is_multi_cam_conc(false)
-, _first_trigger(true)
+    : _is_multi_cam_conc(false)
+    , _first_trigger(true)
+    , _is_1608_sensor(false)
 {
     _raw_proc_thread = new RawProcThread(this);
     _PollCallback = NULL;
@@ -13,9 +15,11 @@ RawStreamProcUnit::RawStreamProcUnit ()
     _rawCap = NULL;
 }
 
-RawStreamProcUnit::RawStreamProcUnit(const rk_sensor_full_info_t* s_info, bool linked_to_isp,
-                                     int tx_buf_cnt)
-    : _is_multi_cam_conc(false), _first_trigger(true) {
+RawStreamProcUnit::RawStreamProcUnit (const rk_sensor_full_info_t *s_info, bool linked_to_isp, int tx_buf_cnt)
+    : _is_multi_cam_conc(false)
+    , _first_trigger(true)
+    , _is_1608_sensor(false)
+{
     _raw_proc_thread = new RawProcThread(this);
     _PollCallback = NULL;
     _rawCap = NULL;
@@ -37,26 +41,21 @@ RawStreamProcUnit::RawStreamProcUnit(const rk_sensor_full_info_t* s_info, bool l
         _dev[2]->open();
         _dev[2]->set_mem_type(V4L2_MEMORY_DMABUF);
     }
+    int buf_cnt = 0;
+    if (tx_buf_cnt > 0) {
+        buf_cnt = tx_buf_cnt;
+    } else if (linked_to_isp) {
+        buf_cnt = ISP_TX_BUF_NUM;
+    } else if (s_info->linked_to_1608) {
+        buf_cnt = VIPCAP_TX_BUF_NUM_1608;
+    } else {
+        buf_cnt = VIPCAP_TX_BUF_NUM;
+    }
     for (int i = 0; i < 3; i++) {
-        if (linked_to_isp) {
-            if (_dev[i].ptr()) {
-                if (tx_buf_cnt > 0) {
-                    _dev[i]->set_buffer_count(tx_buf_cnt);
-                } else {
-                    _dev[i]->set_buffer_count(ISP_TX_BUF_NUM);
-                }
-            }
-        } else {
-            if (_dev[i].ptr()) {
-                if (tx_buf_cnt > 0) {
-                    _dev[i]->set_buffer_count(tx_buf_cnt);
-                } else {
-                    _dev[i]->set_buffer_count(VIPCAP_TX_BUF_NUM);
-                }
-            }
-        }
-        if (_dev[i].ptr())
+        if (_dev[i].ptr()) {
+            _dev[i]->set_buffer_count(buf_cnt);
             _dev[i]->set_buf_sync (true);
+        }
 
         _dev_index[i] = i;
         _stream[i] =  new RKRawStream(_dev[i], i, ISP_POLL_RX);
@@ -72,18 +71,31 @@ XCamReturn RawStreamProcUnit::start(int mode)
 {
     _rawCap = new CaptureRawData(mCamPhyId);
     for (int i = 0; i < _mipi_dev_max; i++) {
+        _stream[i]->setCamPhyId(mCamPhyId);
         _stream[i]->start();
     }
-    _msg_queue.resume_pop();
     _msg_queue.clear();
+
+    // TODO: [baron] for rk1608, vi will capture data before start
+    _buf_mutex.lock();
+    for (int i = 0; i < _mipi_dev_max; i++) {
+        buf_list[i].clear ();
+        cache_list[i].clear ();
+    }
+    _isp_hdr_fid2ready_map.clear();
+    _buf_mutex.unlock();
+
+    _raw_proc_thread->set_policy(SCHED_RR);
+    _raw_proc_thread->set_priority(20);
     _raw_proc_thread->start();
     return XCAM_RETURN_NO_ERROR;
 }
 
 XCamReturn RawStreamProcUnit::stop ()
 {
-    _msg_queue.pause_pop();
+    _msg_queue.push(0);
     _raw_proc_thread->stop();
+    _msg_queue.clear();
 
     for (int i = 0; i < _mipi_dev_max; i++) {
         _stream[i]->stopThreadOnly();
@@ -110,6 +122,7 @@ XCamReturn RawStreamProcUnit::stop ()
     for (int i = 0; i < _mipi_dev_max; i++) {
         _stream[i]->stopDeviceOnly();
     }
+
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -124,7 +137,7 @@ RawStreamProcUnit::prepare(int idx)
 
         ret = _dev[i]->prepare();
         if (ret < 0)
-            LOGE("mipi tx:%d prepare err: %d\n", ret);
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM,"mipi tx:%d prepare err: %d\n", ret);
 
         _stream[i]->set_device_prepared(true);
     }
@@ -148,7 +161,8 @@ RawStreamProcUnit::set_working_mode(int mode)
     default:
         _mipi_dev_max = 1;
     }
-    LOGD("working_mode:0x%x, _mipi_dev_max=%d\n", _working_mode, _mipi_dev_max);
+
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM,"working_mode:0x%x, _mipi_dev_max=%d\n", _working_mode, _mipi_dev_max);
 }
 
 void
@@ -171,60 +185,62 @@ RawStreamProcUnit::get_rx_device(int index)
         return _dev[index];
 }
 
-void
-RawStreamProcUnit::set_rx_format(const struct v4l2_subdev_format& sns_sd_fmt, uint32_t sns_v4l_pix_fmt)
+XCamReturn
+RawStreamProcUnit::set_rx_format(const struct v4l2_subdev_format& sns_sd_fmt,
+                                 uint32_t sns_v4l_pix_fmt)
 {
-    // set mipi tx,rx fmt
-    // for cif: same as sensor fmt
-
-    struct v4l2_format format;
-    memset(&format, 0, sizeof(format));
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     for (int i = 0; i < 3; i++) {
-        if (_dev[i].ptr())
-            _dev[i]->get_format (format);
-        if (format.fmt.pix.width != sns_sd_fmt.format.width ||
-                format.fmt.pix.height != sns_sd_fmt.format.height ||
-                format.fmt.pix.pixelformat != sns_v4l_pix_fmt) {
-            if (_dev[i].ptr())
-                _dev[i]->set_format(sns_sd_fmt.format.width,
-                                    sns_sd_fmt.format.height,
-                                    sns_v4l_pix_fmt,
-                                    V4L2_FIELD_NONE,
-                                    0);
+        if (!_dev[i].ptr()) {
+            ret = XCAM_RETURN_ERROR_PARAM;
+            break;
+        }
+
+        ret = _dev[i]->set_format(sns_sd_fmt.format.width,
+                                  sns_sd_fmt.format.height,
+                                  sns_v4l_pix_fmt,
+                                  V4L2_FIELD_NONE,
+                                  0);
+        if (ret < 0) {
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "device(%s) set format failed", _dev[i]->get_device_name());
+        } else {
+            LOGD_CAMHW_SUBM(ISP20HW_SUBM, "device(%s) set fmt info: fmt 0x%x, %dx%d !",
+                            _dev[i]->get_device_name(), sns_v4l_pix_fmt,
+                            sns_sd_fmt.format.width, sns_sd_fmt.format.height);
         }
     }
 
-    LOGD("set rx fmt info: fmt 0x%x, %dx%d !",
-                    sns_v4l_pix_fmt, sns_sd_fmt.format.width, sns_sd_fmt.format.height);
+    return ret;
 }
 
-void
-RawStreamProcUnit::set_rx_format(const struct v4l2_subdev_selection& sns_sd_sel, uint32_t sns_v4l_pix_fmt)
+XCamReturn
+RawStreamProcUnit::set_rx_format(const struct v4l2_subdev_selection& sns_sd_sel,
+                                 uint32_t sns_v4l_pix_fmt)
 {
-    // set mipi tx,rx fmt
-    // for cif: same as sensor fmt
-
-    struct v4l2_format format;
-    memset(&format, 0, sizeof(format));
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     for (int i = 0; i < 3; i++) {
-        if (_dev[i].ptr())
-            _dev[i]->get_format (format);
-        if (format.fmt.pix.width != sns_sd_sel.r.width ||
-                format.fmt.pix.height != sns_sd_sel.r.height ||
-                format.fmt.pix.pixelformat != sns_v4l_pix_fmt) {
-            if (_dev[i].ptr())
-                _dev[i]->set_format(sns_sd_sel.r.width,
-                                    sns_sd_sel.r.height,
-                                    sns_v4l_pix_fmt,
-                                    V4L2_FIELD_NONE,
-                                    0);
+        if (!_dev[i].ptr()) {
+            ret = XCAM_RETURN_ERROR_PARAM;
+            break;
+        }
+
+        ret = _dev[i]->set_format(sns_sd_sel.r.width,
+                                  sns_sd_sel.r.height,
+                                  sns_v4l_pix_fmt,
+                                  V4L2_FIELD_NONE,
+                                  0);
+        if (ret < 0) {
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "device(%s) set format failed", _dev[i]->get_device_name());
+        } else {
+            LOGD_CAMHW_SUBM(ISP20HW_SUBM, "device(%s) set rx fmt info: fmt 0x%x, %dx%d !",
+                            _dev[i]->get_device_name(), sns_v4l_pix_fmt,
+                            sns_sd_sel.r.width, sns_sd_sel.r.height);
         }
     }
 
-    LOGD("set rx fmt info: fmt 0x%x, %dx%d !",
-                    sns_v4l_pix_fmt, sns_sd_sel.r.width, sns_sd_sel.r.height);
+    return ret;
 }
 
 void
@@ -241,7 +257,7 @@ RawStreamProcUnit::poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_in
 
     if (!buf_list[dev_index].is_empty()) {
         SmartPtr<V4l2BufferProxy> rx_buf = buf_list[dev_index].pop(-1);
-        LOGD("%s dev_index:%d index:%d fd:%d\n",
+        LOG1_CAMHW_SUBM(ISP20HW_SUBM,"%s dev_index:%d index:%d fd:%d\n",
                         __func__, dev_index, rx_buf->get_v4l2_buf_index(), rx_buf->get_expbuf_fd());
     }
     if (_PollCallback)
@@ -258,7 +274,7 @@ RawStreamProcUnit::set_hdr_frame_readback_infos(uint32_t frame_id, int times)
 
     _mipi_trigger_mutex.lock();
     _isp_hdr_fid2times_map[frame_id] = times;
-    LOGD( "rdtimes seq %d \n", frame_id);
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "rdtimes seq %d \n", frame_id);
 //    trigger_isp_readback();
     _mipi_trigger_mutex.unlock();
 }
@@ -272,16 +288,16 @@ RawStreamProcUnit::match_lumadetect_map(uint32_t sequence, sint32_t &additional_
             iter != _isp_hdr_fid2times_map.end();) {
         if (iter->first < sequence) {
             it_times_del = iter++;
-            LOGD( "del seq %d", it_times_del->first);
+            LOGD_CAMHW_SUBM(ISP20HW_SUBM, "del seq %d", it_times_del->first);
             iter = _isp_hdr_fid2times_map.erase(it_times_del);
         } else if (iter->first == sequence) {
             additional_times = iter->second;
             it_times_del = iter++;
-            LOGD( "del seq %d", it_times_del->first);
+            LOGD_CAMHW_SUBM(ISP20HW_SUBM, "del seq %d", it_times_del->first);
             iter = _isp_hdr_fid2times_map.erase(it_times_del);
             break;
         } else {
-            LOGW( "%s missing rdtimes for buf_seq %d, min rdtimes_seq %d !",
+            LOGW_CAMHW_SUBM(ISP20HW_SUBM, "%s missing rdtimes for buf_seq %d, min rdtimes_seq %d !",
                             __func__, sequence, iter->first);
             additional_times = 0;
             break;
@@ -299,16 +315,16 @@ RawStreamProcUnit::match_globaltmostate_map(uint32_t sequence, bool &isHdrGlobal
             iter !=  _hdr_global_tmo_state_map.end();) {
         if (iter->first < sequence) {
             it_del = iter++;
-            LOGD( "del seq %d", it_del->first);
+            LOGD_CAMHW_SUBM(ISP20HW_SUBM, "del seq %d", it_del->first);
             iter = _hdr_global_tmo_state_map.erase(it_del);
         } else if (iter->first == sequence) {
             isHdrGlobalTmo = iter->second;
             it_del = iter++;
-            LOGD( "del seq %d", it_del->first);
+            LOGD_CAMHW_SUBM(ISP20HW_SUBM, "del seq %d", it_del->first);
             iter = _hdr_global_tmo_state_map.erase(it_del);
             break;
         } else {
-            LOGW( "%s missing tmo state for buf_seq %d, min rdtimes_seq %d !",
+            LOGW_CAMHW_SUBM(ISP20HW_SUBM, "%s missing tmo state for buf_seq %d, min rdtimes_seq %d !",
                             __func__, sequence, iter->first);
             break;
         }
@@ -327,7 +343,7 @@ RawStreamProcUnit::match_sof_timestamp_map(sint32_t sequence, uint64_t &timestam
     if (it != _sof_timestamp_map.end()) {
         timestamp = it->second;
     } else {
-        LOGW(  "can't find frameid(%d), get sof timestamp failed!\n",
+        LOGW_CAMHW_SUBM(ISP20HW_SUBM,  "can't find frameid(%d), get sof timestamp failed!\n",
                 sequence);
         ret = XCAM_RETURN_ERROR_FAILED;
     }
@@ -354,14 +370,18 @@ RawStreamProcUnit::notify_sof(uint64_t time, uint32_t frameid)
     _mipi_trigger_mutex.unlock();
 }
 
-bool
-RawStreamProcUnit::raw_buffer_proc ()
+bool RawStreamProcUnit::raw_buffer_proc()
 {
     LOGD("%s enter", __FUNCTION__);
-	if (_msg_queue.pop(-1).ptr())
+    int ret = true;
+    auto v  = _msg_queue.front();
+    if (v)
         trigger_isp_readback();
+    else
+        ret = false;
+    _msg_queue.pop();
     LOGD("%s exit", __FUNCTION__);
-    return true;
+    return ret;
 }
 
 void
@@ -383,8 +403,7 @@ RawStreamProcUnit::send_sync_buf
      }
      _isp_hdr_fid2ready_map[buf_s->get_sequence()] = true;
      _buf_mutex.unlock();
-	 SmartPtr<EmptyClass> ec = new EmptyClass();
-     _msg_queue.push(ec);
+     _msg_queue.push(1);
 }
 
 void
@@ -400,7 +419,7 @@ RawStreamProcUnit::trigger_isp_readback()
     SmartLock locker (_buf_mutex);
 
     if (_isp_hdr_fid2ready_map.size() == 0) {
-        LOGE( "%s buf not ready !", __func__);
+        LOGE_CAMHW_SUBM(ISP20HW_SUBM, "%s buf not ready !", __func__);
         return;
     }
 
@@ -410,7 +429,7 @@ RawStreamProcUnit::trigger_isp_readback()
     if ( _working_mode != RK_AIQ_WORKING_MODE_NORMAL) {
         match_lumadetect_map(sequence, additional_times);
         if (additional_times == -1) {
-        //    LOGE( "%s rdtimes not ready for seq %d !", __func__, sequence);
+        //    LOGE_CAMHW_SUBM(ISP20HW_SUBM, "%s rdtimes not ready for seq %d !", __func__, sequence);
         //    return;
         additional_times = 0;//add by zyl
         }
@@ -424,16 +443,7 @@ RawStreamProcUnit::trigger_isp_readback()
     _isp_hdr_fid2ready_map.erase(it_ready);
 
     if (_camHw) {
-        // driver will ensure params synchronization
-        if (0/*_camHw->setIspConfig(sequence)*/) {
-            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "%s frame[%d] set isp params failed, don't read back!\n",
-                            __func__, sequence);
-            // drop frame, return buf to tx
-            for (int i = 0; i < _mipi_dev_max; i++) {
-                cache_list[i].pop(-1);
-            }
-            goto out;
-        } else {
+        {
             int ret = XCAM_RETURN_NO_ERROR;
 
             // whether to start capturing raw files
@@ -446,7 +456,7 @@ RawStreamProcUnit::trigger_isp_readback()
                 ret = _dev[i]->get_buffer(v4l2buf[i],
                         cache_list[i].front()->get_v4l2_buf_index());
                 if (ret != XCAM_RETURN_NO_ERROR) {
-                    LOGE( "Rx[%d] can not get buffer\n", i);
+                    LOGE_CAMHW_SUBM(ISP20HW_SUBM, "Rx[%d] can not get buffer\n", i);
                     goto out;
                 } else {
                     buf_proxy = cache_list[i].pop(-1);
@@ -476,23 +486,25 @@ RawStreamProcUnit::trigger_isp_readback()
 
                     if (_rawCap) {
                        _rawCap->dynamic_capture_raw(i, sequence, buf_proxy, v4l2buf[i],_mipi_dev_max,_working_mode,_dev[0]);
-
-                        if (_rawCap->is_need_save_metadata_and_register()) {
-                            rkisp_effect_params_v20 ispParams;
-                            _camHw->getEffectiveIspParams(ispParams, sequence);
-
-                            SmartPtr<BaseSensorHw> mSensorSubdev = _camHw->mSensorDev.dynamic_cast_ptr<BaseSensorHw>();
-                            SmartPtr<RkAiqExpParamsProxy> ExpParams = nullptr;
-                            mSensorSubdev->getEffectiveExpParams(ExpParams, sequence);
-
-                            SmartPtr<LensHw> mLensSubdev = _camHw->mLensDev.dynamic_cast_ptr<LensHw>();
-                            SmartPtr<RkAiqAfInfoProxy> afParams = nullptr;
-                            if (mLensSubdev.ptr())
-                                mLensSubdev->getAfInfoParams(afParams, sequence);
-                            _rawCap->save_metadata_and_register(sequence, ispParams, ExpParams, afParams, _working_mode);
-                        }
                     }
                    //CaptureRawData::getInstance().dynamic_capture_raw(i, sequence, buf_proxy, v4l2buf[i],_mipi_dev_max,_working_mode,_dev[0]);
+                }
+            }
+
+            if (_rawCap) {
+                if (_rawCap->is_need_save_metadata_and_register()) {
+                    rkisp_effect_params_v20 ispParams;
+                    _camHw->getEffectiveIspParams(ispParams, sequence);
+
+                    SmartPtr<BaseSensorHw> mSensorSubdev = _camHw->mSensorDev.dynamic_cast_ptr<BaseSensorHw>();
+                    SmartPtr<RkAiqExpParamsProxy> ExpParams = nullptr;
+                    mSensorSubdev->getEffectiveExpParams(ExpParams, sequence);
+
+                    SmartPtr<LensHw> mLensSubdev = _camHw->mLensDev.dynamic_cast_ptr<LensHw>();
+                    SmartPtr<RkAiqAfInfoProxy> afParams = nullptr;
+                    if (mLensSubdev.ptr())
+                        mLensSubdev->getAfInfoParams(afParams, sequence);
+                    _rawCap->save_metadata_and_register(sequence, ispParams, ExpParams, afParams, _working_mode);
                 }
             }
 
@@ -500,7 +512,7 @@ RawStreamProcUnit::trigger_isp_readback()
                 ret = _dev[i]->queue_buffer(v4l2buf[i]);
                 if (ret != XCAM_RETURN_NO_ERROR) {
                     buf_list[i].pop(-1);
-                    LOGE( "Rx[%d] queue buffer failed\n", i);
+                    LOGE_CAMHW_SUBM(ISP20HW_SUBM, "Rx[%d] queue buffer failed\n", i);
                     break;
                 }
             }
@@ -530,20 +542,19 @@ RawStreamProcUnit::trigger_isp_readback()
             tg.sof_timestamp = sof_timestamp;
             tg.frame_timestamp = buf_proxy->get_timestamp () * 1000;
             // tg.times = 1;//fixed to three times readback
-            LOGD(
-                            "camId:%d frame[%d]: sof_ts %" PRId64 "ms, frame_ts %" PRId64 "ms, globalTmo(%d), readback(%d)\n",
-                            mCamPhyId,
-                            sequence,
+            LOGD_CAMHW_SUBM(ISP20HW_SUBM,
+                            "camId: %d, frameId: %d: sof_ts %" PRId64 "ms, frame_ts %" PRId64 "ms, trigger readback times: %d\n",
+                            mCamPhyId, sequence,
                             tg.sof_timestamp / 1000 / 1000,
                             tg.frame_timestamp / 1000 / 1000,
-                            isHdrGlobalTmo,
                             tg.times);
 
-            if (ret == XCAM_RETURN_NO_ERROR)
+            if (ret == XCAM_RETURN_NO_ERROR) {
                 _isp_core_dev->io_control(RKISP_CMD_TRIGGER_READ_BACK, &tg);
-            else
-                LOGE( "%s frame[%d] queue  failed, don't read back!\n",
+            } else {
+                LOGE_CAMHW_SUBM(ISP20HW_SUBM, "%s frame[%d] queue  failed, don't read back!\n",
                                 __func__, sequence);
+            }
 
             if (_rawCap)
                 _rawCap->update_capture_raw_status(_first_trigger);
@@ -555,5 +566,36 @@ RawStreamProcUnit::trigger_isp_readback()
 out:
     return;
 }
+
+XCamReturn
+RawStreamProcUnit::set_csi_mem_word_big_align(uint32_t width, uint32_t height,
+        uint32_t sns_v4l_pix_fmt, int8_t sns_bpp)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM,"sensor fmt 0x%x, %dx%d, sns_bpp: %d",
+                    sns_v4l_pix_fmt, width, height, sns_bpp);
+
+    for (int i = 0; i < 3; i++) {
+        if (!_dev[i].ptr()) {
+            ret = XCAM_RETURN_ERROR_PARAM;
+            break;
+        }
+
+        if (((width / 2 - RKMOUDLE_UNITE_EXTEND_PIXEL) *  sns_bpp / 8) & 0xf) {
+            int mem_mode = CSI_MEM_WORD_BIG_ALIGN;
+            int ret1 = _dev[i]->io_control (RKISP_CMD_SET_CSI_MEMORY_MODE, &mem_mode);
+            if (ret1) {
+                LOGE_CAMHW_SUBM(ISP20HW_SUBM, "set CSI_MEM_WORD_BIG_ALIGN failed !\n");
+                ret = XCAM_RETURN_ERROR_IOCTL;
+            } else {
+                LOGD_CAMHW_SUBM(ISP20HW_SUBM,"set the memory mode of isp rx to big align");
+            }
+        }
+    }
+
+    return ret;
+}
+
 }
 

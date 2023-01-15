@@ -293,8 +293,6 @@ CamHwIsp21::setIspConfig()
     SmartPtr<V4l2Buffer> v4l2buf;
     uint32_t frameId = -1;
 
-    std::lock_guard<std::mutex> lk(mIspConfigLock);
-
     {
         SmartLock locker (_isp_params_cfg_mutex);
         while (_effecting_ispparam_map.size() > 4)
@@ -374,6 +372,19 @@ CamHwIsp21::setIspConfig()
                 mSpStreamUnit->update_af_meas_params(&afParams->data()->result);
             }
 #endif
+        }
+    }
+
+    // add isp dgain results to ready results
+    SmartPtr<SensorHw> mSensorSubdev = mSensorDev.dynamic_cast_ptr<SensorHw>();
+    if (mSensorSubdev.ptr()) {
+        SmartPtr<RkAiqExpParamsProxy> expParam;
+
+        if (mSensorSubdev->getEffectiveExpParams(expParam, frameId) < 0) {
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "frame_id(%d), get exposure failed!!!\n", frameId);
+        } else {
+            expParam->setType(RESULT_TYPE_EXPOSURE_PARAM);
+            ready_results.push_back(expParam);
         }
     }
 
@@ -470,6 +481,7 @@ CamHwIsp21::setIspConfig()
         }
 
         ispModuleEns = _full_active_isp21_params.module_ens;
+        _curIspParamsSeq = frameId;
         LOGD_CAMHW_SUBM(ISP20HW_SUBM, "camId: %d ispparam ens 0x%llx, en_up 0x%llx, cfg_up 0x%llx",
                         mCamPhyId,
                         _full_active_isp21_params.module_ens,

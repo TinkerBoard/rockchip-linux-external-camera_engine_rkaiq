@@ -31,8 +31,7 @@ class RawStreamCapUnit : public PollCallback
 {
 public:
     explicit RawStreamCapUnit ();
-    explicit RawStreamCapUnit(const rk_sensor_full_info_t* s_info, bool linked_to_isp,
-                              int tx_buf_cnt);
+    explicit RawStreamCapUnit (const rk_sensor_full_info_t *s_info, bool linked_to_isp, int tx_buf_cnt);
     virtual ~RawStreamCapUnit ();
     virtual XCamReturn start(int mode);
     virtual XCamReturn stop ();
@@ -40,8 +39,8 @@ public:
     void set_devices(SmartPtr<V4l2SubDevice> ispdev, CamHwIsp20* handle, RawStreamProcUnit *proc);
     void set_tx_devices(SmartPtr<V4l2Device> mipi_tx_devs[3]);
     SmartPtr<V4l2Device> get_tx_device (int index);
-    void set_tx_format(const struct v4l2_subdev_format& sns_sd_fmt, uint32_t sns_v4l_pix_fmt);
-    void set_tx_format(const struct v4l2_subdev_selection& sns_sd_sel, uint32_t sns_v4l_pix_fmt);
+    XCamReturn set_tx_format(const struct v4l2_subdev_format& sns_sd_fmt, uint32_t sns_v4l_pix_fmt);
+    XCamReturn set_tx_format(const struct v4l2_subdev_selection& sns_sd_sel, uint32_t sns_v4l_pix_fmt);
     XCamReturn prepare(int idx);
     void prepare_cif_mipi();
     void skip_frames(int skip_num, int32_t skip_seq);
@@ -52,6 +51,15 @@ public:
     virtual XCamReturn poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_index);
     virtual XCamReturn poll_event_ready (uint32_t sequence, int type) { return XCAM_RETURN_ERROR_FAILED; }
     virtual XCamReturn poll_event_failed (int64_t timestamp, const char *msg) { return XCAM_RETURN_ERROR_FAILED; }
+    void setCamPhyId(int phyId) {
+        mCamPhyId = phyId;
+    }
+    void setSensorCategory(bool sensorState) {
+        _is_1608_stream = sensorState;
+    }
+    XCamReturn reset_hardware();
+    XCamReturn set_csi_mem_word_big_align(uint32_t width, uint32_t height, uint32_t sns_v4l_pix_fmt, int8_t sns_bpp);
+
     enum {
         ISP_MIPI_HDR_S = 0,
         ISP_MIPI_HDR_M,
@@ -65,10 +73,13 @@ public:
         RAW_CAP_STATE_STARTED,
         RAW_CAP_STATE_STOPPED,
     };
+
 protected:
     XCAM_DEAD_COPY (RawStreamCapUnit);
     XCamReturn sync_raw_buf(SmartPtr<V4l2BufferProxy> &buf_s, SmartPtr<V4l2BufferProxy> &buf_m, SmartPtr<V4l2BufferProxy> &buf_l);
     bool check_skip_frame(int32_t buf_seq);
+    int mCamPhyId;
+    bool _is_1608_stream;
 protected:
     SmartPtr<V4l2Device> _dev[3];
     SmartPtr<V4l2Device> _dev_bakup[3];
@@ -81,7 +92,7 @@ protected:
     int64_t _skip_to_seq;
     Mutex _mipi_mutex;
     enum RawCapState _state;
-    
+
     SafeList<V4l2BufferProxy> buf_list[3];
     CamHwIsp20* _camHw;
     SmartPtr<V4l2SubDevice> _isp_core_dev;

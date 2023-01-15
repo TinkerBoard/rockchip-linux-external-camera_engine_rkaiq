@@ -42,6 +42,7 @@ rk_aiq_user_api2_awbV21_SetAllAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uap
     if (algo_handle) {
         return algo_handle->setWbV21Attrib(attr);
     } else {
+        XCamReturn ret                            = XCAM_RETURN_NO_ERROR;
         const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
         for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
             if (!camCtx)
@@ -49,9 +50,12 @@ rk_aiq_user_api2_awbV21_SetAllAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uap
 
             RkAiqAwbV21HandleInt* singleCam_algo_handle =
                 algoHandle<RkAiqAwbV21HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
-            if (singleCam_algo_handle)
-                return singleCam_algo_handle->setWbV21Attrib(attr);
+            if (singleCam_algo_handle) {
+                ret = singleCam_algo_handle->setWbV21Attrib(attr);
+                if (ret != XCAM_RETURN_NO_ERROR) LOGE("%s returned: %d", __FUNCTION__, ret);
+            }
         }
+        return ret;
     }
 #else
     return XCAM_RETURN_ERROR_FAILED;

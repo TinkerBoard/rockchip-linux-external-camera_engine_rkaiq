@@ -17,6 +17,7 @@
 
 #include "RkAiqCamGroupHandleInt.h"
 #include "algo_handlers/RkAiqAblcV32Handle.h"
+#include "hwi/isp20/Isp20_module_dbg.h"
 #include "rk_aiq_user_api2_sysctl.h"
 
 RKAIQ_BEGIN_DECLARE
@@ -131,7 +132,7 @@ rk_aiq_user_api2_ablcV32_GetInfo(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_blc_inf
             camgroupAlgoHandle<RkAiqCamGroupAblcV32HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ABLC);
         if (algo_handle) {
             LOGD_ABLC("%s:%d !!!!!!!!!!!!!group!!!!!!!!\n", __FUNCTION__, __LINE__);
-            return algo_handle->getAttrib(attr);
+            return algo_handle->getInfo(pInfo);
         } else {
             const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)sys_ctx;
             for (auto camCtx : camgroup_ctx->cam_ctxs_array) {

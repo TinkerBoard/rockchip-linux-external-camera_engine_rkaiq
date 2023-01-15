@@ -773,14 +773,26 @@ XCamReturn
 RkAiqResourceTranslator::getParams(const SmartPtr<VideoBuffer>& from)
 {
     const SmartPtr<Isp20StatsBuffer> buf = from.dynamic_cast_ptr<Isp20StatsBuffer>();
-    uint32_t frame_id = buf->get_sequence();
+#ifdef ISP_HW_V32
+    auto stats = (struct rkisp32_isp_stat_buffer*)(buf->get_v4l2_userptr());
+#elif defined(ISP_HW_V30)
+    auto stats = (struct rkisp3x_isp_stat_buffer*)(buf->get_v4l2_userptr());
+#elif defined(ISP_HW_V21)
+    auto stats = (struct rkisp_isp21_stat_buffer*)(buf->get_v4l2_userptr());
+#elif defined(ISP_HW_V20)
+    auto stats = (struct rkisp_isp2x_stat_buffer*)(buf->get_v4l2_userptr());
+#endif
 
     //TODO: check if needed
     //memset(&ispParams, 0, sizeof(_expParams));
 
-    if (buf->getEffectiveExpParams(frame_id, _expParams) < 0)
+    if (buf->getEffectiveExpParams(stats->frame_id, _expParams) < 0)
         LOGE("fail to get expParams");
-    if (buf->getEffectiveIspParams(frame_id, _ispParams) < 0) {
+#ifdef ISP_HW_V20
+    if (buf->getEffectiveIspParams(stats->frame_id, _ispParams) < 0) {
+#else
+    if (buf->getEffectiveIspParams(stats->params_id, _ispParams) < 0) {
+#endif
         LOGE("fail to get ispParams ,ignore\n");
         return XCAM_RETURN_BYPASS;
     }

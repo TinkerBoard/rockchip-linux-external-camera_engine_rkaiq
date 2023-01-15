@@ -111,6 +111,9 @@ prepare(RkAiqAlgoCom* params)
         memcpy(&pAdrcCtx->drcAttrV12.stAuto, calibv2_adrc_calib,
                sizeof(CalibDbV2_drc_V12_t));  // reload stAuto
 #endif
+        pAdrcCtx->ifReCalcStAuto = true;
+    } else if (params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_CHANGERES) {
+        pAdrcCtx->isCapture = true;
     }
 
     if(/* !params->u.prepare.reconfig*/true) {
@@ -121,7 +124,6 @@ prepare(RkAiqAlgoCom* params)
             return(XCAM_RETURN_ERROR_FAILED);
         }
     }
-    pAdrcCtx->ifReCalcStAuto = true;
 
     LOG1_ATMO("%s:Exit!\n", __FUNCTION__);
     return result;
@@ -139,35 +141,28 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     RkAiqAlgoProcResAdrc* pAdrcProcRes = (RkAiqAlgoProcResAdrc*)outparams;
     pAdrcCtx->FrameID                  = inparams->frame_id;
 
-#if RKAIQ_HAVE_DRC_V12
-    memcpy(&pAdrcCtx->ablcV32_proc_res, &pAdrcParams->ablcV32_proc_res, sizeof(AblcProc_V32_t));
-    if (pAdrcCtx->ablcV32_proc_res.blc_ob_enable &&
-        pAdrcCtx->ablcV32_proc_res.isp_ob_predgain < 1.0f) {
-        LOGE_ATMO("%s: ob_enable ON , and ob_predgain[%f]<1.0f!!!\n", __FUNCTION__,
-                  pAdrcCtx->ablcV32_proc_res.isp_ob_predgain);
-        pAdrcCtx->ablcV32_proc_res.isp_ob_predgain = 1.0f;
-    }
-#endif
-
     LOGD_ATMO(
         "%s:////////////////////////////////////////////ADRC "
         "Start//////////////////////////////////////////// \n",
         __func__);
 
-    bool Enable = DrcEnableSetting(pAdrcCtx);
+    if (pAdrcCtx->isCapture) {
+        LOGD_ATMO("%s: It's capturing, using pre frame params\n", __func__);
+        pAdrcCtx->isCapture = false;
+    } else {
+        bool Enable = DrcEnableSetting(pAdrcCtx);
 
-    if (Enable) {
-        //get Sensor Info
-        XCamVideoBuffer* xCamAeProcRes = pAdrcParams->com.u.proc.res_comb->ae_proc_res;
-        RkAiqAlgoProcResAe* pAEProcRes = NULL;
-        if (xCamAeProcRes) {
-            pAEProcRes = (RkAiqAlgoProcResAe*)xCamAeProcRes->map(xCamAeProcRes);
-            pAdrcCtx->NextData.AEData.LongFrmMode = pAEProcRes->ae_proc_res_rk.LongFrmMode;
-        }
-        else {
+        if (Enable) {
+            // get Sensor Info
+            XCamVideoBuffer* xCamAeProcRes = pAdrcParams->com.u.proc.res_comb->ae_proc_res;
+            RkAiqAlgoProcResAe* pAEProcRes = NULL;
+            if (xCamAeProcRes) {
+                pAEProcRes = (RkAiqAlgoProcResAe*)xCamAeProcRes->map(xCamAeProcRes);
+                pAdrcCtx->NextData.AEData.LongFrmMode = pAEProcRes->ae_proc_res_rk.LongFrmMode;
+            } else {
                 pAdrcCtx->NextData.AEData.LongFrmMode = false;
                 LOGW_ATMO("%s: Ae Proc result is null!!!\n", __FUNCTION__);
-        }
+            }
 
         // get eff expo data
         if(pAdrcCtx->FrameNumber == LINEAR_NUM) {
@@ -195,6 +190,16 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             pAdrcCtx->NextData.AEData.LExpo = pAdrcCtx->NextData.AEData.SExpo;
 
 #if RKAIQ_HAVE_DRC_V12
+            pAdrcCtx->ablcV32_proc_res.blc_ob_enable = pAdrcParams->ablcV32_proc_res.blc_ob_enable;
+            pAdrcCtx->ablcV32_proc_res.isp_ob_predgain =
+                pAdrcParams->ablcV32_proc_res.isp_ob_predgain;
+            if (pAdrcCtx->ablcV32_proc_res.blc_ob_enable &&
+                pAdrcCtx->ablcV32_proc_res.isp_ob_predgain < ISP_PREDGAIN_DEFAULT) {
+                LOGE_ATMO("%s: ob_enable ON, and ob_predgain[%f] < 1.0f, clip to 1.0!!!\n",
+                          __FUNCTION__, pAdrcCtx->ablcV32_proc_res.isp_ob_predgain);
+                pAdrcCtx->ablcV32_proc_res.isp_ob_predgain = ISP_PREDGAIN_DEFAULT;
+            }
+
             if (pAdrcCtx->ablcV32_proc_res.blc_ob_enable)
                 pAdrcCtx->NextData.AEData.ISO *= pAdrcCtx->ablcV32_proc_res.isp_ob_predgain;
 #endif
@@ -329,9 +334,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                       pAdrcCtx->NextData.AEData.MExpo);
         //clip for long frame mode
         if (pAdrcCtx->NextData.AEData.LongFrmMode) {
-            pAdrcCtx->NextData.AEData.L2S_Ratio = 1.0f;
-            pAdrcCtx->NextData.AEData.M2S_Ratio = 1.0f;
-            pAdrcCtx->NextData.AEData.L2M_Ratio = 1.0f;
+            pAdrcCtx->NextData.AEData.L2S_Ratio = LONG_FRAME_MODE_RATIO;
+            pAdrcCtx->NextData.AEData.M2S_Ratio = LONG_FRAME_MODE_RATIO;
+            pAdrcCtx->NextData.AEData.L2M_Ratio = LONG_FRAME_MODE_RATIO;
         }
 
         // get ae pre res and bypass_tuning_params
@@ -349,8 +354,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         }
 
         // get bypass_expo_params
-        if (pAdrcCtx->NextData.AEData.L2S_Ratio >= 1.0f &&
-            pAdrcCtx->NextData.AEData.L2M_Ratio >= 1.0f) {
+        if (pAdrcCtx->NextData.AEData.L2S_Ratio >= RATIO_DEFAULT &&
+            pAdrcCtx->NextData.AEData.L2M_Ratio >= RATIO_DEFAULT) {
             if (pAdrcCtx->FrameID <= 2)
                 bypass_expo_params = false;
             else if (pAdrcCtx->ifReCalcStAuto || pAdrcCtx->ifReCalcStManual)
@@ -365,7 +370,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             else
                 bypass_expo_params = true;
         } else {
-            LOGE_ATMO("%s: AE ratio for drc expo sync is under one!!!\n", __FUNCTION__);
+            LOGE_ATMO("%s: AE L2S_Ratio:%f L2M_Ratio:%f for drc expo sync is under one!!!\n",
+                      __FUNCTION__, __LINE__, pAdrcCtx->NextData.AEData.L2S_Ratio,
+                      pAdrcCtx->NextData.AEData.L2M_Ratio);
             bypass_expo_params = true;
         }
 
@@ -375,8 +382,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         // get expo related paras
         if (!bypass_expo_params || !pAdrcCtx->isDampStable) AdrcExpoParaProcessing(pAdrcCtx);
 
-    } else {
-        LOGD_ATMO("%s: Drc Enable is OFF, Bypass Drc !!! \n", __func__);
+        } else {
+            LOGD_ATMO("%s: Drc Enable is OFF, Bypass Drc !!! \n", __func__);
+        }
     }
     LOGD_ATMO(
         "%s:////////////////////////////////////////////ADRC "
@@ -388,7 +396,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                                        pAdrcCtx->ifReCalcStAuto || pAdrcCtx->ifReCalcStManual ||
                                        !pAdrcCtx->isDampStable;
     if (pAdrcProcRes->AdrcProcRes.update) {
-        pAdrcProcRes->AdrcProcRes.bDrcEn = Enable;
+        pAdrcProcRes->AdrcProcRes.bDrcEn = pAdrcCtx->NextData.Enable;
         memcpy(&pAdrcProcRes->AdrcProcRes.DrcProcRes, &pAdrcCtx->AdrcProcRes.DrcProcRes,
                sizeof(DrcProcRes_t));
     }

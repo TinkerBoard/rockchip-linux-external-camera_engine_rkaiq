@@ -44,7 +44,6 @@
 #include "alsc/rk_aiq_types_alsc_algo_int.h"
 #include "amd/rk_aiq_types_algo_amd_int.h"
 #include "amerge/rk_aiq_types_amerge_algo_int.h"
-#include "amerge/rk_aiq_types_amerge_algo_prvt.h"
 #include "amfnr/rk_aiq_types_amfnr_algo_int_v1.h"
 #include "anr/rk_aiq_types_anr_algo_int.h"
 #include "aorb/rk_aiq_types_orb_algo.h"
@@ -402,8 +401,6 @@ typedef struct _RkAiqAlgoConfigAmerge {
 
 typedef struct _RkAiqAlgoProcAmerge {
     RkAiqAlgoCom com;
-    uint32_t width;
-    uint32_t height;
 } RkAiqAlgoProcAmerge;
 
 typedef struct _RkAiqAlgoProcResAmerge {
@@ -1201,9 +1198,9 @@ typedef struct _RkAiqAlgoConfigAdrc {
 
 typedef struct _RkAiqAlgoProcAdrc {
     RkAiqAlgoCom com;
-    AblcProc_V32_t ablcV32_proc_res;
-    uint32_t width;
-    uint32_t height;
+#if RKAIQ_HAVE_DRC_V12
+    adrc_blcRes_V32_t ablcV32_proc_res;
+#endif
 } RkAiqAlgoProcAdrc;
 
 typedef struct _RkAiqAlgoProcResAdrc {

@@ -12,7 +12,7 @@
 
 #include "rk_isp20_hw.h"
 
-#define RKISP_API_VERSION		KERNEL_VERSION(1, 9, 0)
+#define RKISP_API_VERSION		KERNEL_VERSION(2, 1, 0)
 
 #ifndef BIT
 #define BIT(x) (~0ULL & (1ULL << x))
@@ -58,6 +58,10 @@
 
 /* BASE_VIDIOC_PRIVATE + 12 for RKISP_CMD_GET_TB_HEAD_V32 */
 
+/* for all isp device stop and no power off but resolution change */
+#define RKISP_CMD_MULTI_DEV_FORCE_ENUM \
+	_IO('V', BASE_VIDIOC_PRIVATE + 13)
+
 /****************ISP VIDEO IOCTL******************************/
 
 #define RKISP_CMD_GET_CSI_MEMORY_MODE \
@@ -82,16 +86,22 @@
 	_IOW('V', BASE_VIDIOC_PRIVATE + 106, struct rkisp_mirror_flip)
 
 #define RKISP_CMD_GET_WRAP_LINE \
-	_IOR('V', BASE_VIDIOC_PRIVATE + 107, int)
+	_IOR('V', BASE_VIDIOC_PRIVATE + 107, struct rkisp_wrap_info)
 /* set wrap line before VIDIOC_S_FMT */
 #define RKISP_CMD_SET_WRAP_LINE \
-	_IOW('V', BASE_VIDIOC_PRIVATE + 108, int)
+	_IOW('V', BASE_VIDIOC_PRIVATE + 108, struct rkisp_wrap_info)
 
 #define RKISP_CMD_SET_FPS \
 	_IOW('V', BASE_VIDIOC_PRIVATE + 109, int)
 
 #define RKISP_CMD_GET_FPS \
 	_IOR('V', BASE_VIDIOC_PRIVATE + 110, int)
+
+#define RKISP_CMD_GET_TB_STREAM_INFO \
+	_IOR('V', BASE_VIDIOC_PRIVATE + 111, struct rkisp_tb_stream_info)
+
+#define RKISP_CMD_FREE_TB_STREAM_BUF \
+	_IO('V', BASE_VIDIOC_PRIVATE + 112)
 
 /* Private v4l2 event */
 #define CIFISP_V4L2_EVENT_STREAM_START \
@@ -317,28 +327,33 @@ struct isp2x_mesh_head {
 	u32 data_oft;
 } __attribute__ ((packed));
 
-#define RKISP_CMSK_WIN_MAX 8
+#define RKISP_CMSK_WIN_MAX 12
+#define RKISP_CMSK_WIN_MAX_V30 8
 #define RKISP_CMSK_MOSAIC_MODE 0
 #define RKISP_CMSK_COVER_MODE 1
 
 /* struct rkisp_cmsk_win
- * Priacy Mask Window configture, support 8 windows, and
+ * Priacy Mask Window configture, support windows
+ * RKISP_CMSK_WIN_MAX_V30 for rk3588 support 8 windows, and
  * support for mainpath and selfpath output stream channel.
  *
+ * RKISP_CMSK_WIN_MAX for rv1106 support 12 windows, and
+ * support for mainpath selfpath and bypasspath output stream channel.
+ *
  * mode: 0:mosaic mode, 1:cover mode
- * win_index: window index 0~7. windows overlap, priority win7 > win0.
+ * win_index: window index 0~11. windows overlap, priority win11 > win0.
  * cover_color_y: cover mode effective, share for stream channel when same win_index.
  * cover_color_u: cover mode effective, share for stream channel when same win_index.
  * cover_color_v: cover mode effective, share for stream channel when same win_index.
  *
  * h_offs: window horizontal offset, share for stream channel when same win_index. 2 align.
  * v_offs: window vertical offset, share for stream channel when same win_index. 2 align.
- * h_size: window horizontal size, share for stream channel when same win_index. 8 align.
- * v_size: window vertical size, share for stream channel when same win_index. 8 align.
+ * h_size: window horizontal size, share for stream channel when same win_index. 8 align for rk3588, 2 align for rv1106.
+ * v_size: window vertical size, share for stream channel when same win_index. 8 align for rk3588, 2 align for rv1106.
  */
 struct rkisp_cmsk_win {
-	unsigned char mode;
-	unsigned char win_en;
+	unsigned short mode;
+	unsigned short win_en;
 
 	unsigned char cover_color_y;
 	unsigned char cover_color_u;
@@ -352,11 +367,13 @@ struct rkisp_cmsk_win {
 
 /* struct rkisp_cmsk_cfg
  * win: priacy mask window
+ * mosaic_block: Mosaic block size, 0:8x8 1:16x16 2:32x32 3:64x64, share for all windows
  * width_ro: isp full resolution, h_offs + h_size <= width_ro.
  * height_ro: isp full resolution, v_offs + v_size <= height_ro.
  */
 struct rkisp_cmsk_cfg {
 	struct rkisp_cmsk_win win[RKISP_CMSK_WIN_MAX];
+	unsigned int mosaic_block;
 	unsigned int width_ro;
 	unsigned int height_ro;
 } __attribute__ ((packed));
@@ -381,6 +398,33 @@ struct rkisp_stream_info {
 struct rkisp_mirror_flip {
 	unsigned char mirror;
 	unsigned char flip;
+} __attribute__ ((packed));
+
+struct rkisp_wrap_info {
+	int width;
+	int height;
+};
+
+#define RKISP_TB_STREAM_BUF_MAX 5
+struct rkisp_tb_stream_buf {
+	unsigned int dma_addr;
+	unsigned int sequence;
+	long long timestamp;
+} __attribute__ ((packed));
+
+/* struct rkisp_tb_stream_info
+ * frame_size: nv12 frame buf size, bytesperline * height_16align * 1.5
+ * buf_max: memory size / frame_size
+ * buf_cnt: the num of frame write to buf.
+ */
+struct rkisp_tb_stream_info {
+	unsigned int width;
+	unsigned int height;
+	unsigned int bytesperline;
+	unsigned int frame_size;
+	unsigned int buf_max;
+	unsigned int buf_cnt;
+	struct rkisp_tb_stream_buf buf[RKISP_TB_STREAM_BUF_MAX];
 } __attribute__ ((packed));
 
 /* trigger event mode

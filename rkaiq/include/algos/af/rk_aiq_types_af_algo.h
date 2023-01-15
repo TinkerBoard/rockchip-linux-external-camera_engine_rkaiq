@@ -390,6 +390,7 @@ typedef struct {
     float pdSatValRatio;
     float pdSatCntRatio;
     float pdLessTextureRatio;
+    short pdTargetOffset;
 } rk_aiq_pdaf_algo_config_t;
 
 int get_lpfv(uint32_t sequence, uint8_t *image_buf, int32_t _img_width, int32_t _img_height,

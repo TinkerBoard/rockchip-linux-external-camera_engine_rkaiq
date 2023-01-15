@@ -52,7 +52,7 @@ public:
     XCamReturn getAttrib(rk_aiq_sharp_attrib_v4_t* att);
     XCamReturn setStrength(rk_aiq_sharp_strength_v4_t* pStrength);
     XCamReturn getStrength(rk_aiq_sharp_strength_v4_t* pStrength);
-
+    XCamReturn getInfo(rk_aiq_sharp_info_v4_t* pInfo);
 protected:
     virtual void init();
     virtual void deInit() {

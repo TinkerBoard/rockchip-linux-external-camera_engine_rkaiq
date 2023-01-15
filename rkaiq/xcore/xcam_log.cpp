@@ -135,6 +135,7 @@ xcore_cam_log_module_info_t g_xcore_log_infos[XCORE_LOG_MODULE_MAX] = {
     {"CAMGROUP", XCORE_LOG_LEVEL_ERR, 0xff},      // XCORE_LOG_MODULE_CAMGROUP
     {"AWBGROUP", XCORE_LOG_LEVEL_ERR, 0xff},      // XCORE_LOG_MODULE_CAMGROUP
     {"GROUPAEC", XCORE_LOG_LEVEL_ERR, 0xff},      // XCORE_LOG_MODULE_GROUPAEC
+    {"RKSTREAM", XCORE_LOG_LEVEL_ERR, 0xff},      // XCORE_LOG_MODULE_RKSTREAM
 };
 
 bool xcam_get_enviroment_value(const char* variable, unsigned long long* value)

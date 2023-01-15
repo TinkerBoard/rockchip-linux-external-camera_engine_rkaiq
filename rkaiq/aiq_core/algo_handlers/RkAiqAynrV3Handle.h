@@ -52,7 +52,7 @@ public:
     XCamReturn getAttrib(rk_aiq_ynr_attrib_v3_t* att);
     XCamReturn setStrength(rk_aiq_ynr_strength_v3_t* pStrength);
     XCamReturn getStrength(rk_aiq_ynr_strength_v3_t* pStrength);
-
+    XCamReturn getInfo(rk_aiq_ynr_info_v3_t* pInfo);
 protected:
     virtual void init();
     virtual void deInit() {

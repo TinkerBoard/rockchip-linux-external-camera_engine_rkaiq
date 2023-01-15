@@ -224,8 +224,6 @@ XCamReturn CamHwIsp32::setIspConfig() {
     SmartPtr<V4l2Buffer> v4l2buf;
     uint32_t frameId = -1;
 
-    std::lock_guard<std::mutex> lk(mIspConfigLock);
-
     {
         SmartLock locker(_isp_params_cfg_mutex);
         while (_effecting_ispparam_map.size() > 4)
@@ -249,7 +247,7 @@ XCamReturn CamHwIsp32::setIspConfig() {
         return XCAM_RETURN_ERROR_PARAM;
     }
 
-    LOGD_ANALYZER("----------%s, start config id(%d)'s isp params", __FUNCTION__, frameId);
+    LOGD_CAMHW("----------%s, cam%d start config id(%d)'s isp params", __FUNCTION__, mCamPhyId, frameId);
 
     struct isp32_isp_params_cfg update_params[2];
     //memset(update_params, 0, sizeof(struct isp32_isp_params_cfg) * 2);
@@ -297,6 +295,19 @@ XCamReturn CamHwIsp32::setIspConfig() {
                 LOGW_CAMHW_SUBM(ISP20HW_SUBM,
                                 "get awb params from 3a result failed for frame %u !\n", frameId);
             }
+        }
+    }
+
+    // add isp dgain results to ready results
+    SmartPtr<SensorHw> mSensorSubdev = mSensorDev.dynamic_cast_ptr<SensorHw>();
+    if (mSensorSubdev.ptr()) {
+        SmartPtr<RkAiqExpParamsProxy> expParam;
+
+        if (mSensorSubdev->getEffectiveExpParams(expParam, frameId) < 0) {
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "frame_id(%d), get exposure failed!!!\n", frameId);
+        } else {
+            expParam->setType(RESULT_TYPE_EXPOSURE_PARAM);
+            ready_results.push_back(expParam);
         }
     }
 

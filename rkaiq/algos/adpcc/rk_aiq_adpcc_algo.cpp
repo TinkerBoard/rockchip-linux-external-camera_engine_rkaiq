@@ -499,18 +499,18 @@ AdpccResult_t dpcc_expert_mode_basic_params_init(Adpcc_basic_params_t *pBasic, C
         pBasic->arBasic[i].pg_green2_enable = pCalib->DpccTuningPara.Expert_Mode.set2.PG.PG_enable[i];
 
         //methods_set_3 0x0014
-        pBasic->arBasic[i].sw_rk_red_blue3_en = pCalib->DpccTuningPara.Expert_Mode.set2.RK.RK_enable[i];
-        pBasic->arBasic[i].rg_red_blue3_enable = pCalib->DpccTuningPara.Expert_Mode.set2.RG.RG_enable[i];
-        pBasic->arBasic[i].rnd_red_blue3_enable = pCalib->DpccTuningPara.Expert_Mode.set2.RND.RND_enable[i];
-        pBasic->arBasic[i].ro_red_blue3_enable = pCalib->DpccTuningPara.Expert_Mode.set2.RO.RO_enable[i];
-        pBasic->arBasic[i].lc_red_blue3_enable = pCalib->DpccTuningPara.Expert_Mode.set2.LC.LC_enable[i];
-        pBasic->arBasic[i].pg_red_blue3_enable = pCalib->DpccTuningPara.Expert_Mode.set2.PG.PG_enable[i];
-        pBasic->arBasic[i].sw_rk_green3_en = pCalib->DpccTuningPara.Expert_Mode.set2.RK.RK_enable[i];
-        pBasic->arBasic[i].rg_green3_enable = pCalib->DpccTuningPara.Expert_Mode.set2.RG.RG_enable[i];
-        pBasic->arBasic[i].rnd_green3_enable = pCalib->DpccTuningPara.Expert_Mode.set2.RND.RND_enable[i];
-        pBasic->arBasic[i].ro_green3_enable = pCalib->DpccTuningPara.Expert_Mode.set2.RO.RO_enable[i];
-        pBasic->arBasic[i].lc_green3_enable = pCalib->DpccTuningPara.Expert_Mode.set2.LC.LC_enable[i];
-        pBasic->arBasic[i].pg_green3_enable = pCalib->DpccTuningPara.Expert_Mode.set2.PG.PG_enable[i];
+        pBasic->arBasic[i].sw_rk_red_blue3_en = pCalib->DpccTuningPara.Expert_Mode.set3.RK.RK_enable[i];
+        pBasic->arBasic[i].rg_red_blue3_enable = pCalib->DpccTuningPara.Expert_Mode.set3.RG.RG_enable[i];
+        pBasic->arBasic[i].rnd_red_blue3_enable = pCalib->DpccTuningPara.Expert_Mode.set3.RND.RND_enable[i];
+        pBasic->arBasic[i].ro_red_blue3_enable = pCalib->DpccTuningPara.Expert_Mode.set3.RO.RO_enable[i];
+        pBasic->arBasic[i].lc_red_blue3_enable = pCalib->DpccTuningPara.Expert_Mode.set3.LC.LC_enable[i];
+        pBasic->arBasic[i].pg_red_blue3_enable = pCalib->DpccTuningPara.Expert_Mode.set3.PG.PG_enable[i];
+        pBasic->arBasic[i].sw_rk_green3_en = pCalib->DpccTuningPara.Expert_Mode.set3.RK.RK_enable[i];
+        pBasic->arBasic[i].rg_green3_enable = pCalib->DpccTuningPara.Expert_Mode.set3.RG.RG_enable[i];
+        pBasic->arBasic[i].rnd_green3_enable = pCalib->DpccTuningPara.Expert_Mode.set3.RND.RND_enable[i];
+        pBasic->arBasic[i].ro_green3_enable = pCalib->DpccTuningPara.Expert_Mode.set3.RO.RO_enable[i];
+        pBasic->arBasic[i].lc_green3_enable = pCalib->DpccTuningPara.Expert_Mode.set3.LC.LC_enable[i];
+        pBasic->arBasic[i].pg_green3_enable = pCalib->DpccTuningPara.Expert_Mode.set3.PG.PG_enable[i];
 
         //line_thresh_1 0x0018
         pBasic->arBasic[i].sw_mindis1_rb = pCalib->DpccTuningPara.Expert_Mode.set1.RK.rb_sw_mindis[i];
@@ -563,40 +563,40 @@ AdpccResult_t dpcc_expert_mode_basic_params_init(Adpcc_basic_params_t *pBasic, C
 
 
         //line_thresh_3 0x0040
-        pBasic->arBasic[i].sw_mindis3_rb = pCalib->DpccTuningPara.Expert_Mode.set2.RK.rb_sw_mindis[i];
-        pBasic->arBasic[i].sw_mindis3_g = pCalib->DpccTuningPara.Expert_Mode.set2.RK.g_sw_mindis[i];
-        pBasic->arBasic[i].line_thr_3_rb = pCalib->DpccTuningPara.Expert_Mode.set2.LC.rb_line_thr[i];
-        pBasic->arBasic[i].line_thr_3_g = pCalib->DpccTuningPara.Expert_Mode.set2.LC.g_line_thr[i];
+        pBasic->arBasic[i].sw_mindis3_rb = pCalib->DpccTuningPara.Expert_Mode.set3.RK.rb_sw_mindis[i];
+        pBasic->arBasic[i].sw_mindis3_g = pCalib->DpccTuningPara.Expert_Mode.set3.RK.g_sw_mindis[i];
+        pBasic->arBasic[i].line_thr_3_rb = pCalib->DpccTuningPara.Expert_Mode.set3.LC.rb_line_thr[i];
+        pBasic->arBasic[i].line_thr_3_g = pCalib->DpccTuningPara.Expert_Mode.set3.LC.g_line_thr[i];
 
         //line_mad_fac_3 0x0044
-        pBasic->arBasic[i].sw_dis_scale_min3 = pCalib->DpccTuningPara.Expert_Mode.set2.RK.sw_dis_scale_min[i];
-        pBasic->arBasic[i].sw_dis_scale_max3 = pCalib->DpccTuningPara.Expert_Mode.set2.RK.sw_dis_scale_max[i];
-        pBasic->arBasic[i].line_mad_fac_3_rb = pCalib->DpccTuningPara.Expert_Mode.set2.LC.rb_line_mad_fac[i];
-        pBasic->arBasic[i].line_mad_fac_3_g = pCalib->DpccTuningPara.Expert_Mode.set2.LC.g_line_mad_fac[i];
+        pBasic->arBasic[i].sw_dis_scale_min3 = pCalib->DpccTuningPara.Expert_Mode.set3.RK.sw_dis_scale_min[i];
+        pBasic->arBasic[i].sw_dis_scale_max3 = pCalib->DpccTuningPara.Expert_Mode.set3.RK.sw_dis_scale_max[i];
+        pBasic->arBasic[i].line_mad_fac_3_rb = pCalib->DpccTuningPara.Expert_Mode.set3.LC.rb_line_mad_fac[i];
+        pBasic->arBasic[i].line_mad_fac_3_g = pCalib->DpccTuningPara.Expert_Mode.set3.LC.g_line_mad_fac[i];
 
         //pg_fac_3 0x0048
-        pBasic->arBasic[i].pg_fac_3_rb = pCalib->DpccTuningPara.Expert_Mode.set2.PG.rb_pg_fac[i];
-        pBasic->arBasic[i].pg_fac_3_g = pCalib->DpccTuningPara.Expert_Mode.set2.PG.g_pg_fac[i];
+        pBasic->arBasic[i].pg_fac_3_rb = pCalib->DpccTuningPara.Expert_Mode.set3.PG.rb_pg_fac[i];
+        pBasic->arBasic[i].pg_fac_3_g = pCalib->DpccTuningPara.Expert_Mode.set3.PG.g_pg_fac[i];
 
         //rnd_thresh_3 0x004c
-        pBasic->arBasic[i].rnd_thr_3_rb = pCalib->DpccTuningPara.Expert_Mode.set2.RND.rb_rnd_thr[i];
-        pBasic->arBasic[i].rnd_thr_3_g = pCalib->DpccTuningPara.Expert_Mode.set2.RND.g_rnd_thr[i];
+        pBasic->arBasic[i].rnd_thr_3_rb = pCalib->DpccTuningPara.Expert_Mode.set3.RND.rb_rnd_thr[i];
+        pBasic->arBasic[i].rnd_thr_3_g = pCalib->DpccTuningPara.Expert_Mode.set3.RND.g_rnd_thr[i];
 
         //rg_fac_3 0x0050
-        pBasic->arBasic[i].rg_fac_3_rb = pCalib->DpccTuningPara.Expert_Mode.set2.RG.rb_rg_fac[i];
-        pBasic->arBasic[i].rg_fac_3_g = pCalib->DpccTuningPara.Expert_Mode.set2.RG.g_rg_fac[i];
+        pBasic->arBasic[i].rg_fac_3_rb = pCalib->DpccTuningPara.Expert_Mode.set3.RG.rb_rg_fac[i];
+        pBasic->arBasic[i].rg_fac_3_g = pCalib->DpccTuningPara.Expert_Mode.set3.RG.g_rg_fac[i];
 
         //ro_limits 0x0054
-        pBasic->arBasic[i].ro_lim_3_rb = pCalib->DpccTuningPara.Expert_Mode.set2.RO.rb_ro_lim[i];
-        pBasic->arBasic[i].ro_lim_3_g = pCalib->DpccTuningPara.Expert_Mode.set2.RO.g_ro_lim[i];
+        pBasic->arBasic[i].ro_lim_3_rb = pCalib->DpccTuningPara.Expert_Mode.set3.RO.rb_ro_lim[i];
+        pBasic->arBasic[i].ro_lim_3_g = pCalib->DpccTuningPara.Expert_Mode.set3.RO.g_ro_lim[i];
         pBasic->arBasic[i].ro_lim_2_rb = pCalib->DpccTuningPara.Expert_Mode.set2.RO.rb_ro_lim[i];
         pBasic->arBasic[i].ro_lim_2_g = pCalib->DpccTuningPara.Expert_Mode.set2.RO.g_ro_lim[i];
         pBasic->arBasic[i].ro_lim_1_rb = pCalib->DpccTuningPara.Expert_Mode.set1.RO.rb_ro_lim[i];
         pBasic->arBasic[i].ro_lim_1_g = pCalib->DpccTuningPara.Expert_Mode.set1.RO.g_ro_lim[i];
 
         //rnd_offs 0x0058
-        pBasic->arBasic[i].rnd_offs_3_rb = pCalib->DpccTuningPara.Expert_Mode.set2.RND.rb_rnd_offs[i];
-        pBasic->arBasic[i].rnd_offs_3_g = pCalib->DpccTuningPara.Expert_Mode.set2.RND.g_rnd_offs[i];
+        pBasic->arBasic[i].rnd_offs_3_rb = pCalib->DpccTuningPara.Expert_Mode.set3.RND.rb_rnd_offs[i];
+        pBasic->arBasic[i].rnd_offs_3_g = pCalib->DpccTuningPara.Expert_Mode.set3.RND.g_rnd_offs[i];
         pBasic->arBasic[i].rnd_offs_2_rb = pCalib->DpccTuningPara.Expert_Mode.set2.RND.rb_rnd_offs[i];
         pBasic->arBasic[i].rnd_offs_2_g = pCalib->DpccTuningPara.Expert_Mode.set2.RND.g_rnd_offs[i];
         pBasic->arBasic[i].rnd_offs_1_rb = pCalib->DpccTuningPara.Expert_Mode.set1.RND.rb_rnd_offs[i];
@@ -647,7 +647,7 @@ AdpccResult_t dpcc_pdaf_params_init(Adpcc_pdaf_params_t *pPdaf, CalibDb_Dpcc_Pda
 }
 
 AdpccResult_t Api_Expert_mode_select(
-    Adpcc_basic_params_select_t *pSelect,
+    Adpcc_basic_cfg_params_t *pSelect,
     Adpcc_Manual_Attr_t *pstmaunal)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
@@ -667,155 +667,155 @@ AdpccResult_t Api_Expert_mode_select(
     }
 
     //mode 0x0000
-    pSelect->stage1_enable = pstmaunal->stBasic.stage1_enable;
-    pSelect->grayscale_mode = pstmaunal->stBasic.grayscale_mode;
-    pSelect->enable = pstmaunal->stBasic.enable;
+    pSelect->stage1_enable = pstmaunal->stOnfly.expert_mode.stage1_enable;
+    pSelect->grayscale_mode = pstmaunal->stOnfly.expert_mode.grayscale_mode;
+    pSelect->enable = pstmaunal->stOnfly.expert_mode.enable;
 
     //output_mode 0x0004
-    pSelect->sw_rk_out_sel = pstmaunal->stBasic.sw_rk_out_sel;
-    pSelect->sw_dpcc_output_sel = pstmaunal->stBasic.sw_dpcc_output_sel;
-    pSelect->stage1_rb_3x3 = pstmaunal->stBasic.stage1_rb_3x3;
-    pSelect->stage1_g_3x3 = pstmaunal->stBasic.stage1_g_3x3;
-    pSelect->stage1_incl_rb_center = pstmaunal->stBasic.stage1_incl_rb_center;
-    pSelect->stage1_incl_green_center = pstmaunal->stBasic.stage1_incl_green_center;
+    pSelect->sw_rk_out_sel = pstmaunal->stOnfly.expert_mode.sw_rk_out_sel;
+    pSelect->sw_dpcc_output_sel = pstmaunal->stOnfly.expert_mode.sw_dpcc_output_sel;
+    pSelect->stage1_rb_3x3 = pstmaunal->stOnfly.expert_mode.stage1_rb_3x3;
+    pSelect->stage1_g_3x3 = pstmaunal->stOnfly.expert_mode.stage1_g_3x3;
+    pSelect->stage1_incl_rb_center = pstmaunal->stOnfly.expert_mode.stage1_incl_rb_center;
+    pSelect->stage1_incl_green_center = pstmaunal->stOnfly.expert_mode.stage1_incl_green_center;
 
     //set_use 0x0008
-    pSelect->stage1_use_fix_set = pstmaunal->stBasic.stage1_use_fix_set;
-    pSelect->stage1_use_set_3 = pstmaunal->stBasic.stage1_use_set_3;
-    pSelect->stage1_use_set_2 = pstmaunal->stBasic.stage1_use_set_2;
-    pSelect->stage1_use_set_1 = pstmaunal->stBasic.stage1_use_set_1;
+    pSelect->stage1_use_fix_set = pstmaunal->stOnfly.expert_mode.stage1_use_fix_set;
+    pSelect->stage1_use_set_3 = pstmaunal->stOnfly.expert_mode.stage1_use_set_3;
+    pSelect->stage1_use_set_2 = pstmaunal->stOnfly.expert_mode.stage1_use_set_2;
+    pSelect->stage1_use_set_1 = pstmaunal->stOnfly.expert_mode.stage1_use_set_1;
 
     //methods_set_1 0x000c
-    pSelect->sw_rk_red_blue1_en = pstmaunal->stBasic.sw_rk_red_blue1_en;
-    pSelect->rg_red_blue1_enable = pstmaunal->stBasic.rg_red_blue1_enable;
-    pSelect->rnd_red_blue1_enable = pstmaunal->stBasic.rnd_red_blue1_enable;
-    pSelect->ro_red_blue1_enable = pstmaunal->stBasic.ro_red_blue1_enable;
-    pSelect->lc_red_blue1_enable = pstmaunal->stBasic.lc_red_blue1_enable;
-    pSelect->pg_red_blue1_enable = pstmaunal->stBasic.pg_red_blue1_enable;
-    pSelect->sw_rk_green1_en = pstmaunal->stBasic.sw_rk_green1_en;
-    pSelect->rg_green1_enable = pstmaunal->stBasic.rg_green1_enable;
-    pSelect->rnd_green1_enable = pstmaunal->stBasic.rnd_green1_enable;
-    pSelect->ro_green1_enable = pstmaunal->stBasic.ro_green1_enable;
-    pSelect->lc_green1_enable = pstmaunal->stBasic.lc_green1_enable;
-    pSelect->pg_green1_enable = pstmaunal->stBasic.pg_green1_enable;
+    pSelect->sw_rk_red_blue1_en = pstmaunal->stOnfly.expert_mode.sw_rk_red_blue1_en;
+    pSelect->rg_red_blue1_enable = pstmaunal->stOnfly.expert_mode.rg_red_blue1_enable;
+    pSelect->rnd_red_blue1_enable = pstmaunal->stOnfly.expert_mode.rnd_red_blue1_enable;
+    pSelect->ro_red_blue1_enable = pstmaunal->stOnfly.expert_mode.ro_red_blue1_enable;
+    pSelect->lc_red_blue1_enable = pstmaunal->stOnfly.expert_mode.lc_red_blue1_enable;
+    pSelect->pg_red_blue1_enable = pstmaunal->stOnfly.expert_mode.pg_red_blue1_enable;
+    pSelect->sw_rk_green1_en = pstmaunal->stOnfly.expert_mode.sw_rk_green1_en;
+    pSelect->rg_green1_enable = pstmaunal->stOnfly.expert_mode.rg_green1_enable;
+    pSelect->rnd_green1_enable = pstmaunal->stOnfly.expert_mode.rnd_green1_enable;
+    pSelect->ro_green1_enable = pstmaunal->stOnfly.expert_mode.ro_green1_enable;
+    pSelect->lc_green1_enable = pstmaunal->stOnfly.expert_mode.lc_green1_enable;
+    pSelect->pg_green1_enable = pstmaunal->stOnfly.expert_mode.pg_green1_enable;
 
     //methods_set_2 0x0010
-    pSelect->sw_rk_red_blue2_en = pstmaunal->stBasic.sw_rk_red_blue2_en;
-    pSelect->rg_red_blue2_enable = pstmaunal->stBasic.rg_red_blue2_enable;
-    pSelect->rnd_red_blue2_enable = pstmaunal->stBasic.rnd_red_blue2_enable;
-    pSelect->ro_red_blue2_enable = pstmaunal->stBasic.ro_red_blue2_enable;
-    pSelect->lc_red_blue2_enable = pstmaunal->stBasic.lc_red_blue2_enable;
-    pSelect->pg_red_blue2_enable = pstmaunal->stBasic.pg_red_blue2_enable;
-    pSelect->sw_rk_green2_en = pstmaunal->stBasic.sw_rk_green2_en;
-    pSelect->rg_green2_enable = pstmaunal->stBasic.rg_green2_enable;
-    pSelect->rnd_green2_enable = pstmaunal->stBasic.rnd_green2_enable;
-    pSelect->ro_green2_enable = pstmaunal->stBasic.ro_green2_enable;
-    pSelect->lc_green2_enable = pstmaunal->stBasic.lc_green2_enable;
-    pSelect->pg_green2_enable = pstmaunal->stBasic.pg_green2_enable;
+    pSelect->sw_rk_red_blue2_en = pstmaunal->stOnfly.expert_mode.sw_rk_red_blue2_en;
+    pSelect->rg_red_blue2_enable = pstmaunal->stOnfly.expert_mode.rg_red_blue2_enable;
+    pSelect->rnd_red_blue2_enable = pstmaunal->stOnfly.expert_mode.rnd_red_blue2_enable;
+    pSelect->ro_red_blue2_enable = pstmaunal->stOnfly.expert_mode.ro_red_blue2_enable;
+    pSelect->lc_red_blue2_enable = pstmaunal->stOnfly.expert_mode.lc_red_blue2_enable;
+    pSelect->pg_red_blue2_enable = pstmaunal->stOnfly.expert_mode.pg_red_blue2_enable;
+    pSelect->sw_rk_green2_en = pstmaunal->stOnfly.expert_mode.sw_rk_green2_en;
+    pSelect->rg_green2_enable = pstmaunal->stOnfly.expert_mode.rg_green2_enable;
+    pSelect->rnd_green2_enable = pstmaunal->stOnfly.expert_mode.rnd_green2_enable;
+    pSelect->ro_green2_enable = pstmaunal->stOnfly.expert_mode.ro_green2_enable;
+    pSelect->lc_green2_enable = pstmaunal->stOnfly.expert_mode.lc_green2_enable;
+    pSelect->pg_green2_enable = pstmaunal->stOnfly.expert_mode.pg_green2_enable;
 
     //methods_set_3 0x0014
-    pSelect->sw_rk_red_blue3_en = pstmaunal->stBasic.sw_rk_red_blue3_en;
-    pSelect->rg_red_blue3_enable = pstmaunal->stBasic.rg_red_blue3_enable;
-    pSelect->rnd_red_blue3_enable = pstmaunal->stBasic.rnd_red_blue3_enable;
-    pSelect->ro_red_blue3_enable = pstmaunal->stBasic.ro_red_blue3_enable;
-    pSelect->lc_red_blue3_enable = pstmaunal->stBasic.lc_red_blue3_enable;
-    pSelect->pg_red_blue3_enable = pstmaunal->stBasic.pg_red_blue3_enable;
-    pSelect->sw_rk_green3_en = pstmaunal->stBasic.sw_rk_green3_en;
-    pSelect->rg_green3_enable = pstmaunal->stBasic.rg_green3_enable;
-    pSelect->rnd_green3_enable = pstmaunal->stBasic.rnd_green3_enable;
-    pSelect->ro_green3_enable = pstmaunal->stBasic.ro_green3_enable;
-    pSelect->lc_green3_enable = pstmaunal->stBasic.lc_green3_enable;
-    pSelect->pg_green3_enable = pstmaunal->stBasic.pg_green3_enable;
+    pSelect->sw_rk_red_blue3_en = pstmaunal->stOnfly.expert_mode.sw_rk_red_blue3_en;
+    pSelect->rg_red_blue3_enable = pstmaunal->stOnfly.expert_mode.rg_red_blue3_enable;
+    pSelect->rnd_red_blue3_enable = pstmaunal->stOnfly.expert_mode.rnd_red_blue3_enable;
+    pSelect->ro_red_blue3_enable = pstmaunal->stOnfly.expert_mode.ro_red_blue3_enable;
+    pSelect->lc_red_blue3_enable = pstmaunal->stOnfly.expert_mode.lc_red_blue3_enable;
+    pSelect->pg_red_blue3_enable = pstmaunal->stOnfly.expert_mode.pg_red_blue3_enable;
+    pSelect->sw_rk_green3_en = pstmaunal->stOnfly.expert_mode.sw_rk_green3_en;
+    pSelect->rg_green3_enable = pstmaunal->stOnfly.expert_mode.rg_green3_enable;
+    pSelect->rnd_green3_enable = pstmaunal->stOnfly.expert_mode.rnd_green3_enable;
+    pSelect->ro_green3_enable = pstmaunal->stOnfly.expert_mode.ro_green3_enable;
+    pSelect->lc_green3_enable = pstmaunal->stOnfly.expert_mode.lc_green3_enable;
+    pSelect->pg_green3_enable = pstmaunal->stOnfly.expert_mode.pg_green3_enable;
 
     //line_thresh_1 0x0018
-    pSelect->sw_mindis1_rb = pstmaunal->stBasic.sw_mindis1_rb;
-    pSelect->sw_mindis1_g = pstmaunal->stBasic.sw_mindis1_g;
-    pSelect->line_thr_1_rb = pstmaunal->stBasic.line_thr_1_rb;
-    pSelect->line_thr_1_g = pstmaunal->stBasic.line_thr_1_g;
+    pSelect->sw_mindis1_rb = pstmaunal->stOnfly.expert_mode.sw_mindis1_rb;
+    pSelect->sw_mindis1_g = pstmaunal->stOnfly.expert_mode.sw_mindis1_g;
+    pSelect->line_thr_1_rb = pstmaunal->stOnfly.expert_mode.line_thr_1_rb;
+    pSelect->line_thr_1_g = pstmaunal->stOnfly.expert_mode.line_thr_1_g;
 
     //line_mad_fac_1 0x001c
-    pSelect->sw_dis_scale_min1 = pstmaunal->stBasic.sw_dis_scale_min1;
-    pSelect->sw_dis_scale_max1 = pstmaunal->stBasic.sw_dis_scale_max1;
-    pSelect->line_mad_fac_1_rb = pstmaunal->stBasic.line_mad_fac_1_rb;
-    pSelect->line_mad_fac_1_g = pstmaunal->stBasic.line_mad_fac_1_g;
+    pSelect->sw_dis_scale_min1 = pstmaunal->stOnfly.expert_mode.sw_dis_scale_min1;
+    pSelect->sw_dis_scale_max1 = pstmaunal->stOnfly.expert_mode.sw_dis_scale_max1;
+    pSelect->line_mad_fac_1_rb = pstmaunal->stOnfly.expert_mode.line_mad_fac_1_rb;
+    pSelect->line_mad_fac_1_g = pstmaunal->stOnfly.expert_mode.line_mad_fac_1_g;
 
     //pg_fac_1 0x0020
-    pSelect->pg_fac_1_rb = pstmaunal->stBasic.pg_fac_1_rb;
-    pSelect->pg_fac_1_g = pstmaunal->stBasic.pg_fac_1_g;
+    pSelect->pg_fac_1_rb = pstmaunal->stOnfly.expert_mode.pg_fac_1_rb;
+    pSelect->pg_fac_1_g = pstmaunal->stOnfly.expert_mode.pg_fac_1_g;
 
     //rnd_thresh_1 0x0024
-    pSelect->rnd_thr_1_rb = pstmaunal->stBasic.rnd_thr_1_rb;
-    pSelect->rnd_thr_1_g = pstmaunal->stBasic.rnd_thr_1_g;
+    pSelect->rnd_thr_1_rb = pstmaunal->stOnfly.expert_mode.rnd_thr_1_rb;
+    pSelect->rnd_thr_1_g = pstmaunal->stOnfly.expert_mode.rnd_thr_1_g;
 
     //rg_fac_1 0x0028
-    pSelect->rg_fac_1_rb = pstmaunal->stBasic.rg_fac_1_rb;
-    pSelect->rg_fac_1_g = pstmaunal->stBasic.rg_fac_1_g;
+    pSelect->rg_fac_1_rb = pstmaunal->stOnfly.expert_mode.rg_fac_1_rb;
+    pSelect->rg_fac_1_g = pstmaunal->stOnfly.expert_mode.rg_fac_1_g;
 
 
     //line_thresh_2 0x002c
-    pSelect->sw_mindis2_rb = pstmaunal->stBasic.sw_mindis2_rb;
-    pSelect->sw_mindis2_g = pstmaunal->stBasic.sw_mindis2_g;
-    pSelect->line_thr_2_rb = pstmaunal->stBasic.line_thr_2_rb;
-    pSelect->line_thr_2_g = pstmaunal->stBasic.line_thr_2_g;
+    pSelect->sw_mindis2_rb = pstmaunal->stOnfly.expert_mode.sw_mindis2_rb;
+    pSelect->sw_mindis2_g = pstmaunal->stOnfly.expert_mode.sw_mindis2_g;
+    pSelect->line_thr_2_rb = pstmaunal->stOnfly.expert_mode.line_thr_2_rb;
+    pSelect->line_thr_2_g = pstmaunal->stOnfly.expert_mode.line_thr_2_g;
 
     //line_mad_fac_2 0x0030
-    pSelect->sw_dis_scale_min2 = pstmaunal->stBasic.sw_dis_scale_min2;
-    pSelect->sw_dis_scale_max2 = pstmaunal->stBasic.sw_dis_scale_max2;
-    pSelect->line_mad_fac_2_rb = pstmaunal->stBasic.line_mad_fac_2_rb;
-    pSelect->line_mad_fac_2_g = pstmaunal->stBasic.line_mad_fac_2_g;
+    pSelect->sw_dis_scale_min2 = pstmaunal->stOnfly.expert_mode.sw_dis_scale_min2;
+    pSelect->sw_dis_scale_max2 = pstmaunal->stOnfly.expert_mode.sw_dis_scale_max2;
+    pSelect->line_mad_fac_2_rb = pstmaunal->stOnfly.expert_mode.line_mad_fac_2_rb;
+    pSelect->line_mad_fac_2_g = pstmaunal->stOnfly.expert_mode.line_mad_fac_2_g;
 
     //pg_fac_2 0x0034
-    pSelect->pg_fac_2_rb = pstmaunal->stBasic.pg_fac_2_rb;
-    pSelect->pg_fac_2_g = pstmaunal->stBasic.pg_fac_2_g;
+    pSelect->pg_fac_2_rb = pstmaunal->stOnfly.expert_mode.pg_fac_2_rb;
+    pSelect->pg_fac_2_g = pstmaunal->stOnfly.expert_mode.pg_fac_2_g;
 
     //rnd_thresh_2 0x0038
-    pSelect->rnd_thr_2_rb = pstmaunal->stBasic.rnd_thr_2_rb;
-    pSelect->rnd_thr_2_g = pstmaunal->stBasic.rnd_thr_2_g;
+    pSelect->rnd_thr_2_rb = pstmaunal->stOnfly.expert_mode.rnd_thr_2_rb;
+    pSelect->rnd_thr_2_g = pstmaunal->stOnfly.expert_mode.rnd_thr_2_g;
 
     //rg_fac_2 0x003c
-    pSelect->rg_fac_2_rb = pstmaunal->stBasic.rg_fac_2_rb;
-    pSelect->rg_fac_2_g = pstmaunal->stBasic.rg_fac_2_g;
+    pSelect->rg_fac_2_rb = pstmaunal->stOnfly.expert_mode.rg_fac_2_rb;
+    pSelect->rg_fac_2_g = pstmaunal->stOnfly.expert_mode.rg_fac_2_g;
 
 
     //line_thresh_3 0x0040
-    pSelect->sw_mindis3_rb = pstmaunal->stBasic.sw_mindis3_rb;
-    pSelect->sw_mindis3_g = pstmaunal->stBasic.sw_mindis3_g;
-    pSelect->line_thr_3_rb = pstmaunal->stBasic.line_thr_3_rb;
-    pSelect->line_thr_3_g = pstmaunal->stBasic.line_thr_3_g;
+    pSelect->sw_mindis3_rb = pstmaunal->stOnfly.expert_mode.sw_mindis3_rb;
+    pSelect->sw_mindis3_g = pstmaunal->stOnfly.expert_mode.sw_mindis3_g;
+    pSelect->line_thr_3_rb = pstmaunal->stOnfly.expert_mode.line_thr_3_rb;
+    pSelect->line_thr_3_g = pstmaunal->stOnfly.expert_mode.line_thr_3_g;
 
     //line_mad_fac_3 0x0044
-    pSelect->sw_dis_scale_min3 = pstmaunal->stBasic.sw_dis_scale_min3;
-    pSelect->sw_dis_scale_max3 = pstmaunal->stBasic.sw_dis_scale_max3;
-    pSelect->line_mad_fac_3_rb = pstmaunal->stBasic.line_mad_fac_3_rb;
-    pSelect->line_mad_fac_3_g = pstmaunal->stBasic.line_mad_fac_3_g;
+    pSelect->sw_dis_scale_min3 = pstmaunal->stOnfly.expert_mode.sw_dis_scale_min3;
+    pSelect->sw_dis_scale_max3 = pstmaunal->stOnfly.expert_mode.sw_dis_scale_max3;
+    pSelect->line_mad_fac_3_rb = pstmaunal->stOnfly.expert_mode.line_mad_fac_3_rb;
+    pSelect->line_mad_fac_3_g = pstmaunal->stOnfly.expert_mode.line_mad_fac_3_g;
 
     //pg_fac_3 0x0048
-    pSelect->pg_fac_3_rb = pstmaunal->stBasic.pg_fac_3_rb;
-    pSelect->pg_fac_3_g = pstmaunal->stBasic.pg_fac_3_g;
+    pSelect->pg_fac_3_rb = pstmaunal->stOnfly.expert_mode.pg_fac_3_rb;
+    pSelect->pg_fac_3_g = pstmaunal->stOnfly.expert_mode.pg_fac_3_g;
 
     //rnd_thresh_3 0x004c
-    pSelect->rnd_thr_3_rb = pstmaunal->stBasic.rnd_thr_3_rb;
-    pSelect->rnd_thr_3_g = pstmaunal->stBasic.rnd_thr_3_g;
+    pSelect->rnd_thr_3_rb = pstmaunal->stOnfly.expert_mode.rnd_thr_3_rb;
+    pSelect->rnd_thr_3_g = pstmaunal->stOnfly.expert_mode.rnd_thr_3_g;
 
     //rg_fac_3 0x0050
-    pSelect->rg_fac_3_rb = pstmaunal->stBasic.rg_fac_3_rb;
-    pSelect->rg_fac_3_g = pstmaunal->stBasic.rg_fac_3_g;
+    pSelect->rg_fac_3_rb = pstmaunal->stOnfly.expert_mode.rg_fac_3_rb;
+    pSelect->rg_fac_3_g = pstmaunal->stOnfly.expert_mode.rg_fac_3_g;
 
     //ro_limits 0x0054
-    pSelect->ro_lim_3_rb = pstmaunal->stBasic.ro_lim_3_rb;
-    pSelect->ro_lim_3_g = pstmaunal->stBasic.ro_lim_3_g;
-    pSelect->ro_lim_2_rb = pstmaunal->stBasic.ro_lim_2_rb;
-    pSelect->ro_lim_2_g = pstmaunal->stBasic.ro_lim_2_g;
-    pSelect->ro_lim_1_rb = pstmaunal->stBasic.ro_lim_1_rb;
-    pSelect->ro_lim_1_g = pstmaunal->stBasic.ro_lim_1_g;
+    pSelect->ro_lim_3_rb = pstmaunal->stOnfly.expert_mode.ro_lim_3_rb;
+    pSelect->ro_lim_3_g = pstmaunal->stOnfly.expert_mode.ro_lim_3_g;
+    pSelect->ro_lim_2_rb = pstmaunal->stOnfly.expert_mode.ro_lim_2_rb;
+    pSelect->ro_lim_2_g = pstmaunal->stOnfly.expert_mode.ro_lim_2_g;
+    pSelect->ro_lim_1_rb = pstmaunal->stOnfly.expert_mode.ro_lim_1_rb;
+    pSelect->ro_lim_1_g = pstmaunal->stOnfly.expert_mode.ro_lim_1_g;
 
     //rnd_offs 0x0058
-    pSelect->rnd_offs_3_rb = pstmaunal->stBasic.rnd_offs_3_rb;
-    pSelect->rnd_offs_3_g = pstmaunal->stBasic.rnd_offs_3_g;
-    pSelect->rnd_offs_2_rb = pstmaunal->stBasic.rnd_offs_2_rb;
-    pSelect->rnd_offs_2_g = pstmaunal->stBasic.rnd_offs_2_g;
-    pSelect->rnd_offs_1_rb = pstmaunal->stBasic.rnd_offs_1_rb;
-    pSelect->rnd_offs_1_g = pstmaunal->stBasic.rnd_offs_1_g;
+    pSelect->rnd_offs_3_rb = pstmaunal->stOnfly.expert_mode.rnd_offs_3_rb;
+    pSelect->rnd_offs_3_g = pstmaunal->stOnfly.expert_mode.rnd_offs_3_g;
+    pSelect->rnd_offs_2_rb = pstmaunal->stOnfly.expert_mode.rnd_offs_2_rb;
+    pSelect->rnd_offs_2_g = pstmaunal->stOnfly.expert_mode.rnd_offs_2_g;
+    pSelect->rnd_offs_1_rb = pstmaunal->stOnfly.expert_mode.rnd_offs_1_rb;
+    pSelect->rnd_offs_1_g = pstmaunal->stOnfly.expert_mode.rnd_offs_1_g;
 
 
     LOGD_ADPCC("%s:(%d) %d %d %d %d %d\n", __FUNCTION__, __LINE__,
@@ -828,7 +828,7 @@ AdpccResult_t Api_Expert_mode_select(
 
 AdpccResult_t Expert_mode_select_basic_params_by_ISO(
     Adpcc_basic_params_t *pParams,
-    Adpcc_basic_params_select_t *pSelect,
+    Adpcc_basic_cfg_params_t *pSelect,
     AdpccExpInfo_t *pExpInfo)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
@@ -901,7 +901,7 @@ AdpccResult_t Expert_mode_select_basic_params_by_ISO(
 }
 
 void Fast_mode_Triple_level_Setting(
-    Adpcc_basic_params_select_t *pSelect,
+    Adpcc_basic_cfg_params_t *pSelect,
     int level)
 {
     LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
@@ -1289,7 +1289,7 @@ void Fast_mode_Triple_level_Setting(
 
 void Fast_mode_Triple_Setting(
     AdpccContext_t *pParams,
-    Adpcc_basic_params_select_t *pSelect,
+    Adpcc_basic_cfg_params_t *pSelect,
     int iso)
 {
     LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
@@ -1312,7 +1312,7 @@ void Fast_mode_Triple_Setting(
 }
 
 void Fast_mode_Double_level_Setting(
-    Adpcc_basic_params_select_t *pSelect,
+    Adpcc_basic_cfg_params_t *pSelect,
     int level)
 {
     LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
@@ -1701,7 +1701,7 @@ void Fast_mode_Double_level_Setting(
 
 void Fast_mode_Double_Setting(
     AdpccContext_t *pParams,
-    Adpcc_basic_params_select_t *pSelect,
+    Adpcc_basic_cfg_params_t *pSelect,
     int iso)
 {
     LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
@@ -1725,7 +1725,7 @@ void Fast_mode_Double_Setting(
 }
 
 void Fast_mode_Single_level_Setting(
-    Adpcc_basic_params_select_t *pSelect,
+    Adpcc_basic_cfg_params_t *pSelect,
     int level)
 {
     LOG1_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
@@ -2113,7 +2113,7 @@ void Fast_mode_Single_level_Setting(
 
 void Fast_mode_Single_Setting(
     AdpccContext_t *pParams,
-    Adpcc_basic_params_select_t *pSelect,
+    Adpcc_basic_cfg_params_t *pSelect,
     int iso)
 {
     LOG1_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
@@ -2137,7 +2137,7 @@ void Fast_mode_Single_Setting(
 
 AdpccResult_t Fast_mode_select_basic_params_by_ISO(
     AdpccContext_t *pParams,
-    Adpcc_basic_params_select_t *pSelect,
+    Adpcc_basic_cfg_params_t *pSelect,
     AdpccExpInfo_t *pExpInfo)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
@@ -2203,11 +2203,10 @@ AdpccResult_t Fast_mode_select_basic_params_by_ISO(
 
 AdpccResult_t Api_Fast_mode_select(
     AdpccContext_t *pParams,
-    Adpcc_basic_params_select_t *pSelect,
+    Adpcc_basic_cfg_params_t *pSelect,
     Adpcc_fast_mode_attr_t *pAttr)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
-    int iso = 50;
 
     LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
 
@@ -2272,7 +2271,7 @@ AdpccResult_t Api_Fast_mode_select(
 }
 
 AdpccResult_t Api_select_bpt_params(
-    Adpcc_bpt_params_select_t *pSelect,
+    Adpcc_bpt_params_t *pSelect,
     Adpcc_Manual_Attr_t *pstmaunal)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
@@ -2291,7 +2290,7 @@ AdpccResult_t Api_select_bpt_params(
         return ret;
     }
 
-    memcpy(pSelect, &pstmaunal->stBpt, sizeof(Adpcc_bpt_params_select_t));
+    memcpy(pSelect, &pstmaunal->stBpt, sizeof(Adpcc_bpt_params_t));
 
     LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ret;
@@ -2299,7 +2298,7 @@ AdpccResult_t Api_select_bpt_params(
 
 AdpccResult_t select_bpt_params_by_ISO(
     Adpcc_bpt_params_t *pParams,
-    Adpcc_bpt_params_select_t *pSelect,
+    Adpcc_bpt_params_t *pSelect,
     AdpccExpInfo_t *pExpInfo)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
@@ -2324,14 +2323,14 @@ AdpccResult_t select_bpt_params_by_ISO(
         return ret;
     }
 
-    memcpy(pSelect, pParams, sizeof(Adpcc_bpt_params_select_t));
+    memcpy(pSelect, pParams, sizeof(Adpcc_bpt_params_t));
 
     LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ret;
 }
 
 AdpccResult_t Api_select_pdaf_params(
-    Adpcc_pdaf_params_select_t *pSelect,
+    Adpcc_pdaf_params_t *pSelect,
     Adpcc_Manual_Attr_t *pstmaunal)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
@@ -2350,7 +2349,7 @@ AdpccResult_t Api_select_pdaf_params(
         return ret;
     }
 
-    memcpy(pSelect, &pstmaunal->stPdaf, sizeof(Adpcc_pdaf_params_select_t));
+    memcpy(pSelect, &pstmaunal->stPdaf, sizeof(Adpcc_pdaf_params_t));
 
     LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ret;
@@ -2358,7 +2357,7 @@ AdpccResult_t Api_select_pdaf_params(
 
 AdpccResult_t select_pdaf_params_by_ISO(
     Adpcc_pdaf_params_t *pParams,
-    Adpcc_pdaf_params_select_t *pSelect,
+    Adpcc_pdaf_params_t *pSelect,
     AdpccExpInfo_t *pExpInfo)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
@@ -2383,7 +2382,7 @@ AdpccResult_t select_pdaf_params_by_ISO(
         return ret;
     }
 
-    memcpy(pSelect, pParams, sizeof(Adpcc_pdaf_params_select_t));
+    memcpy(pSelect, pParams, sizeof(Adpcc_pdaf_params_t));
 
     LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ret;
@@ -2391,7 +2390,7 @@ AdpccResult_t select_pdaf_params_by_ISO(
 
 AdpccResult_t DpccExpertMode(
     Adpcc_pdaf_params_t *pParams,
-    Adpcc_pdaf_params_select_t *pSelect,
+    Adpcc_pdaf_params_t *pSelect,
     AdpccExpInfo_t *pExpInfo)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
@@ -2416,7 +2415,7 @@ AdpccResult_t DpccExpertMode(
         return ret;
     }
 
-    memcpy(pSelect, pParams, sizeof(Adpcc_pdaf_params_select_t));
+    memcpy(pSelect, pParams, sizeof(Adpcc_pdaf_params_t));
 
     LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ret;
@@ -2682,10 +2681,10 @@ AdpccResult_t AdpccProcess(AdpccContext_t *pAdpccCtx, AdpccExpInfo_t *pExpInfo)
     } else if(pAdpccCtx->eMode == ADPCC_OP_MODE_MANUAL) {
         //TODO
         LOGD_ADPCC("%s(%d): Adpcc Manual mode!!!\n", __FUNCTION__, __LINE__);
-        if(pAdpccCtx->stManual.stFastMode.fast_mode_en)
-            ret = Api_Fast_mode_select(pAdpccCtx, &pAdpccCtx->stManual.stBasic, &pAdpccCtx->stManual.stFastMode);
+        if(pAdpccCtx->stManual.stOnfly.mode == ADPCC_ONFLY_MODE_FAST)
+            ret = Api_Fast_mode_select(pAdpccCtx, &pAdpccCtx->stManual.stOnfly.expert_mode, &pAdpccCtx->stManual.stOnfly.fast_mode);
         else
-            ret = Api_Expert_mode_select(&pAdpccCtx->stManual.stBasic, &pAdpccCtx->stManual);
+            ret = Api_Expert_mode_select(&pAdpccCtx->stManual.stOnfly.expert_mode, &pAdpccCtx->stManual);
 
         ret = Api_select_bpt_params(&pAdpccCtx->stManual.stBpt, &pAdpccCtx->stManual);
         ret = Api_select_pdaf_params(&pAdpccCtx->stManual.stPdaf, &pAdpccCtx->stManual);
@@ -2743,7 +2742,7 @@ AdpccResult_t AdpccGetProcResult(AdpccContext_t *pAdpccCtx, AdpccProcResult_t* p
         pAdpccResult->stPdaf = pAdpccCtx->stAuto.stPdafSelect;
     } else if(pAdpccCtx->eMode == ADPCC_OP_MODE_MANUAL) {
         //TODO
-        pAdpccResult->stBasic = pAdpccCtx->stManual.stBasic;
+        pAdpccResult->stBasic = pAdpccCtx->stManual.stOnfly.expert_mode;
         pAdpccResult->stBpt = pAdpccCtx->stManual.stBpt;
         pAdpccResult->stPdaf = pAdpccCtx->stManual.stPdaf;
     } /*else if(pAdpccCtx->eMode == ADPCC_OP_MODE_TOOL) {

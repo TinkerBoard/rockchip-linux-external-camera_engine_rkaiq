@@ -36,7 +36,7 @@ static XCamReturn groupAsharpV33CreateCtx(RkAiqAlgoContext **context, const Algo
     CamGroup_AsharpV33_Contex_t *asharp_group_contex = NULL;
     AlgoCtxInstanceCfgCamGroup *cfgInt = (AlgoCtxInstanceCfgCamGroup*)cfg;
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32()) {
         asharp_group_contex = (CamGroup_AsharpV33_Contex_t*)malloc(sizeof(CamGroup_AsharpV33_Contex_t));
 #if (ASHARP_USE_JSON_FILE_V33)
         Asharp_result_V33_t ret_v33 = ASHARP_V33_RET_SUCCESS;
@@ -79,7 +79,7 @@ static XCamReturn groupAsharpV33DestroyCtx(RkAiqAlgoContext *context)
 
     CamGroup_AsharpV33_Contex_t *asharp_group_contex = (CamGroup_AsharpV33_Contex_t*)context;
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32()) {
         Asharp_result_V33_t ret_v33 = ASHARP_V33_RET_SUCCESS;
         ret_v33 = Asharp_Release_V33(asharp_group_contex->asharp_contex_v33);
         if(ret_v33 != ASHARP_V33_RET_SUCCESS) {
@@ -112,7 +112,7 @@ static XCamReturn groupAsharpV33Prepare(RkAiqAlgoCom* params)
     CamGroup_AsharpV33_Contex_t * asharp_group_contex = (CamGroup_AsharpV33_Contex_t *)params->ctx;
     RkAiqAlgoCamGroupPrepare* para = (RkAiqAlgoCamGroupPrepare*)params;
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32()) {
         Asharp_Context_V33_t * asharp_contex_v33 = asharp_group_contex->asharp_contex_v33;
         if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
             // todo  update calib pars for surround view
@@ -167,7 +167,7 @@ static XCamReturn groupAsharpV33Processing(const RkAiqAlgoCom* inparams, RkAiqAl
     }
 
     //get cur ae exposure
-    Asharp4_ExpInfo_t stExpInfoV33;
+    Asharp_ExpInfo_V33_t stExpInfoV33;
     memset(&stExpInfoV33, 0x00, sizeof(Asharp3_ExpInfo_t));
     stExpInfoV33.hdr_mode = 0; //pAnrProcParams->hdr_mode;
     stExpInfoV33.snr_mode = 0;
@@ -239,14 +239,14 @@ static XCamReturn groupAsharpV33Processing(const RkAiqAlgoCom* inparams, RkAiqAl
 
 
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32()) {
         Asharp_Context_V33_t * asharp_contex_v33 = asharp_group_contex->asharp_contex_v33;
         Asharp_ProcResult_V33_t stAsharpResultV33;
         deltaIso = abs(stExpInfoV33.arIso[stExpInfoV33.hdr_mode] - asharp_contex_v33->stExpInfo.arIso[stExpInfoV33.hdr_mode]);
         if(deltaIso > ASHARPV33_RECALCULATE_DELTA_ISO) {
             asharp_contex_v33->isReCalculate |= 1;
         }
-        if(stExpInfoV33.blc_ob_predgain != asharp_contex_v33->stExpInfoV23.blc_ob_predgain) {
+        if(stExpInfoV33.blc_ob_predgain != asharp_contex_v33->stExpInfo.blc_ob_predgain) {
             asharp_contex_v33->isReCalculate |= 1;
         }
         if(asharp_contex_v33->isReCalculate) {

@@ -21,6 +21,7 @@ cmake -G "Ninja" \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=YES \
     -DISP_HW_VERSION=${ISP_HW_VERSION} \
     -DCMAKE_INSTALL_PREFIX="installed" \
+    -DRKAIQ_USE_RAWSTREAM_LIB=OFF \
     $SOURCE_PATH \
 && ninja -j$(nproc) \
 && ninja install

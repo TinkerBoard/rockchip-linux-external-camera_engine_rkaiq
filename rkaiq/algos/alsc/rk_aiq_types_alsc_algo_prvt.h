@@ -112,6 +112,7 @@ typedef struct alsc_otp_grad_s
 
 typedef struct alsc_context_s {
     const CalibDbV2_LSC_t   *calibLscV2;
+    CalibDbV2_LSC_t   fixed_calib;
 
     alsc_illu_case_t        *illu_case;
     uint32_t                illu_case_count;

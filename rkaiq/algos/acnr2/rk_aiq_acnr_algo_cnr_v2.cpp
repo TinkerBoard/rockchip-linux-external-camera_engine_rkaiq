@@ -61,7 +61,8 @@ AcnrV2_result_t cnr_select_params_by_ISO_V2(RK_CNR_Params_V2_t *pParams, RK_CNR_
             isoGainHigh = pParams->iso[i + 1];
             isoIndexLow = i;
             isoIndexHigh = i + 1;
-            isoIndex = isoIndexLow;
+            //isoIndex = isoIndexLow;
+            isoIndex = (iso - pParams->iso[i]) < (pParams->iso[i + 1] - iso) ? isoIndexLow : isoIndexHigh;
         }
     }
 
@@ -99,6 +100,9 @@ AcnrV2_result_t cnr_select_params_by_ISO_V2(RK_CNR_Params_V2_t *pParams, RK_CNR_
     isoIndexLow = MIN(MAX(isoIndexLow, 0), max_iso_step - 1);
     isoIndexHigh = MIN(MAX(isoIndexHigh, 0), max_iso_step - 1);
 #endif
+
+    pExpInfo->isoHigh = pParams->iso[isoIndexHigh];
+    pExpInfo->isoLow = pParams->iso[isoIndexLow];
 
     LOGD_ANR("%s:%d iso:%d high:%d low:%d \n",
              __FUNCTION__, __LINE__,
@@ -154,7 +158,7 @@ AcnrV2_result_t cnr_select_params_by_ISO_V2(RK_CNR_Params_V2_t *pParams, RK_CNR_
 }
 
 
-AcnrV2_result_t cnr_fix_transfer_V2(RK_CNR_Params_V2_Select_t *pSelect, RK_CNR_Fix_V2_t *pFix, AcnrV2_ExpInfo_t *pExpInfo, float fStrength)
+AcnrV2_result_t cnr_fix_transfer_V2(RK_CNR_Params_V2_Select_t *pSelect, RK_CNR_Fix_V2_t *pFix, AcnrV2_ExpInfo_t *pExpInfo, rk_aiq_cnr_strength_v2_t *pStrength)
 {
     LOGI_ANR("%s:(%d) enter \n", __FUNCTION__, __LINE__);
 
@@ -177,11 +181,25 @@ AcnrV2_result_t cnr_fix_transfer_V2(RK_CNR_Params_V2_Select_t *pSelect, RK_CNR_F
         return ACNRV2_RET_NULL_POINTER;
     }
 
+    if(pStrength == NULL) {
+        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ACNRV2_RET_NULL_POINTER;
+    }
+
+    float fStrength = 1.0;
+
+    if(pStrength->strength_enable) {
+        fStrength = pStrength->percent;
+    }
 
     if(fStrength <= 0.0) {
         fStrength = 0.000001;
     }
 
+    LOGD_ANR("strength_enable:%d percent:%f fStrength:%f\n",
+             pStrength->strength_enable,
+             pStrength->percent,
+             fStrength);
     // fix bit : RK_CNR_V2_log2e + RK_CNR_V2_SIGMA_FIX_BIT, msigma = (1 / sigma) * (1 << RK_CNR_V2_SIGMA_FIX_BIT) * log2e * (1 << RK_CNR_V2_log2e);
     int log2e = (int)(0.8493f * (1 << (RK_CNR_V2_log2e + RK_CNR_V2_SIGMA_FIX_BIT)));
 

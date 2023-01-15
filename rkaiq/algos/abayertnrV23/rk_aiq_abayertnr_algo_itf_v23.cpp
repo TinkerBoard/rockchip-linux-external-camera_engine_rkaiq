@@ -232,12 +232,18 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             } else {
                 stExpInfo.arDGain[0] = curExp->LinearExp.exp_real_params.digital_gain;
             }
+            if(curExp->LinearExp.exp_real_params.isp_dgain < 1.0) {
+                stExpInfo.isp_dgain[0] = 1.0;
+                LOGW_ANR("leanr mode isp_dgain is wrong, use 1.0 instead\n");
+            } else {
+                stExpInfo.isp_dgain[0] = curExp->LinearExp.exp_real_params.isp_dgain;
+            }
             if(stExpInfo.blc_ob_predgain < 1.0) {
                 stExpInfo.blc_ob_predgain = 1.0;
             }
             // stExpInfo.arAGain[0] = 64.0;
             stExpInfo.arTime[0] = curExp->LinearExp.exp_real_params.integration_time;
-            stExpInfo.arIso[0] = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * stExpInfo.blc_ob_predgain * 50;
+            stExpInfo.arIso[0] = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * stExpInfo.blc_ob_predgain * 50 * stExpInfo.isp_dgain[0];
         } else {
             for(int i = 0; i < 3; i++) {
                 if(curExp->HdrExp[i].exp_real_params.analog_gain < 1.0) {
@@ -252,15 +258,22 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                     LOGW_ANR("hdr mode dgain is wrong, use 1.0 instead\n");
                     stExpInfo.arDGain[i] = curExp->HdrExp[i].exp_real_params.digital_gain;
                 }
+                if(curExp->HdrExp[i].exp_real_params.isp_dgain < 1.0) {
+                    stExpInfo.isp_dgain[i] = 1.0;
+                } else {
+                    LOGW_ANR("hdr mode isp_dgain is wrong, use 1.0 instead\n");
+                    stExpInfo.isp_dgain[i] = curExp->HdrExp[i].exp_real_params.isp_dgain;
+                }
                 stExpInfo.blc_ob_predgain = 1.0;
                 stExpInfo.arTime[i] = curExp->HdrExp[i].exp_real_params.integration_time;
-                stExpInfo.arIso[i] = stExpInfo.arAGain[i] * stExpInfo.arDGain[i] * 50;
+                stExpInfo.arIso[i] = stExpInfo.arAGain[i] * stExpInfo.arDGain[i] * 50 * stExpInfo.isp_dgain[i];
 
-                LOGD_ANR("%s:%d index:%d again:%f dgain:%f time:%f iso:%d hdr_mode:%d\n",
+                LOGD_ANR("%s:%d index:%d again:%f dgain:%f isp_dgain:%f time:%f iso:%d hdr_mode:%d\n",
                          __FUNCTION__, __LINE__,
                          i,
                          stExpInfo.arAGain[i],
                          stExpInfo.arDGain[i],
+                         stExpInfo.isp_dgain[i],
                          stExpInfo.arTime[i],
                          stExpInfo.arIso[i],
                          stExpInfo.hdr_mode);

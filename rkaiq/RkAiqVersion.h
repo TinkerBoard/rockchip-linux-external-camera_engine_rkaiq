@@ -367,6 +367,169 @@
  * - add hw event callback
  * - add group module API of CP/IE/CSM
  * - notify all vicaps ready to app
+ * v3.0x8.7
+ * - fix compille error with gcc-4.4.7
+ * - add parameters of uapi for some algos
+ * - RkAiqxxxHandle: fix wrong 3a result caused by no 3a stats
+ * - CamGroup: skip incomplete expoure params
+ * - common: fix the compile error of 'defined but not used' with GUNC
+ * - camgroup: add refCnt for shared resources
+ * - reduce error log for RKAIQ running on serial port using 11520 baudrate
+ * - add the function of reading/writing uapi parameters in real time for iq tools
+ * v3.0x8.8
+ * - hwi: optimize log printing for HWI
+ * - camgroup: return error when the params of algos is incorrect
+ * - PDAF: fix touchaf is abnormal
+ * - AF: support optical zoom on android
+ * - AF: adapt more type zoom-focus curve
+ * - AE: delete extra Semicolon & add pointer release in GrpAE
+ * - hwi: fix segment fault in setIspConfig when stopping AIQ
+ * v3.0x8.11
+ * - sysctl: remove atrib constructor of rk_aiq_init_lib
+ * - support compile aiq as static lib
+ * - hwi: optimize the bug of vicap drop frame
+ * - xcore: support setting the policy/priority of scheduling before creating thread
+ * - uAPI: print the verison of RKAIQ as default
+ * - fix the bug that ISP params are asynchronous in group cam
+ * - 8_camera_aiq_stable_ver1.0
+ * - dpcc: fix params init
+ * - Adehaze: update api struct and fuctional api
+ * - A3DLUT: some optimization
+ * - ACCM: some optimization
+ * - ASD: fix some bugs
+ * - fix bugs of colorasgray and calibtuning
+ * - tuning: won't free calib witch from iqfiles.
+ * - use json format iqfile in default.
+ * - tuning: update calib async instead stop/start.
+ * - custom AE: adapt for isp2x
+ * - AF: fix can not get soft stats on 356x
+ * - Fix compile bug in android
+ * - Tuning: fix memory leak.
+ * - uAPI: support for updating calib in cam group mode
+ * - compile: use ccache to speed up rebuiding.
+ * - tuning: fix wrong CMD size checking.
+ * - csm: unsupport limit range
+ * - Tuning: add CMD for get 3Astats.
+ * - support acgc
+ * v3.0x9.1
+ * - force using FakeCamera0.json at offline mode
+ * - awb otp : apply otp in awb stat
+ * - awb: translator awb stat based on pre_wbgain_inv_r and bls1
+ * - AF: skip the same motor position in ipc search
+ * - AF: update calulation of shift value
+ * - iqfiles: isp21: change default af value
+ * - fix memleak for some modules
+ * - IspParamsAssembler: protect from "no free xxx buf" of core
+ * - v4l2_device: fix wrong dequeued flag of params buf
+ * - xcore: set buffer QUEUED flag when get buffer.
+ * - Update the lost isp params by driver again
+ * - iqfiles: af: change for fullsweep and pdaf
+ * - update 356x json files to 3.9.1
+ * - PDAF: update to v0.1.5
+ * - kernel headers: Sync with driver
+ * - CamHwIsp20: set memory mode to word align
+ * - 1: ynr support sigma fomula and subsample point in auto
+ * - HWI: modify AE/HIST HW setting
+ * - support otp for awb/alsc
+ * - Hwi: open all AE hw modules
+ * - CCM/3DLUT: del mode & manual cfg in json
+ * - support the function that reset VICAP
+ * - add uapi for turn on/off socket server.
+ * - PDAF: update to v0.1.1
+ * - hwi: update lsc only when status change.
+ * - CAC/LDCH: Support mesh buffer count
+ * - Debayer:params change with ISO
+ * - tuning: create socket for each camera.
+ * - AF: optimize optical zoom
+ * - PDAF: update to v0.1.0
+ * - PDAF: optimize pdaf
+ * - support for loading iq from buffer address.
+ * - tuning: support for group camera.
+ * - Amerge/drc/dehaze: support iso as ctrldata
+ * - HWI: support the funciton of setting isp dgain
+ * - algo: alsc: adjust the position of crop for lsc otp
+ * - merge rk3588 with rk356x base on release v3.0x8.8
+ * v3.0x9.3
+ * iqfiles: add the json of gc8034/ov02b10/s5kjn1
+ * aiq_core: transfer initial exposure to algos
+ * AF: support change resolution
+ * aiq_core: restore the flag of conf_type after switching scene
+ * ipc_server: use 0 be camid when no physical camera.
+ * camgroupManager: multichannel camera write i2C in parallel
+ * aiq offline base on remove rkstream
+ * remove stream code.
+ * aiq_core: keep same iso for Android picture taken when resolution changed
+ * hwi: remove configuring isp params from trigger_isp_readback
+ * def variable(RKAIQ_INSTALL_ALGOS_LIB) to intall lib
+ * Adrc, amerge: fix init expo bug
+ * alsc: fix can't turn on when disabled by IQ.
+ * aiq_core: add initial params of ispDgain/dgain in init
+ * Adrc, amerge and adehaze: use RK_AIQ_ALGO_CONFTYPE_CHANGERES for capture
+ * AE: fix reg2float accuracy problem
+ * AF: Fix custom af build error on Android
+ * AF: fix "Can't release AF (3)" in camera monkey test
+ * AF: fix can not change statics setting when first enter
+ * PDAF: fix memleak when enable pdaf
+ * PDAF: add set memory mode for pdaf video device
+ * PDAF: fix no fine search in low light env when first enter
+ * PDAF: add pdaf.a for 356x
+ * AF: fix crash in af search
+ * PDAF: support fine search extended mode
+ * PDAF: support reshape mode
+ * AF: fix lens pos is changed when no af stats
+ * PDAF: lock ae in fine search to speed up
+ * algos: alsc: apply lsc otp in processing
+ * algo: alsc: lsc otp compatible with isp-unite mode
+ * fix force config LSC when enable blc1
+ * Fix compile error on Android
+ * sysctl: should not release all sensor's calibs when deinit
+ * v3.0x9.4
+ * bbbeacb Revert "hwi: add the interface of set_csi_mem_word_big_align"
+ * ecb78ae Revert "AIE: fix bug that param not taking effect"
+ * 8e3551d Revert "API: add enum static info by physical id"
+ * 75ea4d3 Revert "Adehaze: add XCAM_MESSAGE_YNR_V3_PROC_RES_OK in grpDhazConds, and use ynr proc res"
+ * b5acf48 AF: change some log from LOGE_AEC to LOGE_AF
+ * f257548 PDAF: add librkaiq_pdaf.a for 356x linux
+ * 1ac8977 algos: alsc: adjust Vignetting for lsc OTP
+ * 15d5011 AE: add envChange for android
+ * 65c1304 iqfiles: update xunfei s5kjin1 iq
+ * e2caf1c Adehaze: add XCAM_MESSAGE_YNR_V3_PROC_RES_OK in grpDhazConds, and use ynr proc res
+ * 3e81d4e AF: set lockae to false in pdaf search
+ * 22e30f9 AF: support AF_MODE_EDOF mode
+ * 2d8d0dc PDAF: fix stop_stream is called twice sometimes
+ * 8a8a8e5 fix touchae/touchaf failure
+ * 35ebba0 AF: fix af is stopped after do touchaf/capture
+ * 0d2a231 iqfiles: add pdTargetOffset
+ * f987eaa PDAF: update pdaflib to v0.1.8
+ * 00b23e9 AF: reset/start search when user change af win config
+ * ed914df AF: fix fps is dropped in dual camera case on android platform
+ * 5b2c616 PDAF: fix cannot do pdaf search when enter camera first time
+ * c7c53b9 PDAF: fix lost af/pdaf stats in readback mode sometimes
+ * bf96150 API: add enum static info by physical id
+ * dc9e59b Amerge: update isCapture function
+ * 338519c Adrc: update isCapture function
+ * 95bb11e Adehaze: fix dehaze and hist capturing bug in 8k mode
+ * fda5a8c awb : Increase the decimal digits for lineRgProjCCT
+ * 39cf59a AIE: fix bug that param not taking effect
+ * 50d3dbf rkrawstream: add api mutex.
+ * 24f446c rkrawstream: add rkrawstream Android build script.
+ * 8d09ff3 xcore: fix buf cache flag.
+ * 4239d10 hwi: add the interface of set_csi_mem_word_big_align
+ * a80bc53 iqfiles: update gc8034/ov02b10 json
+ * 07a180a iqfiles: update xunfei s5kjin1 iq
+ * ebd231d AF: fix motor is moved after capture
+ * ccf8ba2 uApi2: add interface rk_aiq_uapi2_sysctl_setIspParamsDelayCnts
+ * 9290261 aiq_core: add setDelayCnt interface
+ * 3677cb2 uApi: rawReproc_genIspParams support params sync for semi mode
+ * 54de8ac xcore: add log module rkrawstream.
+ * d611e50 do not qbuf at prepare when use dmabuf.
+ * 58351eb split v4l2 device stop to streamoff and release buffer. for iflytek project.
+ * 2fa7642 add rkrawstream and rkvi_demo.
+ * 439b562 RkAiqManager: compatible with the calling method of mMetasCb on android hal
+ * 754c3c2 awb: update s5kjn1_default_default.json
+ * 66d1bcf awb : Accelerated convergence speed when wbgain is approaching to target value
+ *
+ *
  * v4.0x8.3
  * - initial version for isp32(rv1106)
  * v4.0x8.5
@@ -492,23 +655,25 @@
  * - TB/IQ: Modify CAC path for sc200ai
  * - TB/IQ: Fix greenish of first frame for gc2093
  * - DEHAZE: Fix null stats issue
- * - DEHAZE: Deal with no ynr sigma case which causes maze artifict
+ * - DEHAZE: Deal with no ynr sigma case which causes maze artifact
  * - HWI: Handle exceptions caused by no stats
- * v4.0x9.b
- * - aiq: hwi: fix bug in fastboot process
- * - awb : fix bug in setting initial wbgain for fast awb
- * - aiq: core: Fix no ready result when no stats
- * - update sc3338_FKO1_30IRC-F16.json
- * - smart ir: add log level ctrl
- * - smart ir: add awbgain dispersion value for n2d
- * - awb: modify for the switch of ircut
- * - smart_ir: fix building
- * - Add option to disable build with libdrm
- * - API: add enum static info by physical id
+
+ * v5.0x1.0
+ * - merge with isp3x, contains v3.0x8.7 - v3.0x9.4
+ *
+ * v5.0x1.1
+ * - Support ISP d-gain for rv1106
+ * - Support Android build system
+ * - Support rkstream and media_enquiry for rv1106
+ * - Support compact API for rk3588
+ * - Fix init param match issues for thunder boot product
+ * - Fix libc check for buildroot build system
+ * - Fix effected param match for all products
+ * - Fix issues caused by branch merge
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.b"
-#define RK_AIQ_RELEASE_DATE "2023-02-08"
+#define RK_AIQ_VERSION_REAL_V "v5.0x1.1"
+#define RK_AIQ_RELEASE_DATE "2023-02-09"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

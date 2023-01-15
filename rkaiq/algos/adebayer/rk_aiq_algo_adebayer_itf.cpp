@@ -151,15 +151,21 @@ processing
         RKAiqAecExpInfo_t *curExp = pAdebayerProcParams->com.u.proc.curExp;
         if(curExp != NULL) {
             if(pAdebayerProcParams->hdr_mode == RK_AIQ_WORKING_MODE_NORMAL) {
-                iso = curExp->LinearExp.exp_real_params.analog_gain * 50;
+                iso = curExp->LinearExp.exp_real_params.analog_gain *
+                      curExp->LinearExp.exp_real_params.digital_gain *
+                      curExp->LinearExp.exp_real_params.isp_dgain * 50;
                 LOGD_ADEBAYER("%s:NORMAL:iso=%d,again=%f\n", __FUNCTION__, iso,
                               curExp->LinearExp.exp_real_params.analog_gain);
             } else if(RK_AIQ_HDR_GET_WORKING_MODE(pAdebayerProcParams->hdr_mode) == RK_AIQ_WORKING_MODE_ISP_HDR2) {
-                iso = curExp->HdrExp[1].exp_real_params.analog_gain * 50;
+                iso = curExp->HdrExp[1].exp_real_params.analog_gain *
+                      curExp->HdrExp[1].exp_real_params.digital_gain *
+                      curExp->HdrExp[1].exp_real_params.isp_dgain * 50;
                 LOGD_ADEBAYER("%s:HDR2:iso=%d,again=%f\n", __FUNCTION__, iso,
                               curExp->HdrExp[1].exp_real_params.analog_gain);
             } else if(RK_AIQ_HDR_GET_WORKING_MODE(pAdebayerProcParams->hdr_mode) == RK_AIQ_WORKING_MODE_ISP_HDR3) {
-                iso = curExp->HdrExp[2].exp_real_params.analog_gain * 50;
+                iso = curExp->HdrExp[2].exp_real_params.analog_gain *
+                      curExp->HdrExp[2].exp_real_params.digital_gain *
+                      curExp->HdrExp[2].exp_real_params.isp_dgain * 50;
                 LOGD_ADEBAYER("%s:HDR3:iso=%d,again=%f\n", __FUNCTION__, iso,
                               curExp->HdrExp[2].exp_real_params.analog_gain);
             }

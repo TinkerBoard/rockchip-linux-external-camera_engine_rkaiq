@@ -396,7 +396,7 @@ int BinMapLoader::removeMap(map_index_t *map_item, size_t map_index) {
 }
 
 void BinMapLoader::info() {
-  printf("block info:[%d]\n", block_vec.size());
-  printf("map info:[%d]\n", map_vec.size());
+  printf("block info:[%zu]\n", block_vec.size());
+  printf("map info:[%zu]\n", map_vec.size());
 }
 

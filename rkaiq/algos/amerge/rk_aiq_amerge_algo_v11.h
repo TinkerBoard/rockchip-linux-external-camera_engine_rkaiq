@@ -17,7 +17,7 @@
 
 #include "ae/rk_aiq_types_ae_algo_int.h"
 #include "rk_aiq_types_amerge_algo_prvt.h"
-#include "rk_aiq_uapi_amerge_int.h"
+#include "amerge/rk_aiq_uapi_amerge_int.h"
 
 XCamReturn AmergeStart(AmergeContext_t* pAmergeCtx);
 XCamReturn AmergeStop(AmergeContext_t* pAmergeCtx);

@@ -32,13 +32,8 @@ XCamReturn RkAiqAcacHandleInt::prepare() {
     RkAiqAlgoConfigAcac* acac_config_int = (RkAiqAlgoConfigAcac*)mConfig;
     RkAiqAlgoDescription* des               = (RkAiqAlgoDescription*)mDes;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    RkAiqCore::RkAiqAlgosGroupShared_t* shared = nullptr;
-    int groupId                                = mAiqCore->getGroupId(RK_AIQ_ALGO_TYPE_ACAC);
-    if (groupId >= 0) {
-        if (mAiqCore->getGroupSharedParams(groupId, shared) != XCAM_RETURN_NO_ERROR)
-            return XCAM_RETURN_BYPASS;
-    } else
-        return XCAM_RETURN_BYPASS;
+    auto* shared = (RkAiqCore::RkAiqAlgosGroupShared_t*)getGroupShared();
+    if (!shared) return XCAM_RETURN_BYPASS;
 
     acac_config_int->mem_ops = mAiqCore->mShareMemOps;
     acac_config_int->width = sharedCom->snsDes.isp_acq_width;
@@ -76,13 +71,8 @@ XCamReturn RkAiqAcacHandleInt::preProcess() {
 
     RkAiqAlgoPreAcac* acac_pre_int          = (RkAiqAlgoPreAcac*)mPreInParam;
     RkAiqAlgoPreResAcac* acac_pre_res_int   = (RkAiqAlgoPreResAcac*)mPreOutParam;
-    RkAiqCore::RkAiqAlgosGroupShared_t* shared = nullptr;
-    int groupId                                = mAiqCore->getGroupId(RK_AIQ_ALGO_TYPE_ACAC);
-    if (groupId >= 0) {
-        if (mAiqCore->getGroupSharedParams(groupId, shared) != XCAM_RETURN_NO_ERROR)
-            return XCAM_RETURN_BYPASS;
-    } else
-        return XCAM_RETURN_BYPASS;
+    auto* shared = (RkAiqCore::RkAiqAlgosGroupShared_t*)getGroupShared();
+    if (!shared) return XCAM_RETURN_BYPASS;
 
     ret = RkAiqHandle::preProcess();
     if (ret) {
@@ -105,15 +95,9 @@ XCamReturn RkAiqAcacHandleInt::processing() {
 
     RkAiqAlgoProcAcac* acac_proc_int        = (RkAiqAlgoProcAcac*)mProcInParam;
     RkAiqAlgoProcResAcac* acac_proc_res_int = (RkAiqAlgoProcResAcac*)mProcOutParam;
-    RkAiqCore::RkAiqAlgosGroupShared_t* shared = nullptr;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-
-    int groupId = mAiqCore->getGroupId(RK_AIQ_ALGO_TYPE_ACAC);
-    if (groupId >= 0) {
-        if (mAiqCore->getGroupSharedParams(groupId, shared) != XCAM_RETURN_NO_ERROR)
-            return XCAM_RETURN_BYPASS;
-    } else
-        return XCAM_RETURN_BYPASS;
+    auto* shared = (RkAiqCore::RkAiqAlgosGroupShared_t*)getGroupShared();
+    if (!shared) return XCAM_RETURN_BYPASS;
 
     RKAiqAecExpInfo_t* aeCurExp = &shared->curExp;
     if (aeCurExp != NULL) {
@@ -189,14 +173,8 @@ XCamReturn RkAiqAcacHandleInt::postProcess() {
 
     RkAiqAlgoPostAcac* acac_post_int        = (RkAiqAlgoPostAcac*)mPostInParam;
     RkAiqAlgoPostResAcac* acac_post_res_int = (RkAiqAlgoPostResAcac*)mPostOutParam;
-    RkAiqCore::RkAiqAlgosGroupShared_t* shared = nullptr;
-
-    int groupId = mAiqCore->getGroupId(RK_AIQ_ALGO_TYPE_ACAC);
-    if (groupId >= 0) {
-        if (mAiqCore->getGroupSharedParams(groupId, shared) != XCAM_RETURN_NO_ERROR)
-            return XCAM_RETURN_BYPASS;
-    } else
-        return XCAM_RETURN_BYPASS;
+    auto* shared = (RkAiqCore::RkAiqAlgosGroupShared_t*)getGroupShared();
+    if (!shared) return XCAM_RETURN_BYPASS;
 
     ret = RkAiqHandle::postProcess();
     if (ret) {

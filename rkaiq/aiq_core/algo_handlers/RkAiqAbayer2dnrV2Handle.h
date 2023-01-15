@@ -52,6 +52,7 @@ public:
     XCamReturn getAttrib(rk_aiq_bayer2dnr_attrib_v2_t* att);
     XCamReturn setStrength(rk_aiq_bayer2dnr_strength_v2_t* pStrength);
     XCamReturn getStrength(rk_aiq_bayer2dnr_strength_v2_t* pStrength);
+    XCamReturn getInfo(rk_aiq_bayer2dnr_info_v2_t* pInfo);
 
 protected:
     virtual void init();

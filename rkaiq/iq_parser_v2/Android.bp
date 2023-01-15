@@ -2,6 +2,7 @@ cc_library_static {
     name: "libiq_parser_v2",
     vendor: true,
     rtti: true,
+    stl: "c++_static",
 
     defaults: [ "rkaiq-defaults", "rkaiq-defaults-flags", ],
 
@@ -33,17 +34,38 @@ cc_library_static {
 
 
     include_dirs: [
-        "external/camera_engine_rkaiq/include/common",
+        "external/camera_engine_rkaiq",
+        "external/camera_engine_rkaiq/iq_parser",
+        "external/camera_engine_rkaiq/iq_parser_v2",
         "external/camera_engine_rkaiq/include/algos",
+        "external/camera_engine_rkaiq/include",
+        "external/camera_engine_rkaiq/algos/",
+        "external/camera_engine_rkaiq/include/xcore/base",
+        "external/camera_engine_rkaiq/include/xcore",
+        "external/camera_engine_rkaiq/include/iq_parser",
         "external/camera_engine_rkaiq/include/iq_parser_v2",
         "external/camera_engine_rkaiq/include/iq_parser_v2/j2s",
+        "external/camera_engine_rkaiq/include/common",
+        "external/camera_engine_rkaiq/uAPI/include",
         "external/camera_engine_rkaiq/include/uAPI2",
+        "external/camera_engine_rkaiq/common",
+        "external/camera_engine_rkaiq/xcore/base",
+        "external/camera_engine_rkaiq/xcore",
+        "external/camera_engine_rkaiq/aiq_core",
     ],
 
     srcs: [
-        "j2s/cJSON.c",
-        "j2s/cJSON_Utils.c",
-        "j2s/j2s.c",
-        "j2s/j2s_utils.c",
+        "j2s/cJSON.cpp",
+        "j2s/cJSON_Utils.cpp",
+        "j2s/j2s.cpp",
+        "j2s/j2s_utils.cpp",
+        "RkAiqCalibDbV2.cpp",
+        "scene/scene_manager.cpp",
+    ],
+
+    shared_libs: [
+        "libutils",
+        "libcutils",
+        "liblog",
     ],
 }

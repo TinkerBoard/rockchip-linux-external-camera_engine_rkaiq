@@ -317,8 +317,14 @@ typedef struct rk_tool_awb_strategy_result_s {
     float wbGainClip[RK_TOOL_AWB_CHANNEL_MAX];//gain by clip
     // M4_ARRAY_DESC("wbGainCaga", "f32", M4_SIZE(1,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float wbGainCaga[RK_TOOL_AWB_CHANNEL_MAX];//gain by  chromatic adatptation gain adjust
-    // M4_ARRAY_DESC("wbGainAdjust", "f32", M4_SIZE(1,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))
+    // M4_ARRAY_DESC("wbGainAdjustIn", "f32", M4_SIZE(1,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))
+    float wbGainAdjustIn[RK_TOOL_AWB_CHANNEL_MAX];//gain by color temperature shift
+    // M4_ARRAY_DESC("wbGainAdjustOut", "f32", M4_SIZE(1,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float wbGainAdjust[RK_TOOL_AWB_CHANNEL_MAX];//gain by color temperature shift
+    // M4_STRUCT_DESC("cctAdjustIn", "normal_ui_style")
+    rk_tool_color_tempture_info_t cctAdjustIn;
+    // M4_STRUCT_DESC("cctAdjustOut", "normal_ui_style")
+    rk_tool_color_tempture_info_t cctAdjustOut;
     // M4_ARRAY_DESC("wbGainOffset", "f32", M4_SIZE(1,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))
     float wbGainOffset[RK_TOOL_AWB_CHANNEL_MAX];//gain by gain shift
     // M4_ARRAY_DESC("wbGainSmooth", "f32", M4_SIZE(1,4), M4_RANGE(0,8), "1", M4_DIGIT(4), M4_DYNAMIC(0))

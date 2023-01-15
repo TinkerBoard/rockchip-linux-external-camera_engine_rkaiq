@@ -23,6 +23,8 @@
 namespace RkCam {
 
 #define ISP2X_WBGAIN_FIXSCALE_BIT  8//check
+#define ISP2X_WBGAIN_INTSCALE_BIT  6//check
+
 #define ISP2X_BLC_BIT_MAX 12
 
 template <typename T>
@@ -1045,7 +1047,7 @@ Isp21Params::convertAiqCsmToIsp21Params(T& isp_cfg,
 {
     struct isp21_csm_cfg* csm_cfg = &isp_cfg.others.csm_cfg;
     if (csm_param.op_mode == RK_AIQ_OP_MODE_MANUAL ||
-            csm_param.op_mode == RK_AIQ_OP_MODE_AUTO) {
+        csm_param.op_mode == RK_AIQ_OP_MODE_AUTO) {
         isp_cfg.module_ens |= ISP2X_MODULE_CSM;
         isp_cfg.module_en_update |= ISP2X_MODULE_CSM;
         isp_cfg.module_cfg_update |= ISP2X_MODULE_CSM;
@@ -1054,8 +1056,8 @@ Isp21Params::convertAiqCsmToIsp21Params(T& isp_cfg,
         csm_cfg->csm_c_offset = csm_param.c_offset;
         for (int i = 0; i < RK_AIQ_CSM_COEFF_NUM; i++) {
             csm_cfg->csm_coeff[i] = csm_param.coeff[i] > 0
-                                        ? (short)(csm_param.coeff[i] * 128 + 0.5)
-                                        : (short)(csm_param.coeff[i] * 128 - 0.5);
+                                    ? (short)(csm_param.coeff[i] * 128 + 0.5)
+                                    : (short)(csm_param.coeff[i] * 128 - 0.5);
         }
     } else {
         isp_cfg.module_ens &= ~ISP2X_MODULE_CSM;
@@ -1066,14 +1068,14 @@ Isp21Params::convertAiqCsmToIsp21Params(T& isp_cfg,
 #if RKAIQ_HAVE_CGC_V1
 template <class T>
 void Isp21Params::convertAiqCgcToIsp21Params(T& isp_cfg,
-                                             const rk_aiq_acgc_params_t& cgc_param) {
+        const rk_aiq_acgc_params_t& cgc_param) {
     struct isp21_cgc_cfg* cgc_cfg = &isp_cfg.others.cgc_cfg;
     if (cgc_param.op_mode == RK_AIQ_OP_MODE_MANUAL ||
             cgc_param.op_mode == RK_AIQ_OP_MODE_AUTO) {
         isp_cfg.module_ens |= ISP2X_MODULE_CGC;
         isp_cfg.module_en_update |= ISP2X_MODULE_CGC;
         isp_cfg.module_cfg_update |= ISP2X_MODULE_CGC;
-        cgc_cfg->ratio_en  = cgc_param.cgc_ratio_en;
+        cgc_cfg->ratio_en = cgc_param.cgc_ratio_en;
         cgc_cfg->yuv_limit = cgc_param.cgc_yuv_limit;
     } else {
         isp_cfg.module_ens &= ~ISP2X_MODULE_CGC;
@@ -1082,6 +1084,57 @@ void Isp21Params::convertAiqCgcToIsp21Params(T& isp_cfg,
     }
 }
 #endif
+
+void Isp21Params::convertAiqExpIspDgainToIsp21Params(struct isp21_isp_params_cfg& isp_cfg, RKAiqAecExpInfo_t ae_exp)
+{
+    // TODO
+
+    struct isp21_awb_gain_cfg *  cfg = &isp_cfg.others.awb_gain_cfg;
+    uint16_t max_wb_gain = (1 << (ISP2X_WBGAIN_FIXSCALE_BIT + ISP2X_WBGAIN_INTSCALE_BIT)) - 1;
+
+    if(_working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
+
+        float isp_dgain = MAX(1.0f, ae_exp.LinearExp.exp_real_params.isp_dgain);
+
+        cfg->gain0_red = MIN(cfg->gain0_red * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain0_green_r = MIN(cfg->gain0_green_r * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain0_green_b = MIN(cfg->gain0_green_b * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain0_blue = MIN(cfg->gain0_blue * isp_dgain + 0.5, max_wb_gain);
+
+        cfg->gain1_red = MIN(cfg->gain1_red * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain1_green_r = MIN(cfg->gain1_green_r * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain1_green_b = MIN(cfg->gain1_green_b * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain1_blue = MIN(cfg->gain1_blue * isp_dgain + 0.5, max_wb_gain);
+
+        cfg->gain2_red = MIN(cfg->gain2_red * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain2_green_r = MIN(cfg->gain2_green_r * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain2_green_b = MIN(cfg->gain2_green_b * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain2_blue = MIN(cfg->gain2_blue * isp_dgain + 0.5, max_wb_gain);
+
+
+    } else {
+
+        float isp_dgain0 = MAX(1.0f, ae_exp.HdrExp[0].exp_real_params.isp_dgain);
+        float isp_dgain1 = MAX(1.0f, ae_exp.HdrExp[1].exp_real_params.isp_dgain);
+        float isp_dgain2 = MAX(1.0f, ae_exp.HdrExp[2].exp_real_params.isp_dgain);
+
+        cfg->gain0_red = MIN(cfg->gain0_red * isp_dgain0 + 0.5, max_wb_gain);
+        cfg->gain0_green_r = MIN(cfg->gain0_green_r * isp_dgain0 + 0.5, max_wb_gain);
+        cfg->gain0_green_b = MIN(cfg->gain0_green_b * isp_dgain0 + 0.5, max_wb_gain);
+        cfg->gain0_blue = MIN(cfg->gain0_blue * isp_dgain0 + 0.5, max_wb_gain);
+
+        cfg->gain1_red = MIN(cfg->gain1_red * isp_dgain1 + 0.5, max_wb_gain);
+        cfg->gain1_green_r = MIN(cfg->gain1_green_r * isp_dgain1 + 0.5, max_wb_gain);
+        cfg->gain1_green_b = MIN(cfg->gain1_green_b * isp_dgain1 + 0.5, max_wb_gain);
+        cfg->gain1_blue = MIN(cfg->gain1_blue * isp_dgain1 + 0.5, max_wb_gain);
+
+        cfg->gain2_red = MIN(cfg->gain2_red * isp_dgain2 + 0.5, max_wb_gain);
+        cfg->gain2_green_r = MIN(cfg->gain2_green_r * isp_dgain2 + 0.5, max_wb_gain);
+        cfg->gain2_green_b = MIN(cfg->gain2_green_b * isp_dgain2 + 0.5, max_wb_gain);
+        cfg->gain2_blue = MIN(cfg->gain2_blue * isp_dgain2 + 0.5, max_wb_gain);
+
+    }
+}
 
 bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
         void* isp_cfg_p, bool is_multi_isp)
@@ -1098,6 +1151,15 @@ bool Isp21Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
     switch (type)
     {
     // followings are specific for isp21
+    case RESULT_TYPE_EXPOSURE_PARAM:
+    {
+        SmartPtr<RkAiqExpParamsProxy> expParams =
+            result.dynamic_cast_ptr<RkAiqExpParamsProxy>();
+        if (expParams.ptr())
+            convertAiqExpIspDgainToIsp21Params(isp_cfg,
+                                               expParams->data()->aecExpInfo);
+    }
+    break;
     case RESULT_TYPE_AWBGAIN_PARAM:
     {
         SmartPtr<RkAiqIspAwbGainParamsProxy> awb_gain = result.dynamic_cast_ptr<RkAiqIspAwbGainParamsProxy>();

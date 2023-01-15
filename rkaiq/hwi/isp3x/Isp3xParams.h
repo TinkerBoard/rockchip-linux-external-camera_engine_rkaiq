@@ -37,7 +37,7 @@ protected:
     template <class T>
     void convertAiqAgammaToIsp3xParams(T& isp_cfg, const rk_aiq_isp_goc_v3x_t& gamma_out_cfg);
 #endif
- private:
+private:
     XCAM_DEAD_COPY(Isp3xParams);
 #if RKAIQ_HAVE_AWB_V21
     void convertAiqAwbToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
@@ -85,6 +85,7 @@ protected:
     void convertAiqAdehazeToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg,
                                         const rk_aiq_isp_dehaze_v3x_t& dhaze);
 #endif
+    void convertAiqExpIspDgainToIsp3xParams(struct isp3x_isp_params_cfg& isp_cfg, RKAiqAecExpInfo_t ae_exp);
 };
 
 }

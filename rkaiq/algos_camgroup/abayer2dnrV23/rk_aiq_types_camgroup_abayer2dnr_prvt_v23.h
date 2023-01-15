@@ -40,7 +40,7 @@ typedef struct CalibDbV2_CamGroup_Abayer2dnrV23_s {
 
 
 typedef struct CamGroup_Abayer2dnrV23_Contex_s {
-    Abayer2dnr_Context_V23_t* abayer2dnr_contex_v2;
+    Abayer2dnr_Context_V23_t* abayer2dnr_contex_v23;
     CalibDbV2_CamGroup_Abayer2dnrV23_t group_CalibV23;
     int camera_Num;
 

@@ -105,5 +105,30 @@ XCamReturn RkAiqCamGroupAblcHandleInt::getAttrib(rk_aiq_blc_attrib_t* att) {
     return ret;
 }
 
+XCamReturn RkAiqCamGroupAblcHandleInt::getInfo(rk_aiq_ablc_info_t *pInfo) {
+    ENTER_ANALYZER_FUNCTION();
+    LOGD_ABLC("%s:%d\n", __FUNCTION__, __LINE__);
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    // TODO
+    // check if there is different between att & mCurAtt
+    // if something changed, set att to mNewAtt, and
+    // the new params will be effective later when updateConfig
+    // called by RkAiqCore
+
+    // if something changed
+    if(pInfo->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_ablc_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        rk_aiq_uapi_ablc_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+    }
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
 #endif
 }

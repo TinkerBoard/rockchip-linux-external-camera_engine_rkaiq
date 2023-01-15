@@ -526,8 +526,13 @@ V4l2Device::prepare ()
     XCAM_FAIL_RETURN (
         ERROR, ret == XCAM_RETURN_NO_ERROR, ret,
         "device(%s) start failed", XCAM_STR (_name));
+#ifndef USE_RAWSTREAM_LIB
     if (!V4L2_TYPE_IS_OUTPUT(_buf_type) &&
             (_buf_type != V4L2_BUF_TYPE_META_OUTPUT)) {
+#else
+    if (!V4L2_TYPE_IS_OUTPUT(_buf_type) && (_memory_type != V4L2_MEMORY_DMABUF) &&
+            (_buf_type != V4L2_BUF_TYPE_META_OUTPUT)) {
+#endif
         //queue all buffers
         for (uint32_t i = 0; i < _buf_count; ++i) {
             SmartPtr<V4l2Buffer> &buf = _buf_pool [i];
@@ -705,6 +710,31 @@ V4l2Device::start (bool prepared)
     }
     _active = true;
     XCAM_LOG_INFO ("device(%s) started successfully", XCAM_STR (_name));
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
+V4l2Device::stop_streamoff ()
+{
+    SmartLock auto_lock(_buf_mutex);
+    XCAM_LOG_INFO ("device(%s) stop stream off", XCAM_STR (_name));
+    // stream off
+    if (_active) {
+        if (io_control (VIDIOC_STREAMOFF, &_buf_type) < 0) {
+            XCAM_LOG_WARNING ("device(%s) steamoff failed", XCAM_STR (_name));
+        }
+        _active = false;
+    }
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
+V4l2Device::stop_freebuffer ()
+{
+    SmartLock auto_lock(_buf_mutex);
+    XCAM_LOG_INFO ("device(%s) stop free buffer", XCAM_STR (_name));
+    if (_buf_pool.size() > 0)
+        fini_buffer_pool ();
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -1084,6 +1114,9 @@ V4l2Device::dequeue_buffer(SmartPtr<V4l2Buffer> &buf)
         v4l2_buf.length = _mplanes_count;
     }
 
+    if (_buf_sync)
+        v4l2_buf.flags = V4L2_BUF_FLAG_NO_CACHE_INVALIDATE | V4L2_BUF_FLAG_NO_CACHE_CLEAN;
+
     if (this->io_control (VIDIOC_DQBUF, &v4l2_buf) < 0) {
         XCAM_LOG_ERROR ("device(%s) fail to dequeue buffer.", XCAM_STR (_name));
         return XCAM_RETURN_ERROR_IOCTL;
@@ -1232,6 +1265,9 @@ V4l2Device::queue_buffer (SmartPtr<V4l2Buffer> &buf, bool locked)
     buf->set_queued(true);
     if (!locked)
         _buf_mutex.unlock();
+
+    if (_buf_sync)
+        v4l2_buf.flags = V4L2_BUF_FLAG_NO_CACHE_INVALIDATE | V4L2_BUF_FLAG_NO_CACHE_CLEAN;
 
     if (io_control (VIDIOC_QBUF, &v4l2_buf) < 0) {
         XCAM_LOG_ERROR("%s fail to enqueue buffer index:%d.",

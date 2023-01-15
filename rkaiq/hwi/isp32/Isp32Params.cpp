@@ -16,7 +16,10 @@
 #include "Isp32Params.h"
 
 namespace RkCam {
+
 #define ISP2X_WBGAIN_FIXSCALE_BIT  8
+#define ISP3X_WBGAIN_INTSCALE_BIT  8
+
 
 void Isp32Params::convertAiqAwbGainToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
         const rk_aiq_wb_gain_v32_t& awb_gain, bool awb_gain_update)
@@ -132,7 +135,7 @@ void Isp32Params::convertAiqAwbToIsp32Params(struct isp32_isp_params_cfg& isp_cf
     awb_cfg_v32->in_rshift_to_12bit_en = awb_meas.inputShiftEnable;
     awb_cfg_v32->in_overexposure_check_en = true;
     awb_cfg_v32->in_overexposure_threshold = awb_meas.overexposure_value;
-    if(awb_cfg_v32->in_overexposure_threshold == 0){
+    if(awb_cfg_v32->in_overexposure_threshold == 0) {
         awb_cfg_v32->in_overexposure_check_en = false;
     }
     awb_cfg_v32->xy_en0    = awb_meas.xyDetectionEnable[RK_AIQ_AWB_XY_TYPE_NORMAL_V201];
@@ -487,8 +490,8 @@ void Isp32Params::convertAiqAwbToIsp32Params(struct isp32_isp_params_cfg& isp_cf
 #endif
 #if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
 void Isp32Params::convertAiqAfToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-                                            const rk_aiq_isp_af_v31_t& af_data,
-                                            bool af_cfg_udpate) {
+        const rk_aiq_isp_af_v31_t& af_data,
+        bool af_cfg_udpate) {
     int i;
 
     if (!af_cfg_udpate) return;
@@ -601,7 +604,7 @@ void Isp32Params::convertAiqAfToIsp32Params(struct isp32_isp_params_cfg& isp_cfg
 #endif
 #if RKAIQ_HAVE_CAC_V11
 void Isp32Params::convertAiqCacToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-                                             const rk_aiq_isp_cac_v32_t& cac_cfg) {
+        const rk_aiq_isp_cac_v32_t& cac_cfg) {
 
     LOGD_ACAC("convert CAC params enable %d", cac_cfg.enable);
 
@@ -1053,7 +1056,7 @@ void Isp32Params::convertAiqAdebayerToIsp32Params(struct isp32_isp_params_cfg& i
 
 #if RKAIQ_HAVE_MERGE_V12
 void Isp32Params::convertAiqMergeToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-                                               const rk_aiq_isp_merge_v32_t& amerge_data) {
+        const rk_aiq_isp_merge_v32_t& amerge_data) {
     if (amerge_data.update) {
         isp_cfg.module_en_update |= 1LL << RK_ISP2X_HDRMGE_ID;
         isp_cfg.module_ens |= 1LL << RK_ISP2X_HDRMGE_ID;
@@ -1132,7 +1135,7 @@ void Isp32Params::convertAiqMergeToIsp32Params(struct isp32_isp_params_cfg& isp_
 
 #if RKAIQ_HAVE_DEHAZE_V12
 void Isp32Params::convertAiqAdehazeToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-                                                 const rk_aiq_isp_dehaze_v32_t& dhaze) {
+        const rk_aiq_isp_dehaze_v32_t& dhaze) {
     if (dhaze.update) {
         if (dhaze.enable) {
             isp_cfg.module_en_update |= ISP2X_MODULE_DHAZ;
@@ -1227,7 +1230,7 @@ void Isp32Params::convertAiqAdehazeToIsp32Params(struct isp32_isp_params_cfg& is
 
 #if RKAIQ_HAVE_DRC_V12
 void Isp32Params::convertAiqDrcToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-                                             rk_aiq_isp_drc_v32_t& adrc_data) {
+        rk_aiq_isp_drc_v32_t& adrc_data) {
     if (adrc_data.update) {
         if (adrc_data.bDrcEn) {
             isp_cfg.module_en_update |= 1LL << Rk_ISP21_DRC_ID;
@@ -1295,7 +1298,7 @@ void Isp32Params::convertAiqDrcToIsp32Params(struct isp32_isp_params_cfg& isp_cf
 
 #if RKAIQ_HAVE_CCM_V2
 void Isp32Params::convertAiqCcmToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-                                             const rk_aiq_ccm_cfg_v2_t& ccm) {
+        const rk_aiq_ccm_cfg_v2_t& ccm) {
     if (ccm.ccmEnable) {
         isp_cfg.module_ens |= ISP2X_MODULE_CCM;
     }
@@ -1307,17 +1310,17 @@ void Isp32Params::convertAiqCcmToIsp32Params(struct isp32_isp_params_cfg& isp_cf
     const float* offset       = ccm.offs;
 
     cfg->coeff0_r = (coeff[0] - 1) > 0 ? (short)((coeff[0] - 1) * 128 + 0.5)
-                                       : (short)((coeff[0] - 1) * 128 - 0.5);  // check -128?
+                    : (short)((coeff[0] - 1) * 128 - 0.5);  // check -128?
     cfg->coeff1_r = coeff[1] > 0 ? (short)(coeff[1] * 128 + 0.5) : (short)(coeff[1] * 128 - 0.5);
     cfg->coeff2_r = coeff[2] > 0 ? (short)(coeff[2] * 128 + 0.5) : (short)(coeff[2] * 128 - 0.5);
     cfg->coeff0_g = coeff[3] > 0 ? (short)(coeff[3] * 128 + 0.5) : (short)(coeff[3] * 128 - 0.5);
     cfg->coeff1_g = (coeff[4] - 1) > 0 ? (short)((coeff[4] - 1) * 128 + 0.5)
-                                       : (short)((coeff[4] - 1) * 128 - 0.5);
+                    : (short)((coeff[4] - 1) * 128 - 0.5);
     cfg->coeff2_g = coeff[5] > 0 ? (short)(coeff[5] * 128 + 0.5) : (short)(coeff[5] * 128 - 0.5);
     cfg->coeff0_b = coeff[6] > 0 ? (short)(coeff[6] * 128 + 0.5) : (short)(coeff[6] * 128 - 0.5);
     cfg->coeff1_b = coeff[7] > 0 ? (short)(coeff[7] * 128 + 0.5) : (short)(coeff[7] * 128 - 0.5);
     cfg->coeff2_b = (coeff[8] - 1) > 0 ? (short)((coeff[8] - 1) * 128 + 0.5)
-                                       : (short)((coeff[8] - 1) * 128 - 0.5);
+                    : (short)((coeff[8] - 1) * 128 - 0.5);
 
     cfg->offset_r =
         offset[0] > 0 ? (short)(offset[0] + 0.5) : (short)(offset[0] - 0.5);  // for 12bit
@@ -1345,7 +1348,7 @@ void Isp32Params::convertAiqCcmToIsp32Params(struct isp32_isp_params_cfg& isp_cf
 
 #if RKAIQ_HAVE_SHARP_V33
 void Isp32Params::convertAiqSharpenToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-                                                 rk_aiq_isp_sharp_v32_t& sharp) {
+        rk_aiq_isp_sharp_v32_t& sharp) {
     LOGD_ASHARP("%s:%d enter! enable:%d\n", __FUNCTION__, __LINE__, sharp.sharp_en);
     bool enable = sharp.sharp_en;
 
@@ -1446,7 +1449,7 @@ void Isp32Params::convertAiqSharpenToIsp32Params(struct isp32_isp_params_cfg& is
 }
 #endif
 void Isp32Params::convertAiqBlcToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
-                                             rk_aiq_isp_blc_v32_t& blc) {
+        rk_aiq_isp_blc_v32_t& blc) {
     LOGD_ABLC("%s:(%d) enter enable:%d\n", __FUNCTION__, __LINE__, blc.enable);
 
     if (blc.enable) {
@@ -1477,7 +1480,7 @@ void Isp32Params::convertAiqBlcToIsp32Params(struct isp32_isp_params_cfg& isp_cf
     isp_cfg.others.bls_cfg.fixed_val.gb = blc.blc_gb;
     isp_cfg.others.bls_cfg.fixed_val.b  = blc.blc_b;
 
-    if (blc.isp_ob_predgain !=0 ) {
+    if (blc.isp_ob_predgain != 0 ) {
         isp_cfg.others.bls_cfg.bls1_val.r  = CLIP((int)(blc.blc1_r * blc.isp_ob_predgain), 0, 32767);
         isp_cfg.others.bls_cfg.bls1_val.gr = CLIP((int)(blc.blc1_gr * blc.isp_ob_predgain), 0, 32767);
         isp_cfg.others.bls_cfg.bls1_val.gb = CLIP((int)(blc.blc1_gb * blc.isp_ob_predgain), 0, 32767);
@@ -1527,13 +1530,65 @@ void Isp32Params::convertAiqAldchToIsp32Params(struct isp32_isp_params_cfg& isp_
         pLdchCfg->bic_mode_en = ldch_cfg.bic_mode_en;
         memcpy(pLdchCfg->bicubic, ldch_cfg.bicubic, sizeof(ldch_cfg.bicubic));
 
-        LOGV_CAMHW_SUBM(ISP20PARAM_SUBM, "enable ldch h/v size: %d, buf_fd: %d",
+        LOGV_CAMHW_SUBM(ISP20PARAM_SUBM, "enable ldch h/v size: %dx%d, buf_fd: %d",
                         pLdchCfg->hsize, pLdchCfg->vsize, pLdchCfg->buf_fd);
 
     } else {
         isp_cfg.module_ens &= ~ISP32_MODULE_LDCH;
         isp_cfg.module_en_update |= ISP32_MODULE_LDCH;
     }
+}
+
+void Isp32Params::convertAiqExpIspDgainToIsp32Params(struct isp32_isp_params_cfg& isp_cfg, RKAiqAecExpInfo_t ae_exp)
+{
+    // TODO
+    struct isp32_awb_gain_cfg *  cfg = &isp_cfg.others.awb_gain_cfg;
+    uint16_t max_wb_gain = (1 << (ISP2X_WBGAIN_FIXSCALE_BIT + ISP3X_WBGAIN_INTSCALE_BIT)) - 1;
+
+    if(_working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
+
+        float isp_dgain = MAX(1.0f, ae_exp.LinearExp.exp_real_params.isp_dgain);
+
+        cfg->gain0_red = MIN(cfg->gain0_red * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain0_green_r = MIN(cfg->gain0_green_r * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain0_green_b = MIN(cfg->gain0_green_b * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain0_blue = MIN(cfg->gain0_blue * isp_dgain + 0.5, max_wb_gain);
+
+        cfg->gain1_red = MIN(cfg->gain1_red * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain1_green_r = MIN(cfg->gain1_green_r * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain1_green_b = MIN(cfg->gain1_green_b * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain1_blue = MIN(cfg->gain1_blue * isp_dgain + 0.5, max_wb_gain);
+
+        cfg->gain2_red = MIN(cfg->gain2_red * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain2_green_r = MIN(cfg->gain2_green_r * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain2_green_b = MIN(cfg->gain2_green_b * isp_dgain + 0.5, max_wb_gain);
+        cfg->gain2_blue = MIN(cfg->gain2_blue * isp_dgain + 0.5, max_wb_gain);
+
+
+    } else {
+
+        float isp_dgain0 = MAX(1.0f, ae_exp.HdrExp[0].exp_real_params.isp_dgain);
+        float isp_dgain1 = MAX(1.0f, ae_exp.HdrExp[1].exp_real_params.isp_dgain);
+        float isp_dgain2 = MAX(1.0f, ae_exp.HdrExp[2].exp_real_params.isp_dgain);
+
+        cfg->gain0_red = MIN(cfg->gain0_red * isp_dgain0 + 0.5, max_wb_gain);
+        cfg->gain0_green_r = MIN(cfg->gain0_green_r * isp_dgain0 + 0.5, max_wb_gain);
+        cfg->gain0_green_b = MIN(cfg->gain0_green_b * isp_dgain0 + 0.5, max_wb_gain);
+        cfg->gain0_blue = MIN(cfg->gain0_blue * isp_dgain0 + 0.5, max_wb_gain);
+
+        cfg->gain1_red = MIN(cfg->gain1_red * isp_dgain1 + 0.5, max_wb_gain);
+        cfg->gain1_green_r = MIN(cfg->gain1_green_r * isp_dgain1 + 0.5, max_wb_gain);
+        cfg->gain1_green_b = MIN(cfg->gain1_green_b * isp_dgain1 + 0.5, max_wb_gain);
+        cfg->gain1_blue = MIN(cfg->gain1_blue * isp_dgain1 + 0.5, max_wb_gain);
+
+        cfg->gain2_red = MIN(cfg->gain2_red * isp_dgain2 + 0.5, max_wb_gain);
+        cfg->gain2_green_r = MIN(cfg->gain2_green_r * isp_dgain2 + 0.5, max_wb_gain);
+        cfg->gain2_green_b = MIN(cfg->gain2_green_b * isp_dgain2 + 0.5, max_wb_gain);
+        cfg->gain2_blue = MIN(cfg->gain2_blue * isp_dgain2 + 0.5, max_wb_gain);
+
+    }
+
+
 }
 
 bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* isp_cfg_p, bool is_multi_isp) {
@@ -1546,11 +1601,20 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
     int32_t type = result->getType();
     //LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%s, module (0x%x) convert params!\n", __FUNCTION__, type);
     switch (type) {
+    case RESULT_TYPE_EXPOSURE_PARAM:
+    {
+        SmartPtr<RkAiqExpParamsProxy> expParams =
+            result.dynamic_cast_ptr<RkAiqExpParamsProxy>();
+        if (expParams.ptr())
+            convertAiqExpIspDgainToIsp32Params(isp_cfg,
+                                               expParams->data()->aecExpInfo);
+    }
+    break;
     case RESULT_TYPE_AWBGAIN_PARAM: {
         SmartPtr<RkAiqIspAwbGainParamsProxyV32> awb_gain =
             result.dynamic_cast_ptr<RkAiqIspAwbGainParamsProxyV32>();
         if (awb_gain.ptr()) {
-                convertAiqAwbGainToIsp32Params(isp_cfg, awb_gain->data()->result, true);
+            convertAiqAwbGainToIsp32Params(isp_cfg, awb_gain->data()->result, true);
         } else
             LOGE("don't get awb_gain params, convert awbgain params failed!");
     }
@@ -1732,7 +1796,8 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
             result.dynamic_cast_ptr<RkAiqIspSharpParamsProxyV32>();
         if (params.ptr()) convertAiqSharpenToIsp32Params(isp_cfg, params->data()->result);
 #endif
-    } break;
+    }
+    break;
     case RESULT_TYPE_CGC_PARAM: {
 #if RKAIQ_HAVE_CGC_V1
         SmartPtr<RkAiqIspCgcParamsProxy> params =

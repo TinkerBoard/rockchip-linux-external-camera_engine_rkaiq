@@ -69,14 +69,9 @@ XCamReturn RkAiqAorbHandleInt::processing() {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     RkAiqAlgoProcAorb* aorb_proc_int        = (RkAiqAlgoProcAorb*)mProcInParam;
-    RkAiqCore::RkAiqAlgosGroupShared_t* shared = nullptr;
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    int groupId                                = mAiqCore->getGroupId(RK_AIQ_ALGO_TYPE_AORB);
-    if (groupId >= 0) {
-        if (mAiqCore->getGroupSharedParams(groupId, shared) != XCAM_RETURN_NO_ERROR)
-            return XCAM_RETURN_BYPASS;
-    } else
-        return XCAM_RETURN_BYPASS;
+    auto* shared = (RkAiqCore::RkAiqAlgosGroupShared_t*)getGroupShared();
+    if (!shared) return XCAM_RETURN_BYPASS;
 
     aorb_proc_int->orb_stats_buf = shared->orbStats;
 

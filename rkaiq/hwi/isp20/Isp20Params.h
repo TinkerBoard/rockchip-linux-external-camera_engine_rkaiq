@@ -54,6 +54,11 @@ public:
     void reset();
     XCamReturn start();
     void stop();
+    void setCamPhyId(int phyId) {
+        mCamPhyId = phyId;
+    }
+protected:
+    int mCamPhyId;
 private:
     XCAM_DEAD_COPY(IspParamsAssembler);
     XCamReturn queue_locked(SmartPtr<cam3aResult>& result);
@@ -246,6 +251,7 @@ protected:
     SmartPtr<cam3aResult> get_3a_result (cam3aResultList &results, int32_t type);
     // std::map<int, std::list<SmartPtr<cam3aResult>>> _cam3aConfig;
     SmartPtr<cam3aResult> mBlcResult = NULL;
+    bool _lsc_en;
 };
 }
 #endif

@@ -84,7 +84,8 @@ private:
     void convertAiqDrcToIsp21Params(struct isp21_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_drc_v21_t& adrc_data);
 #endif
+    void convertAiqExpIspDgainToIsp21Params(struct isp21_isp_params_cfg& isp_cfg, RKAiqAecExpInfo_t ae_exp);
 };
 
-}
+};
 #endif

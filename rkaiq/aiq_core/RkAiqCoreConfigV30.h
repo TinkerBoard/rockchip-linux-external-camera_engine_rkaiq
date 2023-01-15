@@ -48,6 +48,18 @@
 #include "awdr/rk_aiq_algo_awdr_itf.h"
 #include "aynr3/rk_aiq_aynr_algo_itf_v3.h"
 
+#if RKAIQ_ENABLE_CAMGROUP
+#include "algos_camgroup/abayer2dnr2/rk_aiq_algo_camgroup_abayer2dnr_itf_v2.h"
+#include "algos_camgroup/abayertnr2/rk_aiq_algo_camgroup_abayertnr_itf_v2.h"
+#include "algos_camgroup/acnr2/rk_aiq_algo_camgroup_acnr_itf_v2.h"
+#include "algos_camgroup/ae/rk_aiq_algo_camgroup_ae_itf.h"
+#include "algos_camgroup/again2/rk_aiq_algo_camgroup_again_itf_v2.h"
+#include "algos_camgroup/asharp4/rk_aiq_algo_camgroup_asharp_itf_v4.h"
+#include "algos_camgroup/awb/rk_aiq_algo_camgroup_awb_itf.h"
+#include "algos_camgroup/aynr3/rk_aiq_algo_camgroup_aynr_itf_v3.h"
+#include "algos_camgroup/misc/rk_aiq_algo_camgroup_misc_itf.h"
+#endif
+
 namespace RkCam {
 
 /*
@@ -207,6 +219,31 @@ static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
     { NULL,                                 RK_AIQ_CORE_ANALYZE_ALL,    0, 0, 0,    {0, 0}             },
     // clang-format on
 };
+
+#if RKAIQ_ENABLE_CAMGROUP
+const static struct RkAiqAlgoDesCommExt g_camgroup_algos[] = {
+    // clang-format off
+    { &g_RkIspAlgoDescCamgroupAe.common,            RK_AIQ_CORE_ANALYZE_AE,     0,  3,  0, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAblc.common,          RK_AIQ_CORE_ANALYZE_AWB,    0,  0,  0, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAwb.common,           RK_AIQ_CORE_ANALYZE_AWB,    1,  2, 32, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAlsc.common,          RK_AIQ_CORE_ANALYZE_AWB,    0,  0,  0, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAccm.common,          RK_AIQ_CORE_ANALYZE_AWB,    0,  0,  0, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupA3dlut.common,        RK_AIQ_CORE_ANALYZE_AWB,    0,  0,  0, {0, 0} },
+    // { &g_RkIspAlgoDescCamgroupAdpcc.common,      RK_AIQ_CORE_ANALYZE_AWB,    0,  0,  0, {0, 0} },
+    // { &g_RkIspAlgoDescamgroupAgamma.common,      RK_AIQ_CORE_ANALYZE_GRP0,   0,  0,  0, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAdrc.common,          RK_AIQ_CORE_ANALYZE_GRP0,   0,  1,  0, {0, 0} },
+    // { &g_RkIspAlgoDescCamgroupAmerge.common,     RK_AIQ_CORE_ANALYZE_GRP0,   0,  0,  0, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAynrV3.common,        RK_AIQ_CORE_ANALYZE_OTHER,  3,  3,  3, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAcnrV2.common,        RK_AIQ_CORE_ANALYZE_OTHER,  2,  2,  2, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAbayertnrV2.common,   RK_AIQ_CORE_ANALYZE_OTHER,  2,  2,  2, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAbayer2dnrV2.common,  RK_AIQ_CORE_ANALYZE_OTHER,  2,  2,  2, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAsharpV4.common,      RK_AIQ_CORE_ANALYZE_OTHER,  4,  4,  4, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAgainV2.common,       RK_AIQ_CORE_ANALYZE_OTHER,  2,  2,  2, {0, 0} },
+    { &g_RkIspAlgoDescCamgroupAdhaz.common,         RK_AIQ_CORE_ANALYZE_DHAZ,   0,  1,  0, {0, 0} },
+    { NULL,                                         RK_AIQ_CORE_ANALYZE_ALL,    0,  0,  0, {0, 0} },
+    // clang-format on
+};
+#endif
 
 }  // namespace RkCam
 

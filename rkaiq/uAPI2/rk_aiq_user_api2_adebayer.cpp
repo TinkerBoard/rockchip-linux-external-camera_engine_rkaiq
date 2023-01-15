@@ -16,6 +16,7 @@
 #include "rk_aiq_user_api2_adebayer.h"
 
 #include "algo_handlers/RkAiqAdebayerHandle.h"
+#include "uAPI/include/rk_aiq_user_api_adebayer.h"
 
 RKAIQ_BEGIN_DECLARE
 

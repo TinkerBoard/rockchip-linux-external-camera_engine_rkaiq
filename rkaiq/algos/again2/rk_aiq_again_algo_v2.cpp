@@ -44,8 +44,6 @@ Again_result_V2_t Again_Stop_V2(Again_Context_V2_t *pAgainCtx)
     return (AGAINV2_RET_SUCCESS);
 }
 
-
-
 //anr inint
 Again_result_V2_t Again_Init_V2(Again_Context_V2_t **ppAgainCtx, CamCalibDbV2Context_t *pCalibDbV2)
 {

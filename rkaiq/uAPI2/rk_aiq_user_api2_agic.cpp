@@ -16,6 +16,7 @@
 #include "uAPI2/rk_aiq_user_api2_agic.h"
 
 #include "uAPI/include/rk_aiq_user_api_agic.h"
+#include "uAPI/rk_aiq_api_private.h"
 
 RKAIQ_BEGIN_DECLARE
 
@@ -33,14 +34,19 @@ XCamReturn rk_aiq_user_api2_agic_v1_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
         if (algo_handle) {
             return algo_handle->setAttribV1(attr);
         } else {
+            XCamReturn ret                            = XCAM_RETURN_NO_ERROR;
             const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t*)sys_ctx;
             for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
                 if (!camCtx) continue;
 
                 RkAiqAgicHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAgicHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AGIC);
-                if (singleCam_algo_handle) return singleCam_algo_handle->setAttribV1(attr);
+                if (singleCam_algo_handle) {
+                    ret = singleCam_algo_handle->setAttribV1(attr);
+                    if (ret != XCAM_RETURN_NO_ERROR) LOGE("%s returned: %d", __FUNCTION__, ret);
+                }
             }
+            return ret;
         }
 #else
         return XCAM_RETURN_ERROR_FAILED;

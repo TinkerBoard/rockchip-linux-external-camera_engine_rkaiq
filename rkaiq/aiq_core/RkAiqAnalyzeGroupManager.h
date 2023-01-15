@@ -68,7 +68,7 @@ class RkAiqAnalyzerGroup {
     void setDepsFlag(uint64_t new_deps) { mDepsFlag = new_deps; }
 
     RkAiqCore* getAiqCore() { return mAiqCore; }
-
+    void setDelayCnts(int8_t delayCnts);
  private:
     void msgReduction(std::map<uint32_t, GroupMessage>& msgMap);
     int8_t getMsgDelayCnt(XCamMessageType &msg_id);
@@ -81,6 +81,7 @@ class RkAiqAnalyzerGroup {
     SmartPtr<RkAiqAnalyzeGroupMsgHdlThread> mRkAiqGroupMsgHdlTh;
     std::map<uint32_t, GroupMessage> mGroupMsgMap;
     MessageHandleWrapper mHandler;
+    int8_t mUserSetDelayCnts;
 };
 
 class RkAiqAnalyzeGroupMsgHdlThread : public Thread {
@@ -132,6 +133,7 @@ class RkAiqAnalyzeGroupManager {
     XCamReturn setGrpDeps(rk_aiq_core_analyze_type_e group, uint64_t new_deps);
     XCamReturn start();
     XCamReturn stop();
+    void setDelayCnts(int delayCnts);
 
     XCamReturn firstAnalyze();
     XCamReturn handleMessage(const SmartPtr<XCamMessage> &msg);
@@ -141,6 +143,10 @@ class RkAiqAnalyzeGroupManager {
 
     std::map<uint64_t, std::vector<SmartPtr<RkAiqHandle>>> getGroupAlgoListMap() {
         return mGroupAlgoListMap;
+    }
+
+    std::map<uint64_t, SmartPtr<RkAiqAnalyzerGroup>>& getGroups() {
+        return mGroupMap;
     }
 
  protected:

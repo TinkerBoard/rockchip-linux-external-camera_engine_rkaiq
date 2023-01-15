@@ -82,4 +82,5 @@ void computeGradient(int *xInterval, int *yInterval, int *xGradient, int *yGradi
 int getBayerIndex(int pattern, int row, int col);
 void separateBayerChannel(uint16_t* src, uint16_t* disR, uint16_t* disGr, uint16_t* disGb, uint16_t* disB, int width, int height, int bayer);
 void writeFile(char *fileName, uint16_t *buf);
+void adjustVignettingForLscOTP(uint16_t *tableB, uint16_t *tableGb, uint16_t *tableGr, uint16_t *tableR, float newVig, int width, int height);
 #endif

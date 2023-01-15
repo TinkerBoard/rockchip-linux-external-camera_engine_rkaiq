@@ -36,7 +36,7 @@ XCamReturn RkAiqCamGroupAbayertnrV2HandleInt::updateConfig(bool needSync) {
     if (updateStrength) {
         LOGD_ANR("%s:%d\n", __FUNCTION__, __LINE__);
         mCurStrength = mNewStrength;
-        rk_aiq_uapi_camgroup_abayertnrV2_SetStrength(mAlgoCtx, mCurStrength.percent);
+        rk_aiq_uapi_camgroup_abayertnrV2_SetStrength(mAlgoCtx, &mCurStrength);
         sendSignal(mCurStrength.sync.sync_mode);
         updateStrength = false;
     }
@@ -127,17 +127,36 @@ XCamReturn RkAiqCamGroupAbayertnrV2HandleInt::getStrength(rk_aiq_bayertnr_streng
 
     if(pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
-        rk_aiq_uapi_camgroup_abayertnrV2_GetStrength(mAlgoCtx, &pStrength->percent );
+        rk_aiq_uapi_camgroup_abayertnrV2_GetStrength(mAlgoCtx, pStrength);
         pStrength->sync.done = true;
         mCfgMutex.unlock();
     } else {
         if(updateStrength) {
-            pStrength->percent = mNewStrength.percent;
+            *pStrength = mNewStrength;
             pStrength->sync.done = false;
         } else {
-            rk_aiq_uapi_camgroup_abayertnrV2_GetStrength(mAlgoCtx, &pStrength->percent);
+            rk_aiq_uapi_camgroup_abayertnrV2_GetStrength(mAlgoCtx, pStrength);
             pStrength->sync.done = true;
         }
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqCamGroupAbayertnrV2HandleInt::getInfo(rk_aiq_bayertnr_info_v2_t *pInfo) {
+    ENTER_ANALYZER_FUNCTION();
+    LOGD_ANR("%s:%d\n", __FUNCTION__, __LINE__);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if(pInfo->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_camgroup_abayertnrV2_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        rk_aiq_uapi_camgroup_abayertnrV2_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
     }
 
     EXIT_ANALYZER_FUNCTION();

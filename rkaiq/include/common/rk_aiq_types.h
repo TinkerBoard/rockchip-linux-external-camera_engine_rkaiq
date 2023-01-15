@@ -318,6 +318,7 @@ typedef struct {
     bool fl_strth_adj_sup;
     bool has_irc; /*< has ircutter */
     bool fl_ir_strth_adj_sup;
+    bool _is_1608_sensor;       /*< for sensor sync mode verify. */
     uint8_t is_multi_isp_mode;
     uint16_t multi_isp_extended_pixel;
     uint8_t reserved[13];

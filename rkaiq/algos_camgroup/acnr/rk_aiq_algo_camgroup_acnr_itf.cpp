@@ -116,6 +116,7 @@ static XCamReturn groupAcnrPrepare(RkAiqAlgoCom* params)
 
     if(CHECK_ISP_HW_V21()) {
         Acnr_Context_V1_t * acnr_contex_v1 = acnr_group_contex->acnr_contex_v1;
+        acnr_contex_v1->prepare_type = params->u.prepare.conf_type;
         if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
             // todo  update calib pars for surround view
 #if ACNR_USE_JSON_FILE_V1
@@ -170,7 +171,7 @@ static XCamReturn groupAcnrProcessing(const RkAiqAlgoCom* inparams, RkAiqAlgoRes
 
     //get cur ae exposure
     Acnr_ExpInfo_t stExpInfoV1;
-    memset(&stExpInfoV1, 0x00, sizeof(AcnrV2_ExpInfo_t));
+    memset(&stExpInfoV1, 0x00, sizeof(stExpInfoV1));
     stExpInfoV1.hdr_mode = 0; //pAnrProcParams->hdr_mode;
     stExpInfoV1.snr_mode = 0;
     for(int i = 0; i < 3; i++) {
@@ -189,7 +190,7 @@ static XCamReturn groupAcnrProcessing(const RkAiqAlgoCom* inparams, RkAiqAlgoRes
         if((rk_aiq_working_mode_t)procParaGroup->working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
             stExpInfoV1.hdr_mode = 0;
             stExpInfoV1.arAGain[0] = pCurExp->LinearExp.exp_real_params.analog_gain;
-            stExpInfoV1.arDGain[0] = pCurExp->LinearExp.exp_real_params.digital_gain;
+            stExpInfoV1.arDGain[0] = pCurExp->LinearExp.exp_real_params.digital_gain * pCurExp->LinearExp.exp_real_params.isp_dgain;
             stExpInfoV1.arTime[0] = pCurExp->LinearExp.exp_real_params.integration_time;
             stExpInfoV1.arIso[0] = stExpInfoV1.arAGain[0] * stExpInfoV1.arDGain[0] * 50;
 

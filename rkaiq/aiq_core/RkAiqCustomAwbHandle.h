@@ -18,7 +18,7 @@
 
 #include "algo_handlers/RkAiqAwbHandle.h"
 
-#if RKAIQ_HAVE_AWB_V21 || RKAIQ_HAVE_AWB_V32
+#if RKAIQ_HAVE_AWB_V20 || RKAIQ_HAVE_AWB_V21 || RKAIQ_HAVE_AWB_V32
 namespace RkCam {
 
 // awb

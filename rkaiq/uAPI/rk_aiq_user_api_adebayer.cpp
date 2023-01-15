@@ -17,6 +17,7 @@
 
 #include "RkAiqCamGroupHandleInt.h"
 #include "algo_handlers/RkAiqAdebayerHandle.h"
+#include "hwi/isp20/Isp20_module_dbg.h"
 
 RKAIQ_BEGIN_DECLARE
 

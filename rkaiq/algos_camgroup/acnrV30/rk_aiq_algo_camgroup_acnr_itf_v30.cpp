@@ -40,7 +40,7 @@ static XCamReturn groupAcnrV30CreateCtx(RkAiqAlgoContext **context, const AlgoCt
         acnr_group_contex = (CamGroup_AcnrV30_Contex_t*)malloc(sizeof(CamGroup_AcnrV30_Contex_t));
 #if ACNR_USE_JSON_FILE_V30
         AcnrV30_result_t ret_v30 = ACNRV30_RET_SUCCESS;
-        ret_v30 = Acnr_Init_V30(&(acnr_group_contex->acnr_contex_v30), (void *)cfgInt->s_calibv30);
+        ret_v30 = Acnr_Init_V30(&(acnr_group_contex->acnr_contex_v30), (void *)cfgInt->s_calibv2);
         if(ret_v30 != ACNRV30_RET_SUCCESS) {
             ret = XCAM_RETURN_ERROR_FAILED;
             LOGE_ANR("%s: Initializaion ANR failed (%d)\n", __FUNCTION__, ret);
@@ -56,7 +56,7 @@ static XCamReturn groupAcnrV30CreateCtx(RkAiqAlgoContext **context, const AlgoCt
         LOGE_ANR("%s: Initializaion group cnr failed (%d)\n", __FUNCTION__, ret);
     } else {
         // to do got acnrSurrViewClib and initinal paras for for surround view
-        acnr_group_contex->group_CalibV2.groupMethod = CalibDbV2_CAMGROUP_ACNRV30_METHOD_MEAN;// to do from json
+        acnr_group_contex->group_CalibV30.groupMethod = CalibDbV2_CAMGROUP_ACNRV30_METHOD_MEAN;// to do from json
         acnr_group_contex->camera_Num = cfgInt->camIdArrayLen;
 
         *context = (RkAiqAlgoContext *)(acnr_group_contex);
@@ -118,8 +118,8 @@ static XCamReturn groupAcnrV30Prepare(RkAiqAlgoCom* params)
         if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
             // todo  update calib pars for surround view
 #if ACNR_USE_JSON_FILE_V30
-            void *pCalibdbV30 = (void*)(para->s_calibv30);
-            CalibDbV30_CNRV30_t *cnr_v30 = (CalibDbV30_CNRV30_t*)(CALIBDBV30_GET_MODULE_PTR((void*)pCalibdbV30, cnr_v30));
+            void *pCalibdbV30 = (void*)(para->s_calibv2);
+            CalibDbV2_CNRV30_t *cnr_v30 = (CalibDbV2_CNRV30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibdbV30, cnr_v30));
             acnr_contex_v30->cnr_v30 = *cnr_v30;
             acnr_contex_v30->isIQParaUpdate = true;
             acnr_contex_v30->isReCalculate |= 1;
@@ -156,8 +156,8 @@ static XCamReturn groupAcnrV30Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
     int deltaIso = 0;
 
     //method error
-    if (acnr_group_contex->group_CalibV30.groupMethod <= CalibDbV30_CAMGROUP_ACNRV30_METHOD_MIN
-            ||  acnr_group_contex->group_CalibV30.groupMethod >=  CalibDbV30_CAMGROUP_ACNRV30_METHOD_MAX) {
+    if (acnr_group_contex->group_CalibV30.groupMethod <= CalibDbV2_CAMGROUP_ACNRV30_METHOD_MIN
+            ||  acnr_group_contex->group_CalibV30.groupMethod >=  CalibDbV2_CAMGROUP_ACNRV30_METHOD_MAX) {
         return (ret);
     }
 
@@ -219,16 +219,12 @@ static XCamReturn groupAcnrV30Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
                 stExpInfoV30.hdr_mode = 0;
                 LOGE_ANR("mode error\n");
             }
-            if(stExpInfoV30.arAGain[i] < 1.0) {
-                stExpInfoV30.arAGain[i] = 1.0;
-            }
-            if(stExpInfoV30.arDGain[i] < 1.0) {
-                stExpInfoV30.arDGain[i] = 1.0;
-            }
             stExpInfoV30.blc_ob_predgain = 1.0;
             for(int i = 0; i < 3; i++) {
-                stExpInfoV30.arAGain[i] = pCurExp->HdrExp[i].exp_real_params.analog_gain;
-                stExpInfoV30.arDGain[i] = pCurExp->HdrExp[i].exp_real_params.digital_gain;
+                stExpInfoV30.arAGain[i] = pCurExp->HdrExp[i].exp_real_params.analog_gain > 1.0f ?
+                                          pCurExp->HdrExp[i].exp_real_params.analog_gain : 1.0f;
+                stExpInfoV30.arDGain[i] = pCurExp->HdrExp[i].exp_real_params.digital_gain > 1.0f ?
+                                          pCurExp->HdrExp[i].exp_real_params.digital_gain : 1.0f;
                 stExpInfoV30.arTime[i] = pCurExp->HdrExp[i].exp_real_params.integration_time;
                 stExpInfoV30.arIso[i] = stExpInfoV30.arAGain[i] * stExpInfoV30.arDGain[i] * 50;
             }
@@ -247,7 +243,7 @@ static XCamReturn groupAcnrV30Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
         if(deltaIso > ACNRV30_RECALCULATE_DELTA_ISO) {
             acnr_contex_v30->isReCalculate |= 1;
         }
-        if(stExpInfoV30.blc_ob_predgain != acnr_contex_v30->stExpInfoV23.blc_ob_predgain) {
+        if(stExpInfoV30.blc_ob_predgain != acnr_contex_v30->stExpInfo.blc_ob_predgain) {
             acnr_contex_v30->isReCalculate |= 1;
         }
         if(acnr_contex_v30->isReCalculate) {

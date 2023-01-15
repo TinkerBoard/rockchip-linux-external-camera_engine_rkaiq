@@ -45,6 +45,7 @@ static void sample_ae_usage()
     printf("\t m) AE:         set hdr exp ratio.\n");
     printf("\t n) AE:         set linear route.\n");
     printf("\t o) AE:         set hdr mframe params.\n");
+    printf("\t p) AE:         get fps.\n");
 
     printf("\t W) AE:         test default mode.\n");
     printf("\t X) AE:         test sync mode.\n");
@@ -293,8 +294,20 @@ static int sample_is_fps_fix(const rk_aiq_sys_ctx_t* ctx, bool on, rk_aiq_uapi_m
     expSwAttr.sync.sync_mode = sync;
     expSwAttr.sync.done = false;
     expSwAttr.stAuto.stFrmRate.isFpsFix = on;
-    expSwAttr.stAuto.stFrmRate.FpsValue = 25; /*fps = 25*/
+    if(expSwAttr.stAuto.stFrmRate.isFpsFix)
+        expSwAttr.stAuto.stFrmRate.FpsValue = 20; /*Fix fps = 20*/
+    else
+        expSwAttr.stAuto.stFrmRate.FpsValue = 25; /*Auto fps max = 25*/
     ret = rk_aiq_user_api2_ae_setExpSwAttr(ctx, expSwAttr);
+
+    return 0;
+}
+static int sample_get_fps(const rk_aiq_sys_ctx_t* ctx, float* fps, rk_aiq_uapi_mode_sync_e sync)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    Uapi_ExpQueryInfo_t ExpResInfo;
+    ret = rk_aiq_user_api2_ae_queryExpResInfo(ctx, &ExpResInfo);
+    *fps = ExpResInfo.Fps;
 
     return 0;
 }
@@ -522,6 +535,7 @@ XCamReturn sample_ae_module (const void *arg)
 
     Uapi_ExpWin_t ExpWin;
     Uapi_ExpSwAttrV2_t expSwAttr;
+    float fps = 0.0f;
 
     do {
         sample_ae_usage ();
@@ -637,6 +651,10 @@ XCamReturn sample_ae_module (const void *arg)
         case 'o':
             sample_set_hdr_mframe_params(ctx, RK_AIQ_UAPI_MODE_DEFAULT);
             printf("set hdr mframe params\n\n");
+            break;
+        case 'p':
+            sample_get_fps(ctx, &fps, RK_AIQ_UAPI_MODE_DEFAULT);
+            printf("cur fps = %f\n\n", fps);
             break;
         // TEST SYNC MODE
         case 'W':

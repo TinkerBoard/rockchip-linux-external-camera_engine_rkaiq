@@ -123,8 +123,10 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
             memcpy(&pAdehazeHandle->AdehazeAtrrV12.stAuto, calibv2_adehaze_calib_V12,
                    sizeof(CalibDbV2_dehaze_v12_t));
 #endif
+        pAdehazeHandle->ifReCalcStAuto = true;
+    } else if (params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_CHANGERES) {
+        pAdehazeHandle->isCapture = true;
     }
-    pAdehazeHandle->ifReCalcStAuto = true;
 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;
@@ -157,7 +159,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     LOGD_ADEHAZE("/*************************Adehaze over******************/ \n");
 
     // proc res
-    pProcRes->AdehzeProcRes.enable = Enable;
+    pProcRes->AdehzeProcRes.enable = pAdehazeHandle->ProcRes.enable;
     pProcRes->AdehzeProcRes.update = !(pAdehazeHandle->byPassProc);
 #if RKAIQ_HAVE_DEHAZE_V10
     pProcRes->AdehzeProcRes.enable = true;

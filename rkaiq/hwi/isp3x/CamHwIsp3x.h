@@ -34,7 +34,7 @@ public:
     virtual ~CamHwIsp3x();
     virtual XCamReturn init(const char* sns_ent_name);
     virtual XCamReturn stop();
-    XCamReturn setIspParamsSync(uint32_t frameId);
+    XCamReturn setIspParamsSync();
 protected:
     virtual XCamReturn setIspConfig();
 private:

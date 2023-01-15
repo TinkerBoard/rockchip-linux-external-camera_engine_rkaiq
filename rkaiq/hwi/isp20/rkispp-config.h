@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/* SPDX-License-Identifier: ((GPL-2.0+ WITH Linux-syscall-note) OR MIT)
  *
  * Copyright (C) 2019 Rockchip Electronics Co., Ltd.
  */
@@ -9,7 +9,7 @@
 #include <linux/types.h>
 #include <linux/v4l2-controls.h>
 
-#define ISPP_API_VERSION        KERNEL_VERSION(1, 5, 1)
+#define ISPP_API_VERSION		KERNEL_VERSION(1, 8, 0)
 
 #ifndef BIT
 #define BIT(x) (~0 & (1 << x))
@@ -39,76 +39,79 @@ typedef signed long long s64;
 typedef unsigned long long u64;
 #endif
 
-#define ISPP_ID_TNR         (0)
-#define ISPP_ID_NR          (1)
-#define ISPP_ID_SHP         (2)
-#define ISPP_ID_FEC         (3)
-#define ISPP_ID_ORB         (4)
-#define ISPP_ID_MAX         (5)
+#define ISPP_ID_TNR			(0)
+#define ISPP_ID_NR			(1)
+#define ISPP_ID_SHP			(2)
+#define ISPP_ID_FEC			(3)
+#define ISPP_ID_ORB			(4)
+#define ISPP_ID_MAX			(5)
 
-#define ISPP_MODULE_TNR         BIT(ISPP_ID_TNR)//2TO1
-#define ISPP_MODULE_NR          BIT(ISPP_ID_NR)
-#define ISPP_MODULE_SHP         BIT(ISPP_ID_SHP)
-#define ISPP_MODULE_FEC         BIT(ISPP_ID_FEC)//CALIBRATION
-#define ISPP_MODULE_ORB         BIT(ISPP_ID_ORB)
+#define ISPP_MODULE_TNR			BIT(ISPP_ID_TNR)//2TO1
+#define ISPP_MODULE_NR			BIT(ISPP_ID_NR)
+#define ISPP_MODULE_SHP			BIT(ISPP_ID_SHP)
+#define ISPP_MODULE_FEC			BIT(ISPP_ID_FEC)//CALIBRATION
+#define ISPP_MODULE_ORB			BIT(ISPP_ID_ORB)
 //extra function
-#define ISPP_MODULE_TNR_3TO1        (BIT(16) | ISPP_MODULE_TNR)
-#define ISPP_MODULE_FEC_ST      (BIT(17) | ISPP_MODULE_FEC)//STABILIZATION
+#define ISPP_MODULE_TNR_3TO1		(BIT(16) | ISPP_MODULE_TNR)
+#define ISPP_MODULE_FEC_ST		(BIT(17) | ISPP_MODULE_FEC)//STABILIZATION
 
-#define TNR_SIGMA_CURVE_SIZE        17
-#define TNR_LUMA_CURVE_SIZE     6
-#define TNR_GFCOEF6_SIZE        6
-#define TNR_GFCOEF3_SIZE        3
-#define TNR_SCALE_YG_SIZE       4
-#define TNR_SCALE_YL_SIZE       3
-#define TNR_SCALE_CG_SIZE       3
-#define TNR_SCALE_Y2CG_SIZE     3
-#define TNR_SCALE_CL_SIZE       2
-#define TNR_SCALE_Y2CL_SIZE     3
-#define TNR_WEIGHT_Y_SIZE       3
+#define TNR_SIGMA_CURVE_SIZE		17
+#define TNR_LUMA_CURVE_SIZE		6
+#define TNR_GFCOEF6_SIZE		6
+#define TNR_GFCOEF3_SIZE		3
+#define TNR_SCALE_YG_SIZE		4
+#define TNR_SCALE_YL_SIZE		3
+#define TNR_SCALE_CG_SIZE		3
+#define TNR_SCALE_Y2CG_SIZE		3
+#define TNR_SCALE_CL_SIZE		2
+#define TNR_SCALE_Y2CL_SIZE		3
+#define TNR_WEIGHT_Y_SIZE		3
 
-#define NR_UVNR_UVGAIN_SIZE     2
-#define NR_UVNR_T1FLT_WTQ_SIZE      8
-#define NR_UVNR_T2GEN_WTQ_SIZE      4
-#define NR_UVNR_T2FLT_WT_SIZE       3
-#define NR_YNR_SGM_DX_SIZE      16
-#define NR_YNR_SGM_Y_SIZE       17
-#define NR_YNR_HWEIT_D_SIZE     20
-#define NR_YNR_HGRAD_Y_SIZE     24
-#define NR_YNR_HSTV_Y_SIZE      17
-#define NR_YNR_CI_SIZE          4
-#define NR_YNR_LGAIN_MIN_SIZE       4
-#define NR_YNR_LWEIT_FLT_SIZE       4
-#define NR_YNR_HGAIN_SGM_SIZE       4
-#define NR_YNR_HWEIT_SIZE       4
-#define NR_YNR_LWEIT_CMP_SIZE       2
-#define NR_YNR_ST_SCALE_SIZE        3
+#define NR_UVNR_UVGAIN_SIZE		2
+#define NR_UVNR_T1FLT_WTQ_SIZE		8
+#define NR_UVNR_T2GEN_WTQ_SIZE		4
+#define NR_UVNR_T2FLT_WT_SIZE		3
+#define NR_YNR_SGM_DX_SIZE		16
+#define NR_YNR_SGM_Y_SIZE		17
+#define NR_YNR_HWEIT_D_SIZE		20
+#define NR_YNR_HGRAD_Y_SIZE		24
+#define NR_YNR_HSTV_Y_SIZE		17
+#define NR_YNR_CI_SIZE			4
+#define NR_YNR_LGAIN_MIN_SIZE		4
+#define NR_YNR_LWEIT_FLT_SIZE		4
+#define NR_YNR_HGAIN_SGM_SIZE		4
+#define NR_YNR_HWEIT_SIZE		4
+#define NR_YNR_LWEIT_CMP_SIZE		2
+#define NR_YNR_ST_SCALE_SIZE		3
 
-#define SHP_PBF_KERNEL_SIZE     3
-#define SHP_MRF_KERNEL_SIZE     6
-#define SHP_MBF_KERNEL_SIZE     12
-#define SHP_HRF_KERNEL_SIZE     6
-#define SHP_HBF_KERNEL_SIZE     3
-#define SHP_EDGE_COEF_SIZE      3
-#define SHP_EDGE_SMOTH_SIZE     3
-#define SHP_EDGE_GAUS_SIZE      6
-#define SHP_DOG_KERNEL_SIZE     6
-#define SHP_LUM_POINT_SIZE      6
-#define SHP_SIGMA_SIZE          8
-#define SHP_LUM_CLP_SIZE        8
-#define SHP_LUM_MIN_SIZE        8
-#define SHP_EDGE_LUM_THED_SIZE      8
-#define SHP_CLAMP_SIZE          8
-#define SHP_DETAIL_ALPHA_SIZE       8
+#define SHP_PBF_KERNEL_SIZE		3
+#define SHP_MRF_KERNEL_SIZE		6
+#define SHP_MBF_KERNEL_SIZE		12
+#define SHP_HRF_KERNEL_SIZE		6
+#define SHP_HBF_KERNEL_SIZE		3
+#define SHP_EDGE_COEF_SIZE		3
+#define SHP_EDGE_SMOTH_SIZE		3
+#define SHP_EDGE_GAUS_SIZE		6
+#define SHP_DOG_KERNEL_SIZE		6
+#define SHP_LUM_POINT_SIZE		6
+#define SHP_SIGMA_SIZE			8
+#define SHP_LUM_CLP_SIZE		8
+#define SHP_LUM_MIN_SIZE		8
+#define SHP_EDGE_LUM_THED_SIZE		8
+#define SHP_CLAMP_SIZE			8
+#define SHP_DETAIL_ALPHA_SIZE		8
 
-#define ORB_DATA_NUM            10000
-#define ORB_BRIEF_NUM           15
-#define ORB_DUMMY_NUM           13
+#define ORB_DATA_NUM			10000
+#define ORB_BRIEF_NUM			15
+#define ORB_DUMMY_NUM			13
 
+#define FEC_MESH_BUF_MAX		7
 #define FEC_MESH_XY_POINT_SIZE      6
 #define FEC_MESH_XY_NUM         131072
 #define FEC_MESH_BUF_NUM		2
+
 #define MAX_BUF_IDXFD_NUM		64
+
 /************VIDIOC_PRIVATE*************/
 #define RKISPP_CMD_SET_INIT_MODULE	\
 	_IOW('V', BASE_VIDIOC_PRIVATE + 0, int)
@@ -125,12 +128,17 @@ typedef unsigned long long u64;
 #define RKISPP_CMD_GET_TNRBUF_FD	\
 	_IOR('V', BASE_VIDIOC_PRIVATE + 4, struct rkispp_buf_idxfd)
 
-#define RKISPP_CMD_GET_NRBUF_FD     \
-    _IOR('V', BASE_VIDIOC_PRIVATE + 5, struct rkispp_buf_idxfd)
+#define RKISPP_CMD_GET_NRBUF_FD		\
+	_IOR('V', BASE_VIDIOC_PRIVATE + 5, struct rkispp_buf_idxfd)
 
 /**independent fec video**/
 #define RKISPP_CMD_FEC_IN_OUT \
 	_IOW('V', BASE_VIDIOC_PRIVATE + 10, struct rkispp_fec_in_out)
+#define RKISPP_CMD_FEC_BUF_ADD \
+	_IOW('V', BASE_VIDIOC_PRIVATE + 11, int)
+#define RKISPP_CMD_FEC_BUF_DEL \
+	_IOW('V', BASE_VIDIOC_PRIVATE + 12, int)
+
 /************EVENT_PRIVATE**************/
 #define RKISPP_V4L2_EVENT_TNR_COMPLETE  \
 	(V4L2_EVENT_PRIVATE_START + 3)
@@ -147,15 +155,18 @@ struct rkispp_fec_in_out {
 	int mesh_yint_fd;
 	int mesh_yfra_fd;
 };
+
 struct rkispp_buf_idxfd {
 	u32 buf_num;
 	u32 index[MAX_BUF_IDXFD_NUM];
 	s32 dmafd[MAX_BUF_IDXFD_NUM];
 } __attribute__ ((packed));
+
 struct rkispp_trigger_mode {
 	u32 module;
 	u32 on;
 } __attribute__ ((packed));
+
 struct rkispp_tnr_config {
 	u8 opty_en;
 	u8 optc_en;
@@ -183,6 +194,7 @@ struct rkispp_tnr_config {
 	u8 gfcoef_cl0[TNR_GFCOEF6_SIZE];
 	u8 gfcoef_cl1[TNR_GFCOEF3_SIZE];
 	u8 weight_y[TNR_WEIGHT_Y_SIZE];
+
 	u16 glb_gain_cur __attribute__((aligned(2)));
 	u16 glb_gain_nxt;
 	u16 glb_gain_cur_div;
@@ -201,10 +213,12 @@ struct rkispp_tnr_config {
 	u16 scale_cl[TNR_SCALE_CL_SIZE];
 	u16 scale_y2cl[TNR_SCALE_Y2CL_SIZE];
 } __attribute__ ((packed));
+
 struct rkispp_nr_config {
 	u8 uvnr_step1_en;
 	u8 uvnr_step2_en;
 	u8 nr_gain_en;
+	u8 uvnr_sd32_self_en;
 	u8 uvnr_nobig_en;
 	u8 uvnr_big_en;
 	u8 uvnr_gain_1sigma;
@@ -238,6 +252,7 @@ struct rkispp_nr_config {
 	u8 ynr_hstrength;
 	u8 ynr_lweit_cmp[NR_YNR_LWEIT_CMP_SIZE];
 	u8 ynr_lmaxgain_lv4;
+
 	u16 uvnr_t1flt_msigma __attribute__((aligned(2)));
 	u16 uvnr_t2gen_msigma;
 	u16 uvnr_t2flt_msigma;
@@ -247,6 +262,7 @@ struct rkispp_nr_config {
 	u16 ynr_hstv_y[NR_YNR_HSTV_Y_SIZE];
 	u16 ynr_st_scale[NR_YNR_ST_SCALE_SIZE];
 } __attribute__ ((packed));
+
 struct rkispp_sharp_config {
 	u8 rotation;
 	u8 scl_down_v;
@@ -285,6 +301,7 @@ struct rkispp_sharp_config {
 	u8 clamp_pos[SHP_CLAMP_SIZE];
 	u8 clamp_neg[SHP_CLAMP_SIZE];
 	u8 detail_alpha[SHP_DETAIL_ALPHA_SIZE];
+
 	u16 hbf_ratio __attribute__((aligned(2)));
 	u16 smoth_th4;
 	u16 l_alpha;
@@ -292,20 +309,25 @@ struct rkispp_sharp_config {
 	u16 rfl_ratio;
 	u16 rfh_ratio;
 } __attribute__ ((packed));
+
 enum rkispp_fecbuf_stat {
 	FEC_BUF_INIT = 0,
 	FEC_BUF_WAIT2CHIP,
 	FEC_BUF_CHIPINUSE,
 };
+
 struct rkispp_fecbuf_info {
-	s32 buf_fd[FEC_MESH_BUF_NUM];
-	u32 buf_size[FEC_MESH_BUF_NUM];
+	s32 buf_fd[FEC_MESH_BUF_MAX];
+	u32 buf_size[FEC_MESH_BUF_MAX];
 } __attribute__ ((packed));
+
 struct rkispp_fecbuf_size {
 	u32 meas_width;
 	u32 meas_height;
 	u32 meas_mode;
+	int buf_cnt;
 } __attribute__ ((packed));
+
 struct rkispp_fec_head {
 	enum rkispp_fecbuf_stat stat;
 	u32 meshxf_oft;
@@ -313,6 +335,7 @@ struct rkispp_fec_head {
 	u32 meshxi_oft;
 	u32 meshyi_oft;
 } __attribute__ ((packed));
+
 struct rkispp_fec_config {
 	u8 mesh_density;
 	u8 crop_en;
@@ -321,15 +344,18 @@ struct rkispp_fec_config {
 	u32 mesh_size __attribute__((aligned(4)));
 	s32 buf_fd;
 } __attribute__ ((packed));
+
 struct rkispp_orb_config {
 	u8 limit_value;
 	u32 max_feature __attribute__((aligned(4)));
 } __attribute__ ((packed));
+
 struct rkispp_buf_info {
 	//s32 fd;
 	u32 index;
 	u32 size;
 } __attribute__ ((packed));
+
 /**
  * struct rkispp_params_cfghead - Rockchip ISPP Input Parameters Meta Data
  *
@@ -342,36 +368,45 @@ struct rkispp_params_cfghead {
 	u32 module_en_update;
 	u32 module_ens;
 	u32 module_cfg_update;
+
 	u32 frame_id;
 } __attribute__ ((packed));
+
 /**
  * struct rkispp_params_tnrcfg - Rockchip ISPP Input Parameters Meta Data
  */
 struct rkispp_params_tnrcfg {
 	struct rkispp_params_cfghead head;
+
 	struct rkispp_tnr_config tnr_cfg;
 	//struct rkispp_buf_info gain;
 	//struct rkispp_buf_info image;
 } __attribute__ ((packed));
+
 /**
  * struct rkispp_params_nrcfg - Rockchip ISPP Input Parameters Meta Data
  */
 struct rkispp_params_nrcfg {
 	struct rkispp_params_cfghead head;
+
 	struct rkispp_nr_config nr_cfg;
 	struct rkispp_sharp_config shp_cfg;
 	struct rkispp_orb_config orb_cfg;
+
 	struct rkispp_buf_info gain;
 	//struct rkispp_buf_info image;
 } __attribute__ ((packed));
+
 /**
  * struct rkispp_params_feccfg - Rockchip ISPP Input Parameters Meta Data
  */
 struct rkispp_params_feccfg {
 	struct rkispp_params_cfghead head;
+
 	struct rkispp_fec_config fec_cfg;
 	struct rkispp_buf_info image;
 } __attribute__ ((packed));
+
 struct rkispp_orb_data {
 	u8 brief[ORB_BRIEF_NUM];
 	u32 y : 13;
@@ -379,6 +414,7 @@ struct rkispp_orb_data {
 	u32 dmy1 : 6;
 	u8 dmy2[ORB_DUMMY_NUM];
 } __attribute__ ((packed));
+
 /**
  * struct rkispp_stats_nrbuf - Rockchip ISPP Statistics
  *
@@ -388,11 +424,14 @@ struct rkispp_orb_data {
  */
 struct rkispp_stats_nrbuf {
 	struct rkispp_orb_data data[ORB_DATA_NUM];
+
 	u32 total_num __attribute__((aligned(4)));
 	u32 meas_type;
 	u32 frame_id;
+
 	struct rkispp_buf_info image;
 } __attribute__ ((packed));
+
 /**
  * struct rkispp_stats_tnrbuf - Rockchip ISPP Statistics
  *
@@ -402,6 +441,7 @@ struct rkispp_stats_nrbuf {
 struct rkispp_stats_tnrbuf {
 	u32 meas_type;
 	u32 frame_id;
+
 	struct rkispp_buf_info gain;
 	struct rkispp_buf_info gainkg;
 	//struct rkispp_buf_info image;

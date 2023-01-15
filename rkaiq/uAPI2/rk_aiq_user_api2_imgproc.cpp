@@ -2409,10 +2409,12 @@ XCamReturn rk_aiq_uapi2_setMSpaNRStrth(const rk_aiq_sys_ctx_t* ctx, bool on, uns
     if (CHECK_ISP_HW_V30()) {
         rk_aiq_ynr_strength_v3_t ynrStrenght;
         ynrStrenght.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        ynrStrenght.strength_enable = true;
         ynrStrenght.percent = level / 100.0;
         ret = rk_aiq_user_api2_aynrV3_SetStrength(ctx, &ynrStrenght);
         rk_aiq_bayer2dnr_strength_v2_t bayer2dnrV2Strenght;
         bayer2dnrV2Strenght.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        bayer2dnrV2Strenght.strength_enable = true;
         bayer2dnrV2Strenght.percent = level / 100.0;
         ret = rk_aiq_user_api2_abayer2dnrV2_SetStrength(ctx, &bayer2dnrV2Strenght);
     }
@@ -2519,6 +2521,7 @@ XCamReturn rk_aiq_uapi2_setMTNRStrth(const rk_aiq_sys_ctx_t* ctx, bool on, unsig
     if (CHECK_ISP_HW_V30()) {
         rk_aiq_bayertnr_strength_v2_t bayertnrV2Strenght;
         bayertnrV2Strenght.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        bayertnrV2Strenght.strength_enable = true;
         bayertnrV2Strenght.percent = level / 100.0;
         ret = rk_aiq_user_api2_abayertnrV2_SetStrength(ctx, &bayertnrV2Strenght);
     }
@@ -2619,6 +2622,7 @@ XCamReturn rk_aiq_uapi2_setSharpness(const rk_aiq_sys_ctx_t* ctx, unsigned int l
     if (CHECK_ISP_HW_V30()) {
         rk_aiq_sharp_strength_v4_t sharpV4Strenght;
         sharpV4Strenght.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        sharpV4Strenght.strength_enable = true;
         sharpV4Strenght.percent = fPercent;
         ret = rk_aiq_user_api2_asharpV4_SetStrength(ctx, &sharpV4Strenght);
     }
@@ -3344,6 +3348,26 @@ XCamReturn rk_aiq_uapi2_setAngleZ(const rk_aiq_sys_ctx_t* ctx, float angleZ)
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     IMGPROC_FUNC_ENTER
     ret = rk_aiq_user_api2_af_setAngleZ(ctx, angleZ);
+    IMGPROC_FUNC_EXIT
+
+    return ret;
+}
+
+XCamReturn rk_aiq_uapi2_getCustomAfRes(const rk_aiq_sys_ctx_t* ctx, rk_tool_customAf_res_t *attr)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    IMGPROC_FUNC_ENTER
+    ret = rk_aiq_user_api2_af_getCustomAfRes(ctx, attr);
+    IMGPROC_FUNC_EXIT
+
+    return ret;
+}
+
+XCamReturn rk_aiq_uapi2_setCustomAfRes(const rk_aiq_sys_ctx_t* ctx, rk_tool_customAf_res_t *attr)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    IMGPROC_FUNC_ENTER
+    ret = rk_aiq_user_api2_af_setCustomAfRes(ctx, attr);
     IMGPROC_FUNC_EXIT
 
     return ret;
@@ -4159,5 +4183,47 @@ XCamReturn rk_aiq_uapi2_getColorMode(const rk_aiq_sys_ctx_t* ctx, unsigned int *
     return ret;
 }
 
+XCamReturn rk_aiq_uapi2_setGrayMode(const rk_aiq_sys_ctx_t* ctx, rk_aiq_gray_mode_t mode)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    if (ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)ctx;
+        for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+            if (!camCtx)
+                continue;
+
+            ret = camCtx->_analyzer->setGrayMode(mode);
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif
+    } else {
+        ret = ctx->_analyzer->setGrayMode(mode);
+    }
+
+    return ret;
+}
+
+rk_aiq_gray_mode_t rk_aiq_uapi2_getGrayMode(const rk_aiq_sys_ctx_t* ctx)
+{
+    if (ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t *)ctx;
+        for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+            if (!camCtx)
+                continue;
+
+            return camCtx->_analyzer->getGrayMode();
+        }
+#else
+        return RK_AIQ_GRAY_MODE_OFF;
+#endif
+    } else {
+        return ctx->_analyzer->getGrayMode();
+    }
+
+    return RK_AIQ_GRAY_MODE_OFF;
+}
 
 RKAIQ_END_DECLARE

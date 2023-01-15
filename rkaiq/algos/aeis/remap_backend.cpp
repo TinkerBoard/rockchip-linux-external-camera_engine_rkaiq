@@ -201,10 +201,10 @@ FecMeshBuffer* FecRemapBackend::GetPendingHwResult() {
                       [&](const std::unique_ptr<FecMeshBuffer>& p) {
                           if (p->State[0] == fec_hw_mesh_used_by_hardware ||
                               p->State[0] == fec_mesh_skipped) {
-                              if (p->FrameId != -1 && p->FrameId <= last_result_id_) {
+                              if (p->FrameId != (uint32_t)(-1) && p->FrameId <= last_result_id_) {
                                   LOGW_AEIS("Get pending result id %u PASSED !!!", p->FrameId);
                                   p->State[0] = fec_mesh_available;
-                              } else if (last_result_id_ != -1 && p->FrameId - last_result_id_ > 1) {
+                              } else if (last_result_id_ != (uint32_t)(-1) && p->FrameId - last_result_id_ > 1) {
                                   LOGV_AEIS("pending result id %u in FUTURE!!!", p->FrameId);
                               } else {
                                   if (min_id >= p->FrameId) {

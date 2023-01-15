@@ -37,11 +37,11 @@ EisImuData::EisImuData(std::shared_ptr<EisImuAdaptor> imu, mems_sensor_type_t ty
 
 EisImuData::~EisImuData() { imu_->FreeData(data_); }
 
-const mems_sensor_type_t EisImuData::GetType() { return type_; }
+mems_sensor_type_t EisImuData::GetType() const { return type_; }
 
-const mems_sensor_event_t* EisImuData::GetData() { return data_; }
+mems_sensor_event_t* EisImuData::GetData() const { return data_; }
 
-const size_t EisImuData::GetCount() { return count_; }
+size_t EisImuData::GetCount() const { return count_; }
 
 EisImuAdaptor::EisImuAdaptor(const rk_aiq_mems_sensor_intf_t intf, const mems_sensor_type_t type)
     : intf_(intf), type_(type), ctx_(nullptr), handle_(nullptr) {

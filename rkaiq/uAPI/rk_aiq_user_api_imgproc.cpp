@@ -1671,14 +1671,17 @@ XCamReturn rk_aiq_uapi_setANRStrth(const rk_aiq_sys_ctx_t* ctx, unsigned int lev
         sync.sync_mode =  RK_AIQ_UAPI_MODE_SYNC;
         rk_aiq_ynr_strength_v3_t ynrStrenght;
         ynrStrenght.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        ynrStrenght.strength_enable = true;
         ynrStrenght.percent = level / 100.0;
         ret = rk_aiq_user_api_aynrV3_SetStrength(ctx, &ynrStrenght);
         rk_aiq_bayer2dnr_strength_v2_t bayer2dnrV2Strenght;
         bayer2dnrV2Strenght.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        bayer2dnrV2Strenght.strength_enable = true;
         bayer2dnrV2Strenght.percent = level / 100.0;
         ret = rk_aiq_user_api_abayer2dnrV2_SetStrength(ctx, &bayer2dnrV2Strenght);
         rk_aiq_bayertnr_strength_v2_t bayertnrV2Strenght;
         bayertnrV2Strenght.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        bayertnrV2Strenght.strength_enable = true;
         bayertnrV2Strenght.percent = level / 100.0;
         ret = rk_aiq_user_api_abayertnrV2_SetStrength(ctx, &bayertnrV2Strenght);
     }
@@ -1784,10 +1787,12 @@ XCamReturn rk_aiq_uapi_setMSpaNRStrth(const rk_aiq_sys_ctx_t* ctx, bool on, unsi
         sync.sync_mode =  RK_AIQ_UAPI_MODE_SYNC;
         rk_aiq_ynr_strength_v3_t ynrStrenght;
         ynrStrenght.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        ynrStrenght.strength_enable = true;
         ynrStrenght.percent = level / 100.0;
         ret = rk_aiq_user_api_aynrV3_SetStrength(ctx, &ynrStrenght);
         rk_aiq_bayer2dnr_strength_v2_t bayer2dnrV2Strenght;
         bayer2dnrV2Strenght.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        bayer2dnrV2Strenght.strength_enable = true;
         bayer2dnrV2Strenght.percent = level / 100.0;
         ret = rk_aiq_user_api_abayer2dnrV2_SetStrength(ctx, &bayer2dnrV2Strenght);
     }
@@ -1889,6 +1894,7 @@ XCamReturn rk_aiq_uapi_setMTNRStrth(const rk_aiq_sys_ctx_t* ctx, bool on, unsign
     if (CHECK_ISP_HW_V30()) {
         rk_aiq_bayertnr_strength_v2_t bayertnrV2Strenght;
         bayertnrV2Strenght.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        bayertnrV2Strenght.strength_enable = true;
         bayertnrV2Strenght.percent = level / 100.0;
         ret = rk_aiq_user_api_abayertnrV2_SetStrength(ctx, &bayertnrV2Strenght);
     }
@@ -2367,6 +2373,7 @@ XCamReturn rk_aiq_uapi_setSharpness(const rk_aiq_sys_ctx_t* ctx, unsigned int le
     if (CHECK_ISP_HW_V30()) {
         rk_aiq_sharp_strength_v4_t sharpV4Strenght;
         sharpV4Strenght.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        sharpV4Strenght.strength_enable = true;
         sharpV4Strenght.percent = fPercent;
         ret = rk_aiq_user_api_asharpV4_SetStrength(ctx, &sharpV4Strenght);
     }

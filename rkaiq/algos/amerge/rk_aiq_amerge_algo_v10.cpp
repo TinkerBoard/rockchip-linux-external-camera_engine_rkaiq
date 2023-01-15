@@ -110,7 +110,7 @@ void AmergeGetEnvLvV10(AmergeContext_t* pAmergeCtx, AecPreResult_t AecHdrPreResu
             pAmergeCtx->NextData.CtrlData.ExpoData.EnvLv = AecHdrPreResult.GlobalEnvLv[1];
             break;
         default:
-            LOGE_AMERGE("%s:  Wrong frame number in HDR mode!!!\n", __FUNCTION__);
+            LOGE_AMERGE("%s(%d):  Wrong frame number in HDR mode!!!\n", __FUNCTION__, __LINE__);
             break;
     }
 
@@ -312,7 +312,7 @@ void AmergeTuningProcessing(AmergeContext_t* pAmergeCtx) {
         pAmergeCtx->NextData.HandleData.Merge_v10.MDCurveMS_offset =
             pAmergeCtx->mergeAttrV10.stManual.MDCurve.MS_offset;
     } else
-        LOGE_AMERGE("%s:  Amerge wrong mode!!!\n", __FUNCTION__);
+        LOGE_AMERGE("%s(%d): Amerge wrong mode!!!\n", __FUNCTION__, __LINE__);
 
     LOGD_AMERGE("%s: Current OECurve_smooth:%f OECurve_offset:%f \n", __FUNCTION__,
                 pAmergeCtx->NextData.HandleData.Merge_v10.OECurve_smooth,
@@ -590,7 +590,7 @@ XCamReturn AmergeRelease(AmergeContext_t* pAmergeCtx) {
 
     result = AmergeStop(pAmergeCtx);
     if (result != XCAM_RETURN_NO_ERROR) {
-        LOGE_AMERGE("%s: Amerge Stop() failed!\n", __FUNCTION__);
+        LOGE_AMERGE("%s(%d): Amerge Stop() failed!\n", __FUNCTION__, __LINE__);
         return (result);
     }
 

@@ -432,6 +432,7 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
 
         // others
         pAdrcCtx->NextData.Others.OutPutLongFrame =
+            pAdrcCtx->NextData.AEData.LongFrmMode ||
             pAdrcCtx->drcAttrV10.stAuto.DrcTuningPara.OutPutLongFrame;
         pAdrcCtx->NextData.Others.curPixWeit =
             pAdrcCtx->drcAttrV10.stAuto.DrcTuningPara.LocalTMOSetting.curPixWeit;
@@ -491,7 +492,8 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
                 pAdrcCtx->drcAttrV10.stManual.CompressSetting.Manual_curve[i];
 
         // others
-        pAdrcCtx->NextData.Others.OutPutLongFrame = pAdrcCtx->drcAttrV10.stManual.OutPutLongFrame;
+        pAdrcCtx->NextData.Others.OutPutLongFrame =
+            pAdrcCtx->NextData.AEData.LongFrmMode || pAdrcCtx->drcAttrV10.stManual.OutPutLongFrame;
         pAdrcCtx->NextData.Others.curPixWeit =
             pAdrcCtx->drcAttrV10.stManual.LocalTMOSetting.curPixWeit;
         pAdrcCtx->NextData.Others.preFrameWeit =
@@ -563,36 +565,37 @@ void AdrcExpoParaProcessing(AdrcContext_t* pAdrcCtx) {
 
     // get sw_drc_compres_scl
     float adrc_gain      = pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v10.sw_drc_adrc_gain;
-    float log_ratio2     = log(pAdrcCtx->NextData.AEData.L2S_Ratio * adrc_gain) / log(2.0f) + 12;
+    float log_ratio2     = log(pAdrcCtx->NextData.AEData.L2S_Ratio * adrc_gain) / log(2.0f) + 12.0f;
     float offsetbits_int = (float)(pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v10.sw_drc_offset_pow2);
-    float offsetbits     = offsetbits_int * pow(2, MFHDR_LOG_Q_BITS);
-    float hdrbits        = log_ratio2 * pow(2, MFHDR_LOG_Q_BITS);
+    float offsetbits     = offsetbits_int * (1 << MFHDR_LOG_Q_BITS);
+    float hdrbits        = log_ratio2 * (1 << MFHDR_LOG_Q_BITS);
     float hdrvalidbits   = hdrbits - offsetbits;
-    float compres_scl    = (12 * pow(2, MFHDR_LOG_Q_BITS * 2)) / hdrvalidbits;
+    float compres_scl    = (12.0f * (1 << (MFHDR_LOG_Q_BITS * 2))) / hdrvalidbits;
     pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v10.sw_drc_compres_scl = (int)(compres_scl);
 
     // get sw_drc_min_ogain
     if (pAdrcCtx->NextData.Others.OutPutLongFrame)
         pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v10.sw_drc_min_ogain = 1 << 15;
     else {
-        float sw_drc_min_ogain = 1 / (pAdrcCtx->NextData.AEData.L2S_Ratio * adrc_gain);
+        float sw_drc_min_ogain = 1.0f / (pAdrcCtx->NextData.AEData.L2S_Ratio * adrc_gain);
         pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v10.sw_drc_min_ogain =
-            (int)(sw_drc_min_ogain * pow(2, 15) + 0.5);
+            (int)(sw_drc_min_ogain * (1 << 15) + 0.5f);
     }
 
     // get sw_drc_compres_y
     if (pAdrcCtx->NextData.HandleData.Drc_v10.Mode == COMPRESS_AUTO) {
         float curveparam, curveparam2, curveparam3, tmp;
-        float luma2[17] = {0,     1024,  2048,  3072,  4096,  5120,  6144,  7168, 8192,
-                           10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576};
+        float luma2[17] = {0.0f,     1024.0f,  2048.0f,  3072.0f,  4096.0f,  5120.0f,
+                           6144.0f,  7168.0f,  8192.0f,  10240.0f, 12288.0f, 14336.0f,
+                           16384.0f, 18432.0f, 20480.0f, 22528.0f, 24576.0f};
         float curveTable[17];
-        float dstbits   = ISP_RAW_BIT * pow(2, MFHDR_LOG_Q_BITS);
+        float dstbits   = ISP_RAW_BIT * (1 << MFHDR_LOG_Q_BITS);
         float validbits = dstbits - offsetbits;
         for (int i = 0; i < ISP21_DRC_Y_NUM; ++i) {
-            curveparam    = (float)(validbits - 0) / (hdrvalidbits - validbits + pow(2, -6));
-            curveparam2   = validbits * (1 + curveparam);
+            curveparam  = (float)(validbits - 0.0f) / (hdrvalidbits - validbits + pow(2.0f, -6.0f));
+            curveparam2 = validbits * (1.0f + curveparam);
             curveparam3   = hdrvalidbits * curveparam;
-            tmp           = luma2[i] * hdrvalidbits / 24576;
+            tmp           = luma2[i] * hdrvalidbits / 24576.0f;
             curveTable[i] = (tmp * curveparam2 / (tmp + curveparam3));
             pAdrcCtx->AdrcProcRes.DrcProcRes.Drc_v10.sw_drc_compres_y[i] = (int)(curveTable[i]);
         }

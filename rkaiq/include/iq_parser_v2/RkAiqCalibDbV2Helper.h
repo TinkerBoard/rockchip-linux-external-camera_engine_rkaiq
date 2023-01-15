@@ -32,7 +32,7 @@ static calibdb_ctx_member_offset_info_t info_CamCalibDbV2ContextIsp20_t[] = {
     {"ablc_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP20(ablc_calib)},
     {"adegamma_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP20(adegamma_calib)},
     {"agic_calib_v20", CALIBV2_MODULE_RELATIVE_OFFSET_ISP20(agic_calib_v20)},
-    {"adehaze_calib_v20", CALIBV2_MODULE_RELATIVE_OFFSET_ISP20(adehaze_calib_v20)},
+    {"adehaze_calib_v10", CALIBV2_MODULE_RELATIVE_OFFSET_ISP20(adehaze_calib_v10)},
     {"adpcc_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP20(adpcc_calib)},
     {"amerge_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP20(amerge_calib_v10)},
     {"atmo_calib", CALIBV2_MODULE_RELATIVE_OFFSET_ISP20(atmo_calib)},

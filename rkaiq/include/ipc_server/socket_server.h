@@ -55,7 +55,7 @@ public:
   virtual ~SocketServer();
 
   int Send(int cilent_socket, char *buff, int size);
-  int Process(rk_aiq_sys_ctx_t *aiq_ctx);
+  int Process(rk_aiq_sys_ctx_t *aiq_ctx, int camid);
 
   void RegisterRecvCallBack(RecvCallBack cb) { callback_ = cb; }
   void UnRegisterRecvCallBack() { callback_ = nullptr; }

@@ -36,11 +36,11 @@ static XCamReturn groupAbayer2dnrV23CreateCtx(RkAiqAlgoContext **context, const 
     AlgoCtxInstanceCfgCamGroup *cfgInt = (AlgoCtxInstanceCfgCamGroup*)cfg;
 
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32()) {
         abayernr_group_contex = (CamGroup_Abayer2dnrV23_Contex_t*)malloc(sizeof(CamGroup_Abayer2dnrV23_Contex_t));
 #if ABAYER2DNR_USE_JSON_FILE_V23
         Abayer2dnr_result_V23_t ret_v23 = ABAYER2DNR_V23_RET_SUCCESS;
-        ret_v23 = Abayer2dnr_Init_V23(&(abayernr_group_contex->abayer2dnr_contex_v23), (void *)cfgInt->s_calibv23);
+        ret_v23 = Abayer2dnr_Init_V23(&(abayernr_group_contex->abayer2dnr_contex_v23), (void *)cfgInt->s_calibv2);
         if(ret_v23 != ABAYER2DNR_V23_RET_SUCCESS) {
             ret = XCAM_RETURN_ERROR_FAILED;
             LOGE_ANR("%s: Initializaion ANR failed (%d)\n", __FUNCTION__, ret);
@@ -56,7 +56,7 @@ static XCamReturn groupAbayer2dnrV23CreateCtx(RkAiqAlgoContext **context, const 
         LOGE_ANR("%s: Initializaion group bayernr failed (%d)\n", __FUNCTION__, ret);
     } else {
         // to do got abayernrSurrViewClib and initinal paras for for surround view
-        abayernr_group_contex->group_CalibV23.groupMethod = CalibDbV23_CAMGROUP_ABAYER2DNRV23_METHOD_MEAN;// to do from json
+        abayernr_group_contex->group_CalibV23.groupMethod = CalibDbV2_CAMGROUP_ABAYER2DNRV23_METHOD_MEAN;// to do from json
         abayernr_group_contex->camera_Num = cfgInt->camIdArrayLen;
 
         *context = (RkAiqAlgoContext *)(abayernr_group_contex);
@@ -80,7 +80,7 @@ static XCamReturn groupAbayer2dnrV23DestroyCtx(RkAiqAlgoContext *context)
 
     CamGroup_Abayer2dnrV23_Contex_t *abayernr_group_contex = (CamGroup_Abayer2dnrV23_Contex_t*)context;
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32()) {
         Abayer2dnr_result_V23_t ret_v23 = ABAYER2DNR_V23_RET_SUCCESS;
         ret_v23 = Abayer2dnr_Release_V23(abayernr_group_contex->abayer2dnr_contex_v23);
         if(ret_v23 != ABAYER2DNR_V23_RET_SUCCESS) {
@@ -113,7 +113,7 @@ static XCamReturn groupAbayer2dnrV23Prepare(RkAiqAlgoCom* params)
     CamGroup_Abayer2dnrV23_Contex_t * abayernr_group_contex = (CamGroup_Abayer2dnrV23_Contex_t *)params->ctx;
     RkAiqAlgoCamGroupPrepare* para = (RkAiqAlgoCamGroupPrepare*)params;
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32()) {
         Abayer2dnr_Context_V23_t * abayer2dnr_contex_v23 = abayernr_group_contex->abayer2dnr_contex_v23;
         if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
             // todo  update calib pars for surround view
@@ -154,8 +154,8 @@ static XCamReturn groupAbayer2dnrV23Processing(const RkAiqAlgoCom* inparams, RkA
     int deltaIso = 0;
 
     //method error
-    if (abayernr_group_contex->group_CalibV23.groupMethod <= CalibDbV23_CAMGROUP_ABAYER2DNRV23_METHOD_MIN
-            ||  abayernr_group_contex->group_CalibV23.groupMethod >=  CalibDbV23_CAMGROUP_ABAYER2DNRV23_METHOD_MAX) {
+    if (abayernr_group_contex->group_CalibV23.groupMethod <= CalibDbV2_CAMGROUP_ABAYER2DNRV23_METHOD_MIN
+            ||  abayernr_group_contex->group_CalibV23.groupMethod >=  CalibDbV2_CAMGROUP_ABAYER2DNRV23_METHOD_MAX) {
         return (ret);
     }
 
@@ -240,14 +240,14 @@ static XCamReturn groupAbayer2dnrV23Processing(const RkAiqAlgoCom* inparams, RkA
 
 
 
-    if(CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32()) {
         Abayer2dnr_Context_V23_t * abayer2dnr_contex_v23 = abayernr_group_contex->abayer2dnr_contex_v23;
         Abayer2dnr_ProcResult_V23_t stAbayer2dnrResultV23;
-        if(stExpInfoV23.blc_ob_predgain != abayer2dnr_contex_v23->stExpInfoV23.blc_ob_predgain) {
+        if(stExpInfoV23.blc_ob_predgain != abayer2dnr_contex_v23->stExpInfo.blc_ob_predgain) {
             abayer2dnr_contex_v23->isReCalculate |= 1;
         }
         deltaIso = abs(stExpInfoV23.arIso[stExpInfoV23.hdr_mode] - abayer2dnr_contex_v23->stExpInfo.arIso[stExpInfoV23.hdr_mode]);
-        if(deltaIso > ABAYERNRV23_RECALCULATE_DELTA_ISO) {
+        if(deltaIso > ABAYER2DNRV23_RECALCULATE_DELTA_ISO) {
             abayer2dnr_contex_v23->isReCalculate |= 1;
         }
         if(abayer2dnr_contex_v23->isReCalculate) {

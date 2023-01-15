@@ -78,6 +78,7 @@ typedef struct AdehazeAePreResV11_s {
 } AdehazeAePreResV11_t;
 
 typedef struct AdehazeHandle_s {
+    bool isCapture;
     bool ifReCalcStAuto;
     bool ifReCalcStManual;
     bool byPassProc;

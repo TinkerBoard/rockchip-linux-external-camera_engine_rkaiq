@@ -147,6 +147,7 @@ XCamReturn RkAiqAldchHandleInt::updateConfig(bool needSync) {
         mCurAtt   = mNewAtt;
 #if (RKAIQ_HAVE_LDCH_V21)
         rk_aiq_uapi_aldch_v21_SetAttrib(mAlgoCtx, mCurAtt, false);
+        mCurAtt.lut.update_flag = false;
 #else
         rk_aiq_uapi_aldch_SetAttrib(mAlgoCtx, mCurAtt, false);
 #endif

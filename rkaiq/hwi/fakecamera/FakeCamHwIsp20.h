@@ -18,7 +18,6 @@
 
 #ifndef _FAKE_CAM_HW_ISP20_H_
 #define _FAKE_CAM_HW_ISP20_H_
-#include "rk_aiq_offline_raw.h"
 #include "CamHwIsp20.h"
 #include "isp21/CamHwIsp21.h"
 #include "isp3x/CamHwIsp3x.h"
@@ -46,7 +45,7 @@ protected:
     XCamReturn setupOffLineLink(int isp_index, bool enable);
     struct _st_addrinfo _st_addr[3];
     struct _raw_format _rawfmt;
-    struct _frame_info _finfo;
+    rk_aiq_frame_info_t _finfo;
     enum v4l2_memory    _rx_memory_type;
     enum v4l2_memory    _tx_memory_type;
     rk_aiq_rawbuf_type_t _rawbuf_type;

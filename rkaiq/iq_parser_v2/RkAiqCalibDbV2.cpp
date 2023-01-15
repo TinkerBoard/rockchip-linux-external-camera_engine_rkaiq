@@ -202,6 +202,7 @@ CamCalibDbProj_t *RkAiqCalibDbV2::json2calibproj(const char *jsfile) {
 
     base_json = cJSON_Parse(json_buff);
     if (!base_json) {
+        free(json_buff);
         return nullptr;
     }
 
@@ -212,6 +213,7 @@ CamCalibDbProj_t *RkAiqCalibDbV2::json2calibproj(const char *jsfile) {
     if (!RkAiqSceneManager::mergeMultiSceneIQ(base_json)) {
         cJSON_Delete(base_json);
         j2s_deinit(&ctx);
+        free(json_buff);
         return nullptr;
     }
 
@@ -223,6 +225,7 @@ CamCalibDbProj_t *RkAiqCalibDbV2::json2calibproj(const char *jsfile) {
 
     if (ret) {
         CamCalibDbProjFree(calibproj);
+        free(json_buff);
         return nullptr;
     }
 
@@ -230,6 +233,7 @@ CamCalibDbProj_t *RkAiqCalibDbV2::json2calibproj(const char *jsfile) {
     calibproj2json("/tmp/iq_dump.json", calibproj);
 #endif
 
+    free(json_buff);
     return calibproj;
 }
 
@@ -693,13 +697,13 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"adehaze_calib_v12", RK_AIQ_ALGO_TYPE_ADHAZ},
         {"lut3d_calib", RK_AIQ_ALGO_TYPE_A3DLUT},
         {"aldch", RK_AIQ_ALGO_TYPE_ALDCH},
-        {"acsm_calib", RK_AIQ_ALGO_TYPE_ACSM},
+        {"csm", RK_AIQ_ALGO_TYPE_ACSM},
         {"cproc", RK_AIQ_ALGO_TYPE_ACP},
         {"ie", RK_AIQ_ALGO_TYPE_AIE},
         {"sharp_v1", RK_AIQ_ALGO_TYPE_ASHARP},
         {"edgefilter_v1", RK_AIQ_ALGO_TYPE_ASHARP},
         {"aorb_calib", RK_AIQ_ALGO_TYPE_AORB},
-        {"acgc_calib", RK_AIQ_ALGO_TYPE_ACGC},
+        {"cgc", RK_AIQ_ALGO_TYPE_ACGC},
         {"asd_calib", RK_AIQ_ALGO_TYPE_ASD},
         {"adrc_calib_v10", RK_AIQ_ALGO_TYPE_ADRC},
         {"adrc_calib_v11", RK_AIQ_ALGO_TYPE_ADRC},
@@ -745,7 +749,6 @@ RkAiqAlgoType_t RkAiqCalibDbV2::string2algostype(const char *str) {
         {"cnr_v30", RK_AIQ_ALGO_TYPE_ACNR},
         {"sharp_v33", RK_AIQ_ALGO_TYPE_ASHARP},
         {"wb_v32", RK_AIQ_ALGO_TYPE_AWB},
-
     };
 
     auto it = table.find(std::string(str));
@@ -1089,6 +1092,10 @@ int RkAiqCalibDbV2::CamCalibDbFreeAwbV21Ctx(CalibDbV2_Wb_Para_V21_t* awb)
         for (int i = 0; i < autoPara->lightSources_len; i++) {
             CalibDbV2_Awb_Light_V21_t* lightSource = autoPara->lightSources + i;
             calib_free(lightSource->name);
+            if(lightSource->weight.lumaValue)
+                calib_free(lightSource->weight.lumaValue);
+            if(lightSource->weight.weight)
+                calib_free(lightSource->weight.weight);
         }
         calib_free(autoPara->lightSources);
     }
@@ -1170,6 +1177,15 @@ int RkAiqCalibDbV2::CamCalibDbFreeAwbV21Ctx(CalibDbV2_Wb_Para_V21_t* awb)
         calib_free(autoExtPara->xyRegionStableSelection.wpNumTh.forBigType);
     if(autoExtPara->xyRegionStableSelection.wpNumTh.forExtraType)
         calib_free(autoExtPara->xyRegionStableSelection.wpNumTh.forExtraType);
+    CalibDbV2_Awb_SmartRun_t* smartRun = &autoExtPara->smartRun;
+    if (smartRun->cfg.lumaValue)
+        calib_free(smartRun->cfg.lumaValue);
+    if (smartRun->cfg.lvVarTh)
+        calib_free(smartRun->cfg.lvVarTh);
+    if (smartRun->cfg.wbgainAlgDiffTh)
+        calib_free(smartRun->cfg.wbgainAlgDiffTh);
+    if (smartRun->cfg.wbgainHwDiffTh)
+        calib_free(smartRun->cfg.wbgainHwDiffTh);
     return 0;
 }
 #endif
@@ -1204,6 +1220,10 @@ int RkAiqCalibDbV2::CamCalibDbFreeAwbV32Ctx(CalibDbV2_Wb_Para_V32_t* awb)
         for (int i = 0; i < autoPara->lightSources_len; i++) {
             CalibDbV2_Awb_Light_V32_t* lightSource = autoPara->lightSources + i;
             calib_free(lightSource->name);
+            if(lightSource->weight.lumaValue)
+                calib_free(lightSource->weight.lumaValue);
+            if(lightSource->weight.weight)
+                calib_free(lightSource->weight.weight);
         }
         calib_free(autoPara->lightSources);
     }
@@ -1225,6 +1245,12 @@ int RkAiqCalibDbV2::CamCalibDbFreeAwbV32Ctx(CalibDbV2_Wb_Para_V32_t* awb)
         calib_free(autoPara->limitRange.minG);
     if(autoPara->limitRange.minY)
         calib_free(autoPara->limitRange.minY);
+    for(int i=0;i<CALD_AWB_EXCRANGE_NUM_MAX;i++){
+        if(autoPara->extraWpRange[i].weightInculde.lumaValue)
+            calib_free(autoPara->extraWpRange[i].weightInculde.lumaValue);
+        if(autoPara->extraWpRange[i].weightInculde.weight)
+            calib_free(autoPara->extraWpRange[i].weightInculde.weight);
+    }
     CalibDbV2_Wb_Awb_Ext_Para_V32_t* autoExtPara = &awb->autoExtPara;
     if (autoExtPara->lightSourceForFirstFrame)
         calib_free(autoExtPara->lightSourceForFirstFrame);
@@ -1253,13 +1279,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeAwbV32Ctx(CalibDbV2_Wb_Para_V32_t* awb)
 
     CalibDbV2_Awb_GainAdjust2_t* wbGainAdjust = &autoExtPara->wbGainAdjust;
     if (wbGainAdjust->lutAll) {
-        for (int i = 0; i < wbGainAdjust->lutAll_len; i++) {
-            CalibDbV2_Awb_Cct_Lut_Cfg_Lv2_t *lutAll = wbGainAdjust->lutAll + i;
-            if (lutAll->rgct_lut_out)
-                calib_free(lutAll->rgct_lut_out);
-            if (lutAll->bgcri_lut_out)
-                calib_free(lutAll->bgcri_lut_out);
-        }
         calib_free(wbGainAdjust->lutAll);
     }
 
@@ -1832,8 +1851,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV30Ctx(CalibDbV2_AFV30_t* af)
     if (zoomfocus_tbl->ZoomInfoDir)
         calib_free(zoomfocus_tbl->ZoomInfoDir);
 
-    if (TuningPara->contrast_af.FullRangeTbl)
-        calib_free(TuningPara->contrast_af.FullRangeTbl);
     if (TuningPara->contrast_af.AdaptRangeTbl)
         calib_free(TuningPara->contrast_af.AdaptRangeTbl);
     if (TuningPara->contrast_af.TrigThers)
@@ -1854,8 +1871,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV30Ctx(CalibDbV2_AFV30_t* af)
     if (TuningPara->contrast_af.ZoomCfg.StopStep)
         calib_free(TuningPara->contrast_af.ZoomCfg.StopStep);
 
-    if (TuningPara->video_contrast_af.FullRangeTbl)
-        calib_free(TuningPara->video_contrast_af.FullRangeTbl);
     if (TuningPara->video_contrast_af.AdaptRangeTbl)
         calib_free(TuningPara->video_contrast_af.AdaptRangeTbl);
     if (TuningPara->video_contrast_af.TrigThers)

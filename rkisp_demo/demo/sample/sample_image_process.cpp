@@ -45,6 +45,7 @@
 #include "sample_alsc_module.h"
 #include "sample_acp_module.h"
 #include "sample_aie_module.h"
+#include "sample_adpcc_module.h"
 #include "sample_cgc_module.h"
 #include "sample_cac_module.h"
 #include "sample_again_module.h"
@@ -128,6 +129,7 @@ static void sample_usage()
     printf("\t r) CCMV2:      module test sample.\n");
     printf("\t s) ALDCHV32:  module test sample.\n");
     printf("\t t) SMARTIR:    module test sample.\n");
+    printf("\t u) DPCC:       module test sample.\n");
     printf("\n");
     printf("\t please press the key: ");
 
@@ -331,6 +333,11 @@ XCamReturn sample_main (const void *arg)
         struct module_sample_info *info = &module_samples[RK_SMARTIR];
         info->debug (nullptr);
         info->func (arg);
+        break;
+    }
+    case 'u': {
+        printf("enter DPCC module test\n");
+        sample_adpcc_module(arg);
         break;
     }
     default:

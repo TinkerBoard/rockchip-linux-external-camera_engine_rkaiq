@@ -726,6 +726,18 @@ XCamReturn rk_aiq_uapi2_resetZoom(const rk_aiq_sys_ctx_t* ctx);
 XCamReturn rk_aiq_uapi2_setAngleZ(const rk_aiq_sys_ctx_t* ctx, float angleZ);
 
 /*
+*****************************
+*
+* Desc: get/set CustomAf Result
+* Argument:
+*
+*
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_getCustomAfRes(const rk_aiq_sys_ctx_t* ctx, rk_tool_customAf_res_t *attr);
+XCamReturn rk_aiq_uapi2_setCustomAfRes(const rk_aiq_sys_ctx_t* ctx, rk_tool_customAf_res_t *attr);
+
+/*
 **********************************************************
 * Color Correction
 **********************************************************
@@ -1005,6 +1017,22 @@ XCamReturn rk_aiq_uapi2_getHue(const rk_aiq_sys_ctx_t* ctx, unsigned int* level)
 XCamReturn rk_aiq_uapi2_setColorMode(const rk_aiq_sys_ctx_t* ctx, unsigned int mode);
 
 XCamReturn rk_aiq_uapi2_getColorMode(const rk_aiq_sys_ctx_t* ctx, unsigned int *mode);
-RKAIQ_END_DECLARE
 
+/*
+*****************************
+*
+* Desc:
+* Argument:
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setGrayMode(const rk_aiq_sys_ctx_t* ctx, rk_aiq_gray_mode_t mode);
+/*
+*****************************
+*
+* Desc:
+* Argument:
+*****************************
+*/
+rk_aiq_gray_mode_t rk_aiq_uapi2_getGrayMode(const rk_aiq_sys_ctx_t* ctx);
+RKAIQ_END_DECLARE
 #endif

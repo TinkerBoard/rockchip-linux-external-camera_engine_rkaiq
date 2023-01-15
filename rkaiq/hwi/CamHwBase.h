@@ -151,6 +151,15 @@ public:
     virtual void setDevBufCnt(const std::map<std::string, int>& dev_buf_cnt_map) {
         mDevBufCntMap = dev_buf_cnt_map;
     }
+    virtual XCamReturn reset_hardware() {
+        return XCAM_RETURN_ERROR_FAILED;
+    };
+    virtual XCamReturn rawReproc_genIspParams (uint32_t sequence, rk_aiq_frame_info_t *offline_finfo, int mode) {
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+    virtual XCamReturn rawReProc_prepare (uint32_t sequence, rk_aiq_frame_info_t *offline_finfo) {
+        return XCAM_RETURN_ERROR_FAILED;
+    }
     HwResListener* mHwResLintener;
 protected:
     SmartPtr<V4l2Device> mIsppFecParamsDev;

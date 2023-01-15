@@ -317,7 +317,7 @@ ANRresult_t init_bayernr_params_json(RKAnr_Bayernr_Params_t *pParams, CalibDbV2_
     pParams->bayernr_gauss_weight0 = 0;
     pParams->bayernr_gauss_weight1 = 0;
 
-    strncpy(pParams->bayernr_ver_char,  pCalibdb->Version, sizeof(pParams->bayernr_ver_char));
+    strncpy(pParams->bayernr_ver_char,  pCalibdb->Version, sizeof(pParams->bayernr_ver_char)-1);
 
     LOGI_ANR("%s:(%d) oyyf bayerner xml config end!  ver:%s \n", __FUNCTION__, __LINE__, pParams->bayernr_ver_char);
 

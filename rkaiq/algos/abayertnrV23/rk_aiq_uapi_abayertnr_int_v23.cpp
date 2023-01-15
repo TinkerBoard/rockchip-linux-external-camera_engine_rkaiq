@@ -12,7 +12,7 @@
 XCamReturn
 rk_aiq_uapi_abayertnrV23_SetAttrib(RkAiqAlgoContext *ctx,
                                    const rk_aiq_bayertnr_attrib_v23_t *attr,
-                                   bool need_sync)
+                                   bool /* need_sync */)
 {
 
     Abayertnr_Context_V23_t* pCtx = (Abayertnr_Context_V23_t*)ctx;

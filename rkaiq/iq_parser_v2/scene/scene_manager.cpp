@@ -174,7 +174,7 @@ RkAiqSceneManager::refToScene(CamCalibDbProj_t *calibproj,
   memset(&ctx, 0, sizeof(CamCalibDbV2Context_t));
 
   if (!main_list || main_list_len < 1) {
-    printf("No avaliable main scene!\n");
+    printf("No avaliable main scene for %s!\n", main_scene);
     return ctx;
   }
 
@@ -190,7 +190,7 @@ RkAiqSceneManager::refToScene(CamCalibDbProj_t *calibproj,
   }
 
   if (!sub_list || sub_list_len < 1) {
-    printf("No avaliable main scene!\n");
+    printf("No avaliable sub scene!\n");
     return ctx;
   }
 

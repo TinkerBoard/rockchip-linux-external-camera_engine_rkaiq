@@ -1,11 +1,12 @@
 #include "abayertnrV23/rk_aiq_uapi_camgroup_abayertnr_int_v23.h"
 #include "rk_aiq_types_camgroup_abayertnr_prvt_v23.h"
 
+#define ABAYERTNR_LUMA_SF_STRENGTH_MAX_PERCENT (7.0)
 
 XCamReturn
 rk_aiq_uapi_camgroup_abayertnrV23_SetAttrib(RkAiqAlgoContext *ctx,
         const rk_aiq_bayertnr_attrib_v23_t *attr,
-        bool need_sync)
+        bool /* need_sync */)
 {
     LOGD_ANR("%s:%d\n", __FUNCTION__, __LINE__);
 

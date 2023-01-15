@@ -73,7 +73,7 @@ void *j2s_alloc_data(j2s_ctx *ctx, size_t size, size_t* real_size) {
     ptr = ((uint8_t *)j2s_pool->data + j2s_pool->used);
   }
 
-  DBG("%palloc [%d]/[%d]@[%p]-offset[%d]\n", ctx, size, j2s_pool->used, ptr,
+  DBG("%palloc [%zu]/[%zu]@[%p]-offset[%zu]\n", ctx, size, j2s_pool->used, ptr,
       (uint8_t *)ptr - j2s_pool->data);
 
   // 32bit 16 64bit 32

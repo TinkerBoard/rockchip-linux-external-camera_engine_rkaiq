@@ -16,7 +16,7 @@
 #define J2S_H
 
 #include "cJSON.h"
-#include "common.h"
+#include "j2s_common.h"
 #include "BinRecord.hpp"
 
 typedef struct {

@@ -109,12 +109,12 @@ static void load_ir_configs()
     smartIr_ctx->ir_v4ldev = NULL;
 
     smartIr_ctx->ir_cut_v4ldev = "/dev/v4l-subdev3";
-    smartIr_ctx->ir_configs.d2n_envL_th = 0.01f;
-    smartIr_ctx->ir_configs.n2d_envL_th = 1.0f;
-    smartIr_ctx->ir_configs.BG_gain_max = 0.8f;
-    smartIr_ctx->ir_configs.BG_gain_min = 0.6f;
-    smartIr_ctx->ir_configs.RG_gain_max = 1.0f;
-    smartIr_ctx->ir_configs.RG_gain_min = 0.9f;
+    smartIr_ctx->ir_configs.d2n_envL_th = 0.04f;
+    smartIr_ctx->ir_configs.n2d_envL_th = 0.20f;
+    smartIr_ctx->ir_configs.rggain_base = 1.0f;
+    smartIr_ctx->ir_configs.bggain_base = 1.0f;
+    smartIr_ctx->ir_configs.awbgain_rad = 0.10f;
+    smartIr_ctx->ir_configs.awbgain_dis = 0.22f;
     smartIr_ctx->ir_configs.switch_cnts_th = 100;
     rk_smart_ir_config(smartIr_ctx->ir_ctx, &smartIr_ctx->ir_configs);
     // set initial status to day
@@ -210,18 +210,17 @@ void sample_smartIr_calib(const void *arg)
         if (ret == XCAM_RETURN_NO_ERROR && stats_ref != NULL) {
             printf("stats frame id %d \n", stats_ref->frame_id);
             if (stats_ref->awb_hw_ver == 4) { //isp32
-                double Rvalue = 0, Gvalue = 0,Bvalue = 0, wpNo = 0;
+                double Rvalue = 0, Gvalue = 0, Bvalue = 0, RGgain = 0, BGgain = 0;
                 for (int i = 0; i < RK_AIQ_AWB_GRID_NUM_TOTAL; i++) {
-                       Rvalue += stats_ref->awb_stats_v32.blockResult[i].Rvalue;
-                       Gvalue += stats_ref->awb_stats_v32.blockResult[i].Gvalue;
-                       Bvalue += stats_ref->awb_stats_v32.blockResult[i].Bvalue;
-                       wpNo += stats_ref->awb_stats_v32.blockResult[i].WpNo;
+                       Rvalue = stats_ref->awb_stats_v32.blockResult[i].Rvalue;
+                       Gvalue = stats_ref->awb_stats_v32.blockResult[i].Gvalue;
+                       Bvalue = stats_ref->awb_stats_v32.blockResult[i].Bvalue;
+                       RGgain = RGgain + Rvalue / Gvalue;
+                       BGgain = BGgain + Bvalue / Gvalue;
                 }
-                Rvalue /= wpNo;
-                Gvalue /= wpNo;
-                Bvalue /= wpNo;
-                printf("origin Rvalue:%0.3f, Gvalue:%0.3f, Bvalue:%0.3f, RGgain:%0.3f, BGgain:%0.3f\n",
-                       Rvalue, Gvalue, Bvalue, Rvalue/Gvalue, Bvalue/Gvalue);
+                RGgain /= RK_AIQ_AWB_GRID_NUM_TOTAL;
+                BGgain /= RK_AIQ_AWB_GRID_NUM_TOTAL;
+                printf("origin rggain_base:%0.3f, bggain_base:%0.3f\n", RGgain, BGgain);
             }
             rk_aiq_uapi2_sysctl_release3AStatsRef(ctx, stats_ref);
         } else {
@@ -232,14 +231,6 @@ void sample_smartIr_calib(const void *arg)
             } else if (ret == XCAM_RETURN_ERROR_FAILED) {
                 printf("aiq failed!\n");
             }
-        }
-
-        ret = rk_aiq_user_api2_awb_QueryWBInfo(ctx, &wb_info);
-        if (ret == XCAM_RETURN_NO_ERROR) {
-            RGgain = 1.0 / wb_info.stat_gain_blk.rgain;
-            BGgain = 1.0 / wb_info.stat_gain_blk.bgain;
-            printf("RGgain:%0.3f, BGgain: %0.3f\n",
-                   RGgain, BGgain);
         }
     }
     printf("SmartIr Calib Done ...... \n");

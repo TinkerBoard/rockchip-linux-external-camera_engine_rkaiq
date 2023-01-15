@@ -290,6 +290,13 @@ RkAiqManager::prepare(uint32_t width, uint32_t height, rk_aiq_working_mode_t mod
 
     xcam_mem_clear(sensor_des);
     ret = mCamHw->getSensorModeData(mSnsEntName, sensor_des);
+#ifdef USE_RAWSTREAM_LIB
+    //force user defined resolution
+    sensor_des.sensor_output_width = width;
+    sensor_des.sensor_output_height = height;
+#endif
+    sensor_output_width = sensor_des.sensor_output_width;
+    sensor_output_height = sensor_des.sensor_output_height;
     int w, h, aligned_w, aligned_h;
     ret = mCamHw->get_sp_resolution(w, h, aligned_w, aligned_h);
     ret = mRkAiqAnalyzer->set_sp_resolution(w, h, aligned_w, aligned_h);
@@ -472,14 +479,18 @@ RkAiqManager::updateCalibDb(const CamCalibDbV2Context_t* newCalibDb)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     auto update_list = std::make_shared<std::list<std::string>>();
-
     update_list->push_back("colorAsGrey");
 
-    mCamHw->setCalib(newCalibDb);
-    mRkAiqAnalyzer->calibTuning(newCalibDb, update_list);
-
     *mCalibDbV2 = *(CamCalibDbV2Context_t*)newCalibDb;
+    mCamHw->setCalib(newCalibDb);
+
     ret = mRkAiqAnalyzer->setCalib(mCalibDbV2);
+
+    if (!mRkAiqAnalyzer->isRunningState()) {
+      mRkAiqAnalyzer->updateCalibDbBrutal(mCalibDbV2);
+    } else {
+      mRkAiqAnalyzer->calibTuning(mCalibDbV2, update_list);
+    }
 
     EXIT_XCORE_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -504,7 +515,11 @@ RkAiqManager::syncSofEvt(SmartPtr<VideoBuffer>& hwres)
         if (mMetasCb) {
             rk_aiq_metas_t metas;
             metas.frame_id = hwres->get_sequence();
+#ifdef ANDROID_OS
+            mMetasCb(&metas);
+#else
             (*mMetasCb)(&metas);
+#endif
         }
     }
 
@@ -558,27 +573,23 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
     } else if (hwres->_buf_type == ISP_POLL_SOF) {
         xcam_get_runtime_log_level();
 
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        if (!mCamGroupCoreManager) {
-#endif
-            SmartPtr<CamHwIsp20> mCamHwIsp20 = mCamHw.dynamic_cast_ptr<CamHwIsp20>();
-            mCamHwIsp20->notify_sof(hwres);
+        SmartPtr<CamHwIsp20> mCamHwIsp20 = mCamHw.dynamic_cast_ptr<CamHwIsp20>();
+        mCamHwIsp20->notify_sof(hwres);
 
-            SmartPtr<SofEventBuffer> evtbuf = hwres.dynamic_cast_ptr<SofEventBuffer>();
-            SmartPtr<SofEventData> evtdata = evtbuf->get_data();
-            SmartPtr<ispHwEvt_t> hw_evt = mCamHwIsp20->make_ispHwEvt(evtdata->_frameid, V4L2_EVENT_FRAME_SYNC, evtdata->_timestamp);
-            mRkAiqAnalyzer->pushEvts(hw_evt);
-            // TODO: moved to aiq core ?
-            if (mMetasCb) {
-                rk_aiq_metas_t metas;
-                metas.frame_id = evtdata->_frameid;
-                (*mMetasCb)(&metas);
-            }
-#ifdef RKAIQ_ENABLE_CAMGROUP
-        } else {
-            mCamGroupCoreManager->sofSync(this, hwres);
-        }
+        SmartPtr<SofEventBuffer> evtbuf = hwres.dynamic_cast_ptr<SofEventBuffer>();
+        SmartPtr<SofEventData> evtdata = evtbuf->get_data();
+        SmartPtr<ispHwEvt_t> hw_evt = mCamHwIsp20->make_ispHwEvt(evtdata->_frameid, V4L2_EVENT_FRAME_SYNC, evtdata->_timestamp);
+        mRkAiqAnalyzer->pushEvts(hw_evt);
+        // TODO: moved to aiq core ?
+        if (mMetasCb) {
+            rk_aiq_metas_t metas;
+            metas.frame_id = evtdata->_frameid;
+#ifdef ANDROID_OS
+            mMetasCb(&metas);
+#else
+            (*mMetasCb)(&metas);
 #endif
+        }
     } else if (hwres->_buf_type == ISP_POLL_TX) {
 #if 0
         XCamVideoBuffer* camVBuf = convert_to_XCamVideoBuffer(hwres);
@@ -635,15 +646,58 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
             memset(&hwevt, 0, sizeof(hwevt));
             hwevt.cam_id = mCamHw->getCamPhyId();
 #ifdef RKAIQ_ENABLE_CAMGROUP
-            mCamGroupCoreManager->setVicapReady(&hwevt);
-            if (mCamGroupCoreManager->isAllVicapReady())
+            if (mCamGroupCoreManager) {
+                mCamGroupCoreManager->setVicapReady(&hwevt);
+                if (mCamGroupCoreManager->isAllVicapReady())
+                    hwevt.aiq_status = RK_AIQ_STATUS_VICAP_READY;
+                else
+                    hwevt.aiq_status = 0;
+            } else
                 hwevt.aiq_status = RK_AIQ_STATUS_VICAP_READY;
-            else
-                hwevt.aiq_status = 0;
 #else
             hwevt.aiq_status = RK_AIQ_STATUS_VICAP_READY;
 #endif
             hwevt.ctx = mHwEvtCbCtx;
+            (*mHwEvtCb)(&hwevt);
+        }
+    } else if (hwres->_buf_type == VICAP_RESET_EVT) {
+        LOGD_ANALYZER(" VICAP_RESET_EVT... ");
+        if (mHwEvtCb) {
+            rk_aiq_hwevt_t hwevt;
+
+            memset(&hwevt, 0, sizeof(hwevt));
+            hwevt.cam_id = mCamHw->getCamPhyId();
+            hwevt.aiq_status = RK_AIQ_STATUS_VICAP_RESET;
+            hwevt.ctx = mHwEvtCbCtx;
+
+            LOGE_ANALYZER("cam: %d, VICAP_RESET_EVT...", hwevt.cam_id);
+            (*mHwEvtCb)(&hwevt);
+        }
+    } else if (hwres->_buf_type == VICAP_WITH_RK1608_RESET_EVT) {
+        LOGD_ANALYZER(" VICAP_WITH_RK1608_RESET_EVT... ");
+        SmartPtr<CamHwIsp20> mCamHwIsp20 = mCamHw.dynamic_cast_ptr<CamHwIsp20>();
+        if (mHwEvtCb && mCamHwIsp20.ptr()) {
+            rk_aiq_hwevt_t hwevt;
+
+            memset(&hwevt, 0, sizeof(hwevt));
+            for(int id = 0; id < 8; id++)
+                hwevt.multi_cam.multi_cam_id[id] = -1;
+
+            int i = 0;
+            for(int camPhyId = 0; camPhyId < CAM_INDEX_FOR_1608; camPhyId++) {
+                if (CamHwIsp20::rk1608_share_inf.raw_proc_unit[camPhyId]) {
+                    hwevt.multi_cam.multi_cam_id[i++] = camPhyId;
+                }
+            }
+            hwevt.multi_cam.cam_count = i;
+            hwevt.cam_id = -1;
+            hwevt.aiq_status = RK_AIQ_STATUS_VICAP_WITH_MULTI_CAM_RESET;
+            hwevt.ctx = mHwEvtCbCtx;
+
+            for (i = 0; i < 8; i++) {
+                LOGV_ANALYZER("multi_cam_id[%d]: %d \n", i, hwevt.multi_cam.multi_cam_id[i]);
+            }
+
             (*mHwEvtCb)(&hwevt);
         }
     }
@@ -1166,14 +1220,16 @@ XCamReturn RkAiqManager::calibTuning(CamCalibDbV2Context_t* aiqCalib,
     mCamHw->setCalib(aiqCalib);
     ret = mRkAiqAnalyzer->setCalib(aiqCalib);
 
-    std::for_each(std::begin(*change_list), std::end(*change_list),
-                  [](const std::string& name) { std::cout << "tuning : " << name << std::endl; });
+    if (change_list != nullptr)
+        std::for_each(
+            std::begin(*change_list), std::end(*change_list),
+            [](const std::string& name) { std::cout << "tuning : " << name << std::endl; });
     mRkAiqAnalyzer->calibTuning(aiqCalib, change_list);
 
     // Won't free calib witch from iqfiles
     RkAiqCalibDbV2::FreeCalibByJ2S(tuningCalib);
     *mCalibDbV2 = *aiqCalib;
-    tuningCalib = aiqCalib;
+    tuningCalib = const_cast<CamCalibDbV2Context_t*>(aiqCalib);
 
     change_list.reset();
 
@@ -1182,4 +1238,10 @@ XCamReturn RkAiqManager::calibTuning(CamCalibDbV2Context_t* aiqCalib,
     return ret;
 }
 
+void RkAiqManager::unsetTuningCalibDb()
+{
+  tuningCalib = NULL;
+}
+
 } //namespace RkCam
+

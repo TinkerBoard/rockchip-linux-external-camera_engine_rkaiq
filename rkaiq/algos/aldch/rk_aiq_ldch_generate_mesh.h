@@ -23,11 +23,13 @@
 
 RKAIQ_BEGIN_DECLARE
 
+XCamReturn get_ldch_buf(LDCHContext_t* ldchCtx);
 XCamReturn release_ldch_buf(LDCHContext_t* ldchCtx);
 bool read_mesh_from_file(LDCHContext_t* ldchCtx, const char* fileName);
 XCamReturn aiqGenLdchMeshInit(LDCHContext_t* ldchCtx);
 XCamReturn aiqGenLdchMeshDeInit(LDCHContext_t* ldchCtx);
 bool aiqGenMesh(LDCHContext_t* ldchCtx, int32_t level);
+void put_ldch_buf(LDCHContext_t* ldchCtx);
 
 RKAIQ_END_DECLARE
 

@@ -126,11 +126,7 @@ IspParamsAssembler::queue_locked(SmartPtr<cam3aResult>& result)
     }
 #endif
     // exception case 1 : wrong result frame_id
-    if (frame_id == (uint32_t)(-1)) {
-        LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "type:%s, frame_id == -1 &&  mLatestReadyFrmId == %d ",
-                        Cam3aResultType2Str[type], mLatestReadyFrmId);
-        return ret;
-    } else if (((frame_id != 0) && (mLatestReadyFrmId != (uint32_t)(-1) && frame_id <= mLatestReadyFrmId))) {
+    if (frame_id != (uint32_t)(-1) && (frame_id <= mLatestReadyFrmId)) {
         // merged to the oldest one
         bool found = false;
         for (const auto& iter : mParamsMap) {
@@ -159,6 +155,10 @@ IspParamsAssembler::queue_locked(SmartPtr<cam3aResult>& result)
                         mLatestReadyFrmId);
         frame_id = 0;
         result->setId(0);
+    } else if (frame_id == (uint32_t)(-1)) {
+        LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "type:%s, frame_id == -1 &&  mLatestReadyFrmId == %d ",
+                        Cam3aResultType2Str[type], mLatestReadyFrmId);
+        return ret;
     }
 
     mParamsMap[frame_id].params.push_back(result);
@@ -186,8 +186,8 @@ IspParamsAssembler::queue_locked(SmartPtr<cam3aResult>& result)
             mParamsMap.erase(mParamsMap.find(frame_id));
             return ret;
         }
-        LOGD_CAMHW_SUBM(ISP20PARAM_SUBM, "%s, frame: %u params ready, mReadyNums: %d !",
-                        mName.c_str(), frame_id, mReadyNums);
+        LOGD_CAMHW_SUBM(ISP20PARAM_SUBM, "%s, camId:%d, frameId:%d params ready, mReadyNums: %d !",
+                        mName.c_str(), mCamPhyId, frame_id, mReadyNums);
     }
 
     bool overflow = false;
@@ -345,7 +345,25 @@ IspParamsAssembler::deQueOne(cam3aResultList& results, uint32_t& frame_id)
         }
     } else {
         LOG1_CAMHW_SUBM(ISP20PARAM_SUBM, "%s: no ready params", mName.c_str());
-        return XCAM_RETURN_ERROR_PARAM;
+
+        if (mParamsMap.size() > 0) {
+            std::map<uint32_t, params_t>::reverse_iterator rit = mParamsMap.rbegin();
+
+            if (rit->first - mLatestReadyFrmId != (uint32_t)(-1) && rit->first - mLatestReadyFrmId > 5) {
+                std::map<uint32_t, params_t>::iterator it = mParamsMap.begin();
+                LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "not ready params num over 5, force ready: %d", it->first);
+
+                mLatestReadyFrmId = it->first;
+                results = it->second.params;
+                mParamsMap.erase(it);
+            } else {
+                LOGI_CAMHW_SUBM(ISP20PARAM_SUBM, "%s: mParamsMap is %d %d!", mName.c_str(), mParamsMap.size(), __LINE__);
+                return XCAM_RETURN_ERROR_PARAM;
+            }
+        } else {
+            LOGI_CAMHW_SUBM(ISP20PARAM_SUBM, "%s: mParamsMap is empty %d!", mName.c_str(), __LINE__);
+            return XCAM_RETURN_ERROR_PARAM;
+        }
     }
     LOG1_CAMHW_SUBM(ISP20PARAM_SUBM, "%s:(%d) %s: exit \n",
                     __FUNCTION__, __LINE__, mName.c_str());
@@ -1614,7 +1632,7 @@ template<class T>
 void
 Isp20Params::convertAiqDpccToIsp20Params(T& isp_cfg, rk_aiq_isp_dpcc_t &dpcc)
 {
-    LOGD_CAMHW_SUBM(ISP20PARAM_SUBM, "%s:(%d) enter \n", __FUNCTION__, __LINE__);
+    LOG1_CAMHW_SUBM(ISP20PARAM_SUBM, "%s:(%d) enter \n", __FUNCTION__, __LINE__);
 
     struct isp2x_dpcc_cfg * pDpccCfg = &isp_cfg.others.dpcc_cfg;
     rk_aiq_isp_dpcc_t *pDpccRst = &dpcc;
@@ -1831,7 +1849,7 @@ Isp20Params::convertAiqDpccToIsp20Params(T& isp_cfg, rk_aiq_isp_dpcc_t &dpcc)
     pDpccCfg->pdaf_forward_med = pDpccRst->stPdaf.pdaf_forward_med;
 
 
-    LOGD_CAMHW_SUBM(ISP20PARAM_SUBM, "%s:(%d) exit \n", __FUNCTION__, __LINE__);
+    LOG1_CAMHW_SUBM(ISP20PARAM_SUBM, "%s:(%d) exit \n", __FUNCTION__, __LINE__);
 }
 
 
@@ -1845,10 +1863,12 @@ Isp20Params::convertAiqLscToIsp20Params(T& isp_cfg,
         isp_cfg.module_ens |= ISP2X_MODULE_LSC;
         isp_cfg.module_en_update |= ISP2X_MODULE_LSC;
         isp_cfg.module_cfg_update |= ISP2X_MODULE_LSC;
+        _lsc_en = true;
     } else {
         isp_cfg.module_ens &= ~ISP2X_MODULE_LSC;
         isp_cfg.module_en_update |= ISP2X_MODULE_LSC;
         isp_cfg.module_cfg_update &= ~ISP2X_MODULE_LSC;
+        _lsc_en = false;
     }
 
 #if defined (RKAIQ_HAVE_LSC_V2) || defined (RKAIQ_HAVE_LSC_V3)
@@ -1866,8 +1886,8 @@ Isp20Params::convertAiqLscToIsp20Params(T& isp_cfg,
     memcpy(cfg->gr_data_tbl, lsc.gr_data_tbl, sizeof(lsc.gr_data_tbl));
     memcpy(cfg->gb_data_tbl, lsc.gb_data_tbl, sizeof(lsc.gb_data_tbl));
     memcpy(cfg->b_data_tbl, lsc.b_data_tbl, sizeof(lsc.b_data_tbl));
-#if RKAIQ_HAVE_LSC_V2
-#define MAX_LSC_VALUE 8191
+#ifdef ISP_HW_V30
+    #define MAX_LSC_VALUE 8191
     struct isp21_bls_cfg &bls_cfg = isp_cfg.others.bls_cfg;
     if(bls_cfg.bls1_en && bls_cfg.bls1_val.b > 0 && bls_cfg.bls1_val.r > 0
             && bls_cfg.bls1_val.gb > 0 && bls_cfg.bls1_val.gr > 0 ) {
@@ -3906,6 +3926,10 @@ bool Isp20Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result,
         if (params.ptr())
             convertAiqHistToIsp20Params(isp_cfg, params->data()->result);
     }
+    case RESULT_TYPE_EXPOSURE_PARAM:
+    {
+        // TODO
+    }
     break;
     case RESULT_TYPE_AWB_PARAM:
     {
@@ -4123,7 +4147,7 @@ XCamReturn Isp20Params::merge_isp_results(cam3aResultList &results, void* isp_cf
     if (!mBlcResult.ptr())
         LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "get blc params failed!\n");
 
-    LOGD_CAMHW_SUBM(ISP20PARAM_SUBM, "%s, isp cam3a results size: %d\n", __FUNCTION__, results.size());
+    LOG1_CAMHW_SUBM(ISP20PARAM_SUBM, "%s, isp cam3a results size: %d\n", __FUNCTION__, results.size());
     for (cam3aResultList::iterator iter = results.begin ();
             iter != results.end (); iter++)
     {

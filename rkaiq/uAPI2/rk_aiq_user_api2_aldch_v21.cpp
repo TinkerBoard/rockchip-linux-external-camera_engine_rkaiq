@@ -56,6 +56,13 @@ rk_aiq_user_api2_aldch_v21_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_a
         return XCAM_RETURN_ERROR_FAILED;
     #endif
     } else {
+        if (attr->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
+            attr->lut.update_flag && \
+            attr->update_lut_mode == RK_AIQ_LDCH_UPDATE_LUT_FROM_EXTERNAL_BUFFER) {
+            LOGE_ALDCH("Unsupported update_lut_mode %d in async mode.\n", attr->update_lut_mode);
+            return XCAM_RETURN_ERROR_PARAM;
+        }
+
         RkAiqAldchHandleInt* algo_handle =
             algoHandle<RkAiqAldchHandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ALDCH);
 

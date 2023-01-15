@@ -169,7 +169,7 @@ static XCamReturn groupAynrV2Processing(const RkAiqAlgoCom* inparams, RkAiqAlgoR
 
     //get cur ae exposure
     Aynr_ExpInfo_t stExpInfoV2;
-    memset(&stExpInfoV2, 0x00, sizeof(Aynr_ExpInfo_V3_t));
+    memset(&stExpInfoV2, 0x00, sizeof(stExpInfoV2));
     stExpInfoV2.hdr_mode = 0; //pAnrProcParams->hdr_mode;
     stExpInfoV2.snr_mode = 0;
     for(int i = 0; i < 3; i++) {

@@ -80,6 +80,10 @@ Abayertnr_result_V2_t bayertnr_select_params_by_ISO_V2(RK_Bayertnr_Params_V2_t *
         isoLevelCorrect = 0;
     }
 
+    pExpInfo->isoHigh = pParams->iso[isoLevelHig];
+    pExpInfo->isoLow = pParams->iso[isoLevelLow];
+
+
     LOGD_ANR("%s:%d iso:%d high:%d low:%d\n",
              __FUNCTION__, __LINE__,
              isoGain, isoGainHig, isoGainLow);
@@ -230,21 +234,49 @@ unsigned short bayertnr_get_trans_V2(int tmpfix)
     return fx;
 }
 
-Abayertnr_result_V2_t bayertnr_fix_transfer_V2(RK_Bayertnr_Params_V2_Select_t* pSelect, RK_Bayertnr_Fix_V2_t *pFix, float fStrength, Abayertnr_ExpInfo_V2_t *pExpInfo)
+Abayertnr_result_V2_t bayertnr_fix_transfer_V2(RK_Bayertnr_Params_V2_Select_t* pSelect, RK_Bayertnr_Fix_V2_t *pFix, rk_aiq_bayertnr_strength_v2_t *pStrength, Abayertnr_ExpInfo_V2_t *pExpInfo)
 {
     int i = 0;
     int tmp;
 
+    if(pSelect == NULL) {
+        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ABAYERTNRV2_RET_NULL_POINTER;
+    }
+
+    if(pFix == NULL) {
+        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ABAYERTNRV2_RET_NULL_POINTER;
+    }
+
+    if(pStrength == NULL) {
+        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ABAYERTNRV2_RET_NULL_POINTER;
+    }
+
+    if(pExpInfo == NULL) {
+        LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ABAYERTNRV2_RET_NULL_POINTER;
+    }
+
+    float fStrength = 1.0;
+
+    if(pStrength->strength_enable) {
+        fStrength = pStrength->percent;
+    }
+
     if(fStrength <= 0.0f) {
         fStrength = 0.000001;
     }
+    LOGD_ANR("strength_enable:%d, percent:%f fStrength:%f\n",
+             pStrength->strength_enable, pStrength->percent, fStrength);
 
     // BAY3D_BAY3D_CTRL 0x2c00
     pFix->bay3d_soft_st = 0;
     pFix->bay3d_soft_mode = 0;
     pFix->bay3d_bwsaving_en = 0;
     pFix->bay3d_loswitch_protect = 0;
-    pFix->bay3d_glbpk_en = pSelect->global_pk_en;
+    pFix->bay3d_glbpk_en = 0;//pSelect->global_pk_en;
     pFix->bay3d_logaus3_bypass_en = !pSelect->lo_gslum_en;
     pFix->bay3d_logaus5_bypass_en = !pSelect->lo_gsbay_en;
     pFix->bay3d_lomed_bypass_en = !pSelect->lo_med_en;

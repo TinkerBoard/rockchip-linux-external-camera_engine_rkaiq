@@ -41,7 +41,7 @@ static XCamReturn groupAbayertnrV23CreateCtx(RkAiqAlgoContext **context, const A
         abayertnr_group_contex = (CamGroup_AbayertnrV23_Contex_t*)malloc(sizeof(CamGroup_AbayertnrV23_Contex_t));
 #if ABAYERTNR_USE_JSON_FILE_V23
         Abayertnr_result_V23_t ret_v23 = ABAYERTNRV23_RET_SUCCESS;
-        ret_v23 = Abayertnr_Init_V23(&(abayertnr_group_contex->abayertnr_contex_v23), (void *)cfgInt->s_calibv23);
+        ret_v23 = Abayertnr_Init_V23(&(abayertnr_group_contex->abayertnr_contex_v23), (void *)cfgInt->s_calibv2);
         if(ret_v23 != ABAYERTNRV23_RET_SUCCESS) {
             ret = XCAM_RETURN_ERROR_FAILED;
             LOGE_ANR("%s: Initializaion ANR failed (%d)\n", __FUNCTION__, ret);
@@ -56,7 +56,7 @@ static XCamReturn groupAbayertnrV23CreateCtx(RkAiqAlgoContext **context, const A
         LOGE_ANR("%s: Initializaion group bayertnr failed (%d)\n", __FUNCTION__, ret);
     } else {
         // to do got abayertnrSurrViewClib and initinal paras for for surround view
-        abayertnr_group_contex->group_CalibV23.groupMethod = CalibDbV23_CAMGROUP_ABAYERTNRV23_METHOD_MEAN;// to do from json
+        abayertnr_group_contex->group_CalibV23.groupMethod = CalibDbV2_CAMGROUP_ABAYERTNRV23_METHOD_MEAN;// to do from json
         abayertnr_group_contex->camera_Num = cfgInt->camIdArrayLen;
 
         *context = (RkAiqAlgoContext *)(abayertnr_group_contex);
@@ -154,8 +154,8 @@ static XCamReturn groupAbayertnrV23Processing(const RkAiqAlgoCom* inparams, RkAi
     int deltaIso = 0;
 
     //method error
-    if (abayertnr_group_contex->group_CalibV23.groupMethod <= CalibDbV23_CAMGROUP_ABAYERTNRV23_METHOD_MIN
-            ||  abayertnr_group_contex->group_CalibV23.groupMethod >=  CalibDbV23_CAMGROUP_ABAYERTNRV23_METHOD_MAX) {
+    if (abayertnr_group_contex->group_CalibV23.groupMethod <= CalibDbV2_CAMGROUP_ABAYERTNRV23_METHOD_MIN
+            ||  abayertnr_group_contex->group_CalibV23.groupMethod >=  CalibDbV2_CAMGROUP_ABAYERTNRV23_METHOD_MAX) {
         return (ret);
     }
 
@@ -242,7 +242,7 @@ static XCamReturn groupAbayertnrV23Processing(const RkAiqAlgoCom* inparams, RkAi
     if(CHECK_ISP_HW_V32()) {
         Abayertnr_Context_V23_t * abayertnr_contex_v23 = abayertnr_group_contex->abayertnr_contex_v23;
         Abayertnr_ProcResult_V23_t stAbayertnrResultV23;
-        if(stExpInfoV23.blc_ob_predgain != abayertnr_contex_v23->stExpInfoV23.blc_ob_predgain) {
+        if(stExpInfoV23.blc_ob_predgain != abayertnr_contex_v23->stExpInfo.blc_ob_predgain) {
             abayertnr_contex_v23->isReCalculate |= 1;
         }
         deltaIso = abs(stExpInfoV23.arIso[stExpInfoV23.hdr_mode] - abayertnr_contex_v23->stExpInfo.arIso[stExpInfoV23.hdr_mode]);

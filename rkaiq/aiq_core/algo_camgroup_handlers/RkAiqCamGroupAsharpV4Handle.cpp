@@ -37,7 +37,7 @@ XCamReturn RkAiqCamGroupAsharpV4HandleInt::updateConfig(bool needSync) {
     if (updateStrength) {
         LOGD_ASHARP("%s:%d\n", __FUNCTION__, __LINE__);
         mCurStrength = mNewStrength;
-        rk_aiq_uapi_camgroup_asharpV4_SetStrength(mAlgoCtx, mCurStrength.percent);
+        rk_aiq_uapi_camgroup_asharpV4_SetStrength(mAlgoCtx, &mCurStrength);
         sendSignal(mCurStrength.sync.sync_mode);
         updateStrength = false;
     }
@@ -115,6 +115,7 @@ XCamReturn RkAiqCamGroupAsharpV4HandleInt::setStrength(rk_aiq_sharp_strength_v4_
 
     mCfgMutex.lock();
 
+    LOGD_ASHARP("percent:%f enable:%d sync:%d\n", pStrength->percent, pStrength->strength_enable, pStrength->sync.sync_mode);
     bool isChanged = false;
     if (pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
             memcmp(&mNewStrength, pStrength, sizeof(*pStrength)))
@@ -124,6 +125,7 @@ XCamReturn RkAiqCamGroupAsharpV4HandleInt::setStrength(rk_aiq_sharp_strength_v4_
         isChanged = true;
 
     if (isChanged) {
+
         mNewStrength   = *pStrength;
         updateStrength = true;
         waitSignal(pStrength->sync.sync_mode);
@@ -141,15 +143,15 @@ XCamReturn RkAiqCamGroupAsharpV4HandleInt::getStrength(rk_aiq_sharp_strength_v4_
 
     if(pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
-        rk_aiq_uapi_camgroup_asharpV4_GetStrength(mAlgoCtx, &pStrength->percent );
+        rk_aiq_uapi_camgroup_asharpV4_GetStrength(mAlgoCtx, pStrength);
         pStrength->sync.done = true;
         mCfgMutex.unlock();
     } else {
         if(updateStrength) {
-            pStrength->percent = mNewStrength.percent;
+            *pStrength = mNewStrength;
             pStrength->sync.done = false;
         } else {
-            rk_aiq_uapi_camgroup_asharpV4_GetStrength(mAlgoCtx, &pStrength->percent);
+            rk_aiq_uapi_camgroup_asharpV4_GetStrength(mAlgoCtx, pStrength);
             pStrength->sync.done = true;
         }
     }
@@ -157,6 +159,26 @@ XCamReturn RkAiqCamGroupAsharpV4HandleInt::getStrength(rk_aiq_sharp_strength_v4_
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
+
+XCamReturn RkAiqCamGroupAsharpV4HandleInt::getInfo(rk_aiq_sharp_info_v4_t *pInfo) {
+    ENTER_ANALYZER_FUNCTION();
+    LOGD_ASHARP("%s:%d\n", __FUNCTION__, __LINE__);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if(pInfo->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_camgroup_asharpV4_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        rk_aiq_uapi_camgroup_asharpV4_GetInfo(mAlgoCtx, pInfo);
+        pInfo->sync.done = true;
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
 #endif
 
 #endif

@@ -25,6 +25,7 @@
 #include "Isp20_module_dbg.h"
 #include "CamHwIsp20.h"
 #include "CaptureRawData.h"
+#include "rkcif-config.h"
 
 namespace RkCam {
 
@@ -46,7 +47,14 @@ RKStream::poll_type_to_str[ISP_POLL_POST_MAX] =
     "isp_rx_poll",
     "isp_sp_poll",
     "isp_pdaf_poll",
+    "isp_gain",
+    "isp_nr_img",
+    "ispp_gain_kg",
+    "ispp_gain_wr",
     "isp_stream_sync_poll",
+    "vicap_stream_on_evt",
+    "vicap_reset_evt",
+    "vicap_with_rk1608_reset_evt",
 };
 
 RkPollThread::RkPollThread (const char* thName, int type, SmartPtr<V4l2Device> dev, RKStream *stream)
@@ -61,7 +69,7 @@ RkPollThread::RkPollThread (const char* thName, int type, SmartPtr<V4l2Device> d
     _poll_stop_fd[0] =  -1;
     _poll_stop_fd[1] =  -1;
 
-    XCAM_LOG_DEBUG ("RkPollThread constructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RkPollThread constructed");
 }
 
 RkPollThread::RkPollThread (const char* thName, int type, SmartPtr<V4l2SubDevice> dev, RKStream *stream)
@@ -76,13 +84,13 @@ RkPollThread::RkPollThread (const char* thName, int type, SmartPtr<V4l2SubDevice
     _poll_stop_fd[0] =  -1;
     _poll_stop_fd[1] =  -1;
 
-    XCAM_LOG_DEBUG ("RkPollThread constructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RkPollThread constructed");
 }
 
 RkPollThread::~RkPollThread ()
 {
     stop();
-    XCAM_LOG_DEBUG ("~RkPollThread destructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "~RkPollThread destructed");
 }
 
 void RkPollThread::destroy_stop_fds () {
@@ -139,9 +147,9 @@ XCamReturn RkPollThread::start ()
 
 XCamReturn RkPollThread::stop ()
 {
-    XCAM_LOG_INFO("RkPollThread %s:%s stop", get_name(),
-                  _dev.ptr() ? _dev->get_device_name()
-                             : (_subdev.ptr() ? _subdev->get_device_name() : "null"));
+    LOGI_CAMHW_SUBM(ISP20HW_SUBM, "RkPollThread %s:%s stop", get_name(),
+                   _dev.ptr() ? _dev->get_device_name() :
+                   _subdev.ptr() ? _subdev->get_device_name() : "null");
     if (_poll_stop_fd[1] != -1) {
         char buf = 0xf;  // random value to write to flush fd.
         unsigned int size = write(_poll_stop_fd[1], &buf, sizeof(char));
@@ -151,7 +159,7 @@ XCamReturn RkPollThread::stop ()
     }
     Thread::stop();
     destroy_stop_fds ();
-    XCAM_LOG_INFO ("stop done");
+    LOGI_CAMHW_SUBM(ISP20HW_SUBM, "stop done");
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -175,7 +183,7 @@ RkPollThread::poll_buffer_loop ()
     poll_ret = _dev->poll_event (RkPollThread::default_poll_timeout, stop_fd);
 
     if (poll_ret == POLL_STOP_RET) {
-        XCAM_LOG_DEBUG ("poll buffer stop success !");
+        LOGD_CAMHW_SUBM(ISP20HW_SUBM, "poll buffer stop success !");
         // stop success, return error to stop the poll thread
         return XCAM_RETURN_ERROR_UNKNOWN;
     }
@@ -201,6 +209,9 @@ RkPollThread::poll_buffer_loop ()
 
     XCAM_ASSERT (buf.ptr());
 
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "camId: %d, frameId: %d: dequeue buffer on %s\n",
+                    mCamPhyId, buf->get_buf().sequence, RKStream::poll_type_to_str[_dev_type]);
+
     if (_dev_type == ISP_POLL_TX || _dev_type == ISP_POLL_RX) {
         SmartPtr<V4l2BufferProxy> buf_proxy = _stream->new_v4l2proxy_buffer(buf, _dev);
         if (_poll_callback && buf_proxy.ptr())
@@ -221,19 +232,19 @@ RkPollThread::poll_buffer_loop ()
 RkEventPollThread::RkEventPollThread (const char* thName, int type, SmartPtr<V4l2Device> dev, RKStream *stream)
     :RkPollThread(thName, type, dev, stream)
 {
-    XCAM_LOG_DEBUG ("RkEventPollThread constructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RkEventPollThread constructed");
 }
 
 RkEventPollThread::RkEventPollThread (const char* thName, int type, SmartPtr<V4l2SubDevice> subdev, RKStream *stream)
     :RkPollThread(thName, type, subdev, stream)
 {
-    XCAM_LOG_DEBUG ("RkEventPollThread constructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RkEventPollThread constructed");
 }
 
 RkEventPollThread::~RkEventPollThread ()
 {
     stop();
-    XCAM_LOG_DEBUG ("~RkEventPollThread destructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "~RkEventPollThread destructed");
 }
 
 XCamReturn
@@ -247,7 +258,7 @@ RkEventPollThread::poll_event_loop ()
     poll_ret = _dev->poll_event (RkPollThread::default_poll_timeout, stop_fd);
 
     if (poll_ret == POLL_STOP_RET) {
-        XCAM_LOG_INFO ("%s: poll event stop success !", get_name());
+        LOGI_CAMHW_SUBM(ISP20HW_SUBM, "%s: poll event stop success !", get_name());
         // stop success, return error to stop the poll thread
         return XCAM_RETURN_ERROR_UNKNOWN;
     }
@@ -271,11 +282,14 @@ RkEventPollThread::poll_event_loop ()
         return XCAM_RETURN_ERROR_IOCTL;
     }
 
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "camId: %d, frameId: %d: dequeue the type(%d) of event on dev: %s",
+                    mCamPhyId, _event.u.frame_sync.frame_sequence,
+                    _event.type, XCAM_STR(_dev->get_device_name()));
+
     if (_poll_callback && _stream) {
         SmartPtr<VideoBuffer> video_buf = _stream->new_video_buffer(_event, _subdev);
         _poll_callback->poll_buffer_ready (video_buf);
     }
-
 
     return ret;
 }
@@ -288,20 +302,15 @@ RkStreamEventPollThread::poll_event_loop () {
 
     if (ret == XCAM_RETURN_NO_ERROR) {
         if (_event.type == CIFISP_V4L2_EVENT_STREAM_START) {
-            XCAM_LOG_INFO ("%s: poll stream on evt success", _dev->get_device_name());
+            LOGI_CAMHW_SUBM(ISP20HW_SUBM, "%s: poll stream on evt success", _dev->get_device_name());
             _pIsp->notify_isp_stream_status(true);
         } else if (_event.type == CIFISP_V4L2_EVENT_STREAM_STOP) {
-            XCAM_LOG_INFO ("%s: poll stream off evt success", _dev->get_device_name());
+            LOGI_CAMHW_SUBM(ISP20HW_SUBM, "%s: poll stream off evt success", _dev->get_device_name());
             _pIsp->notify_isp_stream_status(false);
             // quit loop
             emit_stop ();
             return XCAM_RETURN_ERROR_UNKNOWN;
         }
-    }
-
-    if (ret == XCAM_RETURN_ERROR_IOCTL) {
-        // ignored for nonblock mode
-        return XCAM_RETURN_ERROR_TIMEOUT;
     }
 
     return ret;
@@ -312,7 +321,7 @@ RkStreamEventPollThread::start()
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    ret = _dev->open(true);
+    ret = _dev->open(false);
     if (ret) {
        return ret;
     }
@@ -327,9 +336,11 @@ RkStreamEventPollThread::stop ()
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     ret = RkEventPollThread::stop();
-    _dev->unsubscribe_event(CIFISP_V4L2_EVENT_STREAM_START);
-    _dev->unsubscribe_event(CIFISP_V4L2_EVENT_STREAM_STOP);
-    ret = _dev->close();
+    if (_dev->is_opened()) {
+        _dev->unsubscribe_event(CIFISP_V4L2_EVENT_STREAM_START);
+        _dev->unsubscribe_event(CIFISP_V4L2_EVENT_STREAM_STOP);
+        ret = _dev->close();
+    }
     return ret;
 }
 
@@ -339,7 +350,7 @@ RKStream::RKStream (SmartPtr<V4l2Device> dev, int type)
     ,_dev_prepared(false)
 {
     _poll_thread = new RkPollThread(RKStream::poll_type_to_str[type], type, dev, this);
-    XCAM_LOG_DEBUG ("RKStream constructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RKStream constructed");
 }
 
 RKStream::RKStream (SmartPtr<V4l2SubDevice> dev, int type)
@@ -348,7 +359,7 @@ RKStream::RKStream (SmartPtr<V4l2SubDevice> dev, int type)
     ,_dev_prepared(false)
 {
     _poll_thread = new RkEventPollThread(RKStream::poll_type_to_str[type], type, dev, this);
-    XCAM_LOG_DEBUG ("RKStream constructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RKStream constructed");
 }
 
 RKStream::RKStream (const char *path, int type)
@@ -357,12 +368,12 @@ RKStream::RKStream (const char *path, int type)
 {
     _dev = new V4l2Device(path);
     _poll_thread = new RkPollThread(RKStream::poll_type_to_str[type], type, _dev, this);
-    XCAM_LOG_DEBUG ("RKStream constructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RKStream constructed");
 }
 
 RKStream::~RKStream()
 {
-    XCAM_LOG_DEBUG ("~RKStream destructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "~RKStream destructed");
 }
 
 void
@@ -370,12 +381,27 @@ RKStream::start()
 {
     if (!_dev->is_activated())
         _dev->start(_dev_prepared);
+
+    _poll_thread->setCamPhyId(mCamPhyId);
+    if (_dev_type == ISP_POLL_3A_STATS || \
+        _dev_type == ISP_POLL_TX || \
+        _dev_type == ISP_POLL_RX) {
+        _poll_thread->set_policy(SCHED_RR);
+        _poll_thread->set_priority(20);
+    }
     _poll_thread->start();
 }
 
 void
 RKStream::startThreadOnly()
 {
+    _poll_thread->setCamPhyId(mCamPhyId);
+    if (_dev_type == ISP_POLL_3A_STATS || \
+        _dev_type == ISP_POLL_TX || \
+        _dev_type == ISP_POLL_RX) {
+        _poll_thread->set_policy(SCHED_RR);
+        _poll_thread->set_priority(20);
+    }
     _poll_thread->start();
 }
 
@@ -425,7 +451,7 @@ RKStream::set_device_prepared(bool prepare)
 
 SmartPtr<VideoBuffer> RKStream::new_video_buffer(SmartPtr<V4l2Buffer> buf,
                                        SmartPtr<V4l2Device> dev)
-{ 
+{
     SmartPtr<VideoBuffer> video_buf = new V4l2BufferProxy (buf, dev);
     video_buf->_buf_type = _dev_type;
     return video_buf;
@@ -450,18 +476,18 @@ XCamReturn RKStream::getFormat(struct v4l2_subdev_format &format)
 RKStatsStream::RKStatsStream (SmartPtr<V4l2Device> dev, int type)
     :RKStream(dev, type)
 {
-    XCAM_LOG_DEBUG ("RKStream constructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RKStream constructed");
 }
 
 //RKStatsStream::RKStatsStream (const char *name, int type)
 //    :RKStream(name, type)
 //{
-//    XCAM_LOG_DEBUG ("RKStream constructed");
+//    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RKStream constructed");
 //}
 
 RKStatsStream::~RKStatsStream()
 {
-    XCAM_LOG_DEBUG ("~RKStream destructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "~RKStream destructed");
 }
 
 bool RKStatsStream::set_event_handle_dev(SmartPtr<BaseSensorHw> &dev)
@@ -513,30 +539,41 @@ RKStatsStream::new_video_buffer(SmartPtr<V4l2Buffer> buf,
 }
 
 /*--------------------sof event stream---------------------------*/
+std::atomic<bool> RKSofEventStream::_is_subscribed{false};
 
-RKSofEventStream::RKSofEventStream (SmartPtr<V4l2SubDevice> dev, int type)
+RKSofEventStream::RKSofEventStream (SmartPtr<V4l2SubDevice> dev, int type, bool linkedToRk1608)
     :RKStream(dev, type)
 {
-    XCAM_LOG_DEBUG ("RKSofEventStream constructed");
+    _linked_to_1608 = linkedToRk1608;
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RKSofEventStream constructed");
 }
 
 //RKSofEventStream::RKSofEventStream (const char *name, int type)
 //    :RKStream(name, type)
 //{
-//    XCAM_LOG_DEBUG ("RKSofEventStream constructed");
+//    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RKSofEventStream constructed");
 //}
 
 RKSofEventStream::~RKSofEventStream()
 {
-    XCAM_LOG_DEBUG ("~RKSofEventStream destructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "~RKSofEventStream destructed");
 }
 
 void
 RKSofEventStream::start()
 {
     _subdev->start(_dev_prepared);
+    _poll_thread->setCamPhyId(mCamPhyId);
     _poll_thread->start();
     _subdev->subscribe_event(V4L2_EVENT_FRAME_SYNC);
+    if (_linked_to_1608) {
+        if (!_is_subscribed.load()) {
+            _subdev->subscribe_event(V4L2_EVENT_RESET_DEV);
+            _is_subscribed.store(true);
+        }
+    } else {
+        _subdev->subscribe_event(V4L2_EVENT_RESET_DEV);
+    }
 }
 
 void
@@ -544,6 +581,14 @@ RKSofEventStream::stop()
 {
     _poll_thread->stop();
     _subdev->unsubscribe_event(V4L2_EVENT_FRAME_SYNC);
+    if (_linked_to_1608) {
+        if (_is_subscribed.load()) {
+            _subdev->unsubscribe_event(V4L2_EVENT_RESET_DEV);
+            _is_subscribed.store(false);
+        }
+    } else {
+        _subdev->unsubscribe_event(V4L2_EVENT_RESET_DEV);
+    }
     _subdev->stop();
 }
 
@@ -561,7 +606,14 @@ RKSofEventStream::new_video_buffer(struct v4l2_event &event,
     evtdata->_frameid = exp_id;
 
     video_buf = new SofEventBuffer(evtdata, dev);
-    video_buf->_buf_type = _dev_type;
+    if (event.type == V4L2_EVENT_RESET_DEV) {
+        if (_linked_to_1608) {
+            video_buf->_buf_type = VICAP_WITH_RK1608_RESET_EVT;
+        } else
+            video_buf->_buf_type = VICAP_RESET_EVT;
+    } else {
+        video_buf->_buf_type = _dev_type;
+    }
     video_buf->set_sequence (exp_id);
     EXIT_CAMHW_FUNCTION();
 
@@ -574,12 +626,12 @@ RKRawStream::RKRawStream (SmartPtr<V4l2Device> dev, int index, int type)
     :RKStream(dev, type)
     ,_dev_index(index)
 {
-    XCAM_LOG_DEBUG ("RKRawStream constructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RKRawStream constructed");
 }
 
 RKRawStream::~RKRawStream()
 {
-    XCAM_LOG_DEBUG ("~RKRawStream destructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "~RKRawStream destructed");
 }
 
 SmartPtr<V4l2BufferProxy>
@@ -597,12 +649,12 @@ RKRawStream::new_v4l2proxy_buffer(SmartPtr<V4l2Buffer> buf,
 RKPdafStream::RKPdafStream (SmartPtr<V4l2Device> dev, int type)
     :RKStream(dev, type)
 {
-    XCAM_LOG_DEBUG ("RKRawStream constructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "RKRawStream constructed");
 }
 
 RKPdafStream::~RKPdafStream()
 {
-    XCAM_LOG_DEBUG ("~RKRawStream destructed");
+    LOGD_CAMHW_SUBM(ISP20HW_SUBM, "~RKRawStream destructed");
 }
 
 SmartPtr<V4l2BufferProxy>

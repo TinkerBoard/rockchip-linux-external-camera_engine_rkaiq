@@ -22,7 +22,16 @@ func rkaiqFlags(ctx android.BaseContext) []string {
     if board == "rk3588" {
        cflags = append(cflags, "-DISP_HW_V30")
     }
+    if board == "rv1106" {
+        cflags = append(cflags, "-DISP_HW_V32")
+     }
     return cflags
+}
+
+func rkaiq_get_aiq_version(ctx android.BaseContext) string {
+    board := ctx.Config().Getenv("TARGET_BOARD_PLATFORM")
+    // fmt.Fprintf(os.Stderr, ">>>>>>>>>>>>>>>>>>>>> %s\n", board)
+    return board;
 }
 
 func rkaiqDefaults(ctx android.LoadHookContext) {
@@ -44,7 +53,47 @@ func rkaiqDefaults(ctx android.LoadHookContext) {
     p := &props{}
 
     //p.Cflags = deviceFlags(ctx)
-    p.Target.Android.Cflags = rkaiqFlags(ctx)
+
+    soc := rkaiq_get_aiq_version(ctx)
+    macros_map := rkaiq_macro_switch(soc)
+    p.Target.Android.Cflags = rkaiq_getAlgosMacros(macros_map)
+    cflags := rkaiqFlags(ctx)
+    p.Target.Android.Cflags = append(p.Target.Android.Cflags, cflags...)
+    ctx.AppendProperties(p)
+}
+
+func rkaiqLibraryShared(ctx android.LoadHookContext) {
+    type props struct {
+        Target struct {
+            Android struct {
+                Srcs  []string
+                Static_libs []string
+                Enabled *bool
+            }
+            Host struct {
+                Enabled *bool
+            }
+            Not_windows struct {
+            }
+        }
+        Srcs []string
+    }
+    p := &props{}
+    soc := rkaiq_get_aiq_version(ctx)
+    macros_map := rkaiq_macro_switch(soc)
+    p.Target.Android.Srcs = rkaiq_getSrcsFiles(soc, macros_map)
+    p.Target.Android.Static_libs = rkaiq_getAlgosLib(macros_map)
+    ctx.AppendProperties(p)
+}
+
+func rkaiqLibraryStatic(ctx android.LoadHookContext) {
+    type props struct {
+        Srcs []string
+    }
+    p := &props{}
+    soc := rkaiq_get_aiq_version(ctx)
+    macros_map := rkaiq_macro_switch(soc)
+    p.Srcs = rkaiq_getStaticLibSrcs(ctx.ModuleName(), macros_map)
     ctx.AppendProperties(p)
 }
 
@@ -53,10 +102,24 @@ func rkaiqDefaults(ctx android.LoadHookContext) {
 */
 func init() {
     android.RegisterModuleType("rkaiq_defaults", rkaiqDefaultFactory)
+    android.RegisterModuleType("cc_rkaiq_library_shared", cc_rkaiq_library_sharedFactory)
+    android.RegisterModuleType("cc_rkaiq_library_static", cc_rkaiq_library_staticFactory)
 }
 
 func rkaiqDefaultFactory() android.Module {
     module := cc.DefaultsFactory()
     android.AddLoadHook(module, rkaiqDefaults)
+    return module
+}
+
+func cc_rkaiq_library_sharedFactory() android.Module {
+    module := cc.LibrarySharedFactory()
+    android.AddLoadHook(module, rkaiqLibraryShared)
+    return module
+}
+
+func cc_rkaiq_library_staticFactory() android.Module {
+    module := cc.LibraryStaticFactory()
+    android.AddLoadHook(module, rkaiqLibraryStatic)
     return module
 }

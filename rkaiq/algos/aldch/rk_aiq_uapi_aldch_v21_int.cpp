@@ -24,13 +24,38 @@
 XCamReturn
 rk_aiq_uapi_aldch_v21_SetAttrib(RkAiqAlgoContext *ctx,
                            rk_aiq_ldch_v21_attrib_t attr,
-                           bool need_sync)
+                           bool /* need_sync */)
 {
     LDCHHandle_t ldch_contex = (LDCHHandle_t)ctx->hLDCH;
 
-    LOGD_ALDCH("attr en:%d, level:%d, bic_en:%d, zero_interp_en:%d, sample_avr_en:%d\n",
-            attr.en, attr.correct_level, attr.bic_mode_en,
-            attr.zero_interp_en, attr.sample_avr_en);
+    LOGD_ALDCH("%s, attr en:%d, level:%d, bic_en:%d, zero_interp_en:%d, sample_avr_en:%d",
+            __FUNCTION__,
+            attr.en,
+            attr.correct_level,
+            attr.bic_mode_en,
+            attr.zero_interp_en,
+            attr.sample_avr_en);
+
+    LOGD_ALDCH("%s, attr custom lut: mode %d, flag %d",
+            __FUNCTION__,
+            attr.update_lut_mode,
+            attr.lut.update_flag);
+
+    if (attr.update_lut_mode == RK_AIQ_LDCH_UPDATE_LUT_FROM_EXTERNAL_FILE) {
+        LOGD_ALDCH("%s, attr custom lut file name: %s/%s",
+                __FUNCTION__,
+                attr.lut.u.file.config_file_dir,
+                attr.lut.u.file.mesh_file_name);
+    } else if (attr.update_lut_mode == RK_AIQ_LDCH_UPDATE_LUT_FROM_EXTERNAL_BUFFER) {
+        LOGD_ALDCH("%s, attr custom lut buffer %p, size %zu",
+                __FUNCTION__,
+                attr.lut.u.buffer.addr,
+                attr.lut.u.buffer.size);
+        if (attr.lut.u.buffer.size == 0) {
+            LOGE_ALDCH("Invalid lut buffer size %zu", attr.lut.u.buffer.size);
+            return XCAM_RETURN_ERROR_FAILED;
+        }
+    }
 
     if (!ldch_contex->ldch_en && !attr.en) {
         LOGE_ALDCH("failed, ldch is disalbed!");
@@ -38,6 +63,25 @@ rk_aiq_uapi_aldch_v21_SetAttrib(RkAiqAlgoContext *ctx,
     }
 
     if (0 != memcmp(&ldch_contex->user_config, &attr, sizeof(rk_aiq_ldch_v21_attrib_t))) {
+        if (attr.update_lut_mode == RK_AIQ_LDCH_UPDATE_LUT_FROM_EXTERNAL_BUFFER && \
+            attr.lut.update_flag) {
+            if (!ldch_contex->_lutCache.ptr()) {
+                ldch_contex->_lutCache = new LutCache(attr.lut.u.buffer.size);
+            } else if (attr.lut.u.buffer.size != ldch_contex->_lutCache->GetSize()) {
+                ldch_contex->_lutCache.release();
+                ldch_contex->_lutCache = new LutCache(attr.lut.u.buffer.size);
+            }
+
+            if (ldch_contex->_lutCache.ptr()) {
+                if (ldch_contex->_lutCache->GetBuffer()) {
+                    memcpy(ldch_contex->_lutCache->GetBuffer(), attr.lut.u.buffer.addr, attr.lut.u.buffer.size);
+                }
+            } else {
+                LOGE_ALDCH("Failed to malloc ldch cache!");
+                return XCAM_RETURN_ERROR_MEM;
+            }
+        }
+
         memcpy(&ldch_contex->user_config, &attr, sizeof(attr));
         ldch_contex->isAttribUpdated = true;
     }
@@ -52,6 +96,31 @@ rk_aiq_uapi_aldch_v21_GetAttrib(const RkAiqAlgoContext *ctx,
     LDCHHandle_t ldch_contex = (LDCHHandle_t)ctx->hLDCH;
 
     memcpy(attr, &ldch_contex->user_config, sizeof(*attr));
+
+    LOGD_ALDCH("%s, attr en:%d, level:%d, bic_en:%d, zero_interp_en:%d, sample_avr_en:%d",
+            __FUNCTION__,
+            attr->en,
+            attr->correct_level,
+            attr->bic_mode_en,
+            attr->zero_interp_en,
+            attr->sample_avr_en);
+
+    LOGD_ALDCH("%s, attr custom lut: mode %d, flag %d",
+            __FUNCTION__,
+            attr->update_lut_mode,
+            attr->lut.update_flag);
+
+    if (attr->update_lut_mode == RK_AIQ_LDCH_UPDATE_LUT_FROM_EXTERNAL_FILE) {
+        LOGD_ALDCH("%s, attr custom lut file name: %s/%s",
+                __FUNCTION__,
+                attr->lut.u.file.config_file_dir,
+                attr->lut.u.file.mesh_file_name);
+    } else if (attr->update_lut_mode == RK_AIQ_LDCH_UPDATE_LUT_FROM_EXTERNAL_BUFFER) {
+        LOGD_ALDCH("%s, attr custom lut buffer %p, size %zu",
+                __FUNCTION__,
+                attr->lut.u.buffer.addr,
+                attr->lut.u.buffer.size);
+    }
 
     return XCAM_RETURN_NO_ERROR;
 }

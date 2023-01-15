@@ -27,7 +27,7 @@
 			},
 			"CISIspDgainRange":	{
 				"Min":	1,
-				"Max":	1
+				"Max":	32
 			},
 			"CISHdrGainIndSetEn":	1
 		},
@@ -223,7 +223,7 @@
 									"TimeDot_len":	6,
 									"GainDot":	[1, 1, 2, 8, 8, 850],
 									"GainDot_len":	6,
-									"IspDGainDot":	[1, 1, 1, 1, 1, 2],
+									"IspDGainDot":	[1, 1, 1, 1, 1, 1],
 									"IspDGainDot_len":	6,
 									"PIrisDot":	[512, 512, 512, 512, 512, 512],
 									"PIrisDot_len":	6
@@ -572,7 +572,13 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[1.92078, 1, 1, 1.72687],
 										"defaultDayGainHigh":	[2.07002, 1, 1, 1.64899],
-										"xyType2Enable":	1
+										"xyType2Enable":	1,
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"A",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_INDOOR",
@@ -595,7 +601,13 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[1.92078, 1, 1, 1.72687],
 										"defaultDayGainHigh":	[2.07002, 1, 1, 1.64899],
-										"xyType2Enable":	1
+										"xyType2Enable":	1,
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"TL84",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_AMBIGUITY",
@@ -618,7 +630,13 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[1.92078, 1, 1, 1.72687],
 										"defaultDayGainHigh":	[2.07002, 1, 1, 1.64899],
-										"xyType2Enable":	1
+										"xyType2Enable":	1,
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"D50",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_OUTDOOR",
@@ -641,7 +659,13 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[1.92078, 1, 1, 1.72687],
 										"defaultDayGainHigh":	[2.07002, 1, 1, 1.64899],
-										"xyType2Enable":	1
+										"xyType2Enable":	1,
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"D65",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_OUTDOOR",
@@ -664,12 +688,31 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[1.92078, 1, 1, 1.72687],
 										"defaultDayGainHigh":	[2.07002, 1, 1, 1.64899],
-										"xyType2Enable":	1
+										"xyType2Enable":	1,
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}],
 								"lightSources_len":	5
 							},
 							"autoExtPara":	{
 								"lightSourceForFirstFrame":	"D50",
+								"smartRun":	{
+									"enable":	1,
+									"cfg":	{
+										"lumaValue":	[0],
+										"lumaValue_len":	1,
+										"lvVarTh":	[0.001],
+										"lvVarTh_len":	1,
+										"wbgainAlgDiffTh":	[0.005],
+										"wbgainAlgDiffTh_len":	1,
+										"wbgainHwDiffTh":	[0.05],
+										"wbgainHwDiffTh_len":	1
+									}
+								},
 								"tolerance":	{
 									"lumaValue":	[256, 512, 32768, 131072],
 									"lumaValue_len":	4,
@@ -1160,50 +1203,42 @@
 								}
 							}
 						},
-						"amerge_calib_v11":
-						{
-							"MergeTuningPara":
-							{
-								"BaseFrm": "BASEFRAME_LONG",
+						"amerge_calib_v11":	{
+							"MergeTuningPara":	{
+								"BaseFrm":	"BASEFRAME_LONG",
 								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
-								"ByPassThr": 0,
-								"LongFrmModeData":
-								{
-									"OECurve":
-									{
+								"ByPassThr":	0,
+								"LongFrmModeData":	{
+									"OECurve":	{
 										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 										"Offset":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210]
 									},
-									"MDCurve":
-									{
+									"MDCurve":	{
 										"MoveCoef":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"LM_smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 										"LM_offset":	[0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38],
 										"MS_smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 										"MS_offset":	[0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38, 0.38]
 									},
-									"OECurve_damp": 0.3,
-									"MDCurveLM_damp": 0.3,
-									"MDCurveMS_damp": 0.3
+									"OECurve_damp":	0.3,
+									"MDCurveLM_damp":	0.3,
+									"MDCurveMS_damp":	0.3
 								},
-								"ShortFrmModeData":
-								{
-									"OECurve":
-									{
+								"ShortFrmModeData":	{
+									"OECurve":	{
 										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Smooth":	[0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
 										"Offset":	[210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210]
 									},
-									"MDCurve":
-									{
+									"MDCurve":	{
 										"MoveCoef":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
 										"Coef":	[0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
-										"ms_thd0":	[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-										"lm_thd0":	[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+										"ms_thd0":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+										"lm_thd0":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 									},
-									"OECurve_damp": 0.3,
-									"MDCurve_damp": 0.3
+									"OECurve_damp":	0.3,
+									"MDCurve_damp":	0.3
 								}
 							}
 						},
@@ -1260,7 +1295,7 @@
 						"adehaze_calib_v11":	{
 							"DehazeTuningPara":	{
 								"Enable":	1,
-								"CtrlDataType": "CTRLDATATYPE_ENVLV",
+								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"cfg_alpha":	0,
 								"ByPassThr":	0,
 								"dehaze_setting":	{
@@ -1540,7 +1575,7 @@
 						"colorAsGrey":	{
 							"param":	{
 								"enable":	0,
-								"skip_frame": 10
+								"skip_frame":	10
 							}
 						},
 						"lsc_v2":	{
@@ -5180,110 +5215,110 @@
 								"Setting_len":	2
 							}
 						},
-                        "cac_v03":	{
-                            "SettingPara":	{
-                                "enable":	0
-                            },
-                            "TuningPara":	{
-                                "SettingByIso":	[{
-                                    "iso":	0,
-                                    "bypass":	0,
-                                    "AutoHighLightDetect":	0,
-                                    "AutoHighLightOffset":	0,
-                                    "FixHighLightBase":	0,
-                                    "YCompensate":	0,
-                                    "AutoStrengthU":	0,
-                                    "AutoStrengthV":	0,
-                                    "GrayStrengthU":	0,
-                                    "GrayStrengthV":	0
-                                }],
-                                "SettingByIso_len":	1
-                            }
-                        },
-                        "cac_v10": {
-                            "SettingPara": {
-                                "enable": 0,
-                                "psf_path":	"/etc/iqfiles/cac_map_42x24x34.bin",
-                                "psf_shift_bits": 2,
-                                "center_en": 0,
-                                "center_x":	0,
-                                "center_y":	0
-                            },
-                            "TuningPara": {
-                                "SettingByIso": [{
-                                    "iso": 50,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 100,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 200,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 400,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 800,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 1600,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 3200,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 6400,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 12800,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 25600,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 51200,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 102400,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 204800,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 409600,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }],
-                                "SettingByIso_len": 14
-                            }
-                        },
+						"cac_v03":	{
+							"SettingPara":	{
+								"enable":	0
+							},
+							"TuningPara":	{
+								"SettingByIso":	[{
+										"iso":	0,
+										"bypass":	0,
+										"AutoHighLightDetect":	0,
+										"AutoHighLightOffset":	0,
+										"FixHighLightBase":	0,
+										"YCompensate":	0,
+										"AutoStrengthU":	0,
+										"AutoStrengthV":	0,
+										"GrayStrengthU":	0,
+										"GrayStrengthV":	0
+									}],
+								"SettingByIso_len":	1
+							}
+						},
+						"cac_v10":	{
+							"SettingPara":	{
+								"enable":	0,
+								"psf_path":	"/etc/iqfiles/cac_map_42x24x34.bin",
+								"psf_shift_bits":	2,
+								"center_en":	0,
+								"center_x":	0,
+								"center_y":	0
+							},
+							"TuningPara":	{
+								"SettingByIso":	[{
+										"iso":	50,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	100,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	200,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	400,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	800,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	1600,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	3200,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	6400,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	12800,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	25600,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	51200,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	102400,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	204800,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	409600,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}],
+								"SettingByIso_len":	14
+							}
+						},
 						"af_v30":	{
 							"TuningPara":	{
 								"af_mode":	"CalibDbV2_AFMODE_CONT_PICTURE",
@@ -5456,7 +5491,8 @@
 									"pdSatCntRatio":	0.06,
 									"pdDiscardRegionEn":	0,
 									"pdLessTextureRatio":	0.25,
-									"pdCalibInf": {
+									"pdTargetOffset":	0,
+									"pdCalibInf":	{
 										"pdGainMapW":	32,
 										"pdGainMapH":	32,
 										"pdDccMapW":	64,
@@ -5466,12 +5502,10 @@
 									"pdCenterMinFv":	0,
 									"pdCenterMinRatio":	0,
 									"pdHighlightRatio":	0.5,
-									"pdStepRatio":	[1.0, 1.0, 1.0, 0.9, 0.8, 0.7, 0.7],
+									"pdStepRatio":	[1, 1, 1, 0.9, 0.8, 0.7, 0.7],
 									"pdStepDefocus":	[32, 64, 96, 128, 160, 192, 224],
-									"pdIsoPara":
-									[
-										{
-											"iso": 6400,
+									"pdIsoPara":	[{
+											"iso":	6400,
 											"pdConfdRatio0":	1,
 											"pdConfdRatio1":	1,
 											"pdConfdRatio2":	1,
@@ -5485,21 +5519,20 @@
 											"stablePdOffset":	8,
 											"stableCntRatio":	1.5,
 											"noconfCntThresh":	4,
-											"roiBlkCntW":		3,
-											"roiBlkCntH":		3,
+											"roiBlkCntW":	3,
+											"roiBlkCntH":	3,
 											"fineSearchTbl":	[{
-												"confidence":	0.5,
-												"range":	0,
-												"stepPos":	1
-											}, {
-												"confidence":	0,
-												"range":	4,
-												"stepPos":	1
-											}],
+													"confidence":	0.5,
+													"range":	0,
+													"stepPos":	1
+												}, {
+													"confidence":	0,
+													"range":	4,
+													"stepPos":	1
+												}],
 											"fineSearchTbl_len":	2
-										},
-										{
-											"iso": 204800,
+										}, {
+											"iso":	204800,
 											"pdConfdRatio0":	1,
 											"pdConfdRatio1":	1,
 											"pdConfdRatio2":	1,
@@ -5513,20 +5546,19 @@
 											"stablePdOffset":	8,
 											"stableCntRatio":	1.5,
 											"noconfCntThresh":	4,
-											"roiBlkCntW":		1,
-											"roiBlkCntH":		1,
+											"roiBlkCntW":	1,
+											"roiBlkCntH":	1,
 											"fineSearchTbl":	[{
-												"confidence":	0.5,
-												"range":	8,
-												"stepPos":	2
-											}, {
-												"confidence":	0,
-												"range":	16,
-												"stepPos":	4
-											}],
+													"confidence":	0.5,
+													"range":	8,
+													"stepPos":	2
+												}, {
+													"confidence":	0,
+													"range":	16,
+													"stepPos":	4
+												}],
 											"fineSearchTbl_len":	2
-										}
-									],
+										}],
 									"pdIsoPara_len":	2
 								},
 								"vcmcfg":	{
@@ -5631,7 +5663,7 @@
 												"idx":	2,
 												"spotlt_scene_idx":	1
 											}],
-										"measiso_len": 13
+										"measiso_len":	13
 									}],
 								"zoom_meas_len":	1,
 								"meascfg_tbl":	[{
@@ -5670,8 +5702,7 @@
 										"h_fv_thresh":	4,
 										"highlit_thresh":	912,
 										"v_fv_ratio":	0.5
-									},
-									{
+									}, {
 										"tbl_idx":	1,
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
@@ -5707,26 +5738,25 @@
 										"h_fv_thresh":	4,
 										"highlit_thresh":	912,
 										"v_fv_ratio":	0.5
-									},
-									{
+									}, {
 										"tbl_idx":	2,
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
 										"v1fv_reliable":	0.2,
 										"v2fv_reliable":	0.2,
 										"v1_fir_sel":	1,
-										"v1_band":	[0.010, 0.040],
+										"v1_band":	[0.01, 0.04],
 										"v1_iir_coe":	[0, 503, 0, 0, 8, 0, 0, 9, 0],
-										"v1_fir_coe":	[-1997,   0,  1997],
-										"v2_band":	[0.010, 0.040],
-										"v2_iir_coe":	[503,     8,     9],
-										"v2_fir_coe":	[-1997,   0,  1997],
-										"h1_band":	[0.010, 0.040],
-										"h1_iir1_coe":	[71,   908,  -419,   511,     0,  -511],
-										"h1_iir2_coe":	[19,   989,  -480,   779,     0,  -779],
-										"h2_band":	[0.010, 0.040],
-										"h2_iir1_coe":	[71,   908,  -419,   511,     0,  -511],
-										"h2_iir2_coe":	[19,   989,  -480,   779,     0,  -779],
+										"v1_fir_coe":	[-1997, 0, 1997],
+										"v2_band":	[0.01, 0.04],
+										"v2_iir_coe":	[503, 8, 9],
+										"v2_fir_coe":	[-1997, 0, 1997],
+										"h1_band":	[0.01, 0.04],
+										"h1_iir1_coe":	[71, 908, -419, 511, 0, -511],
+										"h1_iir2_coe":	[19, 989, -480, 779, 0, -779],
+										"h2_band":	[0.01, 0.04],
+										"h2_iir1_coe":	[71, 908, -419, 511, 0, -511],
+										"h2_iir2_coe":	[19, 989, -480, 779, 0, -779],
 										"ldg_en":	1,
 										"ve_ldg_lumth_l":	64,
 										"ve_ldg_gain_l":	28,
@@ -5869,7 +5899,7 @@
 									"TimeDot_len":	6,
 									"GainDot":	[1, 1, 4, 8, 15.5, 850],
 									"GainDot_len":	6,
-									"IspDGainDot":	[1, 1, 1, 1, 1, 2],
+									"IspDGainDot":	[1, 1, 1, 1, 1, 1],
 									"IspDGainDot_len":	6,
 									"PIrisDot":	[512, 512, 512, 512, 512, 512],
 									"PIrisDot_len":	6
@@ -6218,7 +6248,13 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[1.92078, 1, 1, 1.72687],
 										"defaultDayGainHigh":	[2.07002, 1, 1, 1.64899],
-										"xyType2Enable":	1
+										"xyType2Enable":	1,
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"A",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_INDOOR",
@@ -6241,7 +6277,13 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[1.92078, 1, 1, 1.72687],
 										"defaultDayGainHigh":	[2.07002, 1, 1, 1.64899],
-										"xyType2Enable":	1
+										"xyType2Enable":	1,
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"TL84",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_AMBIGUITY",
@@ -6264,7 +6306,13 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[1.92078, 1, 1, 1.72687],
 										"defaultDayGainHigh":	[2.07002, 1, 1, 1.64899],
-										"xyType2Enable":	1
+										"xyType2Enable":	1,
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"D50",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_OUTDOOR",
@@ -6287,7 +6335,13 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[1.92078, 1, 1, 1.72687],
 										"defaultDayGainHigh":	[2.07002, 1, 1, 1.64899],
-										"xyType2Enable":	1
+										"xyType2Enable":	1,
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}, {
 										"name":	"D65",
 										"doorType":	"CALIB_AWB_DOOR_TYPE_OUTDOOR",
@@ -6310,12 +6364,31 @@
 										"dayGainLvThSet":	[1024, 8192],
 										"defaultDayGainLow":	[1.92078, 1, 1, 1.72687],
 										"defaultDayGainHigh":	[2.07002, 1, 1, 1.64899],
-										"xyType2Enable":	1
+										"xyType2Enable":	1,
+										"weight":	{
+											"lumaValue":	[0, 2, 4, 8, 32, 128, 1024, 8192, 65536, 262144],
+											"lumaValue_len":	10,
+											"weight":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+											"weight_len":	10
+										}
 									}],
 								"lightSources_len":	5
 							},
 							"autoExtPara":	{
 								"lightSourceForFirstFrame":	"D50",
+								"smartRun":	{
+									"enable":	1,
+									"cfg":	{
+										"lumaValue":	[0],
+										"lumaValue_len":	1,
+										"lvVarTh":	[0.001],
+										"lvVarTh_len":	1,
+										"wbgainAlgDiffTh":	[0.005],
+										"wbgainAlgDiffTh_len":	1,
+										"wbgainHwDiffTh":	[0.05],
+										"wbgainHwDiffTh_len":	1
+									}
+								},
 								"tolerance":	{
 									"lumaValue":	[256, 512, 32768, 131072],
 									"lumaValue_len":	4,
@@ -6898,7 +6971,7 @@
 						"adehaze_calib_v11":	{
 							"DehazeTuningPara":	{
 								"Enable":	1,
-								"CtrlDataType": "CTRLDATATYPE_ENVLV",
+								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"cfg_alpha":	0,
 								"ByPassThr":	0,
 								"dehaze_setting":	{
@@ -7178,7 +7251,7 @@
 						"colorAsGrey":	{
 							"param":	{
 								"enable":	0,
-								"skip_frame": 10
+								"skip_frame":	10
 							}
 						},
 						"lsc_v2":	{
@@ -10818,111 +10891,110 @@
 								"Setting_len":	2
 							}
 						},
-                        "cac_v03":	{
-                            "SettingPara":	{
-                                "enable":	0
-                            },
-                            "TuningPara":	{
-                                "SettingByIso":	[{
-                                    "iso":	0,
-                                    "bypass":	0,
-                                    "AutoHighLightDetect":	0,
-                                    "AutoHighLightOffset":	0,
-                                    "FixHighLightBase":	0,
-                                    "YCompensate":	0,
-                                    "AutoStrengthU":	0,
-                                    "AutoStrengthV":	0,
-                                    "GrayStrengthU":	0,
-                                    "GrayStrengthV":	0
-                                }],
-                                "SettingByIso_len":	1
-                            }
-                        },
-                        "cac_v10": {
-                            "SettingPara": {
-                                "enable": 0,
-                                "psf_path":	"/etc/iqfiles/cac_map_42x24x34.bin",
-                                "psf_shift_bits": 2,
-                                "center_en": 0,
-                                "center_x":	0,
-                                "center_y":	0
-                            },
-                            "TuningPara": {
-                                "SettingByIso": [{
-                                    "iso": 50,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 100,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 200,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 400,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 800,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 1600,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 3200,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 6400,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 12800,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 25600,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 51200,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 102400,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 204800,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }, {
-                                    "iso": 409600,
-                                    "bypass": 0,
-									"global_strength":	0,
-                                    "strength_table": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-                                }],
-                                "SettingByIso_len": 14
-                            }
-                        },
-						
+						"cac_v03":	{
+							"SettingPara":	{
+								"enable":	0
+							},
+							"TuningPara":	{
+								"SettingByIso":	[{
+										"iso":	0,
+										"bypass":	0,
+										"AutoHighLightDetect":	0,
+										"AutoHighLightOffset":	0,
+										"FixHighLightBase":	0,
+										"YCompensate":	0,
+										"AutoStrengthU":	0,
+										"AutoStrengthV":	0,
+										"GrayStrengthU":	0,
+										"GrayStrengthV":	0
+									}],
+								"SettingByIso_len":	1
+							}
+						},
+						"cac_v10":	{
+							"SettingPara":	{
+								"enable":	0,
+								"psf_path":	"/etc/iqfiles/cac_map_42x24x34.bin",
+								"psf_shift_bits":	2,
+								"center_en":	0,
+								"center_x":	0,
+								"center_y":	0
+							},
+							"TuningPara":	{
+								"SettingByIso":	[{
+										"iso":	50,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	100,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	200,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	400,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	800,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	1600,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	3200,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	6400,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	12800,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	25600,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	51200,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	102400,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	204800,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}, {
+										"iso":	409600,
+										"bypass":	0,
+										"global_strength":	0,
+										"strength_table":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+									}],
+								"SettingByIso_len":	14
+							}
+						},
 						"af_v30":	{
 							"TuningPara":	{
 								"af_mode":	"CalibDbV2_AFMODE_CONT_PICTURE",
@@ -11095,7 +11167,8 @@
 									"pdSatCntRatio":	0.06,
 									"pdDiscardRegionEn":	0,
 									"pdLessTextureRatio":	0.25,
-									"pdCalibInf": {
+									"pdTargetOffset":	0,
+									"pdCalibInf":	{
 										"pdGainMapW":	32,
 										"pdGainMapH":	32,
 										"pdDccMapW":	64,
@@ -11105,12 +11178,10 @@
 									"pdCenterMinFv":	0,
 									"pdCenterMinRatio":	0,
 									"pdHighlightRatio":	0.5,
-									"pdStepRatio":	[1.0, 1.0, 1.0, 0.9, 0.8, 0.7, 0.7],
+									"pdStepRatio":	[1, 1, 1, 0.9, 0.8, 0.7, 0.7],
 									"pdStepDefocus":	[32, 64, 96, 128, 160, 192, 224],
-									"pdIsoPara":
-									[
-										{
-											"iso": 6400,
+									"pdIsoPara":	[{
+											"iso":	6400,
 											"pdConfdRatio0":	1,
 											"pdConfdRatio1":	1,
 											"pdConfdRatio2":	1,
@@ -11124,21 +11195,20 @@
 											"stablePdOffset":	8,
 											"stableCntRatio":	1.5,
 											"noconfCntThresh":	4,
-											"roiBlkCntW":		3,
-											"roiBlkCntH":		3,
+											"roiBlkCntW":	3,
+											"roiBlkCntH":	3,
 											"fineSearchTbl":	[{
-												"confidence":	0.5,
-												"range":	0,
-												"stepPos":	1
-											}, {
-												"confidence":	0,
-												"range":	4,
-												"stepPos":	1
-											}],
+													"confidence":	0.5,
+													"range":	0,
+													"stepPos":	1
+												}, {
+													"confidence":	0,
+													"range":	4,
+													"stepPos":	1
+												}],
 											"fineSearchTbl_len":	2
-										},
-										{
-											"iso": 204800,
+										}, {
+											"iso":	204800,
 											"pdConfdRatio0":	1,
 											"pdConfdRatio1":	1,
 											"pdConfdRatio2":	1,
@@ -11152,20 +11222,19 @@
 											"stablePdOffset":	8,
 											"stableCntRatio":	1.5,
 											"noconfCntThresh":	4,
-											"roiBlkCntW":		1,
-											"roiBlkCntH":		1,
+											"roiBlkCntW":	1,
+											"roiBlkCntH":	1,
 											"fineSearchTbl":	[{
-												"confidence":	0.5,
-												"range":	8,
-												"stepPos":	2
-											}, {
-												"confidence":	0,
-												"range":	16,
-												"stepPos":	4
-											}],
+													"confidence":	0.5,
+													"range":	8,
+													"stepPos":	2
+												}, {
+													"confidence":	0,
+													"range":	16,
+													"stepPos":	4
+												}],
 											"fineSearchTbl_len":	2
-										}
-									],
+										}],
 									"pdIsoPara_len":	2
 								},
 								"vcmcfg":	{
@@ -11270,7 +11339,7 @@
 												"idx":	2,
 												"spotlt_scene_idx":	1
 											}],
-										"measiso_len": 13
+										"measiso_len":	13
 									}],
 								"zoom_meas_len":	1,
 								"meascfg_tbl":	[{
@@ -11309,8 +11378,7 @@
 										"h_fv_thresh":	4,
 										"highlit_thresh":	912,
 										"v_fv_ratio":	0.5
-									},
-									{
+									}, {
 										"tbl_idx":	1,
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
@@ -11346,26 +11414,25 @@
 										"h_fv_thresh":	4,
 										"highlit_thresh":	912,
 										"v_fv_ratio":	0.5
-									},
-									{
+									}, {
 										"tbl_idx":	2,
 										"afmThres":	4,
 										"gammaY":	[0, 45, 108, 179, 245, 344, 409, 459, 500, 567, 622, 676, 759, 833, 896, 962, 1023],
 										"v1fv_reliable":	0.2,
 										"v2fv_reliable":	0.2,
 										"v1_fir_sel":	1,
-										"v1_band":	[0.010, 0.040],
+										"v1_band":	[0.01, 0.04],
 										"v1_iir_coe":	[0, 503, 0, 0, 8, 0, 0, 9, 0],
-										"v1_fir_coe":	[-1997,   0,  1997],
-										"v2_band":	[0.010, 0.040],
-										"v2_iir_coe":	[503,     8,     9],
-										"v2_fir_coe":	[-1997,   0,  1997],
-										"h1_band":	[0.010, 0.040],
-										"h1_iir1_coe":	[71,   908,  -419,   511,     0,  -511],
-										"h1_iir2_coe":	[19,   989,  -480,   779,     0,  -779],
-										"h2_band":	[0.010, 0.040],
-										"h2_iir1_coe":	[71,   908,  -419,   511,     0,  -511],
-										"h2_iir2_coe":	[19,   989,  -480,   779,     0,  -779],
+										"v1_fir_coe":	[-1997, 0, 1997],
+										"v2_band":	[0.01, 0.04],
+										"v2_iir_coe":	[503, 8, 9],
+										"v2_fir_coe":	[-1997, 0, 1997],
+										"h1_band":	[0.01, 0.04],
+										"h1_iir1_coe":	[71, 908, -419, 511, 0, -511],
+										"h1_iir2_coe":	[19, 989, -480, 779, 0, -779],
+										"h2_band":	[0.01, 0.04],
+										"h2_iir1_coe":	[71, 908, -419, 511, 0, -511],
+										"h2_iir2_coe":	[19, 989, -480, 779, 0, -779],
 										"ldg_en":	1,
 										"ve_ldg_lumth_l":	64,
 										"ve_ldg_gain_l":	28,
@@ -11418,4 +11485,3 @@
 		}
 	}
 }
-

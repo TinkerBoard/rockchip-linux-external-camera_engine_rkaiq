@@ -268,6 +268,8 @@ enum cam_thread_type_e {
     ISPP_GAIN_WR,
     ISP_POLL_ISPSTREAMSYNC,
     VICAP_STREAM_ON_EVT,
+    VICAP_RESET_EVT,
+    VICAP_WITH_RK1608_RESET_EVT,
     ISP_POLL_POST_MAX,
 };
 
@@ -295,6 +297,7 @@ enum cam_thread_type_e {
 
 #define ISP_TX_BUF_NUM 4
 #define VIPCAP_TX_BUF_NUM 4
+#define VIPCAP_TX_BUF_NUM_1608 6    // For mount 3 sensor, is mount 4 sensor, is 7
 
 typedef struct {
     int  model_idx;
@@ -439,6 +442,7 @@ typedef struct {
     rk_aiq_cif_info_t *cif_info;
     rk_aiq_ispp_t *ispp_info;
     bool linked_to_isp;
+    bool linked_to_1608;
     bool dvp_itf;
     struct rkmodule_inf mod_info;
 } rk_sensor_full_info_t;
@@ -462,6 +466,7 @@ public:
         xcam_mem_clear(aec_stats);
         aec_stats_valid = false;
         frame_id = -1;
+        af_prior = 0;
     };
     virtual ~RkAiqAecStats() {};
     rk_aiq_isp_aec_stats_t aec_stats;

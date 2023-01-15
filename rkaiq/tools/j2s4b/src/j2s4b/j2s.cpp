@@ -221,7 +221,7 @@ static inline int j2s_enum_get_value(j2s_ctx *ctx, int enum_index,
       return enum_value->value;
   }
 
-  WARN("unknown enum name: %s for %s\n", name, enum_obj->name);
+  ERR("unknown enum name: %s for %s\n", name, enum_obj->name);
   return -1;
 }
 
@@ -242,7 +242,7 @@ static inline const char *j2s_enum_get_name(j2s_ctx *ctx, int enum_index,
       return enum_value->name;
   }
 
-  WARN("unknown enum value: %d for %s\n", value, enum_obj->name);
+  ERR("unknown enum value: %d for %s\n", value, enum_obj->name);
 out:
   return "INVALID";
 }
@@ -1042,7 +1042,7 @@ static int _j2s_json_to_obj(j2s_ctx *ctx, cJSON *json, cJSON *parent,
         if (*buf) {
           memcpy(*buf, str, strlen(str));
           (*buf)[str_len] = '\0';
-          DBG("----->self ptr offset[%d]-[%d]-[%s]\n",
+          DBG("----->self ptr offset[%zu]-[%zu]-[%s]\n",
               ((uint8_t *)buf - ((j2s_pool_t *)ctx->priv)->data),
               (uint8_t *)*buf - ((j2s_pool_t *)ctx->priv)->data, *buf);
         }
@@ -1062,7 +1062,7 @@ static int _j2s_json_to_obj(j2s_ctx *ctx, cJSON *json, cJSON *parent,
         obj->flags != J2S_FLAG_ARRAY) {
       cJSON_DetachItemViaPointer(parent, index_json);
       index_json = NULL;
-      WARN("ignoring index for dep types %s\n", obj->name);
+      ERR("ignoring index for dep types %s\n", obj->name);
     }
 
     if (index_json)
@@ -1106,7 +1106,7 @@ static int _j2s_json_to_obj(j2s_ctx *ctx, cJSON *json, cJSON *parent,
 
     len_json = cJSON_GetObjectItemCaseSensitive(parent, len_name);
     if (!len_json && !query)
-      WARN("missing len in json for dynamic array '%s'\n", obj->name);
+      ERR("missing len in json for dynamic array '%s'\n", obj->name);
 
     index_json = j2s_get_index_json(ctx, parent, obj_index);
 
@@ -1154,7 +1154,7 @@ static int _j2s_json_to_obj(j2s_ctx *ctx, cJSON *json, cJSON *parent,
       size_t real_size = 0;
       *buf = j2s_alloc_data(ctx, len * obj->elem_size, &real_size);
       j2s_alloc_map_record(ctx, buf, *buf, real_size);
-      DBG("----->self ptr offset[%d]-[%d]\n",
+      DBG("----->self ptr offset[%zu]-[%zu]\n",
           ((uint8_t *)buf - ((j2s_pool_t *)ctx->priv)->data),
           (uint8_t *)*buf - ((j2s_pool_t *)ctx->priv)->data);
 
@@ -1351,7 +1351,7 @@ int j2s_json_to_bin(j2s_ctx *ctx, cJSON *json, const char *name, void **ptr,
 
   free(bin_buffer);
 
-  DBG("maps [%d][%d][%d]\n", sizeof(map_index_t), j2s_pool->map_len, map_start);
+  DBG("maps [%zu][%zu][%zu]\n", sizeof(map_index_t), j2s_pool->map_len, map_start);
 
   return 0;
 }

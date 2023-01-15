@@ -63,7 +63,7 @@ if(libdrm_FOUND OR libdrm_rockchip_FOUND)
     else()
         set(LIBDRM_LIBRARIES    ${LIBDRM_LIBRARY})
         set(LIBDRM_INCLUDE_DIRS ${LIBDRM_INCLUDE_DIR})
-        set(LIBDRM_CFLAGS "-DHAS_LIBDRM")
+		set(LIBDRM_CFLAGS "-DHAS_LIBDRM" "-I${LIBDRM_INCLUDE_DIRS}")
     endif()
 
     if(LIBDRM_LIBRARY AND NOT TARGET libdrm::libdrm)

@@ -106,5 +106,16 @@ XCamReturn RkAiqCamGroupAblcV32HandleInt::getAttrib(rk_aiq_blc_attrib_V32_t* att
     return ret;
 }
 
+XCamReturn  RkAiqCamGroupAblcV32HandleInt::getInfo(rk_aiq_blc_info_v32_t* pInfo) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    ret = rk_aiq_uapi_ablc_V32_GetInfo(mAlgoCtx, pInfo);
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
 #endif
 }

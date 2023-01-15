@@ -16,11 +16,15 @@
  */
 #ifndef _RAW_STREAM_PROC_UNIT_H_
 #define _RAW_STREAM_PROC_UNIT_H_
+
 #include <v4l2_device.h>
+
+#include <map>
+
 #include "poll_thread.h"
+#include "safe_queue.h"
 #include "xcam_mutex.h"
 #include "Stream.h"
-#include <map>
 #include "CaptureRawData.h"
 
 using namespace XCam;
@@ -43,8 +47,8 @@ public:
     XCamReturn prepare(int idx);
     void set_rx_devices             (SmartPtr<V4l2Device> mipi_rx_devs[3]);
     SmartPtr<V4l2Device> get_rx_device (int index);
-    void set_rx_format              (const struct v4l2_subdev_format& sns_sd_fmt, uint32_t sns_v4l_pix_fmt);
-    void set_rx_format              (const struct v4l2_subdev_selection& sns_sd_sel, uint32_t sns_v4l_pix_fmt);
+    XCamReturn set_rx_format              (const struct v4l2_subdev_format& sns_sd_fmt, uint32_t sns_v4l_pix_fmt);
+    XCamReturn set_rx_format              (const struct v4l2_subdev_selection& sns_sd_sel, uint32_t sns_v4l_pix_fmt);
     void set_devices                (SmartPtr<V4l2SubDevice> ispdev, CamHwIsp20* handle);
     void set_hdr_frame_readback_infos(uint32_t frame_id, int times);
     void set_hdr_global_tmo_mode(uint32_t frame_id, bool mode);
@@ -72,6 +76,9 @@ public:
     void setCamPhyId(int phyId) {
         mCamPhyId = phyId;
     }
+    void setSensorCategory(bool sensorState) {
+        _is_1608_sensor = sensorState;
+    }
     XCamReturn capture_raw_ctl(capture_raw_t type, int count = 0, const char* capture_dir = nullptr, char* output_dir = nullptr) {
         if (!_rawCap)
             return XCAM_RETURN_ERROR_FAILED;
@@ -83,6 +90,8 @@ public:
             return XCAM_RETURN_ERROR_FAILED;
         return _rawCap->notify_capture_raw();
     }
+    XCamReturn set_csi_mem_word_big_align(uint32_t width, uint32_t height, uint32_t sns_v4l_pix_fmt, int8_t sns_bpp);
+
 protected:
     XCAM_DEAD_COPY (RawStreamProcUnit);
 
@@ -112,9 +121,10 @@ protected:
     SmartPtr<V4l2SubDevice> _isp_core_dev;
     bool _first_trigger;
     Mutex _mipi_trigger_mutex;
-    SafeList<EmptyClass> _msg_queue;
+    SafeQueue<int> _msg_queue;
     PollCallback* _PollCallback;
     CaptureRawData* _rawCap;
+    bool     _is_1608_sensor;
 };
 
 class RawProcThread
@@ -133,13 +143,6 @@ protected:
 
 private:
     RawStreamProcUnit *_handle;
-};
-
-class EmptyClass
-{
-    public:
-	    EmptyClass() {}
-	    ~EmptyClass() {}
 };
 
 }

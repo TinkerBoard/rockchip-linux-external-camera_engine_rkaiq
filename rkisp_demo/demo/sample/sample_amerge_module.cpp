@@ -55,6 +55,19 @@ static void sample_amerge_usage()
         "\t d) AMERGE:         test rk_aiq_user_api2_amerge_v12_SetAttrib stManual BASEFRAME_LONG "
         "EnableEachChn on Async.\n");
     printf("\t e) AMERGE:         test rk_aiq_user_api2_amerge_v12_GetAttrib.\n");
+    printf(
+        "\t f) AMERGE:         test rk_aiq_user_api2_amerge_SetAttrib stManual BASEFRAME_SHORT "
+        "Sync.\n");
+    printf(
+        "\t g) AMERGE:         test rk_aiq_user_api2_amerge_SetAttrib stManual BASEFRAME_SHORT "
+        "Async.\n");
+    printf(
+        "\t h) AMERGE:         test rk_aiq_user_api2_amerge_SetAttrib stManual BASEFRAME_LONG "
+        "Sync.\n");
+    printf(
+        "\t i) AMERGE:         test rk_aiq_user_api2_amerge_SetAttrib stManual BASEFRAME_LONG "
+        "Async.\n");
+    printf("\t j) AMERGE:         test rk_aiq_user_api2_amerge_GetAttrib.\n");
     printf("\t q) AMERGE:         return to main sample screen.\n");
 
     printf("\n");
@@ -79,6 +92,8 @@ XCamReturn sample_amerge_module(const void *arg)
     memset(&attr_v11, 0x0, sizeof(mergeAttrV11_t));
     mergeAttrV12_t attr_v12;
     memset(&attr_v12, 0x0, sizeof(mergeAttrV12_t));
+    amerge_attrib_t attr_v2;
+    memset(&attr_v2, 0x0, sizeof(amerge_attrib_t));
     const demo_context_t *demo_ctx = (demo_context_t *)arg;
     const rk_aiq_sys_ctx_t* ctx ;
     if (demo_ctx->camGroup) {
@@ -376,6 +391,98 @@ XCamReturn sample_amerge_module(const void *arg)
                        attr_v12.stManual.ShortFrmModeData.MDCurve.Coef,
                        attr_v12.stManual.ShortFrmModeData.MDCurve.ms_thd0,
                        attr_v12.stManual.ShortFrmModeData.MDCurve.lm_thd0);
+                break;
+            }
+            case 'f': {
+                printf(
+                    "\t AMERGE test rk_aiq_user_api2_amerge_SetAttrib stManual BASEFRAME_SHORT "
+                    "Sync\n\n");
+                attr_v2.sync.sync_mode                                   = RK_AIQ_UAPI_MODE_DEFAULT;
+                attr_v2.sync.done                                        = false;
+                attr_v2.attrV30.opMode                                   = MERGE_OPMODE_MANU;
+                attr_v2.attrV30.stManual.BaseFrm                         = BASEFRAME_SHORT;
+                attr_v2.attrV30.stManual.ShortFrmModeData.OECurve.Smooth = 0.4;
+                attr_v2.attrV30.stManual.ShortFrmModeData.OECurve.Offset = 210;
+                attr_v2.attrV30.stManual.ShortFrmModeData.MDCurve.Coef   = 0.05;
+                attr_v2.attrV30.stManual.ShortFrmModeData.MDCurve.ms_thd0 = 0.00;
+                attr_v2.attrV30.stManual.ShortFrmModeData.MDCurve.lm_thd0 = 0.00;
+                rk_aiq_user_api2_amerge_SetAttrib(ctx, attr_v2);
+                break;
+            }
+            case 'g': {
+                printf(
+                    "\t AMERGE test rk_aiq_user_api2_amerge_SetAttrib stManual BASEFRAME_SHORT "
+                    "Async\n\n");
+                attr_v2.sync.sync_mode                                    = RK_AIQ_UAPI_MODE_ASYNC;
+                attr_v2.sync.done                                         = false;
+                attr_v2.attrV30.opMode                                    = MERGE_OPMODE_MANU;
+                attr_v2.attrV30.stManual.BaseFrm                          = BASEFRAME_SHORT;
+                attr_v2.attrV30.stManual.ShortFrmModeData.OECurve.Smooth  = 0.5;
+                attr_v2.attrV30.stManual.ShortFrmModeData.OECurve.Offset  = 230;
+                attr_v2.attrV30.stManual.ShortFrmModeData.MDCurve.Coef    = 0.07;
+                attr_v2.attrV30.stManual.ShortFrmModeData.MDCurve.ms_thd0 = 0.00;
+                attr_v2.attrV30.stManual.ShortFrmModeData.MDCurve.lm_thd0 = 0.00;
+                rk_aiq_user_api2_amerge_SetAttrib(ctx, attr_v2);
+                break;
+            }
+            case 'h': {
+                printf(
+                    "\t AMERGE test rk_aiq_user_api2_amerge_SetAttrib stManual BASEFRAME_LONG "
+                    "Sync\n\n");
+                attr_v2.sync.sync_mode                                  = RK_AIQ_UAPI_MODE_DEFAULT;
+                attr_v2.sync.done                                       = false;
+                attr_v2.attrV30.opMode                                  = MERGE_OPMODE_MANU;
+                attr_v2.attrV30.stManual.BaseFrm                        = BASEFRAME_LONG;
+                attr_v2.attrV30.stManual.LongFrmModeData.OECurve.Smooth = 0.6;
+                attr_v2.attrV30.stManual.LongFrmModeData.OECurve.Offset = 240;
+                attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.LM_smooth = 0.8;
+                attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.LM_offset = 38;
+                attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.MS_smooth = 0.8;
+                attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.MS_offset = 38;
+                rk_aiq_user_api2_amerge_SetAttrib(ctx, attr_v2);
+                break;
+            }
+            case 'i': {
+                printf(
+                    "\t AMERGE test rk_aiq_user_api2_amerge_SetAttrib stManual BASEFRAME_LONG "
+                    "Async\n\n");
+                attr_v2.sync.sync_mode                                     = RK_AIQ_UAPI_MODE_ASYNC;
+                attr_v2.sync.done                                          = false;
+                attr_v2.attrV30.opMode                                     = MERGE_OPMODE_MANU;
+                attr_v2.attrV30.stManual.BaseFrm                           = BASEFRAME_LONG;
+                attr_v2.attrV30.stManual.LongFrmModeData.OECurve.Smooth    = 0.7;
+                attr_v2.attrV30.stManual.LongFrmModeData.OECurve.Offset    = 280;
+                attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.LM_smooth = 0.8;
+                attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.LM_offset = 38;
+                attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.MS_smooth = 0.8;
+                attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.MS_offset = 38;
+                rk_aiq_user_api2_amerge_SetAttrib(ctx, attr_v2);
+                break;
+            }
+            case 'j': {
+                printf("\t AMERGE test rk_aiq_user_api2_amerge_GetAttrib\n\n");
+                rk_aiq_user_api2_amerge_GetAttrib(ctx, &attr_v2);
+                printf("\t sync = %d, done = %d\n", attr_v2.sync.sync_mode, attr_v2.sync.done);
+                printf("\t attr_v2.mode:%d Envlv:%f MoveCoef:%f\n\n", attr_v2.attrV30.opMode,
+                       attr_v2.attrV30.CtlInfo.Envlv, attr_v2.attrV30.CtlInfo.MoveCoef);
+                printf("\t BaseFrm:%d \n\n", attr_v2.attrV30.stManual.BaseFrm);
+                printf("\t LongFrmModeData OECurve Smooth:%f Offset:%f\n\n",
+                       attr_v2.attrV30.stManual.LongFrmModeData.OECurve.Smooth,
+                       attr_v2.attrV30.stManual.LongFrmModeData.OECurve.Offset);
+                printf(
+                    "\t LongFrmModeData MDCurve LM_smooth:%f LM_offset:%f MS_smooth%f "
+                    "MS_offset:%f\n\n",
+                    attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.LM_smooth,
+                    attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.LM_offset,
+                    attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.MS_smooth,
+                    attr_v2.attrV30.stManual.LongFrmModeData.MDCurve.MS_offset);
+                printf("\t ShortFrmModeData OECurve Smooth:%f Offset:%f\n\n",
+                       attr_v2.attrV30.stManual.ShortFrmModeData.OECurve.Smooth,
+                       attr_v2.attrV30.stManual.ShortFrmModeData.OECurve.Offset);
+                printf("\t ShortFrmModeData MDCurve Coef:%f ms_thd0:%f lm_thd0%f\n\n",
+                       attr_v2.attrV30.stManual.ShortFrmModeData.MDCurve.Coef,
+                       attr_v2.attrV30.stManual.ShortFrmModeData.MDCurve.ms_thd0,
+                       attr_v2.attrV30.stManual.ShortFrmModeData.MDCurve.lm_thd0);
                 break;
             }
             default:
