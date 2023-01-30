@@ -494,12 +494,15 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
         params->mFocusParams = NULL;
 #if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
         params->mAfV32Params = cur_params->mAfV32Params;
+        params->mAfV32Params->data()->frame_id = shared->frameId;
 #endif
 #if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
         params->mAfV3xParams = cur_params->mAfV3xParams;
+        params->mAfV3xParams->data()->frame_id = shared->frameId;
 #endif
 #if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
         params->mAfParams = cur_params->mAfParams;
+        params->mAfParams->data()->frame_id = shared->frameId;
 #endif
         return XCAM_RETURN_BYPASS;
     }
@@ -531,12 +534,15 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
         params->mFocusParams = NULL;
 #if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
         params->mAfV32Params = cur_params->mAfV32Params;
+        params->mAfV32Params->data()->frame_id = shared->frameId;
 #endif
 #if RKAIQ_HAVE_AF_V30 || RKAIQ_ONLY_AF_STATS_V30
         params->mAfV3xParams = cur_params->mAfV3xParams;
+        params->mAfV3xParams->data()->frame_id = shared->frameId;
 #endif
 #if RKAIQ_HAVE_AF_V20 || RKAIQ_ONLY_AF_STATS_V20
         params->mAfParams = cur_params->mAfParams;
+        params->mAfParams->data()->frame_id = shared->frameId;
 #endif
         return XCAM_RETURN_BYPASS;
     }

@@ -897,17 +897,23 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
     if (!mProcResShared.ptr()) {
 #if defined(ISP_HW_V30)
         params->mAwbV3xParams = cur_params->mAwbV3xParams;
+        params->mAwbV3xParams->data()->frame_id = shared->frameId;
 #elif defined(ISP_HW_V21)
         params->mAwbV21Params = cur_params->mAwbV21Params;
+        params->mAwbV21Params->data()->frame_id = shared->frameId;
 #elif defined(ISP_HW_V32)
         params->mAwbV32Params = cur_params->mAwbV32Params;
+        params->mAwbV32Params->data()->frame_id = shared->frameId;
 #else
         params->mAwbParams = cur_params->mAwbParams;
+        params->mAwbParams->data()->frame_id = shared->frameId;
 #endif
 #if defined(ISP_HW_V32)
         params->mAwbGainV32Params = cur_params->mAwbGainV32Params;
+        params->mAwbGainV32Params->data()->frame_id = shared->frameId;
 #else
         params->mAwbGainParams = cur_params->mAwbGainParams;
+        params->mAwbGainParams->data()->frame_id = shared->frameId;
 #endif
         return XCAM_RETURN_BYPASS;
     }
@@ -918,17 +924,23 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
         LOGD_ANALYZER("no awb result");
 #if defined(ISP_HW_V30)
         params->mAwbV3xParams = cur_params->mAwbV3xParams;
+        params->mAwbV3xParams->data()->frame_id = shared->frameId;
 #elif defined(ISP_HW_V21)
         params->mAwbV21Params = cur_params->mAwbV21Params;
+        params->mAwbV21Params->data()->frame_id = shared->frameId;
 #elif defined(ISP_HW_V32)
         params->mAwbV32Params = cur_params->mAwbV32Params;
+        params->mAwbV32Params->data()->frame_id = shared->frameId;
 #else
         params->mAwbParams = cur_params->mAwbParams;
+        params->mAwbParams->data()->frame_id = shared->frameId;
 #endif
 #if defined(ISP_HW_V32)
         params->mAwbGainV32Params = cur_params->mAwbGainV32Params;
+        params->mAwbGainV32Params->data()->frame_id = shared->frameId;
 #else
         params->mAwbGainParams = cur_params->mAwbGainParams;
+        params->mAwbGainParams->data()->frame_id = shared->frameId;
 #endif
         mProcResShared = NULL;
         return XCAM_RETURN_BYPASS;

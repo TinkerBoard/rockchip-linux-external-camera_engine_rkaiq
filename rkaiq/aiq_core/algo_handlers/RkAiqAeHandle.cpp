@@ -976,7 +976,9 @@ XCamReturn RkAiqAeHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     if (!mProcResShared.ptr()) {
         params->mExposureParams = NULL;
         params->mAecParams      = cur_params->mAecParams;
+        params->mAecParams->data()->frame_id = shared->frameId;
         params->mHistParams     = cur_params->mHistParams;
+        params->mHistParams->data()->frame_id = shared->frameId;
         return XCAM_RETURN_NO_ERROR;
     }
     RkAiqAlgoProcResAe* ae_proc                 = &mProcResShared->result;
@@ -986,7 +988,9 @@ XCamReturn RkAiqAeHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
         mProcResShared = NULL;
         params->mExposureParams = NULL;
         params->mAecParams      = cur_params->mAecParams;
+        params->mAecParams->data()->frame_id = shared->frameId;
         params->mHistParams     = cur_params->mHistParams;
+        params->mHistParams->data()->frame_id = shared->frameId;
         LOGD_ANALYZER("no ae_proc result");
         return XCAM_RETURN_NO_ERROR;
     }
@@ -996,7 +1000,9 @@ XCamReturn RkAiqAeHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
         mProcResShared = NULL;
         params->mExposureParams = NULL;
         params->mAecParams      = cur_params->mAecParams;
+        params->mAecParams->data()->frame_id = shared->frameId;
         params->mHistParams     = cur_params->mHistParams;
+        params->mHistParams->data()->frame_id = shared->frameId;
         LOGD_ANALYZER("no ae_post result");
         return XCAM_RETURN_NO_ERROR;
     }
