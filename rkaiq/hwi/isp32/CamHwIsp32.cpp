@@ -63,11 +63,12 @@ void CamHwIsp32::gen_full_isp_params(const struct isp32_isp_params_cfg* update_p
 
     for (i = 0; i <= RK_ISP2X_MAX_ID; i++) {
         if (update_params->module_cfg_update & (1LL << i)) {
-#define CHECK_UPDATE_PARAMS(dst, src)           \
-    if (memcmp(&dst, &src, sizeof(dst)) == 0 && !mTbInfo.is_pre_aiq) { \
-        continue;                               \
-    }                                           \
-    *module_cfg_update_partial |= 1LL << i;     \
+#define CHECK_UPDATE_PARAMS(dst, src)                                                 \
+    if ((mTbInfo.prd_type == RK_AIQ_PRD_TYPE_NORMAL) ||                               \
+        (mTbInfo.prd_type != RK_AIQ_PRD_TYPE_NORMAL && full_params->frame_id != 0)) { \
+        if (memcmp(&dst, &src, sizeof(dst)) == 0) continue;                           \
+    }                                                                                 \
+    *module_cfg_update_partial |= 1LL << i;                                           \
     dst = src;
 
             full_params->module_cfg_update |= 1LL << i;
@@ -340,6 +341,7 @@ XCamReturn CamHwIsp32::setIspConfig() {
         if (isp_params->module_cfg_update & ISP2X_MODULE_LSC)
             isp_params->module_en_update |= ISP2X_MODULE_LSC;
         isp_params->frame_id = frameId;
+        _full_active_isp32_params.frame_id = frameId;
 
         {
             SmartLock locker(_isp_params_cfg_mutex);
@@ -366,26 +368,34 @@ XCamReturn CamHwIsp32::setIspConfig() {
                   isp_params->others.bls_cfg.isp_ob_predgain,
                   isp_params->others.bls_cfg.isp_ob_max);
 
-        if (mTbInfo.is_pre_aiq) {
-            static bool not_skip_first = true;
-            static struct isp32_rawawb_meas_cfg awb_cfg;
-            if (frameId == 0 && not_skip_first) {
-                not_skip_first = false;
-                awb_cfg = isp_params->meas.rawawb;
-                LOGE_ANALYZER("<TB> Skip config id(%d)'s isp params", frameId);
-                mIspParamsDev->return_buffer_to_pool(v4l2buf);
-                return XCAM_RETURN_NO_ERROR;
-            } else if (!not_skip_first) {
-                isp_params->meas.rawawb = awb_cfg;
+        if (mTbInfo.prd_type != RK_AIQ_PRD_TYPE_NORMAL) {
+            if (mTbInfo.is_pre_aiq) {
+                static bool not_skip_first = true;
+                static struct isp32_rawawb_meas_cfg awb_cfg;
+                if (frameId == 0 && not_skip_first) {
+                    not_skip_first = false;
+                    awb_cfg = isp_params->meas.rawawb;
+                    LOGE_ANALYZER("<TB> Skip config id(%d)'s isp params", frameId);
+                    mIspParamsDev->return_buffer_to_pool(v4l2buf);
+                    return XCAM_RETURN_NO_ERROR;
+                } else if (!not_skip_first) {
+                    awb_cfg.pre_wbgain_inv_r = isp_params->meas.rawawb.pre_wbgain_inv_r;
+                    awb_cfg.pre_wbgain_inv_g = isp_params->meas.rawawb.pre_wbgain_inv_g;
+                    awb_cfg.pre_wbgain_inv_b = isp_params->meas.rawawb.pre_wbgain_inv_b;
+                    isp_params->meas.rawawb = awb_cfg;
+                }
+                isp_params->module_en_update =
+                    _full_active_isp32_params.module_en_update;
+                isp_params->module_cfg_update =
+                    _full_active_isp32_params.module_cfg_update;
+                LOGE_ANALYZER("<TB> Config id(%d)'s isp params, ens %x ens_up %x, cfg_up %x", frameId,
+                              isp_params->module_ens,
+                              isp_params->module_en_update,
+                              isp_params->module_cfg_update);
+            } else if (frameId == 0) {
+                    mIspParamsDev->return_buffer_to_pool(v4l2buf);
+                    return XCAM_RETURN_NO_ERROR;
             }
-            isp_params->module_en_update =
-                _full_active_isp32_params.module_en_update;
-            isp_params->module_cfg_update =
-                _full_active_isp32_params.module_cfg_update;
-            LOGE_ANALYZER("<TB> Config id(%d)'s isp params, ens %x ens_up %x, cfg_up %x", frameId,
-                          isp_params->module_ens,
-                          isp_params->module_en_update,
-                          isp_params->module_cfg_update);
         }
 
         if (mIspParamsDev->queue_buffer(v4l2buf) != 0) {
