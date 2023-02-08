@@ -494,10 +494,21 @@
  * - DEHAZE: Fix null stats issue
  * - DEHAZE: Deal with no ynr sigma case which causes maze artifict
  * - HWI: Handle exceptions caused by no stats
+ * v4.0x9.b
+ * - aiq: hwi: fix bug in fastboot process
+ * - awb : fix bug in setting initial wbgain for fast awb
+ * - aiq: core: Fix no ready result when no stats
+ * - update sc3338_FKO1_30IRC-F16.json
+ * - smart ir: add log level ctrl
+ * - smart ir: add awbgain dispersion value for n2d
+ * - awb: modify for the switch of ircut
+ * - smart_ir: fix building
+ * - Add option to disable build with libdrm
+ * - API: add enum static info by physical id
  */
 
-#define RK_AIQ_VERSION_REAL_V "v4.0x9.b-rc1"
-#define RK_AIQ_RELEASE_DATE "2022-11-18"
+#define RK_AIQ_VERSION_REAL_V "v4.0x9.b"
+#define RK_AIQ_RELEASE_DATE "2023-02-08"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 
