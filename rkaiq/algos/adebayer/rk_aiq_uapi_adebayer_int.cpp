@@ -2,7 +2,7 @@
 #if RKAIQ_HAVE_DEBAYER_V1
 #include "adebayer/rk_aiq_adebayer_algo_v1.h"
 #endif
-#if RKAIQ_HAVE_DEBAYER_V2
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
 #include "adebayer/rk_aiq_adebayer_algo_v2.h"
 #endif
 
@@ -119,4 +119,58 @@ rk_aiq_uapi_adebayer_v2_GetAttrib
     return XCAM_RETURN_NO_ERROR;
 }
 
+#endif
+
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+XCamReturn
+rk_aiq_uapi_adebayer_v2lite_SetAttrib
+(
+    RkAiqAlgoContext* ctx,
+    adebayer_v2lite_attrib_t attr,
+    bool need_sync
+) {
+    if(ctx == NULL) {
+        LOGE_ADEBAYER("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    AdebayerContext_t* pAdebayerCtx = (AdebayerContext_t*)&ctx->adebayerCtx;
+
+    pAdebayerCtx->mode = attr.mode;
+
+    if (attr.mode == RK_AIQ_DEBAYER_MODE_AUTO) {
+        pAdebayerCtx->full_param_v2_lite = attr.stAuto;
+
+    } else if (attr.mode == RK_AIQ_DEBAYER_MODE_MANUAL) {
+        pAdebayerCtx->select_param_v2_lite = attr.stManual;
+    } else {
+        LOGE_ADEBAYER("Invalid mode: %d\n", attr.mode);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    pAdebayerCtx->is_reconfig = true;
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
+rk_aiq_uapi_adebayer_v2lite_GetAttrib
+(
+    RkAiqAlgoContext*  ctx,
+    adebayer_v2lite_attrib_t* attr
+)
+{
+    if(ctx == NULL || attr == NULL) {
+        LOGE_ADEBAYER("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return XCAM_RETURN_ERROR_PARAM;
+    }
+
+    AdebayerContext_t* pAdebayerCtx = (AdebayerContext_t*)&ctx->adebayerCtx;
+
+    attr->mode = pAdebayerCtx->mode;
+    attr->stAuto = pAdebayerCtx->full_param_v2_lite;
+    attr->stManual = pAdebayerCtx->select_param_v2_lite;
+
+    return XCAM_RETURN_NO_ERROR;
+}
 #endif

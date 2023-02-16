@@ -391,10 +391,11 @@ typedef struct Aec_uapi_advanced_attr_s {
 
 typedef enum AecHwVersion_e
 {
-    AEC_HARDWARE_V0 = 0,  //at most support Hdr 3_frame, 2 AEBIG & 1 AELITE for input raw, support yuv luma e.g. rk1126/1109
-    AEC_HARDWARE_V1 = 1,  //at most support Hdr 2_frame, 1 AEBIG & 1 AELITE for input raw, not support yuv luma  e.g. rk356X
-    AEC_HARDWARE_V2 = 2,  //at most support Hdr 3_frame, 2 AEBIG & 1 AELITE for input raw, not support yuv luma, share AEBIG3 with AF e.g. rk3588
-    AEC_HARDWARE_V3 = 3,  //at most support Hdr 2_frame, 1 AEBIG & 1 AELITE for input raw, not support yuv luma, share AEBIG3 with AF e.g. rk1106
+    AEC_HARDWARE_V0 = 0,  /*at most support Hdr 3_frame, 2 AEBIG & 1 AELITE for input raw, support yuv luma e.g. rv1126/1109*/
+    AEC_HARDWARE_V1 = 1,  /*at most support Hdr 2_frame, 1 AEBIG & 1 AELITE for input raw, not support yuv luma  e.g. rk356X*/
+    AEC_HARDWARE_V2 = 2,  /*at most support Hdr 3_frame, 2 AEBIG & 1 AELITE for input raw, not support yuv luma, share AEBIG3 with AF e.g. rk3588*/
+    AEC_HARDWARE_V3 = 3,  /*at most support Hdr 2_frame, 1 AEBIG & 1 AELITE for input raw, not support yuv luma, share AEBIG3 with AF e.g. rv1106*/
+    AEC_HARDWARE_V4 = 4,  /*at most support Hdr 2_frame, only exist AELITE AEBIG3, not support yuv luma, share AELITE AEBIG3 with AF e.g. rk3562*/
     AEC_HARDWARE_MAX,
 } AecHwVersion_t;
 

@@ -23,7 +23,7 @@
 #include "xcam_mutex.h"
 
 namespace RkCam {
-#if RKAIQ_HAVE_BAYERTNR_V23
+#if (RKAIQ_HAVE_BAYERTNR_V23 || RKAIQ_HAVE_BAYERTNR_V23_LITE)
 
 class RkAiqAbayertnrV23HandleInt : virtual public RkAiqHandle {
 public:
@@ -31,14 +31,15 @@ public:
         : RkAiqHandle(des, aiqCore) {
         updateStrength = false;
         updateAtt      = false;
+        updateAttLite  = false;
         memset(&mCurStrength, 0x00, sizeof(mCurStrength));
         memset(&mNewStrength, 0x00, sizeof(mNewStrength));
         mCurStrength.percent = 1.0;
         mNewStrength.percent = 1.0;
         memset(&mCurAtt, 0x00, sizeof(mCurAtt));
         memset(&mNewAtt, 0x00, sizeof(mNewAtt));
-        memset(&mCurInfo, 0x00, sizeof(mCurInfo));
-        memset(&mNewInfo, 0x00, sizeof(mNewInfo));
+        memset(&mCurAttLite, 0x00, sizeof(mCurAttLite));
+        memset(&mNewAttLite, 0x00, sizeof(mNewAttLite));
     };
     virtual ~RkAiqAbayertnrV23HandleInt() {
         RkAiqHandle::deInit();
@@ -52,6 +53,8 @@ public:
     // TODO add algo specific methords, this is a sample
     XCamReturn setAttrib(const rk_aiq_bayertnr_attrib_v23_t* att);
     XCamReturn getAttrib(rk_aiq_bayertnr_attrib_v23_t* att);
+    XCamReturn setAttribLite(const rk_aiq_bayertnr_attrib_v23L_t* att);
+    XCamReturn getAttribLite(rk_aiq_bayertnr_attrib_v23L_t* att);
     XCamReturn setStrength(const rk_aiq_bayertnr_strength_v23_t* pStrength);
     XCamReturn getStrength(rk_aiq_bayertnr_strength_v23_t* pStrength);
     XCamReturn getInfo(rk_aiq_bayertnr_info_v23_t* pInfo);
@@ -65,12 +68,12 @@ private:
     // TODO
     rk_aiq_bayertnr_attrib_v23_t mCurAtt;
     rk_aiq_bayertnr_attrib_v23_t mNewAtt;
+    rk_aiq_bayertnr_attrib_v23L_t mCurAttLite;
+    rk_aiq_bayertnr_attrib_v23L_t mNewAttLite;
+    mutable std::atomic<bool> updateAttLite;
     rk_aiq_bayertnr_strength_v23_t mCurStrength;
     rk_aiq_bayertnr_strength_v23_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
-    rk_aiq_bayertnr_info_v23_t mCurInfo;
-    rk_aiq_bayertnr_info_v23_t mNewInfo;
-    mutable std::atomic<bool> updateInfo;
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAbayertnrV23HandleInt);

@@ -48,6 +48,11 @@ public:
     XCamReturn getAttribV2(adebayer_v2_attrib_t* att);
 #endif
 
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+    XCamReturn setAttribV2(adebayer_v2lite_attrib_t att);
+    XCamReturn getAttribV2(adebayer_v2lite_attrib_t* att);
+#endif
+
 protected:
     virtual void init();
     virtual void deInit() {
@@ -66,6 +71,10 @@ private:
     adebayer_v2_attrib_t mNewAttV2;
 #endif
 
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+    adebayer_v2lite_attrib_t mCurAttV2Lite;
+    adebayer_v2lite_attrib_t mNewAttV2Lite;
+#endif
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAdebayerHandleInt);

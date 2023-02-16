@@ -24,7 +24,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
-#if RKAIQ_HAVE_BAYERTNR_V23
+#if (RKAIQ_HAVE_BAYERTNR_V23 || RKAIQ_HAVE_BAYERTNR_V23_LITE)
 
 XCamReturn
 rk_aiq_user_api_abayertnrV23_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_bayertnr_attrib_v23_t* attr)
@@ -108,7 +108,81 @@ rk_aiq_user_api_abayertnrV23_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_b
     return XCAM_RETURN_NO_ERROR;
 }
 
+XCamReturn rk_aiq_user_api_abayertnrV23_SetAttribLite(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                      const rk_aiq_bayertnr_attrib_v23L_t* attr) {
+    CHECK_USER_API_ENABLE2(sys_ctx);
+    CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AMFNR);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        RkAiqCamGroupAbayertnrV23HandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupAbayertnrV23HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
+        if (algo_handle) {
+            LOGD_ANR("%s:%d !!!!!!!!!!!!!group!!!!!!!!\n", __FUNCTION__, __LINE__);
+            return algo_handle->setAttribLite(attr);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t*)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx) continue;
+
+                LOGD_ANR("%s:%d !!!!!!!!!!!!!multi single!!!!!!!!\n", __FUNCTION__, __LINE__);
+                RkAiqAbayertnrV23HandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAbayertnrV23HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AMFNR);
+                if (singleCam_algo_handle) ret = singleCam_algo_handle->setAttribLite(attr);
+            }
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif
+    } else {
+        RkAiqAbayertnrV23HandleInt* algo_handle =
+            algoHandle<RkAiqAbayertnrV23HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
+        LOGD_ANR("%s:%d !!!!!!!!!!!!! single!!!!!!!!\n", __FUNCTION__, __LINE__);
+        if (algo_handle) {
+            return algo_handle->setAttribLite(attr);
+        }
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn rk_aiq_user_api_abayertnrV23_GetAttribLite(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                      rk_aiq_bayertnr_attrib_v23L_t* attr) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        RkAiqCamGroupAbayertnrV23HandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupAbayertnrV23HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
+        if (algo_handle) {
+            LOGD_ANR("%s:%d !!!!!!!!!!!!!group!!!!!!!!\n", __FUNCTION__, __LINE__);
+            return algo_handle->getAttribLite(attr);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t*)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx) continue;
+
+                LOGD_ANR("%s:%d !!!!!!!!!!!!!multi single!!!!!!!!\n", __FUNCTION__, __LINE__);
+                RkAiqAbayertnrV23HandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAbayertnrV23HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AMFNR);
+                if (singleCam_algo_handle) ret = singleCam_algo_handle->getAttribLite(attr);
+            }
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif
+    } else {
+        RkAiqAbayertnrV23HandleInt* algo_handle =
+            algoHandle<RkAiqAbayertnrV23HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_AMFNR);
+        LOGD_ANR("%s:%d !!!!!!!!!!!!! single!!!!!!!!\n", __FUNCTION__, __LINE__);
+        if (algo_handle) {
+            return algo_handle->getAttribLite(attr);
+        }
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
 
 XCamReturn
 rk_aiq_user_api_abayertnrV23_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_bayertnr_strength_v23_t *pStrength)
@@ -249,9 +323,18 @@ rk_aiq_user_api_abayertnrV23_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_b
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 
-XCamReturn
-rk_aiq_user_api_abayertnrV23_SetStrength(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_bayertnr_strength_v23_t *pStrength)
-{
+XCamReturn rk_aiq_user_api_abayertnrV23_SetAttribLite(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                      const rk_aiq_bayertnr_attrib_v23L_t* attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn rk_aiq_user_api_abayertnrV23_GetAttribLite(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                      rk_aiq_bayertnr_attrib_v23L_t* attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn rk_aiq_user_api_abayertnrV23_SetStrength(
+    const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_bayertnr_strength_v23_t* pStrength) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 

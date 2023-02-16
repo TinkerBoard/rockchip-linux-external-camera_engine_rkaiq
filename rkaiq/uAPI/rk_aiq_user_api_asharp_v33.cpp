@@ -26,7 +26,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
-#if RKAIQ_HAVE_SHARP_V33
+#if (RKAIQ_HAVE_SHARP_V33 || RKAIQ_HAVE_SHARP_V33_LITE)
 
 XCamReturn rk_aiq_user_api_asharpV33_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
         const rk_aiq_sharp_attrib_v33_t* attr) {
@@ -100,6 +100,84 @@ XCamReturn rk_aiq_user_api_asharpV33_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
         LOGD_ASHARP("%s:%d !!!!!!!!!!!!! single!!!!!!!!\n", __FUNCTION__, __LINE__);
         if (algo_handle) {
             return algo_handle->getAttrib(attr);
+        }
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn rk_aiq_user_api_asharpV33Lite_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                   const rk_aiq_sharp_attrib_v33LT_t* attr) {
+    CHECK_USER_API_ENABLE2(sys_ctx);
+    CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ASHARP);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        RkAiqCamGroupAsharpV33HandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupAsharpV33HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ASHARP);
+
+        if (algo_handle) {
+            LOGD_ASHARP("%s:%d !!!!!!!!!!!!!group!!!!!!!!\n", __FUNCTION__, __LINE__);
+            return algo_handle->setAttribLite(attr);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t*)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx) continue;
+
+                LOGD_ASHARP("%s:%d !!!!!!!!!!!!!multi single!!!!!!!!\n", __FUNCTION__, __LINE__);
+                RkAiqAsharpV33HandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAsharpV33HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_ASHARP);
+                if (singleCam_algo_handle) ret = singleCam_algo_handle->setAttribLite(attr);
+            }
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif  // RKAIQ_ENABLE_CAMGROUP
+    } else {
+        RkAiqAsharpV33HandleInt* algo_handle =
+            algoHandle<RkAiqAsharpV33HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ASHARP);
+        LOGD_ASHARP("%s:%d !!!!!!!!!!!!! single!!!!!!!!\n", __FUNCTION__, __LINE__);
+        if (algo_handle) {
+            return algo_handle->setAttribLite(attr);
+        }
+    }
+
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn rk_aiq_user_api_asharpV33LT_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 rk_aiq_sharp_attrib_v33LT_t* attr) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
+#ifdef RKAIQ_ENABLE_CAMGROUP
+        RkAiqCamGroupAsharpV33HandleInt* algo_handle =
+            camgroupAlgoHandle<RkAiqCamGroupAsharpV33HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ASHARP);
+
+        if (algo_handle) {
+            LOGD_ASHARP("%s:%d !!!!!!!!!!!!!group!!!!!!!!\n", __FUNCTION__, __LINE__);
+            return algo_handle->getAttribLite(attr);
+        } else {
+            const rk_aiq_camgroup_ctx_t* camgroup_ctx = (rk_aiq_camgroup_ctx_t*)sys_ctx;
+            for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
+                if (!camCtx) continue;
+
+                LOGD_ASHARP("%s:%d !!!!!!!!!!!!!multi single!!!!!!!!\n", __FUNCTION__, __LINE__);
+                RkAiqAsharpV33HandleInt* singleCam_algo_handle =
+                    algoHandle<RkAiqAsharpV33HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_ASHARP);
+                if (singleCam_algo_handle) ret = singleCam_algo_handle->getAttribLite(attr);
+            }
+        }
+#else
+        return XCAM_RETURN_ERROR_FAILED;
+#endif  // RKAIQ_ENABLE_CAMGROUP
+    } else {
+        RkAiqAsharpV33HandleInt* algo_handle =
+            algoHandle<RkAiqAsharpV33HandleInt>(sys_ctx, RK_AIQ_ALGO_TYPE_ASHARP);
+        LOGD_ASHARP("%s:%d !!!!!!!!!!!!! single!!!!!!!!\n", __FUNCTION__, __LINE__);
+        if (algo_handle) {
+            return algo_handle->getAttribLite(attr);
         }
     }
 
@@ -233,6 +311,16 @@ XCamReturn rk_aiq_user_api_asharpV33_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
 
 XCamReturn rk_aiq_user_api_asharpV33_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
         rk_aiq_sharp_attrib_v33_t* attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn rk_aiq_user_api_asharpV33LT_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 const rk_aiq_sharp_attrib_v33LT_t* attr) {
+    return XCAM_RETURN_ERROR_UNKNOWN;
+}
+
+XCamReturn rk_aiq_user_api_asharpV33LT_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                 rk_aiq_sharp_attrib_v33LT_t* attr) {
     return XCAM_RETURN_ERROR_UNKNOWN;
 }
 

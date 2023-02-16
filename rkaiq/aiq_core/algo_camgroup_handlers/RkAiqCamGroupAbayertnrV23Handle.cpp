@@ -18,7 +18,7 @@
 
 namespace RkCam {
 
-#if RKAIQ_HAVE_BAYERTNR_V23
+#if (RKAIQ_HAVE_BAYERTNR_V23 || RKAIQ_HAVE_BAYERTNR_V23_LITE)
 XCamReturn RkAiqCamGroupAbayertnrV23HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
@@ -31,6 +31,14 @@ XCamReturn RkAiqCamGroupAbayertnrV23HandleInt::updateConfig(bool needSync) {
         rk_aiq_uapi_camgroup_abayertnrV23_SetAttrib(mAlgoCtx, &mCurAtt, false);
         sendSignal(mCurAtt.sync.sync_mode);
         updateAtt = false;
+    }
+
+    if (updateAttLite) {
+        LOGD_ANR("%s:%d\n", __FUNCTION__, __LINE__);
+        mCurAttLite = mNewAttLite;
+        rk_aiq_uapi_camgroup_abayertnrV23Lite_SetAttrib(mAlgoCtx, &mCurAttLite, false);
+        sendSignal(mCurAttLite.sync.sync_mode);
+        updateAttLite = false;
     }
 
 #if 1
@@ -92,6 +100,57 @@ XCamReturn RkAiqCamGroupAbayertnrV23HandleInt::getAttrib(rk_aiq_bayertnr_attrib_
             att->sync.done = false;
         } else {
             rk_aiq_uapi_camgroup_abayertnrV23_GetAttrib(mAlgoCtx, att);
+            att->sync.done = true;
+        }
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqCamGroupAbayertnrV23HandleInt::setAttribLite(
+    const rk_aiq_bayertnr_attrib_v23L_t* att) {
+    ENTER_ANALYZER_FUNCTION();
+    LOGD_ANR("%s:%d\n", __FUNCTION__, __LINE__);
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    mCfgMutex.lock();
+    // TODO
+    // check if there is different between att & mCurAtt
+    // if something changed, set att to mNewAtt, and
+    // the new params will be effective later when updateConfig
+    // called by RkAiqCore
+
+    // if something changed
+    if (0 != memcmp(&mCurAttLite, att, sizeof(rk_aiq_bayertnr_attrib_v23L_t))) {
+        mNewAttLite   = *att;
+        updateAttLite = true;
+        waitSignal(att->sync.sync_mode);
+    }
+
+    mCfgMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqCamGroupAbayertnrV23HandleInt::getAttribLite(rk_aiq_bayertnr_attrib_v23L_t* att) {
+    ENTER_ANALYZER_FUNCTION();
+    LOGD_ANR("%s:%d\n", __FUNCTION__, __LINE__);
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_camgroup_abayertnrV23Lite_GetAttrib(mAlgoCtx, att);
+        att->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        if (updateAttLite) {
+            memcpy(att, &mNewAttLite, sizeof(mNewAttLite));
+            att->sync.done = false;
+        } else {
+            rk_aiq_uapi_camgroup_abayertnrV23Lite_GetAttrib(mAlgoCtx, att);
             att->sync.done = true;
         }
     }

@@ -31,6 +31,7 @@
 #define AWB_WPNUM2_EN
 #endif
 #define RK_AIQ_WP_INCLUDE_BIS 6
+
 typedef struct rk_aiq_awb_exc_range_v32_s {
     rk_aiq_awb_exc_range_domain_t domain;//1 uv domain,2 xy domain;
     bool excludeEnable[RK_AIQ_AWB_XY_TYPE_MAX_V201];// 0 disable,1 eanble;

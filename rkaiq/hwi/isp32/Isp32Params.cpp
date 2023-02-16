@@ -87,6 +87,327 @@ void Isp32Params::convertAiqAwbGainToIsp32Params(struct isp32_isp_params_cfg& is
 }
 
 #if RKAIQ_HAVE_AWB_V32
+static void WriteAwbReg(struct isp32_rawawb_meas_cfg* awb_cfg_v32)
+{
+#if 0
+    char fName[100];
+    sprintf(fName, "./tmp/awb_reg.txt");
+    LOGE_AWB( "%s", fName);
+
+    FILE* fp = fopen(fName, "wb");
+    if(fp == NULL){
+        return;
+    }
+    //fprintf(fp, "\t\tsw_rawawb_en = 0x%0x (%d)\n",                              awb_cfg_v32->en                            ,awb_cfg_v32->en);
+    fprintf(fp, "\t\tsw_rawawb_uv_en0 = 0x%0x (%d)\n",                            awb_cfg_v32->uv_en0                        ,awb_cfg_v32->uv_en0);
+    fprintf(fp, "\t\tsw_rawawb_xy_en0 = 0x%0x (%d)\n",                            awb_cfg_v32->xy_en0                        ,awb_cfg_v32->xy_en0);
+    fprintf(fp, "\t\tsw_rawawb_yuv3d_en0 = 0x%0x (%d)\n",                         awb_cfg_v32->yuv3d_en0                     ,awb_cfg_v32->yuv3d_en0);
+    fprintf(fp, "\t\tsw_rawawb_yuv3d_ls_idx0 = 0x%0x (%d)\n",                     awb_cfg_v32->yuv3d_ls_idx0                 ,awb_cfg_v32->yuv3d_ls_idx0);
+    fprintf(fp, "\t\tsw_rawawb_yuv3d_ls_idx1 = 0x%0x (%d)\n",                     awb_cfg_v32->yuv3d_ls_idx1                 ,awb_cfg_v32->yuv3d_ls_idx1);
+    fprintf(fp, "\t\tsw_rawawb_yuv3d_ls_idx2 = 0x%0x (%d)\n",                     awb_cfg_v32->yuv3d_ls_idx2                 ,awb_cfg_v32->yuv3d_ls_idx2);
+    fprintf(fp, "\t\tsw_rawawb_yuv3d_ls_idx3 = 0x%0x (%d)\n",                     awb_cfg_v32->yuv3d_ls_idx3                 ,awb_cfg_v32->yuv3d_ls_idx3);
+    fprintf(fp, "\t\tsw_rawawb_in_rshift_to_12bit_en = 0x%0x (%d)\n",             awb_cfg_v32->in_rshift_to_12bit_en         ,awb_cfg_v32->in_rshift_to_12bit_en);
+    fprintf(fp, "\t\tsw_rawawb_in_overexposure_check_en = 0x%0x (%d)\n",          awb_cfg_v32->in_overexposure_check_en      ,awb_cfg_v32->in_overexposure_check_en);
+    fprintf(fp, "\t\tsw_rawawb_wind_size = 0x%0x (%d)\n",                         awb_cfg_v32->wind_size                     ,awb_cfg_v32->wind_size);
+    fprintf(fp, "\t\tsw_rawlsc_bypass_en = 0x%0x (%d)\n",                         awb_cfg_v32->rawlsc_bypass_en                     ,awb_cfg_v32->rawlsc_bypass_en);
+    fprintf(fp, "\t\tsw_rawawb_light_num = 0x%0x (%d)\n",                         awb_cfg_v32->light_num                     ,awb_cfg_v32->light_num);
+    //fprintf(fp, "\t\tsw_rawawb_2ddr_path_en = 0x%0x (%d)\n",                      awb_cfg_v32->2ddr_path_en                  ,awb_cfg_v32->2ddr_path_en);
+    fprintf(fp, "\t\tsw_rawawb_uv_en1 = 0x%0x (%d)\n",                            awb_cfg_v32->uv_en1                        ,awb_cfg_v32->uv_en1);
+    fprintf(fp, "\t\tsw_rawawb_xy_en1 = 0x%0x (%d)\n",                            awb_cfg_v32->xy_en1                        ,awb_cfg_v32->xy_en1);
+    fprintf(fp, "\t\tsw_rawawb_yuv3d_en1 = 0x%0x (%d)\n",                         awb_cfg_v32->yuv3d_en1                     ,awb_cfg_v32->yuv3d_en1);
+    //fprintf(fp, "\t\tsw_rawawb_2ddr_path_sel = 0x%0x (%d)\n",                     awb_cfg_v32->2ddr_path_sel                 ,awb_cfg_v32->2ddr_path_sel);
+    fprintf(fp, "\t\tsw_rawawbin_low12bit_val = 0x%0x (%d)\n",                    awb_cfg_v32->low12bit_val                ,awb_cfg_v32->low12bit_val);
+    fprintf(fp, "\t\tsw_rawawb_blk_measure_en = 0x%0x (%d)\n",                    awb_cfg_v32->blk_measure_enable                ,awb_cfg_v32->blk_measure_enable);
+    fprintf(fp, "\t\tsw_rawawb_blk_measure_mode = 0x%0x (%d)\n",                  awb_cfg_v32->blk_measure_mode              ,awb_cfg_v32->blk_measure_mode);
+    fprintf(fp, "\t\tsw_rawawb_blk_measure_xytype = 0x%0x (%d)\n",                awb_cfg_v32->blk_measure_xytype            ,awb_cfg_v32->blk_measure_xytype);
+    fprintf(fp, "\t\tsw_rawawb_blk_rtdw_measure_en = 0x%0x (%d)\n",               awb_cfg_v32->blk_rtdw_measure_en           ,awb_cfg_v32->blk_rtdw_measure_en);
+    fprintf(fp, "\t\tsw_rawawb_blk_measure_illu_idx = 0x%0x (%d)\n",              awb_cfg_v32->blk_measure_illu_idx          ,awb_cfg_v32->blk_measure_illu_idx);
+    fprintf(fp, "\t\tsw_rawawb_ds16x8_mode_en = 0x%0x (%d)\n",                    awb_cfg_v32->ds16x8_mode_en                ,awb_cfg_v32->ds16x8_mode_en);
+    fprintf(fp, "\t\tsw_rawawb_blk_with_luma_wei_en = 0x%0x (%d)\n",              awb_cfg_v32->blk_with_luma_wei_en          ,awb_cfg_v32->blk_with_luma_wei_en);
+    fprintf(fp, "\t\tsw_rawawb_in_overexposure_threshold = 0x%0x (%d)\n",         awb_cfg_v32->in_overexposure_threshold     ,awb_cfg_v32->in_overexposure_threshold);
+    fprintf(fp, "\t\tsw_rawawb_h_offs = 0x%0x (%d)\n",                            awb_cfg_v32->h_offs                        ,awb_cfg_v32->h_offs);
+    fprintf(fp, "\t\tsw_rawawb_v_offs = 0x%0x (%d)\n",                            awb_cfg_v32->v_offs                        ,awb_cfg_v32->v_offs);
+    fprintf(fp, "\t\tsw_rawawb_h_size = 0x%0x (%d)\n",                            awb_cfg_v32->h_size                        ,awb_cfg_v32->h_size);
+    fprintf(fp, "\t\tsw_rawawb_v_size = 0x%0x (%d)\n",                            awb_cfg_v32->v_size                        ,awb_cfg_v32->v_size);
+    fprintf(fp, "\t\tsw_rawawb_r_max = 0x%0x (%d)\n",                             awb_cfg_v32->r_max                         ,awb_cfg_v32->r_max);
+    fprintf(fp, "\t\tsw_rawawb_g_max = 0x%0x (%d)\n",                             awb_cfg_v32->g_max                         ,awb_cfg_v32->g_max);
+    fprintf(fp, "\t\tsw_rawawb_b_max = 0x%0x (%d)\n",                             awb_cfg_v32->b_max                         ,awb_cfg_v32->b_max);
+    fprintf(fp, "\t\tsw_rawawb_y_max = 0x%0x (%d)\n",                             awb_cfg_v32->y_max                         ,awb_cfg_v32->y_max);
+    fprintf(fp, "\t\tsw_rawawb_r_min = 0x%0x (%d)\n",                             awb_cfg_v32->r_min                         ,awb_cfg_v32->r_min);
+    fprintf(fp, "\t\tsw_rawawb_g_min = 0x%0x (%d)\n",                             awb_cfg_v32->g_min                         ,awb_cfg_v32->g_min);
+    fprintf(fp, "\t\tsw_rawawb_b_min = 0x%0x (%d)\n",                             awb_cfg_v32->b_min                         ,awb_cfg_v32->b_min);
+    fprintf(fp, "\t\tsw_rawawb_y_min = 0x%0x (%d)\n",                             awb_cfg_v32->y_min                         ,awb_cfg_v32->y_min);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_wei_en0 = 0x%0x (%d)\n",                   awb_cfg_v32->wp_luma_wei_en0               ,awb_cfg_v32->wp_luma_wei_en0);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_wei_en1 = 0x%0x (%d)\n",                   awb_cfg_v32->wp_luma_wei_en1               ,awb_cfg_v32->wp_luma_wei_en1);
+    fprintf(fp, "\t\tsw_rawawb_wp_blk_wei_en0 = 0x%0x (%d)\n",                    awb_cfg_v32->wp_blk_wei_en0                ,awb_cfg_v32->wp_blk_wei_en0);
+    fprintf(fp, "\t\tsw_rawawb_wp_blk_wei_en1 = 0x%0x (%d)\n",                    awb_cfg_v32->wp_blk_wei_en1                ,awb_cfg_v32->wp_blk_wei_en1);
+    fprintf(fp, "\t\tsw_rawawb_wp_hist_xytype = 0x%0x (%d)\n",                    awb_cfg_v32->wp_hist_xytype                ,awb_cfg_v32->wp_hist_xytype);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_y0 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_y0           ,awb_cfg_v32->wp_luma_weicurve_y0);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_y1 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_y1           ,awb_cfg_v32->wp_luma_weicurve_y1);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_y2 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_y2           ,awb_cfg_v32->wp_luma_weicurve_y2);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_y3 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_y3           ,awb_cfg_v32->wp_luma_weicurve_y3);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_y4 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_y4           ,awb_cfg_v32->wp_luma_weicurve_y4);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_y5 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_y5           ,awb_cfg_v32->wp_luma_weicurve_y5);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_y6 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_y6           ,awb_cfg_v32->wp_luma_weicurve_y6);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_y7 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_y7           ,awb_cfg_v32->wp_luma_weicurve_y7);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_y8 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_y8           ,awb_cfg_v32->wp_luma_weicurve_y8);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_w0 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_w0           ,awb_cfg_v32->wp_luma_weicurve_w0);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_w1 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_w1           ,awb_cfg_v32->wp_luma_weicurve_w1);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_w2 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_w2           ,awb_cfg_v32->wp_luma_weicurve_w2);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_w3 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_w3           ,awb_cfg_v32->wp_luma_weicurve_w3);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_w4 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_w4           ,awb_cfg_v32->wp_luma_weicurve_w4);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_w5 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_w5           ,awb_cfg_v32->wp_luma_weicurve_w5);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_w6 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_w6           ,awb_cfg_v32->wp_luma_weicurve_w6);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_w7 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_w7           ,awb_cfg_v32->wp_luma_weicurve_w7);
+    fprintf(fp, "\t\tsw_rawawb_wp_luma_weicurve_w8 = 0x%0x (%d)\n",               awb_cfg_v32->wp_luma_weicurve_w8           ,awb_cfg_v32->wp_luma_weicurve_w8);
+    fprintf(fp, "\t\tsw_rawawb_pre_wbgain_inv_r = 0x%0x (%d)\n",                  awb_cfg_v32->pre_wbgain_inv_r              ,awb_cfg_v32->pre_wbgain_inv_r);
+    fprintf(fp, "\t\tsw_rawawb_pre_wbgain_inv_g = 0x%0x (%d)\n",                  awb_cfg_v32->pre_wbgain_inv_g              ,awb_cfg_v32->pre_wbgain_inv_g);
+    fprintf(fp, "\t\tsw_rawawb_pre_wbgain_inv_b = 0x%0x (%d)\n",                  awb_cfg_v32->pre_wbgain_inv_b              ,awb_cfg_v32->pre_wbgain_inv_b);
+    fprintf(fp, "\t\tsw_rawawb_vertex0_u_0 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex0_u_0                   ,awb_cfg_v32->vertex0_u_0);
+    fprintf(fp, "\t\tsw_rawawb_vertex0_v_0 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex0_v_0                   ,awb_cfg_v32->vertex0_v_0);
+    fprintf(fp, "\t\tsw_rawawb_vertex1_u_0 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex1_u_0                   ,awb_cfg_v32->vertex1_u_0);
+    fprintf(fp, "\t\tsw_rawawb_vertex1_v_0 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex1_v_0                   ,awb_cfg_v32->vertex1_v_0);
+    fprintf(fp, "\t\tsw_rawawb_vertex2_u_0 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex2_u_0                   ,awb_cfg_v32->vertex2_u_0);
+    fprintf(fp, "\t\tsw_rawawb_vertex2_v_0 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex2_v_0                   ,awb_cfg_v32->vertex2_v_0);
+    fprintf(fp, "\t\tsw_rawawb_vertex3_u_0 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex3_u_0                   ,awb_cfg_v32->vertex3_u_0);
+    fprintf(fp, "\t\tsw_rawawb_vertex3_v_0 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex3_v_0                   ,awb_cfg_v32->vertex3_v_0);
+    fprintf(fp, "\t\tsw_rawawb_islope01_0 = 0x%0x (%d)\n",                        awb_cfg_v32->islope01_0                    ,awb_cfg_v32->islope01_0);
+    fprintf(fp, "\t\tsw_rawawb_islope12_0 = 0x%0x (%d)\n",                        awb_cfg_v32->islope12_0                    ,awb_cfg_v32->islope12_0);
+    fprintf(fp, "\t\tsw_rawawb_islope23_0 = 0x%0x (%d)\n",                        awb_cfg_v32->islope23_0                    ,awb_cfg_v32->islope23_0);
+    fprintf(fp, "\t\tsw_rawawb_islope30_0 = 0x%0x (%d)\n",                        awb_cfg_v32->islope30_0                    ,awb_cfg_v32->islope30_0);
+    fprintf(fp, "\t\tsw_rawawb_vertex0_u_1 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex0_u_1                   ,awb_cfg_v32->vertex0_u_1);
+    fprintf(fp, "\t\tsw_rawawb_vertex0_v_1 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex0_v_1                   ,awb_cfg_v32->vertex0_v_1);
+    fprintf(fp, "\t\tsw_rawawb_vertex1_u_1 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex1_u_1                   ,awb_cfg_v32->vertex1_u_1);
+    fprintf(fp, "\t\tsw_rawawb_vertex1_v_1 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex1_v_1                   ,awb_cfg_v32->vertex1_v_1);
+    fprintf(fp, "\t\tsw_rawawb_vertex2_u_1 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex2_u_1                   ,awb_cfg_v32->vertex2_u_1);
+    fprintf(fp, "\t\tsw_rawawb_vertex2_v_1 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex2_v_1                   ,awb_cfg_v32->vertex2_v_1);
+    fprintf(fp, "\t\tsw_rawawb_vertex3_u_1 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex3_u_1                   ,awb_cfg_v32->vertex3_u_1);
+    fprintf(fp, "\t\tsw_rawawb_vertex3_v_1 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex3_v_1                   ,awb_cfg_v32->vertex3_v_1);
+    fprintf(fp, "\t\tsw_rawawb_islope01_1 = 0x%0x (%d)\n",                        awb_cfg_v32->islope01_1                    ,awb_cfg_v32->islope01_1);
+    fprintf(fp, "\t\tsw_rawawb_islope12_1 = 0x%0x (%d)\n",                        awb_cfg_v32->islope12_1                    ,awb_cfg_v32->islope12_1);
+    fprintf(fp, "\t\tsw_rawawb_islope23_1 = 0x%0x (%d)\n",                        awb_cfg_v32->islope23_1                    ,awb_cfg_v32->islope23_1);
+    fprintf(fp, "\t\tsw_rawawb_islope30_1 = 0x%0x (%d)\n",                        awb_cfg_v32->islope30_1                    ,awb_cfg_v32->islope30_1);
+    fprintf(fp, "\t\tsw_rawawb_vertex0_u_2 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex0_u_2                   ,awb_cfg_v32->vertex0_u_2);
+    fprintf(fp, "\t\tsw_rawawb_vertex0_v_2 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex0_v_2                   ,awb_cfg_v32->vertex0_v_2);
+    fprintf(fp, "\t\tsw_rawawb_vertex1_u_2 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex1_u_2                   ,awb_cfg_v32->vertex1_u_2);
+    fprintf(fp, "\t\tsw_rawawb_vertex1_v_2 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex1_v_2                   ,awb_cfg_v32->vertex1_v_2);
+    fprintf(fp, "\t\tsw_rawawb_vertex2_u_2 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex2_u_2                   ,awb_cfg_v32->vertex2_u_2);
+    fprintf(fp, "\t\tsw_rawawb_vertex2_v_2 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex2_v_2                   ,awb_cfg_v32->vertex2_v_2);
+    fprintf(fp, "\t\tsw_rawawb_vertex3_u_2 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex3_u_2                   ,awb_cfg_v32->vertex3_u_2);
+    fprintf(fp, "\t\tsw_rawawb_vertex3_v_2 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex3_v_2                   ,awb_cfg_v32->vertex3_v_2);
+    fprintf(fp, "\t\tsw_rawawb_islope01_2 = 0x%0x (%d)\n",                        awb_cfg_v32->islope01_2                    ,awb_cfg_v32->islope01_2);
+    fprintf(fp, "\t\tsw_rawawb_islope12_2 = 0x%0x (%d)\n",                        awb_cfg_v32->islope12_2                    ,awb_cfg_v32->islope12_2);
+    fprintf(fp, "\t\tsw_rawawb_islope23_2 = 0x%0x (%d)\n",                        awb_cfg_v32->islope23_2                    ,awb_cfg_v32->islope23_2);
+    fprintf(fp, "\t\tsw_rawawb_islope30_2 = 0x%0x (%d)\n",                        awb_cfg_v32->islope30_2                    ,awb_cfg_v32->islope30_2);
+    fprintf(fp, "\t\tsw_rawawb_vertex0_u_3 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex0_u_3                   ,awb_cfg_v32->vertex0_u_3);
+    fprintf(fp, "\t\tsw_rawawb_vertex0_v_3 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex0_v_3                   ,awb_cfg_v32->vertex0_v_3);
+    fprintf(fp, "\t\tsw_rawawb_vertex1_u_3 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex1_u_3                   ,awb_cfg_v32->vertex1_u_3);
+    fprintf(fp, "\t\tsw_rawawb_vertex1_v_3 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex1_v_3                   ,awb_cfg_v32->vertex1_v_3);
+    fprintf(fp, "\t\tsw_rawawb_vertex2_u_3 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex2_u_3                   ,awb_cfg_v32->vertex2_u_3);
+    fprintf(fp, "\t\tsw_rawawb_vertex2_v_3 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex2_v_3                   ,awb_cfg_v32->vertex2_v_3);
+    fprintf(fp, "\t\tsw_rawawb_vertex3_u_3 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex3_u_3                   ,awb_cfg_v32->vertex3_u_3);
+    fprintf(fp, "\t\tsw_rawawb_vertex3_v_3 = 0x%0x (%d)\n",                       awb_cfg_v32->vertex3_v_3                   ,awb_cfg_v32->vertex3_v_3);
+    fprintf(fp, "\t\tsw_rawawb_islope01_3 = 0x%0x (%d)\n",                        awb_cfg_v32->islope01_3                    ,awb_cfg_v32->islope01_3);
+    fprintf(fp, "\t\tsw_rawawb_islope12_3 = 0x%0x (%d)\n",                        awb_cfg_v32->islope12_3                    ,awb_cfg_v32->islope12_3);
+    fprintf(fp, "\t\tsw_rawawb_islope23_3 = 0x%0x (%d)\n",                        awb_cfg_v32->islope23_3                    ,awb_cfg_v32->islope23_3);
+    fprintf(fp, "\t\tsw_rawawb_islope30_3 = 0x%0x (%d)\n",                        awb_cfg_v32->islope30_3                    ,awb_cfg_v32->islope30_3);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvmat0_y = 0x%0x (%d)\n",                    awb_cfg_v32->rgb2ryuvmat0_y                ,awb_cfg_v32->rgb2ryuvmat0_y);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvmat1_y = 0x%0x (%d)\n",                    awb_cfg_v32->rgb2ryuvmat1_y                ,awb_cfg_v32->rgb2ryuvmat1_y);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvmat2_y = 0x%0x (%d)\n",                    awb_cfg_v32->rgb2ryuvmat2_y                ,awb_cfg_v32->rgb2ryuvmat2_y);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvofs_y = 0x%0x (%d)\n",                     awb_cfg_v32->rgb2ryuvofs_y                 ,awb_cfg_v32->rgb2ryuvofs_y);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvmat0_u = 0x%0x (%d)\n",                    awb_cfg_v32->rgb2ryuvmat0_u                ,awb_cfg_v32->rgb2ryuvmat0_u);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvmat1_u = 0x%0x (%d)\n",                    awb_cfg_v32->rgb2ryuvmat1_u                ,awb_cfg_v32->rgb2ryuvmat1_u);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvmat2_u = 0x%0x (%d)\n",                    awb_cfg_v32->rgb2ryuvmat2_u                ,awb_cfg_v32->rgb2ryuvmat2_u);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvofs_u = 0x%0x (%d)\n",                     awb_cfg_v32->rgb2ryuvofs_u                 ,awb_cfg_v32->rgb2ryuvofs_u);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvmat0_v = 0x%0x (%d)\n",                    awb_cfg_v32->rgb2ryuvmat0_v                ,awb_cfg_v32->rgb2ryuvmat0_v);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvmat1_v = 0x%0x (%d)\n",                    awb_cfg_v32->rgb2ryuvmat1_v                ,awb_cfg_v32->rgb2ryuvmat1_v);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvmat2_v = 0x%0x (%d)\n",                    awb_cfg_v32->rgb2ryuvmat2_v                ,awb_cfg_v32->rgb2ryuvmat2_v);
+    fprintf(fp, "\t\tsw_rawawb_rgb2ryuvofs_v = 0x%0x (%d)\n",                     awb_cfg_v32->rgb2ryuvofs_v                 ,awb_cfg_v32->rgb2ryuvofs_v);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls0_y = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls0_y                 ,awb_cfg_v32->coor_x1_ls0_y);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls0_y = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls0_y                 ,awb_cfg_v32->vec_x21_ls0_y);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls0_u = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls0_u                 ,awb_cfg_v32->coor_x1_ls0_u);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls0_u = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls0_u                 ,awb_cfg_v32->vec_x21_ls0_u);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls0_v = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls0_v                 ,awb_cfg_v32->coor_x1_ls0_v);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls0_v = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls0_v                 ,awb_cfg_v32->vec_x21_ls0_v);
+    fprintf(fp, "\t\tsw_rawawb_dis_x1x2_ls0 = 0x%0x (%d)\n",                      awb_cfg_v32->dis_x1x2_ls0                  ,awb_cfg_v32->dis_x1x2_ls0);
+    fprintf(fp, "\t\tsw_rawawb_rotu0_ls0 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu0_ls0                     ,awb_cfg_v32->rotu0_ls0);
+    fprintf(fp, "\t\tsw_rawawb_rotu1_ls0 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu1_ls0                     ,awb_cfg_v32->rotu1_ls0);
+    fprintf(fp, "\t\tsw_rawawb_rotu2_ls0 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu2_ls0                     ,awb_cfg_v32->rotu2_ls0);
+    fprintf(fp, "\t\tsw_rawawb_rotu3_ls0 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu3_ls0                     ,awb_cfg_v32->rotu3_ls0);
+    fprintf(fp, "\t\tsw_rawawb_rotu4_ls0 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu4_ls0                     ,awb_cfg_v32->rotu4_ls0);
+    fprintf(fp, "\t\tsw_rawawb_rotu5_ls0 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu5_ls0                     ,awb_cfg_v32->rotu5_ls0);
+    fprintf(fp, "\t\tsw_rawawb_th0_ls0 = 0x%0x (%d)\n",                           awb_cfg_v32->th0_ls0                       ,awb_cfg_v32->th0_ls0);
+    fprintf(fp, "\t\tsw_rawawb_th1_ls0 = 0x%0x (%d)\n",                           awb_cfg_v32->th1_ls0                       ,awb_cfg_v32->th1_ls0);
+    fprintf(fp, "\t\tsw_rawawb_th2_ls0 = 0x%0x (%d)\n",                           awb_cfg_v32->th2_ls0                       ,awb_cfg_v32->th2_ls0);
+    fprintf(fp, "\t\tsw_rawawb_th3_ls0 = 0x%0x (%d)\n",                           awb_cfg_v32->th3_ls0                       ,awb_cfg_v32->th3_ls0);
+    fprintf(fp, "\t\tsw_rawawb_th4_ls0 = 0x%0x (%d)\n",                           awb_cfg_v32->th4_ls0                       ,awb_cfg_v32->th4_ls0);
+    fprintf(fp, "\t\tsw_rawawb_th5_ls0 = 0x%0x (%d)\n",                           awb_cfg_v32->th5_ls0                       ,awb_cfg_v32->th5_ls0);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls1_y = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls1_y                 ,awb_cfg_v32->coor_x1_ls1_y);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls1_y = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls1_y                 ,awb_cfg_v32->vec_x21_ls1_y);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls1_u = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls1_u                 ,awb_cfg_v32->coor_x1_ls1_u);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls1_u = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls1_u                 ,awb_cfg_v32->vec_x21_ls1_u);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls1_v = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls1_v                 ,awb_cfg_v32->coor_x1_ls1_v);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls1_v = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls1_v                 ,awb_cfg_v32->vec_x21_ls1_v);
+    fprintf(fp, "\t\tsw_rawawb_dis_x1x2_ls1 = 0x%0x (%d)\n",                      awb_cfg_v32->dis_x1x2_ls1                  ,awb_cfg_v32->dis_x1x2_ls1);
+    fprintf(fp, "\t\tsw_rawawb_rotu0_ls1 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu0_ls1                     ,awb_cfg_v32->rotu0_ls1);
+    fprintf(fp, "\t\tsw_rawawb_rotu1_ls1 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu1_ls1                     ,awb_cfg_v32->rotu1_ls1);
+    fprintf(fp, "\t\tsw_rawawb_rotu2_ls1 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu2_ls1                     ,awb_cfg_v32->rotu2_ls1);
+    fprintf(fp, "\t\tsw_rawawb_rotu3_ls1 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu3_ls1                     ,awb_cfg_v32->rotu3_ls1);
+    fprintf(fp, "\t\tsw_rawawb_rotu4_ls1 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu4_ls1                     ,awb_cfg_v32->rotu4_ls1);
+    fprintf(fp, "\t\tsw_rawawb_rotu5_ls1 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu5_ls1                     ,awb_cfg_v32->rotu5_ls1);
+    fprintf(fp, "\t\tsw_rawawb_th0_ls1 = 0x%0x (%d)\n",                           awb_cfg_v32->th0_ls1                       ,awb_cfg_v32->th0_ls1);
+    fprintf(fp, "\t\tsw_rawawb_th1_ls1 = 0x%0x (%d)\n",                           awb_cfg_v32->th1_ls1                       ,awb_cfg_v32->th1_ls1);
+    fprintf(fp, "\t\tsw_rawawb_th2_ls1 = 0x%0x (%d)\n",                           awb_cfg_v32->th2_ls1                       ,awb_cfg_v32->th2_ls1);
+    fprintf(fp, "\t\tsw_rawawb_th3_ls1 = 0x%0x (%d)\n",                           awb_cfg_v32->th3_ls1                       ,awb_cfg_v32->th3_ls1);
+    fprintf(fp, "\t\tsw_rawawb_th4_ls1 = 0x%0x (%d)\n",                           awb_cfg_v32->th4_ls1                       ,awb_cfg_v32->th4_ls1);
+    fprintf(fp, "\t\tsw_rawawb_th5_ls1 = 0x%0x (%d)\n",                           awb_cfg_v32->th5_ls1                       ,awb_cfg_v32->th5_ls1);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls2_y = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls2_y                 ,awb_cfg_v32->coor_x1_ls2_y);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls2_y = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls2_y                 ,awb_cfg_v32->vec_x21_ls2_y);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls2_u = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls2_u                 ,awb_cfg_v32->coor_x1_ls2_u);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls2_u = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls2_u                 ,awb_cfg_v32->vec_x21_ls2_u);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls2_v = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls2_v                 ,awb_cfg_v32->coor_x1_ls2_v);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls2_v = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls2_v                 ,awb_cfg_v32->vec_x21_ls2_v);
+    fprintf(fp, "\t\tsw_rawawb_dis_x1x2_ls2 = 0x%0x (%d)\n",                      awb_cfg_v32->dis_x1x2_ls2                  ,awb_cfg_v32->dis_x1x2_ls2);
+    fprintf(fp, "\t\tsw_rawawb_rotu0_ls2 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu0_ls2                     ,awb_cfg_v32->rotu0_ls2);
+    fprintf(fp, "\t\tsw_rawawb_rotu1_ls2 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu1_ls2                     ,awb_cfg_v32->rotu1_ls2);
+    fprintf(fp, "\t\tsw_rawawb_rotu2_ls2 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu2_ls2                     ,awb_cfg_v32->rotu2_ls2);
+    fprintf(fp, "\t\tsw_rawawb_rotu3_ls2 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu3_ls2                     ,awb_cfg_v32->rotu3_ls2);
+    fprintf(fp, "\t\tsw_rawawb_rotu4_ls2 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu4_ls2                     ,awb_cfg_v32->rotu4_ls2);
+    fprintf(fp, "\t\tsw_rawawb_rotu5_ls2 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu5_ls2                     ,awb_cfg_v32->rotu5_ls2);
+    fprintf(fp, "\t\tsw_rawawb_th0_ls2 = 0x%0x (%d)\n",                           awb_cfg_v32->th0_ls2                       ,awb_cfg_v32->th0_ls2);
+    fprintf(fp, "\t\tsw_rawawb_th1_ls2 = 0x%0x (%d)\n",                           awb_cfg_v32->th1_ls2                       ,awb_cfg_v32->th1_ls2);
+    fprintf(fp, "\t\tsw_rawawb_th2_ls2 = 0x%0x (%d)\n",                           awb_cfg_v32->th2_ls2                       ,awb_cfg_v32->th2_ls2);
+    fprintf(fp, "\t\tsw_rawawb_th3_ls2 = 0x%0x (%d)\n",                           awb_cfg_v32->th3_ls2                       ,awb_cfg_v32->th3_ls2);
+    fprintf(fp, "\t\tsw_rawawb_th4_ls2 = 0x%0x (%d)\n",                           awb_cfg_v32->th4_ls2                       ,awb_cfg_v32->th4_ls2);
+    fprintf(fp, "\t\tsw_rawawb_th5_ls2 = 0x%0x (%d)\n",                           awb_cfg_v32->th5_ls2                       ,awb_cfg_v32->th5_ls2);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls3_y = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls3_y                 ,awb_cfg_v32->coor_x1_ls3_y);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls3_y = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls3_y                 ,awb_cfg_v32->vec_x21_ls3_y);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls3_u = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls3_u                 ,awb_cfg_v32->coor_x1_ls3_u);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls3_u = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls3_u                 ,awb_cfg_v32->vec_x21_ls3_u);
+    fprintf(fp, "\t\tsw_rawawb_coor_x1_ls3_v = 0x%0x (%d)\n",                     awb_cfg_v32->coor_x1_ls3_v                 ,awb_cfg_v32->coor_x1_ls3_v);
+    fprintf(fp, "\t\tsw_rawawb_vec_x21_ls3_v = 0x%0x (%d)\n",                     awb_cfg_v32->vec_x21_ls3_v                 ,awb_cfg_v32->vec_x21_ls3_v);
+    fprintf(fp, "\t\tsw_rawawb_dis_x1x2_ls3 = 0x%0x (%d)\n",                      awb_cfg_v32->dis_x1x2_ls3                  ,awb_cfg_v32->dis_x1x2_ls3);
+    fprintf(fp, "\t\tsw_rawawb_rotu0_ls3 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu0_ls3                     ,awb_cfg_v32->rotu0_ls3);
+    fprintf(fp, "\t\tsw_rawawb_rotu1_ls3 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu1_ls3                     ,awb_cfg_v32->rotu1_ls3);
+    fprintf(fp, "\t\tsw_rawawb_rotu2_ls3 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu2_ls3                     ,awb_cfg_v32->rotu2_ls3);
+    fprintf(fp, "\t\tsw_rawawb_rotu3_ls3 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu3_ls3                     ,awb_cfg_v32->rotu3_ls3);
+    fprintf(fp, "\t\tsw_rawawb_rotu4_ls3 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu4_ls3                     ,awb_cfg_v32->rotu4_ls3);
+    fprintf(fp, "\t\tsw_rawawb_rotu5_ls3 = 0x%0x (%d)\n",                         awb_cfg_v32->rotu5_ls3                     ,awb_cfg_v32->rotu5_ls3);
+    fprintf(fp, "\t\tsw_rawawb_th0_ls3 = 0x%0x (%d)\n",                           awb_cfg_v32->th0_ls3                       ,awb_cfg_v32->th0_ls3);
+    fprintf(fp, "\t\tsw_rawawb_th1_ls3 = 0x%0x (%d)\n",                           awb_cfg_v32->th1_ls3                       ,awb_cfg_v32->th1_ls3);
+    fprintf(fp, "\t\tsw_rawawb_th2_ls3 = 0x%0x (%d)\n",                           awb_cfg_v32->th2_ls3                       ,awb_cfg_v32->th2_ls3);
+    fprintf(fp, "\t\tsw_rawawb_th3_ls3 = 0x%0x (%d)\n",                           awb_cfg_v32->th3_ls3                       ,awb_cfg_v32->th3_ls3);
+    fprintf(fp, "\t\tsw_rawawb_th4_ls3 = 0x%0x (%d)\n",                           awb_cfg_v32->th4_ls3                       ,awb_cfg_v32->th4_ls3);
+    fprintf(fp, "\t\tsw_rawawb_th5_ls3 = 0x%0x (%d)\n",                           awb_cfg_v32->th5_ls3                       ,awb_cfg_v32->th5_ls3);
+    fprintf(fp, "\t\tsw_rawawb_wt0 = 0x%0x (%d)\n",                               awb_cfg_v32->wt0                           ,awb_cfg_v32->wt0);
+    fprintf(fp, "\t\tsw_rawawb_wt1 = 0x%0x (%d)\n",                               awb_cfg_v32->wt1                           ,awb_cfg_v32->wt1);
+    fprintf(fp, "\t\tsw_rawawb_wt2 = 0x%0x (%d)\n",                               awb_cfg_v32->wt2                           ,awb_cfg_v32->wt2);
+    fprintf(fp, "\t\tsw_rawawb_mat0_x = 0x%0x (%d)\n",                            awb_cfg_v32->mat0_x                        ,awb_cfg_v32->mat0_x);
+    fprintf(fp, "\t\tsw_rawawb_mat0_y = 0x%0x (%d)\n",                            awb_cfg_v32->mat0_y                        ,awb_cfg_v32->mat0_y);
+    fprintf(fp, "\t\tsw_rawawb_mat1_x = 0x%0x (%d)\n",                            awb_cfg_v32->mat1_x                        ,awb_cfg_v32->mat1_x);
+    fprintf(fp, "\t\tsw_rawawb_mat1_y = 0x%0x (%d)\n",                            awb_cfg_v32->mat1_y                        ,awb_cfg_v32->mat1_y);
+    fprintf(fp, "\t\tsw_rawawb_mat2_x = 0x%0x (%d)\n",                            awb_cfg_v32->mat2_x                        ,awb_cfg_v32->mat2_x);
+    fprintf(fp, "\t\tsw_rawawb_mat2_y = 0x%0x (%d)\n",                            awb_cfg_v32->mat2_y                        ,awb_cfg_v32->mat2_y);
+    fprintf(fp, "\t\tsw_rawawb_nor_x0_0 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_x0_0                      ,awb_cfg_v32->nor_x0_0);
+    fprintf(fp, "\t\tsw_rawawb_nor_x1_0 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_x1_0                      ,awb_cfg_v32->nor_x1_0);
+    fprintf(fp, "\t\tsw_rawawb_nor_y0_0 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_y0_0                      ,awb_cfg_v32->nor_y0_0);
+    fprintf(fp, "\t\tsw_rawawb_nor_y1_0 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_y1_0                      ,awb_cfg_v32->nor_y1_0);
+    fprintf(fp, "\t\tsw_rawawb_big_x0_0 = 0x%0x (%d)\n",                          awb_cfg_v32->big_x0_0                      ,awb_cfg_v32->big_x0_0);
+    fprintf(fp, "\t\tsw_rawawb_big_x1_0 = 0x%0x (%d)\n",                          awb_cfg_v32->big_x1_0                      ,awb_cfg_v32->big_x1_0);
+    fprintf(fp, "\t\tsw_rawawb_big_y0_0 = 0x%0x (%d)\n",                          awb_cfg_v32->big_y0_0                      ,awb_cfg_v32->big_y0_0);
+    fprintf(fp, "\t\tsw_rawawb_big_y1_0 = 0x%0x (%d)\n",                          awb_cfg_v32->big_y1_0                      ,awb_cfg_v32->big_y1_0);
+    fprintf(fp, "\t\tsw_rawawb_nor_x0_1 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_x0_1                      ,awb_cfg_v32->nor_x0_1);
+    fprintf(fp, "\t\tsw_rawawb_nor_x1_1 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_x1_1                      ,awb_cfg_v32->nor_x1_1);
+    fprintf(fp, "\t\tsw_rawawb_nor_y0_1 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_y0_1                      ,awb_cfg_v32->nor_y0_1);
+    fprintf(fp, "\t\tsw_rawawb_nor_y1_1 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_y1_1                      ,awb_cfg_v32->nor_y1_1);
+    fprintf(fp, "\t\tsw_rawawb_big_x0_1 = 0x%0x (%d)\n",                          awb_cfg_v32->big_x0_1                      ,awb_cfg_v32->big_x0_1);
+    fprintf(fp, "\t\tsw_rawawb_big_x1_1 = 0x%0x (%d)\n",                          awb_cfg_v32->big_x1_1                      ,awb_cfg_v32->big_x1_1);
+    fprintf(fp, "\t\tsw_rawawb_big_y0_1 = 0x%0x (%d)\n",                          awb_cfg_v32->big_y0_1                      ,awb_cfg_v32->big_y0_1);
+    fprintf(fp, "\t\tsw_rawawb_big_y1_1 = 0x%0x (%d)\n",                          awb_cfg_v32->big_y1_1                      ,awb_cfg_v32->big_y1_1);
+    fprintf(fp, "\t\tsw_rawawb_nor_x0_2 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_x0_2                      ,awb_cfg_v32->nor_x0_2);
+    fprintf(fp, "\t\tsw_rawawb_nor_x1_2 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_x1_2                      ,awb_cfg_v32->nor_x1_2);
+    fprintf(fp, "\t\tsw_rawawb_nor_y0_2 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_y0_2                      ,awb_cfg_v32->nor_y0_2);
+    fprintf(fp, "\t\tsw_rawawb_nor_y1_2 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_y1_2                      ,awb_cfg_v32->nor_y1_2);
+    fprintf(fp, "\t\tsw_rawawb_big_x0_2 = 0x%0x (%d)\n",                          awb_cfg_v32->big_x0_2                      ,awb_cfg_v32->big_x0_2);
+    fprintf(fp, "\t\tsw_rawawb_big_x1_2 = 0x%0x (%d)\n",                          awb_cfg_v32->big_x1_2                      ,awb_cfg_v32->big_x1_2);
+    fprintf(fp, "\t\tsw_rawawb_big_y0_2 = 0x%0x (%d)\n",                          awb_cfg_v32->big_y0_2                      ,awb_cfg_v32->big_y0_2);
+    fprintf(fp, "\t\tsw_rawawb_big_y1_2 = 0x%0x (%d)\n",                          awb_cfg_v32->big_y1_2                      ,awb_cfg_v32->big_y1_2);
+    fprintf(fp, "\t\tsw_rawawb_nor_x0_3 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_x0_3                      ,awb_cfg_v32->nor_x0_3);
+    fprintf(fp, "\t\tsw_rawawb_nor_x1_3 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_x1_3                      ,awb_cfg_v32->nor_x1_3);
+    fprintf(fp, "\t\tsw_rawawb_nor_y0_3 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_y0_3                      ,awb_cfg_v32->nor_y0_3);
+    fprintf(fp, "\t\tsw_rawawb_nor_y1_3 = 0x%0x (%d)\n",                          awb_cfg_v32->nor_y1_3                      ,awb_cfg_v32->nor_y1_3);
+    fprintf(fp, "\t\tsw_rawawb_big_x0_3 = 0x%0x (%d)\n",                          awb_cfg_v32->big_x0_3                      ,awb_cfg_v32->big_x0_3);
+    fprintf(fp, "\t\tsw_rawawb_big_x1_3 = 0x%0x (%d)\n",                          awb_cfg_v32->big_x1_3                      ,awb_cfg_v32->big_x1_3);
+    fprintf(fp, "\t\tsw_rawawb_big_y0_3 = 0x%0x (%d)\n",                          awb_cfg_v32->big_y0_3                      ,awb_cfg_v32->big_y0_3);
+    fprintf(fp, "\t\tsw_rawawb_big_y1_3 = 0x%0x (%d)\n",                          awb_cfg_v32->big_y1_3                      ,awb_cfg_v32->big_y1_3);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region0_excen = 0x%0x (%d)\n",              awb_cfg_v32->exc_wp_region0_excen          ,awb_cfg_v32->exc_wp_region0_excen);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region0_measen = 0x%0x (%d)\n",             awb_cfg_v32->exc_wp_region0_measen         ,awb_cfg_v32->exc_wp_region0_measen);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region0_domain = 0x%0x (%d)\n",             awb_cfg_v32->exc_wp_region0_domain         ,awb_cfg_v32->exc_wp_region0_domain);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region1_excen = 0x%0x (%d)\n",              awb_cfg_v32->exc_wp_region1_excen          ,awb_cfg_v32->exc_wp_region1_excen);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region1_measen = 0x%0x (%d)\n",             awb_cfg_v32->exc_wp_region1_measen         ,awb_cfg_v32->exc_wp_region1_measen);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region1_domain = 0x%0x (%d)\n",             awb_cfg_v32->exc_wp_region1_domain         ,awb_cfg_v32->exc_wp_region1_domain);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region2_excen = 0x%0x (%d)\n",              awb_cfg_v32->exc_wp_region2_excen          ,awb_cfg_v32->exc_wp_region2_excen);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region2_measen = 0x%0x (%d)\n",             awb_cfg_v32->exc_wp_region2_measen         ,awb_cfg_v32->exc_wp_region2_measen);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region2_domain = 0x%0x (%d)\n",             awb_cfg_v32->exc_wp_region2_domain         ,awb_cfg_v32->exc_wp_region2_domain);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region3_excen = 0x%0x (%d)\n",              awb_cfg_v32->exc_wp_region3_excen          ,awb_cfg_v32->exc_wp_region3_excen);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region3_measen = 0x%0x (%d)\n",             awb_cfg_v32->exc_wp_region3_measen         ,awb_cfg_v32->exc_wp_region3_measen);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region3_domain = 0x%0x (%d)\n",             awb_cfg_v32->exc_wp_region3_domain         ,awb_cfg_v32->exc_wp_region3_domain);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region4_excen = 0x%0x (%d)\n",              awb_cfg_v32->exc_wp_region4_excen          ,awb_cfg_v32->exc_wp_region4_excen);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region4_domain = 0x%0x (%d)\n",             awb_cfg_v32->exc_wp_region4_domain         ,awb_cfg_v32->exc_wp_region4_domain);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region5_excen = 0x%0x (%d)\n",              awb_cfg_v32->exc_wp_region5_excen          ,awb_cfg_v32->exc_wp_region5_excen);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region5_domain = 0x%0x (%d)\n",             awb_cfg_v32->exc_wp_region5_domain         ,awb_cfg_v32->exc_wp_region5_domain);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region6_excen = 0x%0x (%d)\n",              awb_cfg_v32->exc_wp_region6_excen          ,awb_cfg_v32->exc_wp_region6_excen);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region6_domain = 0x%0x (%d)\n",             awb_cfg_v32->exc_wp_region6_domain         ,awb_cfg_v32->exc_wp_region6_domain);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow_en = 0x%0x (%d)\n",                    awb_cfg_v32->multiwindow_en                ,awb_cfg_v32->multiwindow_en);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow0_h_offs = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow0_h_offs           ,awb_cfg_v32->multiwindow0_h_offs);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow0_v_offs = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow0_v_offs           ,awb_cfg_v32->multiwindow0_v_offs);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow0_h_size = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow0_h_size           ,awb_cfg_v32->multiwindow0_h_size);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow1_v_size = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow1_v_size           ,awb_cfg_v32->multiwindow1_v_size);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow1_h_offs = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow1_h_offs           ,awb_cfg_v32->multiwindow1_h_offs);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow1_v_offs = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow1_v_offs           ,awb_cfg_v32->multiwindow1_v_offs);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow1_h_size = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow1_h_size           ,awb_cfg_v32->multiwindow1_h_size);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow1_v_size = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow1_v_size           ,awb_cfg_v32->multiwindow1_v_size);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow2_h_offs = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow2_h_offs           ,awb_cfg_v32->multiwindow2_h_offs);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow2_v_offs = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow2_v_offs           ,awb_cfg_v32->multiwindow2_v_offs);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow2_h_size = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow2_h_size           ,awb_cfg_v32->multiwindow2_h_size);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow2_v_size = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow2_v_size           ,awb_cfg_v32->multiwindow2_v_size);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow3_h_offs = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow3_h_offs           ,awb_cfg_v32->multiwindow3_h_offs);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow3_v_offs = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow3_v_offs           ,awb_cfg_v32->multiwindow3_v_offs);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow3_h_size = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow3_h_size           ,awb_cfg_v32->multiwindow3_h_size);
+    fprintf(fp, "\t\tsw_rawawb_multiwindow3_v_size = 0x%0x (%d)\n",               awb_cfg_v32->multiwindow3_v_size           ,awb_cfg_v32->multiwindow3_v_size);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region0_xu0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region0_xu0            ,awb_cfg_v32->exc_wp_region0_xu0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region0_xu1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region0_xu1            ,awb_cfg_v32->exc_wp_region0_xu1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region0_yv0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region0_yv0            ,awb_cfg_v32->exc_wp_region0_yv0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region0_yv1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region0_yv1            ,awb_cfg_v32->exc_wp_region0_yv1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region1_xu0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region1_xu0            ,awb_cfg_v32->exc_wp_region1_xu0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region1_xu1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region1_xu1            ,awb_cfg_v32->exc_wp_region1_xu1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region1_yv0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region1_yv0            ,awb_cfg_v32->exc_wp_region1_yv0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region1_yv1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region1_yv1            ,awb_cfg_v32->exc_wp_region1_yv1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region2_xu0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region2_xu0            ,awb_cfg_v32->exc_wp_region2_xu0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region2_xu1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region2_xu1            ,awb_cfg_v32->exc_wp_region2_xu1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region2_yv0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region2_yv0            ,awb_cfg_v32->exc_wp_region2_yv0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region2_yv1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region2_yv1            ,awb_cfg_v32->exc_wp_region2_yv1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region3_xu0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region3_xu0            ,awb_cfg_v32->exc_wp_region3_xu0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region3_xu1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region3_xu1            ,awb_cfg_v32->exc_wp_region3_xu1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region3_yv0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region3_yv0            ,awb_cfg_v32->exc_wp_region3_yv0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region3_yv1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region3_yv1            ,awb_cfg_v32->exc_wp_region3_yv1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region4_xu0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region4_xu0            ,awb_cfg_v32->exc_wp_region4_xu0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region4_xu1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region4_xu1            ,awb_cfg_v32->exc_wp_region4_xu1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region4_yv0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region4_yv0            ,awb_cfg_v32->exc_wp_region4_yv0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region4_yv1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region4_yv1            ,awb_cfg_v32->exc_wp_region4_yv1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region5_xu0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region5_xu0            ,awb_cfg_v32->exc_wp_region5_xu0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region5_xu1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region5_xu1            ,awb_cfg_v32->exc_wp_region5_xu1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region5_yv0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region5_yv0            ,awb_cfg_v32->exc_wp_region5_yv0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region5_yv1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region5_yv1            ,awb_cfg_v32->exc_wp_region5_yv1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region6_xu0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region6_xu0            ,awb_cfg_v32->exc_wp_region6_xu0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region6_xu1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region6_xu1            ,awb_cfg_v32->exc_wp_region6_xu1);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region6_yv0 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region6_yv0            ,awb_cfg_v32->exc_wp_region6_yv0);
+    fprintf(fp, "\t\tsw_rawawb_exc_wp_region6_yv1 = 0x%0x (%d)\n",                awb_cfg_v32->exc_wp_region6_yv1            ,awb_cfg_v32->exc_wp_region6_yv1);
+
+
+    fclose(fp);
+#endif
+}
 void Isp32Params::convertAiqAwbToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_awb_meas_cfg_v32_t& awb_meas,
         bool awb_cfg_udpate) {
@@ -166,7 +487,17 @@ void Isp32Params::convertAiqAwbToIsp32Params(struct isp32_isp_params_cfg& isp_cf
     awb_cfg_v32->v_offs          = awb_meas.windowSet[1];
     awb_cfg_v32->h_size          = awb_meas.windowSet[2];
     awb_cfg_v32->v_size          = awb_meas.windowSet[3];
+ #if RKAIQ_HAVE_AWB_V32LT
+    if(awb_meas.dsMode ==RK_AIQ_AWB_DS_4X4 || awb_meas.dsMode ==RK_AIQ_AWB_DS_8X8){
+        awb_cfg_v32->wind_size       = awb_meas.dsMode;
+        awb_cfg_v32->ds16x8_mode_en = 0;
+    }else if(awb_meas.dsMode ==RK_AIQ_AWB_DS_16X8){
+        awb_cfg_v32->ds16x8_mode_en = 1;
+        awb_cfg_v32->wind_size = RK_AIQ_AWB_DS_8X8;
+    }
+ #else
     awb_cfg_v32->wind_size       = awb_meas.dsMode;
+ #endif
     awb_cfg_v32->r_max           = awb_meas.maxR;
     awb_cfg_v32->g_max           = awb_meas.maxG;
     awb_cfg_v32->b_max           = awb_meas.maxB;
@@ -480,12 +811,23 @@ void Isp32Params::convertAiqAwbToIsp32Params(struct isp32_isp_params_cfg& isp_cf
     awb_cfg_v32->wp_luma_weicurve_w6   = awb_meas.wpDiffwei_w[6];
     awb_cfg_v32->wp_luma_weicurve_w7   = awb_meas.wpDiffwei_w[7];
     awb_cfg_v32->wp_luma_weicurve_w8   = awb_meas.wpDiffwei_w[8];
-
+#if RKAIQ_HAVE_AWB_V32LT
+    for (int i = 0; i < ISP32L_RAWAWB_WEIGHT_NUM; i++) {
+        awb_cfg_v32->win_weight[i] = awb_meas.blkWeight[i*5]|
+            (awb_meas.blkWeight[i*5+1]<<6)|
+            (awb_meas.blkWeight[i*5+2]<<12)|
+            (awb_meas.blkWeight[i*5+3]<<18)|
+            (awb_meas.blkWeight[i*5+4]<<24);
+    }
+#else
     for (int i = 0; i < RK_AIQ_AWB_GRID_NUM_TOTAL; i++) {
         awb_cfg_v32->wp_blk_wei_w[i] = awb_meas.blkWeight[i];
     }
-
+#endif
     awb_cfg_v32->blk_rtdw_measure_en = awb_meas.blk_rtdw_measure_en;
+
+    WriteAwbReg(awb_cfg_v32);
+
 }
 #endif
 #if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
@@ -602,6 +944,144 @@ void Isp32Params::convertAiqAfToIsp32Params(struct isp32_isp_params_cfg& isp_cfg
     }
 }
 #endif
+#if RKAIQ_HAVE_AF_V32_LITE || RKAIQ_ONLY_AF_STATS_V32_LITE
+void Isp32Params::convertAiqAfLiteToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
+                                            const rk_aiq_isp_af_v32_t& af_data,
+                                            bool af_cfg_udpate) {
+    int i;
+
+    if (!af_cfg_udpate) return;
+
+    if (af_data.af_en) isp_cfg.module_ens |= ISP2X_MODULE_RAWAF;
+    isp_cfg.module_en_update |= ISP2X_MODULE_RAWAF;
+    isp_cfg.module_cfg_update |= ISP2X_MODULE_RAWAF;
+
+    isp_cfg.meas.rawaf.rawaf_sel      = af_data.rawaf_sel;
+    isp_cfg.meas.rawaf.gamma_en       = af_data.gamma_en;
+    isp_cfg.meas.rawaf.gaus_en        = af_data.gaus_en;
+    isp_cfg.meas.rawaf.v1_fir_sel     = af_data.v1_fir_sel;
+    isp_cfg.meas.rawaf.hiir_en        = af_data.hiir_en;
+    isp_cfg.meas.rawaf.viir_en        = af_data.viir_en;
+    isp_cfg.meas.rawaf.v1_fv_mode     = af_data.v1_fv_outmode;
+    isp_cfg.meas.rawaf.v2_fv_mode     = af_data.v2_fv_outmode;
+    isp_cfg.meas.rawaf.h1_fv_mode     = af_data.h1_fv_outmode;
+    isp_cfg.meas.rawaf.h2_fv_mode     = af_data.h2_fv_outmode;
+    isp_cfg.meas.rawaf.ldg_en         = af_data.ldg_en;
+    isp_cfg.meas.rawaf.accu_8bit_mode = af_data.accu_8bit_mode;
+    isp_cfg.meas.rawaf.y_mode         = af_data.y_mode;
+    isp_cfg.meas.rawaf.vldg_sel       = af_data.vldg_sel;
+    isp_cfg.meas.rawaf.sobel_sel      = af_data.sobel_sel;
+    isp_cfg.meas.rawaf.v_dnscl_mode   = af_data.v_dnscl_mode;
+    isp_cfg.meas.rawaf.from_awb       = af_data.from_awb;
+    isp_cfg.meas.rawaf.from_ynr       = af_data.from_ynr;
+    if (af_data.af_en) {
+        isp_cfg.meas.rawaf.ae_mode = af_data.ae_mode;
+        isp_cfg.meas.rawaf.ae_config_use = af_data.ae_config_use;
+        isp_cfg.meas.rawaf.ae_sel = af_data.ae_sel;
+    } else {
+        isp_cfg.meas.rawaf.ae_mode = 0;
+        isp_cfg.meas.rawaf.ae_config_use = 1;
+        isp_cfg.meas.rawaf.ae_sel = 1;
+    }
+
+    memcpy(isp_cfg.meas.rawaf.line_en, af_data.line_en,
+           ISP32_RAWAF_LINE_NUM * sizeof(unsigned char));
+    memcpy(isp_cfg.meas.rawaf.line_num, af_data.line_num,
+           ISP32_RAWAF_LINE_NUM * sizeof(unsigned char));
+
+    isp_cfg.meas.rawaf.num_afm_win   = af_data.window_num;
+    isp_cfg.meas.rawaf.win[0].h_offs = af_data.wina_h_offs;
+    isp_cfg.meas.rawaf.win[0].v_offs = af_data.wina_v_offs;
+    isp_cfg.meas.rawaf.win[0].h_size = af_data.wina_h_size;
+    isp_cfg.meas.rawaf.win[0].v_size = af_data.wina_v_size;
+    isp_cfg.meas.rawaf.win[1].h_offs = af_data.winb_h_offs;
+    isp_cfg.meas.rawaf.win[1].v_offs = af_data.winb_v_offs;
+    isp_cfg.meas.rawaf.win[1].h_size = af_data.winb_h_size;
+    isp_cfg.meas.rawaf.win[1].v_size = af_data.winb_v_size;
+
+    memcpy(isp_cfg.meas.rawaf.gamma_y, af_data.gamma_y,
+           ISP32_RAWAF_GAMMA_NUM * sizeof(unsigned short));
+
+    /* THRES */
+    isp_cfg.meas.rawaf.afm_thres = af_data.thres;
+    /* VAR_SHIFT */
+    isp_cfg.meas.rawaf.afm_var_shift[0] = af_data.shift_sum_a;
+    isp_cfg.meas.rawaf.lum_var_shift[0] = af_data.shift_y_a;
+    isp_cfg.meas.rawaf.afm_var_shift[1] = af_data.shift_sum_b;
+    isp_cfg.meas.rawaf.lum_var_shift[1] = af_data.shift_y_b;
+    /* HVIIR_VAR_SHIFT */
+    isp_cfg.meas.rawaf.h1iir_var_shift = af_data.h1_fv_shift;
+    isp_cfg.meas.rawaf.h2iir_var_shift = af_data.h2_fv_shift;
+    isp_cfg.meas.rawaf.v1iir_var_shift = af_data.v1_fv_shift;
+    isp_cfg.meas.rawaf.v2iir_var_shift = af_data.v2_fv_shift;
+
+    /* HIIR_THRESH */
+    isp_cfg.meas.rawaf.h_fv_thresh = af_data.h_fv_thresh;
+    isp_cfg.meas.rawaf.h_fv_limit = af_data.h_fv_limit;
+    isp_cfg.meas.rawaf.h_fv_slope = af_data.h_fv_slope;
+    isp_cfg.meas.rawaf.v_fv_thresh = af_data.v_fv_thresh;
+    isp_cfg.meas.rawaf.v_fv_limit = af_data.v_fv_limit;
+    isp_cfg.meas.rawaf.v_fv_slope = af_data.v_fv_slope;
+
+    for (i = 0; i < ISP32_RAWAF_CURVE_NUM; i++) {
+        isp_cfg.meas.rawaf.curve_h[i].ldg_lumth = af_data.h_ldg_lumth[i];
+        isp_cfg.meas.rawaf.curve_h[i].ldg_gain  = af_data.h_ldg_gain[i];
+        isp_cfg.meas.rawaf.curve_h[i].ldg_gslp  = af_data.h_ldg_gslp[i];
+        isp_cfg.meas.rawaf.curve_v[i].ldg_lumth = af_data.v_ldg_lumth[i];
+        isp_cfg.meas.rawaf.curve_v[i].ldg_gain  = af_data.v_ldg_gain[i];
+        isp_cfg.meas.rawaf.curve_v[i].ldg_gslp  = af_data.v_ldg_gslp[i];
+    }
+
+    for (i = 0; i < ISP32_RAWAF_HIIR_COE_NUM; i++) {
+        isp_cfg.meas.rawaf.h1iir1_coe[i] = af_data.h1_iir1_coe[i];
+        isp_cfg.meas.rawaf.h1iir2_coe[i] = af_data.h1_iir2_coe[i];
+        isp_cfg.meas.rawaf.h2iir1_coe[i] = af_data.h2_iir1_coe[i];
+        isp_cfg.meas.rawaf.h2iir2_coe[i] = af_data.h2_iir2_coe[i];
+    }
+    for (i = 0; i < ISP32_RAWAF_GAUS_COE_NUM; i++) {
+        isp_cfg.meas.rawaf.gaus_coe[i] = af_data.gaus_coe[i];
+    }
+    for (i = 0; i < ISP32_RAWAF_VIIR_COE_NUM; i++) {
+        isp_cfg.meas.rawaf.v1iir_coe[i] = af_data.v1_iir_coe[i];
+        isp_cfg.meas.rawaf.v2iir_coe[i] = af_data.v2_iir_coe[i];
+    }
+    for (i = 0; i < ISP32_RAWAF_VFIR_COE_NUM; i++) {
+        isp_cfg.meas.rawaf.v1fir_coe[i] = af_data.v1_fir_coe[i];
+        isp_cfg.meas.rawaf.v2fir_coe[i] = af_data.v2_fir_coe[i];
+    }
+    isp_cfg.meas.rawaf.highlit_thresh = af_data.highlit_thresh;
+
+    /* af32 add */
+    isp_cfg.meas.rawaf.bnr2af_sel = af_data.from_bnr;
+    isp_cfg.meas.rawaf.tnrin_shift = af_data.bnrin_shift;
+    isp_cfg.meas.rawaf.hldg_dilate_num = af_data.hldg_dilate_num;
+    isp_cfg.meas.rawaf.hiir_left_border_mode = af_data.hiir_left_border_mode;
+    isp_cfg.meas.rawaf.avg_ds_en = af_data.avg_ds_en;
+    isp_cfg.meas.rawaf.avg_ds_mode = af_data.avg_ds_mode;
+    isp_cfg.meas.rawaf.h1_acc_mode = af_data.h1_acc_mode;
+    isp_cfg.meas.rawaf.h2_acc_mode = af_data.h2_acc_mode;
+    isp_cfg.meas.rawaf.v1_acc_mode = af_data.v1_acc_mode;
+    isp_cfg.meas.rawaf.v2_acc_mode = af_data.v2_acc_mode;
+    isp_cfg.meas.rawaf.h_fv_limit = af_data.h_fv_limit;
+    isp_cfg.meas.rawaf.h_fv_slope = af_data.h_fv_slope;
+    isp_cfg.meas.rawaf.v_fv_limit = af_data.v_fv_limit;
+    isp_cfg.meas.rawaf.v_fv_slope = af_data.v_fv_slope;
+    isp_cfg.meas.rawaf.bls_en = af_data.bls_en;
+    isp_cfg.meas.rawaf.bls_offset = af_data.bls_offset;
+
+    // rawae0 is used by af now!!!
+    if (af_data.af_en && af_data.ae_mode) {
+        isp_cfg.module_ens |= ISP2X_MODULE_RAWAE0;
+        isp_cfg.module_en_update |= ISP2X_MODULE_RAWAE0;
+        isp_cfg.module_cfg_update |= ISP2X_MODULE_RAWAE0;
+
+        isp_cfg.meas.rawae0.win.h_offs = af_data.wina_h_offs;
+        isp_cfg.meas.rawae0.win.v_offs = af_data.wina_v_offs;
+        isp_cfg.meas.rawae0.win.h_size = af_data.wina_h_size;
+        isp_cfg.meas.rawae0.win.v_size = af_data.wina_v_size;
+    }
+}
+#endif
 #if RKAIQ_HAVE_CAC_V11
 void Isp32Params::convertAiqCacToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
         const rk_aiq_isp_cac_v32_t& cac_cfg) {
@@ -710,7 +1190,7 @@ void Isp32Params::convertAiqRawnrToIsp32Params(struct isp32_isp_params_cfg& isp_
     LOGD_ANR("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
 #endif
-#if RKAIQ_HAVE_BAYERTNR_V23
+#if (RKAIQ_HAVE_BAYERTNR_V23 || RKAIQ_HAVE_BAYERTNR_V23_LITE)
 void Isp32Params::convertAiqTnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
         rk_aiq_isp_tnr_v32_t& tnr) {
     LOGD_ANR("%s:%d enter! enable:%d\n", __FUNCTION__, __LINE__, tnr.bay3d_en);
@@ -765,6 +1245,8 @@ void Isp32Params::convertAiqTnrToIsp32Params(struct isp32_isp_params_cfg& isp_cf
     pBayertnr->higaus5x5_en = tnr.higaus5x5_en;
     pBayertnr->wgtmix_opt_en = tnr.wgtmix_opt_en;
 
+    pBayertnr->wgtmm_opt_en = tnr.wgtmm_opt_en;
+    pBayertnr->wgtmm_sel_en = tnr.wgtmm_sel_en;
 
     pBayertnr->wgtlmt   = tnr.wgtlmt;
     pBayertnr->wgtratio = tnr.wgtratio;
@@ -779,6 +1261,8 @@ void Isp32Params::convertAiqTnrToIsp32Params(struct isp32_isp_params_cfg& isp_cf
         // pBayertnr->sig2_x[i] = tnr.bay3d_sig1_x[i];
         pBayertnr->sig2_y[i] = tnr.sig2_y[i];
     }
+
+    pBayertnr->wgtmin = tnr.wgtmin;
 
     pBayertnr->hisigrat0 = tnr.hisigrat0;
     pBayertnr->hisigrat1 = tnr.hisigrat1;
@@ -895,7 +1379,7 @@ void Isp32Params::convertAiqYnrToIsp32Params(struct isp32_isp_params_cfg& isp_cf
     LOGD_ANR("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
 #endif
-#if RKAIQ_HAVE_CNR_V30
+#if (RKAIQ_HAVE_CNR_V30 || RKAIQ_HAVE_CNR_V30_LITE)
 void Isp32Params::convertAiqUvnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
         rk_aiq_isp_cnr_v32_t& uvnr) {
     LOGD_ANR("%s:%d enter! enable:%d \n", __FUNCTION__, __LINE__, uvnr.cnr_en);
@@ -967,6 +1451,8 @@ void Isp32Params::convertAiqUvnrToIsp32Params(struct isp32_isp_params_cfg& isp_c
     LOGD_ANR("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
 #endif
+
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
 void Isp32Params::convertAiqAdebayerToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
         rk_aiq_isp_debayer_v32_t & debayer)
 {
@@ -1014,6 +1500,7 @@ void Isp32Params::convertAiqAdebayerToIsp32Params(struct isp32_isp_params_cfg& i
     /* G_FILTER_OFFSET */
     isp_cfg.others.debayer_cfg.offset = debayer.offset;
 
+#if RKAIQ_HAVE_DEBAYER_V2
     /* C_FILTER_GUIDE_GAUS */
     isp_cfg.others.debayer_cfg.guid_gaus_coe0 = debayer.guid_gaus_coe[0];
     isp_cfg.others.debayer_cfg.guid_gaus_coe1 = debayer.guid_gaus_coe[1];
@@ -1052,7 +1539,9 @@ void Isp32Params::convertAiqAdebayerToIsp32Params(struct isp32_isp_params_cfg& i
     /* C_FILTER_EDGE */
     isp_cfg.others.debayer_cfg.edge_offset = debayer.edge_offset;
     isp_cfg.others.debayer_cfg.edge_scale = debayer.edge_scale;
+#endif
 }
+#endif
 
 #if RKAIQ_HAVE_MERGE_V12
 void Isp32Params::convertAiqMergeToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
@@ -1228,7 +1717,7 @@ void Isp32Params::convertAiqAdehazeToIsp32Params(struct isp32_isp_params_cfg& is
 }
 #endif
 
-#if RKAIQ_HAVE_DRC_V12
+#if RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE
 void Isp32Params::convertAiqDrcToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
         rk_aiq_isp_drc_v32_t& adrc_data) {
     if (adrc_data.update) {
@@ -1346,7 +1835,7 @@ void Isp32Params::convertAiqCcmToIsp32Params(struct isp32_isp_params_cfg& isp_cf
 }
 #endif
 
-#if RKAIQ_HAVE_SHARP_V33
+#if (RKAIQ_HAVE_SHARP_V33 || RKAIQ_HAVE_SHARP_V33_LITE)
 void Isp32Params::convertAiqSharpenToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
         rk_aiq_isp_sharp_v32_t& sharp) {
     LOGD_ASHARP("%s:%d enter! enable:%d\n", __FUNCTION__, __LINE__, sharp.sharp_en);
@@ -1368,6 +1857,9 @@ void Isp32Params::convertAiqSharpenToIsp32Params(struct isp32_isp_params_cfg& is
     if (!enable) {
         pSharp->bypass = 0x01;
     }
+
+    pSharp->clip_hf_mode = sharp.sharp_clip_hf_mode;
+    pSharp->add_mode     = sharp.sharp_add_mode;
 
     pSharp->sharp_ratio = sharp.sharp_sharp_ratio;
     pSharp->bf_ratio    = sharp.sharp_bf_ratio;
@@ -1444,6 +1936,12 @@ void Isp32Params::convertAiqSharpenToIsp32Params(struct isp32_isp_params_cfg& is
     LOGD_ASHARP("%s:%d  enhance_bit:0x%x \n", __FUNCTION__, __LINE__, pSharp->enhance_bit);
     LOGD_ASHARP("%s:%d  noise_strength:0x%x \n", __FUNCTION__, __LINE__, pSharp->noise_strength);
 
+    for (int i = 0; i < 8; i++) {
+        pSharp->ehf_th[i]   = sharp.sharp_ehf_th[i];
+        pSharp->clip_neg[i] = sharp.sharp_clip_neg[i];
+        LOGD_ASHARP("%s:%d  ehf_th[%d]:0x%x  clip_neg[%d]:0x%x\n", __FUNCTION__, __LINE__, i,
+                    pSharp->ehf_th[i], i, pSharp->clip_neg[i]);
+    }
 #endif
     LOGD_ASHARP("%s:%d exit!\n", __FUNCTION__, __LINE__);
 }
@@ -1650,6 +2148,11 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
             result.dynamic_cast_ptr<RkAiqIspAfParamsProxyV32>();
         if (params.ptr()) convertAiqAfToIsp32Params(isp_cfg, params->data()->result, true);
 #endif
+#if RKAIQ_HAVE_AF_V32_LITE || RKAIQ_ONLY_AF_STATS_V32_LITE
+        SmartPtr<RkAiqIspAfParamsProxyV32Lite> params =
+            result.dynamic_cast_ptr<RkAiqIspAfParamsProxyV32Lite>();
+        if (params.ptr()) convertAiqAfLiteToIsp32Params(isp_cfg, params->data()->result, true);
+#endif
     }
     break;
     case RESULT_TYPE_CCM_PARAM: {
@@ -1717,7 +2220,7 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
     }
     break;
     case RESULT_TYPE_DRC_PARAM: {
-#if RKAIQ_HAVE_DRC_V12
+#if RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE
         SmartPtr<RkAiqIspDrcParamsProxy> params = result.dynamic_cast_ptr<RkAiqIspDrcParamsProxy>();
         if (params.ptr()) convertAiqDrcToIsp32Params(isp_cfg, params->data()->result);
 #endif
@@ -1754,7 +2257,7 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
     }
     break;
     case RESULT_TYPE_TNR_PARAM: {
-#if RKAIQ_HAVE_BAYERTNR_V23
+#if (RKAIQ_HAVE_BAYERTNR_V23 || RKAIQ_HAVE_BAYERTNR_V23_LITE)
         SmartPtr<RkAiqIspTnrParamsProxyV32> params =
             result.dynamic_cast_ptr<RkAiqIspTnrParamsProxyV32>();
         if (params.ptr()) convertAiqTnrToIsp32Params(isp_cfg, params->data()->result);
@@ -1770,7 +2273,7 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
     }
     break;
     case RESULT_TYPE_UVNR_PARAM: {
-#if RKAIQ_HAVE_CNR_V30
+#if (RKAIQ_HAVE_CNR_V30 || RKAIQ_HAVE_CNR_V30_LITE)
         SmartPtr<RkAiqIspCnrParamsProxyV32> params =
             result.dynamic_cast_ptr<RkAiqIspCnrParamsProxyV32>();
         if (params.ptr()) convertAiqUvnrToIsp32Params(isp_cfg, params->data()->result);
@@ -1791,7 +2294,7 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
     }
     break;
     case RESULT_TYPE_SHARPEN_PARAM: {
-#if RKAIQ_HAVE_SHARP_V33
+#if (RKAIQ_HAVE_SHARP_V33 || RKAIQ_HAVE_SHARP_V33_LITE)
         SmartPtr<RkAiqIspSharpParamsProxyV32> params =
             result.dynamic_cast_ptr<RkAiqIspSharpParamsProxyV32>();
         if (params.ptr()) convertAiqSharpenToIsp32Params(isp_cfg, params->data()->result);

@@ -773,7 +773,9 @@ XCamReturn
 RkAiqResourceTranslator::getParams(const SmartPtr<VideoBuffer>& from)
 {
     const SmartPtr<Isp20StatsBuffer> buf = from.dynamic_cast_ptr<Isp20StatsBuffer>();
-#ifdef ISP_HW_V32
+#ifdef ISP_HW_V32_LITE
+    auto stats = (struct rkisp32_lite_stat_buffer*)(buf->get_v4l2_userptr());
+#elif ISP_HW_V32
     auto stats = (struct rkisp32_isp_stat_buffer*)(buf->get_v4l2_userptr());
 #elif defined(ISP_HW_V30)
     auto stats = (struct rkisp3x_isp_stat_buffer*)(buf->get_v4l2_userptr());

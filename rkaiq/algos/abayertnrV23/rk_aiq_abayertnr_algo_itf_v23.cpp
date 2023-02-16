@@ -85,8 +85,14 @@ prepare(RkAiqAlgoCom* params)
 
     if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
 #if ABAYERTNR_USE_JSON_FILE_V23
-        void *pCalibDbV2 = (void*)(pCfgParam->com.u.prepare.calibv2);
+        void* pCalibDbV2 = (void*)(pCfgParam->com.u.prepare.calibv2);
+#if (RKAIQ_HAVE_BAYERTNR_V23)
         CalibDbV2_BayerTnrV23_t *bayertnr_v23 = (CalibDbV2_BayerTnrV23_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDbV2, bayertnr_v23));
+#else
+        CalibDbV2_BayerTnrV23Lite_t* bayertnr_v23 =
+            (CalibDbV2_BayerTnrV23Lite_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDbV2,
+                                                                    bayertnr_v23));
+#endif
         pAbayertnrCtx->bayertnr_v23 = *bayertnr_v23;
 #endif
         pAbayertnrCtx->isIQParaUpdate = true;

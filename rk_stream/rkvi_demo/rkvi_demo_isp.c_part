@@ -1,6 +1,6 @@
 
 
-#define BUFFER_COUNT 3
+#define BUFFER_COUNT 4
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 #define FMT_NUM_PLANES 1
 
@@ -242,7 +242,7 @@ static int write_yuv_to_file(const void *p,
     char file_name[64] = {0};
 
     snprintf(file_name, sizeof(file_name),
-             "/userdata/frame%d.yuv", sequence);
+             "/tmp/frame%d.yuv", sequence);
     FILE *fp = fopen(file_name, "wb");
     if (fp == NULL) {
         printf("fopen yuv file %s failed!\n", file_name);

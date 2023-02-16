@@ -5,10 +5,18 @@
 
 RKAIQ_BEGIN_DECLARE
 
-Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(RK_Bayertnr_Params_V23_t *pParams, RK_Bayertnr_Params_V23_Select_t *pSelect, Abayertnr_ExpInfo_V23_t *pExpInfo)
-{
+Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(void* pParams_v, void* pSelect_v,
+                                                         Abayertnr_ExpInfo_V23_t* pExpInfo) {
     Abayertnr_result_V23_t res = ABAYERTNRV23_RET_SUCCESS;
     int iso = 50;
+
+#if (RKAIQ_HAVE_BAYERTNR_V23)
+    RK_Bayertnr_Params_V23_t* pParams        = (RK_Bayertnr_Params_V23_t*)pParams_v;
+    RK_Bayertnr_Params_V23_Select_t* pSelect = (RK_Bayertnr_Params_V23_Select_t*)pSelect_v;
+#else
+    RK_Bayertnr_Params_V23L_t* pParams       = (RK_Bayertnr_Params_V23L_t*)pParams_v;
+    RK_Bayertnr_Param_V23L_Select_t* pSelect = (RK_Bayertnr_Param_V23L_Select_t*)pSelect_v;
+#endif
 
     if(pParams == NULL) {
         LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
@@ -86,8 +94,13 @@ Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(RK_Bayertnr_Params_V23_
 
     pExpInfo->isoLevelLow = isoLevelLow;
     pExpInfo->isoLevelHig = isoLevelHig;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     RK_Bayertnr_Params_V23_Select_t* pLowISO = &pParams->bayertnrParamISO[isoLevelLow];
     RK_Bayertnr_Params_V23_Select_t* pHighISO = &pParams->bayertnrParamISO[isoLevelHig];
+#else
+    RK_Bayertnr_Param_V23L_Select_t* pLowISO   = &pParams->bayertnrParamISO[isoLevelLow];
+    RK_Bayertnr_Param_V23L_Select_t* pHighISO  = &pParams->bayertnrParamISO[isoLevelHig];
+#endif
 
     pSelect->enable = pParams->enable;
 
@@ -140,9 +153,11 @@ Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(RK_Bayertnr_Params_V23_
            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hi_enable;
     pSelect->hi_enable = (tmpf) > 0.5;
 
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lo_med_en
            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lo_med_en;
     pSelect->lo_med_en = (tmpf) > 0.5;
+#endif
 
     tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lo_gsbay_en
            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lo_gsbay_en;
@@ -152,9 +167,11 @@ Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(RK_Bayertnr_Params_V23_
            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lo_gslum_en;
     pSelect->lo_gslum_en = (tmpf) > 0.5;
 
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hi_med_en
            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hi_med_en;
     pSelect->hi_med_en = (tmpf) > 0.5;
+#endif
 
     tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hi_gslum_en
            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hi_gslum_en;
@@ -175,35 +192,50 @@ Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(RK_Bayertnr_Params_V23_
 
 
     pSelect->hi_filter_abs_ctrl = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_abs_ctrl : pHighISO->hi_filter_abs_ctrl;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     pSelect->hi_filter_filt_avg = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_filt_avg : pHighISO->hi_filter_filt_avg;
     pSelect->hi_filter_filt_bay = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_filt_bay : pHighISO->hi_filter_filt_bay;
     pSelect->hi_filter_filt_mode = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_filt_mode : pHighISO->hi_filter_filt_mode;
+#endif
 
     pSelect->hi_filter_rat0 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_rat0 : pHighISO->hi_filter_rat0;
     pSelect->hi_filter_thed0 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_thed0 : pHighISO->hi_filter_thed0;
     pSelect->hi_filter_rat1 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_rat1 : pHighISO->hi_filter_rat1;
     pSelect->hi_filter_thed1 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_thed1 : pHighISO->hi_filter_thed1;
 
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     tmpf    = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hi_guass
               + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hi_guass;
     pSelect->hi_guass = (tmpf) > 0.5;
     tmpf    = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->kl_guass
               + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->kl_guass;
     pSelect->kl_guass = (tmpf) > 0.5;
+#endif
 
+#if (RKAIQ_HAVE_BAYERTNR_V23_LITE)
+    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->wgtmm_opt_en +
+           float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->wgtmm_opt_en;
+    pSelect->wgtmm_opt_en = (tmpf) > 0.5;
+    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->wgtmm_sel_en +
+           float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->wgtmm_sel_en;
+    pSelect->wgtmm_sel_en = (tmpf) > 0.5;
+    pSelect->wgtmin =
+        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->wgtmin +
+        float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->wgtmin;
+#endif
 
     pSelect->wgt_use_mode = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->wgt_use_mode : pHighISO->wgt_use_mode;
     pSelect->wgt_mge_mode = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->wgt_mge_mode : pHighISO->wgt_mge_mode;
     pSelect->guass_guide_coeff0 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->guass_guide_coeff0 : pHighISO->guass_guide_coeff0;
     pSelect->guass_guide_coeff1 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->guass_guide_coeff1 : pHighISO->guass_guide_coeff1;
     pSelect->guass_guide_coeff2 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->guass_guide_coeff2 : pHighISO->guass_guide_coeff2;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     pSelect->guass_guide_coeff3 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->guass_guide_coeff3 : pHighISO->guass_guide_coeff3;
-
+#endif
 
     pSelect->trans_en = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->trans_en : pHighISO->trans_en;
     return res;
 }
-
 
 unsigned short bayertnr_get_trans_V23(int tmpfix)
 {
@@ -256,10 +288,17 @@ unsigned short bayertnr_get_trans_V23(int tmpfix)
     return fx;
 }
 
-Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t* pSelect, RK_Bayertnr_Fix_V23_t *pFix, rk_aiq_bayertnr_strength_v23_t* pStrength, Abayertnr_ExpInfo_V23_t *pExpInfo)
-{
+Abayertnr_result_V23_t bayertnr_fix_transfer_V23(void* pSelect_v, RK_Bayertnr_Fix_V23_t* pFix,
+                                                 rk_aiq_bayertnr_strength_v23_t* pStrength,
+                                                 Abayertnr_ExpInfo_V23_t* pExpInfo) {
     int i = 0;
     int tmp;
+
+#if (RKAIQ_HAVE_BAYERTNR_V23)
+    RK_Bayertnr_Params_V23_Select_t* pSelect = (RK_Bayertnr_Params_V23_Select_t*)pSelect_v;
+#else
+    RK_Bayertnr_Param_V23L_Select_t* pSelect   = (RK_Bayertnr_Param_V23L_Select_t*)pSelect_v;
+#endif
 
     if(pSelect == NULL) {
         LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
@@ -302,11 +341,23 @@ Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t
     pFix->glbpk_en = pSelect->global_pk_en;
     pFix->logaus3_bypass_en = !pSelect->lo_gslum_en;
     pFix->logaus5_bypass_en = !pSelect->lo_gsbay_en;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     pFix->lomed_bypass_en = !pSelect->lo_med_en;
+#else
+    pFix->lomed_bypass_en                      = 0;
+#endif
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     pFix->hichnsplit_en = (pSelect->hi_filter_filt_bay == 0) ? (pSelect->lo_enable == 0) : (pSelect->hi_filter_filt_bay > 1);
+#else
+    pFix->hichnsplit_en                        = 0;
+#endif
     pFix->hiabs_possel = (pSelect->hi_filter_abs_ctrl == 0) ? (pSelect->lo_enable == 0) : (pSelect->hi_filter_abs_ctrl > 1);
     pFix->higaus_bypass_en = !pSelect->hi_gslum_en;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     pFix->himed_bypass_en = !pSelect->hi_med_en;
+#else
+    pFix->himed_bypass_en                      = 0;
+#endif
     pFix->lobypass_en = !pSelect->lo_enable;
     pFix->hibypass_en = !pSelect->hi_enable;
     pFix->bypass_en = !pSelect->enable;;
@@ -326,7 +377,11 @@ Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t
 
     // BAY3D_BAY3D_CTRL1 0x2c0c
     pFix->hiwgt_opt_en = pSelect->wgt_mge_mode;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     pFix->hichncor_en = (pSelect->hi_filter_filt_avg == 0) ? (pSelect->lo_enable == 0) : (pSelect->hi_filter_filt_avg > 1);
+#else
+    pFix->hichncor_en                          = 0;
+#endif
     pFix->bwopt_gain_dis = 0;
     pFix->lo4x8_en = 1;
     pFix->lo4x4_en = 0;
@@ -343,10 +398,16 @@ Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t
         pFix->lo4x8_en = 1;
         pFix->lo4x4_en = 0;
     }
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     pFix->hisig_ind_sel = pSelect->hi_guass;
     pFix->pksig_ind_sel = pSelect->kl_guass;
+#else
+    pFix->hisig_ind_sel                        = 0;
+    pFix->pksig_ind_sel                        = 0;
+#endif
     pFix->iirwr_rnd_en = 1;
     pFix->curds_high_en = 0;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     tmp = pSelect->hi_filter_filt_mode;
     tmp = CLIP(tmp, 0, 4);
     pFix->higaus3_mode = 0;
@@ -361,7 +422,16 @@ Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t
         pFix->higaus5x5_en = 1;
     else if(tmp == 4)
         pFix->higaus5x5_en = 0;
+#else
+    pFix->higaus3_mode                         = 0;
+    pFix->higaus5x5_en                         = 0;
+#endif
     pFix->wgtmix_opt_en = pSelect->wgt_use_mode != 0;
+
+#if (RKAIQ_HAVE_BAYERTNR_V23_LITE)
+    pFix->wgtmm_opt_en = pSelect->wgtmm_opt_en;
+    pFix->wgtmm_sel_en = pSelect->wgtmm_sel_en;
+#endif
 
     // BAY3D_BAY3D_WGTLMT 0x2c10
     tmp = (int)(((float)1 - pSelect->lo_clipwgt) * (1 << FIXTNRWGT));
@@ -394,6 +464,11 @@ Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t
         pFix->sig2_y[i] = CLIP(tmp, 0, (1 << 10) - 1);
     }
 
+#if (RKAIQ_HAVE_BAYERTNR_V23_LITE)
+    tmp          = pSelect->wgtmin * (1 << 10);
+    pFix->wgtmin = CLIP(tmp, 0, (1 << 10) - 1);
+#endif
+
     // BAY3D_BAY3D_HISIGRAT 0x2ce4
     tmp = (int)(pSelect->hi_filter_rat0 * (1 << 8));
     pFix->hisigrat0 = CLIP(tmp, 0, 0xfff);
@@ -425,14 +500,17 @@ Abayertnr_result_V23_t bayertnr_fix_transfer_V23(RK_Bayertnr_Params_V23_Select_t
     pFix->siggaus1 = CLIP(tmp, 0, 0x3f);
     tmp = (int)(pSelect->guass_guide_coeff2);
     pFix->siggaus2 = CLIP(tmp, 0, 0x3f);
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     tmp = (int)(pSelect->guass_guide_coeff3);
     pFix->siggaus3 = CLIP(tmp, 0, 0x3f);
+#else
+    pFix->siggaus3                             = 0;
+#endif
 
     bayertnr_fix_printf_V23(pFix);
 
     return ABAYERTNRV23_RET_SUCCESS;
 }
-
 
 Abayertnr_result_V23_t bayertnr_fix_printf_V23(RK_Bayertnr_Fix_V23_t * pFix)
 {
@@ -568,12 +646,16 @@ Abayertnr_result_V23_t bayertnr_fix_printf_V23(RK_Bayertnr_Fix_V23_t * pFix)
     return res;
 }
 
-
-
-Abayertnr_result_V23_t bayertnr_get_setting_by_name_json_V23(CalibDbV2_BayerTnrV23_t* pCalibdb, char *name, int *calib_idx, int *tuning_idx)
-{
+Abayertnr_result_V23_t bayertnr_get_setting_by_name_json_V23(void* pCalibdb_v, char* name,
+                                                             int* calib_idx, int* tuning_idx) {
     int i = 0;
     Abayertnr_result_V23_t res = ABAYERTNRV23_RET_SUCCESS;
+
+#if (RKAIQ_HAVE_BAYERTNR_V23)
+    CalibDbV2_BayerTnrV23_t* pCalibdb = (CalibDbV2_BayerTnrV23_t*)pCalibdb_v;
+#else
+    CalibDbV2_BayerTnrV23Lite_t* pCalibdb      = (CalibDbV2_BayerTnrV23Lite_t*)pCalibdb_v;
+#endif
 
     if(pCalibdb == NULL || name == NULL || calib_idx == NULL || tuning_idx == NULL) {
         LOGE_ANR("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
@@ -606,16 +688,22 @@ Abayertnr_result_V23_t bayertnr_get_setting_by_name_json_V23(CalibDbV2_BayerTnrV
 
     LOGD_ANR("%s:%d snr_name:%s  snr_idx:%d i:%d \n", __FUNCTION__, __LINE__, name, *calib_idx, i);
     return res;
-
-
 }
 
-
-Abayertnr_result_V23_t bayertnr_init_params_json_V23(RK_Bayertnr_Params_V23_t *pParams, CalibDbV2_BayerTnrV23_t* pCalibdb, int calib_idx, int tuning_idx)
-{
+Abayertnr_result_V23_t bayertnr_init_params_json_V23(void* pParams_v, void* pCalibdb_v,
+                                                     int calib_idx, int tuning_idx) {
     Abayertnr_result_V23_t res = ABAYERTNRV23_RET_SUCCESS;
     CalibDbV2_BayerTnrV23_C_ISO_t *pCalibIso = NULL;
-    CalibDbV2_BayerTnrV23_T_ISO_t *pTuningIso = NULL;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
+    CalibDbV2_BayerTnrV23_t* pCalibdb         = (CalibDbV2_BayerTnrV23_t*)pCalibdb_v;
+    RK_Bayertnr_Params_V23_t* pParams         = (RK_Bayertnr_Params_V23_t*)pParams_v;
+    CalibDbV2_BayerTnrV23_T_ISO_t* pTuningIso = NULL;
+#else
+    CalibDbV2_BayerTnrV23Lite_t* pCalibdb      = (CalibDbV2_BayerTnrV23Lite_t*)pCalibdb_v;
+    RK_Bayertnr_Params_V23L_t* pParams         = (RK_Bayertnr_Params_V23L_t*)pParams_v;
+    CalibDbV2_BayerTnrV23L_T_ISO_t* pTuningIso = NULL;
+#endif
+
 #if 1
     LOGI_ANR("%s:(%d) oyyf bayerner xml config start\n", __FUNCTION__, __LINE__);
     if(pParams == NULL || pCalibdb == NULL) {
@@ -649,10 +737,14 @@ Abayertnr_result_V23_t bayertnr_init_params_json_V23(RK_Bayertnr_Params_V23_t *p
 
 
         pParams->bayertnrParamISO[i].lo_clipwgt = pTuningIso->lo_clipwgt;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
         pParams->bayertnrParamISO[i].lo_med_en = pTuningIso->lo_med_en;
+#endif
         pParams->bayertnrParamISO[i].lo_gsbay_en = pTuningIso->lo_gsbay_en;
         pParams->bayertnrParamISO[i].lo_gslum_en = pTuningIso->lo_gslum_en;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
         pParams->bayertnrParamISO[i].hi_med_en = pTuningIso->hi_med_en;
+#endif
         pParams->bayertnrParamISO[i].hi_gslum_en = pTuningIso->hi_gslum_en;
         pParams->bayertnrParamISO[i].global_pk_en = pTuningIso->global_pk_en;
         pParams->bayertnrParamISO[i].global_pksq = pTuningIso->global_pksq;
@@ -665,9 +757,11 @@ Abayertnr_result_V23_t bayertnr_init_params_json_V23(RK_Bayertnr_Params_V23_t *p
 
 
         pParams->bayertnrParamISO[i].hi_filter_abs_ctrl = pTuningIso->hi_filter_abs_ctrl;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
         pParams->bayertnrParamISO[i].hi_filter_filt_avg = pTuningIso->hi_filter_filt_avg;
         pParams->bayertnrParamISO[i].hi_filter_filt_bay = pTuningIso->hi_filter_filt_bay;
         pParams->bayertnrParamISO[i].hi_filter_filt_mode = pTuningIso->hi_filter_filt_mode;
+#endif
 
         pParams->bayertnrParamISO[i].hi_filter_rat0 = pTuningIso->hi_filter_rat0;
         pParams->bayertnrParamISO[i].hi_filter_thed0 = pTuningIso->hi_filter_thed0;
@@ -678,11 +772,22 @@ Abayertnr_result_V23_t bayertnr_init_params_json_V23(RK_Bayertnr_Params_V23_t *p
         pParams->bayertnrParamISO[i].guass_guide_coeff0 = pTuningIso->guass_guide_coeff0;
         pParams->bayertnrParamISO[i].guass_guide_coeff1 = pTuningIso->guass_guide_coeff1;
         pParams->bayertnrParamISO[i].guass_guide_coeff2 = pTuningIso->guass_guide_coeff2;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
         pParams->bayertnrParamISO[i].guass_guide_coeff3 = pTuningIso->guass_guide_coeff3;
+#endif
         pParams->bayertnrParamISO[i].wgt_use_mode = pTuningIso->wgt_use_mode;
         pParams->bayertnrParamISO[i].wgt_mge_mode = pTuningIso->wgt_mge_mode;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
         pParams->bayertnrParamISO[i].hi_guass = pTuningIso->hi_guass;
         pParams->bayertnrParamISO[i].kl_guass = pTuningIso->kl_guass;
+#endif
+
+#if (RKAIQ_HAVE_BAYERTNR_V23_LITE)
+        pParams->bayertnrParamISO[i].wgtmm_opt_en = pTuningIso->wgtmm_opt_en;
+        pParams->bayertnrParamISO[i].wgtmm_sel_en = pTuningIso->wgtmm_sel_en;
+        pParams->bayertnrParamISO[i].wgtmin       = pTuningIso->wgtmin;
+#endif
+
         pParams->bayertnrParamISO[i].trans_en = pCalibdb->TuningPara.trans_en;
 
     }
@@ -692,12 +797,19 @@ Abayertnr_result_V23_t bayertnr_init_params_json_V23(RK_Bayertnr_Params_V23_t *p
     return res;
 }
 
-
-Abayertnr_result_V23_t bayertnr_config_setting_param_json_V23(RK_Bayertnr_Params_V23_t *pParams, CalibDbV2_BayerTnrV23_t* pCalibdbV23, char* param_mode, char * snr_name)
-{
+Abayertnr_result_V23_t bayertnr_config_setting_param_json_V23(void* pParams_v, void* pCalibdbV23_v,
+                                                              char* param_mode, char* snr_name) {
     Abayertnr_result_V23_t res = ABAYERTNRV23_RET_SUCCESS;
     int calib_idx = 0;
     int tuning_idx = 0;
+
+#if (RKAIQ_HAVE_BAYERTNR_V23)
+    RK_Bayertnr_Params_V23_t* pParams    = (RK_Bayertnr_Params_V23_t*)pParams_v;
+    CalibDbV2_BayerTnrV23_t* pCalibdbV23 = (CalibDbV2_BayerTnrV23_t*)pCalibdbV23_v;
+#else
+    RK_Bayertnr_Params_V23L_t* pParams         = (RK_Bayertnr_Params_V23L_t*)pParams_v;
+    CalibDbV2_BayerTnrV23Lite_t* pCalibdbV23   = (CalibDbV2_BayerTnrV23Lite_t*)pCalibdbV23_v;
+#endif
 
     if(pParams == NULL || pCalibdbV23 == NULL
             || param_mode == NULL || snr_name == NULL) {
@@ -714,7 +826,6 @@ Abayertnr_result_V23_t bayertnr_config_setting_param_json_V23(RK_Bayertnr_Params
     res = bayertnr_init_params_json_V23(pParams, pCalibdbV23, calib_idx, tuning_idx);
 
     return res;
-
 }
 
 RKAIQ_END_DECLARE

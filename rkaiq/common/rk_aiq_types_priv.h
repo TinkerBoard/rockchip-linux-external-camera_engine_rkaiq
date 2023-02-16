@@ -90,7 +90,7 @@ typedef struct rkisp_effect_params_s {
     rk_aiq_isp_awb_meas_cfg_v3x_t awb_cfg_v3x;
     rk_aiq_isp_blc_v21_t blc_cfg;
 } rkisp_effect_params_v20;
-#elif ISP_HW_V32
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
 typedef struct rkisp_effect_params_s {
     //struct isp32_isp_params_cfg isp_params_v32;
 	struct isp32_isp_meas_cfg meas;
@@ -176,6 +176,9 @@ typedef rk_aiq_isp_params_t<rk_aiq_isp_awb_meas_cfg_v32_t>    rk_aiq_isp_awb_par
 typedef rk_aiq_isp_params_t<rk_aiq_isp_af_v31_t>              rk_aiq_isp_af_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_tnr_v32_t>             rk_aiq_isp_tnr_params_v32_t;
 typedef rk_aiq_isp_params_t<rk_aiq_wb_gain_v32_t>             rk_aiq_isp_awb_gain_params_v32_t;
+
+// v32 lite param struct
+typedef rk_aiq_isp_params_t<rk_aiq_isp_af_v32_t>              rk_aiq_isp_af_params_v32_lite_t;
 
 typedef enum rk_aiq_drv_share_mem_type_e {
     MEM_TYPE_LDCH,

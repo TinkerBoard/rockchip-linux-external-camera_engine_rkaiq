@@ -906,7 +906,7 @@ XCamReturn RkAiqAeHandleInt::processing() {
         }
     }
 
-#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF
     SmartPtr<RkAiqHandle>* af_handle = mAiqCore->getCurAlgoTypeHandle(RK_AIQ_ALGO_TYPE_AF);
     int algo_id                      = (*af_handle)->getAlgoId();
 

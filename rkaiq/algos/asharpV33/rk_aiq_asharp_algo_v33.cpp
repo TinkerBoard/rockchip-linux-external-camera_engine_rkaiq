@@ -89,7 +89,12 @@ Asharp_result_V33_t Asharp_Init_V33(Asharp_Context_V33_t** ppAsharpCtx, void* pC
 #if ASHARP_USE_XML_FILE_V33
     // read v1 params from xml
 #if ASHARP_USE_JSON_FILE_V33
+#if RKAIQ_HAVE_SHARP_V33
     pAsharpCtx->sharp_v33 = *(CalibDbV2_SharpV33_t*)(CALIBDBV2_GET_MODULE_PTR(pCalibDb, sharp_v33));
+#else
+    pAsharpCtx->sharp_v33 =
+        *(CalibDbV2_SharpV33Lite_t*)(CALIBDBV2_GET_MODULE_PTR(pCalibDb, sharp_v33));
+#endif
 #endif
 #endif
 

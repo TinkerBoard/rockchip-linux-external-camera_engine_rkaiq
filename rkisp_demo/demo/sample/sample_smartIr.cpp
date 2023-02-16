@@ -104,6 +104,7 @@ static void switch_to_night()
 static void load_ir_configs()
 {
     sample_smartIr_t* smartIr_ctx = &g_sample_smartIr_ctx;
+    rk_smart_ir_result_t ir_init_res;
 
     smartIr_ctx->ir_cut_v4ldev = NULL;
     smartIr_ctx->ir_v4ldev = NULL;
@@ -118,6 +119,8 @@ static void load_ir_configs()
     smartIr_ctx->ir_configs.switch_cnts_th = 100;
     rk_smart_ir_config(smartIr_ctx->ir_ctx, &smartIr_ctx->ir_configs);
     // set initial status to day
+    ir_init_res.status = RK_SMART_IR_STATUS_DAY;
+    rk_smart_ir_set_status(smartIr_ctx->ir_ctx, ir_init_res);
     switch_to_day();
 }
 

@@ -57,6 +57,8 @@
 #include "rk_aiq_user_api2_again_v2.h"
 #include "rk_aiq_user_api2_aldch_v21.h"
 #include "rk_aiq_user_api2_ablc_v32.h"
+#include "rk_aiq_user_api2_acsm.h"
+#include "rk_aiq_user_api2_acgc.h"
 
 RKAIQ_BEGIN_DECLARE
 /*
@@ -1017,6 +1019,27 @@ XCamReturn rk_aiq_uapi2_getHue(const rk_aiq_sys_ctx_t* ctx, unsigned int* level)
 XCamReturn rk_aiq_uapi2_setColorMode(const rk_aiq_sys_ctx_t* ctx, unsigned int mode);
 
 XCamReturn rk_aiq_uapi2_getColorMode(const rk_aiq_sys_ctx_t* ctx, unsigned int *mode);
+
+/*
+**********************************************************
+* Color Space
+**********************************************************
+*/
+/*
+*****************************
+*
+* Desc: Set Color Space
+* Argument:
+*    Cspace:
+*        [0  BT.601 FULL
+*         1  BT.601 LIMIT
+*         2  BT.709 FULL
+*         3  BT.709 LIMIT
+*         255 OTHER]
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setColorSpace(const rk_aiq_sys_ctx_t* ctx, int Cspace);
+XCamReturn rk_aiq_uapi2_getColorSpace(const rk_aiq_sys_ctx_t* ctx, int *Cspace);
 
 /*
 *****************************

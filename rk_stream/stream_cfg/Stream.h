@@ -85,7 +85,7 @@ protected:
     virtual bool loop () {
         XCamReturn ret = poll_buffer_loop ();
         if (ret == XCAM_RETURN_NO_ERROR || ret == XCAM_RETURN_ERROR_TIMEOUT ||
-                XCAM_RETURN_BYPASS)
+                ret == XCAM_RETURN_BYPASS)
             return true;
         return false;
     }

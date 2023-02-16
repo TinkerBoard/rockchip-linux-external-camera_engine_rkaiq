@@ -379,8 +379,8 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
 #else
             XCAM_ASSERT(0);
 #endif
-        } else if (s_info->isp_hw_ver == 7) {
-#ifdef ISP_HW_V32
+        } else if (s_info->isp_hw_ver == 7 || s_info->isp_hw_ver == 8) {
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
             ctx->_camHw = new FakeCamHwIsp32 ();
             ctx->_analyzer = new RkAiqCore(4);
 #else
@@ -413,8 +413,8 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
 #else
             XCAM_ASSERT(0);
 #endif
-        } else if (s_info->isp_hw_ver == 7) {
-#ifdef ISP_HW_V32
+        } else if (s_info->isp_hw_ver == 7 || s_info->isp_hw_ver == 8) {
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
             ctx->_camHw = new CamHwIsp32();
             ctx->_analyzer = new RkAiqCore(4);
 #else
@@ -1103,10 +1103,10 @@ camgroupAlgoHandle(const rk_aiq_sys_ctx_t* ctx, const int algo_type)
 #include "uAPI/rk_aiq_user_api_agic.cpp"
 #include "uAPI2/rk_aiq_user_api2_camgroup.cpp"
 #include "uAPI2/rk_aiq_user_api2_agic.cpp"
-#if defined(ISP_HW_V30)||defined(ISP_HW_V32)
+#if defined(ISP_HW_V30)|| defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
 #include "rk_aiq_user_api2_custom_ae.cpp"
 #endif
-#if defined(ISP_HW_V30)||defined(ISP_HW_V32)
+#if defined(ISP_HW_V30)||defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
 #include "rk_aiq_user_api2_custom_awb.cpp"
 #endif
 #include "uAPI2/rk_aiq_user_api2_aynr_v3.cpp"
@@ -1297,7 +1297,7 @@ rk_aiq_uapi_sysctl_queryCpsLtCap(const rk_aiq_sys_ctx_t* ctx,
 
 extern RkAiqAlgoDescription g_RkIspAlgoDescAe;
 extern RkAiqAlgoDescription g_RkIspAlgoDescAwb;
-#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF
 extern RkAiqAlgoDescription g_RkIspAlgoDescAf;
 #endif
 #if RKAIQ_HAVE_MERGE_V10 || RKAIQ_HAVE_MERGE_V11 || RKAIQ_HAVE_MERGE_V12
@@ -1345,7 +1345,7 @@ void rk_aiq_uapi_get_version_info(rk_aiq_ver_info_t* vers)
 
     strcpy(vers->awb_algo_ver, g_RkIspAlgoDescAwb.common.version);
     strcpy(vers->ae_algo_ver, g_RkIspAlgoDescAe.common.version);
-#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF
     strcpy(vers->af_algo_ver, g_RkIspAlgoDescAf.common.version);
 #endif
 #if RKAIQ_HAVE_MERGE_V10 || RKAIQ_HAVE_MERGE_V11 || RKAIQ_HAVE_MERGE_V12
@@ -1382,6 +1382,8 @@ static void rk_aiq_init_lib(void)
             g_rkaiq_isp_hw_ver = 30;
         else if (s_info->isp_hw_ver == 7)
             g_rkaiq_isp_hw_ver = 32;
+        else if (s_info->isp_hw_ver == 8)
+            g_rkaiq_isp_hw_ver = 321;
         else
             LOGE("do not support isp hw ver %d now !", s_info->isp_hw_ver);
     }
@@ -1394,6 +1396,8 @@ static void rk_aiq_init_lib(void)
     assert(g_rkaiq_isp_hw_ver == 30);
 #elif defined(ISP_HW_V32)
     assert(g_rkaiq_isp_hw_ver == 32);
+#elif defined(ISP_HW_V32_LITE)
+    assert(g_rkaiq_isp_hw_ver == 321);
 #else
 #error "WRONG ISP_HW_VERSION, ONLY SUPPORT V20 AND V21 NOW !"
 #endif

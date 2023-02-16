@@ -53,6 +53,14 @@ XCamReturn RkAiqAdebayerHandleInt::updateConfig(bool needSync) {
         sendSignal(mCurAttV2.sync.sync_mode);
         updateAtt = false;
 #endif
+
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+        mCurAttV2Lite = mNewAttV2Lite;
+        rk_aiq_uapi_adebayer_v2lite_SetAttrib(mAlgoCtx, mCurAttV2Lite, false);
+        sendSignal(mCurAttV2Lite.sync.sync_mode);
+        updateAtt = false;
+#endif
+
     }
 
     if (needSync) mCfgMutex.unlock();
@@ -176,6 +184,64 @@ XCamReturn RkAiqAdebayerHandleInt::getAttribV2(adebayer_v2_attrib_t* att) {
 }
 #endif
 
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+XCamReturn RkAiqAdebayerHandleInt::setAttribV2(adebayer_v2lite_attrib_t att) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    mCfgMutex.lock();
+
+    // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
+    // if something changed, set att to mNewAtt, and
+    // the new params will be effective later when updateConfig
+    // called by RkAiqCore
+    bool isChanged = false;
+    if (att.sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
+            memcmp(&mNewAttV2Lite, &att, sizeof(att)))
+        isChanged = true;
+    else if (att.sync.sync_mode != RK_AIQ_UAPI_MODE_ASYNC && \
+             memcmp(&mCurAttV2Lite, &att, sizeof(att)))
+        isChanged = true;
+
+    // if something changed
+    if (isChanged) {
+        mNewAttV2Lite = att;
+        updateAtt = true;
+        waitSignal(att.sync.sync_mode);
+    }
+
+    mCfgMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqAdebayerHandleInt::getAttribV2(adebayer_v2lite_attrib_t* att) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_adebayer_v2lite_GetAttrib(mAlgoCtx, att);
+        att->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        if (updateAtt) {
+            memcpy(att, &mNewAttV2Lite, sizeof(mNewAttV2Lite));
+            att->sync.done = false;
+        } else {
+            rk_aiq_uapi_adebayer_v2lite_GetAttrib(mAlgoCtx, att);
+            att->sync.sync_mode = mNewAttV2Lite.sync.sync_mode;
+            att->sync.done      = true;
+        }
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+#endif
+
 XCamReturn RkAiqAdebayerHandleInt::prepare() {
     ENTER_ANALYZER_FUNCTION();
 
@@ -288,7 +354,7 @@ XCamReturn RkAiqAdebayerHandleInt::genIspResult(RkAiqFullParams* params,
 #if RKAIQ_HAVE_DEBAYER_V1
     rk_aiq_isp_debayer_params_v20_t* debayer_param = params->mDebayerParams->data().ptr();
 #endif
-#if RKAIQ_HAVE_DEBAYER_V2
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
     rk_aiq_isp_debayer_params_v32_t* debayer_param = params->mDebayerV32Params->data().ptr();
 #endif
     if (!adebayer_com) {
@@ -306,7 +372,7 @@ XCamReturn RkAiqAdebayerHandleInt::genIspResult(RkAiqFullParams* params,
 #if RKAIQ_HAVE_DEBAYER_V1
         memcpy(&debayer_param->result, &adebayer_rk->debayerResV1.config, sizeof(AdebayerHwConfigV1_t));
 #endif
-#if RKAIQ_HAVE_DEBAYER_V2
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
         memcpy(&debayer_param->result, &adebayer_rk->debayerResV2.config, sizeof(AdebayerHwConfigV2_t));
 #endif
 
@@ -315,7 +381,7 @@ XCamReturn RkAiqAdebayerHandleInt::genIspResult(RkAiqFullParams* params,
 #if RKAIQ_HAVE_DEBAYER_V1
     cur_params->mDebayerParams = params->mDebayerParams;
 #endif
-#if RKAIQ_HAVE_DEBAYER_V2
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
     cur_params->mDebayerV32Params = params->mDebayerV32Params;
 #endif
 

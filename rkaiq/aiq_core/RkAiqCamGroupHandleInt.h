@@ -46,6 +46,8 @@
 #include "abayertnrV23/rk_aiq_uapi_abayertnr_int_v23.h"
 #include "asharpV33/rk_aiq_uapi_asharp_int_v33.h"
 
+using namespace XCam;
+
 namespace RkCam {
 // ae
 class RkAiqCamGroupAeHandleInt:
@@ -431,6 +433,10 @@ public:
         memset(&mCurAttV12, 0, sizeof(drcAttrV12_t));
         memset(&mNewAttV12, 0, sizeof(drcAttrV12_t));
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+        memset(&mCurAttV12Lite, 0, sizeof(drcAttrV12Lite_t));
+        memset(&mNewAttV12Lite, 0, sizeof(drcAttrV12Lite_t));
+#endif
     };
     virtual ~RkAiqCamGroupAdrcHandleInt() {
         RkAiqCamgroupHandle::deInit();
@@ -449,9 +455,13 @@ public:
     XCamReturn setAttribV12(const drcAttrV12_t* att);
     XCamReturn getAttribV12(drcAttrV12_t* att);
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    XCamReturn setAttribV12Lite(const drcAttrV12Lite_t* att);
+    XCamReturn getAttribV12Lite(drcAttrV12Lite_t* att);
+#endif
 
-protected:
-private:
+ protected:
+ private:
 // TODO
 #if RKAIQ_HAVE_DRC_V10
     drcAttrV10_t mCurAttV10;
@@ -464,6 +474,10 @@ private:
 #if RKAIQ_HAVE_DRC_V12
     drcAttrV12_t mCurAttV12;
     drcAttrV12_t mNewAttV12;
+#endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    drcAttrV12Lite_t mCurAttV12Lite;
+    drcAttrV12Lite_t mNewAttV12Lite;
 #endif
 };
 
@@ -796,6 +810,11 @@ public:
         memset(&mCurAttV2, 0, sizeof(mCurAttV2));
         memset(&mNewAttV2, 0, sizeof(mNewAttV2));
 #endif
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+        memset(&mCurAttV2Lite, 0, sizeof(mCurAttV2Lite));
+        memset(&mNewAttV2Lite, 0, sizeof(mNewAttV2Lite));
+#endif
+
     };
     virtual ~RkAiqCamGroupAdebayerHandleInt() {
         RkAiqCamgroupHandle::deInit();
@@ -809,6 +828,10 @@ public:
 #if RKAIQ_HAVE_DEBAYER_V2
     XCamReturn setAttribV2(adebayer_v2_attrib_t att);
     XCamReturn getAttribV2(adebayer_v2_attrib_t* att);
+#endif
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+    XCamReturn setAttribV2(adebayer_v2lite_attrib_t att);
+    XCamReturn getAttribV2(adebayer_v2lite_attrib_t* att);
 #endif
 
 protected:
@@ -824,6 +847,11 @@ private:
     adebayer_v2_attrib_t mCurAttV2;
     adebayer_v2_attrib_t mNewAttV2;
 #endif
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+    adebayer_v2lite_attrib_t mCurAttV2Lite;
+    adebayer_v2lite_attrib_t mNewAttV2Lite;
+#endif
+
 };
 
 // lsc
@@ -943,7 +971,7 @@ private:
 #endif
 
 // acnr v2
-#if RKAIQ_HAVE_CNR_V30
+#if (RKAIQ_HAVE_CNR_V30 || RKAIQ_HAVE_CNR_V30_LITE)
 
 class RkAiqCamGroupAcnrV30HandleInt:
     virtual public RkAiqCamgroupHandle {
@@ -1053,7 +1081,7 @@ private:
 };
 #endif
 
-#if RKAIQ_HAVE_BAYERTNR_V23
+#if (RKAIQ_HAVE_BAYERTNR_V23 || RKAIQ_HAVE_BAYERTNR_V23_LITE)
 
 class RkAiqCamGroupAbayertnrV23HandleInt:
     public RkAiqCamgroupHandle {
@@ -1063,12 +1091,15 @@ public:
         : RkAiqCamgroupHandle(des, camGroupMg) {
         updateAtt      = false;
         updateStrength = false;
+        updateAttLite  = false;
         memset(&mCurStrength, 0x00, sizeof(mCurStrength));
         mCurStrength.percent = 1.0;
         memset(&mNewStrength, 0x00, sizeof(mNewStrength));
         mNewStrength.percent = 1.0;
         memset(&mCurAtt, 0x00, sizeof(mCurAtt));
         memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+        memset(&mCurAttLite, 0x00, sizeof(mCurAttLite));
+        memset(&mNewAttLite, 0x00, sizeof(mNewAttLite));
     };
     virtual ~RkAiqCamGroupAbayertnrV23HandleInt() {
         RkAiqCamgroupHandle::deInit();
@@ -1077,6 +1108,8 @@ public:
     // TODO add algo specific methords, this is a sample
     XCamReturn setAttrib(const rk_aiq_bayertnr_attrib_v23_t *att);
     XCamReturn getAttrib(rk_aiq_bayertnr_attrib_v23_t *att);
+    XCamReturn setAttribLite(const rk_aiq_bayertnr_attrib_v23L_t* att);
+    XCamReturn getAttribLite(rk_aiq_bayertnr_attrib_v23L_t* att);
     XCamReturn setStrength(const rk_aiq_bayertnr_strength_v23_t *pStrength);
     XCamReturn getStrength(rk_aiq_bayertnr_strength_v23_t *pStrength);
     XCamReturn getInfo(rk_aiq_bayertnr_info_v23_t *pInfo);
@@ -1090,11 +1123,14 @@ private:
     rk_aiq_bayertnr_strength_v23_t mCurStrength;
     rk_aiq_bayertnr_strength_v23_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
+    rk_aiq_bayertnr_attrib_v23L_t mCurAttLite;
+    rk_aiq_bayertnr_attrib_v23L_t mNewAttLite;
+    mutable std::atomic<bool> updateAttLite;
 };
 #endif
 
 // asharp
-#if RKAIQ_HAVE_SHARP_V33
+#if (RKAIQ_HAVE_SHARP_V33 || RKAIQ_HAVE_SHARP_V33_LITE)
 
 class RkAiqCamGroupAsharpV33HandleInt:
     public RkAiqCamgroupHandle {
@@ -1103,12 +1139,15 @@ public:
         : RkAiqCamgroupHandle(des, camGroupMg) {
         updateAtt      = false;
         updateStrength = false;
+        updateAttLite  = false;
         memset(&mCurStrength, 0x00, sizeof(mCurStrength));
         mCurStrength.percent = 1.0;
         memset(&mNewStrength, 0x00, sizeof(mNewStrength));
         mNewStrength.percent = 1.0;
         memset(&mCurAtt, 0x00, sizeof(mCurAtt));
         memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+        memset(&mCurAttLite, 0x00, sizeof(mCurAttLite));
+        memset(&mNewAttLite, 0x00, sizeof(mNewAttLite));
     };
     virtual ~RkAiqCamGroupAsharpV33HandleInt() {
         RkAiqCamgroupHandle::deInit();
@@ -1117,6 +1156,8 @@ public:
     // TODO add algo specific methords, this is a sample
     XCamReturn setAttrib(const rk_aiq_sharp_attrib_v33_t *att);
     XCamReturn getAttrib(rk_aiq_sharp_attrib_v33_t *att);
+    XCamReturn setAttribLite(const rk_aiq_sharp_attrib_v33LT_t* att);
+    XCamReturn getAttribLite(rk_aiq_sharp_attrib_v33LT_t* att);
     XCamReturn setStrength(const rk_aiq_sharp_strength_v33_t *pStrength);
     XCamReturn getStrength(rk_aiq_sharp_strength_v33_t *pStrength);
     XCamReturn getInfo(rk_aiq_sharp_info_v33_t *pStrength);
@@ -1130,6 +1171,9 @@ private:
     rk_aiq_sharp_strength_v33_t mCurStrength;
     rk_aiq_sharp_strength_v33_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
+    rk_aiq_sharp_attrib_v33LT_t mCurAttLite;
+    rk_aiq_sharp_attrib_v33LT_t mNewAttLite;
+    mutable std::atomic<bool> updateAttLite;
 };
 #endif
 }

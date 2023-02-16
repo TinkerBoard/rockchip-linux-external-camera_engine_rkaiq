@@ -59,11 +59,11 @@ class RawStreamProcUnit : public PollCallback
 {
 public:
     //explicit RawStreamProcUnit (char *ispdev, char *dev0, char *dev1, char *dev2, bool linked_to_isp);
-    explicit RawStreamProcUnit (const rk_sensor_full_info_t *s_info, uint8_t is_offline, uint8_t buf_memory_type);
+    explicit RawStreamProcUnit (const rk_sensor_full_info_t *s_info, uint8_t is_offline);
     virtual ~RawStreamProcUnit ();
     virtual XCamReturn start        ();
     virtual XCamReturn stop         ();
-	XCamReturn prepare(int idx);
+	XCamReturn prepare(int idx, uint8_t buf_memory_type, uint8_t buf_cnt);
 	void set_working_mode           (int mode);
     void set_rx_format(uint32_t width, uint32_t height, uint32_t pix_fmt, int mode);
     void setup_pipeline_fmt(uint32_t width, uint32_t height);
@@ -83,7 +83,7 @@ public:
 	*/
     void send_sync_buf(SmartPtr<V4l2BufferProxy> &buf_s, SmartPtr<V4l2BufferProxy> &buf_m, SmartPtr<V4l2BufferProxy> &buf_l);
 	void send_sync_buf2(uint8_t *rkraw_data);
-
+    void _send_sync_buf(rkrawstream_rkraw2_t *rkraw2);
     bool raw_buffer_proc();
     void setMulCamConc(bool cc) {
         _is_multi_cam_conc = cc;

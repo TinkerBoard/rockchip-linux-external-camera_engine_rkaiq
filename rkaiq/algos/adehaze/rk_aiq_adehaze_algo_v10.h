@@ -23,7 +23,9 @@
 #include "RkAiqCalibDbTypes.h"
 #include "RkAiqCalibDbV2Helper.h"
 #include "adehaze/rk_aiq_types_adehaze_algo_prvt.h"
+#ifdef RKAIQ_ENABLE_CAMGROUP
 #include "rk_aiq_algo_camgroup_types.h"
+#endif
 #include "rk_aiq_comm.h"
 #include "rk_aiq_types_adehaze_stat.h"
 
@@ -31,8 +33,10 @@ RKAIQ_BEGIN_DECLARE
 
 void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData);
 XCamReturn AdehazeGetCurrData(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoProcAdhaz* procPara);
+#ifdef RKAIQ_ENABLE_CAMGROUP
 XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx,
                                    rk_aiq_singlecam_3a_result_t* pCamgrpParams);
+#endif
 XCamReturn AdehazeInit(AdehazeHandle_t** para, CamCalibDbV2Context_t* calib);
 XCamReturn AdehazeRelease(AdehazeHandle_t* para);
 XCamReturn AdehazeProcess(AdehazeHandle_t* para);

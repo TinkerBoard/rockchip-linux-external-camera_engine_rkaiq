@@ -24,7 +24,7 @@ RKAIQ_BEGIN_DECLARE
 #define CHECK_USER_API_ENABLE
 #endif
 
-#if RKAIQ_HAVE_CNR_V30
+#if (RKAIQ_HAVE_CNR_V30 || RKAIQ_HAVE_CNR_V30_LITE)
 
 XCamReturn
 rk_aiq_user_api_acnrV30_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq_cnr_attrib_v30_t* attr)

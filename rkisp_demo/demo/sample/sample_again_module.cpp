@@ -138,7 +138,7 @@ XCamReturn sample_again_module (const void *arg)
     }
 
     rk_aiq_gain_attrib_v2_t default_gainV2_attr;
-    if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         ret = rk_aiq_user_api2_againV2_GetAttrib(ctx, &default_gainV2_attr);
         printf("get again v2 default attri ret:%d \n\n", ret);
     }
@@ -153,42 +153,42 @@ XCamReturn sample_again_module (const void *arg)
 
         switch (key) {
         case '0':
-            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_again_getAttr_v2(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
             break;
         case '1':
-            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_again_setAuto_v2(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
             break;
         case '2':
-            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_again_setManual_v2(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
             break;
         case '3':
-            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_again_setDefault_v2(ctx, RK_AIQ_UAPI_MODE_SYNC, default_gainV2_attr);
             }
             break;
         case '4':
-            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_again_getAttr_v2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
             break;
         case '5':
-            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_again_setAuto_v2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
             break;
         case '6':
-            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_again_setManual_v2(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
             break;
         case '7':
-            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_again_setDefault_v2(ctx, RK_AIQ_UAPI_MODE_ASYNC, default_gainV2_attr);
             }
             break;

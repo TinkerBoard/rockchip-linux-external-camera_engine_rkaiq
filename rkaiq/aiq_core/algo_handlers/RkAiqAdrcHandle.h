@@ -47,6 +47,10 @@ class RkAiqAdrcHandleInt : virtual public RkAiqHandle {
     XCamReturn setAttribV12(const drcAttrV12_t* att);
     XCamReturn getAttribV12(drcAttrV12_t* att);
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    XCamReturn setAttribV12Lite(const drcAttrV12Lite_t* att);
+    XCamReturn getAttribV12Lite(drcAttrV12Lite_t* att);
+#endif
 
  protected:
     virtual void init();
@@ -64,6 +68,10 @@ class RkAiqAdrcHandleInt : virtual public RkAiqHandle {
 #if RKAIQ_HAVE_DRC_V12
     drcAttrV12_t mCurAttV12;
     drcAttrV12_t mNewAttV12;
+#endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    drcAttrV12Lite_t mCurAttV12Lite;
+    drcAttrV12Lite_t mNewAttV12Lite;
 #endif
 
  private:

@@ -73,9 +73,10 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
                     (void*)(pCfgParam->com.u.prepare.calibv2), ablcV32_calib));
 
         void *pCalibDbV2 = (void*)(pCfgParam->com.u.prepare.calibv2);
+#if (RKAIQ_HAVE_BAYER2DNR_V23)
         CalibDbV2_Bayer2dnrV23_t *bayernr_v23 = (CalibDbV2_Bayer2dnrV23_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDbV2, bayer2dnr_v23));
         pAblcCtx->stBayer2dnrCalib = bayernr_v23->CalibPara;
-
+#endif
         LOGE_ABLC("%s: Ablc Reload Para!\n", __FUNCTION__);
         pAblcCtx->stBlcCalib = *calibv2_ablc_calib;
         pAblcCtx->isUpdateParam = true;

@@ -37,7 +37,7 @@ static XCamReturn groupAbayertnrV23CreateCtx(RkAiqAlgoContext **context, const A
     AlgoCtxInstanceCfgCamGroup *cfgInt = (AlgoCtxInstanceCfgCamGroup*)cfg;
 
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         abayertnr_group_contex = (CamGroup_AbayertnrV23_Contex_t*)malloc(sizeof(CamGroup_AbayertnrV23_Contex_t));
 #if ABAYERTNR_USE_JSON_FILE_V23
         Abayertnr_result_V23_t ret_v23 = ABAYERTNRV23_RET_SUCCESS;
@@ -80,7 +80,7 @@ static XCamReturn groupAbayertnrV23DestroyCtx(RkAiqAlgoContext *context)
 
     CamGroup_AbayertnrV23_Contex_t *abayertnr_group_contex = (CamGroup_AbayertnrV23_Contex_t*)context;
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Abayertnr_result_V23_t ret_v23 = ABAYERTNRV23_RET_SUCCESS;
         ret_v23 = Abayertnr_Release_V23(abayertnr_group_contex->abayertnr_contex_v23);
         if(ret_v23 != ABAYERTNRV23_RET_SUCCESS) {
@@ -113,14 +113,23 @@ static XCamReturn groupAbayertnrV23Prepare(RkAiqAlgoCom* params)
     CamGroup_AbayertnrV23_Contex_t * abayertnr_group_contex = (CamGroup_AbayertnrV23_Contex_t *)params->ctx;
     RkAiqAlgoCamGroupPrepare* para = (RkAiqAlgoCamGroupPrepare*)params;
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Abayertnr_Context_V23_t * abayertnr_contex_v23 = abayertnr_group_contex->abayertnr_contex_v23;
         if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
             // todo  update calib pars for surround view
 #if ABAYERTNR_USE_JSON_FILE_V23
             void *pCalibdbV23 = (void*)(para->s_calibv2);
-            CalibDbV2_BayerTnrV23_t *bayertnr_v23 = (CalibDbV2_BayerTnrV23_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibdbV23, bayertnr_v23));
-            abayertnr_contex_v23->bayertnr_v23 = *bayertnr_v23;
+#if (RKAIQ_HAVE_BAYERTNR_V23)
+            CalibDbV2_BayerTnrV23_t* bayertnr_v23 =
+                (CalibDbV2_BayerTnrV23_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibdbV23,
+                                                                    bayertnr_v23));
+#else
+            CalibDbV2_BayerTnrV23Lite_t* bayertnr_v23 =
+                (CalibDbV2_BayerTnrV23Lite_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibdbV23,
+                                                                        bayertnr_v23));
+#endif
+
+            abayertnr_contex_v23->bayertnr_v23   = *bayertnr_v23;
             abayertnr_contex_v23->isIQParaUpdate = true;
             abayertnr_contex_v23->isReCalculate |= 1;
 #endif
@@ -239,7 +248,7 @@ static XCamReturn groupAbayertnrV23Processing(const RkAiqAlgoCom* inparams, RkAi
 
 
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Abayertnr_Context_V23_t * abayertnr_contex_v23 = abayertnr_group_contex->abayertnr_contex_v23;
         Abayertnr_ProcResult_V23_t stAbayertnrResultV23;
         if(stExpInfoV23.blc_ob_predgain != abayertnr_contex_v23->stExpInfo.blc_ob_predgain) {

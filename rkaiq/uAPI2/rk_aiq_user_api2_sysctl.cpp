@@ -408,3 +408,9 @@ void rk_aiq_uapi2_sysctl_setIspParamsDelayCnts(const rk_aiq_sys_ctx_t* sys_ctx, 
 #endif
     sys_ctx->_analyzer->setDelayCnts(delay_cnts);
 }
+
+void rk_aiq_uapi2_sysctl_setUserSensorFormat(rk_aiq_sys_ctx_t* sys_ctx, uint16_t width, uint16_t height,
+                                                 uint16_t code)
+{
+    sys_ctx->_camHw->setUserSensorFormat(width, height, code);
+}

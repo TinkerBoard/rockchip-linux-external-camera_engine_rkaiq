@@ -4,14 +4,13 @@
 #include "xcam_defs.h"
 
 namespace RkRawStream {
-RawStreamCapUnit::RawStreamCapUnit (char *dev0, char *dev1, char *dev2, int buf_memory_type)
+RawStreamCapUnit::RawStreamCapUnit (char *dev0, char *dev1, char *dev2)
     :_skip_num(0)
     ,_mipi_dev_max(0)
     ,_state(RAW_CAP_STATE_INVALID)
     ,_memory_type(V4L2_MEMORY_MMAP)
     ,user_on_frame_capture_cb(NULL)
 {
-    _memory_type = (enum v4l2_memory)buf_memory_type;
     if(dev0){
         LOGD_RKSTREAM( "%s open device %s", __FUNCTION__, dev0);
         _dev[0] = new V4l2Device (dev0);
@@ -50,8 +49,9 @@ RawStreamCapUnit::RawStreamCapUnit (char *dev0, char *dev1, char *dev2, int buf_
     _state = RAW_CAP_STATE_INITED;
 }
 
-RawStreamCapUnit::RawStreamCapUnit (const rk_sensor_full_info_t *s_info, int buf_memory_type)
+RawStreamCapUnit::RawStreamCapUnit (const rk_sensor_full_info_t *s_info)
     :_skip_num(0)
+    ,_mipi_dev_max(0)
     ,_state(RAW_CAP_STATE_INVALID)
     ,_memory_type(V4L2_MEMORY_MMAP)
     ,user_on_frame_capture_cb(NULL)
@@ -59,7 +59,6 @@ RawStreamCapUnit::RawStreamCapUnit (const rk_sensor_full_info_t *s_info, int buf
     bool linked_to_isp = s_info->linked_to_isp;
 
     strncpy(_sns_name, s_info->sensor_name.c_str(), 32);
-    _memory_type = (enum v4l2_memory)buf_memory_type;
 
     /*
      * for _mipi_tx_devs, index 0 refer to short frame always, inedex 1 refer
@@ -83,7 +82,6 @@ RawStreamCapUnit::RawStreamCapUnit (const rk_sensor_full_info_t *s_info, int buf
                 else
                     _dev[0] = new V4l2Device (s_info->cif_info->dvp_id0);
             } else{
-                printf("RawStreamCapUnit open %s\n", s_info->cif_info->mipi_id0);
                 _dev[0] = new V4l2Device (s_info->cif_info->mipi_id0);
             }
         }
@@ -221,17 +219,25 @@ XCamReturn RawStreamCapUnit::release_buffer ()
 
 
 XCamReturn
-RawStreamCapUnit::prepare(int idx)
+RawStreamCapUnit::prepare(int idx, uint8_t buf_memory_type, uint8_t buf_cnt)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    LOGD_RKSTREAM( "%s enter", __FUNCTION__);
+    _memory_type = (enum v4l2_memory)buf_memory_type;
+    LOGE_RKSTREAM("RawStreamCapUnit::prepare idx:%d buf_memory_type: %d\n",idx, buf_memory_type);
     // mipi rx/tx format should match to sensor.
     for (int i = 0; i < 3; i++) {
         if (!(idx & (1 << i)))
             continue;
+
+        if(buf_memory_type)
+            _dev[i]->set_mem_type(_memory_type);
+
+        if(buf_cnt)
+            _dev[i]->set_buffer_count(buf_cnt);
+
         ret = _dev[i]->prepare();
         if (ret < 0)
-            LOGE_RKSTREAM( "mipi tx:%d prepare err: %d\n", ret);
+            LOGE_RKSTREAM( "mipi tx:%d prepare err: %d\n", i, ret);
 
         _stream[i]->set_device_prepared(true);
     }
@@ -272,14 +278,12 @@ RawStreamCapUnit::set_tx_format(uint32_t width, uint32_t height, uint32_t pix_fm
             _dev[i]->get_format (format);
 
             int bpp = pixFmt2Bpp(format.fmt.pix.pixelformat);
-            //printf("tx fmt info: fmt 0x%x is_multi_isp_mode %d bpp%d\n", format.fmt.pix.pixelformat, is_multi_isp_mode, bpp);
-            //printf("width %d, %d\n", width, ((width / 2 - RKMOUDLE_UNITE_EXTEND_PIXEL) *  bpp / 8));
-
             int mem_mode = mode;
             int ret1 = _dev[i]->io_control (RKCIF_CMD_SET_CSI_MEMORY_MODE, &mem_mode);
             if (ret1)
-                printf("set RKCIF_CMD_SET_CSI_MEMORY_MODE failed !\n");
+                LOGE_RKSTREAM("set RKCIF_CMD_SET_CSI_MEMORY_MODE failed !\n");
 
+            LOGI_RKSTREAM("set_tx_format: setup fmt %dx%d, 0x%x mem_mode %d\n",width, height, format.fmt.pix.pixelformat, mem_mode);
             _dev[i]->set_format(width,
                                 height,
                                 format.fmt.pix.pixelformat,
@@ -302,7 +306,6 @@ RawStreamCapUnit::set_sensor_format(uint32_t width, uint32_t height, uint32_t fp
         format.which = V4L2_SUBDEV_FORMAT_ACTIVE;
         format.format.width = width;
         format.format.height = height;
-        printf("try format: %dx%d 0x%x\n", width, format.format.height, format.format.code);
         _sensor_dev->setFormat(format);
     }
 }
@@ -328,7 +331,7 @@ RawStreamCapUnit::set_sensor_mode(uint32_t mode)
 
         hdr_cfg.hdr_mode = hdr_mode;
         if (_sensor_dev->io_control(RKMODULE_SET_HDR_CFG, &hdr_cfg) < 0) {
-            printf("set_sensor_mode failed to set hdr mode %d\n", hdr_mode);
+            LOGE_RKSTREAM("set_sensor_mode failed to set hdr mode %d\n", hdr_mode);
             //return XCAM_RETURN_ERROR_IOCTL;
         }
     }

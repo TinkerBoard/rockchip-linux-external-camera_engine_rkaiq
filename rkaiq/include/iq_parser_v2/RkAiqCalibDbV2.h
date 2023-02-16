@@ -39,9 +39,9 @@ struct cJSON;
 namespace RkCam {
 
 typedef struct __map_index {
-  void *dst_offset;
-  void *ptr_offset;
-  size_t len;
+    void *dst_offset;
+    void *ptr_offset;
+    size_t len;
 } map_index_t;
 
 typedef std::shared_ptr<std::list<std::string>> ModuleNameList;
@@ -258,6 +258,10 @@ private:
 #if RKAIQ_HAVE_DEBAYER_V2
     static int CamCalibDbFreeDebayerV2Ctx(CalibDbV2_Debayer_v2_t * debayer_v2);
 #endif
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+    static int CamCalibDbFreeDebayerV2Ctx(CalibDbV2_Debayer_v2_lite_t * debayer_v2);
+#endif
+
 #if RKAIQ_HAVE_CCM_V2
     static int CamCalibDbFreeCcmV2Ctx(CalibDbV2_Ccm_Para_V32_t* ccm);
 #endif
@@ -267,7 +271,10 @@ private:
 #if RKAIQ_HAVE_BAYERTNR_V23
     static int CamCalibDbFreeBayertnrV23Ctx(CalibDbV2_BayerTnrV23_t* bayertnr_v23);
 #endif
-#if RKAIQ_HAVE_CNR_V30
+#if RKAIQ_HAVE_BAYERTNR_V23_LITE
+    static int CamCalibDbFreeBayertnrV23LiteCtx(CalibDbV2_BayerTnrV23Lite_t* bayertnr_v23_lite);
+#endif
+#if (RKAIQ_HAVE_CNR_V30 || RKAIQ_HAVE_CNR_V30_LITE)
     static int CamCalibDbFreeCnrV30Ctx(CalibDbV2_CNRV30_t* cnr_v30);
 #endif
 #if RKAIQ_HAVE_YNR_V22
@@ -276,11 +283,19 @@ private:
 #if RKAIQ_HAVE_SHARP_V33
     static int CamCalibDbFreeSharpV33Ctx(CalibDbV2_SharpV33_t* sharp_v33);
 #endif
+#if RKAIQ_HAVE_SHARP_V33_LITE
+    static int CamCalibDbFreeSharpV33LiteCtx(CalibDbV2_SharpV33Lite_t* sharp_v33);
+#endif
+
 #if RKAIQ_HAVE_AF_V31
     static int CamCalibDbFreeAfV31Ctx(CalibDbV2_AFV31_t* af);
 #endif
 #if RKAIQ_HAVE_GAIN_V2
     static int CamCalibDbFreeGainV2Ctx(CalibDbV2_GainV2_t* gain_v2);
+#endif
+
+#if RKAIQ_HAVE_AF_V32_LITE
+    static int CamCalibDbFreeAfV32Ctx(CalibDbV2_AFV32_t* af);
 #endif
 
 };

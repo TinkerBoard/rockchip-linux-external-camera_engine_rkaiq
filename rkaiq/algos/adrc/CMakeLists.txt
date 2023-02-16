@@ -11,7 +11,7 @@ if (RKAIQ_HAVE_DRC_V11)
     list(APPEND ADRC_SRC rk_aiq_adrc_algo_v11.cpp)
 endif()
 
-if (RKAIQ_HAVE_DRC_V12)
+if (RKAIQ_HAVE_DRC_V12 OR RKAIQ_HAVE_DRC_V12_LITE)
     list(APPEND ADRC_SRC rk_aiq_adrc_algo_v12.cpp)
 endif()
 

@@ -255,8 +255,10 @@ typedef struct rk_tool_awb_strategy_result_s {
     uint32_t runInterval;
     // M4_NUMBER_DESC("tolerance", "f32", M4_RANGE(0,10000), "5000", M4_DIGIT(0))
     float tolerance;
-    // M4_ARRAY_DESC("dsRate", "u8", M4_SIZE(1,1), M4_RANGE(0,255), "0", M4_DIGIT(0), M4_DYNAMIC(0))
-    uint8_t dsRate; //downsample 8x8->Pixel(R,G,B)
+    // M4_ARRAY_DESC("dsRateWt", "u8", M4_SIZE(1,1), M4_RANGE(0,255), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    uint8_t dsRateWh; //downsample 8x8->Pixel(R,G,B)
+    // M4_ARRAY_DESC("dsRateHt", "u8", M4_SIZE(1,1), M4_RANGE(0,255), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    uint8_t dsRateHt; //downsample 8x8->Pixel(R,G,B)
     // M4_ARRAY_DESC("width_ds", "u32", M4_SIZE(1,1), M4_RANGE(0,4294967295), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     uint32_t width_ds;
     // M4_ARRAY_DESC("height_ds", "u32", M4_SIZE(1,1), M4_RANGE(0,4294967295), "0", M4_DIGIT(0), M4_DYNAMIC(0))

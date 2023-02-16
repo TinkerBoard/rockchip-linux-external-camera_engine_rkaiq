@@ -1388,6 +1388,12 @@ XCamReturn rk_aiq_uapi2_setDrcLocalTMO(const rk_aiq_sys_ctx_t* ctx, float LocalW
                             "RV1106 do not support rk_aiq_uapi2_setDrcLocalTMO! Please use "
                             "rk_aiq_uapi2_setDrcLocalData");
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    ret = XCAM_RETURN_ERROR_PARAM;
+    RKAIQ_IMGPROC_CHECK_RET(ret,
+                            "RK3562 do not support rk_aiq_uapi2_setDrcLocalTMO! Please use "
+                            "rk_aiq_uapi2_setDrcLocalData");
+#endif
 
     IMGPROC_FUNC_EXIT
     return ret;
@@ -1422,6 +1428,12 @@ XCamReturn rk_aiq_uapi2_getDrcLocalTMO(const rk_aiq_sys_ctx_t* ctx, float * Loca
     ret = XCAM_RETURN_ERROR_PARAM;
     RKAIQ_IMGPROC_CHECK_RET(ret,
                             "RV1106 do not support rk_aiq_uapi2_getDrcLocalTMO! Please use "
+                            "rk_aiq_uapi2_getDrcLocalData");
+#endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    ret = XCAM_RETURN_ERROR_PARAM;
+    RKAIQ_IMGPROC_CHECK_RET(ret,
+                            "RK3562 do not support rk_aiq_uapi2_getDrcLocalTMO! Please use "
                             "rk_aiq_uapi2_getDrcLocalData");
 #endif
 
@@ -1532,6 +1544,35 @@ XCamReturn rk_aiq_uapi2_setDrcLocalData(const rk_aiq_sys_ctx_t* ctx, float Local
     ret = rk_aiq_user_api2_adrc_v12_SetAttrib(ctx, &attr_v12);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    drcAttrV12Lite_t attr_v12_lite;
+    memset(&attr_v12_lite, 0, sizeof(drcAttrV12Lite_t));
+    ret = rk_aiq_user_api2_adrc_v12_lite_GetAttrib(ctx, &attr_v12_lite);
+    RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcLocalData failed!");
+    attr_v12_lite.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
+    attr_v12_lite.sync.done      = false;
+    if (attr_v12_lite.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
+            attr_v12_lite.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalWeit[i] = LocalWeit;
+            attr_v12_lite.stAuto.DrcTuningPara.LocalSetting.LocalData.GlobalContrast[i] =
+                GlobalContrast;
+            attr_v12_lite.stAuto.DrcTuningPara.LocalSetting.LocalData.LoLitContrast[i] =
+                LoLitContrast;
+            attr_v12_lite.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoEnable[i] =
+                LocalAutoEnable;
+            attr_v12_lite.stAuto.DrcTuningPara.LocalSetting.LocalData.LocalAutoWeit[i] =
+                LocalAutoWeit;
+        }
+    } else if (attr_v12_lite.opMode == DRC_OPMODE_MANUAL) {
+        attr_v12_lite.stManual.LocalSetting.LocalData.LocalWeit       = LocalWeit;
+        attr_v12_lite.stManual.LocalSetting.LocalData.GlobalContrast  = GlobalContrast;
+        attr_v12_lite.stManual.LocalSetting.LocalData.LoLitContrast   = LoLitContrast;
+        attr_v12_lite.stManual.LocalSetting.LocalData.LocalAutoEnable = LocalAutoEnable;
+        attr_v12_lite.stManual.LocalSetting.LocalData.LocalAutoWeit   = LocalAutoWeit;
+    }
+    ret = rk_aiq_user_api2_adrc_v12_lite_SetAttrib(ctx, &attr_v12_lite);
+    RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
+#endif
 
     IMGPROC_FUNC_EXIT
     return ret;
@@ -1574,6 +1615,17 @@ XCamReturn rk_aiq_uapi2_getDrcLocalData(const rk_aiq_sys_ctx_t* ctx, float * Loc
     *LoLitContrast   = attr_v12.Info.ValidParams.LocalSetting.LocalData.LoLitContrast;
     *LocalAutoEnable = attr_v12.Info.ValidParams.LocalSetting.LocalData.LocalAutoEnable;
     *LocalAutoWeit   = attr_v12.Info.ValidParams.LocalSetting.LocalData.LocalAutoWeit;
+#endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    drcAttrV12Lite_t attr_v12_lite;
+    memset(&attr_v12_lite, 0, sizeof(drcAttrV12Lite_t));
+    ret = rk_aiq_user_api2_adrc_v12_lite_GetAttrib(ctx, &attr_v12_lite);
+    RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcLocalData failed in get attrib!");
+    *LocalWeit       = attr_v12_lite.Info.ValidParams.LocalSetting.LocalData.LocalWeit;
+    *GlobalContrast  = attr_v12_lite.Info.ValidParams.LocalSetting.LocalData.GlobalContrast;
+    *LoLitContrast   = attr_v12_lite.Info.ValidParams.LocalSetting.LocalData.LoLitContrast;
+    *LocalAutoEnable = attr_v12_lite.Info.ValidParams.LocalSetting.LocalData.LocalAutoEnable;
+    *LocalAutoWeit   = attr_v12_lite.Info.ValidParams.LocalSetting.LocalData.LocalAutoWeit;
 #endif
 
     IMGPROC_FUNC_EXIT
@@ -1654,6 +1706,23 @@ XCamReturn rk_aiq_uapi2_setDrcHiLit(const rk_aiq_sys_ctx_t* ctx, float Strength)
     ret = rk_aiq_user_api2_adrc_v12_SetAttrib(ctx, &attr_v12);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcHiLit failed!");
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    drcAttrV12Lite_t attr_v12_lite;
+    memset(&attr_v12_lite, 0, sizeof(drcAttrV12Lite_t));
+    ret = rk_aiq_user_api2_adrc_v12_lite_GetAttrib(ctx, &attr_v12_lite);
+    RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcHiLit failed!");
+    attr_v12_lite.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
+    attr_v12_lite.sync.done      = false;
+
+    if (attr_v12_lite.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++)
+            attr_v12_lite.stAuto.DrcTuningPara.HiLight.HiLightData.Strength[i] = Strength;
+    } else if (attr_v12_lite.opMode == DRC_OPMODE_MANUAL) {
+        attr_v12_lite.stManual.HiLight.HiLightData.Strength = Strength;
+    }
+    ret = rk_aiq_user_api2_adrc_v12_lite_SetAttrib(ctx, &attr_v12_lite);
+    RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcHiLit failed!");
+#endif
 
     IMGPROC_FUNC_EXIT
     return ret;
@@ -1687,6 +1756,13 @@ XCamReturn rk_aiq_uapi2_getDrcHiLit(const rk_aiq_sys_ctx_t* ctx, float * Strengt
     ret = rk_aiq_user_api2_adrc_v12_GetAttrib(ctx, &attr_v12);
     RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcHiLit failed in get attrib!");
     *Strength = attr_v12.Info.ValidParams.HiLight.HiLightData.Strength;
+#endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    drcAttrV12Lite_t attr_v12_lite;
+    memset(&attr_v12_lite, 0, sizeof(drcAttrV12Lite_t));
+    ret = rk_aiq_user_api2_adrc_v12_lite_GetAttrib(ctx, &attr_v12_lite);
+    RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcHiLit failed in get attrib!");
+    *Strength = attr_v12_lite.Info.ValidParams.HiLight.HiLightData.Strength;
 #endif
 
     IMGPROC_FUNC_EXIT
@@ -1794,6 +1870,28 @@ XCamReturn rk_aiq_uapi2_setDrcGain(const rk_aiq_sys_ctx_t* ctx, float Gain, floa
     ret = rk_aiq_user_api2_adrc_v12_SetAttrib(ctx, &attr_v12);
     RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    drcAttrV12Lite_t attr_v12_lite;
+    memset(&attr_v12_lite, 0, sizeof(drcAttrV12Lite_t));
+    ret = rk_aiq_user_api2_adrc_v12_lite_GetAttrib(ctx, &attr_v12_lite);
+    RKAIQ_IMGPROC_CHECK_RET(ret, "getDrcGain failed!");
+    attr_v12_lite.sync.sync_mode = RK_AIQ_UAPI_MODE_DEFAULT;
+    attr_v12_lite.sync.done      = false;
+
+    if (attr_v12_lite.opMode == DRC_OPMODE_AUTO) {
+        for (int i = 0; i < ADRC_ENVLV_STEP_MAX; i++) {
+            attr_v12_lite.stAuto.DrcTuningPara.DrcGain.DrcGain[i] = Gain;
+            attr_v12_lite.stAuto.DrcTuningPara.DrcGain.Alpha[i]   = Alpha;
+            attr_v12_lite.stAuto.DrcTuningPara.DrcGain.Clip[i]    = Clip;
+        }
+    } else if (attr_v12_lite.opMode == DRC_OPMODE_MANUAL) {
+        attr_v12_lite.stManual.DrcGain.DrcGain = Gain;
+        attr_v12_lite.stManual.DrcGain.Alpha   = Alpha;
+        attr_v12_lite.stManual.DrcGain.Clip    = Clip;
+    }
+    ret = rk_aiq_user_api2_adrc_v12_lite_SetAttrib(ctx, &attr_v12_lite);
+    RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed!");
+#endif
 
     IMGPROC_FUNC_EXIT
     return ret;
@@ -1834,6 +1932,15 @@ XCamReturn rk_aiq_uapi2_getDrcGain(const rk_aiq_sys_ctx_t* ctx, float * Gain, fl
     *Alpha = attr_v12.Info.ValidParams.DrcGain.Alpha;
     *Clip  = attr_v12.Info.ValidParams.DrcGain.Clip;
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    drcAttrV12Lite_t attr_v12_lite;
+    memset(&attr_v12_lite, 0, sizeof(drcAttrV12Lite_t));
+    ret = rk_aiq_user_api2_adrc_v12_lite_GetAttrib(ctx, &attr_v12_lite);
+    RKAIQ_IMGPROC_CHECK_RET(ret, "setDrcGain failed in get attrib!");
+    *Gain  = attr_v12_lite.Info.ValidParams.DrcGain.DrcGain;
+    *Alpha = attr_v12_lite.Info.ValidParams.DrcGain.Alpha;
+    *Clip  = attr_v12_lite.Info.ValidParams.DrcGain.Clip;
+#endif
 
     IMGPROC_FUNC_EXIT
     return ret;
@@ -1865,6 +1972,10 @@ XCamReturn rk_aiq_uapi2_getDarkAreaBoostStrth(const rk_aiq_sys_ctx_t* ctx, unsig
     ret = XCAM_RETURN_ERROR_PARAM;
     RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.2 do not support tmo api!");
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    ret = XCAM_RETURN_ERROR_PARAM;
+    RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.2 lite do not support tmo api!");
+#endif
 
     return ret;
 }
@@ -1884,6 +1995,10 @@ XCamReturn rk_aiq_uapi2_setDarkAreaBoostStrth(const rk_aiq_sys_ctx_t* ctx, unsig
 #if RKAIQ_HAVE_DRC_V12
     ret = XCAM_RETURN_ERROR_PARAM;
     RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.2 do not support tmo api!");
+#endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    ret = XCAM_RETURN_ERROR_PARAM;
+    RKAIQ_IMGPROC_CHECK_RET(ret, "ISP3.2 lite do not support tmo api!");
 #endif
 
     return ret;
@@ -2076,7 +2191,6 @@ XCamReturn rk_aiq_uapi2_setNRMode(const rk_aiq_sys_ctx_t* ctx, opMode_t mode)
         ret = rk_aiq_user_api2_abayertnrV2_SetAttrib(ctx, &bayertnrV2_attr);
     }
 
-
     if (CHECK_ISP_HW_V32()) {
         rk_aiq_ynr_attrib_v22_t ynrV22_attr;
         ynrV22_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
@@ -2115,6 +2229,39 @@ XCamReturn rk_aiq_uapi2_setNRMode(const rk_aiq_sys_ctx_t* ctx, opMode_t mode)
         ret = rk_aiq_user_api2_acnrV30_SetAttrib(ctx, &cnrV30_attr);
         ret = rk_aiq_user_api2_abayer2dnrV23_SetAttrib(ctx, &bayer2dnrV23_attr);
         ret = rk_aiq_user_api2_abayertnrV23_SetAttrib(ctx, &bayertnrV23_attr);
+    }
+
+    if (CHECK_ISP_HW_V32_LITE()) {
+        rk_aiq_ynr_attrib_v22_t ynrV22_attr;
+        ynrV22_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        rk_aiq_cnr_attrib_v30_t cnrV30_attr;
+        cnrV30_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        rk_aiq_bayertnr_attrib_v23L_t bayertnrV23_attr;
+        bayertnrV23_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
+        ret                             = rk_aiq_user_api2_aynrV22_GetAttrib(ctx, &ynrV22_attr);
+        ret                             = rk_aiq_user_api2_acnrV30_GetAttrib(ctx, &cnrV30_attr);
+        ret = rk_aiq_user_api2_abayertnrV23Lite_GetAttrib(ctx, &bayertnrV23_attr);
+        RKAIQ_IMGPROC_CHECK_RET(ret, "get anr attrib failed!,ret=%d", ret);
+
+        if (mode == OP_AUTO) {
+            ynrV22_attr.eMode      = AYNRV22_OP_MODE_AUTO;
+            cnrV30_attr.eMode      = ACNRV30_OP_MODE_AUTO;
+            bayertnrV23_attr.eMode = ABAYERTNRV23_OP_MODE_AUTO;
+        } else if (mode == OP_MANUAL) {
+            ynrV22_attr.eMode      = AYNRV22_OP_MODE_MANUAL;
+            cnrV30_attr.eMode      = ACNRV30_OP_MODE_MANUAL;
+            bayertnrV23_attr.eMode = ABAYERTNRV23_OP_MODE_MANUAL;
+        } else if (mode == OP_REG_MANUAL) {
+            ynrV22_attr.eMode      = AYNRV22_OP_MODE_REG_MANUAL;
+            cnrV30_attr.eMode      = ACNRV30_OP_MODE_REG_MANUAL;
+            bayertnrV23_attr.eMode = ABAYERTNRV23_OP_MODE_REG_MANUAL;
+        } else {
+            ret = XCAM_RETURN_ERROR_PARAM;
+            RKAIQ_IMGPROC_CHECK_RET(ret, "Not supported mode!");
+        }
+        ret = rk_aiq_user_api2_aynrV22_SetAttrib(ctx, &ynrV22_attr);
+        ret = rk_aiq_user_api2_acnrV30_SetAttrib(ctx, &cnrV30_attr);
+        ret = rk_aiq_user_api2_abayertnrV23Lite_SetAttrib(ctx, &bayertnrV23_attr);
     }
 
     RKAIQ_IMGPROC_CHECK_RET(ret, "setNRMode failed!", ret);
@@ -2211,7 +2358,7 @@ XCamReturn rk_aiq_uapi2_getNRMode(const rk_aiq_sys_ctx_t* ctx, opMode_t *mode)
         }
     }
 
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         rk_aiq_ynr_attrib_v22_t ynrV22_attr;
         ynrV22_attr.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
         rk_aiq_cnr_attrib_v30_t cnrV30_attr;
@@ -2305,7 +2452,7 @@ XCamReturn rk_aiq_uapi2_setANRStrth(const rk_aiq_sys_ctx_t* ctx, unsigned int le
         RKAIQ_IMGPROC_CHECK_RET(ret, "setANRStrth failed!", ret);
     }
 
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         rk_aiq_ynr_strength_v22_t ynrV22Strength;
         ynrV22Strength.strength_enable = true;
         ynrV22Strength.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
@@ -2362,7 +2509,7 @@ XCamReturn rk_aiq_uapi2_getANRStrth(const rk_aiq_sys_ctx_t* ctx, unsigned int *l
         *level = (unsigned int)(percent * 100);
     }
 
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         rk_aiq_bayertnr_strength_v23_t bayertnrV23Strength;
         bayertnrV23Strength.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
         ret = rk_aiq_user_api2_abayertnrV23_GetStrength(ctx, &bayertnrV23Strength);
@@ -2419,7 +2566,7 @@ XCamReturn rk_aiq_uapi2_setMSpaNRStrth(const rk_aiq_sys_ctx_t* ctx, bool on, uns
         ret = rk_aiq_user_api2_abayer2dnrV2_SetStrength(ctx, &bayer2dnrV2Strenght);
     }
 
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         rk_aiq_ynr_strength_v22_t ynrStrength;
         ynrStrength.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
         ynrStrength.strength_enable = true;
@@ -2474,7 +2621,7 @@ XCamReturn rk_aiq_uapi2_getMSpaNRStrth(const rk_aiq_sys_ctx_t* ctx, bool * on, u
         percent = bayer2dnrV2Strenght.percent;
     }
 
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         rk_aiq_bayer2dnr_strength_v23_t bayer2dnrV23Strength;
         bayer2dnrV23Strength.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
         ret = rk_aiq_user_api2_abayer2dnrV23_GetStrength(ctx, &bayer2dnrV23Strength);
@@ -2526,7 +2673,7 @@ XCamReturn rk_aiq_uapi2_setMTNRStrth(const rk_aiq_sys_ctx_t* ctx, bool on, unsig
         ret = rk_aiq_user_api2_abayertnrV2_SetStrength(ctx, &bayertnrV2Strenght);
     }
 
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         rk_aiq_bayertnr_strength_v23_t bayertnrV23Strength;
         bayertnrV23Strength.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
         bayertnrV23Strength.strength_enable = true;
@@ -2575,7 +2722,7 @@ XCamReturn rk_aiq_uapi2_getMTNRStrth(const rk_aiq_sys_ctx_t* ctx, bool * on, uns
         percent = bayertnrV2Strenght.percent;
     }
 
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         rk_aiq_bayertnr_strength_v23_t bayertnrV23Strength;
         bayertnrV23Strength.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
         ret = rk_aiq_user_api2_abayertnrV23_GetStrength(ctx, &bayertnrV23Strength);
@@ -2627,7 +2774,7 @@ XCamReturn rk_aiq_uapi2_setSharpness(const rk_aiq_sys_ctx_t* ctx, unsigned int l
         ret = rk_aiq_user_api2_asharpV4_SetStrength(ctx, &sharpV4Strenght);
     }
 
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         rk_aiq_sharp_strength_v33_t sharpV33Strength;
         sharpV33Strength.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
         sharpV33Strength.strength_enable = true;
@@ -2662,7 +2809,7 @@ XCamReturn rk_aiq_uapi2_getSharpness(const rk_aiq_sys_ctx_t* ctx, unsigned int *
         fPercent = sharpV4Strenght.percent;
     }
 
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         rk_aiq_sharp_strength_v33_t sharpV33Strength;
         sharpV33Strength.sync.sync_mode = RK_AIQ_UAPI_MODE_SYNC;
         ret = rk_aiq_user_api2_asharpV33_GetStrength(ctx, &sharpV33Strength);
@@ -4226,4 +4373,238 @@ rk_aiq_gray_mode_t rk_aiq_uapi2_getGrayMode(const rk_aiq_sys_ctx_t* ctx)
     return RK_AIQ_GRAY_MODE_OFF;
 }
 
+/*
+**********************************************************
+* Color Space
+**********************************************************
+*/
+
+/*
+*****************************
+*
+* Desc: Set Color Space
+* Argument:
+*    Cspace:
+*        [0  BT.601 FULL
+*         1  BT.601 LIMIT
+*         2  BT.709 FULL
+*         3  BT.709 LIMIT
+*         255 OTHER]
+*****************************
+*/
+XCamReturn rk_aiq_uapi2_setColorSpace(const rk_aiq_sys_ctx_t* ctx, int Cspace)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    IMGPROC_FUNC_ENTER
+
+    LOGD("setColorSpace enter, Cspace=%d\n", Cspace);
+    rk_aiq_uapi_acsm_attrib_t csm_attrib;
+    rk_aiq_uapi_acgc_attrib_t cgc_attrib;
+    memset(&csm_attrib, 0, sizeof(rk_aiq_uapi_acsm_attrib_t));
+    memset(&cgc_attrib, 0, sizeof(rk_aiq_uapi_acgc_attrib_t));
+    if (Cspace < 0 || Cspace > 3) {
+        ret = XCAM_RETURN_ERROR_PARAM;
+        RKAIQ_IMGPROC_CHECK_RET(ret, "mode out of range, setColorSpace failed!");
+    }
+
+    XCamReturn ret1 = XCAM_RETURN_NO_ERROR;
+    XCamReturn ret2 = XCAM_RETURN_NO_ERROR;
+
+    ret1 = rk_aiq_user_api2_acsm_GetAttrib(ctx, &csm_attrib);
+    ret2 = rk_aiq_user_api2_acgc_GetAttrib(ctx, &cgc_attrib);
+    if (ret1 != XCAM_RETURN_NO_ERROR || ret2 != XCAM_RETURN_NO_ERROR) {
+        LOGE("getAttrib error,set ColorSpace failed!");
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+
+    csm_attrib.param.op_mode = RK_AIQ_OP_MODE_MANUAL;
+    cgc_attrib.param.op_mode = RK_AIQ_OP_MODE_MANUAL;
+    switch (Cspace) {
+    case 0:
+        csm_attrib.param.full_range = true;
+        csm_attrib.param.y_offset = 0;
+        csm_attrib.param.c_offset = 0;
+        csm_attrib.param.coeff[0] = 0.299;
+        csm_attrib.param.coeff[1] = 0.587;
+        csm_attrib.param.coeff[2] = 0.114;
+        csm_attrib.param.coeff[3] = -0.169;
+        csm_attrib.param.coeff[4] = -0.331;
+        csm_attrib.param.coeff[5] = 0.5;
+        csm_attrib.param.coeff[6] = 0.5;
+        csm_attrib.param.coeff[7] = -0.419;
+        csm_attrib.param.coeff[8] = -0.081;
+        cgc_attrib.param.cgc_ratio_en = 0;
+        cgc_attrib.param.cgc_yuv_limit = 0;
+        break;
+    case 1:
+        csm_attrib.param.full_range = true;
+        csm_attrib.param.y_offset = 0;
+        csm_attrib.param.c_offset = 0;
+        csm_attrib.param.coeff[0] = 0.257;
+        csm_attrib.param.coeff[1] = 0.504;
+        csm_attrib.param.coeff[2] = 0.098;
+        csm_attrib.param.coeff[3] = -0.148;
+        csm_attrib.param.coeff[4] = -0.291;
+        csm_attrib.param.coeff[5] = 0.439;
+        csm_attrib.param.coeff[6] = 0.439;
+        csm_attrib.param.coeff[7] = -0.368;
+        csm_attrib.param.coeff[8] = -0.071;
+        cgc_attrib.param.cgc_ratio_en = 0;
+        cgc_attrib.param.cgc_yuv_limit = 1;
+        break;
+    case 2:
+        csm_attrib.param.full_range = true;
+        csm_attrib.param.y_offset = 0;
+        csm_attrib.param.c_offset = 0;
+        csm_attrib.param.coeff[0] = 0.2126;
+        csm_attrib.param.coeff[1] = 0.7152;
+        csm_attrib.param.coeff[2] = 0.0722;
+        csm_attrib.param.coeff[3] = -0.1146;
+        csm_attrib.param.coeff[4] = -0.3854;
+        csm_attrib.param.coeff[5] = 0.5;
+        csm_attrib.param.coeff[6] = 0.5;
+        csm_attrib.param.coeff[7] = -0.4542;
+        csm_attrib.param.coeff[8] = -0.0468;
+        cgc_attrib.param.cgc_ratio_en = 0;
+        cgc_attrib.param.cgc_yuv_limit = 0;
+        break;
+    case 3:
+        csm_attrib.param.full_range = true;
+        csm_attrib.param.y_offset = 0;
+        csm_attrib.param.c_offset = 0;
+        csm_attrib.param.coeff[0] = 0.1826;
+        csm_attrib.param.coeff[1] = 0.6142;
+        csm_attrib.param.coeff[2] = 0.0620;
+        csm_attrib.param.coeff[3] = -0.1006;
+        csm_attrib.param.coeff[4] = -0.3386;
+        csm_attrib.param.coeff[5] = 0.4392;
+        csm_attrib.param.coeff[6] = 0.4392;
+        csm_attrib.param.coeff[7] = -0.3989;
+        csm_attrib.param.coeff[8] = -0.0403;
+        cgc_attrib.param.cgc_ratio_en = 0;
+        cgc_attrib.param.cgc_yuv_limit = 1;
+        break;
+    default:
+        break;
+    }
+    ret1 = rk_aiq_user_api2_acsm_SetAttrib(ctx, &csm_attrib);
+    ret2 = rk_aiq_user_api2_acgc_SetAttrib(ctx, &cgc_attrib);
+    if (ret1 != XCAM_RETURN_NO_ERROR || ret2 != XCAM_RETURN_NO_ERROR) {
+        LOGE("set ColorSpace failed!");
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+    IMGPROC_FUNC_EXIT
+
+    return ret;
+}
+
+XCamReturn rk_aiq_uapi2_getColorSpace(const rk_aiq_sys_ctx_t* ctx, int *Cspace)
+{
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    IMGPROC_FUNC_ENTER
+    rk_aiq_uapi_acsm_attrib_t csm_attrib;
+    rk_aiq_uapi_acgc_attrib_t cgc_attrib;
+    memset(&csm_attrib, 0, sizeof(rk_aiq_uapi_acsm_attrib_t));
+    memset(&cgc_attrib, 0, sizeof(rk_aiq_uapi_acgc_attrib_t));
+    if (Cspace == NULL || ctx == NULL) {
+        ret = XCAM_RETURN_ERROR_PARAM;
+        RKAIQ_IMGPROC_CHECK_RET(ret, "param error, getColorSpace failed!");
+    }
+    XCamReturn ret1 = XCAM_RETURN_NO_ERROR;
+    XCamReturn ret2 = XCAM_RETURN_NO_ERROR;
+
+    ret1 = rk_aiq_user_api2_acsm_GetAttrib(ctx, &csm_attrib);
+    ret2 = rk_aiq_user_api2_acgc_GetAttrib(ctx, &cgc_attrib);
+    if (ret1 != XCAM_RETURN_NO_ERROR || ret2 != XCAM_RETURN_NO_ERROR) {
+        LOGE("getAttrib error,get ColorSpace failed!");
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+
+    static Csm_Param_t g_csm_601fa_def = {
+        .op_mode = RK_AIQ_OP_MODE_AUTO,
+        .full_range = true,
+        .y_offset = 0,
+        .c_offset = 0,
+        .coeff = {
+                0.299, 0.587, 0.114,
+                -0.169, -0.331, 0.5,
+                0.5, -0.419, -0.081
+        }
+    };
+    static Csm_Param_t g_csm_601fm_def = {
+        .op_mode = RK_AIQ_OP_MODE_MANUAL,
+        .full_range = true,
+        .y_offset = 0,
+        .c_offset = 0,
+        .coeff = {
+                0.299, 0.587, 0.114,
+                -0.169, -0.331, 0.5,
+                0.5, -0.419, -0.081
+        }
+    };
+    static Csm_Param_t g_csm_601l_def = {
+        .op_mode = RK_AIQ_OP_MODE_MANUAL,
+        .full_range = true,
+        .y_offset = 0,
+        .c_offset = 0,
+        .coeff = {
+                0.257, 0.504, 0.098,
+                -0.148, -0.291, 0.439,
+                0.439, -0.368, -0.071
+        }
+    };
+    static Csm_Param_t g_csm_709fa_def = {
+        .op_mode = RK_AIQ_OP_MODE_AUTO,
+        .full_range = true,
+        .y_offset = 0,
+        .c_offset = 0,
+        .coeff = {
+                0.2126, 0.7152, 0.0722,
+                -0.1146, -0.3854, 0.5000,
+                0.5000, -0.4542, -0.0468,
+        }
+    };
+    static Csm_Param_t g_csm_709fm_def = {
+        .op_mode = RK_AIQ_OP_MODE_MANUAL,
+        .full_range = true,
+        .y_offset = 0,
+        .c_offset = 0,
+        .coeff = {
+                0.2126, 0.7152, 0.0722,
+                -0.1146, -0.3854, 0.5000,
+                0.5000, -0.4542, -0.0468,
+        }
+    };
+    static Csm_Param_t g_csm_709l_def = {
+        .op_mode = RK_AIQ_OP_MODE_MANUAL,
+        .full_range = true,
+        .y_offset = 0,
+        .c_offset = 0,
+        .coeff = {
+                0.1826, 0.6142, 0.0620,
+                -0.1006, -0.3386, 0.4392,
+                0.4392, -0.3989, -0.0403
+        }
+    };
+    if (cgc_attrib.param.cgc_yuv_limit == true) {
+        if (!memcmp(&csm_attrib.param, &g_csm_601l_def, sizeof(g_csm_601l_def)))
+            *Cspace = 1;
+        else if (!memcmp(&csm_attrib.param, &g_csm_709l_def, sizeof(g_csm_709l_def)))
+            *Cspace = 3;
+        else
+            *Cspace = 255;
+    } else {
+        if (!memcmp(&csm_attrib.param, &g_csm_601fa_def, sizeof(g_csm_601fa_def)) ||
+                !memcmp(&csm_attrib.param, &g_csm_601fm_def, sizeof(g_csm_601fm_def)))
+            *Cspace = 0;
+        else if (!memcmp(&csm_attrib.param, &g_csm_709fa_def, sizeof(g_csm_709fa_def)) ||
+                !memcmp(&csm_attrib.param, &g_csm_709fm_def, sizeof(g_csm_709fm_def)))
+            *Cspace = 2;
+        else
+            *Cspace = 255;
+    }
+
+    IMGPROC_FUNC_EXIT
+    return ret;
+}
 RKAIQ_END_DECLARE

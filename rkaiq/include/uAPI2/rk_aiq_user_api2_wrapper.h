@@ -102,6 +102,15 @@ XCamReturn rk_aiq_set_adrc_v12_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx, mdrc
 
 XCamReturn rk_aiq_get_adrc_v12_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx, mdrcAttr_V12_t* manual);
 
+XCamReturn rk_aiq_user_api2_adrc_v12_lite_queryinfo(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                    DrcInfoV12Lite_t* drc_info);
+
+XCamReturn rk_aiq_set_adrc_v12_lite_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                mdrcAttr_v12_lite_t* manual);
+
+XCamReturn rk_aiq_get_adrc_v12_lite_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                mdrcAttr_v12_lite_t* manual);
+
 XCamReturn rk_aiq_set_agamma_v10_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
         AgammaApiManualV10_t* manual);
 

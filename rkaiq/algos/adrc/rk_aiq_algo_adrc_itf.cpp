@@ -25,7 +25,7 @@
 #if RKAIQ_HAVE_DRC_V11
 #include "adrc/rk_aiq_adrc_algo_v11.h"
 #endif
-#if RKAIQ_HAVE_DRC_V12
+#if RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE
 #include "adrc/rk_aiq_adrc_algo_v12.h"
 #endif
 #include "adrc/rk_aiq_types_adrc_algo_prvt.h"
@@ -111,6 +111,12 @@ prepare(RkAiqAlgoCom* params)
         memcpy(&pAdrcCtx->drcAttrV12.stAuto, calibv2_adrc_calib,
                sizeof(CalibDbV2_drc_V12_t));  // reload stAuto
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+        CalibDbV2_drc_v12_lite_t* calibv2_adrc_calib =
+            (CalibDbV2_drc_v12_lite_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, adrc_calib));
+        memcpy(&pAdrcCtx->drcAttrV12.stAuto, calibv2_adrc_calib,
+               sizeof(CalibDbV2_drc_v12_lite_t));  // reload stAuto
+#endif
         pAdrcCtx->ifReCalcStAuto = true;
     } else if (params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_CHANGERES) {
         pAdrcCtx->isCapture = true;
@@ -189,19 +195,18 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             pAdrcCtx->NextData.AEData.MExpo = pAdrcCtx->NextData.AEData.SExpo;
             pAdrcCtx->NextData.AEData.LExpo = pAdrcCtx->NextData.AEData.SExpo;
 
-#if RKAIQ_HAVE_DRC_V12
+#if RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE
             pAdrcCtx->ablcV32_proc_res.blc_ob_enable = pAdrcParams->ablcV32_proc_res.blc_ob_enable;
             pAdrcCtx->ablcV32_proc_res.isp_ob_predgain =
                 pAdrcParams->ablcV32_proc_res.isp_ob_predgain;
-            if (pAdrcCtx->ablcV32_proc_res.blc_ob_enable &&
-                pAdrcCtx->ablcV32_proc_res.isp_ob_predgain < ISP_PREDGAIN_DEFAULT) {
-                LOGE_ATMO("%s: ob_enable ON, and ob_predgain[%f] < 1.0f, clip to 1.0!!!\n",
-                          __FUNCTION__, pAdrcCtx->ablcV32_proc_res.isp_ob_predgain);
-                pAdrcCtx->ablcV32_proc_res.isp_ob_predgain = ISP_PREDGAIN_DEFAULT;
-            }
-
-            if (pAdrcCtx->ablcV32_proc_res.blc_ob_enable)
+            if (pAdrcCtx->ablcV32_proc_res.blc_ob_enable) {
+                if (pAdrcCtx->ablcV32_proc_res.isp_ob_predgain < ISP_PREDGAIN_DEFAULT) {
+                    LOGE_ATMO("%s: ob_enable ON, and ob_predgain[%f] < 1.0f, clip to 1.0!!!\n",
+                              __FUNCTION__, pAdrcCtx->ablcV32_proc_res.isp_ob_predgain);
+                    pAdrcCtx->ablcV32_proc_res.isp_ob_predgain = ISP_PREDGAIN_DEFAULT;
+                }
                 pAdrcCtx->NextData.AEData.ISO *= pAdrcCtx->ablcV32_proc_res.isp_ob_predgain;
+            }
 #endif
         }
         else if(pAdrcCtx->FrameNumber == HDR_2X_NUM) {

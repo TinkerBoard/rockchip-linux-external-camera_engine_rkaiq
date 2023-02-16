@@ -39,7 +39,7 @@ private:
     void convertAiqRawnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                       rk_aiq_isp_baynr_v32_t& rawnr);
 #endif
-#if RKAIQ_HAVE_BAYERTNR_V23
+#if (RKAIQ_HAVE_BAYERTNR_V23 || RKAIQ_HAVE_BAYERTNR_V23_LITE)
     void convertAiqTnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_tnr_v32_t& tnr);
 #endif
@@ -47,7 +47,7 @@ private:
     void convertAiqYnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_ynr_v32_t& ynr);
 #endif
-#if RKAIQ_HAVE_CNR_V30
+#if (RKAIQ_HAVE_CNR_V30 || RKAIQ_HAVE_CNR_V30_LITE)
     void convertAiqUvnrToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                      rk_aiq_isp_cnr_v32_t& uvnr);
 #endif
@@ -58,7 +58,7 @@ private:
                                     const rk_aiq_isp_awb_meas_cfg_v32_t& awb_meas,
                                     bool awb_cfg_udpate);
 #endif
-#if RKAIQ_HAVE_SHARP_V33
+#if (RKAIQ_HAVE_SHARP_V33 || RKAIQ_HAVE_SHARP_V33_LITE)
     void convertAiqSharpenToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                         rk_aiq_isp_sharp_v32_t& sharp);
 #endif
@@ -68,6 +68,10 @@ private:
 #if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
     void convertAiqAfToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                    const rk_aiq_isp_af_v31_t& af_data, bool af_cfg_udpate);
+#endif
+#if RKAIQ_HAVE_AF_V32_LITE || RKAIQ_ONLY_AF_STATS_V32_LITE
+    void convertAiqAfLiteToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
+                                   const rk_aiq_isp_af_v32_t& af_data, bool af_cfg_udpate);
 #endif
 #if RKAIQ_HAVE_CAC_V11
     void convertAiqCacToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
@@ -79,7 +83,7 @@ private:
     void convertAiqAdehazeToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                         const rk_aiq_isp_dehaze_v32_t& dhaze);
 #endif
-#if RKAIQ_HAVE_DRC_V12
+#if RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE
     void convertAiqDrcToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     rk_aiq_isp_drc_v32_t& adrc_data);
 #endif

@@ -14,6 +14,7 @@
 #define SIHIST_WIN_NUM      225
 
 #define RAWHIST_BIN_N_MAX   256
+#define RAWHIST_32LITE_BIN_N_MAX   64
 #define SIHIST_BIN_N_MAX    32
 
 #define MAX_AEC_EFFECT_FNUM 5

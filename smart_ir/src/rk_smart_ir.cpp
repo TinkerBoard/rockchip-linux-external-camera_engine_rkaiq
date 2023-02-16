@@ -148,6 +148,20 @@ rk_smart_ir_config(rk_smart_ir_ctx_t* ctx, rk_smart_ir_params_t* config)
     return ret;
 }
 
+XCamReturn
+rk_smart_ir_set_status(rk_smart_ir_ctx_t* ctx, rk_smart_ir_result_t result)
+{
+    SMARTIR_LOG("%s: (enter)\n", __FUNCTION__ );
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    ctx->state = result.status;
+
+    SMARTIR_LOG("%s: (exit)\n", __FUNCTION__ );
+
+    return ret;
+}
+
 enum RK_SMART_IR_ALGO_RESULT_e {
     RK_SMART_IR_ALGO_RESULT_KEEP = 0,
     RK_SMART_IR_ALGO_RESULT_DAY,

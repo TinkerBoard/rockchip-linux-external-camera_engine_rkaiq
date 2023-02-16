@@ -105,7 +105,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGD_ACCM( "%s: awbIIRDampCoef:%f\n", __FUNCTION__, hAccm->accmSwInfo.awbIIRDampCoef);
 
     AccmConfig(hAccm);
-#ifdef ISP_HW_V32
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     memcpy(&proResAccm->accm_hw_conf_v2, &hAccm->ccmHwConf_v2, sizeof(rk_aiq_ccm_cfg_v2_t));
 #else
     memcpy(&proResAccm->accm_hw_conf, &hAccm->ccmHwConf, sizeof(rk_aiq_ccm_cfg_t));

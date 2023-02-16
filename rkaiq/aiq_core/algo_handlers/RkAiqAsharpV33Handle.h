@@ -23,7 +23,7 @@
 #include "xcam_mutex.h"
 
 namespace RkCam {
-#if RKAIQ_HAVE_SHARP_V33
+#if (RKAIQ_HAVE_SHARP_V33 || RKAIQ_HAVE_SHARP_V33_LITE)
 
 class RkAiqAsharpV33HandleInt : virtual public RkAiqHandle {
 public:
@@ -31,15 +31,15 @@ public:
         : RkAiqHandle(des, aiqCore) {
         updateStrength = false;
         updateAtt      = false;
+        updateAttLite  = false;
         memset(&mCurStrength, 0x00, sizeof(mCurStrength));
         memset(&mNewStrength, 0x00, sizeof(mNewStrength));
         mCurStrength.percent = 1.0;
         mNewStrength.percent = 1.0;
         memset(&mCurAtt, 0x00, sizeof(mCurAtt));
         memset(&mNewAtt, 0x00, sizeof(mNewAtt));
-        memset(&mCurInfo, 0x00, sizeof(mCurInfo));
-        memset(&mNewInfo, 0x00, sizeof(mNewInfo));
-        updateInfo = false;
+        memset(&mCurAttLite, 0x00, sizeof(mCurAttLite));
+        memset(&mNewAttLite, 0x00, sizeof(mNewAttLite));
     };
     virtual ~RkAiqAsharpV33HandleInt() {
         RkAiqHandle::deInit();
@@ -54,6 +54,8 @@ public:
 
     XCamReturn setAttrib(const rk_aiq_sharp_attrib_v33_t* att);
     XCamReturn getAttrib(rk_aiq_sharp_attrib_v33_t* att);
+    XCamReturn setAttribLite(const rk_aiq_sharp_attrib_v33LT_t* att);
+    XCamReturn getAttribLite(rk_aiq_sharp_attrib_v33LT_t* att);
     XCamReturn setStrength(const rk_aiq_sharp_strength_v33_t* pStrength);
     XCamReturn getStrength(rk_aiq_sharp_strength_v33_t* pStrength);
 
@@ -71,11 +73,11 @@ private:
     rk_aiq_sharp_strength_v33_t mCurStrength;
     rk_aiq_sharp_strength_v33_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
-    rk_aiq_sharp_info_v33_t mCurInfo;
-    rk_aiq_sharp_info_v33_t mNewInfo;
-    mutable std::atomic<bool> updateInfo;
+    rk_aiq_sharp_attrib_v33LT_t mCurAttLite;
+    rk_aiq_sharp_attrib_v33LT_t mNewAttLite;
+    mutable std::atomic<bool> updateAttLite;
 
-private:
+ private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAsharpV33HandleInt);
 };
 #endif

@@ -28,14 +28,23 @@ RKAIQ_BEGIN_DECLARE
 #define CALD_AWB_EXCRANGE_NUM_MAX 7
 #define CALD_AWB_LV_NUM_MAX 16
 #define CALD_AWB_ILLUMINATION_NAME       ( 20U )
+#define CALD_AWB_GRID_NUM_TOTAL_LITE 25
 #define CALD_AWB_GRID_NUM_TOTAL 225
 #define CALD_AWB_RGCT_GRID_NUM 9
 #define CALD_AWB_BGCRI_GRID_NUM 11
 
+#if ISP_HW_V32_LITE
+typedef enum CalibDbV2_Awb_Down_Scale_Mode_e {
+    CALIB_AWB_DS_4X4 = 0,
+    CALIB_AWB_DS_8X8 = 1,
+    CALIB_AWB_DS_16X8 = 2,
+} CalibDbV2_Awb_Down_Scale_Mode_t;
+#else
 typedef enum CalibDbV2_Awb_Down_Scale_Mode_e {
     CALIB_AWB_DS_4X4 = 0,
     CALIB_AWB_DS_8X8 = 1,
 } CalibDbV2_Awb_Down_Scale_Mode_t;
+#endif
 
 typedef enum CalibDbV2_Awb_Blk_Stat_V21_e {
     CALIB_AWB_BLK_STAT_MODE_AL_V201 = 0,
@@ -990,8 +999,13 @@ typedef struct CalibDbV2_Wb_Awb_Para_V32_t {
     CalibDbV2_Awb_Luma_Weight_t wpDiffLumaWeight;
     // M4_BOOL_DESC("wpDiffBlkWeiEnable", "0");
     bool           wpDiffBlkWeiEnable;
+#if ISP_HW_V32_LITE
+    // M4_ARRAY_DESC("wpDiffBlkWeight", "u16", M4_SIZE(5,5), M4_RANGE(0,63), "0", M4_DIGIT(0), M4_DYNAMIC(0))
+    unsigned short wpDiffBlkWeight[CALD_AWB_GRID_NUM_TOTAL_LITE];
+#else
     // M4_ARRAY_DESC("wpDiffBlkWeight", "u16", M4_SIZE(15,15), M4_RANGE(0,63), "0", M4_DIGIT(0), M4_DYNAMIC(0))
     unsigned short wpDiffBlkWeight[CALD_AWB_GRID_NUM_TOTAL];
+#endif
     // M4_STRUCT_LIST_DESC("lightSources", M4_SIZE(1,7), "normal_ui_style")
     CalibDbV2_Awb_Light_V32_t* lightSources;
     int lightSources_len;

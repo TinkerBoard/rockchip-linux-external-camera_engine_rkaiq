@@ -48,6 +48,7 @@ cc_defaults {
         "external/camera_engine_rkaiq/xcore/base",
         "external/camera_engine_rkaiq/xcore",
         "external/camera_engine_rkaiq/aiq_core",
+        "external/camera_engine_rkaiq/algos_camgroup",
     ],
 }
 

@@ -14,7 +14,8 @@ cc_library_static {
     srcs: [
         "rk_aiq_algo_camgroup_awb_itf.cpp",
         "rk_aiq_awb_algo_surround_view_v201.cpp",
-	"rk_aiq_uapiv2_camgroup_awb_int.cpp",
+        "rk_aiq_uapiv2_camgroup_awb_int.cpp",
+        "rk_aiq_awb_algo_surround_view_v32.cpp"
     ],
 
     cppflags: [

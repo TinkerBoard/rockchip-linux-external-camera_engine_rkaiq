@@ -97,8 +97,15 @@ XCamReturn RkAiqCamgroupHandle::prepare(RkAiqCore* aiqCore) {
     com->u.prepare.conf_type     = sharedCom->conf_type;
     com->u.prepare.calibv2 =
         const_cast<CamCalibDbV2Context_t*>(prepareCfg->s_calibv2);
+    if (mDes->type == RK_AIQ_ALGO_TYPE_AWB) {
+        mCfgMutex.lock();
+        ret = ((RkAiqAlgoDescription*)mDes)->prepare(com);
+        mCfgMutex.unlock();
+    }
+    else {
+        ret = ((RkAiqAlgoDescription*)mDes)->prepare(com);
+    }
 
-    ret = ((RkAiqAlgoDescription*)mDes)->prepare(com);
     if (ret) {
         LOGE("algo %d prepare failed !", mDes->type);
         return ret;

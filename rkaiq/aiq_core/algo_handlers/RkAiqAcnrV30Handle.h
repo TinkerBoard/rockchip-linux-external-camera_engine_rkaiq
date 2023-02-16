@@ -23,7 +23,7 @@
 #include "xcam_mutex.h"
 
 namespace RkCam {
-#if RKAIQ_HAVE_CNR_V30
+#if (RKAIQ_HAVE_CNR_V30 || RKAIQ_HAVE_CNR_V30_LITE)
 
 class RkAiqAcnrV30HandleInt : virtual public RkAiqHandle {
 public:

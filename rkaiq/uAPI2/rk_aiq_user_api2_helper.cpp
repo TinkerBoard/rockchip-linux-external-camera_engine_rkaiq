@@ -91,6 +91,10 @@ __RKAIQUAPI_CALLER(mdrcAttr_V11_t);
 __RKAIQUAPI_CALLER(DrcInfoV12_t);
 __RKAIQUAPI_CALLER(mdrcAttr_V12_t);
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+__RKAIQUAPI_CALLER(DrcInfoV12Lite_t);
+__RKAIQUAPI_CALLER(mdrcAttr_v12_lite_t);
+#endif
 #if RKAIQ_HAVE_GAMMA_V10
 __RKAIQUAPI_CALLER(AgammaApiManualV10_t);
 #endif
@@ -111,7 +115,7 @@ __RKAIQUAPI_CALLER(uapi_ae_hwstats_t);
 __RKAIQUAPI_CALLER(rk_aiq_awb_stat_res2_v201_t);
 #elif defined(ISP_HW_V30)
 __RKAIQUAPI_CALLER(rk_tool_awb_stat_res2_v30_t);
-#elif defined(ISP_HW_V32)
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
 __RKAIQUAPI_CALLER(rk_tool_isp_awb_stats_v32_t);
 #endif
 __RKAIQUAPI_CALLER(rk_tool_awb_stat_res_full_t);
@@ -119,14 +123,14 @@ __RKAIQUAPI_CALLER(rk_tool_awb_strategy_result_t);
 __RKAIQUAPI_CALLER(rk_aiq_ccm_querry_info_t);
 #if defined(ISP_HW_V21) || defined(ISP_HW_V30)
 __RKAIQUAPI_CALLER(rk_aiq_ccm_mccm_attrib_t);
-#elif defined(ISP_HW_V32)
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
 __RKAIQUAPI_CALLER(rk_aiq_ccm_mccm_attrib_v2_t);
 #endif
 __RKAIQUAPI_CALLER(Cgc_Param_t);
 __RKAIQUAPI_CALLER(Csm_Param_t);
 __RKAIQUAPI_CALLER(Adpcc_Manual_Attr_t);
 
-#if defined(ISP_HW_V32) || defined(ISP_HW_V30)
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE) || defined(ISP_HW_V30)
 __RKAIQUAPI_CALLER(ablc_uapi_manual_t);
 __RKAIQUAPI_CALLER(asharp_uapi_manual_t);
 __RKAIQUAPI_CALLER(abayer2dnr_uapi_manual_t);
@@ -150,7 +154,6 @@ __RKAIQUAPI_CALLER(acp_attrib_t);
 __RKAIQUAPI_CALLER(rk_aiq_lsc_table_t);
 __RKAIQUAPI_CALLER(camgroup_uapi_t);
 __RKAIQUAPI_CALLER(adebayer_attrib_t);
-
 
 RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
     __RKAIQUAPI_DESC_DEF("/uapi/0/ae_uapi/expsw_attr", uapi_expsw_attr_t,
@@ -199,6 +202,13 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
     __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/stManual", mdrcAttr_V12_t,
                          rk_aiq_set_adrc_v12_manual_attr, rk_aiq_get_adrc_v12_manual_attr),
 #endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/Info", DrcInfoV12Lite_t, NULL,
+                         rk_aiq_user_api2_adrc_v12_lite_queryinfo),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/adrc_uapi/stManual", mdrcAttr_v12_lite_t,
+                         rk_aiq_set_adrc_v12_lite_manual_attr,
+                         rk_aiq_get_adrc_v12_lite_manual_attr),
+#endif
 #if RKAIQ_HAVE_GAMMA_V10
     __RKAIQUAPI_DESC_DEF("/uapi/0/agamma_uapi/stManual", AgammaApiManualV10_t,
                          rk_aiq_set_agamma_v10_manual_attr, rk_aiq_get_agamma_v10_manual_attr),
@@ -234,7 +244,7 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
 #elif defined(ISP_HW_V30)
     __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_stat", rk_tool_awb_stat_res2_v30_t,
                          NULL, rk_aiq_uapi_get_awb_stat),
-#elif defined(ISP_HW_V32)
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_stat", rk_tool_isp_awb_stats_v32_t,
                          NULL, rk_aiq_uapi_get_awbV32_stat),
 #endif
@@ -248,50 +258,18 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
                          rk_aiq_user_api2_accm_QueryCcmInfo),
     __RKAIQUAPI_DESC_DEF("/uapi/0/accm_uapi/stManual", rk_aiq_ccm_mccm_attrib_t,
                          rk_aiq_set_accm_v1_manual_attr, rk_aiq_get_accm_v1_manual_attr),
-#elif defined(ISP_HW_V32)
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     __RKAIQUAPI_DESC_DEF("/uapi/0/accm_uapi/Info", rk_aiq_ccm_querry_info_t, NULL,
                          rk_aiq_user_api2_accm_QueryCcmInfo),
     __RKAIQUAPI_DESC_DEF("/uapi/0/accm_uapi/stManual", rk_aiq_ccm_mccm_attrib_v2_t,
                          rk_aiq_set_accm_v2_manual_attr, rk_aiq_get_accm_v2_manual_attr),
 #endif
-    __RKAIQUAPI_DESC_DEF("/uapi/0/acgc_uapi/manual", Cgc_Param_t,
-                         rk_aiq_set_acgc_manual_attr, rk_aiq_get_acgc_manual_attr),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/acsm_uapi/manual", Csm_Param_t,
-                         rk_aiq_set_acsm_manual_attr, rk_aiq_get_acsm_manual_attr),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/adpcc_manual", Adpcc_Manual_Attr_t, rk_aiq_set_adpcc_manual_attr,
-                         rk_aiq_get_adpcc_manual_attr),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/a3dlut_uapi/mode", uapi_wb_mode_t, rk_aiq_set_tool_3dlut_mode,
-                         rk_aiq_get_a3dlut_mode),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/a3dlut_uapi/manual", rk_aiq_lut3d_mlut3d_attrib_t,
-                         rk_aiq_set_a3dlut_manual_attr, rk_aiq_get_a3dlut_manual_attr),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/agicv2_uapi/attr",
-                         rkaiq_gic_v2_api_attr_t,
-                         rk_aiq_user_api2_agic_v2_SetAttrib,
-                         rk_aiq_user_api2_agic_v2_GetAttrib),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/aie_uapi/attr",
-                         aie_attrib_t,
-                         __RKAIQUAPI_SET_WRAPPER_NAME(
-                             rk_aiq_user_api2_aie_SetAttrib),
-                         rk_aiq_user_api2_aie_GetAttrib),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/acp_uapi/attr",
-                         acp_attrib_t,
-                         __RKAIQUAPI_SET_WRAPPER_NAME(
-                             rk_aiq_user_api2_acp_SetAttrib),
-                         rk_aiq_user_api2_acp_GetAttrib),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/alsc_uapi/manual",
-                         rk_aiq_lsc_table_t,
-                         rk_aiq_set_alsc_manual_attr,
-                         rk_aiq_get_alsc_manual_attr),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/camgroup_uapi",
-                         camgroup_uapi_t,
-                         rk_aiq_set_current_camindex,
-                         rk_aiq_get_current_camindex),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/adebayer_uapi/adebayer_attr",
-                         adebayer_attrib_t,
-                         rk_aiq_set_adebayer_attr,
-                         rk_aiq_get_adebayer_attr),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/acgc_uapi/manual", Cgc_Param_t, rk_aiq_set_acgc_manual_attr,
+                         rk_aiq_get_acgc_manual_attr),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/acsm_uapi/manual", Csm_Param_t, rk_aiq_set_acsm_manual_attr,
+                         rk_aiq_get_acsm_manual_attr),
 
-#if defined(ISP_HW_V32) || defined(ISP_HW_V30)
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     __RKAIQUAPI_DESC_DEF("/uapi/0/ablc_uapi/manual", ablc_uapi_manual_t,
                          rk_aiq_set_ablc_manual_attr, rk_aiq_get_ablc_manual_attr),
     __RKAIQUAPI_DESC_DEF("/uapi/0/asharp_uapi/manual", asharp_uapi_manual_t,
@@ -306,20 +284,24 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
                          rk_aiq_set_acnr_manual_attr, rk_aiq_get_acnr_manual_attr),
     __RKAIQUAPI_DESC_DEF("/uapi/0/again_uapi/manual", again_uapi_manual_t,
                          rk_aiq_set_again_manual_attr, rk_aiq_get_again_manual_attr),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/ablc_uapi/info", ablc_uapi_info_t,
-                         NULL, rk_aiq_get_ablc_info),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/abayertnr_uapi/info", abayertnr_uapi_info_t,
-                         NULL, rk_aiq_get_abayertnr_info),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/abayer2dnr_uapi/info", abayer2dnr_uapi_info_t,
-                         NULL, rk_aiq_get_abayer2dnr_info),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/aynr_uapi/info", aynr_uapi_info_t,
-                         NULL, rk_aiq_get_aynr_info),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/acnr_uapi/info", acnr_uapi_info_t,
-                         NULL, rk_aiq_get_acnr_info),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/asharp_uapi/info", asharp_uapi_info_t,
-                         NULL, rk_aiq_get_asharp_info),
-    __RKAIQUAPI_DESC_DEF("/uapi/0/again_uapi/info", again_uapi_info_t,
-                         NULL, rk_aiq_get_again_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/ablc_uapi/info", ablc_uapi_info_t, NULL, rk_aiq_get_ablc_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/abayertnr_uapi/info", abayertnr_uapi_info_t, NULL,
+                         rk_aiq_get_abayertnr_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/abayer2dnr_uapi/info", abayer2dnr_uapi_info_t, NULL,
+                         rk_aiq_get_abayer2dnr_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/aynr_uapi/info", aynr_uapi_info_t, NULL, rk_aiq_get_aynr_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/acnr_uapi/info", acnr_uapi_info_t, NULL, rk_aiq_get_acnr_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/asharp_uapi/info", asharp_uapi_info_t, NULL,
+                         rk_aiq_get_asharp_info),
+
+    __RKAIQUAPI_DESC_DEF("/uapi/0/again_uapi/info", again_uapi_info_t, NULL, rk_aiq_get_again_info),
+
 #endif
 
 };

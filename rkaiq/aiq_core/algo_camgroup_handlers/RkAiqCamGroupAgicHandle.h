@@ -21,6 +21,7 @@
 
 namespace RkCam {
 
+#if (RRKAIQ_HAVE_GIC_V1 || RKAIQ_HAVE_GIC_V2)
 class RkAiqCamGroupAgicHandleInt : public RkAiqCamgroupHandle {
  public:
     explicit RkAiqCamGroupAgicHandleInt(RkAiqAlgoDesComm* des, RkAiqCamGroupManager* camGroupMg)
@@ -48,6 +49,7 @@ class RkAiqCamGroupAgicHandleInt : public RkAiqCamgroupHandle {
     rkaiq_gic_v2_api_attr_t mCurAttV2;
     rkaiq_gic_v2_api_attr_t mNewAttV2;
 };
+#endif
 
 }  // namespace RkCam
 

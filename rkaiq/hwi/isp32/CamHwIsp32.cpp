@@ -44,7 +44,7 @@ void CamHwIsp32::gen_full_isp_params(const struct isp32_isp_params_cfg* update_p
                                      struct isp32_isp_params_cfg* full_params,
                                      uint64_t* module_en_update_partial,
                                      uint64_t* module_cfg_update_partial) {
-#ifdef ISP_HW_V32
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     XCAM_ASSERT(update_params);
     XCAM_ASSERT(full_params);
     int i = 0;
@@ -218,7 +218,7 @@ void CamHwIsp32::gen_full_isp_params(const struct isp32_isp_params_cfg* update_p
 XCamReturn CamHwIsp32::setIspConfig() {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-#ifdef ISP_HW_V32
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     ENTER_CAMHW_FUNCTION();
 
     SmartPtr<V4l2Buffer> v4l2buf;

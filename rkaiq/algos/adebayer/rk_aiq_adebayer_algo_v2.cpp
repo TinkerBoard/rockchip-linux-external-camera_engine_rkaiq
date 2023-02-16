@@ -29,6 +29,8 @@ AdebayerCalibConfig
 
     if (pCalibDbV2) {
 
+#if RKAIQ_HAVE_DEBAYER_V2
+
         CalibDbV2_Debayer_v2_t* debayer =
             (CalibDbV2_Debayer_v2_t*)(CALIBDBV2_GET_MODULE_PTR(pCalibDbV2, debayer_v2));
 
@@ -104,7 +106,50 @@ AdebayerCalibConfig
             pAdebayerCtx->full_param_v2.c_filter.debayer_loghf_offset[i] = debayer->param.c_filter.debayer_loghf_offset[i];
 
         }
+#endif
 
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+
+        CalibDbV2_Debayer_v2_lite_t* debayer =
+            (CalibDbV2_Debayer_v2_lite_t*)(CALIBDBV2_GET_MODULE_PTR(pCalibDbV2, debayer_v2_lite));
+
+        pAdebayerCtx->full_param_v2_lite.debayer_en = debayer->param.debayer_en;
+
+        pAdebayerCtx->full_param_v2_lite.lowfreq_filter1[0] = debayer->param.lowfreq_filter1[0];
+        pAdebayerCtx->full_param_v2_lite.lowfreq_filter1[1] = debayer->param.lowfreq_filter1[1];
+        pAdebayerCtx->full_param_v2_lite.lowfreq_filter1[2] = debayer->param.lowfreq_filter1[2];
+        pAdebayerCtx->full_param_v2_lite.lowfreq_filter1[3] = debayer->param.lowfreq_filter1[3];
+
+        pAdebayerCtx->full_param_v2_lite.highfreq_filter2[0] = debayer->param.highfreq_filter2[0];
+        pAdebayerCtx->full_param_v2_lite.highfreq_filter2[1] = debayer->param.highfreq_filter2[1];
+        pAdebayerCtx->full_param_v2_lite.highfreq_filter2[2] = debayer->param.highfreq_filter2[2];
+        pAdebayerCtx->full_param_v2_lite.highfreq_filter2[3] = debayer->param.highfreq_filter2[3];
+
+        for(int i = 0; i < RK_DEBAYER_ISO_STEP_MAX; i++) {
+
+            //g_interp
+            pAdebayerCtx->full_param_v2_lite.g_interp.iso[i] = debayer->param.g_interp.iso[i];
+            pAdebayerCtx->full_param_v2_lite.g_interp.debayer_clip_en[i] = debayer->param.g_interp.debayer_clip_en[i];
+            pAdebayerCtx->full_param_v2_lite.g_interp.debayer_gain_offset[i] = debayer->param.g_interp.debayer_gain_offset[i];
+            pAdebayerCtx->full_param_v2_lite.g_interp.debayer_max_ratio[i] = debayer->param.g_interp.debayer_max_ratio[i];
+
+            //g_drctwgt
+
+            pAdebayerCtx->full_param_v2_lite.g_drctwgt.iso[i] = debayer->param.g_drctwgt.iso[i];
+
+            pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_hf_offset[i] = debayer->param.g_drctwgt.debayer_hf_offset[i];
+            pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_thed0[i] = debayer->param.g_drctwgt.debayer_thed0[i];
+            pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_thed1[i] = debayer->param.g_drctwgt.debayer_thed1[i];
+            pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_dist_scale[i] = debayer->param.g_drctwgt.debayer_dist_scale[i];
+            pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_select_thed[i] = debayer->param.g_drctwgt.debayer_select_thed[i];
+
+            //g_filter
+
+            pAdebayerCtx->full_param_v2_lite.g_filter.iso[i] = debayer->param.g_filter.iso[i];
+            pAdebayerCtx->full_param_v2_lite.g_filter.debayer_gfilter_en[i] = debayer->param.g_filter.debayer_gfilter_en[i];
+            pAdebayerCtx->full_param_v2_lite.g_filter.debayer_gfilter_offset[i] = debayer->param.g_filter.debayer_gfilter_offset[i];
+        }
+#endif
     }
 
     LOGV_ADEBAYER("%s(%d): exit!\n", __FUNCTION__, __LINE__);
@@ -130,9 +175,16 @@ AdebayerInit
     }
 
     memset(&pAdebayerCtx->config, 0, sizeof(AdebayerHwConfigV2_t));
+
+#if RKAIQ_HAVE_DEBAYER_V2
     memset(&pAdebayerCtx->full_param_v2, 0, sizeof(CalibDbV2_Debayer_Tuning_t));
     memset(&pAdebayerCtx->select_param_v2, 0, sizeof(AdebayerSeletedParamV2_t));
+#endif
 
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+    memset(&pAdebayerCtx->full_param_v2_lite, 0, sizeof(CalibDbV2_Debayer_Tuning_Lite_t));
+    memset(&pAdebayerCtx->select_param_v2_lite, 0, sizeof(AdebayerSeletedParamV2Lite_t));
+#endif
     //copy json params
     ret = AdebayerCalibConfig(pAdebayerCtx, pCalibDbV2);
 
@@ -221,6 +273,7 @@ XCamReturn AdebayerSelectParam
         return XCAM_RETURN_ERROR_PARAM;
     }
 
+#if RKAIQ_HAVE_DEBAYER_V2
 
     int i = 0;
     int iso_low = 0, iso_high = 0, iso_low_index = 0, iso_high_index = 0;
@@ -396,6 +449,126 @@ XCamReturn AdebayerSelectParam
     LOGD_ADEBAYER("c_filter:ISO(%d),alpha_offset=%d,alpha_scale=%f,edge_offset=%d,edge_scale=%f", iso,
                   pAdebayerCtx->select_param_v2.debayer_alpha_offset, pAdebayerCtx->select_param_v2.debayer_alpha_scale,
                   pAdebayerCtx->select_param_v2.debayer_edge_offset, pAdebayerCtx->select_param_v2.debayer_edge_scale);
+#endif
+
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+    int i = 0;
+    int iso_low = 0, iso_high = 0, iso_low_index = 0, iso_high_index = 0;
+    float ratio = 0.0f;
+
+    //g_interp
+
+    for(i = 0; i < RK_DEBAYER_ISO_STEP_MAX; i++) {
+        if (iso < pAdebayerCtx->full_param_v2_lite.g_interp.iso[i])
+        {
+
+            iso_low = pAdebayerCtx->full_param_v2_lite.g_interp.iso[MAX(0, i - 1)];
+            iso_high = pAdebayerCtx->full_param_v2_lite.g_interp.iso[i];
+            iso_low_index = MAX(0, i - 1);
+            iso_high_index = i;
+
+            if(i == 0)
+                ratio = 0.0f;
+            else
+                ratio = (float)(iso - iso_low) / (iso_high - iso_low);
+
+            break;
+        }
+    }
+
+    if(i == RK_DEBAYER_ISO_STEP_MAX) {
+        iso_low = pAdebayerCtx->full_param_v2_lite.g_interp.iso[i - 1];
+        iso_high = pAdebayerCtx->full_param_v2_lite.g_interp.iso[i - 1];
+        iso_low_index = i - 1;
+        iso_high_index = i - 1;
+        ratio = 1;
+    }
+
+
+    pAdebayerCtx->select_param_v2_lite.debayer_gain_offset = ROUND_F(INTERP_DEBAYER_V2(pAdebayerCtx->full_param_v2_lite.g_interp.debayer_gain_offset[iso_low_index], pAdebayerCtx->full_param_v2_lite.g_interp.debayer_gain_offset[iso_high_index], ratio));
+    pAdebayerCtx->select_param_v2_lite.debayer_max_ratio = ROUND_F(INTERP_DEBAYER_V2(pAdebayerCtx->full_param_v2_lite.g_interp.debayer_max_ratio[iso_low_index], pAdebayerCtx->full_param_v2_lite.g_interp.debayer_max_ratio[iso_high_index], ratio));
+    pAdebayerCtx->select_param_v2_lite.debayer_clip_en = ROUND_F(INTERP_DEBAYER_V2(pAdebayerCtx->full_param_v2_lite.g_interp.debayer_clip_en[iso_low_index], pAdebayerCtx->full_param_v2_lite.g_interp.debayer_clip_en[iso_high_index], ratio));
+
+    LOGD_ADEBAYER("g_interp:ISO(%d),gain_offset=%d,max_ratio=%d,clip_en=%d", iso,
+                  pAdebayerCtx->select_param_v2_lite.debayer_gain_offset,
+                  pAdebayerCtx->select_param_v2_lite.debayer_max_ratio,
+                  pAdebayerCtx->select_param_v2_lite.debayer_clip_en);
+
+
+    //g_drctwgt
+    for(i = 0; i < RK_DEBAYER_ISO_STEP_MAX; i++) {
+        if (iso < pAdebayerCtx->full_param_v2_lite.g_drctwgt.iso[i])
+        {
+
+            iso_low = pAdebayerCtx->full_param_v2_lite.g_drctwgt.iso[MAX(0, i - 1)];
+            iso_high = pAdebayerCtx->full_param_v2_lite.g_drctwgt.iso[i];
+            iso_low_index = MAX(0, i - 1);
+            iso_high_index = i;
+
+            if(i == 0)
+                ratio = 0;
+            else
+                ratio = (float)(iso - iso_low) / (iso_high - iso_low);
+
+            break;
+        }
+    }
+
+    if(i == RK_DEBAYER_ISO_STEP_MAX) {
+        iso_low = pAdebayerCtx->full_param_v2_lite.g_drctwgt.iso[i - 1];
+        iso_high = pAdebayerCtx->full_param_v2_lite.g_drctwgt.iso[i - 1];
+        iso_low_index = i - 1;
+        iso_high_index = i - 1;
+        ratio = 1;
+    }
+
+    pAdebayerCtx->select_param_v2_lite.debayer_thed0 = ROUND_F(INTERP_DEBAYER_V2(pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_thed0[iso_low_index], pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_thed0[iso_high_index], ratio));
+    pAdebayerCtx->select_param_v2_lite.debayer_thed1 = ROUND_F(INTERP_DEBAYER_V2(pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_thed1[iso_low_index], pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_thed1[iso_high_index], ratio));
+
+    pAdebayerCtx->select_param_v2_lite.debayer_dist_scale = ROUND_F(INTERP_DEBAYER_V2(pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_dist_scale[iso_low_index], pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_dist_scale[iso_high_index], ratio));
+    pAdebayerCtx->select_param_v2_lite.debayer_hf_offset = ROUND_F(INTERP_DEBAYER_V2(pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_hf_offset[iso_low_index], pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_hf_offset[iso_high_index], ratio));
+    pAdebayerCtx->select_param_v2_lite.debayer_select_thed = ROUND_F(INTERP_DEBAYER_V2(pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_select_thed[iso_low_index], pAdebayerCtx->full_param_v2_lite.g_drctwgt.debayer_select_thed[iso_high_index], ratio));
+
+    LOGD_ADEBAYER("g_drctwgt:ISO(%d),thed0=%d,thed1=%d,dist_scale=%d,hf_offset=%d,select_thed=%d", iso,
+                  pAdebayerCtx->select_param_v2_lite.debayer_thed0, pAdebayerCtx->select_param_v2_lite.debayer_thed1,
+                  pAdebayerCtx->select_param_v2_lite.debayer_dist_scale, pAdebayerCtx->select_param_v2_lite.debayer_hf_offset,
+                  pAdebayerCtx->select_param_v2_lite.debayer_select_thed);
+
+    //g_filter
+    for(i = 0; i < RK_DEBAYER_ISO_STEP_MAX; i++) {
+        if (iso < pAdebayerCtx->full_param_v2_lite.g_filter.iso[i])
+        {
+
+            iso_low = pAdebayerCtx->full_param_v2_lite.g_filter.iso[MAX(0, i - 1)];
+            iso_high = pAdebayerCtx->full_param_v2_lite.g_filter.iso[i];
+            iso_low_index = MAX(0, i - 1);
+            iso_high_index = i;
+
+            if(i == 0)
+                ratio = 0;
+            else
+                ratio = (float)(iso - iso_low) / (iso_high - iso_low);
+
+            break;
+        }
+    }
+
+    if(i == RK_DEBAYER_ISO_STEP_MAX) {
+        iso_low = pAdebayerCtx->full_param_v2_lite.g_filter.iso[i - 1];
+        iso_high = pAdebayerCtx->full_param_v2_lite.g_filter.iso[i - 1];
+        iso_low_index = i - 1;
+        iso_high_index = i - 1;
+        ratio = 1;
+    }
+
+    pAdebayerCtx->select_param_v2_lite.debayer_gfilter_en = ROUND_F(INTERP_DEBAYER_V2(pAdebayerCtx->full_param_v2_lite.g_filter.debayer_gfilter_en[iso_low_index], pAdebayerCtx->full_param_v2_lite.g_filter.debayer_gfilter_en[iso_high_index], ratio));
+    pAdebayerCtx->select_param_v2_lite.debayer_gfilter_offset = ROUND_F(INTERP_DEBAYER_V2(pAdebayerCtx->full_param_v2_lite.g_filter.debayer_gfilter_offset[iso_low_index], pAdebayerCtx->full_param_v2_lite.g_filter.debayer_gfilter_offset[iso_high_index], ratio));
+
+    LOGD_ADEBAYER("g_filter:ISO(%d),gfilter_en=%d,gfilter_offset=%d", iso,
+                  pAdebayerCtx->select_param_v2_lite.debayer_gfilter_en, pAdebayerCtx->select_param_v2_lite.debayer_gfilter_offset);
+
+#endif
+
 
     LOGI_ADEBAYER("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return XCAM_RETURN_NO_ERROR;
@@ -417,6 +590,9 @@ AdebayerProcess
         return XCAM_RETURN_ERROR_PARAM;
     }
     if(pAdebayerCtx->mode == RK_AIQ_DEBAYER_MODE_AUTO) {
+
+#if RKAIQ_HAVE_DEBAYER_V2
+
         pAdebayerCtx->select_param_v2.debayer_en = pAdebayerCtx->full_param_v2.debayer_en;
 
         pAdebayerCtx->select_param_v2.lowfreq_filter1[0] = pAdebayerCtx->full_param_v2.lowfreq_filter1[0];
@@ -444,6 +620,26 @@ AdebayerProcess
         // TODO: copy params from json, and select params according to ISO
 
         AdebayerSelectParam(pAdebayerCtx, iso);
+#endif
+
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+
+        pAdebayerCtx->select_param_v2_lite.debayer_en = pAdebayerCtx->full_param_v2_lite.debayer_en;
+
+        pAdebayerCtx->select_param_v2_lite.lowfreq_filter1[0] = pAdebayerCtx->full_param_v2_lite.lowfreq_filter1[0];
+        pAdebayerCtx->select_param_v2_lite.lowfreq_filter1[1] = pAdebayerCtx->full_param_v2_lite.lowfreq_filter1[1];
+        pAdebayerCtx->select_param_v2_lite.lowfreq_filter1[2] = pAdebayerCtx->full_param_v2_lite.lowfreq_filter1[2];
+        pAdebayerCtx->select_param_v2_lite.lowfreq_filter1[3] = pAdebayerCtx->full_param_v2_lite.lowfreq_filter1[3];
+
+        pAdebayerCtx->select_param_v2_lite.highfreq_filter2[0] = pAdebayerCtx->full_param_v2_lite.highfreq_filter2[0];
+        pAdebayerCtx->select_param_v2_lite.highfreq_filter2[1] = pAdebayerCtx->full_param_v2_lite.highfreq_filter2[1];
+        pAdebayerCtx->select_param_v2_lite.highfreq_filter2[2] = pAdebayerCtx->full_param_v2_lite.highfreq_filter2[2];
+        pAdebayerCtx->select_param_v2_lite.highfreq_filter2[3] = pAdebayerCtx->full_param_v2_lite.highfreq_filter2[3];
+
+        // TODO: copy params from json, and select params according to ISO
+
+        AdebayerSelectParam(pAdebayerCtx, iso);
+#endif
 
     } else {
 
@@ -477,6 +673,8 @@ AdebayerGetProcResult
     }
 
     // TODO: FIX TO REG VALUE
+
+#if RKAIQ_HAVE_DEBAYER_V2
     /* CONTROL */
 
     pAdebayerCtx->config.enable = pAdebayerCtx->select_param_v2.debayer_en;
@@ -517,7 +715,6 @@ AdebayerGetProcResult
     pAdebayerCtx->config.alpha_gaus_coe[0] = pAdebayerCtx->select_param_v2.c_alpha_gaus_coe[0];
     pAdebayerCtx->config.alpha_gaus_coe[1] = pAdebayerCtx->select_param_v2.c_alpha_gaus_coe[1];
     pAdebayerCtx->config.alpha_gaus_coe[2] = pAdebayerCtx->select_param_v2.c_alpha_gaus_coe[2];
-
 
     /* G_INTERP_OFFSET */
     pAdebayerCtx->config.hf_offset = pAdebayerCtx->select_param_v2.debayer_hf_offset;
@@ -564,14 +761,54 @@ AdebayerGetProcResult
     float log2e                 = 0.8493;
     pAdebayerCtx->config.bf_sgm = (int)((1 << RK_DEBAYER_V2_FIX_BIT_INV_BF_SIGMA) * log2e / (pAdebayerCtx->select_param_v2.debayer_bf_sgm * scale));
 
-    LOGD_ADEBAYER("FIX 2 REG: max_ratio=%d,hf_offset=%d,gain_offset=%d,loghf_offset=%d,loggd_offset=%d",
-                  pAdebayerCtx->config.max_ratio, pAdebayerCtx->config.hf_offset,  pAdebayerCtx->config.gain_offset,
-                  pAdebayerCtx->config.loghf_offset, pAdebayerCtx->config.loggd_offset);
-
     LOGD_ADEBAYER("FIX 2 REG: alpha_scale=%d,edge_scale=%d,ce_sgm=%d,exp_shift=%d,wgtslope=%d,wet_clip=%d,wet_ghost=%d,bf_sgm=%d",
                   pAdebayerCtx->config.alpha_scale, pAdebayerCtx->config.edge_scale, pAdebayerCtx->config.ce_sgm,
                   pAdebayerCtx->config.exp_shift, pAdebayerCtx->config.wgtslope,  pAdebayerCtx->config.wet_clip,
                   pAdebayerCtx->config.wet_ghost, pAdebayerCtx->config.bf_sgm);
+
+    LOGD_ADEBAYER("FIX 2 REG: max_ratio=%d,hf_offset=%d,gain_offset=%d,loghf_offset=%d,loggd_offset=%d",
+                  pAdebayerCtx->config.max_ratio, pAdebayerCtx->config.hf_offset,  pAdebayerCtx->config.gain_offset,
+                  pAdebayerCtx->config.loghf_offset, pAdebayerCtx->config.loggd_offset);
+#endif
+
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+    /* CONTROL */
+
+    pAdebayerCtx->config.enable = pAdebayerCtx->select_param_v2_lite.debayer_en;
+    pAdebayerCtx->config.filter_g_en = pAdebayerCtx->select_param_v2_lite.debayer_gfilter_en;
+    pAdebayerCtx->config.filter_c_en = 0;//pAdebayerCtx->select_param_v2_lite.debayer_cfilter_en;
+
+    /* G_INTERP */
+
+    pAdebayerCtx->config.clip_en = pAdebayerCtx->select_param_v2_lite.debayer_clip_en;
+    pAdebayerCtx->config.dist_scale = pAdebayerCtx->select_param_v2_lite.debayer_dist_scale;
+    pAdebayerCtx->config.thed0 = pAdebayerCtx->select_param_v2_lite.debayer_thed0;
+    pAdebayerCtx->config.thed1 = pAdebayerCtx->select_param_v2_lite.debayer_thed1;
+    pAdebayerCtx->config.select_thed = pAdebayerCtx->select_param_v2_lite.debayer_select_thed;
+    pAdebayerCtx->config.max_ratio = pAdebayerCtx->select_param_v2_lite.debayer_max_ratio;
+
+    /* G_INTERP_FILTER */
+    pAdebayerCtx->config.filter1_coe[0] = pAdebayerCtx->select_param_v2_lite.lowfreq_filter1[0];
+    pAdebayerCtx->config.filter1_coe[1] = pAdebayerCtx->select_param_v2_lite.lowfreq_filter1[1];
+    pAdebayerCtx->config.filter1_coe[2] = pAdebayerCtx->select_param_v2_lite.lowfreq_filter1[2];
+    pAdebayerCtx->config.filter1_coe[3] = pAdebayerCtx->select_param_v2_lite.lowfreq_filter1[3];
+
+    pAdebayerCtx->config.filter2_coe[0] = pAdebayerCtx->select_param_v2_lite.highfreq_filter2[0];
+    pAdebayerCtx->config.filter2_coe[1] = pAdebayerCtx->select_param_v2_lite.highfreq_filter2[1];
+    pAdebayerCtx->config.filter2_coe[2] = pAdebayerCtx->select_param_v2_lite.highfreq_filter2[2];
+    pAdebayerCtx->config.filter2_coe[3] = pAdebayerCtx->select_param_v2_lite.highfreq_filter2[3];
+
+    /* G_INTERP_OFFSET */
+    pAdebayerCtx->config.hf_offset = pAdebayerCtx->select_param_v2_lite.debayer_hf_offset;
+    pAdebayerCtx->config.gain_offset = pAdebayerCtx->select_param_v2_lite.debayer_gain_offset;
+
+    /* G_FILTER_OFFSET */
+    pAdebayerCtx->config.offset = pAdebayerCtx->select_param_v2_lite.debayer_gfilter_offset;
+
+    LOGD_ADEBAYER("FIX 2 REG: max_ratio=%d,hf_offset=%d,gain_offset=%d",
+                  pAdebayerCtx->config.max_ratio, pAdebayerCtx->config.hf_offset,  pAdebayerCtx->config.gain_offset);
+#endif
+
 
     // TODO: copy regvalue result
     pAdebayerResult->config = pAdebayerCtx->config;

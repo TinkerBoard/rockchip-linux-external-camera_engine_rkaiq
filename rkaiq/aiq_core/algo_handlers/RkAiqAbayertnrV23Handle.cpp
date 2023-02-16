@@ -45,6 +45,13 @@ XCamReturn RkAiqAbayertnrV23HandleInt::updateConfig(bool needSync) {
         updateAtt = false;
     }
 
+    if (updateAttLite) {
+        mCurAttLite = mNewAttLite;
+        rk_aiq_uapi_abayertnrV23Lite_SetAttrib(mAlgoCtx, &mCurAttLite, false);
+        sendSignal(mCurAttLite.sync.sync_mode);
+        updateAttLite = false;
+    }
+
     if (updateStrength) {
         mCurStrength   = mNewStrength;
         rk_aiq_uapi_abayertnrV23_SetStrength(mAlgoCtx, &mCurStrength);
@@ -108,7 +115,55 @@ XCamReturn RkAiqAbayertnrV23HandleInt::getAttrib(rk_aiq_bayertnr_attrib_v23_t* a
     return ret;
 }
 
+XCamReturn RkAiqAbayertnrV23HandleInt::setAttribLite(const rk_aiq_bayertnr_attrib_v23L_t* att) {
+    ENTER_ANALYZER_FUNCTION();
 
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    mCfgMutex.lock();
+    // TODO
+    // check if there is different between att & mCurAtt
+    // if something changed, set att to mNewAtt, and
+    // the new params will be effective later when updateConfig
+    // called by RkAiqCore
+
+    // if something changed
+    if (0 != memcmp(&mCurAttLite, att, sizeof(rk_aiq_bayertnr_attrib_v23L_t))) {
+        mNewAttLite   = *att;
+        updateAttLite = true;
+        waitSignal(att->sync.sync_mode);
+    }
+
+    mCfgMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
+XCamReturn RkAiqAbayertnrV23HandleInt::getAttribLite(rk_aiq_bayertnr_attrib_v23L_t* att) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
+        mCfgMutex.lock();
+        rk_aiq_uapi_abayertnrV23Lite_GetAttrib(mAlgoCtx, att);
+        att->sync.done = true;
+        mCfgMutex.unlock();
+    } else {
+        if (updateAttLite) {
+            memcpy(att, &mNewAttLite, sizeof(mNewAttLite));
+            mCfgMutex.unlock();
+            att->sync.done = false;
+        } else {
+            mCfgMutex.unlock();
+            rk_aiq_uapi_abayertnrV23Lite_GetAttrib(mAlgoCtx, att);
+            att->sync.done = true;
+        }
+    }
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
 
 XCamReturn RkAiqAbayertnrV23HandleInt::setStrength(const rk_aiq_bayertnr_strength_v23_t *pStrength) {
     ENTER_ANALYZER_FUNCTION();

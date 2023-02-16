@@ -77,7 +77,7 @@ XCamReturn RkAiqAfHandleInt::setAttrib(rk_aiq_af_attrib_t* att) {
         isChanged = true;
 
     // if something changed
-    if (isChanged || (mCurAtt.AfMode == RKAIQ_AF_MODE_AUTO && sharedCom->snsDes.lens_des.focus_support)) {
+    if (isChanged/* || (mCurAtt.AfMode == RKAIQ_AF_MODE_AUTO && sharedCom->snsDes.lens_des.focus_support)*/) {
         mNewAtt         = *att;
         updateAtt       = true;
         isUpdateAttDone = false;
@@ -501,7 +501,7 @@ XCamReturn RkAiqAfHandleInt::processing() {
         LOGW("the xcamvideobuffer of af stats is null");
     }
 
-#if RKAIQ_HAVE_AF_V20 || RKAIQ_HAVE_AF_V30 || RKAIQ_HAVE_AF_V31
+#if RKAIQ_HAVE_AF
     if ((!xAfStats || !xAfStats->af_stats_valid) && !sharedCom->init) {
         LOGW("no af stats, ignore!");
         mProcResShared.release();
@@ -567,6 +567,9 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
 
     if (!mProcResShared.ptr()) {
         params->mFocusParams = NULL;
+#if RKAIQ_HAVE_AF_V32_LITE || RKAIQ_ONLY_AF_STATS_V32_LITE
+        params->mAfV32LiteParams = cur_params->mAfV32LiteParams;
+#endif
 #if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
         params->mAfV32Params = cur_params->mAfV32Params;
         params->mAfV32Params->data()->frame_id = shared->frameId;
@@ -584,6 +587,9 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
 
     RkAiqAlgoProcResAf* af_com                  = &mProcResShared->result;
 
+#if RKAIQ_HAVE_AF_V32_LITE || RKAIQ_ONLY_AF_STATS_V32_LITE
+    rk_aiq_isp_af_params_v32_lite_t* af_param = params->mAfV32LiteParams->data().ptr();
+#endif
 #if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
     rk_aiq_isp_af_params_v32_t* af_param = params->mAfV32Params->data().ptr();
 #endif
@@ -602,6 +608,9 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
         LOGD_ANALYZER("no af result");
         mProcResShared = NULL;
         params->mFocusParams = NULL;
+#if RKAIQ_HAVE_AF_V32_LITE || RKAIQ_ONLY_AF_STATS_V32_LITE
+        params->mAfV32LiteParams = cur_params->mAfV32LiteParams;
+#endif
 #if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
         params->mAfV32Params = cur_params->mAfV32Params;
         params->mAfV32Params->data()->frame_id = shared->frameId;
@@ -628,6 +637,9 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
             focus_param->frame_id = shared->frameId;
         }
 
+#if RKAIQ_HAVE_AF_V32_LITE || RKAIQ_ONLY_AF_STATS_V32_LITE
+        af_param->result = af_rk->af_isp_param_v32;
+#endif
 #if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
         af_param->result = af_rk->af_isp_param_v31;
 #endif
@@ -681,6 +693,9 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     }
 
     cur_params->mFocusParams = params->mFocusParams;
+#if RKAIQ_HAVE_AF_V32_LITE || RKAIQ_ONLY_AF_STATS_V32_LITE
+    cur_params->mAfV32LiteParams = params->mAfV32LiteParams;
+#endif
 #if RKAIQ_HAVE_AF_V31 || RKAIQ_ONLY_AF_STATS_V31
     cur_params->mAfV32Params = params->mAfV32Params;
 #endif

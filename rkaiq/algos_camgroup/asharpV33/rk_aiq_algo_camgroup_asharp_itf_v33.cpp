@@ -36,7 +36,7 @@ static XCamReturn groupAsharpV33CreateCtx(RkAiqAlgoContext **context, const Algo
     CamGroup_AsharpV33_Contex_t *asharp_group_contex = NULL;
     AlgoCtxInstanceCfgCamGroup *cfgInt = (AlgoCtxInstanceCfgCamGroup*)cfg;
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         asharp_group_contex = (CamGroup_AsharpV33_Contex_t*)malloc(sizeof(CamGroup_AsharpV33_Contex_t));
 #if (ASHARP_USE_JSON_FILE_V33)
         Asharp_result_V33_t ret_v33 = ASHARP_V33_RET_SUCCESS;
@@ -79,7 +79,7 @@ static XCamReturn groupAsharpV33DestroyCtx(RkAiqAlgoContext *context)
 
     CamGroup_AsharpV33_Contex_t *asharp_group_contex = (CamGroup_AsharpV33_Contex_t*)context;
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Asharp_result_V33_t ret_v33 = ASHARP_V33_RET_SUCCESS;
         ret_v33 = Asharp_Release_V33(asharp_group_contex->asharp_contex_v33);
         if(ret_v33 != ASHARP_V33_RET_SUCCESS) {
@@ -112,13 +112,18 @@ static XCamReturn groupAsharpV33Prepare(RkAiqAlgoCom* params)
     CamGroup_AsharpV33_Contex_t * asharp_group_contex = (CamGroup_AsharpV33_Contex_t *)params->ctx;
     RkAiqAlgoCamGroupPrepare* para = (RkAiqAlgoCamGroupPrepare*)params;
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Asharp_Context_V33_t * asharp_contex_v33 = asharp_group_contex->asharp_contex_v33;
         if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
             // todo  update calib pars for surround view
 #if ASHARP_USE_JSON_FILE_V33
             void *pCalibdbV2 = (void*)(para->s_calibv2);
+#if RKAIQ_HAVE_SHARP_V33
             CalibDbV2_SharpV33_t *sharp_v33 = (CalibDbV2_SharpV33_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibdbV2, sharp_v33));
+#else
+            CalibDbV2_SharpV33Lite_t* sharp_v33 =
+                (CalibDbV2_SharpV33Lite_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibdbV2, sharp_v33));
+#endif
             asharp_contex_v33->sharp_v33 = *sharp_v33;
             asharp_contex_v33->isIQParaUpdate = true;
             asharp_contex_v33->isReCalculate |= 1;
@@ -239,7 +244,7 @@ static XCamReturn groupAsharpV33Processing(const RkAiqAlgoCom* inparams, RkAiqAl
 
 
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Asharp_Context_V33_t * asharp_contex_v33 = asharp_group_contex->asharp_contex_v33;
         Asharp_ProcResult_V33_t stAsharpResultV33;
         deltaIso = abs(stExpInfoV33.arIso[stExpInfoV33.hdr_mode] - asharp_contex_v33->stExpInfo.arIso[stExpInfoV33.hdr_mode]);

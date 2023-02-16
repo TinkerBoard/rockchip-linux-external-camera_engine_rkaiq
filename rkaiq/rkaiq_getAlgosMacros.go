@@ -282,6 +282,10 @@ func rkaiq_getAlgosMacros(macros_map map[string]bool) []string {
     if (flag0) {
         cflags = append(cflags, "-DRKAIQ_HAVE_DEBAYER_V2=1")
     }
+    flag0 = macros_map["RKAIQ_HAVE_DEBAYER_V2_LITE"]
+    if (flag0) {
+        cflags = append(cflags, "-DRKAIQ_HAVE_DEBAYER_V2_LITE=1")
+    }
     flag0 = macros_map["RKAIQ_HAVE_LSC_V1"]
     if (flag0) {
         cflags = append(cflags, "-DRKAIQ_HAVE_LSC_V1=1")
@@ -343,6 +347,36 @@ func rkaiq_getAlgosMacros(macros_map map[string]bool) []string {
     if (flag0) {
         cflags = append(cflags, "-DRKAIQ_HAVE_AF=1")
         cflags = append(cflags, "-DRKAIQ_ONLY_AF_STATS_V31=1")
+    }
+    flag0 = macros_map["RKAIQ_HAVE_AWB_V32LT"]
+    if (flag0) {
+        cflags = append(cflags, "-DRKAIQ_HAVE_AWB_V32LT=1")
+    }
+    flag0 = macros_map["RKAIQ_HAVE_CNR_V30_LITE"]
+    if (flag0) {
+        cflags = append(cflags, "-DRKAIQ_HAVE_CNR_V30_LITE=1")
+    }
+    flag0 = macros_map["RKAIQ_HAVE_SHARP_V33_LITE"]
+    if (flag0) {
+        cflags = append(cflags, "-DRKAIQ_HAVE_SHARP_V33_LITE=1")
+    }
+    flag0 = macros_map["RKAIQ_HAVE_BAYERTNR_V23_LITE"]
+    if (flag0) {
+        cflags = append(cflags, "-DRKAIQ_HAVE_BAYERTNR_V23_LITE=1")
+    }
+    flag0 = macros_map["RKAIQ_HAVE_AF_V32_LITE"]
+    if (flag0) {
+        cflags = append(cflags, "-DRKAIQ_HAVE_AF=1")
+        cflags = append(cflags, "-DRKAIQ_HAVE_AF_V32_LITE=1")
+    }
+    flag0 = macros_map["RKAIQ_ONLY_AF_STATS_V32_LITE"]
+    if (flag0) {
+        cflags = append(cflags, "-DRKAIQ_HAVE_AF=1")
+        cflags = append(cflags, "-DRKAIQ_ONLY_AF_STATS_V32_LITE=1")
+    }
+    flag0 = macros_map["RKAIQ_HAVE_DRC_V12_LITE"]
+    if (flag0) {
+        cflags = append(cflags, "-DRKAIQ_HAVE_DRC_V12_LITE=1")
     }
     for i, v := range cflags {
         fmt.Printf("%d %s\n", i, v)

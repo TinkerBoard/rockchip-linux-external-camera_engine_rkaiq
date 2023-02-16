@@ -19,19 +19,19 @@
 
 #define USE_LIBAIQ
 
-#define SENSOR_ENTNAME "m00_b_sc4336 4-0030-1"
+#define SENSOR_ENTNAME "m01_b_ov50c40 4-0036"
 
-#define VIDEO_DEVNAME "/dev/video11"
-#define VIDEO_WIDTH 2560
-#define VIDEO_HEIGHT 1440
+#define VIDEO_DEVNAME "/dev/video24"
+#define VIDEO_WIDTH 4096
+#define VIDEO_HEIGHT 3072
 #define VIDEO_WORKMODE RK_AIQ_WORKING_MODE_NORMAL
 
 #define VIDEO_WIDTH_2 3840
 #define VIDEO_HEIGHT_2 2160
 #define VIDEO_WORKMODE_2 RK_AIQ_WORKING_MODE_NORMAL
 
-#define RAWCAP_SAVE_NUM    10
-#define STREAM_SAVE_NUM    10
+#define RAWCAP_SAVE_NUM    30
+#define STREAM_SAVE_NUM    30
 
 struct rk_aiq_vbuf_info {
     uint32_t frame_id;
@@ -107,7 +107,7 @@ static int capture_raw(uint8_t *rkraw_data, uint32_t rkraw_len)
     rkrawstream_uapi_parase_rkraw2(rkraw_data, &rkraw);
 
     char filname[32];
-    sprintf(filname, "/userdata/raw%d", saved_num);
+    sprintf(filname, "/tmp/raw%d", saved_num);
     FILE *fp = fopen(filname,"wb");
     if(fp){
         int ret = 0;
@@ -133,10 +133,13 @@ static int on_frame_ready_capture(uint8_t *rkraw_data, uint32_t rkraw_len)
 
 static int on_frame_ready_streaming(uint8_t *rkraw_data, uint32_t rkraw_len)
 {
-    printf("on_frame_ready_streaming\n");
+    printf("on_frame_ready_streaming11111\n");
     //capture_raw(rkraw_data, rkraw_len);
+
+    rkrawstream_rkraw2_t rkraw;
+    rkrawstream_uapi_parase_rkraw2(rkraw_data, &rkraw);
     rkrawstream_vicap_buf_take(g_vi_ctx);
-    rkrawstream_readback_set_buffer(g_vi_ctx, rkraw_data);
+    rkrawstream_readback_set_rkraw2(g_vi_ctx, &rkraw);
 
     saved_num++;
     if(saved_num == STREAM_SAVE_NUM)
@@ -146,6 +149,7 @@ static int on_frame_ready_streaming(uint8_t *rkraw_data, uint32_t rkraw_len)
 
 static void on_isp_process_done_streaming(int dev_index)
 {
+    printf("on_isp_process_done_streaming\n");
     rkrawstream_vicap_buf_return(g_vi_ctx, dev_index);
 }
 
@@ -185,7 +189,6 @@ int rawcap_test(void)
     g_vi_ctx = rkrawstream_uapi_init();
     init_p.sns_ent_name = g_sns_entity_name;
     init_p.use_offline = false;
-    init_p.buf_memory_type = V4L2_MEMORY_MMAP;
     rkrawstream_vicap_init(g_vi_ctx, &init_p);
 
     prepare_p.width = VIDEO_WIDTH;
@@ -193,6 +196,7 @@ int rawcap_test(void)
     prepare_p.pix_fmt = V4L2_PIX_FMT_SGBRG10;
     prepare_p.hdr_mode = VIDEO_WORKMODE;
     prepare_p.mem_mode = CSI_LVDS_MEM_WORD_LOW_ALIGN;
+    prepare_p.buf_memory_type = 0;
     rkrawstream_vicap_prepare(g_vi_ctx, &prepare_p);
 
     rkrawstream_vicap_start(g_vi_ctx, on_frame_ready_capture);
@@ -220,19 +224,17 @@ int stream_test(void)
     rkraw_vi_prepare_params_t prepare_p;
     int param[2];
 
-    //g_ispfd = open(VIDEO_DEVNAME, O_RDWR /* required */ /*| O_NONBLOCK*/, 0);
-    //if (-1 == g_ispfd) {
-    //    printf("Cannot open '%s'\n", VIDEO_DEVNAME);
-    //    return 0;
-    //}
+    g_ispfd = open(VIDEO_DEVNAME, O_RDWR /* required */ /*| O_NONBLOCK*/, 0);
+    if (-1 == g_ispfd) {
+        printf("Cannot open '%s'\n", VIDEO_DEVNAME);
+        return 0;
+    }
 
     /* init rkraw_vi user api */
     g_vi_ctx = rkrawstream_uapi_init();
     init_p.sns_ent_name = g_sns_entity_name;
     init_p.use_offline = false;
-    init_p.buf_memory_type = V4L2_MEMORY_MMAP;
     rkrawstream_vicap_init(g_vi_ctx, &init_p);
-    init_p.buf_memory_type = V4L2_MEMORY_DMABUF;
     rkrawstream_readback_init(g_vi_ctx, &init_p);
 
     prepare_p.width = VIDEO_WIDTH;
@@ -240,29 +242,31 @@ int stream_test(void)
     prepare_p.pix_fmt = V4L2_PIX_FMT_SGBRG10;
     prepare_p.hdr_mode = VIDEO_WORKMODE;
     prepare_p.mem_mode = 0;
+    prepare_p.buf_memory_type = 0;
     rkrawstream_vicap_prepare(g_vi_ctx, &prepare_p);
 
-    prepare_p.width = VIDEO_WIDTH;
-    prepare_p.height = VIDEO_HEIGHT;
+    prepare_p.width = 4096;
+    prepare_p.height = 3072;
+    prepare_p.buf_memory_type = V4L2_MEMORY_DMABUF;
     rkrawstream_readback_prepare(g_vi_ctx, &prepare_p);
 
     //g_aiq_ctx = rk_aiq_uapi2_sysctl_init(g_sns_entity_name, "/etc/iqfiles", NULL, NULL);
 
     g_aiq_pause = 1;
     g_aiq_quit = 0;
-    param[0] = VIDEO_WIDTH;
-    param[1] = VIDEO_HEIGHT;
-    //pthread_create(&isp_tid, NULL, isp_thread, param);
+    param[0] = 4096;
+    param[1] = 3072;
+    pthread_create(&isp_tid, NULL, isp_thread, param);
 
 
     //rk_aiq_uapi2_sysctl_prepare(g_aiq_ctx, VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_WORKMODE);
-    rkrawstream_setup_pipline_fmt(g_vi_ctx, VIDEO_HEIGHT, VIDEO_WIDTH);
+    rkrawstream_setup_pipline_fmt(g_vi_ctx, 4096, 3072);
 
     //rk_aiq_uapi2_sysctl_start(g_aiq_ctx);
 
-    //printf("rkisp_init_device %d %d\n", param[0], param[1]);
-    //rkisp_init_device(param[0], param[1]);
-    //rkisp_start_capturing();
+    printf("rkisp_init_device %d %d\n", param[0], param[1]);
+    rkisp_init_device(param[0], param[1]);
+    rkisp_start_capturing();
     g_aiq_pause = 0;
     printf("sleeping...\n");
     sleep(3);
@@ -279,15 +283,15 @@ int stream_test(void)
     rkrawstream_readback_stop(g_vi_ctx);
     //rk_aiq_uapi2_sysctl_stop(g_aiq_ctx, false);
     /* clean up library. */
-
     rkrawstream_uapi_deinit(g_vi_ctx);
 
-    //pthread_join(isp_tid, NULL);
+    pthread_join(isp_tid, NULL);
 
-    //rkisp_stop_capturing();
-    //rkisp_uninit_device();
+    rkisp_stop_capturing();
+    rkisp_uninit_device();
     //rk_aiq_uapi2_sysctl_deinit(g_aiq_ctx);
-    //close(g_ispfd);
+
+    close(g_ispfd);
     return 0;
 }
 

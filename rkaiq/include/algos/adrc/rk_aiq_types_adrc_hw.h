@@ -123,7 +123,7 @@ typedef struct DrcProcRes_s {
 #if RKAIQ_HAVE_DRC_V11
     DrcProcResV11_t Drc_v11;
 #endif
-#if RKAIQ_HAVE_DRC_V12
+#if RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE
     DrcProcResV12_t Drc_v12;
 #endif
 } DrcProcRes_t;

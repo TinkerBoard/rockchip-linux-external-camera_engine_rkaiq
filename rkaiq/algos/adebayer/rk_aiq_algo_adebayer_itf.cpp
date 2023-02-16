@@ -21,7 +21,7 @@
 #if RKAIQ_HAVE_DEBAYER_V1
 #include "adebayer/rk_aiq_adebayer_algo_v1.h"
 #endif
-#if RKAIQ_HAVE_DEBAYER_V2
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
 #include "adebayer/rk_aiq_adebayer_algo_v2.h"
 #endif
 #include "rk_aiq_algo_types.h"
@@ -54,6 +54,11 @@ create_context
 
 #if RKAIQ_HAVE_DEBAYER_V2
     if(cfg->module_hw_version != ADEBAYER_HARDWARE_V2)
+        LOGE_ADEBAYER("%s: wrong HW version(%d)", __FUNCTION__, cfg->module_hw_version);
+#endif
+
+#if RKAIQ_HAVE_DEBAYER_V2_LITE
+    if(cfg->module_hw_version != ADEBAYER_HARDWARE_V2_LITE)
         LOGE_ADEBAYER("%s: wrong HW version(%d)", __FUNCTION__, cfg->module_hw_version);
 #endif
 
@@ -102,7 +107,7 @@ prepare
         result = AdebayerFullParamsInit(pAdebayerCtx, pCfgParam->com.u.prepare.calib, pCfgParam->com.u.prepare.calibv2);
 #endif
 
-#if RKAIQ_HAVE_DEBAYER_V2
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
         result = AdebayerCalibConfig(pAdebayerCtx, pCfgParam->com.u.prepare.calibv2);
 #endif
 
@@ -193,7 +198,7 @@ processing
     AdebayerGetProcResult(pAdebayerCtx, &pAdebayerProcResParams->debayerResV1);
 #endif
 
-#if RKAIQ_HAVE_DEBAYER_V2
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
     AdebayerGetProcResult(pAdebayerCtx, &pAdebayerProcResParams->debayerResV2);
 #endif
 

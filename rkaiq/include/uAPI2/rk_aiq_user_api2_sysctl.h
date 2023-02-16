@@ -534,6 +534,16 @@ rk_aiq_uapi2_sysctl_rawReproc_preInit(const char* isp_driver,
 
 void rk_aiq_uapi2_sysctl_setIspParamsDelayCnts(const rk_aiq_sys_ctx_t* sys_ctx, int8_t delay_cnts);
 
+/**
+ * @brief set different format form sensor output.
+ *
+ * \param[in] sys_ctx             the context returned by \ref rk_aiq_uapi2_sysctl_init
+ * \param[in] width               input raw width.
+ * \param[in] height              input raw height.
+ * \param[in] code                input raw v4l2 format code.
+ */
+void rk_aiq_uapi2_sysctl_setUserSensorFormat(rk_aiq_sys_ctx_t* sys_ctx, uint16_t width, uint16_t height,
+                                                 uint16_t code);
 RKAIQ_END_DECLARE
 
 #endif

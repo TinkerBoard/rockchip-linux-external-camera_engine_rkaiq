@@ -210,6 +210,7 @@ typedef struct _RkAiqAlgoProcResAf {
         rk_aiq_isp_af_meas_t af_isp_param;
         rk_aiq_isp_af_meas_v3x_t af_isp_param_v3x;
         rk_aiq_isp_af_v31_t af_isp_param_v31;
+        rk_aiq_isp_af_v32_t af_isp_param_v32;
     };
     rk_aiq_af_focus_pos_meas_t af_focus_param;
     uint32_t id;
@@ -1198,7 +1199,7 @@ typedef struct _RkAiqAlgoConfigAdrc {
 
 typedef struct _RkAiqAlgoProcAdrc {
     RkAiqAlgoCom com;
-#if RKAIQ_HAVE_DRC_V12
+#if RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE
     adrc_blcRes_V32_t ablcV32_proc_res;
 #endif
 } RkAiqAlgoProcAdrc;

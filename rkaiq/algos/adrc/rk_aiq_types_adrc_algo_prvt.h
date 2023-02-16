@@ -156,7 +156,7 @@ typedef struct DrcHandleData_s {
 #if RKAIQ_HAVE_DRC_V11
     DrcHandleDataV11_t Drc_v11;
 #endif
-#if RKAIQ_HAVE_DRC_V12
+#if RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE
     DrcHandleDataV12_t Drc_v12;
 #endif
 } DrcHandleData_t;
@@ -209,6 +209,10 @@ typedef struct AdrcContext_s {
 #endif
 #if RKAIQ_HAVE_DRC_V12
     drcAttrV12_t drcAttrV12;
+    adrc_blcRes_V32_t ablcV32_proc_res;
+#endif
+#if RKAIQ_HAVE_DRC_V12_LITE
+    drcAttrV12Lite_t drcAttrV12;
     adrc_blcRes_V32_t ablcV32_proc_res;
 #endif
     AdrcState_t state;

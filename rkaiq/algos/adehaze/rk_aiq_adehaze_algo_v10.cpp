@@ -435,7 +435,7 @@ void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData
 
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);
 }
-
+#ifdef RKAIQ_ENABLE_CAMGROUP
 XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx,
                                    rk_aiq_singlecam_3a_result_t* pCamgrpParams) {
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
@@ -499,7 +499,7 @@ XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx,
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);
     return ret;
 }
-
+#endif
 XCamReturn AdehazeGetCurrData(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoProcAdhaz* pProcPara) {
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
     XCamReturn ret = XCAM_RETURN_NO_ERROR;

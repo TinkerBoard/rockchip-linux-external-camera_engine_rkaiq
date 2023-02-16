@@ -92,5 +92,6 @@ typedef RK_Bayer2dnr_Fix_V23_t rk_aiq_isp_baynr_v32_t;
 typedef RK_Bayertnr_Fix_V23_t rk_aiq_isp_tnr_v32_t ;
 
 typedef rk_aiq_af_algo_meas_v31_t rk_aiq_isp_af_v31_t;
+typedef rk_aiq_af_algo_meas_v32_t rk_aiq_isp_af_v32_t;
 
 #endif

@@ -56,4 +56,14 @@ typedef struct drcAttrV12_s {
     DrcInfoV12_t Info;
 } drcAttrV12_t;
 
+// drc attr V12 lite
+typedef struct drcAttrV12Lite_s {
+    rk_aiq_uapi_sync_t sync;
+
+    drc_OpMode_t opMode;
+    CalibDbV2_drc_v12_lite_t stAuto;
+    mdrcAttr_v12_lite_t stManual;
+    DrcInfoV12Lite_t Info;
+} drcAttrV12Lite_t;
+
 #endif

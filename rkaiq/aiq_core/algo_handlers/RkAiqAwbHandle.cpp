@@ -134,6 +134,8 @@ XCamReturn RkAiqAwbHandleInt::setAttrib(rk_aiq_wb_attrib_t att) {
 XCamReturn RkAiqAwbHandleInt::getAttrib(rk_aiq_wb_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
+    SmartLock lock (mCfgMutex);
+
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     rk_aiq_uapi_awb_GetAttrib(mAlgoCtx, att);
@@ -155,6 +157,8 @@ XCamReturn RkAiqAwbHandleInt::getCct(rk_aiq_wb_cct_t* cct) {
 
 XCamReturn RkAiqAwbHandleInt::queryWBInfo(rk_aiq_wb_querry_info_t* wb_querry_info) {
     ENTER_ANALYZER_FUNCTION();
+
+    SmartLock lock (mCfgMutex);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
@@ -189,6 +193,8 @@ XCamReturn RkAiqAwbHandleInt::unlock() {
 XCamReturn RkAiqAwbHandleInt::getAlgoStat(rk_tool_awb_stat_res_full_t *awb_stat_algo) {
     ENTER_ANALYZER_FUNCTION();
 
+    SmartLock lock (mCfgMutex);
+
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     rk_aiq_uapiV2_awb_GetAlgoStat(mAlgoCtx,awb_stat_algo);
@@ -199,6 +205,8 @@ XCamReturn RkAiqAwbHandleInt::getAlgoStat(rk_tool_awb_stat_res_full_t *awb_stat_
 
 XCamReturn RkAiqAwbHandleInt::getStrategyResult(rk_tool_awb_strategy_result_t *awb_strategy_result) {
     ENTER_ANALYZER_FUNCTION();
+
+    SmartLock lock (mCfgMutex);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
@@ -236,6 +244,8 @@ XCamReturn RkAiqAwbHandleInt::setWbV20Attrib(rk_aiq_uapiV2_wbV20_attrib_t att) {
 
 XCamReturn RkAiqAwbHandleInt::getWbV20Attrib(rk_aiq_uapiV2_wbV20_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
+
+    SmartLock lock (mCfgMutex);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
@@ -387,6 +397,8 @@ XCamReturn RkAiqAwbHandleInt::setAwbV20Attrib(rk_aiq_uapiV2_wbV20_awb_attrib_t a
 XCamReturn RkAiqAwbHandleInt::getAwbV20Attrib(rk_aiq_uapiV2_wbV20_awb_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
+    SmartLock lock (mCfgMutex);
+
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     rk_aiq_uapiV2_awbV20_GetAwbAttrib(mAlgoCtx, att);
@@ -535,7 +547,9 @@ XCamReturn RkAiqAwbHandleInt::getWbAwbWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wb
             mallocAndCopyWbGainAdjustAttrib(att,&mNewWbAwbWbGainAdjustAttr);
             att->sync.done = false;
         } else {
+            mCfgMutex.lock();
             rk_aiq_uapiV2_awb_GetAwbGainAdjust(mAlgoCtx, att);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbAwbWbGainAdjustAttr.sync.sync_mode;
             att->sync.done      = true;
         }
@@ -593,7 +607,9 @@ XCamReturn RkAiqAwbHandleInt::getWbAwbWbGainOffsetAttrib(rk_aiq_uapiV2_wb_awb_wb
             memcpy(att, &mNewWbAwbWbGainOffsetAttr, sizeof(mNewWbAwbWbGainOffsetAttr));
             att->sync.done = false;
         } else {
+            mCfgMutex.lock();
             rk_aiq_uapiV2_awb_GetAwbGainOffset(mAlgoCtx, &att->gainOffset);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbAwbWbGainOffsetAttr.sync.sync_mode;
             att->sync.done      = true;
         }
@@ -649,7 +665,9 @@ XCamReturn RkAiqAwbHandleInt::getWbAwbMultiWindowAttrib(rk_aiq_uapiV2_wb_awb_mul
             memcpy(att, &mNewWbAwbMultiWindowAttr, sizeof(mNewWbAwbMultiWindowAttr));
             att->sync.done = false;
         } else {
+            mCfgMutex.lock();
             rk_aiq_uapiV2_awb_GetAwbMultiwindow(mAlgoCtx, &att->multiWindw);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbAwbMultiWindowAttr.sync.sync_mode;
             att->sync.done      = true;
         }
@@ -705,7 +723,9 @@ XCamReturn RkAiqAwbHandleInt::prepare() {
     // awb_config_int->rawBit;
     awb_config_int->mem_ops_ptr   = mAiqCore->mShareMemOps;
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
+    mCfgMutex.lock();
     ret                       = des->prepare(mConfig);
+    mCfgMutex.unlock();
     RKAIQCORE_CHECK_RET(ret, "awb algo prepare failed");
 
     EXIT_ANALYZER_FUNCTION();
@@ -901,14 +921,14 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
 #elif defined(ISP_HW_V21)
         params->mAwbV21Params = cur_params->mAwbV21Params;
         params->mAwbV21Params->data()->frame_id = shared->frameId;
-#elif defined(ISP_HW_V32)
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
         params->mAwbV32Params = cur_params->mAwbV32Params;
         params->mAwbV32Params->data()->frame_id = shared->frameId;
 #else
         params->mAwbParams = cur_params->mAwbParams;
         params->mAwbParams->data()->frame_id = shared->frameId;
 #endif
-#if defined(ISP_HW_V32)
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
         params->mAwbGainV32Params = cur_params->mAwbGainV32Params;
         params->mAwbGainV32Params->data()->frame_id = shared->frameId;
 #else
@@ -928,14 +948,14 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
 #elif defined(ISP_HW_V21)
         params->mAwbV21Params = cur_params->mAwbV21Params;
         params->mAwbV21Params->data()->frame_id = shared->frameId;
-#elif defined(ISP_HW_V32)
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
         params->mAwbV32Params = cur_params->mAwbV32Params;
         params->mAwbV32Params->data()->frame_id = shared->frameId;
 #else
         params->mAwbParams = cur_params->mAwbParams;
         params->mAwbParams->data()->frame_id = shared->frameId;
 #endif
-#if defined(ISP_HW_V32)
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
         params->mAwbGainV32Params = cur_params->mAwbGainV32Params;
         params->mAwbGainV32Params->data()->frame_id = shared->frameId;
 #else
@@ -950,12 +970,12 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
     rk_aiq_isp_awb_params_v3x_t* awb_param = params->mAwbV3xParams->data().ptr();
 #elif defined(ISP_HW_V21)
     rk_aiq_isp_awb_params_v21_t* awb_param = params->mAwbV21Params->data().ptr();
-#elif defined(ISP_HW_V32)
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     rk_aiq_isp_awb_params_v32_t* awb_param = params->mAwbV32Params->data().ptr();
 #else
     rk_aiq_isp_awb_params_v20_t* awb_param = params->mAwbParams->data().ptr();
 #endif
-#if defined(ISP_HW_V32)
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     rk_aiq_isp_awb_gain_params_v32_t* awb_gain_param = params->mAwbGainV32Params->data().ptr();
 #else
     rk_aiq_isp_awb_gain_params_v20_t* awb_gain_param = params->mAwbGainParams->data().ptr();
@@ -979,7 +999,7 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
         awb_gain_param->frame_id = shared->frameId;
         awb_param->frame_id      = shared->frameId;
     }
-#if defined(ISP_HW_V32)
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     rk_aiq_wb_gain_v32_t *awb_gain_v32 = &awb_gain_param->result;
     awb_gain_v32->rgain = awb_rk->awb_gain_algo.rgain;
     awb_gain_v32->grgain = awb_rk->awb_gain_algo.grgain;
@@ -991,7 +1011,7 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
 #endif
 #if defined(ISP_HW_V30) || defined(ISP_HW_V21)
     awb_param->result = awb_rk->awb_hw1_para;
-#elif defined(ISP_HW_V32)
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     awb_param->result = awb_rk->awb_hw32_para;
 #else
     awb_param->result = awb_rk->awb_hw0_para;
@@ -1007,12 +1027,12 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
     cur_params->mAwbV3xParams  = params->mAwbV3xParams;
 #elif defined(ISP_HW_V21)
     cur_params->mAwbV21Params  = params->mAwbV21Params;
-#elif defined(ISP_HW_V32)
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     cur_params->mAwbV32Params  = params->mAwbV32Params;
 #else
     cur_params->mAwbParams     = params->mAwbParams;
 #endif
-#if defined(ISP_HW_V32)
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     cur_params->mAwbGainV32Params = params->mAwbGainV32Params;
 #else
     cur_params->mAwbGainParams = params->mAwbGainParams;

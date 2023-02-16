@@ -18,7 +18,7 @@
 #include "acnrV30/rk_aiq_uapi_camgroup_acnr_int_v30.h"
 
 namespace RkCam {
-#if RKAIQ_HAVE_CNR_V30
+#if (RKAIQ_HAVE_CNR_V30 || RKAIQ_HAVE_CNR_V30_LITE)
 
 XCamReturn RkAiqCamGroupAcnrV30HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();

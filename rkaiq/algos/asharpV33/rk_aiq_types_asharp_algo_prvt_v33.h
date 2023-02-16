@@ -32,8 +32,13 @@ typedef struct Asharp_Context_V33_s {
     Asharp_State_V33_t eState;
     Asharp_OPMode_V33_t eMode;
 
+#if RKAIQ_HAVE_SHARP_V33
     Asharp_Auto_Attr_V33_t stAuto;
     Asharp_Manual_Attr_V33_t stManual;
+#else
+    Asharp_Auto_Attr_V33LT_t stAuto;
+    Asharp_Manual_Attr_V33LT_t stManual;
+#endif
 
     struct list_head* list_sharp_v33;
 
@@ -47,7 +52,11 @@ typedef struct Asharp_Context_V33_s {
     int rawHeight;
 
     int prepare_type;
+#if RKAIQ_HAVE_SHARP_V33
     CalibDbV2_SharpV33_t sharp_v33;
+#else
+    CalibDbV2_SharpV33Lite_t sharp_v33;
+#endif
 
     int isReCalculate;
 } Asharp_Context_V33_t;

@@ -71,6 +71,7 @@ AblcResult_V32_t AblcRefJsonParamInit_V32(AblcRefParams_V32_t* pBlcRefPara, Cali
     LOG1_ABLC("%s:enter!\n", __FUNCTION__);
 
     AblcResult_V32_t ret = ABLC_V32_RET_SUCCESS;
+#if (RKAIQ_HAVE_BAYER2DNR_V23)
     // initial checks
     DCT_ASSERT(pBlcRefPara != NULL);
     DCT_ASSERT(stBayer2dnrCalib != NULL);
@@ -103,7 +104,7 @@ AblcResult_V32_t AblcRefJsonParamInit_V32(AblcRefParams_V32_t* pBlcRefPara, Cali
         pBlcRefPara->Reference_b[j] = stBayer2dnrCalib->Blc_Ref[j].Reference_b;
     }
     LOGD_ABLC("%s(%d): blc ref init done \n", __FUNCTION__, __LINE__);
-
+#endif
     LOG1_ABLC("%s:exit!\n", __FUNCTION__);
     return ret;
 }
@@ -419,19 +420,21 @@ AblcResult_V32_t AblcV32ParamsUpdate(AblcContext_V32_t* pAblcCtx, CalibDbV2_Blc_
     AblcJsonParamInit_V32(&pAblcCtx->stBlc0Params, &pCalibDb->Blc0TuningPara);
 
     // bls1
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         BlcNewMalloc(&pAblcCtx->stBlc1Params, &pCalibDb->Blc1TuningPara);
         AblcJsonParamInit_V32(&pAblcCtx->stBlc1Params, &pCalibDb->Blc1TuningPara);
     }
 
     // blc_ob
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         BlcOBNewMalloc(&pAblcCtx->stBlcOBParams, &pCalibDb->BlcObPara);
         AblcOBJsonParamInit_V32(&pAblcCtx->stBlcOBParams, &pCalibDb->BlcObPara);
     }
     // blc_ref
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() ||  CHECK_ISP_HW_V32_LITE()) {
+#if (RKAIQ_HAVE_BAYER2DNR_V23)
         AblcRefJsonParamInit_V32(&pAblcCtx->stBlcRefParams, &pAblcCtx->stBayer2dnrCalib);
+#endif
     }
 
     return ret;
@@ -461,10 +464,10 @@ AblcResult_V32_t AblcV32Init(AblcContext_V32_t** ppAblcCtx, CamCalibDbV2Context_
 
     CalibDbV2_Blc_V32_t* ablc_calib =
         (CalibDbV2_Blc_V32_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ablcV32_calib));
-
+#if (RKAIQ_HAVE_BAYER2DNR_V23)
     CalibDbV2_Bayer2dnrV23_t *bayernr_v23 = (CalibDbV2_Bayer2dnrV23_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, bayer2dnr_v23));
-
     pAblcCtx->stBayer2dnrCalib = bayernr_v23->CalibPara;
+#endif
     pAblcCtx->stBlcCalib = *ablc_calib;
     AblcV32ParamsUpdate(pAblcCtx, ablc_calib);
 

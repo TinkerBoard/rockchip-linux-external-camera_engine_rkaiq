@@ -120,7 +120,9 @@ XCamReturn RkAiqAwbV32HandleInt::getWbV32AwbMultiWindowAttrib(rk_aiq_uapiV2_wbV3
             memcpy(att, &mNewWbV32AwbMultiWindowAttr, sizeof(mNewWbV32AwbMultiWindowAttr));
             att->sync.done = false;
         } else {
+            mCfgMutex.lock();
             rk_aiq_uapiV2_awbV32_GetAwbMultiwindow(mAlgoCtx, att);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbV32AwbMultiWindowAttr.sync.sync_mode;
             att->sync.done      = true;
         }
@@ -176,7 +178,9 @@ XCamReturn RkAiqAwbV32HandleInt::getWbV32Attrib(rk_aiq_uapiV2_wbV32_attrib_t* at
              memcpy(att, &mNewWbV32Attr, sizeof(mNewWbV32Attr));
              att->sync.done = false;
         } else {
+            mCfgMutex.lock();
             rk_aiq_uapiV2_awbV32_GetAttrib(mAlgoCtx, att);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbV32Attr.sync.sync_mode;
             att->sync.done = true;
         }

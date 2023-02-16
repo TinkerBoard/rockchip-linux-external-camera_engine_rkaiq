@@ -152,7 +152,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     AccmConfig(hAccm);
 
     for (int i = 0; i < procResParaGroup->arraySize; i++) {
-#ifdef ISP_HW_V32
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
         *(procResParaGroup->camgroupParmasArray[i]->accm._ccmCfg_v2) = hAccm->ccmHwConf_v2;
 #else
         *(procResParaGroup->camgroupParmasArray[i]->accm._ccmCfg) = hAccm->ccmHwConf;

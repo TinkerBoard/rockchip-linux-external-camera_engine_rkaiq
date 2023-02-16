@@ -160,7 +160,9 @@ public:
     virtual XCamReturn rawReProc_prepare (uint32_t sequence, rk_aiq_frame_info_t *offline_finfo) {
         return XCAM_RETURN_ERROR_FAILED;
     }
+    virtual void setUserSensorFormat(uint16_t width, uint16_t height, uint16_t code) { }
     HwResListener* mHwResLintener;
+
 protected:
     SmartPtr<V4l2Device> mIsppFecParamsDev;
     SmartPtr<V4l2Device> mIspLumaDev;

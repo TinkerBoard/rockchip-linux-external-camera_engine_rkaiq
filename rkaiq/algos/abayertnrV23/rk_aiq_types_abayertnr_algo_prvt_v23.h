@@ -73,8 +73,13 @@ typedef struct Abayertnr_Context_V23_s {
     Abayertnr_State_V23_t eState;
     Abayertnr_OPMode_V23_t eMode;
 
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     Abayertnr_Auto_Attr_V23_t stAuto;
     Abayertnr_Manual_Attr_V23_t stManual;
+#else
+    Abayertnr_Auto_Attr_V23L_t stAuto;
+    Abayertnr_Manual_Attr_V23L_t stManual;
+#endif
 
     // struct list_head* list_bayernr_v23;
 
@@ -85,7 +90,11 @@ typedef struct Abayertnr_Context_V23_s {
     Abayertnr_ParamMode_V23_t eParamMode;
     int prepare_type;
 
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     CalibDbV2_BayerTnrV23_t bayertnr_v23;
+#else
+    CalibDbV2_BayerTnrV23Lite_t bayertnr_v23;
+#endif
 
     int isReCalculate;
 } Abayertnr_Context_V23_t;

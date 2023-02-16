@@ -515,7 +515,6 @@ static XCamReturn initAecHwConfig(rk_aiq_rkAe_config_t* pConfig)
 #endif
 
 #if defined(ISP_HW_V21)
-
     if(pConfig->IsHdr) {
         pConfig->aeHwConfig.ae_meas.rawae0.rawae_sel = 1;
         pConfig->aeHwConfig.ae_meas.rawae1.rawae_sel = 1;
@@ -530,7 +529,6 @@ static XCamReturn initAecHwConfig(rk_aiq_rkAe_config_t* pConfig)
 #endif
 
 #if defined(ISP_HW_V32)
-
     if(pConfig->IsHdr) {
 
         pConfig->aeHwConfig.ae_meas.rawae0.rawae_sel = 0;
@@ -547,6 +545,23 @@ static XCamReturn initAecHwConfig(rk_aiq_rkAe_config_t* pConfig)
 
 #endif
 
+#if defined(ISP_HW_V32_LITE)
+
+    if(pConfig->IsHdr) {
+
+        pConfig->aeHwConfig.ae_meas.rawae0.rawae_sel = 0;
+        pConfig->aeHwConfig.ae_meas.rawae1.rawae_sel = 0;
+        pConfig->aeHwConfig.ae_meas.rawae2.rawae_sel = 0; //rawae2 no effective
+        pConfig->aeHwConfig.ae_meas.rawae3.rawae_sel = 1; //raw.chn[0] = BIG, make all channel = BIG
+
+    } else {
+        pConfig->aeHwConfig.ae_meas.rawae0.rawae_sel = 0;
+        pConfig->aeHwConfig.ae_meas.rawae1.rawae_sel = 0;
+        pConfig->aeHwConfig.ae_meas.rawae2.rawae_sel = 0; //rawae2 no effective
+        pConfig->aeHwConfig.ae_meas.rawae3.rawae_sel = 0; //raw.chn[0] = BIG, make all channel = BIG
+    }
+
+#endif
 
 
     pConfig->aeHwConfig.hist_meas.ae_swap = pConfig->aeHwConfig.ae_meas.rawae1.rawae_sel;

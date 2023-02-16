@@ -63,14 +63,14 @@ struct _live_rkraw_data
 class RawStreamCapUnit : public PollCallback
 {
 public:
-    explicit RawStreamCapUnit(char *dev0, char *dev1, char *dev2, int buf_memory_type);
-    explicit RawStreamCapUnit(const rk_sensor_full_info_t *s_info, int buf_memory_type);
+    explicit RawStreamCapUnit(char *dev0, char *dev1, char *dev2);
+    explicit RawStreamCapUnit(const rk_sensor_full_info_t *s_info);
     virtual ~RawStreamCapUnit();
     virtual XCamReturn start();
     virtual XCamReturn stop ();
     virtual XCamReturn stop_device ();
     virtual XCamReturn release_buffer ();
-	XCamReturn prepare(int idx);
+	XCamReturn prepare(int idx, uint8_t buf_memory_type, uint8_t buf_cnt);
     void set_tx_format(uint32_t width, uint32_t heigh, uint32_t pix_fmt, int mode);
     void set_sensor_format(uint32_t width, uint32_t height, uint32_t fps);
     void set_sensor_mode(uint32_t mode);

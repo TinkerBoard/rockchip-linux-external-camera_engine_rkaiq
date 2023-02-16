@@ -589,6 +589,8 @@ protected:
     SmartPtr<RkAiqIspTnrParamsPoolV32>      mAiqIspTnrV32ParamsPool;
     SmartPtr<RkAiqIspAwbGainParamsPoolV32>  mAiqIspAwbGainV32ParamsPool;
 
+    SmartPtr<RkAiqIspAfParamsPoolV32Lite>   mAiqIspAfV32LiteParamsPool;
+
 #endif
     static uint16_t DEFAULT_POOL_SIZE;
     XCam::Cond mIspStatsCond;

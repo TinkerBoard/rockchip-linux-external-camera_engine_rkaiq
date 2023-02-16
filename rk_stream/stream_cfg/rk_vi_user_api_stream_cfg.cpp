@@ -96,10 +96,10 @@ int rkrawstream_vicap_init(rkraw_vi_ctx_t* ctx, rkraw_vi_init_params_t *p)
             LOGE_RKSTREAM("can't find sensor %s", p->sns_ent_name);
             return XCAM_RETURN_ERROR_SENSOR;
         }
-        ctx->_mRawCapUnit = new RawStreamCapUnit(ctx->s_full_info, p->buf_memory_type);
+        ctx->_mRawCapUnit = new RawStreamCapUnit(ctx->s_full_info);
     }else{
         LOGI_RKSTREAM("%s:use %s", __func__, p->dev0_name);
-        ctx->_mRawCapUnit = new RawStreamCapUnit(p->dev0_name, p->dev1_name, p->dev2_name, p->buf_memory_type);
+        ctx->_mRawCapUnit = new RawStreamCapUnit(p->dev0_name, p->dev1_name, p->dev2_name);
     }
 	return ret;
 }
@@ -111,12 +111,12 @@ int rkrawstream_vicap_prepare(rkraw_vi_ctx_t* ctx, rkraw_vi_prepare_params_t *p)
     ctx->_mRawCapUnit->set_sensor_format(p->width, p->height, 0);
     ctx->_mRawCapUnit->set_tx_format(p->width, p->height, p->pix_fmt, p->mem_mode);
     if(p->hdr_mode == RK_AIQ_WORKING_MODE_NORMAL){
-        ctx->_mRawCapUnit->prepare(MIPI_STREAM_IDX_0);
+        ctx->_mRawCapUnit->prepare(MIPI_STREAM_IDX_0, p->buf_memory_type, p->buf_cnt);
         ctx->_mRawCapUnit->set_working_mode(RK_AIQ_WORKING_MODE_NORMAL);
         ctx->_mRawCapUnit->set_sensor_mode(RK_AIQ_WORKING_MODE_NORMAL);
     }else if(p->hdr_mode == RK_AIQ_WORKING_MODE_ISP_HDR2){
 
-        ctx->_mRawCapUnit->prepare(MIPI_STREAM_IDX_0 | MIPI_STREAM_IDX_1);
+        ctx->_mRawCapUnit->prepare(MIPI_STREAM_IDX_0 | MIPI_STREAM_IDX_1, p->buf_memory_type, p->buf_cnt);
         ctx->_mRawCapUnit->set_working_mode(RK_AIQ_ISP_HDR_MODE_2_LINE_HDR);
         ctx->_mRawCapUnit->set_sensor_mode(RK_AIQ_ISP_HDR_MODE_2_LINE_HDR);
     }
@@ -179,7 +179,7 @@ int rkrawstream_readback_init(rkraw_vi_ctx_t* ctx, rkraw_vi_init_params_t *p)
             LOGE_RKSTREAM("can't find sensor %s", p->sns_ent_name);
             return XCAM_RETURN_ERROR_SENSOR;
         }
-        ctx->_mRawProcUnit = new RawStreamProcUnit(ctx->s_full_info, p->use_offline, p->buf_memory_type);
+        ctx->_mRawProcUnit = new RawStreamProcUnit(ctx->s_full_info, p->use_offline);
     }
 
 	return ret;
@@ -191,10 +191,10 @@ int rkrawstream_readback_prepare(rkraw_vi_ctx_t* ctx, rkraw_vi_prepare_params_t 
 	int ret = 0;
     ctx->_mRawProcUnit->set_rx_format(p->width, p->height, p->pix_fmt, p->mem_mode);
     if(p->hdr_mode == RK_AIQ_WORKING_MODE_NORMAL){
-        ctx->_mRawProcUnit->prepare(MIPI_STREAM_IDX_0);
+        ctx->_mRawProcUnit->prepare(MIPI_STREAM_IDX_0, p->buf_memory_type, p->buf_cnt);
         ctx->_mRawProcUnit->set_working_mode(RK_AIQ_WORKING_MODE_NORMAL);
     }else if(p->hdr_mode == RK_AIQ_WORKING_MODE_ISP_HDR2){
-        ctx->_mRawProcUnit->prepare(MIPI_STREAM_IDX_0 | MIPI_STREAM_IDX_1);
+        ctx->_mRawProcUnit->prepare(MIPI_STREAM_IDX_0 | MIPI_STREAM_IDX_1, p->buf_memory_type, p->buf_cnt);
         ctx->_mRawProcUnit->set_working_mode(RK_AIQ_ISP_HDR_MODE_2_LINE_HDR);
     }
 	return ret;
@@ -221,6 +221,13 @@ int rkrawstream_readback_set_buffer(rkraw_vi_ctx_t* ctx, uint8_t *rkraw_data)
 {
 	int ret = 0;
 	ctx->_mRawProcUnit->send_sync_buf2(rkraw_data);
+	return ret;
+}
+
+int rkrawstream_readback_set_rkraw2(rkraw_vi_ctx_t* ctx, rkrawstream_rkraw2_t *rkraw2)
+{
+	int ret = 0;
+	ctx->_mRawProcUnit->_send_sync_buf(rkraw2);
 	return ret;
 }
 

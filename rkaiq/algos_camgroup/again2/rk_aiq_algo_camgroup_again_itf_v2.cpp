@@ -37,7 +37,7 @@ static XCamReturn groupAgainV2CreateCtx(RkAiqAlgoContext **context, const AlgoCt
     AlgoCtxInstanceCfgCamGroup *cfgInt = (AlgoCtxInstanceCfgCamGroup*)cfg;
 
 
-    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE() || CHECK_ISP_HW_V30()) {
         again_group_contex = (CamGroup_AgainV2_Contex_t*)malloc(sizeof(CamGroup_AgainV2_Contex_t));
 #if AGAIN_USE_JSON_FILE_V2
         Again_result_V2_t ret_v2 = AGAINV2_RET_SUCCESS;
@@ -81,7 +81,7 @@ static XCamReturn groupAgainV2DestroyCtx(RkAiqAlgoContext *context)
 
     CamGroup_AgainV2_Contex_t *again_group_contex = (CamGroup_AgainV2_Contex_t*)context;
 
-    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V30()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE() || CHECK_ISP_HW_V30()) {
         Again_result_V2_t ret_v2 = AGAINV2_RET_SUCCESS;
         ret_v2 = Again_Release_V2(again_group_contex->again_contex_v2);
         if(ret_v2 != AGAINV2_RET_SUCCESS) {
@@ -114,7 +114,7 @@ static XCamReturn groupAgainV2Prepare(RkAiqAlgoCom* params)
     CamGroup_AgainV2_Contex_t * again_group_contex = (CamGroup_AgainV2_Contex_t *)params->ctx;
     RkAiqAlgoCamGroupPrepare* para = (RkAiqAlgoCamGroupPrepare*)params;
 
-    if(CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Again_Context_V2_t * again_contex_v2 = again_group_contex->again_contex_v2;
         again_contex_v2->prepare_type = params->u.prepare.conf_type;
         if (!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
@@ -220,7 +220,7 @@ static XCamReturn groupAgainV2Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
 
 
 
-    if(CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V30() || CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Again_Context_V2_t * again_contex_v2 = again_group_contex->again_contex_v2;
         Again_ProcResult_V2_t stAgainResultV2;
         deltaIso = abs(stExpInfoV2.arIso[stExpInfoV2.hdr_mode] - again_contex_v2->stExpInfo.arIso[stExpInfoV2.hdr_mode]);

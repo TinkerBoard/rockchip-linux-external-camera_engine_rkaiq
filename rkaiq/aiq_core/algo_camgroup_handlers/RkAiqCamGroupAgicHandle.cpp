@@ -17,6 +17,7 @@
 
 namespace RkCam {
 
+#if (RRKAIQ_HAVE_GIC_V1 || RKAIQ_HAVE_GIC_V2)
 XCamReturn RkAiqCamGroupAgicHandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
@@ -154,6 +155,6 @@ XCamReturn RkAiqCamGroupAgicHandleInt::getAttribV2(rkaiq_gic_v2_api_attr_t* att)
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
-
+#endif
 
 }  // namespace RkCam

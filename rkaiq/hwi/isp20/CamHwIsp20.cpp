@@ -111,6 +111,10 @@ CamHwIsp20::CamHwIsp20()
     mEffectIspParamsPool = new RkAiqIspEffParamsPool("ISP_EFF", CAMHWISP_EFFECT_ISP_POOL_NUM);
     _module_cfg_update_frome_drv = 0;
     _curIspParamsSeq = 0;
+
+    userSensorWidth = 0;
+    userSensorHeight = 0;
+    userSensorFmtCode = 0;
 }
 
 CamHwIsp20::~CamHwIsp20()
@@ -1993,6 +1997,16 @@ CamHwIsp20::setupPipelineFmt()
         ret = XCAM_RETURN_NO_ERROR;
     }
 
+    // with librkrawstream, usr may change raw image, such as crop or rotate.
+    // in this case, pipeline format is differ from sensor format.
+    if(userSensorWidth && userSensorHeight){
+        sns_sd_sel.r.width = userSensorWidth;
+        sns_sd_sel.r.height = userSensorHeight;
+    }
+    if(userSensorFmtCode){
+        sns_sd_fmt.format.code = userSensorFmtCode;
+    }
+
     if (!_linked_to_isp && _crop_rect.width && _crop_rect.height) {
         struct v4l2_format mipi_tx_fmt;
         memset(&mipi_tx_fmt, 0, sizeof(mipi_tx_fmt));
@@ -2565,6 +2579,15 @@ CamHwIsp20::setCalib(const CamCalibDbV2Context_t* calibv2)
             memset(&_cur_calib_infos.af.vcmcfg, 0, sizeof(CalibDbV2_Af_VcmCfg_t));
         }
         memset(&_cur_calib_infos.af.ldg_param, 0, sizeof(CalibDbV2_Af_LdgParam_t));
+    } else if (CHECK_ISP_HW_V32_LITE()) {
+        CalibDbV2_AFV32_t *af_v32 =
+            (CalibDbV2_AFV32_t*)(CALIBDBV2_GET_MODULE_PTR((void*)mCalibDbV2, af_v32));
+        if (af_v32) {
+            _cur_calib_infos.af.vcmcfg = af_v32->TuningPara.vcmcfg;
+        } else {
+            memset(&_cur_calib_infos.af.vcmcfg, 0, sizeof(CalibDbV2_Af_VcmCfg_t));
+        }
+        memset(&_cur_calib_infos.af.ldg_param, 0, sizeof(CalibDbV2_Af_LdgParam_t));
     } else {
         CalibDbV2_AF_t *af =
             (CalibDbV2_AF_t*)CALIBDBV2_GET_MODULE_PTR((void*)mCalibDbV2, af);
@@ -2759,6 +2782,10 @@ CamHwIsp20::prepare(uint32_t width, uint32_t height, int mode, int t_delay, int 
         CalibDbV2_AFV30_t *af_v30 =
             (CalibDbV2_AFV30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)mCalibDbV2, af_v30));
         pdaf = &af_v30->TuningPara.pdaf;
+    } else if (CHECK_ISP_HW_V32_LITE()) {
+        CalibDbV2_AFV32_t *af_v32 =
+            (CalibDbV2_AFV32_t*)CALIBDBV2_GET_MODULE_PTR((void*)mCalibDbV2, af_v32);
+        pdaf = &af_v32->TuningPara.pdaf;
     } else {
         CalibDbV2_AF_t *af =
             (CalibDbV2_AF_t*)CALIBDBV2_GET_MODULE_PTR((void*)mCalibDbV2, af);
@@ -3981,6 +4008,13 @@ CamHwIsp20::getSensorModeData(const char* sns_ent_name,
         sns_des.isp_acq_width = sns_des.sensor_output_width;
         sns_des.isp_acq_height = sns_des.sensor_output_height;
         ret = XCAM_RETURN_NO_ERROR;
+    }
+
+    if(userSensorWidth && userSensorHeight){
+        sns_des.sensor_output_width = userSensorWidth;
+        sns_des.sensor_output_height = userSensorHeight;
+        sns_des.isp_acq_width = sns_des.sensor_output_width;
+        sns_des.isp_acq_height = sns_des.sensor_output_height;
     }
 
     xcam_mem_clear (sns_des.lens_des);

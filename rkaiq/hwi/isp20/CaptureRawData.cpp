@@ -492,8 +492,8 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          focusCode,
                          zoomCode);
 #endif
-            } else if (CHECK_ISP_HW_V32()) {
-#ifdef ISP_HW_V32
+            } else if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-l_m_s-gain[%08.5f_%08.5f_%08.5f]-time[%08.5f_%08.5f_%08.5f]-"
@@ -572,8 +572,8 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          focusCode,
                          zoomCode);
 #endif
-            } else if (CHECK_ISP_HW_V32()) {
-#ifdef ISP_HW_V32
+            } else if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-l_s-gain[%08.5f_%08.5f]-time[%08.5f_%08.5f]-"
@@ -643,8 +643,8 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
                          focusCode,
                          zoomCode);
 #endif
-            } else if (CHECK_ISP_HW_V32()) {
-#ifdef ISP_HW_V32
+            } else if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
                 snprintf(buffer,
                          sizeof(buffer),
                          "frame%08d-gain[%08.5f]-time[%08.5f]-"

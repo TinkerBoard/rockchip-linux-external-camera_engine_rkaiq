@@ -19,6 +19,9 @@
 /* Auto generated file, do not modify */
 
 #cmakedefine01 RKAIQ_HAVE_YNR_V2
+#if RKAIQ_HAVE_AWB_V32
+#cmakedefine01 RKAIQ_HAVE_AWB_V32LT
+#endif
 #cmakedefine01 RKAIQ_HAVE_AWB_V32
 #cmakedefine01 RKAIQ_HAVE_AWB_V21
 #cmakedefine01 RKAIQ_HAVE_AWB_V20
@@ -51,9 +54,11 @@
 #cmakedefine01 RKAIQ_HAVE_AF_V20
 #cmakedefine01 RKAIQ_HAVE_AF_V30
 #cmakedefine01 RKAIQ_HAVE_AF_V31
+#cmakedefine01 RKAIQ_HAVE_AF_V32_LITE
 #cmakedefine01 RKAIQ_ONLY_AF_STATS_V20
 #cmakedefine01 RKAIQ_ONLY_AF_STATS_V30
 #cmakedefine01 RKAIQ_ONLY_AF_STATS_V31
+#cmakedefine01 RKAIQ_ONLY_AF_STATS_V32_LITE
 #cmakedefine01 RKAIQ_HAVE_3DLUT_V1
 #cmakedefine01 RKAIQ_HAVE_CCM_V1
 #cmakedefine01 RKAIQ_HAVE_CCM_V2
@@ -65,6 +70,7 @@
 #cmakedefine01 RKAIQ_HAVE_DRC_V10
 #cmakedefine01 RKAIQ_HAVE_DRC_V11
 #cmakedefine01 RKAIQ_HAVE_DRC_V12
+#cmakedefine01 RKAIQ_HAVE_DRC_V12_LITE
 #cmakedefine01 RKAIQ_HAVE_DEHAZE_V10
 #cmakedefine01 RKAIQ_HAVE_DEHAZE_V11
 #cmakedefine01 RKAIQ_HAVE_DEHAZE_V11_DUO
@@ -79,11 +85,15 @@
 #cmakedefine01 RKAIQ_HAVE_AE_V1
 #cmakedefine01 RKAIQ_HAVE_DEBAYER_V1
 #cmakedefine01 RKAIQ_HAVE_DEBAYER_V2
+#cmakedefine01 RKAIQ_HAVE_DEBAYER_V2_LITE
 #cmakedefine01 RKAIQ_HAVE_BAYER2DNR_V23
 #cmakedefine01 RKAIQ_HAVE_BAYERTNR_V23
+#cmakedefine01 RKAIQ_HAVE_BAYERTNR_V23_LITE
 #cmakedefine01 RKAIQ_HAVE_YNR_V22
 #cmakedefine01 RKAIQ_HAVE_CNR_V30
+#cmakedefine01 RKAIQ_HAVE_CNR_V30_LITE
 #cmakedefine01 RKAIQ_HAVE_SHARP_V33
+#cmakedefine01 RKAIQ_HAVE_SHARP_V33_LITE
 #cmakedefine01 RKAIQ_HAVE_LSC_V1
 #cmakedefine01 RKAIQ_HAVE_LSC_V2
 #cmakedefine01 RKAIQ_HAVE_LSC_V3

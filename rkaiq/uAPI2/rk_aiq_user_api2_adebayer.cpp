@@ -36,6 +36,7 @@ rk_aiq_user_api2_adebayer_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_at
     return rk_aiq_user_api_adebayer_GetAttrib(sys_ctx, attr);
 }
 
+
 XCamReturn
 rk_aiq_user_api2_adebayer_v2_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_v2_attrib_t attr)
 {
@@ -46,6 +47,17 @@ XCamReturn
 rk_aiq_user_api2_adebayer_v2_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_v2_attrib_t *attr)
 {
     return rk_aiq_user_api_adebayer_v2_GetAttrib(sys_ctx, attr);
+}
+XCamReturn
+rk_aiq_user_api2_adebayer_v2_lite_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_v2lite_attrib_t attr)
+{
+    return rk_aiq_user_api_adebayer_v2_lite_SetAttrib(sys_ctx, attr);
+}
+
+XCamReturn
+rk_aiq_user_api2_adebayer_v2_lite_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, adebayer_v2lite_attrib_t *attr)
+{
+    return rk_aiq_user_api_adebayer_v2_lite_GetAttrib(sys_ctx, attr);
 }
 
 RKAIQ_END_DECLARE

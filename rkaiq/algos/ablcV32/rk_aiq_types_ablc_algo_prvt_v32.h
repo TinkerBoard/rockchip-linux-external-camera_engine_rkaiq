@@ -41,7 +41,9 @@ typedef struct AblcContext_V32_s {
     AblcState_V32_t eState;
 
     CalibDbV2_Blc_V32_t stBlcCalib;
+#if (RKAIQ_HAVE_BAYER2DNR_V23)
     CalibDbV2_Bayer2dnrV23_Calib_t stBayer2dnrCalib;
+#endif
     int prepare_type;
 
     int isReCalculate;

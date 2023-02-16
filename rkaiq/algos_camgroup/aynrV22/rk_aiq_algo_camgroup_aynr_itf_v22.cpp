@@ -36,7 +36,7 @@ static XCamReturn groupAynrV22CreateCtx(RkAiqAlgoContext **context, const AlgoCt
     CamGroup_AynrV22_Contex_t *aynr_group_contex = NULL;
     AlgoCtxInstanceCfgCamGroup *cfgInt = (AlgoCtxInstanceCfgCamGroup*)cfg;
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         aynr_group_contex = (CamGroup_AynrV22_Contex_t*)malloc(sizeof(CamGroup_AynrV22_Contex_t));
 #if AYNR_USE_JSON_FILE_V22
         Aynr_result_V22_t ret_v22 = AYNRV22_RET_SUCCESS;
@@ -80,7 +80,7 @@ static XCamReturn groupAynrV22DestroyCtx(RkAiqAlgoContext *context)
 
     CamGroup_AynrV22_Contex_t *aynr_group_contex = (CamGroup_AynrV22_Contex_t*)context;
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Aynr_result_V22_t ret_v22 = AYNRV22_RET_SUCCESS;
         ret_v22 = Aynr_Release_V22(aynr_group_contex->aynr_contex_v22);
         if(ret_v22 != AYNRV22_RET_SUCCESS) {
@@ -113,7 +113,7 @@ static XCamReturn groupAynrV22Prepare(RkAiqAlgoCom* params)
     CamGroup_AynrV22_Contex_t * aynr_group_contex = (CamGroup_AynrV22_Contex_t *)params->ctx;
     RkAiqAlgoCamGroupPrepare* para = (RkAiqAlgoCamGroupPrepare*)params;
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Aynr_Context_V22_t * aynr_contex_v22 = aynr_group_contex->aynr_contex_v22;
         if(!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB )) {
             // todo  update calib pars for surround view
@@ -240,7 +240,7 @@ static XCamReturn groupAynrV22Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
 
 
 
-    if(CHECK_ISP_HW_V32()) {
+    if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Aynr_Context_V22_t * aynr_contex_v22 = aynr_group_contex->aynr_contex_v22;
         Aynr_ProcResult_V22_t stAynrResultV22;
         deltaIso = abs(stExpInfoV22.arIso[stExpInfoV22.hdr_mode] - aynr_contex_v22->stExpInfo.arIso[stExpInfoV22.hdr_mode]);

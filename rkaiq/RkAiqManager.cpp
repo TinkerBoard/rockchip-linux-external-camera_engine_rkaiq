@@ -290,11 +290,7 @@ RkAiqManager::prepare(uint32_t width, uint32_t height, rk_aiq_working_mode_t mod
 
     xcam_mem_clear(sensor_des);
     ret = mCamHw->getSensorModeData(mSnsEntName, sensor_des);
-#ifdef USE_RAWSTREAM_LIB
-    //force user defined resolution
-    sensor_des.sensor_output_width = width;
-    sensor_des.sensor_output_height = height;
-#endif
+
     sensor_output_width = sensor_des.sensor_output_width;
     sensor_output_height = sensor_des.sensor_output_height;
     int w, h, aligned_w, aligned_h;
@@ -546,8 +542,8 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
                 SmartPtr<CamHwIsp20> mCamHwIsp20 =
                     mCamHw.dynamic_cast_ptr<CamHwIsp20>();
                 SmartPtr<ispHwEvt_t> hw_evt = mCamHwIsp20->make_ispHwEvt(
-                    0, V4L2_EVENT_FRAME_SYNC,
-                    tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec);
+                                                  0, V4L2_EVENT_FRAME_SYNC,
+                                                  tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec);
                 LOGE("<TB> push sof %d\n", seq);
                 mRkAiqAnalyzer->pushEvts(hw_evt);
             }
@@ -834,7 +830,7 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
     APPLY_ANALYZER_RESULT(Tmo, TMO);
 #endif
     // ispv21
-#if (RKAIQ_HAVE_DRC_V10 || RKAIQ_HAVE_DRC_V11 || RKAIQ_HAVE_DRC_V12)
+#if (RKAIQ_HAVE_DRC_V10 || RKAIQ_HAVE_DRC_V11 || RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE)
     APPLY_ANALYZER_RESULT(Drc, DRC);
 #endif
 #if RKAIQ_HAVE_AWB_V21
@@ -890,7 +886,7 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
 #if RKAIQ_HAVE_BLC_V32
     APPLY_ANALYZER_RESULT(BlcV32, BLC);
 #endif
-#if RKAIQ_HAVE_BAYERTNR_V23
+#if (RKAIQ_HAVE_BAYERTNR_V23 || RKAIQ_HAVE_BAYERTNR_V23_LITE)
     APPLY_ANALYZER_RESULT(TnrV32, TNR);
 #endif
 #if RKAIQ_HAVE_BAYER2DNR_V23
@@ -899,7 +895,7 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
 #if RKAIQ_HAVE_CAC_V11
     APPLY_ANALYZER_RESULT(CacV32, CAC);
 #endif
-#if RKAIQ_HAVE_DEBAYER_V2
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
     APPLY_ANALYZER_RESULT(DebayerV32, DEBAYER);
 #endif
 #if RKAIQ_HAVE_CCM_V2
@@ -912,10 +908,10 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
 #if RKAIQ_HAVE_YNR_V22
     APPLY_ANALYZER_RESULT(YnrV32, YNR);
 #endif
-#if RKAIQ_HAVE_CNR_V30
+#if (RKAIQ_HAVE_CNR_V30 || RKAIQ_HAVE_CNR_V30_LITE)
     APPLY_ANALYZER_RESULT(CnrV32, UVNR);
 #endif
-#if RKAIQ_HAVE_SHARP_V33
+#if (RKAIQ_HAVE_SHARP_V33 || RKAIQ_HAVE_SHARP_V33_LITE)
     APPLY_ANALYZER_RESULT(SharpV32, SHARPEN);
 #endif
 #if RKAIQ_HAVE_AWB_V32
@@ -926,6 +922,9 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
 #endif
 #if RKAIQ_HAVE_AWB_V32
     APPLY_ANALYZER_RESULT(AwbGainV32, AWBGAIN);
+#endif
+#if RKAIQ_HAVE_AF_V32_LITE || RKAIQ_ONLY_AF_STATS_V32_LITE
+    APPLY_ANALYZER_RESULT(AfV32Lite, AF);
 #endif
     mCamHw->applyAnalyzerResult(results_list);
 
@@ -1223,7 +1222,9 @@ XCamReturn RkAiqManager::calibTuning(CamCalibDbV2Context_t* aiqCalib,
     if (change_list != nullptr)
         std::for_each(
             std::begin(*change_list), std::end(*change_list),
-            [](const std::string& name) { std::cout << "tuning : " << name << std::endl; });
+        [](const std::string & name) {
+        std::cout << "tuning : " << name << std::endl;
+    });
     mRkAiqAnalyzer->calibTuning(aiqCalib, change_list);
 
     // Won't free calib witch from iqfiles
@@ -1240,7 +1241,7 @@ XCamReturn RkAiqManager::calibTuning(CamCalibDbV2Context_t* aiqCalib,
 
 void RkAiqManager::unsetTuningCalibDb()
 {
-  tuningCalib = NULL;
+    tuningCalib = NULL;
 }
 
 } //namespace RkCam

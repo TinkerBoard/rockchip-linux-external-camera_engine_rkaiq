@@ -54,6 +54,9 @@ XCamReturn
 rk_smart_ir_config(rk_smart_ir_ctx_t* ctx, rk_smart_ir_params_t* config);
 
 XCamReturn
+rk_smart_ir_set_status(rk_smart_ir_ctx_t* ctx, rk_smart_ir_result_t result);
+
+XCamReturn
 rk_smart_ir_runOnce(rk_smart_ir_ctx_t* ctx, rk_aiq_isp_stats_t* stats_ref, rk_smart_ir_result_t* result);
 
 RKAIQ_END_DECLARE

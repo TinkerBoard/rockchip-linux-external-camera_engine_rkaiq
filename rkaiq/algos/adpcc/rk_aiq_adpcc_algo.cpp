@@ -826,6 +826,186 @@ AdpccResult_t Api_Expert_mode_select(
     return ret;
 }
 
+AdpccResult_t Expert_mode_param_cpy(
+    Adpcc_basic_cfg_params_t *pSelect,
+    Adpcc_basic_params_select_t *pParams)
+{
+    AdpccResult_t ret = ADPCC_RET_SUCCESS;
+
+    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+
+    if(pSelect == NULL) {
+        ret = ADPCC_RET_NULL_POINTER;
+        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        return ret;
+    }
+
+    if(pParams == NULL) {
+        ret = ADPCC_RET_NULL_POINTER;
+        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        return ret;
+    }
+
+    //mode 0x0000
+    pSelect->stage1_enable = pParams->stage1_enable;
+    pSelect->grayscale_mode = pParams->grayscale_mode;
+    pSelect->enable = pParams->enable;
+
+    //output_mode 0x0004
+    pSelect->sw_rk_out_sel = pParams->sw_rk_out_sel;
+    pSelect->sw_dpcc_output_sel = pParams->sw_dpcc_output_sel;
+    pSelect->stage1_rb_3x3 = pParams->stage1_rb_3x3;
+    pSelect->stage1_g_3x3 = pParams->stage1_g_3x3;
+    pSelect->stage1_incl_rb_center = pParams->stage1_incl_rb_center;
+    pSelect->stage1_incl_green_center = pParams->stage1_incl_green_center;
+
+    //set_use 0x0008
+    pSelect->stage1_use_fix_set = pParams->stage1_use_fix_set;
+    pSelect->stage1_use_set_3 = pParams->stage1_use_set_3;
+    pSelect->stage1_use_set_2 = pParams->stage1_use_set_2;
+    pSelect->stage1_use_set_1 = pParams->stage1_use_set_1;
+
+    //methods_set_1 0x000c
+    pSelect->sw_rk_red_blue1_en = pParams->sw_rk_red_blue1_en;
+    pSelect->rg_red_blue1_enable = pParams->rg_red_blue1_enable;
+    pSelect->rnd_red_blue1_enable = pParams->rnd_red_blue1_enable;
+    pSelect->ro_red_blue1_enable = pParams->ro_red_blue1_enable;
+    pSelect->lc_red_blue1_enable = pParams->lc_red_blue1_enable;
+    pSelect->pg_red_blue1_enable = pParams->pg_red_blue1_enable;
+    pSelect->sw_rk_green1_en = pParams->sw_rk_green1_en;
+    pSelect->rg_green1_enable = pParams->rg_green1_enable;
+    pSelect->rnd_green1_enable = pParams->rnd_green1_enable;
+    pSelect->ro_green1_enable = pParams->ro_green1_enable;
+    pSelect->lc_green1_enable = pParams->lc_green1_enable;
+    pSelect->pg_green1_enable = pParams->pg_green1_enable;
+
+    //methods_set_2 0x0010
+    pSelect->sw_rk_red_blue2_en = pParams->sw_rk_red_blue2_en;
+    pSelect->rg_red_blue2_enable = pParams->rg_red_blue2_enable;
+    pSelect->rnd_red_blue2_enable = pParams->rnd_red_blue2_enable;
+    pSelect->ro_red_blue2_enable = pParams->ro_red_blue2_enable;
+    pSelect->lc_red_blue2_enable = pParams->lc_red_blue2_enable;
+    pSelect->pg_red_blue2_enable = pParams->pg_red_blue2_enable;
+    pSelect->sw_rk_green2_en = pParams->sw_rk_green2_en;
+    pSelect->rg_green2_enable = pParams->rg_green2_enable;
+    pSelect->rnd_green2_enable = pParams->rnd_green2_enable;
+    pSelect->ro_green2_enable = pParams->ro_green2_enable;
+    pSelect->lc_green2_enable = pParams->lc_green2_enable;
+    pSelect->pg_green2_enable = pParams->pg_green2_enable;
+
+    //methods_set_3 0x0014
+    pSelect->sw_rk_red_blue3_en = pParams->sw_rk_red_blue3_en;
+    pSelect->rg_red_blue3_enable = pParams->rg_red_blue3_enable;
+    pSelect->rnd_red_blue3_enable = pParams->rnd_red_blue3_enable;
+    pSelect->ro_red_blue3_enable = pParams->ro_red_blue3_enable;
+    pSelect->lc_red_blue3_enable = pParams->lc_red_blue3_enable;
+    pSelect->pg_red_blue3_enable = pParams->pg_red_blue3_enable;
+    pSelect->sw_rk_green3_en = pParams->sw_rk_green3_en;
+    pSelect->rg_green3_enable = pParams->rg_green3_enable;
+    pSelect->rnd_green3_enable = pParams->rnd_green3_enable;
+    pSelect->ro_green3_enable = pParams->ro_green3_enable;
+    pSelect->lc_green3_enable = pParams->lc_green3_enable;
+    pSelect->pg_green3_enable = pParams->pg_green3_enable;
+
+    //line_thresh_1 0x0018
+    pSelect->sw_mindis1_rb = pParams->sw_mindis1_rb;
+    pSelect->sw_mindis1_g = pParams->sw_mindis1_g;
+    pSelect->line_thr_1_rb = pParams->line_thr_1_rb;
+    pSelect->line_thr_1_g = pParams->line_thr_1_g;
+
+    //line_mad_fac_1 0x001c
+    pSelect->sw_dis_scale_min1 = pParams->sw_dis_scale_min1;
+    pSelect->sw_dis_scale_max1 = pParams->sw_dis_scale_max1;
+    pSelect->line_mad_fac_1_rb = pParams->line_mad_fac_1_rb;
+    pSelect->line_mad_fac_1_g = pParams->line_mad_fac_1_g;
+
+    //pg_fac_1 0x0020
+    pSelect->pg_fac_1_rb = pParams->pg_fac_1_rb;
+    pSelect->pg_fac_1_g = pParams->pg_fac_1_g;
+
+    //rnd_thresh_1 0x0024
+    pSelect->rnd_thr_1_rb = pParams->rnd_thr_1_rb;
+    pSelect->rnd_thr_1_g = pParams->rnd_thr_1_g;
+
+    //rg_fac_1 0x0028
+    pSelect->rg_fac_1_rb = pParams->rg_fac_1_rb;
+    pSelect->rg_fac_1_g = pParams->rg_fac_1_g;
+
+
+    //line_thresh_2 0x002c
+    pSelect->sw_mindis2_rb = pParams->sw_mindis2_rb;
+    pSelect->sw_mindis2_g = pParams->sw_mindis2_g;
+    pSelect->line_thr_2_rb = pParams->line_thr_2_rb;
+    pSelect->line_thr_2_g = pParams->line_thr_2_g;
+
+    //line_mad_fac_2 0x0030
+    pSelect->sw_dis_scale_min2 = pParams->sw_dis_scale_min2;
+    pSelect->sw_dis_scale_max2 = pParams->sw_dis_scale_max2;
+    pSelect->line_mad_fac_2_rb = pParams->line_mad_fac_2_rb;
+    pSelect->line_mad_fac_2_g = pParams->line_mad_fac_2_g;
+
+    //pg_fac_2 0x0034
+    pSelect->pg_fac_2_rb = pParams->pg_fac_2_rb;
+    pSelect->pg_fac_2_g = pParams->pg_fac_2_g;
+
+    //rnd_thresh_2 0x0038
+    pSelect->rnd_thr_2_rb = pParams->rnd_thr_2_rb;
+    pSelect->rnd_thr_2_g = pParams->rnd_thr_2_g;
+
+    //rg_fac_2 0x003c
+    pSelect->rg_fac_2_rb = pParams->rg_fac_2_rb;
+    pSelect->rg_fac_2_g = pParams->rg_fac_2_g;
+
+
+    //line_thresh_3 0x0040
+    pSelect->sw_mindis3_rb = pParams->sw_mindis3_rb;
+    pSelect->sw_mindis3_g = pParams->sw_mindis3_g;
+    pSelect->line_thr_3_rb = pParams->line_thr_3_rb;
+    pSelect->line_thr_3_g = pParams->line_thr_3_g;
+
+    //line_mad_fac_3 0x0044
+    pSelect->sw_dis_scale_min3 = pParams->sw_dis_scale_min3;
+    pSelect->sw_dis_scale_max3 = pParams->sw_dis_scale_max3;
+    pSelect->line_mad_fac_3_rb = pParams->line_mad_fac_3_rb;
+    pSelect->line_mad_fac_3_g = pParams->line_mad_fac_3_g;
+
+    //pg_fac_3 0x0048
+    pSelect->pg_fac_3_rb = pParams->pg_fac_3_rb;
+    pSelect->pg_fac_3_g = pParams->pg_fac_3_g;
+
+    //rnd_thresh_3 0x004c
+    pSelect->rnd_thr_3_rb = pParams->rnd_thr_3_rb;
+    pSelect->rnd_thr_3_g = pParams->rnd_thr_3_g;
+
+    //rg_fac_3 0x0050
+    pSelect->rg_fac_3_rb = pParams->rg_fac_3_rb;
+    pSelect->rg_fac_3_g = pParams->rg_fac_3_g;
+
+    //ro_limits 0x0054
+    pSelect->ro_lim_3_rb = pParams->ro_lim_3_rb;
+    pSelect->ro_lim_3_g = pParams->ro_lim_3_g;
+    pSelect->ro_lim_2_rb = pParams->ro_lim_2_rb;
+    pSelect->ro_lim_2_g = pParams->ro_lim_2_g;
+    pSelect->ro_lim_1_rb = pParams->ro_lim_1_rb;
+    pSelect->ro_lim_1_g = pParams->ro_lim_1_g;
+
+    //rnd_offs 0x0058
+    pSelect->rnd_offs_3_rb = pParams->rnd_offs_3_rb;
+    pSelect->rnd_offs_3_g = pParams->rnd_offs_3_g;
+    pSelect->rnd_offs_2_rb = pParams->rnd_offs_2_rb;
+    pSelect->rnd_offs_2_g = pParams->rnd_offs_2_g;
+    pSelect->rnd_offs_1_rb = pParams->rnd_offs_1_rb;
+    pSelect->rnd_offs_1_g = pParams->rnd_offs_1_g;
+
+
+    LOGD_ADPCC("%s:(%d) %d %d %d %d %d\n", __FUNCTION__, __LINE__,
+               pSelect->enable, pSelect->line_thr_2_g, pSelect->line_mad_fac_2_rb,
+               pSelect->ro_lim_2_g, pSelect->rnd_offs_2_g);
+
+    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    return ret;
+}
+
 AdpccResult_t Expert_mode_select_basic_params_by_ISO(
     Adpcc_basic_params_t *pParams,
     Adpcc_basic_cfg_params_t *pSelect,
@@ -890,7 +1070,12 @@ AdpccResult_t Expert_mode_select_basic_params_by_ISO(
     LOGD_ADPCC("%s:(%d) iso:%d lowLevel:%d hightLevel:%d lowIso:%d HighIso:%d ratio:%f\n",
                __FUNCTION__, __LINE__, iso, lowLevel, highLevel, lowIso, highIso, ratio);
 
-    memcpy(pSelect, &pParams->arBasic[lowLevel], sizeof(*pSelect));
+    // copy param from pParams->arBasic[lowLevel]
+    ret = Expert_mode_param_cpy(pSelect, &pParams->arBasic[lowLevel]);
+    if (ret != ADPCC_RET_SUCCESS) {
+        LOGE_ADPCC("%s(%d): failed to copy Expert mode params\n", __FUNCTION__, __LINE__);
+        return ret;
+    }
 
     LOGD_ADPCC("%s:(%d) %d %d %d %d %d\n", __FUNCTION__, __LINE__,
                pSelect->enable, pSelect->line_thr_2_g, pSelect->line_mad_fac_2_rb,
@@ -2536,7 +2721,6 @@ AdpccResult_t AdpccReloadPara(AdpccContext_t *pAdpccCtx, CamCalibDbV2Context_t *
     dpcc_fast_mode_basic_params_init(&pAdpccCtx->stAuto.stFastMode, &pAdpccCtx->stDpccCalib);
     dpcc_pdaf_params_init(&pAdpccCtx->stAuto.stPdafParams, &pAdpccCtx->stDpccCalib.DpccTuningPara.Dpcc_pdaf);
     dpcc_sensor_params_init(&pAdpccCtx->stAuto.stSensorDpcc, &pAdpccCtx->stDpccCalib);
-    memset(&pAdpccCtx->stAuto.stPdafParams, 0x00, sizeof(pAdpccCtx->stAuto.stPdafParams));
 
     LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ADPCC_RET_SUCCESS;

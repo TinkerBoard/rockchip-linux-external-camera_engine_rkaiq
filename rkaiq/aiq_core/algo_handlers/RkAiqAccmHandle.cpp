@@ -365,7 +365,7 @@ XCamReturn RkAiqAccmHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
     RkAiqAlgoProcResAccm* accm_com = (RkAiqAlgoProcResAccm*)mProcOutParam;
-#if defined(ISP_HW_V32)
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     rk_aiq_isp_ccm_params_v32_t* ccm_param = params->mCcmV32Params->data().ptr();
 #else
     rk_aiq_isp_ccm_params_v20_t* ccm_param = params->mCcmParams->data().ptr();
@@ -384,7 +384,7 @@ XCamReturn RkAiqAccmHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
         ccm_param->frame_id = shared->frameId;
     }
 
-#if defined(ISP_HW_V32)
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     ccm_param->result = accm_rk->accm_hw_conf_v2;
 #else
     ccm_param->result = accm_rk->accm_hw_conf;
@@ -393,7 +393,7 @@ XCamReturn RkAiqAccmHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     if (!this->getAlgoId()) {
         RkAiqAlgoProcResAccm* accm_rk_int = (RkAiqAlgoProcResAccm*)accm_com;
     }
-#if defined(ISP_HW_V32)
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     cur_params->mCcmV32Params = params->mCcmV32Params;
 #else
     cur_params->mCcmParams = params->mCcmParams;

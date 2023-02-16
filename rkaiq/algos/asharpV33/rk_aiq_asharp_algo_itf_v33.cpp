@@ -80,8 +80,14 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
 
     if (!!(params->u.prepare.conf_type & RK_AIQ_ALGO_CONFTYPE_UPDATECALIB)) {
 #if (ASHARP_USE_JSON_FILE_V33)
+#if RKAIQ_HAVE_SHARP_V33
         CalibDbV2_SharpV33_t* calibv2_sharp = (CalibDbV2_SharpV33_t*)(CALIBDBV2_GET_MODULE_PTR(
                 pCfgParam->com.u.prepare.calibv2, sharp_v33));
+#else
+        CalibDbV2_SharpV33Lite_t* calibv2_sharp =
+            (CalibDbV2_SharpV33Lite_t*)(CALIBDBV2_GET_MODULE_PTR(pCfgParam->com.u.prepare.calibv2,
+                                                                 sharp_v33));
+#endif
         pAsharpCtx->sharp_v33               = *calibv2_sharp;
 #endif
         pAsharpCtx->isIQParaUpdate = true;

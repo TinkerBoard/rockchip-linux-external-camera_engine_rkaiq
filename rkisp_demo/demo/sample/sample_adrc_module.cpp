@@ -30,15 +30,18 @@ static void sample_adrc_usage()
     printf("\t 6) ADRC:         test rk_aiq_user_api2_adrc_v12_SetAttrib stManual Sync.\n");
     printf("\t 7) ADRC:         test rk_aiq_user_api2_adrc_v12_GetAttrib stManual Async.\n");
     printf("\t 8) ADRC:         test rk_aiq_user_api2_adrc_v12_GetAttrib.\n");
-    printf("\t 9) ADRC:         test rk_aiq_user_api2_adrc_SetAttrib stManual Sync.\n");
-    printf("\t a) ADRC:         test rk_aiq_user_api2_adrc_SetAttrib stManual Async.\n");
-    printf("\t b) ADRC:         test rk_aiq_user_api2_adrc_GetAttrib.\n");
-    printf("\t c) ADRC:         test rk_aiq_uapi2_getDrcGain.\n");
-    printf("\t d) ADRC:         test rk_aiq_uapi2_setDrcGain.\n");
-    printf("\t e) ADRC:         test rk_aiq_uapi2_getDrcHiLit.\n");
-    printf("\t f) ADRC:         test rk_aiq_uapi2_setDrcHiLit.\n");
-    printf("\t g) ADRC:         test rk_aiq_uapi2_getDrcLocalData.\n");
-    printf("\t h) ADRC:         test rk_aiq_uapi2_setDrcLocalData.\n");
+    printf("\t 9) ADRC:         test rk_aiq_user_api2_adrc_v12_lite_SetAttrib stManual Sync.\n");
+    printf("\t a) ADRC:         test rk_aiq_user_api2_adrc_v12_lite_GetAttrib stManual Async.\n");
+    printf("\t b) ADRC:         test rk_aiq_user_api2_adrc_v12_lite_GetAttrib.\n");
+    printf("\t c) ADRC:         test rk_aiq_user_api2_adrc_SetAttrib stManual Sync.\n");
+    printf("\t d) ADRC:         test rk_aiq_user_api2_adrc_SetAttrib stManual Async.\n");
+    printf("\t e) ADRC:         test rk_aiq_user_api2_adrc_GetAttrib.\n");
+    printf("\t f) ADRC:         test rk_aiq_uapi2_getDrcGain.\n");
+    printf("\t g) ADRC:         test rk_aiq_uapi2_setDrcGain.\n");
+    printf("\t h) ADRC:         test rk_aiq_uapi2_getDrcHiLit.\n");
+    printf("\t i) ADRC:         test rk_aiq_uapi2_setDrcHiLit.\n");
+    printf("\t j) ADRC:         test rk_aiq_uapi2_getDrcLocalData.\n");
+    printf("\t k) ADRC:         test rk_aiq_uapi2_setDrcLocalData.\n");
     printf("\t q) ADRC:         return to main sample screen.\n");
 
     printf("\n");
@@ -60,6 +63,7 @@ XCamReturn sample_adrc_module(const void *arg)
     drcAttrV10_t attr_v10;
     drcAttrV11_t attr_v11;
     drcAttrV12_t attr_v12;
+    drcAttrV12Lite_t attr_v12_lite;
     drc_attrib_t attr_v2;
     const demo_context_t *demo_ctx = (demo_context_t *)arg;
     const rk_aiq_sys_ctx_t* ctx ;
@@ -98,7 +102,6 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v10.stManual.LocalTMOSetting.Range_sgm_pre               = 0.2;
                 attr_v10.stManual.LocalTMOSetting.Space_sgm_cur               = 4068;
                 attr_v10.stManual.LocalTMOSetting.Space_sgm_pre               = 3068;
-                attr_v10.stManual.LocalTMOSetting.Space_sgm_pre               = 3068;
                 attr_v10.stManual.CompressSetting.Mode                        = COMPRESS_AUTO;
                 attr_v10.stManual.CompressSetting.Manual_curve[0]             = 0;
                 attr_v10.stManual.CompressSetting.Manual_curve[1]             = 558;
@@ -111,7 +114,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v10.stManual.CompressSetting.Manual_curve[8]             = 3744;
                 attr_v10.stManual.CompressSetting.Manual_curve[9]             = 4473;
                 attr_v10.stManual.CompressSetting.Manual_curve[10]            = 5139;
-                attr_v10.stManual.CompressSetting.Manual_curve[10]            = 5751;
+                attr_v10.stManual.CompressSetting.Manual_curve[11]            = 5751;
                 attr_v10.stManual.CompressSetting.Manual_curve[12]            = 6316;
                 attr_v10.stManual.CompressSetting.Manual_curve[13]            = 6838;
                 attr_v10.stManual.CompressSetting.Manual_curve[14]            = 7322;
@@ -128,7 +131,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v10.stManual.Scale_y[8]                                  = 919;
                 attr_v10.stManual.Scale_y[9]                                  = 1066;
                 attr_v10.stManual.Scale_y[10]                                 = 1210;
-                attr_v10.stManual.Scale_y[10]                                 = 1479;
+                attr_v10.stManual.Scale_y[11]                                 = 1479;
                 attr_v10.stManual.Scale_y[12]                                 = 1700;
                 attr_v10.stManual.Scale_y[13]                                 = 1863;
                 attr_v10.stManual.Scale_y[14]                                 = 1968;
@@ -160,7 +163,6 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v10.stManual.LocalTMOSetting.Range_sgm_pre               = 0.2;
                 attr_v10.stManual.LocalTMOSetting.Space_sgm_cur               = 4068;
                 attr_v10.stManual.LocalTMOSetting.Space_sgm_pre               = 3068;
-                attr_v10.stManual.LocalTMOSetting.Space_sgm_pre               = 3068;
                 attr_v10.stManual.CompressSetting.Mode                        = COMPRESS_AUTO;
                 attr_v10.stManual.CompressSetting.Manual_curve[0]             = 0;
                 attr_v10.stManual.CompressSetting.Manual_curve[1]             = 558;
@@ -173,7 +175,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v10.stManual.CompressSetting.Manual_curve[8]             = 3744;
                 attr_v10.stManual.CompressSetting.Manual_curve[9]             = 4473;
                 attr_v10.stManual.CompressSetting.Manual_curve[10]            = 5139;
-                attr_v10.stManual.CompressSetting.Manual_curve[10]            = 5751;
+                attr_v10.stManual.CompressSetting.Manual_curve[11]            = 5751;
                 attr_v10.stManual.CompressSetting.Manual_curve[12]            = 6316;
                 attr_v10.stManual.CompressSetting.Manual_curve[13]            = 6838;
                 attr_v10.stManual.CompressSetting.Manual_curve[14]            = 7322;
@@ -190,7 +192,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v10.stManual.Scale_y[8]                                  = 919;
                 attr_v10.stManual.Scale_y[9]                                  = 1066;
                 attr_v10.stManual.Scale_y[10]                                 = 1210;
-                attr_v10.stManual.Scale_y[10]                                 = 1479;
+                attr_v10.stManual.Scale_y[11]                                 = 1479;
                 attr_v10.stManual.Scale_y[12]                                 = 1700;
                 attr_v10.stManual.Scale_y[13]                                 = 1863;
                 attr_v10.stManual.Scale_y[14]                                 = 1968;
@@ -234,7 +236,6 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v11.stManual.LocalSetting.Range_sgm_cur             = 0.2;
                 attr_v11.stManual.LocalSetting.Range_sgm_pre             = 0.2;
                 attr_v11.stManual.LocalSetting.Space_sgm_cur             = 4068;
-                attr_v11.stManual.LocalSetting.Space_sgm_pre             = 3068;
                 attr_v11.stManual.LocalSetting.Space_sgm_pre             = 3068;
                 attr_v11.stManual.CompressSetting.Mode                   = COMPRESS_AUTO;
                 attr_v11.stManual.CompressSetting.Manual_curve[0]        = 0;
@@ -298,7 +299,6 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v11.stManual.LocalSetting.Range_sgm_cur             = 0.2;
                 attr_v11.stManual.LocalSetting.Range_sgm_pre             = 0.2;
                 attr_v11.stManual.LocalSetting.Space_sgm_cur             = 4068;
-                attr_v11.stManual.LocalSetting.Space_sgm_pre             = 3068;
                 attr_v11.stManual.LocalSetting.Space_sgm_pre             = 3068;
                 attr_v11.stManual.CompressSetting.Mode                   = COMPRESS_AUTO;
                 attr_v11.stManual.CompressSetting.Manual_curve[0]        = 0;
@@ -380,7 +380,6 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v12.stManual.LocalSetting.Range_sgm_pre             = 0.2;
                 attr_v12.stManual.LocalSetting.Space_sgm_cur             = 4068;
                 attr_v12.stManual.LocalSetting.Space_sgm_pre             = 3068;
-                attr_v12.stManual.LocalSetting.Space_sgm_pre             = 3068;
                 attr_v12.stManual.CompressSetting.Mode                   = COMPRESS_AUTO;
                 attr_v12.stManual.CompressSetting.Manual_curve[0]        = 0;
                 attr_v12.stManual.CompressSetting.Manual_curve[1]        = 558;
@@ -393,7 +392,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v12.stManual.CompressSetting.Manual_curve[8]        = 3744;
                 attr_v12.stManual.CompressSetting.Manual_curve[9]        = 4473;
                 attr_v12.stManual.CompressSetting.Manual_curve[10]       = 5139;
-                attr_v12.stManual.CompressSetting.Manual_curve[12]       = 5751;
+                attr_v12.stManual.CompressSetting.Manual_curve[11]       = 5751;
                 attr_v12.stManual.CompressSetting.Manual_curve[12]       = 6316;
                 attr_v12.stManual.CompressSetting.Manual_curve[13]       = 6838;
                 attr_v12.stManual.CompressSetting.Manual_curve[14]       = 7322;
@@ -410,7 +409,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v12.stManual.Scale_y[8]                             = 919;
                 attr_v12.stManual.Scale_y[9]                             = 1066;
                 attr_v12.stManual.Scale_y[10]                            = 1212;
-                attr_v12.stManual.Scale_y[12]                            = 1479;
+                attr_v12.stManual.Scale_y[11]                            = 1479;
                 attr_v12.stManual.Scale_y[12]                            = 1700;
                 attr_v12.stManual.Scale_y[13]                            = 1863;
                 attr_v12.stManual.Scale_y[14]                            = 1968;
@@ -450,7 +449,6 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v12.stManual.LocalSetting.Range_sgm_pre             = 0.2;
                 attr_v12.stManual.LocalSetting.Space_sgm_cur             = 4068;
                 attr_v12.stManual.LocalSetting.Space_sgm_pre             = 3068;
-                attr_v12.stManual.LocalSetting.Space_sgm_pre             = 3068;
                 attr_v12.stManual.CompressSetting.Mode                   = COMPRESS_AUTO;
                 attr_v12.stManual.CompressSetting.Manual_curve[0]        = 0;
                 attr_v12.stManual.CompressSetting.Manual_curve[1]        = 558;
@@ -463,7 +461,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v12.stManual.CompressSetting.Manual_curve[8]        = 3744;
                 attr_v12.stManual.CompressSetting.Manual_curve[9]        = 4473;
                 attr_v12.stManual.CompressSetting.Manual_curve[10]       = 5139;
-                attr_v12.stManual.CompressSetting.Manual_curve[12]       = 5751;
+                attr_v12.stManual.CompressSetting.Manual_curve[11]       = 5751;
                 attr_v12.stManual.CompressSetting.Manual_curve[12]       = 6316;
                 attr_v12.stManual.CompressSetting.Manual_curve[13]       = 6838;
                 attr_v12.stManual.CompressSetting.Manual_curve[14]       = 7322;
@@ -480,7 +478,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v12.stManual.Scale_y[8]                             = 919;
                 attr_v12.stManual.Scale_y[9]                             = 1066;
                 attr_v12.stManual.Scale_y[10]                            = 1212;
-                attr_v12.stManual.Scale_y[12]                            = 1479;
+                attr_v12.stManual.Scale_y[11]                            = 1479;
                 attr_v12.stManual.Scale_y[12]                            = 1700;
                 attr_v12.stManual.Scale_y[13]                            = 1863;
                 attr_v12.stManual.Scale_y[14]                            = 1968;
@@ -504,6 +502,150 @@ XCamReturn sample_adrc_module(const void *arg)
                 break;
             }
             case '9': {
+                printf("\t ADRC test rk_aiq_user_api2_adrc_v12_lite_SetAttrib stManual Sync\n\n");
+                attr_v12_lite.sync.sync_mode                            = RK_AIQ_UAPI_MODE_DEFAULT;
+                attr_v12_lite.sync.done                                 = false;
+                attr_v12_lite.opMode                                    = DRC_OPMODE_MANUAL;
+                attr_v12_lite.stManual.Enable                           = true;
+                attr_v12_lite.stManual.DrcGain.Alpha                    = 0.2;
+                attr_v12_lite.stManual.DrcGain.DrcGain                  = 2;
+                attr_v12_lite.stManual.DrcGain.Clip                     = 1;
+                attr_v12_lite.stManual.HiLight.HiLightData.Strength     = 0.5;
+                attr_v12_lite.stManual.HiLight.HiLightData.gas_t        = 0.5;
+                attr_v12_lite.stManual.HiLight.gas_l0                   = 24;
+                attr_v12_lite.stManual.HiLight.gas_l1                   = 10;
+                attr_v12_lite.stManual.HiLight.gas_l2                   = 10;
+                attr_v12_lite.stManual.HiLight.gas_l3                   = 5;
+                attr_v12_lite.stManual.LocalSetting.LocalData.LocalWeit = 1;
+                attr_v12_lite.stManual.LocalSetting.LocalData.LocalAutoEnable = 1;
+                attr_v12_lite.stManual.LocalSetting.LocalData.LocalAutoWeit   = 0.5;
+                attr_v12_lite.stManual.LocalSetting.LocalData.GlobalContrast  = 0.5;
+                attr_v12_lite.stManual.LocalSetting.LocalData.LoLitContrast   = 0.5;
+                attr_v12_lite.stManual.LocalSetting.MotionData.MotionStr      = 0.0;
+                attr_v12_lite.stManual.LocalSetting.curPixWeit                = 0.376471;
+                attr_v12_lite.stManual.LocalSetting.Range_force_sgm           = 0.0;
+                attr_v12_lite.stManual.LocalSetting.Range_sgm_cur             = 0.2;
+                attr_v12_lite.stManual.LocalSetting.Space_sgm_cur             = 4068;
+                attr_v12_lite.stManual.CompressSetting.Mode                   = COMPRESS_AUTO;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[0]        = 0;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[1]        = 558;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[2]        = 1087;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[3]        = 1588;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[4]        = 2063;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[5]        = 2515;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[6]        = 2944;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[7]        = 3353;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[8]        = 3744;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[9]        = 4473;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[10]       = 5139;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[11]       = 5751;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[12]       = 6316;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[13]       = 6838;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[14]       = 7322;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[15]       = 7772;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[16]       = 8192;
+                attr_v12_lite.stManual.Scale_y[0]                             = 0;
+                attr_v12_lite.stManual.Scale_y[1]                             = 2;
+                attr_v12_lite.stManual.Scale_y[2]                             = 20;
+                attr_v12_lite.stManual.Scale_y[3]                             = 76;
+                attr_v12_lite.stManual.Scale_y[4]                             = 193;
+                attr_v12_lite.stManual.Scale_y[5]                             = 381;
+                attr_v12_lite.stManual.Scale_y[6]                             = 631;
+                attr_v12_lite.stManual.Scale_y[7]                             = 772;
+                attr_v12_lite.stManual.Scale_y[8]                             = 919;
+                attr_v12_lite.stManual.Scale_y[9]                             = 1066;
+                attr_v12_lite.stManual.Scale_y[10]                            = 1212;
+                attr_v12_lite.stManual.Scale_y[11]                            = 1479;
+                attr_v12_lite.stManual.Scale_y[12]                            = 1700;
+                attr_v12_lite.stManual.Scale_y[13]                            = 1863;
+                attr_v12_lite.stManual.Scale_y[14]                            = 1968;
+                attr_v12_lite.stManual.Scale_y[15]                            = 2024;
+                attr_v12_lite.stManual.Scale_y[16]                            = 2048;
+                attr_v12_lite.stManual.Edge_Weit                              = 0.02;
+                attr_v12_lite.stManual.OutPutLongFrame                        = false;
+                attr_v12_lite.stManual.IIR_frame                              = 2;
+                rk_aiq_user_api2_adrc_v12_lite_SetAttrib(ctx, &attr_v12_lite);
+                break;
+            }
+            case 'a': {
+                printf("\t ADRC test rk_aiq_user_api2_adrc_v12_lite_SetAttrib stManual Async\n\n");
+                attr_v12_lite.sync.sync_mode                            = RK_AIQ_UAPI_MODE_ASYNC;
+                attr_v12_lite.sync.done                                 = false;
+                attr_v12_lite.opMode                                    = DRC_OPMODE_MANUAL;
+                attr_v12_lite.stManual.Enable                           = true;
+                attr_v12_lite.stManual.DrcGain.Alpha                    = 0.1;
+                attr_v12_lite.stManual.DrcGain.DrcGain                  = 2;
+                attr_v12_lite.stManual.DrcGain.Clip                     = 1;
+                attr_v12_lite.stManual.HiLight.HiLightData.Strength     = 0.5;
+                attr_v12_lite.stManual.HiLight.HiLightData.gas_t        = 0.5;
+                attr_v12_lite.stManual.HiLight.gas_l0                   = 24;
+                attr_v12_lite.stManual.HiLight.gas_l1                   = 10;
+                attr_v12_lite.stManual.HiLight.gas_l2                   = 10;
+                attr_v12_lite.stManual.HiLight.gas_l3                   = 5;
+                attr_v12_lite.stManual.LocalSetting.LocalData.LocalWeit = 1;
+                attr_v12_lite.stManual.LocalSetting.LocalData.LocalAutoEnable = 1;
+                attr_v12_lite.stManual.LocalSetting.LocalData.LocalAutoWeit   = 0.5;
+                attr_v12_lite.stManual.LocalSetting.LocalData.GlobalContrast  = 0.5;
+                attr_v12_lite.stManual.LocalSetting.LocalData.LoLitContrast   = 0.5;
+                attr_v12_lite.stManual.LocalSetting.MotionData.MotionStr      = 0.0;
+                attr_v12_lite.stManual.LocalSetting.curPixWeit                = 0.376471;
+                attr_v12_lite.stManual.LocalSetting.Range_force_sgm           = 0.0;
+                attr_v12_lite.stManual.LocalSetting.Range_sgm_cur             = 0.2;
+                attr_v12_lite.stManual.LocalSetting.Space_sgm_cur             = 4068;
+                attr_v12_lite.stManual.CompressSetting.Mode                   = COMPRESS_AUTO;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[0]        = 0;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[1]        = 558;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[2]        = 1087;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[3]        = 1588;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[4]        = 2063;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[5]        = 2515;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[6]        = 2944;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[7]        = 3353;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[8]        = 3744;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[9]        = 4473;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[10]       = 5139;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[11]       = 5751;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[12]       = 6316;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[13]       = 6838;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[14]       = 7322;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[15]       = 7772;
+                attr_v12_lite.stManual.CompressSetting.Manual_curve[16]       = 8192;
+                attr_v12_lite.stManual.Scale_y[0]                             = 0;
+                attr_v12_lite.stManual.Scale_y[1]                             = 2;
+                attr_v12_lite.stManual.Scale_y[2]                             = 20;
+                attr_v12_lite.stManual.Scale_y[3]                             = 76;
+                attr_v12_lite.stManual.Scale_y[4]                             = 193;
+                attr_v12_lite.stManual.Scale_y[5]                             = 381;
+                attr_v12_lite.stManual.Scale_y[6]                             = 631;
+                attr_v12_lite.stManual.Scale_y[7]                             = 772;
+                attr_v12_lite.stManual.Scale_y[8]                             = 919;
+                attr_v12_lite.stManual.Scale_y[9]                             = 1066;
+                attr_v12_lite.stManual.Scale_y[10]                            = 1212;
+                attr_v12_lite.stManual.Scale_y[11]                            = 1479;
+                attr_v12_lite.stManual.Scale_y[12]                            = 1700;
+                attr_v12_lite.stManual.Scale_y[13]                            = 1863;
+                attr_v12_lite.stManual.Scale_y[14]                            = 1968;
+                attr_v12_lite.stManual.Scale_y[15]                            = 2024;
+                attr_v12_lite.stManual.Scale_y[16]                            = 2048;
+                attr_v12_lite.stManual.Edge_Weit                              = 0.02;
+                attr_v12_lite.stManual.OutPutLongFrame                        = false;
+                attr_v12_lite.stManual.IIR_frame                              = 2;
+                rk_aiq_user_api2_adrc_v12_lite_SetAttrib(ctx, &attr_v12_lite);
+                break;
+            }
+            case 'b': {
+                printf("\t ADRC test rk_aiq_user_api2_lite_adrc_GetAttrib\n\n");
+                rk_aiq_user_api2_adrc_v12_lite_GetAttrib(ctx, &attr_v12_lite);
+                printf("\t sync = %d, done = %d\n", attr_v12_lite.sync.sync_mode,
+                       attr_v12_lite.sync.done);
+                printf("\t opMode:%d EnvLv:%f ISO:%f\n\n", attr_v12_lite.opMode,
+                       attr_v12_lite.Info.CtrlInfo.EnvLv, attr_v12_lite.Info.CtrlInfo.ISO);
+                printf("\t stManual DrcGain:%f Alpha:%f Clip:%f\n\n",
+                       attr_v12_lite.stManual.DrcGain.DrcGain, attr_v12_lite.stManual.DrcGain.Alpha,
+                       attr_v12_lite.stManual.DrcGain.Clip);
+                break;
+            }
+            case 'c': {
                 printf("\t ADRC test rk_aiq_user_api2_adrc_SetAttrib stManual Sync\n\n");
                 attr_v2.sync.sync_mode                               = RK_AIQ_UAPI_MODE_DEFAULT;
                 attr_v2.sync.done                                    = false;
@@ -538,7 +680,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v2.stManualV30.CompressSetting.Manual_curve[8]        = 3744;
                 attr_v2.stManualV30.CompressSetting.Manual_curve[9]        = 4473;
                 attr_v2.stManualV30.CompressSetting.Manual_curve[10]       = 5139;
-                attr_v2.stManualV30.CompressSetting.Manual_curve[12]       = 5751;
+                attr_v2.stManualV30.CompressSetting.Manual_curve[11]       = 5751;
                 attr_v2.stManualV30.CompressSetting.Manual_curve[12]       = 6316;
                 attr_v2.stManualV30.CompressSetting.Manual_curve[13]       = 6838;
                 attr_v2.stManualV30.CompressSetting.Manual_curve[14]       = 7322;
@@ -555,7 +697,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v2.stManualV30.Scale_y[8]                             = 919;
                 attr_v2.stManualV30.Scale_y[9]                             = 1066;
                 attr_v2.stManualV30.Scale_y[10]                            = 1212;
-                attr_v2.stManualV30.Scale_y[12]                            = 1479;
+                attr_v2.stManualV30.Scale_y[11]                            = 1479;
                 attr_v2.stManualV30.Scale_y[12]                            = 1700;
                 attr_v2.stManualV30.Scale_y[13]                            = 1863;
                 attr_v2.stManualV30.Scale_y[14]                            = 1968;
@@ -567,7 +709,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 rk_aiq_user_api2_adrc_SetAttrib(ctx, attr_v2);
                 break;
             }
-            case 'a': {
+            case 'd': {
                 printf("\t ADRC test rk_aiq_user_api2_adrc_SetAttrib stManual Async\n\n");
                 attr_v2.sync.sync_mode                                     = RK_AIQ_UAPI_MODE_ASYNC;
                 attr_v2.sync.done                                          = false;
@@ -602,7 +744,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v2.stManualV30.CompressSetting.Manual_curve[8]        = 3744;
                 attr_v2.stManualV30.CompressSetting.Manual_curve[9]        = 4473;
                 attr_v2.stManualV30.CompressSetting.Manual_curve[10]       = 5139;
-                attr_v2.stManualV30.CompressSetting.Manual_curve[12]       = 5751;
+                attr_v2.stManualV30.CompressSetting.Manual_curve[11]       = 5751;
                 attr_v2.stManualV30.CompressSetting.Manual_curve[12]       = 6316;
                 attr_v2.stManualV30.CompressSetting.Manual_curve[13]       = 6838;
                 attr_v2.stManualV30.CompressSetting.Manual_curve[14]       = 7322;
@@ -619,7 +761,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 attr_v2.stManualV30.Scale_y[8]                             = 919;
                 attr_v2.stManualV30.Scale_y[9]                             = 1066;
                 attr_v2.stManualV30.Scale_y[10]                            = 1212;
-                attr_v2.stManualV30.Scale_y[12]                            = 1479;
+                attr_v2.stManualV30.Scale_y[11]                            = 1479;
                 attr_v2.stManualV30.Scale_y[12]                            = 1700;
                 attr_v2.stManualV30.Scale_y[13]                            = 1863;
                 attr_v2.stManualV30.Scale_y[14]                            = 1968;
@@ -631,7 +773,7 @@ XCamReturn sample_adrc_module(const void *arg)
                 rk_aiq_user_api2_adrc_SetAttrib(ctx, attr_v2);
                 break;
             }
-            case 'b': {
+            case 'e': {
                 printf("\t ADRC test rk_aiq_user_api2_adrc_GetAttrib\n\n");
                 rk_aiq_user_api2_adrc_GetAttrib(ctx, &attr_v2);
                 printf("\t sync = %d, done = %d Version:%d\n", attr_v2.sync.sync_mode,
@@ -643,7 +785,7 @@ XCamReturn sample_adrc_module(const void *arg)
                        attr_v2.stManualV30.DrcGain.Clip);
                 break;
             }
-            case 'c': {
+            case 'f': {
                 printf("\t ADRC test rk_aiq_uapi2_getDrcGain\n\n");
                 float Gain  = 0;
                 float Alpha = 0;
@@ -653,24 +795,24 @@ XCamReturn sample_adrc_module(const void *arg)
                        Clip);
                 break;
             }
-            case 'd': {
+            case 'g': {
                 printf("\t ADRC test rk_aiq_uapi2_setDrcGain\n\n");
                 rk_aiq_uapi2_setDrcGain(ctx, 3.5, 0.4, 3);
                 break;
             }
-            case 'e': {
+            case 'h': {
                 printf("\t ADRC test rk_aiq_uapi2_getDrcHiLit\n\n");
                 float Strength = 0;
                 rk_aiq_uapi2_getDrcHiLit(ctx, &Strength);
                 printf("\t ADRC rk_aiq_uapi2_getDrcHiLit: Strength:%f\n\n", Strength);
                 break;
             }
-            case 'f': {
+            case 'i': {
                 printf("\t ADRC test rk_aiq_uapi2_setDrcHiLit\n\n");
                 rk_aiq_uapi2_setDrcHiLit(ctx, 0.8);
                 break;
             }
-            case 'g': {
+            case 'j': {
                 printf("\t ADRC test rk_aiq_uapi2_getDrcLocalData\n\n");
                 float LocalWeit      = 0;
                 float GlobalContrast = 0;
@@ -685,7 +827,7 @@ XCamReturn sample_adrc_module(const void *arg)
                     LocalWeit, GlobalContrast, LoLitContrast, LocalAutoEnable, LocalAutoWeit);
                 break;
             }
-            case 'h': {
+            case 'k': {
                 printf("\t ADRC test rk_aiq_uapi2_setDrcLocalData\n\n");
                 rk_aiq_uapi2_setDrcLocalData(ctx, 1.0, 0.5, 0.5, 1, 0.9);
                 break;

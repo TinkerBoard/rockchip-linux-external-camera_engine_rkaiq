@@ -418,7 +418,7 @@ XCamReturn sample_ablc_module (const void *arg)
     }
 
     rk_aiq_blc_attrib_V32_t default_blc_attr_v32;
-    if (CHECK_ISP_HW_V32()) {
+    if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         memset(&default_blc_attr_v32, 0x00, sizeof(default_blc_attr_v32));//important, need init first
         rk_aiq_user_api2_ablcV32_GetAttrib(ctx, &default_blc_attr_v32);
     }
@@ -436,7 +436,7 @@ XCamReturn sample_ablc_module (const void *arg)
             if (CHECK_ISP_HW_V30()) {
                 sample_ablc_getAttr(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
-            if (CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_ablc_getAttr_v32(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
             break;
@@ -444,7 +444,7 @@ XCamReturn sample_ablc_module (const void *arg)
             if (CHECK_ISP_HW_V30()) {
                 sample_ablc_setAuto(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
-            if (CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_ablc_setAuto_v32(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
             break;
@@ -452,7 +452,7 @@ XCamReturn sample_ablc_module (const void *arg)
             if (CHECK_ISP_HW_V30()) {
                 sample_ablc_setManual(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
-            if (CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_ablc_setManual_v32(ctx, RK_AIQ_UAPI_MODE_SYNC);
             }
             break;
@@ -460,7 +460,7 @@ XCamReturn sample_ablc_module (const void *arg)
             if (CHECK_ISP_HW_V30()) {
                 sample_ablc_setDefault(ctx, RK_AIQ_UAPI_MODE_SYNC, default_blc_attr);
             }
-            if (CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_ablc_setDefault_v32(ctx, RK_AIQ_UAPI_MODE_SYNC, default_blc_attr_v32);
             }
             break;
@@ -468,7 +468,7 @@ XCamReturn sample_ablc_module (const void *arg)
             if (CHECK_ISP_HW_V30()) {
                 sample_ablc_getAttr(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
-            if (CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_ablc_getAttr_v32(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
             break;
@@ -476,7 +476,7 @@ XCamReturn sample_ablc_module (const void *arg)
             if (CHECK_ISP_HW_V30()) {
                 sample_ablc_setAuto(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
-            if (CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_ablc_setAuto_v32(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
             break;
@@ -484,7 +484,7 @@ XCamReturn sample_ablc_module (const void *arg)
             if (CHECK_ISP_HW_V30()) {
                 sample_ablc_setManual(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
-            if (CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_ablc_setManual_v32(ctx, RK_AIQ_UAPI_MODE_ASYNC);
             }
             break;
@@ -492,7 +492,7 @@ XCamReturn sample_ablc_module (const void *arg)
             if (CHECK_ISP_HW_V30()) {
                 sample_ablc_setDefault(ctx, RK_AIQ_UAPI_MODE_ASYNC, default_blc_attr);
             }
-            if (CHECK_ISP_HW_V32()) {
+            if (CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
                 sample_ablc_setDefault_v32(ctx, RK_AIQ_UAPI_MODE_ASYNC, default_blc_attr_v32);
             }
             break;

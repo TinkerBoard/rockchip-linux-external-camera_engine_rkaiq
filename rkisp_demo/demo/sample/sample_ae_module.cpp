@@ -154,7 +154,7 @@ static int sample_set_time_manual_and_gain_auto(const rk_aiq_sys_ctx_t* ctx, rk_
     ret = rk_aiq_user_api2_ae_getExpSwAttr(ctx, &expSwAttr);
     expSwAttr.sync.sync_mode = sync;
     expSwAttr.sync.done = false;
-    expSwAttr.AecOpType = RK_AIQ_OP_MODE_AUTO;
+    expSwAttr.AecOpType = RK_AIQ_OP_MODE_MANUAL;
     //set time range
     expSwAttr.stAdvanced.SetAeRangeEn = true;/*must enable*/
     //LinAE

@@ -12,6 +12,8 @@ func rkaiq_getSrcsFiles(soc string, macros_map map[string]bool) []string {
     var flag3 bool = false;
     var flag4 bool = false;
     var flag5 bool = false;
+    var flag6 bool = false;
+    var flag7 bool = false;
 
     var srcs []string;
      srcs = append(srcs, "aiq_core/algo_handlers/RkAiqAwbHandle.cpp")
@@ -39,7 +41,8 @@ func rkaiq_getSrcsFiles(soc string, macros_map map[string]bool) []string {
     }
 
     flag0 = macros_map["RKAIQ_HAVE_AWB_V32"]
-    if (flag0) {
+    flag1 = macros_map["RKAIQ_HAVE_AWB_V32LT"]
+    if (flag0 || flag1) {
         srcs = append(srcs, "aiq_core/algo_handlers/RkAiqAwbV32Handle.cpp")
         srcs = append(srcs, "aiq_core/algo_handlers/RkAiqCustomAwbHandle.cpp")
     }
@@ -111,7 +114,8 @@ func rkaiq_getSrcsFiles(soc string, macros_map map[string]bool) []string {
     }
 
     flag0 = macros_map["RKAIQ_HAVE_CNR_V30"]
-    if (flag0) {
+    flag1 = macros_map["RKAIQ_HAVE_CNR_V30_LITE"]
+    if (flag0 || flag1) {
         srcs = append(srcs, "aiq_core/algo_handlers/RkAiqAcnrV30Handle.cpp")
     }
 
@@ -131,7 +135,8 @@ func rkaiq_getSrcsFiles(soc string, macros_map map[string]bool) []string {
     }
 
     flag0 = macros_map["RKAIQ_HAVE_SHARP_V33"]
-    if (flag0) {
+    flag1 = macros_map["RKAIQ_HAVE_SHARP_V33_LITE"]
+    if (flag0 || flag1) {
         srcs = append(srcs, "aiq_core/algo_handlers/RkAiqAsharpV33Handle.cpp")
     }
 
@@ -166,7 +171,8 @@ func rkaiq_getSrcsFiles(soc string, macros_map map[string]bool) []string {
     }
 
     flag0 = macros_map["RKAIQ_HAVE_BAYERTNR_V23"]
-    if (flag0) {
+    flag1 = macros_map["RKAIQ_HAVE_BAYERTNR_V23_LITE"]
+    if (flag0 || flag1) {
         srcs = append(srcs, "aiq_core/algo_handlers/RkAiqAbayertnrV23Handle.cpp")
     }
 
@@ -227,7 +233,8 @@ func rkaiq_getSrcsFiles(soc string, macros_map map[string]bool) []string {
     flag0 = macros_map["RKAIQ_HAVE_DRC_V10"]
     flag1 = macros_map["RKAIQ_HAVE_DRC_V11"]
     flag2 = macros_map["RKAIQ_HAVE_DRC_V12"]
-    if (flag0 || flag1 || flag2) {
+    flag3 = macros_map["RKAIQ_HAVE_DRC_V12_LITE"]
+    if (flag0 || flag1 || flag2 || flag3) {
         srcs = append(srcs, "aiq_core/algo_handlers/RkAiqAdrcHandle.cpp")
     }
 
@@ -282,7 +289,8 @@ func rkaiq_getSrcsFiles(soc string, macros_map map[string]bool) []string {
 
     flag0 = macros_map["RKAIQ_HAVE_DEBAYER_V1"]
     flag1 = macros_map["RKAIQ_HAVE_DEBAYER_V2"]
-    if (flag0 || flag1) {
+    flag2 = macros_map["RKAIQ_HAVE_DEBAYER_V2_LITE"]
+    if (flag0 || flag1 || flag2) {
         srcs = append(srcs, "aiq_core/algo_handlers/RkAiqAdebayerHandle.cpp")
     }
 
@@ -328,10 +336,12 @@ func rkaiq_getSrcsFiles(soc string, macros_map map[string]bool) []string {
     flag0 = macros_map["RKAIQ_HAVE_AF_V20"]
     flag1 = macros_map["RKAIQ_HAVE_AF_V30"]
     flag2 = macros_map["RKAIQ_HAVE_AF_V31"]
-    flag3 = macros_map["RKAIQ_ONLY_AF_STATS_V20"]
-    flag4 = macros_map["RKAIQ_ONLY_AF_STATS_V30"]
-    flag5 = macros_map["RKAIQ_ONLY_AF_STATS_V31"]
-    if (flag0 || flag1 || flag2 || flag3 || flag4 || flag5) {
+    flag3 = macros_map["RKAIQ_HAVE_AF_V32_LITE"]
+    flag4 = macros_map["RKAIQ_ONLY_AF_STATS_V20"]
+    flag5 = macros_map["RKAIQ_ONLY_AF_STATS_V30"]
+    flag6 = macros_map["RKAIQ_ONLY_AF_STATS_V31"]
+    flag7 = macros_map["RKAIQ_ONLY_AF_STATS_V32_LITE"]
+    if (flag0 || flag1 || flag2 || flag3 || flag4 || flag5 || flag6 || flag7) {
         srcs = append(srcs, "aiq_core/algo_handlers/RkAiqAfHandle.cpp")
     }
     flag0 = macros_map["RKAIQ_ENABLE_PARSER_V1"]

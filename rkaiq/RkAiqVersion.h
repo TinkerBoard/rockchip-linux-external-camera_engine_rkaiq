@@ -670,10 +670,20 @@
  * - Fix libc check for buildroot build system
  * - Fix effected param match for all products
  * - Fix issues caused by branch merge
+ *
+ * v5.0x1.2-rc1
+ * - AWB: fix Access Violation in awbV32_GetAttrib
+ * - isp32_lite: iqfiles: add gc8034/ov13855 iqfiles
+ * - dpcc: fix bug in memcpy Expert_mode params
+ * - LSC: fix stack smashing detect when using api
+ * - isp32_lite: adapts to isp32 lite
+ * - aiq: hwi: Update kernel driver header of isp32_lite
+ *   - until update to date kernel header commit:
+ *   - https://10.10.10.29/c/rk/kernel/+/177679
  */
 
-#define RK_AIQ_VERSION_REAL_V "v5.0x1.1"
-#define RK_AIQ_RELEASE_DATE "2023-02-09"
+#define RK_AIQ_VERSION_REAL_V "v5.0x1.2-rc1"
+#define RK_AIQ_RELEASE_DATE "2023-02-16"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

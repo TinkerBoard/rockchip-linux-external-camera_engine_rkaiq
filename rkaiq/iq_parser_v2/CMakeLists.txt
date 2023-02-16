@@ -134,6 +134,9 @@ endif ()
 if (${ISP_HW_VERSION} STREQUAL "-DISP_HW_V32")
     set(IQFILES_DIR_INTERNAL "${CMAKE_SOURCE_DIR}/iqfiles/isp32")
 endif ()
+if (${ISP_HW_VERSION} STREQUAL "-DISP_HW_V32_LITE")
+    set(IQFILES_DIR_INTERNAL "${CMAKE_SOURCE_DIR}/iqfiles/isp32_lite")
+endif ()
 
 add_custom_target(
     j2s4b

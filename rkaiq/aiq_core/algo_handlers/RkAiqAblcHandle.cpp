@@ -292,7 +292,7 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     if (!mProcResShared.ptr())
         return XCAM_RETURN_NO_ERROR;
     RkAiqAlgoProcResAblc* ablc_com             = (RkAiqAlgoProcResAblc*)&mProcResShared->result;
-#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32)
+#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     rk_aiq_isp_blc_params_v21_t* blc_param = params->mBlcV21Params->data().ptr();
 #else
     rk_aiq_isp_blc_params_v20_t* blc_param = params->mBlcParams->data().ptr();
@@ -315,14 +315,14 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
         }
 
 
-#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32)
+#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
         memcpy(&blc_param->result.v0, &ablc_rk->ablc_proc_res, sizeof(rk_aiq_isp_blc_t));
 #else
         memcpy(&blc_param->result, &ablc_rk->ablc_proc_res, sizeof(rk_aiq_isp_blc_t));
 #endif
     }
 
-#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32)
+#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     cur_params->mBlcV21Params = params->mBlcV21Params;
 #else
     cur_params->mBlcParams = params->mBlcParams;

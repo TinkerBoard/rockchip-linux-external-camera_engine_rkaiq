@@ -31,15 +31,15 @@ using namespace XCam;
 
 namespace RkRawStream {
 
-//#define MAX_MEDIA_INDEX               4
+//#define MAX_MEDIA_INDEX               16
 //#define DEV_PATH_LEN                  64
 //#define SENSOR_ATTACHED_FLASH_MAX_NUM 2
-//#define MAX_CAM_NUM                   2
+//#define MAX_CAM_NUM                   8
 
 //#define MAX_ISP_LINKED_VICAP_CNT      4
 
-#define STREAM_ISP_BUF_NUM 3
-#define STREAM_VIPCAP_BUF_NUM 3
+#define STREAM_ISP_BUF_NUM 5
+#define STREAM_VIPCAP_BUF_NUM 5
 
 /*
 typedef struct {

@@ -441,6 +441,9 @@ typedef SharedItemProxy<rk_aiq_isp_tnr_params_v32_t>        RkAiqIspTnrParamsPro
 typedef SharedItemPool<rk_aiq_isp_awb_gain_params_v32_t>    RkAiqIspAwbGainParamsPoolV32;
 typedef SharedItemProxy<rk_aiq_isp_awb_gain_params_v32_t>   RkAiqIspAwbGainParamsProxyV32;
 
+typedef SharedItemPool<rk_aiq_isp_af_params_v32_lite_t>     RkAiqIspAfParamsPoolV32Lite;
+typedef SharedItemProxy<rk_aiq_isp_af_params_v32_lite_t>    RkAiqIspAfParamsProxyV32Lite;
+
 class RkAiqFullParams : public XCam::BufferData {
 public:
     explicit RkAiqFullParams()
@@ -516,7 +519,8 @@ public:
         , mAwbV32Params(NULL)
         , mAfV32Params(NULL)
         , mTnrV32Params(NULL)
-        , mAwbGainV32Params(NULL) {
+        , mAwbGainV32Params(NULL)
+        , mAfV32LiteParams(NULL) {
     };
     ~RkAiqFullParams() {
         reset();
@@ -603,6 +607,9 @@ public:
         mAfV32Params.release();
         mTnrV32Params.release();
         mAwbGainV32Params.release();
+
+        // V32 lite differential modules
+        mAfV32LiteParams.release();
     };
     SmartPtr<RkAiqExpParamsProxy>           mExposureParams;
     SmartPtr<RkAiqFocusParamsProxy>         mFocusParams;
@@ -682,6 +689,9 @@ public:
     SmartPtr<RkAiqIspAfParamsProxyV32>       mAfV32Params;
     SmartPtr<RkAiqIspTnrParamsProxyV32>      mTnrV32Params;
     SmartPtr<RkAiqIspAwbGainParamsProxyV32>  mAwbGainV32Params;
+
+    // V32 lite differential modules
+    SmartPtr<RkAiqIspAfParamsProxyV32Lite>   mAfV32LiteParams;
 private:
     XCAM_DEAD_COPY (RkAiqFullParams);
 };

@@ -4,12 +4,11 @@
 
 #define CAMGROUP_ASHSRPV33_STRENGTH_SLOPE_FACTOR (4.0)
 
-XCamReturn
-rk_aiq_uapi_camgroup_asharpV33_SetAttrib(RkAiqAlgoContext *ctx,
-        const rk_aiq_sharp_attrib_v33_t *attr,
-        bool /* need_sync */)
-{
+XCamReturn rk_aiq_uapi_camgroup_asharpV33_SetAttrib(RkAiqAlgoContext* ctx,
+                                                    const rk_aiq_sharp_attrib_v33_t* attr,
+                                                    bool /* need_sync */) {
     LOGD_ASHARP("%s:%d\n", __FUNCTION__, __LINE__);
+#if RKAIQ_HAVE_SHARP_V33
 
     CamGroup_AsharpV33_Contex_t *pGroupAsharpCtx = (CamGroup_AsharpV33_Contex_t *)ctx;
     Asharp_Context_V33_t* pAsharpCtx = pGroupAsharpCtx->asharp_contex_v33;
@@ -23,22 +22,58 @@ rk_aiq_uapi_camgroup_asharpV33_SetAttrib(RkAiqAlgoContext *ctx,
         pAsharpCtx->stManual.stFix = attr->stManual.stFix;
     }
     pAsharpCtx->isReCalculate |= 1;
-
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn
-rk_aiq_uapi_camgroup_asharpV33_GetAttrib(const RkAiqAlgoContext *ctx,
-        rk_aiq_sharp_attrib_v33_t *attr)
-{
+XCamReturn rk_aiq_uapi_camgroup_asharpV33_GetAttrib(const RkAiqAlgoContext* ctx,
+                                                    rk_aiq_sharp_attrib_v33_t* attr) {
     LOGD_ASHARP("%s:%d\n", __FUNCTION__, __LINE__);
 
+#if RKAIQ_HAVE_SHARP_V33
+    CamGroup_AsharpV33_Contex_t* pGroupAsharpCtx = (CamGroup_AsharpV33_Contex_t*)ctx;
+    Asharp_Context_V33_t* pAsharpCtx             = pGroupAsharpCtx->asharp_contex_v33;
+
+    attr->eMode = pAsharpCtx->eMode;
+    memcpy(&attr->stAuto, &pAsharpCtx->stAuto, sizeof(attr->stAuto));
+    memcpy(&attr->stManual, &pAsharpCtx->stManual, sizeof(attr->stManual));
+#endif
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn rk_aiq_uapi_camgroup_asharpV33Lite_SetAttrib(RkAiqAlgoContext* ctx,
+                                                        const rk_aiq_sharp_attrib_v33LT_t* attr,
+                                                        bool /* need_sync */) {
+    LOGD_ASHARP("%s:%d\n", __FUNCTION__, __LINE__);
+#if RKAIQ_HAVE_SHARP_V33_LITE
+    CamGroup_AsharpV33_Contex_t* pGroupAsharpCtx = (CamGroup_AsharpV33_Contex_t*)ctx;
+    Asharp_Context_V33_t* pAsharpCtx             = pGroupAsharpCtx->asharp_contex_v33;
+
+    pAsharpCtx->eMode = attr->eMode;
+    if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_AUTO) {
+        pAsharpCtx->stAuto = attr->stAuto;
+    } else if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_MANUAL) {
+        pAsharpCtx->stManual.stSelect = attr->stManual.stSelect;
+    } else if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_REG_MANUAL) {
+        pAsharpCtx->stManual.stFix = attr->stManual.stFix;
+    }
+    pAsharpCtx->isReCalculate |= 1;
+#endif
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn rk_aiq_uapi_camgroup_asharpV33Lite_GetAttrib(const RkAiqAlgoContext* ctx,
+                                                        rk_aiq_sharp_attrib_v33LT_t* attr) {
+    LOGD_ASHARP("%s:%d\n", __FUNCTION__, __LINE__);
+
+#if RKAIQ_HAVE_SHARP_V33_LITE
     CamGroup_AsharpV33_Contex_t *pGroupAsharpCtx = (CamGroup_AsharpV33_Contex_t *)ctx;
     Asharp_Context_V33_t* pAsharpCtx = pGroupAsharpCtx->asharp_contex_v33;
 
     attr->eMode = pAsharpCtx->eMode;
     memcpy(&attr->stAuto, &pAsharpCtx->stAuto, sizeof(attr->stAuto));
     memcpy(&attr->stManual, &pAsharpCtx->stManual, sizeof(attr->stManual));
+#endif
 
     return XCAM_RETURN_NO_ERROR;
 }

@@ -145,7 +145,9 @@ XCamReturn RkAiqAwbV21HandleInt::getWbV21Attrib(rk_aiq_uapiV2_wbV21_attrib_t* at
             mallocAndCopyWbGainAdjustAttrib(&att->stAuto.wbGainAdjust,&mNewWbV21Attr.stAuto.wbGainAdjust);
             att->sync.done = false;
         } else {
+            mCfgMutex.lock();
             rk_aiq_uapiV2_awbV21_GetAttrib(mAlgoCtx, att);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbV21Attr.sync.sync_mode;
             att->sync.done = true;
         }

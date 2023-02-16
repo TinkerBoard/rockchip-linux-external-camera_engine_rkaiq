@@ -5,7 +5,7 @@ set(THIRDAF_SRC
 
 dec_algo(thirdaf rk_aiq_algo_af_itf_thirdalgo.cpp ${THIRDAF_SRC})
 
-if (RKAIQ_HAVE_AF_V20 OR RKAIQ_HAVE_AF_V30 OR RKAIQ_HAVE_AF_V31)
+if (RKAIQ_HAVE_AF_V20 OR RKAIQ_HAVE_AF_V30 OR RKAIQ_HAVE_AF_V31 OR RKAIQ_HAVE_AF_V32_LITE)
 set(AF_SRC
     rk_aiq_algo_af_itf.cpp
     af.cpp

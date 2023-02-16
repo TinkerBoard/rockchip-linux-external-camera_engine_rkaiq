@@ -119,7 +119,9 @@ XCamReturn RkAiqCamGroupAwbHandleInt::getWbV21Attrib(rk_aiq_uapiV2_wbV21_attrib_
             memcpy(att, &mNewWbV21Attr, sizeof(mNewWbV21Attr));
             att->sync.done = false;
         } else {
+            mCfgMutex.lock();
             rk_aiq_uapiV2_camgroup_awbV21_GetAttrib(mAlgoCtx, att);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbV21Attr.sync.sync_mode;
             att->sync.done      = true;
         }
@@ -142,6 +144,8 @@ XCamReturn RkAiqCamGroupAwbHandleInt::getCct(rk_aiq_wb_cct_t* cct) {
 
 XCamReturn RkAiqCamGroupAwbHandleInt::queryWBInfo(rk_aiq_wb_querry_info_t* wb_querry_info) {
     ENTER_ANALYZER_FUNCTION();
+
+    SmartLock lock (mCfgMutex);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
@@ -331,7 +335,9 @@ XCamReturn RkAiqCamGroupAwbHandleInt::getWbAwbWbGainAdjustAttrib(rk_aiq_uapiV2_w
             memcpy(att, &mNewWbAwbWbGainAdjustAttr, sizeof(mNewWbAwbWbGainAdjustAttr));
             att->sync.done = false;
         } else {
+            mCfgMutex.lock();
             rk_aiq_uapiV2_camgroup_awb_GetAwbGainAdjust(mAlgoCtx, att);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbAwbWbGainAdjustAttr.sync.sync_mode;
             att->sync.done      = true;
         }
@@ -387,7 +393,9 @@ XCamReturn RkAiqCamGroupAwbHandleInt::getWbAwbWbGainOffsetAttrib(rk_aiq_uapiV2_w
             memcpy(att, &mNewWbAwbWbGainOffsetAttr, sizeof(mNewWbAwbWbGainOffsetAttr));
             att->sync.done = false;
         } else {
+            mCfgMutex.unlock();
             rk_aiq_uapiV2_camgroup_awb_GetAwbGainOffset(mAlgoCtx, &att->gainOffset);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbAwbWbGainOffsetAttr.sync.sync_mode;
             att->sync.done      = true;
         }
@@ -443,7 +451,9 @@ XCamReturn RkAiqCamGroupAwbHandleInt::getWbAwbMultiWindowAttrib(rk_aiq_uapiV2_wb
             memcpy(att, &mNewWbAwbMultiWindowAttr, sizeof(mNewWbAwbMultiWindowAttr));
             att->sync.done = false;
         } else {
+            mCfgMutex.lock();
             rk_aiq_uapiV2_camgroup_awb_GetAwbMultiwindow(mAlgoCtx, &att->multiWindw);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbAwbMultiWindowAttr.sync.sync_mode;
             att->sync.done      = true;
         }
@@ -456,6 +466,8 @@ XCamReturn RkAiqCamGroupAwbHandleInt::getWbAwbMultiWindowAttrib(rk_aiq_uapiV2_wb
 XCamReturn RkAiqCamGroupAwbHandleInt::getAlgoStat(rk_tool_awb_stat_res_full_t *awb_stat_algo) {
     ENTER_ANALYZER_FUNCTION();
 
+    SmartLock lock (mCfgMutex);
+
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     rk_aiq_uapiV2_camgroup_awb_GetAlgoStat(mAlgoCtx, awb_stat_algo);
@@ -466,6 +478,8 @@ XCamReturn RkAiqCamGroupAwbHandleInt::getAlgoStat(rk_tool_awb_stat_res_full_t *a
 
 XCamReturn RkAiqCamGroupAwbHandleInt::getStrategyResult(rk_tool_awb_strategy_result_t *awb_strategy_result) {
     ENTER_ANALYZER_FUNCTION();
+
+    SmartLock lock (mCfgMutex);
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
@@ -521,7 +535,9 @@ XCamReturn RkAiqCamGroupAwbHandleInt::getWbV32AwbMultiWindowAttrib(rk_aiq_uapiV2
             memcpy(att, &mNewWbV32AwbMultiWindowAttr, sizeof(mNewWbV32AwbMultiWindowAttr));
             att->sync.done = false;
         } else {
+            mCfgMutex.lock();
             rk_aiq_uapiV2_camgroup_awbV32_GetAwbMultiwindow(mAlgoCtx, att);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbV32AwbMultiWindowAttr.sync.sync_mode;
             att->sync.done      = true;
         }
@@ -564,7 +580,9 @@ XCamReturn RkAiqCamGroupAwbHandleInt::getWbV32Attrib(rk_aiq_uapiV2_wbV32_attrib_
              memcpy(att, &mNewWbV32Attr, sizeof(mNewWbV32Attr));
              att->sync.done = false;
         } else {
+            mCfgMutex.lock();
             rk_aiq_uapiV2_camgroup_awbV32_GetAttrib(mAlgoCtx, att);
+            mCfgMutex.unlock();
             att->sync.sync_mode = mNewWbV32Attr.sync.sync_mode;
             att->sync.done = true;
         }

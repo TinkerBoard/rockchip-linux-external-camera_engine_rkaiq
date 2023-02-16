@@ -3,12 +3,11 @@
 
 #define ABAYERTNR_LUMA_SF_STRENGTH_MAX_PERCENT (7.0)
 
-XCamReturn
-rk_aiq_uapi_camgroup_abayertnrV23_SetAttrib(RkAiqAlgoContext *ctx,
-        const rk_aiq_bayertnr_attrib_v23_t *attr,
-        bool /* need_sync */)
-{
+XCamReturn rk_aiq_uapi_camgroup_abayertnrV23_SetAttrib(RkAiqAlgoContext* ctx,
+                                                       const rk_aiq_bayertnr_attrib_v23_t* attr,
+                                                       bool /* need_sync */) {
     LOGD_ANR("%s:%d\n", __FUNCTION__, __LINE__);
+#if (RKAIQ_HAVE_BAYERTNR_V23)
 
     CamGroup_AbayertnrV23_Contex_t *pGroupCtx = (CamGroup_AbayertnrV23_Contex_t *)ctx;
     Abayertnr_Context_V23_t* pCtx = pGroupCtx->abayertnr_contex_v23;
@@ -22,23 +21,57 @@ rk_aiq_uapi_camgroup_abayertnrV23_SetAttrib(RkAiqAlgoContext *ctx,
         pCtx->stManual.st3DFix = attr->stManual.st3DFix;
     }
     pCtx->isReCalculate |= 1;
-
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn
-rk_aiq_uapi_camgroup_abayertnrV23_GetAttrib(const RkAiqAlgoContext *ctx,
-        rk_aiq_bayertnr_attrib_v23_t *attr)
-{
+XCamReturn rk_aiq_uapi_camgroup_abayertnrV23_GetAttrib(const RkAiqAlgoContext* ctx,
+                                                       rk_aiq_bayertnr_attrib_v23_t* attr) {
     LOGD_ANR("%s:%d\n", __FUNCTION__, __LINE__);
 
+#if (RKAIQ_HAVE_BAYERTNR_V23)
     CamGroup_AbayertnrV23_Contex_t *pGroupCtx = (CamGroup_AbayertnrV23_Contex_t *)ctx;
     Abayertnr_Context_V23_t* pCtx = pGroupCtx->abayertnr_contex_v23;
 
     attr->eMode = pCtx->eMode;
     memcpy(&attr->stAuto, &pCtx->stAuto, sizeof(attr->stAuto));
     memcpy(&attr->stManual, &pCtx->stManual, sizeof(attr->stManual));
+#endif
+    return XCAM_RETURN_NO_ERROR;
+}
 
+XCamReturn rk_aiq_uapi_camgroup_abayertnrV23Lite_SetAttrib(RkAiqAlgoContext* ctx,
+                                                           const rk_aiq_bayertnr_attrib_v23L_t* attr,
+                                                           bool /* need_sync */) {
+    LOGD_ANR("%s:%d\n", __FUNCTION__, __LINE__);
+#if (RKAIQ_HAVE_BAYERTNR_V23_LITE)
+    CamGroup_AbayertnrV23_Contex_t* pGroupCtx = (CamGroup_AbayertnrV23_Contex_t*)ctx;
+    Abayertnr_Context_V23_t* pCtx             = pGroupCtx->abayertnr_contex_v23;
+
+    pCtx->eMode = attr->eMode;
+    if (pCtx->eMode == ABAYERTNRV23_OP_MODE_AUTO) {
+        pCtx->stAuto = attr->stAuto;
+    } else if (pCtx->eMode == ABAYERTNRV23_OP_MODE_MANUAL) {
+        pCtx->stManual.st3DSelect = attr->stManual.st3DSelect;
+    } else if (pCtx->eMode == ABAYERTNRV23_OP_MODE_REG_MANUAL) {
+        pCtx->stManual.st3DFix = attr->stManual.st3DFix;
+    }
+    pCtx->isReCalculate |= 1;
+#endif
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn rk_aiq_uapi_camgroup_abayertnrV23Lite_GetAttrib(const RkAiqAlgoContext* ctx,
+                                                           rk_aiq_bayertnr_attrib_v23L_t* attr) {
+    LOGD_ANR("%s:%d\n", __FUNCTION__, __LINE__);
+#if (RKAIQ_HAVE_BAYERTNR_V23)
+    CamGroup_AbayertnrV23_Contex_t* pGroupCtx = (CamGroup_AbayertnrV23_Contex_t*)ctx;
+    Abayertnr_Context_V23_t* pCtx             = pGroupCtx->abayertnr_contex_v23;
+
+    attr->eMode = pCtx->eMode;
+    memcpy(&attr->stAuto, &pCtx->stAuto, sizeof(attr->stAuto));
+    memcpy(&attr->stManual, &pCtx->stManual, sizeof(attr->stManual));
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 

@@ -40,6 +40,10 @@ XCamReturn rk_aiq_user_api2_adrc_v11_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, 
 XCamReturn rk_aiq_user_api2_adrc_v12_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                                const drcAttrV12_t* attr);
 XCamReturn rk_aiq_user_api2_adrc_v12_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, drcAttrV12_t* attr);
+XCamReturn rk_aiq_user_api2_adrc_v12_lite_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                    const drcAttrV12Lite_t* attr);
+XCamReturn rk_aiq_user_api2_adrc_v12_lite_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
+                                                    drcAttrV12Lite_t* attr);
 
 RKAIQ_END_DECLARE
 

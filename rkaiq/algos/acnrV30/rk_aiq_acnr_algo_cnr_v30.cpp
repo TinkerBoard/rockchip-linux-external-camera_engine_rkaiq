@@ -130,7 +130,7 @@ AcnrV30_result_t cnr_select_params_by_ISO_V30(RK_CNR_Params_V30_t *pParams, RK_C
     else {
         pSelect->down_scale_x = pLowISO->down_scale_x;
         pSelect->down_scale_y = pLowISO->down_scale_y;
-        pSelect->bf_wgt0_sel = pHighISO->bf_wgt0_sel;
+        pSelect->bf_wgt0_sel  = pLowISO->bf_wgt0_sel;
 
         for(int i = 0; i < 4; i++) {
             pSelect->thumb_filter_wgt_coeff[i] = pLowISO->thumb_filter_wgt_coeff[i];
@@ -218,6 +218,7 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
 
     // CNR_CTRL
     pFix->bf3x3_wgt0_sel = pSelect->bf_wgt0_sel;
+#if RKAIQ_HAVE_CNR_V30
     if(pSelect->down_scale_x == 2 && pSelect->down_scale_y == 2) {
         pFix->thumb_mode = 0;
     } else if(pSelect->down_scale_x == 4 && pSelect->down_scale_y == 4) {
@@ -227,6 +228,15 @@ AcnrV30_result_t cnr_fix_transfer_V30(RK_CNR_Params_V30_Select_t *pSelect, RK_CN
     } else {
         pFix->thumb_mode = 2;
     }
+#else
+    if (pSelect->down_scale_x == 4 && pSelect->down_scale_y == 4) {
+        pFix->thumb_mode = 1;
+    } else if (pSelect->down_scale_x == 8 && pSelect->down_scale_y == 4) {
+        pFix->thumb_mode = 3;
+    } else {
+        pFix->thumb_mode = 1;
+    }
+#endif
     pFix->yuv422_mode = 0;
     pFix->exgain_bypass = 0;
     pFix->cnr_en = pSelect->enable;

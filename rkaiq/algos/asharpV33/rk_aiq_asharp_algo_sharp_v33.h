@@ -33,25 +33,23 @@
 
 RKAIQ_BEGIN_DECLARE
 
-Asharp_result_V33_t sharp_select_params_by_ISO_V33(RK_SHARP_Params_V33_t* pParams,
-        RK_SHARP_Params_V33_Select_t* pSelect,
-        Asharp_ExpInfo_V33_t* pExpInfo);
+Asharp_result_V33_t sharp_select_params_by_ISO_V33(void* pParams_v, void* pSelect_v,
+                                                   Asharp_ExpInfo_V33_t* pExpInfo);
 
-Asharp_result_V33_t sharp_fix_transfer_V33(RK_SHARP_Params_V33_Select_t* pSelect,
-        RK_SHARP_Fix_V33_t* pFix, rk_aiq_sharp_strength_v33_t* pStrength,
-        Asharp_ExpInfo_V33_t *pExpInfo);
+Asharp_result_V33_t sharp_fix_transfer_V33(void* pSelect_v, RK_SHARP_Fix_V33_t* pFix,
+                                           rk_aiq_sharp_strength_v33_t* pStrength,
+                                           Asharp_ExpInfo_V33_t* pExpInfo);
 
 Asharp_result_V33_t sharp_fix_printf_V33(RK_SHARP_Fix_V33_t* pFix);
 
-Asharp_result_V33_t sharp_get_setting_by_name_json_V33(CalibDbV2_SharpV33_t* pCalibdbV2, char* name,
-        int* tuning_idx);
+Asharp_result_V33_t sharp_get_setting_by_name_json_V33(void* pCalibdbV2_v, char* name,
+                                                       int* tuning_idx);
 
-Asharp_result_V33_t sharp_init_params_json_V33(RK_SHARP_Params_V33_t* pSharpParams,
-        CalibDbV2_SharpV33_t* pCalibdbV2, int tuning_idx);
+Asharp_result_V33_t sharp_init_params_json_V33(void* pSharpParams_v, void* pCalibdbV2_v,
+                                               int tuning_idx);
 
-Asharp_result_V33_t sharp_config_setting_param_json_V33(RK_SHARP_Params_V33_t* pParams,
-        CalibDbV2_SharpV33_t* pCalibdbV2,
-        char* param_mode, char* snr_name);
+Asharp_result_V33_t sharp_config_setting_param_json_V33(void* pParams_v, void* pCalibdbV2_v,
+                                                        char* param_mode, char* snr_name);
 
 RKAIQ_END_DECLARE
 #endif

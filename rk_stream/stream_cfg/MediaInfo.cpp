@@ -304,34 +304,36 @@ get_ispp_subdevs(struct media_device *device, const char *devpath, rk_aiq_ispp_t
             strncpy(ispp_info[index].pp_scale2_path, entity_name, sizeof(ispp_info[index].pp_scale2_path)-1);
         }
     }
-    // entity = media_get_entity_by_name(device, "rkispp_tnr_params", strlen("rkispp_tnr_params"));
-    // if(entity) {
-    //     entity_name = media_entity_get_devname (entity);
-    //     if(entity_name) {
-    //         strncpy(ispp_info[index].pp_tnr_params_path, entity_name, sizeof(ispp_info[index].pp_tnr_params_path)-1);
-    //     }
-    // }
-    // entity = media_get_entity_by_name(device, "rkispp_tnr_stats", strlen("rkispp_tnr_stats"));
-    // if(entity) {
-    //     entity_name = media_entity_get_devname (entity);
-    //     if(entity_name) {
-    //         strncpy(ispp_info[index].pp_tnr_stats_path, entity_name, sizeof(ispp_info[index].pp_tnr_stats_path)-1);
-    //     }
-    // }
-    // entity = media_get_entity_by_name(device, "rkispp_nr_params", strlen("rkispp_nr_params"));
-    // if(entity) {
-    //     entity_name = media_entity_get_devname (entity);
-    //     if(entity_name) {
-    //         strncpy(ispp_info[index].pp_nr_params_path, entity_name, sizeof(ispp_info[index].pp_nr_params_path)-1);
-    //     }
-    //}
-    // entity = media_get_entity_by_name(device, "rkispp_nr_stats", strlen("rkispp_nr_stats"));
-    // if(entity) {
-    //     entity_name = media_entity_get_devname (entity);
-    //     if(entity_name) {
-    //         strncpy(ispp_info[index].pp_nr_stats_path, entity_name, sizeof(ispp_info[index].pp_nr_stats_path)-1);
-    //     }
-    // }
+    /*
+    entity = media_get_entity_by_name(device, "rkispp_tnr_params", strlen("rkispp_tnr_params"));
+    if(entity) {
+        entity_name = media_entity_get_devname (entity);
+        if(entity_name) {
+            strncpy(ispp_info[index].pp_tnr_params_path, entity_name, sizeof(ispp_info[index].pp_tnr_params_path)-1);
+        }
+    }
+    entity = media_get_entity_by_name(device, "rkispp_tnr_stats", strlen("rkispp_tnr_stats"));
+    if(entity) {
+        entity_name = media_entity_get_devname (entity);
+        if(entity_name) {
+            strncpy(ispp_info[index].pp_tnr_stats_path, entity_name, sizeof(ispp_info[index].pp_tnr_stats_path)-1);
+        }
+    }
+    entity = media_get_entity_by_name(device, "rkispp_nr_params", strlen("rkispp_nr_params"));
+    if(entity) {
+        entity_name = media_entity_get_devname (entity);
+        if(entity_name) {
+            strncpy(ispp_info[index].pp_nr_params_path, entity_name, sizeof(ispp_info[index].pp_nr_params_path)-1);
+        }
+    }
+    entity = media_get_entity_by_name(device, "rkispp_nr_stats", strlen("rkispp_nr_stats"));
+    if(entity) {
+        entity_name = media_entity_get_devname (entity);
+        if(entity_name) {
+            strncpy(ispp_info[index].pp_nr_stats_path, entity_name, sizeof(ispp_info[index].pp_nr_stats_path)-1);
+        }
+    }
+    */
     entity = media_get_entity_by_name(device, "rkispp_fec_params", strlen("rkispp_fec_params"));
     if(entity) {
         entity_name = media_entity_get_devname (entity);
