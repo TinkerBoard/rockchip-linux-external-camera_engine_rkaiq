@@ -637,7 +637,14 @@ get_isp_subdevs(struct media_device *device, const char *devpath, rk_aiq_isp_t* 
     else
         isp_info[index].linked_dvp = false;
 
+    entity = media_get_entity_by_name(device, "rkcif-dvp", strlen("rkcif-dvp"));
+    if(entity)
+        isp_info[index].linked_dvp = true;
+    else
+        isp_info[index].linked_dvp = false;
+
     const char* linked_entity_name_strs[] = {
+        "rkcif-dvp",
         "rkcif_dvp",
         "rkcif_lite_mipi_lvds",
         "rkcif_mipi_lvds",
@@ -1116,6 +1123,7 @@ CamHwIsp20::initCamHwInfos()
             }
             isp_info->valid = true;
         } else if (strcmp(device->info.model, "rkcif") == 0 ||
+                   strcmp(device->info.model, "rkcif-dvp") == 0 ||
                    strcmp(device->info.model, "rkcif_dvp") == 0 ||
                    strstr(device->info.model, "rkcif_mipi_lvds") ||
                    strstr(device->info.model, "rkcif-mipi-lvds") ||
@@ -1123,7 +1131,7 @@ CamHwIsp20::initCamHwInfos()
             cif_info = get_cif_subdevs(device, sys_path, CamHwIsp20::mCifHwInfos.cif_info);
             strncpy(cif_info->model_str, device->info.model, sizeof(cif_info->model_str));
 
-            if (strcmp(device->info.model, "rkcif_dvp") == 0)
+            if (strcmp(device->info.model, "rkcif_dvp") == 0 || strcmp(device->info.model, "rkcif-dvp") == 0)
                 dvp_itf = true;
         } else {
             goto media_unref;
@@ -2183,7 +2191,16 @@ CamHwIsp20::setupHdrLink_vidcap(int hdr_mode, int cif_index, bool enable)
     if(entity) {
         sink_pad = (media_pad *)media_entity_get_pad(entity, 0);
         if (!sink_pad) {
-            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get HDR pad s failed!\n");
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get pad of stream_cif_mipi_id2 failed!\n");
+            goto FAIL;
+        }
+    }
+
+    entity = media_get_entity_by_name(device, "stream_cif_dvp_id2", strlen("stream_cif_dvp_id2"));
+    if(entity) {
+        sink_pad = (media_pad *)media_entity_get_pad(entity, 0);
+        if (!sink_pad) {
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get pad of stream_cif_dvp_id2 failed!\n");
             goto FAIL;
         }
     }
@@ -2191,6 +2208,7 @@ CamHwIsp20::setupHdrLink_vidcap(int hdr_mode, int cif_index, bool enable)
         media_setup_link(device, src_pad_s, sink_pad, MEDIA_LNK_FL_ENABLED);
     else
         media_setup_link(device, src_pad_s, sink_pad, 0);
+
 
     entity = media_get_entity_by_name(device, "rockchip-mipi-csi2", strlen("rockchip-mipi-csi2"));
     if(entity) {
@@ -2223,10 +2241,20 @@ CamHwIsp20::setupHdrLink_vidcap(int hdr_mode, int cif_index, bool enable)
     if(entity) {
         sink_pad = (media_pad *)media_entity_get_pad(entity, 0);
         if (!sink_pad) {
-            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get HDR pad s failed!\n");
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get pad of stream_cif_mipi_id1 failed!\n");
             goto FAIL;
         }
     }
+
+    entity = media_get_entity_by_name(device, "stream_cif_dvp_id1", strlen("stream_cif_dvp_id1"));
+    if(entity) {
+        sink_pad = (media_pad *)media_entity_get_pad(entity, 0);
+        if (!sink_pad) {
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get pad of stream_cif_dvp_id1 failed!\n");
+            goto FAIL;
+        }
+    }
+
     if (enable)
         media_setup_link(device, src_pad_m, sink_pad, MEDIA_LNK_FL_ENABLED);
     else
@@ -2246,7 +2274,16 @@ CamHwIsp20::setupHdrLink_vidcap(int hdr_mode, int cif_index, bool enable)
     if(entity) {
         sink_pad = (media_pad *)media_entity_get_pad(entity, 0);
         if (!sink_pad) {
-            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get HDR pad s failed!\n");
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get pad of stream_cif_mipi_id0 failed!\n");
+            goto FAIL;
+        }
+    }
+
+    entity = media_get_entity_by_name(device, "stream_cif_dvp_id0", strlen("stream_cif_dvp_id0"));
+    if(entity) {
+        sink_pad = (media_pad *)media_entity_get_pad(entity, 0);
+        if (!sink_pad) {
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "get pad of stream_cif_dvp_id0 failed!\n");
             goto FAIL;
         }
     }
