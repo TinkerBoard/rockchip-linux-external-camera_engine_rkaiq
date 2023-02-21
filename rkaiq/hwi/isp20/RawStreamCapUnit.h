@@ -97,7 +97,6 @@ protected:
     CamHwIsp20* _camHw;
     SmartPtr<V4l2SubDevice> _isp_core_dev;
     RawStreamProcUnit *_proc_stream;
-    struct v4l2_format _format;
     //
     SafeList<V4l2BufferProxy> _NrImg_ready_list;
 };

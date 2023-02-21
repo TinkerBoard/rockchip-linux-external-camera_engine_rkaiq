@@ -2173,12 +2173,14 @@ bool Isp32Params::convert3aResultsToIspCfg(SmartPtr<cam3aResult>& result, void* 
     }
     break;
     case RESULT_TYPE_DEBAYER_PARAM: {
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
         SmartPtr<RkAiqIspDebayerParamsProxyV32> params =
             result.dynamic_cast_ptr<RkAiqIspDebayerParamsProxyV32>();
 
         if (params.ptr()) {
             convertAiqAdebayerToIsp32Params(isp_cfg, params->data()->result);
         }
+#endif
     }
     break;
     case RESULT_TYPE_AEC_PARAM: {

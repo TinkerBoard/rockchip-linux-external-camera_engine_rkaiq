@@ -662,13 +662,8 @@ static XCamReturn UpdateLscCalibPara(alsc_handle_t hAlsc)
         CalibDbV2_Lsc_Resolution_t& src = calib2->common.resolutionAll[res_id];
         alsc_grad_t& dst = hAlsc->res_grad[res_id];
         strcpy(dst.resolution.name, src.name);
-#if defined(ISP_HW_V30) || defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
         uint32_t x_size = sizeof(src.lsc_sect_size_x) / sizeof(src.lsc_sect_size_x[0]);
         uint32_t y_size = sizeof(src.lsc_sect_size_y) / sizeof(src.lsc_sect_size_y[0]);
-#else
-        uint32_t x_size = 8;
-        uint32_t y_size = 8;
-#endif
         for (uint32_t i = 0; i < x_size; i++) {
             if (0 < src.lsc_sect_size_x[i]) {
                 dst.LscXGradTbl[i] = (uint16_t)((double)(1UL << 15) / src.lsc_sect_size_x[i] + 0.5);

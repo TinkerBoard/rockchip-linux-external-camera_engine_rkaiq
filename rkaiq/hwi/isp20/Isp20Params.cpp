@@ -1877,10 +1877,10 @@ Isp20Params::convertAiqLscToIsp20Params(T& isp_cfg,
 #else
     struct isp2x_lsc_cfg *  cfg = &isp_cfg.others.lsc_cfg;
 #endif
-    memcpy(cfg->x_size_tbl, lsc.x_size_tbl, sizeof(lsc.x_size_tbl));
-    memcpy(cfg->y_size_tbl, lsc.y_size_tbl, sizeof(lsc.y_size_tbl));
-    memcpy(cfg->x_grad_tbl, lsc.x_grad_tbl, sizeof(lsc.x_grad_tbl));
-    memcpy(cfg->y_grad_tbl, lsc.y_grad_tbl, sizeof(lsc.y_grad_tbl));
+    memcpy(cfg->x_size_tbl, lsc.x_size_tbl, sizeof(cfg->x_size_tbl));
+    memcpy(cfg->y_size_tbl, lsc.y_size_tbl, sizeof(cfg->y_size_tbl));
+    memcpy(cfg->x_grad_tbl, lsc.x_grad_tbl, sizeof(cfg->x_grad_tbl));
+    memcpy(cfg->y_grad_tbl, lsc.y_grad_tbl, sizeof(cfg->y_grad_tbl));
 
     memcpy(cfg->r_data_tbl, lsc.r_data_tbl, sizeof(lsc.r_data_tbl));
     memcpy(cfg->gr_data_tbl, lsc.gr_data_tbl, sizeof(lsc.gr_data_tbl));

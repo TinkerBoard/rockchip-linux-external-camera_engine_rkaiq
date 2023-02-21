@@ -1039,8 +1039,16 @@ void CalibConverterALSC::convert(
         for (int j = 0; j < lsc_v2.common.resolutionAll_len; j++) {
             int ret = strcmp(lsc_v2.common.resolutionAll[j].name, tableV2->resolution);
             if(0 == ret) {
-                memcpy(lsc_v2.common.resolutionAll[j].lsc_sect_size_x, tableV1->LscXSizeTbl, sizeof(tableV1->LscXSizeTbl));
-                memcpy(lsc_v2.common.resolutionAll[j].lsc_sect_size_y, tableV1->LscYSizeTbl, sizeof(tableV1->LscYSizeTbl));
+                if (g_rkaiq_isp_hw_ver == 20 || g_rkaiq_isp_hw_ver == 22) {
+                    memcpy(lsc_v2.common.resolutionAll[j].lsc_sect_size_x, tableV1->LscXSizeTbl, sizeof(tableV1->LscXSizeTbl));
+                    memcpy(lsc_v2.common.resolutionAll[j].lsc_sect_size_y, tableV1->LscYSizeTbl, sizeof(tableV1->LscYSizeTbl));
+                } else if (g_rkaiq_isp_hw_ver == 30 || g_rkaiq_isp_hw_ver == 32 || g_rkaiq_isp_hw_ver == 321) {
+                    memcpy(lsc_v2.common.resolutionAll[j].lsc_sect_size_x, tableV1->LscXSizeTbl, sizeof(tableV1->LscXSizeTbl));
+                    memcpy(lsc_v2.common.resolutionAll[j].lsc_sect_size_x+8, tableV1->LscXSizeTbl, sizeof(tableV1->LscXSizeTbl));
+                    memcpy(lsc_v2.common.resolutionAll[j].lsc_sect_size_y, tableV1->LscYSizeTbl, sizeof(tableV1->LscYSizeTbl));
+                    memcpy(lsc_v2.common.resolutionAll[j].lsc_sect_size_y+8, tableV1->LscYSizeTbl, sizeof(tableV1->LscYSizeTbl));
+                }
+
             }
         }
 

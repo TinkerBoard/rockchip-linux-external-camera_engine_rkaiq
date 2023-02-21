@@ -19,10 +19,10 @@ dec_algo(af rk_aiq_algo_af_itf.cpp ${AF_SRC})
 
 if(RKAIQ_HAVE_PDAF)
     if("${ARCH}" STREQUAL "arm")
-        file(COPY ${CMAKE_SOURCE_DIR}/algos/af/linux/arm/librkaiq_pdaf.a	DESTINATION ${LIBRARY_OUTPUT_PATH})
+        file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/linux/arm/librkaiq_pdaf.a	DESTINATION ${LIBRARY_OUTPUT_PATH})
     endif()
     if("${ARCH}" STREQUAL "aarch64")
-        file(COPY ${CMAKE_SOURCE_DIR}/algos/af/linux/aarch64/librkaiq_pdaf.a  DESTINATION ${LIBRARY_OUTPUT_PATH})
+        file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/linux/aarch64/librkaiq_pdaf.a  DESTINATION ${LIBRARY_OUTPUT_PATH})
     endif()
 
     add_library(rkaiq_pdaf STATIC IMPORTED GLOBAL)

@@ -77,8 +77,10 @@ private:
     void convertAiqCacToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                     const rk_aiq_isp_cac_v32_t& cac_cfg);
 #endif
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
     void convertAiqAdebayerToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                          rk_aiq_isp_debayer_v32_t & debayer);
+#endif
 #if RKAIQ_HAVE_DEHAZE_V12
     void convertAiqAdehazeToIsp32Params(struct isp32_isp_params_cfg& isp_cfg,
                                         const rk_aiq_isp_dehaze_v32_t& dhaze);

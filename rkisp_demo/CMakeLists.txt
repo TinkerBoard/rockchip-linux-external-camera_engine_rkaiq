@@ -57,6 +57,11 @@ if(ADD_RK_AIQ)
     set(RK_AIQ_LIB rkaiq)
 endif()
 
+if(RK_AIQ_IS_SUBDIR)
+get_target_property(RK_AIQ_HEADER_DIR rkaiq INTERFACE_INCLUDE_DIRECTORIES)
+message("RK_AIQ_HEADER_DIR ${RK_AIQ_HEADER_DIR}")
+endif()
+
 if (ENABLE_IIO_API)
     set(IIO_LIB_DIR ${PROJECT_SOURCE_DIR}/demo/iio/lib)
     set(IIO_LIBS easyiio iio serialport xml2 )
@@ -82,6 +87,7 @@ include_directories(
     ${RK_AIQ_INCLUDE_DIR}
     demo/sample/
 	${SMARTIR_INCLUDE_DIR}
+    ${RK_AIQ_HEADER_DIR}
     )
 
 if (libdrm_FOUND)

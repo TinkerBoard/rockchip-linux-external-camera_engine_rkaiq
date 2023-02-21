@@ -391,9 +391,7 @@ RawStreamCapUnit::poll_buffer_ready (SmartPtr<V4l2BufferProxy> &buf, int dev_ind
         }
 
         if (_camHw->mHwResLintener) {
-            struct VideoBufferInfo vbufInfo;
-            vbufInfo.init(_format.fmt.pix.pixelformat, _format.fmt.pix.width, _format.fmt.pix.height,
-                         _format.fmt.pix.width, _format.fmt.pix.height, _format.fmt.pix.sizeimage, true);
+            auto vbufInfo = buf_s->get_video_info();
             SmartPtr<SubVideoBuffer> subvbuf = new SubVideoBuffer (buf_s);
             subvbuf->_buf_type = ISP_POLL_TX;
             subvbuf->set_sequence(buf_s->get_sequence());

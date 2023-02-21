@@ -61,9 +61,15 @@ set(RK_AIQ_INCLUDE_DIR
 	)
 set(RK_AIQ_LIB rkaiq)
 
+if(RK_AIQ_IS_SUBDIR)
+get_target_property(RK_AIQ_HEADER_DIR rkaiq INTERFACE_INCLUDE_DIRECTORIES)
+message("RK_AIQ_HEADER_DIR ${RK_AIQ_HEADER_DIR}")
+endif()
+
 include_directories(
     include
     ${RK_AIQ_INCLUDE_DIR}
+	${RK_AIQ_HEADER_DIR}
     )
 
 set (SMARTIR_SRC

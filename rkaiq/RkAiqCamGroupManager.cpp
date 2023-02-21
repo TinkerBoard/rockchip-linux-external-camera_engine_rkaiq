@@ -533,6 +533,7 @@ RkAiqCamGroupManager::RelayAiqCoreResults(RkAiqCore* src, SmartPtr<RkAiqFullPara
         SET_TO_CAMGROUP(CnrV32, UVNR);
         SET_TO_CAMGROUP(SharpV32, SHARPEN);
         SET_TO_CAMGROUP(AwbV32, AWB);
+        SET_TO_CAMGROUP(AfV32, AF);
         SET_TO_CAMGROUP(TnrV32, TNR);
         SET_TO_CAMGROUP(AwbGainV32, AWBGAIN);
         SET_TO_CAMGROUP(GainV3x, GAIN);

@@ -1279,6 +1279,17 @@ add_custom_command (TARGET rkaiq_tmp POST_BUILD
 	COMMAND rm *.o
 	)
 
+set(RKAIQ_HEAD_DEPENDENCE
+    include/
+    include/algos/
+    include/uAPI2/
+    include/xcore/
+    include/common/
+    include/iq_parser/
+    include/iq_parser_v2/)
+target_include_directories(rkaiq PUBLIC ${RKAIQ_HEAD_DEPENDENCE})
+
+
 install(DIRECTORY include/
     DESTINATION include/rkaiq
     FILES_MATCHING PATTERN "*.h")

@@ -19,24 +19,24 @@ set(J2S_SRC
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/output.h
     COMMAND ${CMAKE_C_COMPILER}
-    ${CMAKE_SOURCE_DIR}/include/iq_parser_v2/RkAiqCalibDbTypesV2.h -E -C -o .temp.h ${ISP_HW_VERSION}
-    -I${CMAKE_SOURCE_DIR}/
-    -I${CMAKE_SOURCE_DIR}/include
-    -I${CMAKE_SOURCE_DIR}/include/common
-    -I${CMAKE_SOURCE_DIR}/include/uAPI2
-    -I${CMAKE_SOURCE_DIR}/include/algos
-    -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2
-    -I${CMAKE_SOURCE_DIR}/include/iq_parser
-    -I${CMAKE_SOURCE_DIR}/include/xcore
-    -I${CMAKE_SOURCE_DIR}/include/algos
-    COMMAND ${CMAKE_SOURCE_DIR}/tools/iq_check/script/header_strip.sh
+    ${rk_aiq_SOURCE_DIR}/include/iq_parser_v2/RkAiqCalibDbTypesV2.h -E -C -o .temp.h ${ISP_HW_VERSION}
+    -I${rk_aiq_SOURCE_DIR}/
+    -I${rk_aiq_SOURCE_DIR}/include
+    -I${rk_aiq_SOURCE_DIR}/include/common
+    -I${rk_aiq_SOURCE_DIR}/include/uAPI2
+    -I${rk_aiq_SOURCE_DIR}/include/algos
+    -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2
+    -I${rk_aiq_SOURCE_DIR}/include/iq_parser
+    -I${rk_aiq_SOURCE_DIR}/include/xcore
+    -I${rk_aiq_SOURCE_DIR}/include/algos
+    COMMAND ${rk_aiq_SOURCE_DIR}/tools/iq_check/script/header_strip.sh
     .temp.h output.h
 )
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/RkAiqCalibDbTypesV2_M4.h
-    COMMAND cat ${CMAKE_SOURCE_DIR}/tools/iq_check/script/m4/desc.m4
+    COMMAND cat ${rk_aiq_SOURCE_DIR}/tools/iq_check/script/m4/desc.m4
     output.h > RkAiqCalibDbTypesV2.m4
-    COMMAND cp ${CMAKE_SOURCE_DIR}/tools/iq_check/script/m4/desc.sh ./
+    COMMAND cp ${rk_aiq_SOURCE_DIR}/tools/iq_check/script/m4/desc.sh ./
     COMMAND m4 -E RkAiqCalibDbTypesV2.m4 > RkAiqCalibDbTypesV2_M4.h
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/output.h
 )
@@ -45,20 +45,20 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/RkAiqCalibDbTypesV2_M4.h
 #                BUILD HOST PARSER tools                 #
 #########################################################
 add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/.j2s_generated.h
-    COMMAND gcc ${J2S_HOST_CFLAGS} -DJ2S_ENABLE_DESC ${CMAKE_SOURCE_DIR}/tools/iq_check/src/parser.c -o parser ${ISP_HW_VERSION}
-    -I${CMAKE_SOURCE_DIR}/include/common
-    -I${CMAKE_SOURCE_DIR}/
-    -I${CMAKE_SOURCE_DIR}/include/uAPI2
-    -I${CMAKE_SOURCE_DIR}/include/algos
-    -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2
-    -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s
-    COMMAND ${CMAKE_SOURCE_DIR}/tools/iq_check/script/headerprocess.sh
-    ${CMAKE_SOURCE_DIR}/include/iq_parser_v2/RkAiqCalibDbTypesV2.h
-    ${CMAKE_BINARY_DIR}/.j2s_generated.h
-	#COMMAND ${CMAKE_SOURCE_DIR}/tools/iq_check/bin/parser RkAiqCalibDbTypesV2_M4.h CamCalibDbProj_t >>
-	COMMAND ${CMAKE_BINARY_DIR}/iq_parser_v2/parser RkAiqCalibDbTypesV2_M4.h CamCalibDbProj_t >>
-    ${CMAKE_BINARY_DIR}/.j2s_generated.h
+    OUTPUT ${rk_aiq_BINARY_DIR}/.j2s_generated.h
+    COMMAND gcc ${J2S_HOST_CFLAGS} -DJ2S_ENABLE_DESC ${rk_aiq_SOURCE_DIR}/tools/iq_check/src/parser.c -o parser ${ISP_HW_VERSION}
+    -I${rk_aiq_SOURCE_DIR}/include/common
+    -I${rk_aiq_SOURCE_DIR}/
+    -I${rk_aiq_SOURCE_DIR}/include/uAPI2
+    -I${rk_aiq_SOURCE_DIR}/include/algos
+    -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2
+    -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2/j2s
+    COMMAND ${rk_aiq_SOURCE_DIR}/tools/iq_check/script/headerprocess.sh
+    ${rk_aiq_SOURCE_DIR}/include/iq_parser_v2/RkAiqCalibDbTypesV2.h
+    ${rk_aiq_BINARY_DIR}/.j2s_generated.h
+	#COMMAND ${rk_aiq_SOURCE_DIR}/tools/iq_check/bin/parser RkAiqCalibDbTypesV2_M4.h CamCalibDbProj_t >>
+	COMMAND ${rk_aiq_BINARY_DIR}/iq_parser_v2/parser RkAiqCalibDbTypesV2_M4.h CamCalibDbProj_t >>
+    ${rk_aiq_BINARY_DIR}/.j2s_generated.h
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/RkAiqCalibDbTypesV2_M4.h
     )
 
@@ -67,18 +67,18 @@ add_custom_command(
 #########################################################
 add_custom_target(
     j2s_code2bin
-    COMMAND gcc ${J2S_HOST_CFLAGS} ${CMAKE_SOURCE_DIR}/tools/iq_check/src/tobin.c -o tobin ${ISP_HW_VERSION} -DRKAIQ_HAVE_LSC_V3
-	-I${CMAKE_BINARY_DIR}
-    -I${CMAKE_SOURCE_DIR}/include/common
-    -I${CMAKE_SOURCE_DIR}/
-    -I${CMAKE_SOURCE_DIR}/include/uAPI2
-    -I${CMAKE_SOURCE_DIR}/include/algos
-    -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2
-    -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s
+    COMMAND gcc ${J2S_HOST_CFLAGS} ${rk_aiq_SOURCE_DIR}/tools/iq_check/src/tobin.c -o tobin ${ISP_HW_VERSION} -DRKAIQ_HAVE_LSC_V3
+	-I${rk_aiq_BINARY_DIR}
+    -I${rk_aiq_SOURCE_DIR}/include/common
+    -I${rk_aiq_SOURCE_DIR}/
+    -I${rk_aiq_SOURCE_DIR}/include/uAPI2
+    -I${rk_aiq_SOURCE_DIR}/include/algos
+    -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2
+    -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2/j2s
 
-	COMMAND ./tobin ${CMAKE_BINARY_DIR}/j2s_code2bin.bin
-	COMMAND cd ${CMAKE_BINARY_DIR}/ && xxd -i j2s_code2bin.bin j2s_code2bin.h
-    DEPENDS ${CMAKE_BINARY_DIR}/.j2s_generated.h
+	COMMAND ./tobin ${rk_aiq_BINARY_DIR}/j2s_code2bin.bin
+	COMMAND cd ${rk_aiq_BINARY_DIR}/ && xxd -i j2s_code2bin.bin j2s_code2bin.h
+    DEPENDS ${rk_aiq_BINARY_DIR}/.j2s_generated.h
     )
 
 #########################################################
@@ -86,16 +86,16 @@ add_custom_target(
 #########################################################
 add_custom_target(
     j2s_generated_optim
-    COMMAND gcc ${J2S_HOST_CFLAGS} ${CMAKE_SOURCE_DIR}/tools/iq_check/src/j2s_generated_optim.c -o j2s_generated_optim ${ISP_HW_VERSION}
-	-I${CMAKE_BINARY_DIR}
-    -I${CMAKE_SOURCE_DIR}/include/common
-    -I${CMAKE_SOURCE_DIR}/
-    -I${CMAKE_SOURCE_DIR}/include/uAPI2
-    -I${CMAKE_SOURCE_DIR}/include/algos
-    -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2
-    -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s
+    COMMAND gcc ${J2S_HOST_CFLAGS} ${rk_aiq_SOURCE_DIR}/tools/iq_check/src/j2s_generated_optim.c -o j2s_generated_optim ${ISP_HW_VERSION}
+	-I${rk_aiq_BINARY_DIR}
+    -I${rk_aiq_SOURCE_DIR}/include/common
+    -I${rk_aiq_SOURCE_DIR}/
+    -I${rk_aiq_SOURCE_DIR}/include/uAPI2
+    -I${rk_aiq_SOURCE_DIR}/include/algos
+    -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2
+    -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2/j2s
 
-	COMMAND ./j2s_generated_optim ${CMAKE_BINARY_DIR}/j2s_generated.h
+	COMMAND ./j2s_generated_optim ${rk_aiq_BINARY_DIR}/j2s_generated.h
     DEPENDS j2s_code2bin
     )
 
@@ -105,20 +105,20 @@ add_custom_target(
 add_custom_target(
     j2s_parser
 	COMMAND g++ -std=c++11 -DJ2S_ENABLE_DESC -DCOMPILE_TEMPLATE -o dump ${J2S_SRC} ${ISP_HW_VERSION}
-    ${CMAKE_SOURCE_DIR}/tools/iq_check/src/dump.cpp
-    -I${CMAKE_SOURCE_DIR}/include/common
-    -I${CMAKE_SOURCE_DIR}/
-    -I${CMAKE_SOURCE_DIR}/include/uAPI2
-    -I${CMAKE_SOURCE_DIR}/include/algos
-    -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2
-    -I${CMAKE_SOURCE_DIR}/include/iq_parser_v2/j2s
-    -I${CMAKE_BINARY_DIR}/
+    ${rk_aiq_SOURCE_DIR}/tools/iq_check/src/dump.cpp
+    -I${rk_aiq_SOURCE_DIR}/include/common
+    -I${rk_aiq_SOURCE_DIR}/
+    -I${rk_aiq_SOURCE_DIR}/include/uAPI2
+    -I${rk_aiq_SOURCE_DIR}/include/algos
+    -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2
+    -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2/j2s
+    -I${rk_aiq_BINARY_DIR}/
 
     COMMAND ./dump --template > .j2s_template.json
-    COMMAND cp ${CMAKE_SOURCE_DIR}/tools/iq_check/script/dump_template.sh ./
+    COMMAND cp ${rk_aiq_SOURCE_DIR}/tools/iq_check/script/dump_template.sh ./
     COMMAND ./dump_template.sh
-    ${CMAKE_BINARY_DIR}/j2s_generated_template_json.h
-	DEPENDS ${CMAKE_BINARY_DIR}/.j2s_generated.h
+    ${rk_aiq_BINARY_DIR}/j2s_generated_template_json.h
+	DEPENDS ${rk_aiq_BINARY_DIR}/.j2s_generated.h
 	DEPENDS j2s_generated_optim
     )
 
@@ -126,28 +126,28 @@ add_custom_target(
 #                    BUILD BINARY IQ FILES              #
 #########################################################
 if (${ISP_HW_VERSION} STREQUAL "-DISP_HW_V21")
-    set(IQFILES_DIR_INTERNAL "${CMAKE_SOURCE_DIR}/iqfiles/isp21")
+    set(IQFILES_DIR_INTERNAL "${rk_aiq_SOURCE_DIR}/iqfiles/isp21")
 endif ()
 if (${ISP_HW_VERSION} STREQUAL "-DISP_HW_V30")
-    set(IQFILES_DIR_INTERNAL "${CMAKE_SOURCE_DIR}/iqfiles/isp3x")
+    set(IQFILES_DIR_INTERNAL "${rk_aiq_SOURCE_DIR}/iqfiles/isp3x")
 endif ()
 if (${ISP_HW_VERSION} STREQUAL "-DISP_HW_V32")
-    set(IQFILES_DIR_INTERNAL "${CMAKE_SOURCE_DIR}/iqfiles/isp32")
+    set(IQFILES_DIR_INTERNAL "${rk_aiq_SOURCE_DIR}/iqfiles/isp32")
 endif ()
 if (${ISP_HW_VERSION} STREQUAL "-DISP_HW_V32_LITE")
-    set(IQFILES_DIR_INTERNAL "${CMAKE_SOURCE_DIR}/iqfiles/isp32_lite")
+    set(IQFILES_DIR_INTERNAL "${rk_aiq_SOURCE_DIR}/iqfiles/isp32_lite")
 endif ()
 
 add_custom_target(
     j2s4b
     COMMAND ${CMAKE_COMMAND}
-    -DROOT_PROJ_BIN_DIR:STRING=${CMAKE_BINARY_DIR}
+    -DROOT_PROJ_BIN_DIR:STRING=${rk_aiq_BINARY_DIR}
     -DRKAIQ_IQFILES_DIR:STRING="${IQFILES_DIR_INTERNAL}"
-    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE:PATH="${CMAKE_BINARY_DIR}/bin"
+    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE:PATH="${rk_aiq_BINARY_DIR}/bin"
     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
     -DRKAIQ_TARGET_ARCH=${ARCH}
     -B"host_tool"
-    -H"${CMAKE_SOURCE_DIR}/tools/j2s4b"
+    -H"${rk_aiq_SOURCE_DIR}/tools/j2s4b"
     COMMAND ${CMAKE_COMMAND} --build host_tool
     COMMAND make -C host_tool install
 	DEPENDS j2s_parser
