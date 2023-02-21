@@ -6,7 +6,7 @@ if(NOT CMAKE_BUILD_TYPE)
         FORCE)
 endif()
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8...3.22)
 
 #project name
 PROJECT(rkaiq_3A_server)
@@ -83,12 +83,19 @@ SET(RK_AIQ_INCLUDE_DIR
 )
 SET(RK_AIQ_LIB rkaiq)
 else()
-message(FATAL_ERROR "Please check librkaiq.so and include files")
+message("Please check librkaiq.so and include files")
 endif()
+endif()
+
+if(RK_AIQ_IS_SUBDIR)
+get_target_property(RK_AIQ_HEADER_DIR rkaiq INTERFACE_INCLUDE_DIRECTORIES)
+message("RK_AIQ_HEADER_DIR ${RK_AIQ_HEADER_DIR}")
+SET(RK_AIQ_LIB rkaiq)
 endif()
 
 include_directories(
 ${RK_AIQ_INCLUDE_DIR}
+${RK_AIQ_HEADER_DIR}
 include/common/mediactl
 ./
 ./common/
