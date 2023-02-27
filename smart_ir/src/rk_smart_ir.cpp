@@ -35,10 +35,9 @@ RKAIQ_BEGIN_DECLARE
 #endif
 
 #define SMARTIR_LOG_BITS (1ULL << 35) //reuse ASD
-static unsigned long long g_cam_engine_log_level = 0xff0;
 static bool g_smart_ir_log = false;
 
-bool xcam_get_enviroment_value(const char* variable, unsigned long long* value)
+bool smart_ir_get_env_value(const char* variable, unsigned long long* value)
 {
     if (!variable || !value) {
 
@@ -55,21 +54,23 @@ bool xcam_get_enviroment_value(const char* variable, unsigned long long* value)
     return false;
 }
 
-int xcam_get_log_level()
+int smart_ir_get_log_level()
 {
+    unsigned long long cam_engine_log_level = 0xff0;
+
 #ifdef ANDROID_OS
     char property_value[PROPERTY_VALUE_MAX] = {0};
 
     property_get("persist.vendor.rkisp.log", property_value, "0");
-    g_cam_engine_log_level = strtoull(property_value, nullptr, 16);
+    cam_engine_log_level = strtoull(property_value, nullptr, 16);
 
 #else
-    xcam_get_enviroment_value("persist_camera_engine_log",
-                              &g_cam_engine_log_level);
+    smart_ir_get_env_value("persist_camera_engine_log",
+                              &cam_engine_log_level);
 #endif
-    printf("rkaiq log level %llx\n", g_cam_engine_log_level);
+    printf("rkaiq log level %llx\n", cam_engine_log_level);
 
-    if (g_cam_engine_log_level & SMARTIR_LOG_BITS) {
+    if (cam_engine_log_level & SMARTIR_LOG_BITS) {
         g_smart_ir_log = true;
     }
 
@@ -100,7 +101,7 @@ rk_smart_ir_init(const rk_aiq_sys_ctx_t* ctx)
         ir_ctx->ir_configs.awbgain_dis = 0.3f;
         ir_ctx->cur_working_mode = -1;
     }
-    xcam_get_log_level();
+    smart_ir_get_log_level();
 
     SMARTIR_LOG("%s: (exit)\n", __FUNCTION__ );
     return ir_ctx;
