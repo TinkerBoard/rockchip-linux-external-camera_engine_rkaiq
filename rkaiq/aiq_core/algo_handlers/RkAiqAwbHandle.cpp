@@ -774,12 +774,10 @@ XCamReturn RkAiqAwbHandleInt::processing() {
 #if 0
     RkAiqAlgoProcResAwb* awb_proc_res_int = (RkAiqAlgoProcResAwb*)mProcOutParam;
 #else
-    if (mDes->id == 0) {
-        mProcResShared           = new RkAiqAlgoProcResAwbIntShared();
-        if (!mProcResShared.ptr()) {
-            LOGE("new awb mProcOutParam failed, bypass!");
-            return XCAM_RETURN_BYPASS;
-        }
+    mProcResShared           = new RkAiqAlgoProcResAwbIntShared();
+    if (!mProcResShared.ptr()) {
+        LOGE("new awb mProcOutParam failed, bypass!");
+        return XCAM_RETURN_BYPASS;
     }
     RkAiqAlgoProcResAwb* awb_proc_res_int = &mProcResShared->result;
     // mProcOutParam = (RkAiqAlgoResCom*)awb_proc_res_int;

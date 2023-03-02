@@ -381,25 +381,23 @@ XCamReturn CamHwIsp32::setIspConfig() {
 
         if (mTbInfo.prd_type != RK_AIQ_PRD_TYPE_NORMAL) {
             if (mTbInfo.is_pre_aiq) {
-                static bool not_skip_first = true;
-                static struct isp32_rawawb_meas_cfg awb_cfg;
-                if (frameId == 0 && not_skip_first) {
-                    not_skip_first = false;
-                    awb_cfg = isp_params->meas.rawawb;
+                if (frameId == 0 && _not_skip_first) {
+                    _not_skip_first = false;
+                    _first_awb_cfg = isp_params->meas.rawawb;
                     LOGE_ANALYZER("<TB> Skip config id(%d)'s isp params", frameId);
                     mIspParamsDev->return_buffer_to_pool(v4l2buf);
                     return XCAM_RETURN_NO_ERROR;
-                } else if (!not_skip_first) {
-                    awb_cfg.pre_wbgain_inv_r = isp_params->meas.rawawb.pre_wbgain_inv_r;
-                    awb_cfg.pre_wbgain_inv_g = isp_params->meas.rawawb.pre_wbgain_inv_g;
-                    awb_cfg.pre_wbgain_inv_b = isp_params->meas.rawawb.pre_wbgain_inv_b;
-                    isp_params->meas.rawawb = awb_cfg;
+                } else if (!_not_skip_first) {
+                    _first_awb_cfg.pre_wbgain_inv_r = isp_params->meas.rawawb.pre_wbgain_inv_r;
+                    _first_awb_cfg.pre_wbgain_inv_g = isp_params->meas.rawawb.pre_wbgain_inv_g;
+                    _first_awb_cfg.pre_wbgain_inv_b = isp_params->meas.rawawb.pre_wbgain_inv_b;
+                    isp_params->meas.rawawb = _first_awb_cfg;
                 }
                 isp_params->module_en_update =
                     _full_active_isp32_params.module_en_update;
                 isp_params->module_cfg_update =
                     _full_active_isp32_params.module_cfg_update;
-                LOGE_ANALYZER("<TB> Config id(%d)'s isp params, ens %x ens_up %x, cfg_up %x", frameId,
+                LOGE_ANALYZER("<TB> Config id(%u)'s isp params, ens 0x%llx ens_up 0x%llx, cfg_up 0x%llx", frameId,
                               isp_params->module_ens,
                               isp_params->module_en_update,
                               isp_params->module_cfg_update);

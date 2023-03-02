@@ -750,12 +750,11 @@ XCamReturn RkAiqAeHandleInt::preProcess() {
         return XCAM_RETURN_BYPASS;
     }
 
-    if (mDes->id == 0) {
-        mPreResShared = new RkAiqAlgoPreResAeIntShared();
-        if (!mPreResShared.ptr()) {
-            LOGE("new ae mPreOutParam failed, bypass!");
-            return XCAM_RETURN_BYPASS;
-        }
+    mPreResShared = new RkAiqAlgoPreResAeIntShared();
+    if (!mPreResShared.ptr()) {
+        LOGE("new ae mPreOutParam failed, bypass!");
+        mProcResShared = NULL;
+        return XCAM_RETURN_BYPASS;
     }
 
     ret = RkAiqHandle::preProcess();
@@ -826,13 +825,11 @@ XCamReturn RkAiqAeHandleInt::processing() {
         return XCAM_RETURN_BYPASS;
     }
 
-    if (mDes->id == 0) {
-        mProcResShared = new RkAiqAlgoProcResAeIntShared();
-        if (!mProcResShared.ptr()) {
-            LOGE("new ae mProcOutParam failed, bypass!");
-            mPreResShared = NULL;
-            return XCAM_RETURN_BYPASS;
-        }
+    mProcResShared = new RkAiqAlgoProcResAeIntShared();
+    if (!mProcResShared.ptr()) {
+        LOGE("new ae mProcOutParam failed, bypass!");
+        mPreResShared = NULL;
+        return XCAM_RETURN_BYPASS;
     }
 
     AeInstanceConfig_t* pAeInstConfig           = (AeInstanceConfig_t*)mAlgoCtx;

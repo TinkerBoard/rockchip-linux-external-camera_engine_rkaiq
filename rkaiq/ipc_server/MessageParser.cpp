@@ -278,7 +278,7 @@ RkAiqSocketPacket_t *MessageParser::findValidSection(uint8_t *buffer, int len,
   aiq_pkt = (RkAiqSocketPacket_t *)start_pos;
 
   // Assume Single packet, check if data all present
-  if (remain_size < aiq_pkt->packet_size) {
+  if (remain_size < (aiq_pkt->packet_size + RKAIQ_SOCKET_DATA_EXTRA_SIZE)) {
     return nullptr;
   }
 

@@ -89,7 +89,7 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 link_directories("${RK_AIQ_LIB_DIR}")
 add_library(smartIr SHARED ${SMARTIR_SRC})
-target_link_libraries(smartIr ${RK_AIQ_LIB})
+target_link_libraries(smartIr PUBLIC ${RK_AIQ_LIB})
 
 add_library(smartIr_static STATIC ${SMARTIR_SRC})
 

@@ -8,6 +8,10 @@ cmake_minimum_required(VERSION 2.8...3.22)
 
 PROJECT(rkisp_demo)
 
+if(POLICY CMP0015)
+    cmake_policy(SET CMP0015 NEW)
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(BuildOptions)

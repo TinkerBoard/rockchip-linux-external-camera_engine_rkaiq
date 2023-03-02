@@ -256,6 +256,7 @@ private:
     RkAiqCamGroupManager* mCamGroupCoreManager;
 #endif
     bool mIsMain;
+    int mTBStatsCnt {0};
 };
 
 } //namespace RkCam

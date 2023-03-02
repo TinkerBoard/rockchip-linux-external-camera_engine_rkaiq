@@ -25,10 +25,15 @@
 RKAIQ_BEGIN_DECLARE
 
 typedef struct CalibDbV2_Fec_Param_s {
-    unsigned char fec_en;
+    // M4_BOOL_DESC("enable", "0")
+    bool fec_en;
+    // M4_STRING_DESC("meshfile", M4_SIZE(1,255), M4_RANGE(0, 255), "default_meshfile", M4_DYNAMIC(0), M4_HIDE(0), "1")
     char meshfile[256];
-    int correct_level;
+    // M4_NUMBER_DESC("correct_level", "u8", M4_RANGE(0,255), "255", M4_DIGIT(0), M4_HIDE(0))
+    uint8_t correct_level;
+    // M4_ARRAY_DESC("light_center", "f64", M4_SIZE(1,2), M4_RANGE(-10000000000000000,10000000000000000), "0", M4_DIGIT(16), M4_DYNAMIC(0), M4_HIDE(0), "1")
     double light_center[2]; // light center
+    // M4_ARRAY_DESC("coefficient", "f64", M4_SIZE(1,4), M4_RANGE(-10000000000000000,10000000000000000), "0", M4_DIGIT(16), M4_DYNAMIC(0), M4_HIDE(0), "1")
     double coefficient[4]; // the distortion coefficient of the fisheye lens
 } CalibDbV2_Fec_Param_t;
 

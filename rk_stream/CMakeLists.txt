@@ -68,6 +68,7 @@ set (VI_DEMO_SRCS
 
 cmake_policy(SET CMP0015 NEW)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/all_lib/${CMAKE_BUILD_TYPE})
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/exe/${CMAKE_BUILD_TYPE})
 link_directories("${LIBRARY_OUTPUT_PATH}" "${AIQ_DIR}/build/linux/output/aarch64/all_lib/RelWithDebInfo")
 add_executable(rkvi_demo ${VI_DEMO_SRCS})
 target_link_libraries(rkvi_demo ${RK_VI_STREAM_CFG_LIB} ${RK_AIQ_LIB} pthread)

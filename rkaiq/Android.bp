@@ -221,6 +221,7 @@ cc_rkaiq_library_shared {
         "-fno-strict-aliasing",
         "-frtti",
         "-DANDROID_OS",
+        "-UNDEBUG",
     ],
 
     cppflags: [
@@ -248,6 +249,7 @@ cc_rkaiq_library_shared {
         "-frtti",
         "-std=c++11",
         "-DANDROID_OS",
+        "-UNDEBUG",
     ],
 
     export_include_dirs: [

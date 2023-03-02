@@ -531,10 +531,9 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
 
     if (hwres->_buf_type == ISP_POLL_3A_STATS) {
         if (mTbInfo.is_pre_aiq) {
-            static int cnt = 0;
             uint32_t seq = -1;
             seq = hwres.dynamic_cast_ptr<VideoBuffer>()->get_sequence();
-            if (seq == 0 && cnt == 0) {
+            if (seq == 0 && mTBStatsCnt == 0) {
                 LOGE("<TB> tb hwResCb stats %d\n", seq);
                 struct timespec tp;
                 clock_gettime(CLOCK_MONOTONIC_RAW, &tp);
@@ -548,9 +547,9 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
                 mRkAiqAnalyzer->pushEvts(hw_evt);
             }
 
-            if (cnt == 0) ret = mRkAiqAnalyzer->pushStats(hwres);
+            if (mTBStatsCnt == 0) ret = mRkAiqAnalyzer->pushStats(hwres);
 
-            cnt++;
+            mTBStatsCnt++;
         } else {
             ret = mRkAiqAnalyzer->pushStats(hwres);
         }

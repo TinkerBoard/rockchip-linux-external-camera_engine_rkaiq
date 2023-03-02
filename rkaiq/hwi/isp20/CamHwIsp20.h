@@ -404,6 +404,9 @@ protected:
     uint16_t userSensorWidth;
     uint16_t userSensorHeight;
     uint16_t userSensorFmtCode;
+
+    bool _not_skip_first{true};
+    struct isp32_rawawb_meas_cfg _first_awb_cfg{};
 };
 
 }

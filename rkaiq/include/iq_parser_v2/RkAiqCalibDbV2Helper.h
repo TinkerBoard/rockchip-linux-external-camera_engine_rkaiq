@@ -133,6 +133,7 @@ static calibdb_ctx_member_offset_info_t info_CamCalibDbV2ContextIsp30_t[] = {
     {"gain_v2", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(gain_v2)},
     {"csm", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(csm)},
     {"cgc", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(cgc)},
+    {"afec", CALIBV2_MODULE_RELATIVE_OFFSET_ISP30(afec)},
     {NULL, 0},
 };
 #endif

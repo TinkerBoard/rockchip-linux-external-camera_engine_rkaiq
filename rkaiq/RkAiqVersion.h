@@ -680,10 +680,16 @@
  * - aiq: hwi: Update kernel driver header of isp32_lite
  *   - until update to date kernel header commit:
  *   - https://10.10.10.29/c/rk/kernel/+/177679
+ *
+ * v5.0x1.2-rc2
+ * - AF: change default value for FineSearchStep in M4 comment
+ * - iqfiles: sync iqfiles to aiq_v5.0x1.2-rc1
+ * - SmartIr: rename get_env_value function to avoid conflict
+ * - hwi: Fix thunder boot for dual camera
  */
 
-#define RK_AIQ_VERSION_REAL_V "v5.0x1.2-rc1"
-#define RK_AIQ_RELEASE_DATE "2023-02-16"
+#define RK_AIQ_VERSION_REAL_V "v5.0x1.2-rc2"
+#define RK_AIQ_RELEASE_DATE "2023-03-02"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

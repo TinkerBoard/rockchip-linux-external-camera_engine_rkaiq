@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "rk_aiq_user_api_sysctl.h"
+#ifdef ANDROID_OS
+#include <cutils/properties.h>
+#endif
 #include "rk_aiq_api_private.h"
 #include "RkAiqManager.h"
 #include "socket_server.h"
@@ -30,10 +34,9 @@
 #include "isp3x/CamHwIsp3x.h"
 #include "isp32/CamHwIsp32.h"
 #endif
+#include "cJSON.h"
 #include <sys/file.h>
 #include <fcntl.h>
-
-#include "cJSON.h"
 
 using namespace RkCam;
 using namespace XCam;
@@ -49,6 +52,7 @@ using namespace XCam;
 RKAIQ_BEGIN_DECLARE
 
 int g_rkaiq_isp_hw_ver = 0;
+bool g_bypass_uapi = false;
 
 static void _set_fast_aewb_as_init(const rk_aiq_sys_ctx_t* ctx, rk_aiq_working_mode_t mode);
 
@@ -89,8 +93,13 @@ void rk_aiq_ctx_set_tool_mode(const rk_aiq_sys_ctx_t* ctx, bool status)
 
 bool is_ctx_need_bypass(const rk_aiq_sys_ctx_t* ctx)
 {
-    if (!ctx)
+    if (!ctx) {
         return true;
+    }
+
+    if (!g_bypass_uapi) {
+        return false;
+    }
 
     if (ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
 #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -98,7 +107,8 @@ bool is_ctx_need_bypass(const rk_aiq_sys_ctx_t* ctx)
         for (auto camCtx : camgroup_ctx->cam_ctxs_array) {
             if(camCtx && camCtx->_socket) {
                 if (camCtx->_socket->is_connected() && \
-                        camCtx->ctx_type != CTX_TYPE_TOOL_SERVER) {
+                    camCtx->ctx_type != CTX_TYPE_TOOL_SERVER) {
+                    LOG1("bypass the uapi which isn't called by iqtool while socket is connected");
                     return true;
                 }
             }
@@ -107,7 +117,8 @@ bool is_ctx_need_bypass(const rk_aiq_sys_ctx_t* ctx)
     } else {
         if(ctx->_socket) {
             if (ctx->_socket->is_connected() && \
-                    ctx->ctx_type != CTX_TYPE_TOOL_SERVER) {
+                ctx->ctx_type != CTX_TYPE_TOOL_SERVER) {
+                LOG1("bypass the uapi which isn't called by iqtool while socket is connected");
                 return true;
             }
         }
@@ -594,6 +605,26 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
     ctx->next_ctx->ctx_type = CTX_TYPE_TOOL_SERVER;
     ctx->next_ctx->next_ctx = NULL;
     ctx->cam_type = RK_AIQ_CAM_TYPE_SINGLE;
+
+    {
+#ifdef ANDROID_OS
+        char property_value[PROPERTY_VALUE_MAX] = {0};
+
+        property_get("persist.vendor.rkisp.tuning.bypass_uapi", property_value, "1");
+        if(atoi(property_value) != 0) {
+            g_bypass_uapi = true;
+        } else {
+            g_bypass_uapi = false;
+        }
+#else
+        const char *bypass_env = std::getenv("persist_camera_tuning_bypass_uapi");
+        if (bypass_env && atoi(bypass_env) != 0) {
+            g_bypass_uapi = true;
+        } else {
+            g_bypass_uapi = false;
+        }
+#endif
+    }
 
     EXIT_XCORE_FUNCTION();
 
