@@ -311,6 +311,9 @@ RkAiqManager::prepare(uint32_t width, uint32_t height, rk_aiq_working_mode_t mod
 
     SmartPtr<RkAiqFullParamsProxy> initParams = mRkAiqAnalyzer->getAiqFullParams();
 
+    if (mTbInfo.is_pre_aiq) {
+        mAiqRstAppTh->triger_start();
+    }
 #ifdef RKAIQ_ENABLE_CAMGROUP
     if (!mCamGroupCoreManager) {
 #endif
@@ -355,13 +358,12 @@ RkAiqManager::start()
         return ret;
     }
 
-#if 0
-    mAiqRstAppTh->triger_start();
+    if (mTbInfo.is_pre_aiq) {
+        bool bret = mAiqRstAppTh->start();
+        ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
+        RKAIQMNG_CHECK_RET(ret, "apply result thread start error");
+    }
 
-    bool bret = mAiqRstAppTh->start();
-    ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
-    RKAIQMNG_CHECK_RET(ret, "apply result thread start error");
-#endif
     ret = mRkAiqAnalyzer->start();
     RKAIQMNG_CHECK_RET(ret, "analyzer start error %d", ret);
 
@@ -374,12 +376,13 @@ RkAiqManager::start()
     ret = mCamHw->start();
     RKAIQMNG_CHECK_RET(ret, "camhw start error %d", ret);
 
-    mAiqRstAppTh->triger_start();
+    if (!mTbInfo.is_pre_aiq) {
+        mAiqRstAppTh->triger_start();
 
-    bool bret = mAiqRstAppTh->start();
-    ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
-    RKAIQMNG_CHECK_RET(ret, "apply result thread start error");
-
+        bool bret = mAiqRstAppTh->start();
+        ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
+        RKAIQMNG_CHECK_RET(ret, "apply result thread start error");
+    }
     _state = AIQ_STATE_STARTED;
 
     EXIT_XCORE_FUNCTION();
