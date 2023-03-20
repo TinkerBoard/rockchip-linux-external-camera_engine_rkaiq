@@ -1218,6 +1218,7 @@ media_unref:
         media_device_unref (device);
     }
 
+#if defined(ISP_HW_V30)
     // judge isp if multiplex by multiple cams
     rk_aiq_isp_t* isp_info = NULL;
     for (i = 0; i < MAX_CAM_NUM; i++) {
@@ -1231,6 +1232,7 @@ media_unref:
             }
         }
     }
+#endif
 
     std::unordered_map<std::string, SmartPtr<rk_sensor_full_info_t>>::iterator iter;
     for(iter = CamHwIsp20::mSensorHwInfos.begin(); \
@@ -2688,7 +2690,8 @@ CamHwIsp20::prepare(uint32_t width, uint32_t height, int mode, int t_delay, int 
     if (s_info->isp_info->isMultiplex)
         mNoReadBack = false;
 
-    if (mTbInfo.prd_type == RK_AIQ_PRD_TYPE_TB_DOORLOCK) {
+    if (mTbInfo.prd_type == RK_AIQ_PRD_TYPE_TB_DOORLOCK ||
+        mTbInfo.prd_type == RK_AIQ_PRD_TYPE_TB_BATIPC) {
         mNoReadBack = true;
     }
 
