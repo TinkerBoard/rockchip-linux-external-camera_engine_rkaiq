@@ -702,14 +702,11 @@ RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e type)
                 }
                 if (mAlogsComSharedParams.init || !isGroupAlgo(type)) {
                     ret = curHdl->updateConfig(true);
-                    if (ret) break;
                     ret = curHdl->preProcess();
-                    if (ret) break;
                     ret = curHdl->processing();
-                    if (ret) break;
                     ret = algoHdl->postProcess();
-                    if (ret) break;
                     curHdl->genIspResult(aiqParams, curParams.ptr());
+                    if (ret) break;
                 }
             }
             curHdl = curHdl->getNextHdl();

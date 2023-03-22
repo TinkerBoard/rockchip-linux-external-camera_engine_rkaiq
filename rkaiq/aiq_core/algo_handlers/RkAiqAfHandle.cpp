@@ -566,7 +566,8 @@ XCamReturn RkAiqAfHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     if (!mProcResShared.ptr()) {
-        params->mFocusParams = NULL;
+        //params->mFocusParams = NULL;
+        params->mFocusParams->data()->frame_id = shared->frameId;
 #if RKAIQ_HAVE_AF_V32_LITE || RKAIQ_ONLY_AF_STATS_V32_LITE
         params->mAfV32LiteParams = cur_params->mAfV32LiteParams;
 #endif
