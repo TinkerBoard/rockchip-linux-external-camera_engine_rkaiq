@@ -55,6 +55,7 @@ int g_rkaiq_isp_hw_ver = 0;
 bool g_bypass_uapi = false;
 
 static void _set_fast_aewb_as_init(const rk_aiq_sys_ctx_t* ctx, rk_aiq_working_mode_t mode);
+static XCamReturn _get_fast_aewb_from_drv(std::string& sensor_name, rkisp32_thunderboot_resmem_head& fastAeAwbInfo);
 
 rk_aiq_sys_ctx_t* get_next_ctx(const rk_aiq_sys_ctx_t* ctx)
 {
@@ -204,6 +205,7 @@ rk_aiq_uapi_sysctl_preInit_tb_info(const char* sns_ent_name,
                                    const rk_aiq_tb_info_t* info)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    rkisp32_thunderboot_resmem_head fastAeAwbInfo;
 
     if (!sns_ent_name || !info) {
         LOGE("Invalid input parameter");
@@ -211,17 +213,23 @@ rk_aiq_uapi_sysctl_preInit_tb_info(const char* sns_ent_name,
     }
 
     std::string sns_ent_name_str(sns_ent_name);
+    ret = _get_fast_aewb_from_drv(sns_ent_name_str, fastAeAwbInfo);
+    LOGI("%s: magic %x, is_pre_aiq : %d, prd_type : %d, kernel status %d", 
+         __func__, info->magic, info->is_pre_aiq, info->prd_type, ret);
 
-    if (g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].tb_info.magic != info->magic) {
-        LOGE("Wrong magic %x vs %x", g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].tb_info.magic,
-             info->magic);
-        return XCAM_RETURN_ERROR_PARAM;
+    if (ret == XCAM_RETURN_NO_ERROR) {
+        if (g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].tb_info.magic != info->magic) {
+            LOGE("Wrong magic %x vs %x", g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].tb_info.magic,
+                 info->magic);
+            return XCAM_RETURN_ERROR_PARAM;
+        }
+        g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].tb_info.is_pre_aiq = info->is_pre_aiq;
+        g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].tb_info.prd_type = info->prd_type;
+
+    } else {
+        g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].tb_info.prd_type = RK_AIQ_PRD_TYPE_NORMAL;
+        LOGE("%s: get fast aewb error, skip set tb_info!", __func__);
     }
-    LOGI("Init tb info : magic %x, is_pre_aiq : %d, prd_type : %d", info->magic, info->is_pre_aiq,
-         info->prd_type);
-    g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].tb_info.is_pre_aiq = info->is_pre_aiq;
-    g_rk_aiq_sys_preinit_cfg_map[sns_ent_name_str].tb_info.prd_type = info->prd_type;
-
     return (ret);
 
 }
