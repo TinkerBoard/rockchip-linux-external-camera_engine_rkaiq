@@ -2009,6 +2009,78 @@ void release_buffer(void *addr) {
     printf("release buffer called: addr=%p\n", addr);
 }
 
+static void test_tuning_api(demo_context_t *ctx)
+{
+    /*   Sample code of API rk_aiq_uapi2_sysctl_tuning
+     * This API replaces current iq params through JsonPatch.
+     * 1. Must be called after Api rk_aiq_uapi2_sysctl_init, prefer to be
+     * called before rk_aiq_uapi2_sysctl_prepare
+     * 2. Notice that this API only replaces the current iq params in use, and
+     * the iq file would not be modified.
+     *    Supported path including:
+     * path：/sensor_calib
+     *       /module_calib
+     *       And submodules in node 'scene_isp30' , such as
+     *       /wb_v21  notice that not /main_scene/0/sbu_scene/0/wb_v21, cause
+     *                there is no scene contex for in-use iq params.
+     * 'path' could refer to iq json file
+     * 3.
+     *  3.1 Prefer to replace the all params of same iq node in one JsonPatch
+     *  3.2 prefer to replace the params of diffrent iq node in separate JsonPatch
+     * 4. JsonPatch string format:
+     *    [// '[' start syntax
+     *      {  // each 'op' embraced by '{}'
+              "op": "replace", // Fixed syntax
+              "path":          // node path in Json iq file
+              "value":         // Note: All chidren's valuse should be specified for the 'path', otherwise those unspecified ones
+                               //       may be uninitialzed.
+     *      }, { //  ',' for next 'op'
+
+     *      } // Note: no ',' for last 'op'
+     *    ]// ']' end syntax
+     */
+    // example 1: replace sensor info
+    // 1. Show how to repalce the non-leaf node "sensor_calib/resolution"
+    //    values should be embraced by '{}' for non-leaf node, and all children should be set.
+    // 2. Show how to replace the values for multiple sub nodes of same parent in one JsonPatch
+    std::string json_sensor_str = " \n\
+        [{ \n\
+            \"op\":\"replace\", \n\
+            \"path\": \"/sensor_calib/resolution\", \n\
+            \"value\": \n\
+            { \"width\": 2222, \"height\": 2160} \n\
+        }, { \n\
+            \"op\":\"replace\", \n\
+            \"path\": \"/sensor_calib/CISFlip\", \n\
+            \"value\": 6\n\
+        }]";
+
+    printf("%s\n", json_sensor_str.c_str());
+    rk_aiq_uapi2_sysctl_tuning(ctx->aiq_ctx, const_cast<char*>(json_sensor_str.c_str()));
+
+    // example 2: replace awb info
+    // 1. Show how to replace the values for type array
+    //    value shoulde be embraced by '[]' for type array, and the target
+    //    length of the array should be unchanged.
+    // 2. Show how to replace the value for one array item
+    //    the path for array item is: array name/array index/
+    std::string json_awb_str = " \n\
+        [{ \n\
+            \"op\":\"replace\", \n\
+            \"path\": \"/wb_v21/autoExtPara/wbGainClip/cct\", \n\
+            \"value\": \n\
+            [100,200,300,40,50,60] \n\
+        },{ \n\
+            \"op\":\"replace\", \n\
+            \"path\": \"/wb_v21/autoPara/lightSources/0/name\", \n\
+            \"value\": \"aaaaaaaaa\" \n\
+        }]";
+    printf("%s\n", json_awb_str.c_str());
+    rk_aiq_uapi2_sysctl_tuning(ctx->aiq_ctx, const_cast<char*>(json_awb_str.c_str()));
+
+    printf("%s done ..\n", __func__);
+}
+
 static void rkisp_routine(demo_context_t *ctx)
 {
     char sns_entity_name[64];
@@ -2226,6 +2298,9 @@ static void rkisp_routine(demo_context_t *ctx)
             rk_aiq_uapi2_sysctl_regMemsSensorIntf(ctx->aiq_ctx, &g_rkiio_aiq_api);
 #endif
 
+#if 0
+            test_tuning_api(ctx);
+#endif
             XCamReturn ret = rk_aiq_uapi2_sysctl_prepare(ctx->aiq_ctx, ctx->width, ctx->height, work_mode);
 
             if (ret != XCAM_RETURN_NO_ERROR)
