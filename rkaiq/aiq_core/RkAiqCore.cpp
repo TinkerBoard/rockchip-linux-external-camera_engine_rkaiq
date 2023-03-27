@@ -2255,11 +2255,12 @@ RkAiqCore::setCalib(const CamCalibDbV2Context_t* aiqCalib)
 {
     ENTER_ANALYZER_FUNCTION();
 
+#if 0
     if (mState != RK_AIQ_CORE_STATE_STOPED) {
         LOGE_ANALYZER("wrong state %d\n", mState);
         return XCAM_RETURN_ERROR_ANALYZER;
     }
-
+#endif
     /* TODO: xuhf WARNING */
     mAlogsComSharedParams.calibv2 = aiqCalib;
     mAlogsComSharedParams.conf_type = RK_AIQ_ALGO_CONFTYPE_UPDATECALIB;
@@ -2323,8 +2324,11 @@ XCamReturn RkAiqCore::calibTuning(const CamCalibDbV2Context_t* aiqCalib,
     }
 
     notifyUpdate(grpMask);
-    waitUpdateDone();
-
+    if (mState != RK_AIQ_CORE_STATE_RUNNING)
+        updateCalib(RK_AIQ_CORE_ANALYZE_ALL);
+    else {
+        waitUpdateDone();
+    }
     mAlogsComSharedParams.conf_type &= ~RK_AIQ_ALGO_CONFTYPE_UPDATECALIB;
 
     EXIT_ANALYZER_FUNCTION();
