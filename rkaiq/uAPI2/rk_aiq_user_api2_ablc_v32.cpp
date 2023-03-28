@@ -69,7 +69,7 @@ rk_aiq_user_api2_ablcV32_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, const rk_aiq
             ret = algo_handle->setAttrib(attr);
     }
 
-    printf("attr=%d\n", attr->eMode);
+    LOGI_ABLC("attr=%d\n", attr->eMode);
 
     return ret;
 }
