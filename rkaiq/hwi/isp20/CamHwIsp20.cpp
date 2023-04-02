@@ -2943,6 +2943,10 @@ CamHwIsp20::start()
     _is_exit = false;
     _state = CAM_HW_STATE_STARTED;
 
+    // in fastboot server stage, F1 param maybe ready
+    // before _state = CAM_HW_STATE_STARTED.
+    if (mParamsAssembler->ready())
+        setIspConfig();
     EXIT_CAMHW_FUNCTION();
     return ret;
 }
