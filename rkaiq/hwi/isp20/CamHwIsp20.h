@@ -34,6 +34,7 @@
 #include "NrStreamProcUnit.h"
 #include "FecParamStream.h"
 #include "thumbnails.h"
+#include "CifScaleStream.h"
 
 #include <unordered_map>
 
@@ -119,6 +120,7 @@ public:
     XCamReturn getSensorFlip(bool& mirror, bool& flip) override;
     void setMulCamConc(bool cc);
     XCamReturn getZoomPosition(int& position) override;
+    XCamReturn getIrisParams(SmartPtr<RkAiqIrisParamsProxy>& irisPar, CalibDb_IrisTypeV2_t irisType);
     XCamReturn getLensVcmCfg(rk_aiq_lens_vcmcfg& lens_cfg) override;
     XCamReturn setLensVcmCfg(rk_aiq_lens_vcmcfg& lens_cfg) override;
     XCamReturn setLensVcmCfg(struct rkmodule_inf& mod_info);
@@ -152,7 +154,9 @@ public:
     }
     XCamReturn notify_sof(SmartPtr<VideoBuffer>& buf);
     SmartPtr<ispHwEvt_t> make_ispHwEvt (uint32_t sequence, int type, int64_t timestamp);
-    int get_workingg_mode() { return _hdr_mode; }
+    int get_workingg_mode() {
+        return _hdr_mode;
+    }
     //should be called after prepare
     XCamReturn get_stream_format(rkaiq_stream_type_t type, struct v4l2_format &format);
     XCamReturn get_sp_resolution(int &width, int &height, int &aligned_w, int &aligned_h) override;
@@ -184,11 +188,14 @@ public:
     // FIXME: Set struct to static.
     static sensor_info_share_t rk1608_share_inf;
 
-    void setUserSensorFormat(uint16_t width, uint16_t height, uint16_t code) {
+    virtual void setUserSensorFormat(uint16_t width, uint16_t height, uint16_t code) override {
         userSensorWidth = width;
         userSensorHeight = height;
         userSensorFmtCode = code;
     }
+
+    // cif scale flag
+    XCamReturn setCifSclStartFlag(int ratio, bool mode);
 
 private:
     using V4l2Device::start;
@@ -277,16 +284,16 @@ protected:
     static bool         _sync_1608_done;
     void gen_full_isp_params(const struct isp2x_isp_params_cfg* update_params,
                              struct isp2x_isp_params_cfg* full_params,
-                                uint64_t* module_en_update_partial,
-                                uint64_t* module_cfg_update_partial);
+                             uint64_t* module_en_update_partial,
+                             uint64_t* module_cfg_update_partial);
 #if defined(ISP_HW_V20)
     void gen_full_ispp_params(const struct rkispp_params_cfg* update_params,
                               struct rkispp_params_cfg* full_params);
 #endif
     XCamReturn overrideExpRatioToAiqResults(const uint32_t frameId,
-                int module_id,
-                cam3aResultList &results,
-                int hdr_mode);
+                                            int module_id,
+                                            cam3aResultList &results,
+                                            int hdr_mode);
 #if 0
     void dump_isp_config(struct isp2x_isp_params_cfg* isp_params,
                          SmartPtr<RkAiqIspParamsProxy> aiq_results,
@@ -328,10 +335,10 @@ protected:
     uint64_t ispModuleEns;
     rk_aiq_rotation_t _sharp_fbc_rotation;
 
-    rk_aiq_ldch_share_mem_info_t ldch_mem_info_array[2*ISP2X_MESH_BUF_NUM];
+    rk_aiq_ldch_share_mem_info_t ldch_mem_info_array[2 * ISP2X_MESH_BUF_NUM];
     rk_aiq_fec_share_mem_info_t fec_mem_info_array[FEC_MESH_BUF_NUM];
-    rk_aiq_cac_share_mem_info_t cac_mem_info_array[2*ISP3X_MESH_BUF_NUM];
-    rk_aiq_dbg_share_mem_info_t dbg_mem_info_array[2*RKISP_INFO2DDR_BUF_MAX];
+    rk_aiq_cac_share_mem_info_t cac_mem_info_array[2 * ISP3X_MESH_BUF_NUM];
+    rk_aiq_dbg_share_mem_info_t dbg_mem_info_array[2 * RKISP_INFO2DDR_BUF_MAX];
     typedef struct drv_share_mem_ctx_s {
         void* ops_ctx;
         void* mem_info;
@@ -367,6 +374,8 @@ protected:
 
     SmartPtr<RawStreamCapUnit> mRawCapUnit;
     SmartPtr<RawStreamProcUnit> mRawProcUnit;
+
+    SmartPtr<CifSclStream> mCifScaleStream;
 
     SmartPtr<PdafStreamProcUnit> mPdafStreamUnit;
 

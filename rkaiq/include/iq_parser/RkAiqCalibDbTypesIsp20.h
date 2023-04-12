@@ -120,6 +120,7 @@ typedef enum _CalibDb_AntiFlickerMode_e {
 typedef enum _CalibDb_IrisType_e {
     IRIS_DC_TYPE = 0,
     IRIS_P_TYPE = 1,
+    IRIS_HDC_TYPE = 2,
     IRIS_INVALID_TYPE,
 } CalibDb_IrisType_t;
 
@@ -244,6 +245,7 @@ typedef struct CalibDb_LinExpInitExp_s {
     float                   InitIspDGainValue;
     int                     InitPIrisGainValue;
     int                     InitDCIrisDutyValue;
+    int                     InitHDCIrisTargetValue;
     int                     array_size;
 } CalibDb_LinExpInitExp_t;
 
@@ -253,6 +255,7 @@ typedef struct CalibDb_HdrExpInitExp_s {
     Cam3x1FloatMatrix_t     InitIspDGainValue;
     int                     InitPIrisGainValue;
     int                     InitDCIrisDutyValue;
+    int                     InitHDCIrisTargetValue;
     int                     array_size;
 } CalibDb_HdrExpInitExp_t;
 
@@ -286,6 +289,7 @@ typedef struct CalibDb_LinMeAttr_s {
     float                IspDGainValue;
     int                  PIrisGainValue;
     int                  DCIrisValue;
+    int                  HDCIrisValue;
 } CalibDb_LinMeAttr_t;
 
 typedef struct CalibDb_HdrMeAttr_s {
@@ -298,6 +302,7 @@ typedef struct CalibDb_HdrMeAttr_s {
     Cam3x1FloatMatrix_t     IspDGainValue;
     int                     PIrisGainValue;
     int                     DCIrisValue;
+    int                     HDCIrisValue;
 } CalibDb_HdrMeAttr_t;
 
 typedef struct CalibDb_MeAttr_s {
@@ -379,11 +384,27 @@ typedef struct CalibDb_DCIris_Attr_s {
     int         ClosePwmDuty;
 } CalibDb_DCIris_Attr_t;
 
+#define AEC_HDCIRIS_DOT_MAX_NUM (256)
+typedef struct CalibDb_HDCIris_Attr_s {
+    float       DampOver;
+    float       DampUnder;
+    bool        ZeroIsMax;
+    int         MinTarget;
+    int         MaxTarget;
+    int         ZoomTargetDot[AEC_HDCIRIS_DOT_MAX_NUM];
+    int         ZoomDot[AEC_HDCIRIS_DOT_MAX_NUM];
+    int         IrisTargetDot[AEC_HDCIRIS_DOT_MAX_NUM];
+    int         GainDot[AEC_HDCIRIS_DOT_MAX_NUM];
+    int         zoom_array_size;
+    int         iris_array_size;
+} CalibDb_HDCIris_Attr_t;
+
 typedef struct CalibDb_AecIrisCtrl_s {
     uint8_t                     enable;
     CalibDb_IrisType_t          IrisType;
     CalibDb_PIris_Attr_t        PIrisAttr;
     CalibDb_DCIris_Attr_t       DCIrisAttr;
+    CalibDb_HDCIris_Attr_t      HDCIrisAttr;
 } CalibDb_AecIrisCtrl_t;
 
 typedef struct CalibDb_AecCommon_Attr_s {

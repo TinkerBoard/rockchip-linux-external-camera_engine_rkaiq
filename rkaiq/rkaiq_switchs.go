@@ -87,6 +87,8 @@ func rkaiq_macro_switch(soc string) map[string]bool {
         macros_map["RKAIQ_HAVE_CSM_V1"] = true
         macros_map["RKAIQ_HAVE_CGC_V1"] = true
         macros_map["RKAIQ_HAVE_AE_V1"] = true
+        macros_map["RKAIQ_HAVE_AFD_V1"] = false
+        macros_map["RKAIQ_HAVE_AFD_V2"] = false
         macros_map["RKAIQ_HAVE_DEBAYER_V1"] = false
         macros_map["RKAIQ_HAVE_DEBAYER_V2"] = false
         macros_map["RKAIQ_HAVE_DEBAYER_V2_LITE"] = true
@@ -169,6 +171,8 @@ func rkaiq_macro_switch(soc string) map[string]bool {
         macros_map["RKAIQ_HAVE_CSM_V1"] = true
         macros_map["RKAIQ_HAVE_CGC_V1"] = true
         macros_map["RKAIQ_HAVE_AE_V1"] = true
+        macros_map["RKAIQ_HAVE_AFD_V1"] = false
+        macros_map["RKAIQ_HAVE_AFD_V2"] = true
         macros_map["RKAIQ_HAVE_DEBAYER_V1"] = false
         macros_map["RKAIQ_HAVE_DEBAYER_V2"] = true
         macros_map["RKAIQ_HAVE_LSC_V1"] = false
@@ -244,6 +248,8 @@ func rkaiq_macro_switch(soc string) map[string]bool {
         macros_map["RKAIQ_HAVE_CSM_V1"] = true
         macros_map["RKAIQ_HAVE_CGC_V1"] = true
         macros_map["RKAIQ_HAVE_AE_V1"] = true
+        macros_map["RKAIQ_HAVE_AFD_V1"] = false
+        macros_map["RKAIQ_HAVE_AFD_V2"] = true
         macros_map["RKAIQ_HAVE_DEBAYER_V1"] = true
         macros_map["RKAIQ_HAVE_DEBAYER_V2"] = false
         macros_map["RKAIQ_HAVE_LSC_V1"] = false
@@ -316,6 +322,8 @@ func rkaiq_macro_switch(soc string) map[string]bool {
         macros_map["RKAIQ_HAVE_CSM_V1"] = true
         macros_map["RKAIQ_HAVE_CGC_V1"] = true
         macros_map["RKAIQ_HAVE_AE_V1"] = true
+        macros_map["RKAIQ_HAVE_AFD_V1"] = false
+        macros_map["RKAIQ_HAVE_AFD_V2"] = false
         macros_map["RKAIQ_HAVE_DEBAYER_V1"] = true
         macros_map["RKAIQ_HAVE_DEBAYER_V2"] = false
         macros_map["RKAIQ_HAVE_LSC_V1"] = true
@@ -389,6 +397,8 @@ func rkaiq_macro_switch(soc string) map[string]bool {
         macros_map["RKAIQ_HAVE_CSM_V1"] = true
         macros_map["RKAIQ_HAVE_CGC_V1"] = false
         macros_map["RKAIQ_HAVE_AE_V1"] = true
+        macros_map["RKAIQ_HAVE_AFD_V1"] = false
+        macros_map["RKAIQ_HAVE_AFD_V2"] = false
         macros_map["RKAIQ_HAVE_DEBAYER_V1"] = true
         macros_map["RKAIQ_HAVE_DEBAYER_V2"] = false
         macros_map["RKAIQ_HAVE_LSC_V1"] = true

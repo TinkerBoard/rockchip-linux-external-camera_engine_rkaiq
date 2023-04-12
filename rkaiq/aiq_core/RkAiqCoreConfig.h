@@ -89,6 +89,7 @@ inline std::string AlgoTypeToString(RkAiqAlgoType_t type) {
         { RK_AIQ_ALGO_TYPE_AMD,         "Amd"       },
         { RK_AIQ_ALGO_TYPE_AGAIN,       "Again"     },
         { RK_AIQ_ALGO_TYPE_ACAC,        "Acac"      },
+        { RK_AIQ_ALGO_TYPE_AFD,         "Afd"       },
         // clang-format oon
     };
 

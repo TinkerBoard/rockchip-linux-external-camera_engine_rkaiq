@@ -287,6 +287,12 @@ func rkaiq_getSrcsFiles(soc string, macros_map map[string]bool) []string {
         srcs = append(srcs, "aiq_core/algo_handlers/RkAiqCustomAeHandle.cpp")
     }
 
+    flag0 = macros_map["RKAIQ_HAVE_AFD_V1"]
+    flag1 = macros_map["RKAIQ_HAVE_AFD_V2"]
+    if (flag0 || flag1) {
+        srcs = append(srcs, "aiq_core/algo_handlers/RkAiqAfdHandle.cpp")
+    }
+
     flag0 = macros_map["RKAIQ_HAVE_DEBAYER_V1"]
     flag1 = macros_map["RKAIQ_HAVE_DEBAYER_V2"]
     flag2 = macros_map["RKAIQ_HAVE_DEBAYER_V2_LITE"]

@@ -281,7 +281,7 @@ void stManuGetHistParamsV11(mDehazeAttrV11_t* pStManu, RkAiqAdehazeProcResult_t*
         pProcRes->ProcResV11.dc_en ? pProcRes->ProcResV11.hpara_en : FUNCTION_ENABLE;
 
     pProcRes->ProcResV11.hist_gratio =
-        ClipValueV11(pStManu->hist_setting.HistData.hist_gratio, 0, 8);
+        ClipValueV11(pStManu->hist_setting.HistData.hist_gratio, 5, 3);
     pProcRes->ProcResV11.hist_th_off =
         ClipValueV11(pStManu->hist_setting.HistData.hist_th_off, 8, 0);
     pProcRes->ProcResV11.hist_k     = ClipValueV11(pStManu->hist_setting.HistData.hist_k, 3, 2);
@@ -530,7 +530,7 @@ void GetHistParamsV11(CalibDbDehazeV11_t* pCalibV11, RkAiqAdehazeProcResult_t* p
 
     pProcRes->ProcResV11.hist_gratio = DehazeLinearInterpV11(
         pCalibV11->hist_setting.HistData.CtrlData, pCalibV11->hist_setting.HistData.hist_gratio,
-        CtrlValue, 0, 8, DHAZ_CTRL_DATA_STEP_MAX);
+        CtrlValue, 5, 3, DHAZ_CTRL_DATA_STEP_MAX);
     pProcRes->ProcResV11.hist_th_off = DehazeLinearInterpV11(
         pCalibV11->hist_setting.HistData.CtrlData, pCalibV11->hist_setting.HistData.hist_th_off,
         CtrlValue, 8, 0, DHAZ_CTRL_DATA_STEP_MAX);

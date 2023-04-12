@@ -528,43 +528,54 @@ XCamReturn CamCalibDbGetCcmProfileByName(const CalibDbV2_Ccm_Tuning_Para_t *cali
     return ret;
 }
 
-static void UpdateIlluProbList(List *l, int illu, float prob, int listMaxSize)
+static void UpdateIlluProbList(struct list_head *l, int illu, float prob, int listMaxSize)
 {
-    prob_node_t *pCurNode;
-    int sizeList;
+    prob_node_t *pCurNode, *pNode0;
+
     if(listMaxSize == 0) {
         return;
     }
-    pCurNode = (prob_node_t*)malloc(sizeof(prob_node_t));
-    pCurNode->value = illu;
-    pCurNode->prob = prob;
-    ListPrepareItem(pCurNode);
-    ListAddTail(l, pCurNode);
-    sizeList = ListNoItems(l);
-    if (sizeList > listMaxSize)
-    {
-        prob_node_t *pDelNode;
-        pDelNode = (prob_node_t *)ListRemoveHead(l);
-        free(pDelNode);
+    int sizeList = get_list_num(l);
+    if (sizeList < listMaxSize) {
+        pCurNode = (prob_node_t*)malloc(sizeof(prob_node_t));
+        pCurNode->value = illu;
+        pCurNode->prob = prob;
+        list_prepare_item(&pCurNode->node);
+        list_add_tail((struct list_head*)(&pCurNode->node), l);
+    } else {
+        // input list
+        //     |-------------------------|
+        //     head<->n0<->n1<->n2<->n3
+        // output list
+        //     |-------------------------|
+        //     n0'<->head<->n1<->n2<->n3
+        //     n0'->value = illu;
+        pNode0 = (prob_node_t*)(l->next);
+        pNode0->value = illu;
+        pNode0->prob = prob;
+        struct list_head* nodeH = l;
+        struct list_head* node0 = nodeH->next;
+        list_swap_item(nodeH, node0);
+
     }
 }
 
 
-static void StableProbEstimation(List l, int listSize, int count, int illuNum, float* probSet)
+static void StableProbEstimation(struct list_head *l, int listSize, int count, int illuNum, float* probSet)
 {
-    int sizeList = ListNoItems(&l);
+    int sizeList = get_list_num(l);
     if(sizeList < listSize || listSize == 0) {
         return;
     }
     float *prob_tmp = (float*)malloc(illuNum*sizeof(float));
     memset(prob_tmp, 0, illuNum*sizeof(float));
-    List *pNextNode = ListHead(&l);
+    struct list_head *pNextNode = l->next;
     while (NULL != pNextNode)
     {
         prob_node_t *pL;
         pL = (prob_node_t*)pNextNode;
         prob_tmp[pL->value] += pL->prob;
-        pNextNode = pNextNode->p_next;
+        pNextNode = pNextNode->next;
     }
 
     for(int i=0; i<illuNum; i++){
@@ -576,35 +587,45 @@ static void StableProbEstimation(List l, int listSize, int count, int illuNum, f
 }
 
 #if RKAIQ_ACCM_ILLU_VOTE
-static void UpdateDominateIlluList(List *l, int illu, int listMaxSize)
+static void UpdateDominateIlluList(struct list_head* l_head, int illu, int listMaxSize)
 {
-    illu_node_t *pCurNode;
-    int sizeList;
-    if(listMaxSize == 0) {
+    illu_node_t* pCurNode, * pNode0;
+    if (listMaxSize == 0) {
         return;
     }
-    pCurNode = (illu_node_t*)malloc(sizeof(illu_node_t));
-    pCurNode->value = illu;
-    ListPrepareItem(pCurNode);
-    ListAddTail(l, pCurNode);
-    sizeList = ListNoItems(l);
-    if (sizeList > listMaxSize)
-    {
-        illu_node_t *pDelNode;
-        pDelNode = (illu_node_t *)ListRemoveHead(l);
-        free(pDelNode);
+    int sizeList = get_list_num(l_head);
+    if (sizeList < listMaxSize) {
+        pCurNode = (illu_node_t*)malloc(sizeof(illu_node_t));
+        pCurNode->value = illu;
+        list_prepare_item(&pCurNode->node);
+        list_add_tail((struct list_head*)(&pCurNode->node), l_head);
+    }
+    else {
+        // input list
+        //     |-------------------------|
+        //     head<->n0<->n1<->n2<->n3
+        // output list
+        //     |-------------------------|
+        //     n0'<->head<->n1<->n2<->n3
+        //     n0'->value = illu;
+        pNode0 = (illu_node_t*)(l_head->next);
+        pNode0->value = illu;
+        struct list_head* nodeH = l_head;
+        struct list_head* node0 = nodeH->next;
+        list_swap_item(nodeH, node0);
+
     }
 }
 
-static void StableIlluEstimation(List l, int listSize, int illuNum, float varianceLuma, float varianceLumaTh, bool awbConverged, int preIllu, int *newIllu)
+static void StableIlluEstimation(struct list_head * head, int listSize, int illuNum, float varianceLuma, float varianceLumaTh, bool awbConverged, int preIllu, int *newIllu)
 {
-    int sizeList = ListNoItems(&l);
-    if(sizeList < listSize || listSize == 0) {
+    int sizeList = get_list_num(head);
+    if (sizeList < listSize || listSize == 0) {
         return;
     }
     /*if( awbConverged) {
         *newIllu = preIllu;
-        LOGD_ALSC("awb is converged , reserve the last illumination(%d) \n", preIllu );
+        LOGD_ACCM("awb is converged , reserve the last illumination(%d) \n", preIllu );
         return;
     }*/
     /*if( varianceLuma <= varianceLumaTh) {
@@ -612,26 +633,28 @@ static void StableIlluEstimation(List l, int listSize, int illuNum, float varian
         LOGD_ACCM("varianceLuma %f < varianceLumaTh %f , reserve the last illumination(%d) \n", varianceLuma,varianceLumaTh,preIllu );
         return;
     }*/
-    List *pNextNode = ListHead(&l);
-    illu_node_t *pL;
-    int *illuSet = (int*)malloc(illuNum*sizeof(int));
-    memset(illuSet, 0, illuNum*sizeof(int));
-    while (NULL != pNextNode)
+    struct list_head* pNextNode = head->next;
+    illu_node_t* pL;
+    int* illuSet = (int*)malloc(illuNum * sizeof(int));
+    memset(illuSet, 0, illuNum * sizeof(int));
+    while (head != pNextNode)
     {
         pL = (illu_node_t*)pNextNode;
         illuSet[pL->value]++;
-        pNextNode = pNextNode->p_next;
+        pNextNode = pNextNode->next;
     }
+    int count2 = 0;
     int max_count = 0;
-    for(int i=0; i<illuNum; i++){
-        LOGV_ACCM("illu(%d), count(%d)\n", i,illuSet[i]);
-        if(illuSet[i] > max_count){
+    for (int i = 0; i < illuNum; i++) {
+        LOGV_ACCM("illu(%d), count(%d)\n", i, illuSet[i]);
+        if (illuSet[i] > max_count) {
             max_count = illuSet[i];
             *newIllu = i;
         }
     }
     free(illuSet);
-    LOGV_ACCM("final estmination illu is %d\n", *newIllu);
+    LOGD_ACCM("varianceLuma %f, varianceLumaTh %f final estmination illu is %d\n", varianceLuma, varianceLumaTh, *newIllu);
+
 }
 #endif
 
@@ -658,7 +681,7 @@ XCamReturn interpCCMbywbgain(const CalibDbV2_Ccm_Tuning_Para_t* pCcm, accm_handl
     int frames = (int)hAccm->count > (pCcm->illu_estim.frame_no - 1) ? pCcm->illu_estim.frame_no
                                                                      : hAccm->count;  // todo
 
-    StableProbEstimation(hAccm->accmRest.problist, problistsize, frames, pCcm->aCcmCof_len, prob);
+    StableProbEstimation(&hAccm->accmRest.problist, problistsize, frames, pCcm->aCcmCof_len, prob);
 
     // 2) all illuminant do interp by fSaturation
     float undampedCcmMatrix[9];
@@ -828,7 +851,7 @@ XCamReturn ReloadCCMCalibV2(accm_handle_t hAccm, const CalibDbV2_Ccm_Tuning_Para
         return XCAM_RETURN_ERROR_PARAM;
     }
     if (TuningPara->aCcmCof_len != stCcm->aCcmCof_len)
-        ClearList(&hAccm->accmRest.dominateIlluList);
+        clear_list(&hAccm->accmRest.dominateIlluList);
 
     hAccm->ccm_tune = *TuningPara;
     return (XCAM_RETURN_NO_ERROR);

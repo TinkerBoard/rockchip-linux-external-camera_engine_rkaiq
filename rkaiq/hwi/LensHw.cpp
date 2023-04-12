@@ -349,7 +349,7 @@ LensHw::setFocusParamsSync(int position, bool is_update_time, bool focus_norebac
 
         end_time = _focus_tim.vcm_end_t.tv_sec * 1000 + _focus_tim.vcm_end_t.tv_usec / 1000;
         LOGD_CAMHW_SUBM(LENS_SUBM, "|||set focus result: %d, focus_pos %d, _last_zoomchg_focus %d, end time %ld, is_update_time %d, is_need_reback %d",
-            position, set_focus.focus_pos, _last_zoomchg_focus, end_time, is_update_time, set_focus.is_need_reback);
+                        position, set_focus.focus_pos, _last_zoomchg_focus, end_time, is_update_time, set_focus.is_need_reback);
     }
 
     EXIT_CAMHW_FUNCTION();
@@ -425,7 +425,7 @@ LensHw::setFocusParams(SmartPtr<RkAiqFocusParamsProxy>& focus_params)
         start_time = _focus_tim.vcm_start_t.tv_sec * 1000 + _focus_tim.vcm_start_t.tv_usec / 1000;
         end_time = _focus_tim.vcm_end_t.tv_sec * 1000 + _focus_tim.vcm_end_t.tv_usec / 1000;
         LOGI_AF("|||set focus: algo_pos %d, driver_pos %d, end time %ld, need time %d",
-                 algo_pos, driver_pos, end_time, end_time - start_time);
+                algo_pos, driver_pos, end_time, end_time - start_time);
     }
 
     EXIT_CAMHW_FUNCTION();
@@ -493,7 +493,7 @@ LensHw::setDCIrisParams(int pwmDuty)
     if (_dciris_pwmduty == pwmDuty)
         return XCAM_RETURN_NO_ERROR;
 
-    //get old Piris-step
+    //get old DCiris-step
     _last_dciris_pwmduty = pwmDuty;
 
     xcam_mem_clear (control);
@@ -506,6 +506,69 @@ LensHw::setDCIrisParams(int pwmDuty)
         return XCAM_RETURN_ERROR_IOCTL;
     }
     _dciris_pwmduty = pwmDuty;
+
+    EXIT_CAMHW_FUNCTION();
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
+LensHw::setHDCIrisParams(int target)
+{
+    ENTER_CAMHW_FUNCTION();
+    SmartLock locker (_mutex);
+    struct v4l2_control control;
+
+    if (!_iris_enable) {
+        LOGE_CAMHW_SUBM(LENS_SUBM, "iris is not supported");
+        return XCAM_RETURN_NO_ERROR;
+    }
+
+    if (!_active)
+        start_internal();
+
+    if (_hdciris_target == target)
+        return XCAM_RETURN_NO_ERROR;
+
+    //get old HDCiris-step
+    _last_hdciris_target = _hdciris_target;
+
+    xcam_mem_clear (control);
+    control.id = V4L2_CID_IRIS_ABSOLUTE;
+    control.value = target;
+
+    LOGD_CAMHW_SUBM(LENS_SUBM, "|||set hdc-iris result: %d, control.value %d", target, control.value);
+    if (io_control (VIDIOC_S_CTRL, &control) < 0) {
+        LOGE_CAMHW_SUBM(LENS_SUBM, "set hdc-iris result failed to device");
+        return XCAM_RETURN_ERROR_IOCTL;
+    }
+    _hdciris_target = target;
+
+    EXIT_CAMHW_FUNCTION();
+    return XCAM_RETURN_NO_ERROR;
+}
+
+XCamReturn
+LensHw::getHDCIrisParams(int* adc)
+{
+    ENTER_CAMHW_FUNCTION();
+    SmartLock locker (_mutex);
+
+    if (!_iris_enable) {
+        LOGE_CAMHW_SUBM(LENS_SUBM, "iris is not supported");
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+
+    int iris_adc = 0;
+    // No work for now
+    /*
+    if (io_control(RK_VIDIOC_GET_DCIRIS_HALL_ADC, &iris_adc) < 0) {
+        LOGD_CAMHW_SUBM(LENS_SUBM, "failed to get iris adc");
+        *adc = 0;
+        return XCAM_RETURN_ERROR_IOCTL;
+    }
+    */
+    *adc = iris_adc;
+    LOGD("|||get dciris adc value=%d\n", iris_adc);
 
     EXIT_CAMHW_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -606,7 +669,7 @@ LensHw::setZoomFocusRebackSync(SmartPtr<rk_aiq_focus_params_t> attrPtr, bool is_
 
     time0 = _zoom_tim.vcm_end_t.tv_sec * 1000 + _zoom_tim.vcm_end_t.tv_usec / 1000;
     LOGD_CAMHW_SUBM(LENS_SUBM, "zoom_pos %d, focus_pos %d, is_need_zoom_reback %d, is_need_focus_reback %d, end time %ld, is_update_time %d",
-        zoom_pos, focus_pos, set_zoom.is_need_zoom_reback, set_zoom.is_need_focus_reback, time0, is_update_time);
+                    zoom_pos, focus_pos, set_zoom.is_need_zoom_reback, set_zoom.is_need_focus_reback, time0, is_update_time);
 
     EXIT_CAMHW_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -642,7 +705,7 @@ LensHw::endZoomChgSync(SmartPtr<rk_aiq_focus_params_t> attrPtr, bool is_update_t
         set_zoom.zoom_pos[0].focus_pos = focus_pos;
 
         LOGD_CAMHW_SUBM(LENS_SUBM, "zoom_pos %d, focus_pos %d, _last_zoomchg_zoom %d, _last_zoomchg_focus %d\n",
-            zoom_pos, focus_pos, _last_zoomchg_zoom, _last_zoomchg_focus);
+                        zoom_pos, focus_pos, _last_zoomchg_zoom, _last_zoomchg_focus);
         if (zoom_pos < _last_zoomchg_zoom)
             set_zoom.is_need_zoom_reback = true;
         else
@@ -692,7 +755,7 @@ LensHw::endZoomChgSync(SmartPtr<rk_aiq_focus_params_t> attrPtr, bool is_update_t
 
         time0 = _zoom_tim.vcm_end_t.tv_sec * 1000 + _zoom_tim.vcm_end_t.tv_usec / 1000;
         LOGD_CAMHW_SUBM(LENS_SUBM, "zoom_pos %d, focus_pos %d, zoom focus move end time %ld, is_need_zoom_reback %d, is_need_focus_reback %d, is_update_time %d",
-            zoom_pos, focus_pos, time0, set_zoom.is_need_zoom_reback, set_zoom.is_need_focus_reback, is_update_time);
+                        zoom_pos, focus_pos, time0, set_zoom.is_need_zoom_reback, set_zoom.is_need_focus_reback, is_update_time);
     }
 
     EXIT_CAMHW_FUNCTION();
@@ -783,7 +846,7 @@ LensHw::setZoomFocusParamsSync(SmartPtr<rk_aiq_focus_params_t> attrPtr, bool is_
 
         time0 = _zoom_tim.vcm_end_t.tv_sec * 1000 + _zoom_tim.vcm_end_t.tv_usec / 1000;
         LOGD_CAMHW_SUBM(LENS_SUBM, "zoom_pos %d, focus_pos %d, zoom focus move end time %ld, is_need_zoom_reback %d, is_need_focus_reback %d, is_update_time %d",
-            zoom_pos, focus_pos, time0, set_zoom.is_need_zoom_reback, set_zoom.is_need_focus_reback, is_update_time);
+                        zoom_pos, focus_pos, time0, set_zoom.is_need_zoom_reback, set_zoom.is_need_focus_reback, is_update_time);
     }
 
     EXIT_CAMHW_FUNCTION();
@@ -849,7 +912,7 @@ LensHw::setZoomFocusParams(SmartPtr<RkAiqFocusParamsProxy>& focus_params)
         _lenshw_thd->push_attr(attrPtr);
     } else if (attrPtr->end_zoom_chg) {
         LOGD_CAMHW_SUBM(LENS_SUBM, "end_zoom_chg zoom_pos %d, focus_pos %d, next_pos_num %d",
-            _zoom_pos, _focus_pos, attrPtr->next_pos_num);
+                        _zoom_pos, _focus_pos, attrPtr->next_pos_num);
         _lenshw_thd->push_attr(attrPtr);
     }
 
@@ -1068,7 +1131,7 @@ LensHw::ZoomFocusModifyPositionSync(SmartPtr<rk_aiq_focus_params_t> attrPtr)
     _last_zoomchg_focus = attrPtr->auto_focpos;
 
     LOGD_CAMHW_SUBM(LENS_SUBM, "zoom focus modify position, use_manual %d, zoom_pos %d, focus_pos %d",
-        attrPtr->use_manual, modify_pos.zoom_pos, modify_pos.focus_pos);
+                    attrPtr->use_manual, modify_pos.zoom_pos, modify_pos.focus_pos);
 
     EXIT_CAMHW_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
@@ -1163,7 +1226,7 @@ LensHw::setLowPassFv(uint32_t sub_shp4_4[RKAIQ_RAWAF_SUMDATA_NUM], uint32_t sub_
     }
 
     LOGD_CAMHW_SUBM(LENS_SUBM, "%s: frm_id %d, lowPassFv4_4 %lld, lowPassFv8_8 %lld, lowPassLight %lld\n",
-        __func__, frameid, lowPassFv4_4, lowPassFv8_8, lowPassLight);
+                    __func__, frameid, lowPassFv4_4, lowPassFv8_8, lowPassLight);
 
     EXIT_CAMHW_FUNCTION();
     return ret;
@@ -1273,7 +1336,7 @@ LensHw::getAfInfoParams(SmartPtr<RkAiqAfInfoProxy>& afInfo, uint32_t frame_id)
     }
 
     LOGD_CAMHW_SUBM(LENS_SUBM, "%s: frm_id %u, time %lld, lowPassFv4_4[0] %d, lowPassId %d\n",
-        __func__, frame_id, afInfo->data()->sofTime, afInfo->data()->lowPassFv4_4[0], afInfo->data()->lowPassId);
+                    __func__, frame_id, afInfo->data()->sofTime, afInfo->data()->lowPassFv4_4[0], afInfo->data()->lowPassId);
 
 
     LOGD_CAMHW_SUBM(LENS_SUBM, "%s: frm_id %u, time %lld\n", __func__, frame_id, afInfo->data()->sofTime);

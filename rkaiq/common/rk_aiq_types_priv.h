@@ -93,9 +93,9 @@ typedef struct rkisp_effect_params_s {
 #elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
 typedef struct rkisp_effect_params_s {
     //struct isp32_isp_params_cfg isp_params_v32;
-	struct isp32_isp_meas_cfg meas;
-	struct isp32_bls_cfg bls_cfg;
-	struct isp32_awb_gain_cfg awb_gain_cfg;
+    struct isp32_isp_meas_cfg meas;
+    struct isp32_bls_cfg bls_cfg;
+    struct isp32_awb_gain_cfg awb_gain_cfg;
     rk_aiq_awb_stat_cfg_v32_t awb_cfg_v32;
 } rkisp_effect_params_v20;
 #else
@@ -133,6 +133,7 @@ typedef rk_aiq_isp_params_t<rk_aiq_isp_sharpen_t>   rk_aiq_isp_sharpen_params_v2
 typedef rk_aiq_isp_params_t<rk_aiq_isp_edgeflt_t>   rk_aiq_isp_edgeflt_params_v20_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_fec_t>       rk_aiq_isp_fec_params_v20_t;
 typedef rk_aiq_isp_params_t<rk_aiq_isp_orb_t>       rk_aiq_isp_orb_params_v20_t;
+typedef rk_aiq_isp_params_t<rk_aiq_isp_afd_t>       rk_aiq_isp_afd_params_t;
 
 // v21 params struct
 typedef rk_aiq_isp_params_t<rk_aiq_awb_stat_cfg_v201_t>       rk_aiq_isp_awb_params_v21_t;
@@ -251,6 +252,22 @@ struct rk_aiq_vbuf {
     struct rk_aiq_vbuf_info buf_info[3];/*index: 0-short,1-medium,2-long*/
 };
 
+typedef struct rk_aiq_tx_info_s {
+    uint32_t            width;
+    uint32_t            height;
+    uint8_t             bpp;
+    uint8_t             bayer_fmt;
+    uint32_t            stridePerLine;
+    uint32_t            bytesPerLine;
+    bool                storage_type;
+    uint32_t            id;
+    //get from AE
+    bool                IsAeConverged;
+    bool                envChange;
+    void                *data_addr;
+    RKAiqAecExpInfo_t   *aecExpInfo;
+} rk_aiq_tx_info_t;
+
 enum cam_thread_type_e {
     ISP_POLL_LUMA,
     ISP_POLL_3A_STATS,
@@ -273,6 +290,7 @@ enum cam_thread_type_e {
     VICAP_STREAM_ON_EVT,
     VICAP_RESET_EVT,
     VICAP_WITH_RK1608_RESET_EVT,
+    VICAP_POLL_SCL,
     ISP_POLL_POST_MAX,
 };
 
@@ -589,6 +607,54 @@ private:
     XCAM_DEAD_COPY (RkAiqPdafStats);
 };
 
+typedef struct rk_aiq_scale_raw_info_s {
+    uint8_t             bpp;
+    XCamVideoBuffer     *raw_s;
+    XCamVideoBuffer     *raw_m;
+    XCamVideoBuffer     *raw_l;
+} rk_aiq_scale_raw_info_t;
+
+typedef struct RkAiqVicapRawBufInfo_s {
+    uint32_t frame_id;
+    bool ready;
+    uint8_t flags;
+    int bpp;
+    SmartPtr<VideoBuffer> raw_s;
+    SmartPtr<VideoBuffer> raw_m;
+    SmartPtr<VideoBuffer> raw_l;
+    void reset() {
+        frame_id = -1;
+        ready = false;
+        flags = 0;
+        bpp = 0;
+        if (raw_s.ptr())
+            raw_s.release();
+        if (raw_m.ptr())
+            raw_m.release();
+        if (raw_l.ptr())
+            raw_l.release();
+    }
+} RkAiqVicapRawBufInfo_t;
+
+typedef struct RkAiqVicapRawBuf_s : public BufferData {
+    RkAiqVicapRawBufInfo_t info;
+    virtual uint8_t* map() override {
+        return (uint8_t*)(&info);
+    }
+    RkAiqVicapRawBuf_s() {
+        info.reset();
+    }
+    ~RkAiqVicapRawBuf_s() {
+        info.reset();
+    }
+} RkAiqVicapRawBuf_t;
+
+typedef enum RkAiqVicapRawBufFlag_e {
+    RK_AIQ_VICAP_SCALE_HDR_MODE_NORMAL = 0x1,
+    RK_AIQ_VICAP_SCALE_HDR_MODE_2_HDR  = 0x3,
+    RK_AIQ_VICAP_SCALE_HDR_MODE_3_HDR  = 0x7,
+} RkAiqVicapRawBufFlag_t;
+
 enum rk_aiq_core_analyze_type_e {
     RK_AIQ_CORE_ANALYZE_MEAS,
     RK_AIQ_CORE_ANALYZE_OTHER,
@@ -605,6 +671,7 @@ enum rk_aiq_core_analyze_type_e {
     RK_AIQ_CORE_ANALYZE_AF,
     RK_AIQ_CORE_ANALYZE_EIS,
     RK_AIQ_CORE_ANALYZE_ORB,
+    RK_AIQ_CORE_ANALYZE_AFD,
     RK_AIQ_CORE_ANALYZE_MAX,
     RK_AIQ_CORE_ANALYZE_ALL = 0xffffffff,
 };
@@ -621,7 +688,7 @@ static const char* AnalyzerGroupType2Str[32] = {
     [RK_AIQ_CORE_ANALYZE_AWB] = "GRP_AWB",     [RK_AIQ_CORE_ANALYZE_DHAZ] = "DHAZ",
     [RK_AIQ_CORE_ANALYZE_GRP0] = "GRP0",       [RK_AIQ_CORE_ANALYZE_GRP1] = "GRP1",
     [RK_AIQ_CORE_ANALYZE_AF] = "AF",           [RK_AIQ_CORE_ANALYZE_EIS] = "EIS",
-    [RK_AIQ_CORE_ANALYZE_ORB] = "ORB",
+    [RK_AIQ_CORE_ANALYZE_ORB] = "ORB",         [RK_AIQ_CORE_ANALYZE_AFD] = "AFD",
 };
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop

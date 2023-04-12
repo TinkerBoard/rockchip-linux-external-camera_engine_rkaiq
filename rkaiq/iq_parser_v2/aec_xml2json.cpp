@@ -547,6 +547,7 @@ void convertAecCalibV1ToCalibV2(const CamCalibDbContext_t *calib, CamCalibDbV2Co
         aec_json.LinearAeCtrl.InitExp.InitIspDGainValue = aec_xml.CommCtrl.stInitExp.stLinExpInitExp.InitIspDGainValue;
         aec_json.LinearAeCtrl.InitExp.InitPIrisGainValue = aec_xml.CommCtrl.stInitExp.stLinExpInitExp.InitPIrisGainValue;
         aec_json.LinearAeCtrl.InitExp.InitDCIrisDutyValue = aec_xml.CommCtrl.stInitExp.stLinExpInitExp.InitDCIrisDutyValue;
+        aec_json.LinearAeCtrl.InitExp.InitHDCIrisTargetValue = aec_xml.CommCtrl.stInitExp.stLinExpInitExp.InitHDCIrisTargetValue;
 
         aec_json.LinearAeCtrl.Route.TimeDot_len = aec_xml.CommCtrl.stAeRoute.LinAeSeperate[AEC_DNMODE_DAY].array_size;
         aec_json.LinearAeCtrl.Route.GainDot_len = aec_xml.CommCtrl.stAeRoute.LinAeSeperate[AEC_DNMODE_DAY].array_size;
@@ -635,6 +636,7 @@ void convertAecCalibV1ToCalibV2(const CamCalibDbContext_t *calib, CamCalibDbV2Co
 
         aec_json.HdrAeCtrl.InitExp.InitPIrisGainValue = aec_xml.CommCtrl.stInitExp.stHdrExpInitExp.InitPIrisGainValue;
         aec_json.HdrAeCtrl.InitExp.InitDCIrisDutyValue = aec_xml.CommCtrl.stInitExp.stHdrExpInitExp.InitDCIrisDutyValue;
+        aec_json.HdrAeCtrl.InitExp.InitHDCIrisTargetValue = aec_xml.CommCtrl.stInitExp.stHdrExpInitExp.InitHDCIrisTargetValue;
 
         aec_json.HdrAeCtrl.Route.Frm0TimeDot_len = aec_xml.CommCtrl.stAeRoute.HdrAeSeperate[AEC_DNMODE_DAY].array_size;
         aec_json.HdrAeCtrl.Route.Frm0GainDot_len = aec_xml.CommCtrl.stAeRoute.HdrAeSeperate[AEC_DNMODE_DAY].array_size;
@@ -768,6 +770,20 @@ void convertAecCalibV1ToCalibV2(const CamCalibDbContext_t *calib, CamCalibDbV2Co
         aec_json.IrisCtrl.DCIrisAttr.MaxPwmDuty = aec_xml.CommCtrl.stIris.DCIrisAttr.MaxPwmDuty;
         aec_json.IrisCtrl.DCIrisAttr.OpenPwmDuty = aec_xml.CommCtrl.stIris.DCIrisAttr.OpenPwmDuty;
         aec_json.IrisCtrl.DCIrisAttr.ClosePwmDuty = aec_xml.CommCtrl.stIris.DCIrisAttr.ClosePwmDuty;
+
+        aec_json.IrisCtrl.ManualAttr.HDCIrisTargetValue = aec_xml.CommCtrl.stManual.stLinMe.HDCIrisValue;
+        aec_json.IrisCtrl.InitAttr.HDCIrisTargetValue = aec_xml.CommCtrl.stInitExp.stLinExpInitExp.InitHDCIrisTargetValue;
+        aec_json.IrisCtrl.HDCIrisAttr.DampOver = aec_xml.CommCtrl.stIris.HDCIrisAttr.DampOver;
+        aec_json.IrisCtrl.HDCIrisAttr.DampUnder = aec_xml.CommCtrl.stIris.HDCIrisAttr.DampUnder;
+        aec_json.IrisCtrl.HDCIrisAttr.ZeroIsMax = aec_xml.CommCtrl.stIris.HDCIrisAttr.ZeroIsMax;
+        aec_json.IrisCtrl.HDCIrisAttr.MinTarget = aec_xml.CommCtrl.stIris.HDCIrisAttr.MinTarget;
+        aec_json.IrisCtrl.HDCIrisAttr.MaxTarget = aec_xml.CommCtrl.stIris.HDCIrisAttr.MaxTarget;
+        memcpy(aec_json.IrisCtrl.HDCIrisAttr.ZoomTargetDot, aec_xml.CommCtrl.stIris.HDCIrisAttr.ZoomTargetDot, aec_xml.CommCtrl.stIris.HDCIrisAttr.zoom_array_size * sizeof(int));
+        memcpy(aec_json.IrisCtrl.HDCIrisAttr.ZoomDot, aec_xml.CommCtrl.stIris.HDCIrisAttr.ZoomDot, aec_xml.CommCtrl.stIris.HDCIrisAttr.zoom_array_size * sizeof(int));
+        memcpy(aec_json.IrisCtrl.HDCIrisAttr.IrisTargetDot, aec_xml.CommCtrl.stIris.HDCIrisAttr.IrisTargetDot, aec_xml.CommCtrl.stIris.HDCIrisAttr.iris_array_size * sizeof(int));
+        memcpy(aec_json.IrisCtrl.HDCIrisAttr.GainDot, aec_xml.CommCtrl.stIris.HDCIrisAttr.GainDot, aec_xml.CommCtrl.stIris.HDCIrisAttr.iris_array_size * sizeof(int));
+        aec_json.IrisCtrl.HDCIrisAttr.ZoomTargetDot_len = aec_xml.CommCtrl.stIris.HDCIrisAttr.zoom_array_size;
+        aec_json.IrisCtrl.HDCIrisAttr.IrisTargetDot_len = aec_xml.CommCtrl.stIris.HDCIrisAttr.iris_array_size;
 
         //1.2.4 SyncTest
         aec_json.SyncTest.Enable = (aec_xml.CommCtrl.stSyncTest.enable == 0) ? false : true;
@@ -912,6 +928,7 @@ void convertAecCalibV1ToCalibV2(const CamCalibDbContext_t *calib, CamCalibDbV2Co
         aec_json.LinearAeCtrl.InitExp.InitIspDGainValue = aec_tune_xml->CommCtrl.stInitExp.stLinExpInitExp.InitIspDGainValue;
         aec_json.LinearAeCtrl.InitExp.InitPIrisGainValue = aec_tune_xml->CommCtrl.stInitExp.stLinExpInitExp.InitPIrisGainValue;
         aec_json.LinearAeCtrl.InitExp.InitDCIrisDutyValue = aec_tune_xml->CommCtrl.stInitExp.stLinExpInitExp.InitDCIrisDutyValue;
+        aec_json.LinearAeCtrl.InitExp.InitHDCIrisTargetValue = aec_tune_xml->CommCtrl.stInitExp.stLinExpInitExp.InitHDCIrisTargetValue;
 
         aec_json.LinearAeCtrl.Route.TimeDot_len = aec_tune_xml->CommCtrl.stAeRoute.LinAeSeperate.array_size;
         aec_json.LinearAeCtrl.Route.GainDot_len = aec_tune_xml->CommCtrl.stAeRoute.LinAeSeperate.array_size;
@@ -1000,6 +1017,7 @@ void convertAecCalibV1ToCalibV2(const CamCalibDbContext_t *calib, CamCalibDbV2Co
 
         aec_json.HdrAeCtrl.InitExp.InitPIrisGainValue = aec_tune_xml->CommCtrl.stInitExp.stHdrExpInitExp.InitPIrisGainValue;
         aec_json.HdrAeCtrl.InitExp.InitDCIrisDutyValue = aec_tune_xml->CommCtrl.stInitExp.stHdrExpInitExp.InitDCIrisDutyValue;
+        aec_json.HdrAeCtrl.InitExp.InitHDCIrisTargetValue = aec_tune_xml->CommCtrl.stInitExp.stHdrExpInitExp.InitHDCIrisTargetValue;
 
         aec_json.HdrAeCtrl.Route.Frm0TimeDot_len = aec_tune_xml->CommCtrl.stAeRoute.HdrAeSeperate.array_size;
         aec_json.HdrAeCtrl.Route.Frm0GainDot_len = aec_tune_xml->CommCtrl.stAeRoute.HdrAeSeperate.array_size;
@@ -1133,6 +1151,20 @@ void convertAecCalibV1ToCalibV2(const CamCalibDbContext_t *calib, CamCalibDbV2Co
         aec_json.IrisCtrl.DCIrisAttr.MaxPwmDuty = aec_tune_xml->CommCtrl.stIris.DCIrisAttr.MaxPwmDuty;
         aec_json.IrisCtrl.DCIrisAttr.OpenPwmDuty = aec_tune_xml->CommCtrl.stIris.DCIrisAttr.OpenPwmDuty;
         aec_json.IrisCtrl.DCIrisAttr.ClosePwmDuty = aec_tune_xml->CommCtrl.stIris.DCIrisAttr.ClosePwmDuty;
+
+        aec_json.IrisCtrl.ManualAttr.HDCIrisTargetValue = aec_tune_xml->CommCtrl.stManual.stLinMe.HDCIrisValue;
+        aec_json.IrisCtrl.InitAttr.HDCIrisTargetValue = aec_tune_xml->CommCtrl.stInitExp.stLinExpInitExp.InitHDCIrisTargetValue;
+        aec_json.IrisCtrl.HDCIrisAttr.DampOver = aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.DampOver;
+        aec_json.IrisCtrl.HDCIrisAttr.DampUnder = aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.DampUnder;
+        aec_json.IrisCtrl.HDCIrisAttr.ZeroIsMax = aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.ZeroIsMax;
+        aec_json.IrisCtrl.HDCIrisAttr.MinTarget = aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.MinTarget;
+        aec_json.IrisCtrl.HDCIrisAttr.MaxTarget = aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.MaxTarget;
+        memcpy(aec_json.IrisCtrl.HDCIrisAttr.ZoomTargetDot, aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.ZoomTargetDot, aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.zoom_array_size * sizeof(int));
+        memcpy(aec_json.IrisCtrl.HDCIrisAttr.ZoomDot, aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.ZoomDot, aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.zoom_array_size * sizeof(int));
+        memcpy(aec_json.IrisCtrl.HDCIrisAttr.IrisTargetDot, aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.IrisTargetDot, aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.iris_array_size * sizeof(int));
+        memcpy(aec_json.IrisCtrl.HDCIrisAttr.GainDot, aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.GainDot, aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.iris_array_size * sizeof(int));
+        aec_json.IrisCtrl.HDCIrisAttr.ZoomTargetDot_len = aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.zoom_array_size;
+        aec_json.IrisCtrl.HDCIrisAttr.IrisTargetDot_len = aec_tune_xml->CommCtrl.stIris.HDCIrisAttr.iris_array_size;
 
         //1.2.4 SyncTest
         aec_json.SyncTest.Enable = (aec_tune_xml->CommCtrl.stSyncTest.enable == 0) ? false : true;

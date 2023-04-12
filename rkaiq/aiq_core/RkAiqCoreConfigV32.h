@@ -52,6 +52,7 @@
 #include "awdr/rk_aiq_algo_awdr_itf.h"
 #include "aynr3/rk_aiq_aynr_algo_itf_v3.h"
 #include "aynrV22/rk_aiq_aynr_algo_itf_v22.h"
+#include "afd/rk_aiq_algo_afd_itf.h"
 
 #if RKAIQ_ENABLE_CAMGROUP
 #include "algos_camgroup/abayer2dnrV23/rk_aiq_algo_camgroup_abayer2dnr_itf_v23.h"
@@ -129,6 +130,15 @@ static RkAiqGrpCondition_t otherGrpCondV3x[] = {
     [0] = {XCAM_MESSAGE_SOF_INFO_OK, 0},
 };
 static RkAiqGrpConditions_t otherGrpCondsV3x = {grp_conds_array_info(otherGrpCondV3x)};
+
+static RkAiqGrpCondition_t grpAfdCond[] = {
+    [0] = {XCAM_MESSAGE_SOF_INFO_OK, 0},
+    [1] = {XCAM_MESSAGE_AE_PROC_RES_OK, 0},
+    [2] = {XCAM_MESSAGE_VICAP_POLL_SCL_OK, 0},
+};
+
+static RkAiqGrpConditions_t grpAfdConds = {grp_conds_array_info(grpAfdCond)};
+
 
 static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
 // clang-format off
@@ -244,6 +254,9 @@ static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
 #endif
 #if (RKAIQ_HAVE_SHARP_V33 || RKAIQ_HAVE_SHARP_V33_LITE)
     { &g_RkIspAlgoDescAsharpV33.common,       RK_AIQ_CORE_ANALYZE_GRP0,   33, 33, 33,    grp0Conds          },
+#endif
+#if (RKAIQ_HAVE_AFD_V2)
+    { &g_RkIspAlgoDescAfd.common,            RK_AIQ_CORE_ANALYZE_AFD,     0, 1, 0,    grpAfdConds      },
 #endif
     { NULL,                                 RK_AIQ_CORE_ANALYZE_ALL,    0, 0, 0,    {0, 0}             },
     // clang-format on

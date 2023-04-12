@@ -216,10 +216,9 @@ rk_aiq_uapi_sysctl_preInit_tb_info(const char* sns_ent_name,
         rk_aiq_init_lib();
         g_rk_aiq_init_lib = true;
     }
-
     std::string sns_ent_name_str(sns_ent_name);
     ret = _get_fast_aewb_from_drv(sns_ent_name_str, fastAeAwbInfo);
-    LOGI("%s: magic %x, is_pre_aiq : %d, prd_type : %d, kernel status %d", 
+    LOGI("%s: magic %x, is_pre_aiq : %d, prd_type : %d, kernel status %d",
          __func__, info->magic, info->is_pre_aiq, info->prd_type, ret);
 
     if (ret == XCAM_RETURN_NO_ERROR) {
@@ -236,7 +235,6 @@ rk_aiq_uapi_sysctl_preInit_tb_info(const char* sns_ent_name,
         LOGE("%s: get fast aewb error, skip set tb_info!", __func__);
     }
     return (ret);
-
 }
 
 XCamReturn rk_aiq_uapi_sysctl_preInit_devBufCnt(const char* sns_ent_name, const char* dev_ent,
@@ -256,7 +254,12 @@ XCamReturn rk_aiq_uapi_sysctl_preInit_devBufCnt(const char* sns_ent_name, const 
 static int rk_aiq_offline_init(rk_aiq_sys_ctx_t* ctx)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifdef ANDROID_OS
+    char use_as_fake_cam_env[PROPERTY_VALUE_MAX] = {0};
+    property_get("persist.vendor.rkisp.use_as_fake_cam", use_as_fake_cam_env, "0");
+#else
     char* use_as_fake_cam_env = getenv("USE_AS_FAKE_CAM");
+#endif
     ini_t* aiq_ini = rkaiq_ini_load(OFFLINE_INI_FILE);
 
     ENTER_XCORE_FUNCTION();
@@ -309,8 +312,19 @@ static int rk_aiq_offline_init(rk_aiq_sys_ctx_t* ctx)
         rkaiq_ini_free(aiq_ini);
     }
 
+#ifdef ANDROID_OS
+    int use_fakecam = atoi(use_as_fake_cam_env);
+    if (use_fakecam > 0) {
+        ctx->_use_fakecam = true;
+    } else {
+        ctx->_use_fakecam = false;
+    }
+#else
     if (use_as_fake_cam_env)
         ctx->_use_fakecam = atoi(use_as_fake_cam_env) > 0 ? true : false;
+#endif
+
+    LOGI("use fakecam %d", ctx->_use_fakecam);
 
     EXIT_XCORE_FUNCTION();
 
@@ -524,7 +538,7 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
                 strcat(config_file, ".json");
             }
             LOGI("use iq file %s", config_file);
-        } else {
+        } else if (ctx->_use_fakecam && !user_spec_iq) {
             if (config_file_dir && (strlen(config_file_dir) > 0))
                 sprintf(config_file, "%s/%s", config_file_dir, "FakeCamera0.json");
             else

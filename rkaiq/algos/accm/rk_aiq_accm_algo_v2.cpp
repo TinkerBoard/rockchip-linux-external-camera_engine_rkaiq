@@ -390,7 +390,7 @@ static XCamReturn UpdateCcmCalibV2ParaV2(accm_handle_t hAccm) {
     hAccm->accmSwInfo.ccmConverged = false;
     hAccm->calib_update            = true;
 
-    ClearList(&hAccm->accmRest.problist);
+    clear_list(&hAccm->accmRest.problist);
 
     LOG1_ACCM("%s: (exit)\n", __FUNCTION__);
     return (ret);
@@ -433,7 +433,12 @@ XCamReturn AccmInit(accm_handle_t* hAccm, const CamCalibDbV2Context_t* calibv2) 
     // todo whm --- CalibDbV2_Ccm_Para_V2
     accm_context->ccm_v2 = calib_ccm;
     accm_context->mCurAttV2.mode = RK_AIQ_CCM_MODE_AUTO;
+#if RKAIQ_ACCM_ILLU_VOTE
+    INIT_LIST_HEAD(&accm_context->accmRest.dominateIlluList);
+#endif
+    INIT_LIST_HEAD(&accm_context->accmRest.problist);
     ret                  = UpdateCcmCalibV2ParaV2(accm_context);
+
 
     for (int i = 0; i < RK_AIQ_ACCM_COLOR_GAIN_NUM; i++) {
         accm_context->mCurAttV2.stAuto.color_inhibition.sensorGain[i] = 1;
@@ -453,9 +458,9 @@ XCamReturn AccmRelease(accm_handle_t hAccm) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 #if RKAIQ_ACCM_ILLU_VOTE
-    ClearList(&hAccm->accmRest.dominateIlluList);
+    clear_list(&hAccm->accmRest.dominateIlluList);
 #endif
-    ClearList(&hAccm->accmRest.problist);
+    clear_list(&hAccm->accmRest.problist);
     free(hAccm);
     hAccm = NULL;
 

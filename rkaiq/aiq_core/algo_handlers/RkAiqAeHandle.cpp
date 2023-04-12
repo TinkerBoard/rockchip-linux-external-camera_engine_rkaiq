@@ -692,6 +692,18 @@ XCamReturn RkAiqAeHandleInt::setLockAeForAf(bool lock_ae) {
     return ret;
 }
 
+XCamReturn RkAiqAeHandleInt::getAfdResForAE(AfdPeakRes_t AfdRes) {
+    ENTER_ANALYZER_FUNCTION();
+
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+    mGetAfdResMutex.lock();
+    mAfdRes = AfdRes;
+    mGetAfdResMutex.unlock();
+
+    EXIT_ANALYZER_FUNCTION();
+    return ret;
+}
+
 XCamReturn RkAiqAeHandleInt::prepare() {
     ENTER_ANALYZER_FUNCTION();
 
@@ -772,6 +784,16 @@ XCamReturn RkAiqAeHandleInt::preProcess() {
 
     ae_pre_int->aecStatsBuf = shared->aecStatsBuf;
 
+
+    int algoId = this->getAlgoId();
+    if (algoId == 0) {
+        AeInstanceConfig_t* pAeInstConfig           = (AeInstanceConfig_t*)mAlgoCtx;
+
+        mGetAfdResMutex.lock();
+        pAeInstConfig->aecCfg->AfdRes = mAfdRes;
+        mGetAfdResMutex.unlock();
+    }
+
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     if (des->pre_process) {
         ret = des->pre_process(mPreInParam, (RkAiqAlgoResCom*)(&mPreResShared->result));
@@ -832,11 +854,14 @@ XCamReturn RkAiqAeHandleInt::processing() {
         return XCAM_RETURN_BYPASS;
     }
 
-    AeInstanceConfig_t* pAeInstConfig           = (AeInstanceConfig_t*)mAlgoCtx;
+    int algoId = this->getAlgoId();
+    if (algoId == 0) {
+        AeInstanceConfig_t* pAeInstConfig           = (AeInstanceConfig_t*)mAlgoCtx;
 
-    mLockAebyAfMutex.lock();
-    pAeInstConfig->lockaebyaf = lockaebyaf;
-    mLockAebyAfMutex.unlock();
+        mLockAebyAfMutex.lock();
+        pAeInstConfig->lockaebyaf = lockaebyaf;
+        mLockAebyAfMutex.unlock();
+    }
 
     ret = RkAiqHandle::processing();
     if (ret < 0) {
@@ -1054,8 +1079,14 @@ XCamReturn RkAiqAeHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
 
     if (algo_id == 0) {
         RkAiqAlgoPostResAe* ae_post_rk = (RkAiqAlgoPostResAe*)ae_post;
-        iris_param->DCIris.update         = ae_post_rk->ae_post_res_rk.DCIris.update;
-        iris_param->DCIris.pwmDuty        = ae_post_rk->ae_post_res_rk.DCIris.pwmDuty;
+        // HDC iris control
+        iris_param->DCIris.update = ae_post_rk->ae_post_res_rk.DCIris.update;
+        iris_param->DCIris.pwmDuty = ae_post_rk->ae_post_res_rk.DCIris.pwmDuty;
+        // HDC iris control
+        iris_param->HDCIris.update = ae_post_rk->ae_post_res_rk.HDCIris.update;
+        iris_param->HDCIris.target = ae_post_rk->ae_post_res_rk.HDCIris.target;
+        ae_post_rk->ae_post_res_rk.HDCIris.adc = iris_param->HDCIris.adc;
+        ae_post_rk->ae_post_res_rk.HDCIris.zoomPos = iris_param->HDCIris.zoomPos;
     }
 
     cur_params->mExposureParams = params->mExposureParams;

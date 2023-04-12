@@ -39,7 +39,15 @@ V4l2Buffer::map ()
 {
     if (_buf.memory == V4L2_MEMORY_DMABUF)
         return NULL;
-    return (uint8_t *)(_buf.m.userptr);
+
+    if (_expbuf_usrptr)
+        return (uint8_t *)_expbuf_usrptr;
+
+    if (_buf.type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE  ||
+            _buf.type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)
+        return (uint8_t *)_buf.m.planes[0].m.userptr;
+    else
+        return (uint8_t *)(_buf.m.userptr);
 }
 
 bool
@@ -134,6 +142,15 @@ V4l2BufferProxy::v4l2_format_to_video_info (
         info.color_bits = 12;
         info.components = 1;
         info.strides [0] = format.fmt.pix.bytesperline;
+        info.offsets[0] = 0;
+        break;
+    case V4L2_PIX_FMT_SBGGR16:
+    case V4L2_PIX_FMT_SGBRG16:
+    case V4L2_PIX_FMT_SGRBG16:
+    case V4L2_PIX_FMT_SRGGB16:
+        info.color_bits = 16;
+        info.components = 1;
+        info.strides [0] = info.width * 2;
         info.offsets[0] = 0;
         break;
     case V4L2_META_FMT_RK_ISP1_PARAMS:

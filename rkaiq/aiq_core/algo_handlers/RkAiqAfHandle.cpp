@@ -81,6 +81,8 @@ XCamReturn RkAiqAfHandleInt::setAttrib(rk_aiq_af_attrib_t* att) {
         mNewAtt         = *att;
         updateAtt       = true;
         isUpdateAttDone = false;
+        LOGI_AF("%s: AfMode %d, win: %d, %d, %d, %d",
+               __func__, att->AfMode, att->h_offs, att->v_offs, att->h_size, att->v_size);
         waitSignal(att->sync.sync_mode);
     }
 

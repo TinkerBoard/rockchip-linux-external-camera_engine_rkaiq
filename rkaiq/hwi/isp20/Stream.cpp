@@ -55,6 +55,7 @@ RKStream::poll_type_to_str[ISP_POLL_POST_MAX] =
     "vicap_stream_on_evt",
     "vicap_reset_evt",
     "vicap_with_rk1608_reset_evt",
+    "vicap_scale_poll",
 };
 
 RkPollThread::RkPollThread (const char* thName, int type, SmartPtr<V4l2Device> dev, RKStream *stream)
@@ -644,6 +645,27 @@ RKRawStream::new_v4l2proxy_buffer(SmartPtr<V4l2Buffer> buf,
     EXIT_CAMHW_FUNCTION();
 
     return buf_proxy;
+}
+
+SmartPtr<VideoBuffer>
+RKRawStream::new_video_buffer(SmartPtr<V4l2Buffer> buf,
+                                       SmartPtr<V4l2Device> dev)
+{
+    ENTER_CAMHW_FUNCTION();
+    buf->set_reserved((uintptr_t)_reserved);
+    SmartPtr<VideoBuffer> video_buf = new V4l2BufferProxy(buf, dev);
+    video_buf->_buf_type = _dev_type;
+    EXIT_CAMHW_FUNCTION();
+
+    return video_buf;
+}
+
+void
+RKRawStream::set_reserved_data(int bpp)
+{
+    _bpp = bpp;
+    _reserved[0] = _dev_index;
+    _reserved[1] = bpp;
 }
 
 RKPdafStream::RKPdafStream (SmartPtr<V4l2Device> dev, int type)

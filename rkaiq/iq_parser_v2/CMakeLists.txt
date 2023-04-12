@@ -104,7 +104,7 @@ add_custom_target(
 #########################################################
 add_custom_target(
     j2s_parser
-	COMMAND g++ -std=c++11 -DJ2S_ENABLE_DESC -DCOMPILE_TEMPLATE -o dump ${J2S_SRC} ${ISP_HW_VERSION}
+	COMMAND g++ -std=gnu++11 -DJ2S_ENABLE_DESC -DCOMPILE_TEMPLATE -o dump ${J2S_SRC} ${ISP_HW_VERSION}
     ${rk_aiq_SOURCE_DIR}/tools/iq_check/src/dump.cpp
     -I${rk_aiq_SOURCE_DIR}/include/common
     -I${rk_aiq_SOURCE_DIR}/

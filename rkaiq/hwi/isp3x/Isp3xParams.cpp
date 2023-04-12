@@ -488,12 +488,17 @@ void Isp3xParams::convertAiqRawnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_
 
     LOGD_ANR("%s:%d enter! enable:%d \n", __FUNCTION__, __LINE__, rawnr.baynr_en);
     bool enable = rawnr.baynr_en;
-    if(enable) {
-        isp_cfg.module_ens |= ISP3X_MODULE_BAYNR;
-    } else {
-        isp_cfg.module_ens &= ~(ISP3X_MODULE_BAYNR);
-    }
 
+    // use weight=0 to bypss bayer2dnr effect, then  always  keep 2dnr en bit = 1.
+#if 0
+   if(enable) {
+       isp_cfg.module_ens |= ISP3X_MODULE_BAYNR;
+   } else {
+       isp_cfg.module_ens &= ~(ISP3X_MODULE_BAYNR);
+   }
+#else
+    isp_cfg.module_ens |= ISP3X_MODULE_BAYNR;
+#endif
     isp_cfg.module_en_update |= ISP3X_MODULE_BAYNR;
     isp_cfg.module_cfg_update |= ISP3X_MODULE_BAYNR;
 
@@ -512,7 +517,15 @@ void Isp3xParams::convertAiqRawnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_
     pBayernr->softthld = rawnr.baynr_softthld;
 
     pBayernr->bltflt_streng = rawnr.bltflt_streng;
+#if 0
     pBayernr->reg_w1 = rawnr.baynr_reg_w1;
+#else
+    if (enable) {
+        pBayernr->reg_w1 = rawnr.baynr_reg_w1;
+    } else {
+        pBayernr->reg_w1 = 0;
+    }
+#endif
 
     for(int i = 0; i < ISP3X_BAYNR_XY_NUM; i++) {
         pBayernr->sigma_x[i] = rawnr.sigma_x[i];
@@ -539,9 +552,13 @@ void Isp3xParams::convertAiqTnrToIsp3xParams(struct isp3x_isp_params_cfg& isp_cf
     bool enable = tnr.bay3d_en_i;
     if(enable) {
         isp_cfg.module_ens |= ISP3X_MODULE_BAY3D;
-        //bayer3dnr enable  bayer2dnr must enable at the same time
-        isp_cfg.module_ens |= ISP3X_MODULE_BAYNR;
-        isp_cfg.module_en_update |= ISP3X_MODULE_BAYNR;
+        // use 2dnr weight to bypss 2dnr effect, not need 3dnr state at all.
+        // just keep 2dnr and 3dnr en bit always 1
+#if 0
+       //bayer3dnr enable  bayer2dnr must enable at the same time
+       isp_cfg.module_ens |= ISP3X_MODULE_BAYNR;
+       isp_cfg.module_en_update |= ISP3X_MODULE_BAYNR;
+#endif
     } else {
         //isp_cfg.module_ens &= ~(ISP3X_MODULE_BAY3D);
         isp_cfg.module_ens |= ISP3X_MODULE_BAY3D;

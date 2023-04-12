@@ -686,10 +686,21 @@
  * - iqfiles: sync iqfiles to aiq_v5.0x1.2-rc1
  * - SmartIr: rename get_env_value function to avoid conflict
  * - hwi: Fix thunder boot for dual camera
+ *
+ * v5.0x1.2-rc3
+ * - hwi: Adapt to new dvp driver model
+ * - uAPI: support completely offline mode for Android
+ * - FakeSensorHw: change the id if the enqueue frame id isn't contiguous
+ * - rkvi_demo: fix build error in buildroot
+ * - rkisp_demo: fix build error in buildroot
+ *
+ * v5.0x1.2-rc4
+ * - afd: add afd algo
+ * - awb: modify apis
  */
 
-#define RK_AIQ_VERSION_REAL_V "v5.0x1.2-rc2"
-#define RK_AIQ_RELEASE_DATE "2023-03-02"
+#define RK_AIQ_VERSION_REAL_V "v5.0x1.2-rc4"
+#define RK_AIQ_RELEASE_DATE "2023-04-11"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

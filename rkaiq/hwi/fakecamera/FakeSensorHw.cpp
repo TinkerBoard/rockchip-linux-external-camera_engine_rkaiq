@@ -388,9 +388,10 @@ FakeSensorHw::enqueue_rawbuffer(struct rk_aiq_vbuf *vbuf, bool sync)
                _working_mode == RK_AIQ_ISP_HDR_MODE_3_LINE_HDR) {
         max_count = 3;
     }
-    if (vbuf->buf_info[0].frame_id <= _frame_sequence) {
-        LOGW_CAMHW_SUBM(FAKECAM_SUBM, "frameId %u <= cur_id %u, modify the id",
-                        vbuf->buf_info[0].frame_id, _frame_sequence);
+
+    if (_frame_sequence != uint32_t(-1) && vbuf->buf_info[0].frame_id != _frame_sequence + 1) {
+        LOGW_CAMHW_SUBM(FAKECAM_SUBM, "enqueue frame id(%u) isn't contiguous, change the id to %u",
+                        vbuf->buf_info[0].frame_id, _frame_sequence + 1);
         vbuf->buf_info[0].frame_id = ++_frame_sequence;
     } else
         _frame_sequence = vbuf->buf_info[0].frame_id;

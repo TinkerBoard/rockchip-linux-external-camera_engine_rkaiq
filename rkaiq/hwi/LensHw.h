@@ -72,6 +72,9 @@
 #define RK_VIDIOC_MODIFY_POSITION \
     _IOW('V', BASE_VIDIOC_PRIVATE + 16, struct rk_cam_modify_pos)
 
+#define RK_VIDIOC_GET_DCIRIS_HALL_ADC \
+    _IOR('V', BASE_VIDIOC_PRIVATE + 20, unsigned int)
+
 #ifdef CONFIG_COMPAT
 #define RK_VIDIOC_COMPAT_VCM_TIMEINFO \
     _IOR('V', BASE_VIDIOC_PRIVATE + 0, struct rk_cam_compat_vcm_tim)
@@ -162,6 +165,8 @@ public:
     XCamReturn setLensVcmMaxlogpos(int& max_log_pos);
     XCamReturn setPIrisParams(int step);
     XCamReturn setDCIrisParams(int pwmDuty);
+    XCamReturn setHDCIrisParams(int target);
+    XCamReturn getHDCIrisParams(int* adc);
     XCamReturn setFocusParams(SmartPtr<RkAiqFocusParamsProxy>& focus_params);
     XCamReturn setFocusParamsSync(int position, bool is_update_time, bool focus_noreback);
     XCamReturn setZoomParams(int position);
@@ -209,6 +214,8 @@ private:
     int _last_piris_step;
     int _dciris_pwmduty;
     int _last_dciris_pwmduty;
+    int _hdciris_target;
+    int _last_hdciris_target;
     int _focus_pos;
     int _zoom_pos;
     int _last_zoomchg_focus;
@@ -239,9 +246,9 @@ class LensHwHelperThd
 public:
     LensHwHelperThd(LensHw *lenshw, int id)
         : Thread("LensHwHelperThread")
-          , mLensHw(lenshw), mId(id) {
+        , mLensHw(lenshw), mId(id) {
         (void)(mId);
-   };
+    };
     ~LensHwHelperThd() {
         mAttrQueue.clear ();
     };

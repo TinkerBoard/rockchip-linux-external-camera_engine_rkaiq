@@ -217,7 +217,8 @@
 									"InitGainValue":	1,
 									"InitIspDGainValue":	1,
 									"InitPIrisGainValue":	512,
-									"InitDCIrisDutyValue":	100
+									"InitDCIrisDutyValue":	100,
+									"InitHDCIrisTargetValue": 0
 								},
 								"Route":	{
 									"TimeDot":	[0, 0.01, 0.01, 0.02, 0.03, 0.03],
@@ -281,7 +282,8 @@
 									"InitGainValue":	[1, 1, 1],
 									"InitIspDGainValue":	[1, 1, 1],
 									"InitPIrisGainValue":	512,
-									"InitDCIrisDutyValue":	100
+									"InitDCIrisDutyValue":	100,
+									"InitHDCIrisTargetValue": 0
 								},
 								"Route":	{
 									"Frm0TimeDot":	[0, 0.003, 0.003, 0.003, 0.003, 0.003],
@@ -367,11 +369,13 @@
 								"ManualEn":	0,
 								"ManualAttr":	{
 									"PIrisGainValue":	1,
-									"DCIrisHoldValue":	30
+									"DCIrisHoldValue":	30,
+									"HDCIrisTargetValue": 0
 								},
 								"InitAttr":	{
 									"PIrisGainValue":	512,
-									"DCIrisHoldValue":	100
+									"DCIrisHoldValue":	100,
+									"HDCIrisTargetValue": 0
 								},
 								"PIrisAttr":	{
 									"TotalStep":	81,
@@ -387,6 +391,19 @@
 									"MaxPwmDuty":	100,
 									"OpenPwmDuty":	40,
 									"ClosePwmDuty":	22
+								},
+								"HDCIrisAttr":	{
+									"DampOver":	0.35,
+									"DampUnder":	0.15,
+									"ZeroIsMax":	1,
+									"MinTarget":	0,
+									"MaxTarget":	500,
+									"ZoomTargetDot":	[0, 33, 75, 91, 95, 97, 98, 100, 101, 102, 103, 104],
+									"ZoomDot":		[1709, 975, 653, 464, 334, 239, 165, 102, 57, 15, -28, -70],
+									"IrisTargetDot":	[0, 5, 10, 15, 20, 25, 30, 35, 40, 45],
+									"GainDot":		[512, 409, 402, 394, 384, 376, 370, 362, 354, 347],
+									"ZoomTargetDot_len":	12,
+									"IrisTargetDot_len":	10
 								}
 							},
 							"SyncTest":	{

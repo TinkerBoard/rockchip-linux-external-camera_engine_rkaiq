@@ -66,9 +66,11 @@ class RkAiqAnalyzerGroup {
     rk_aiq_core_analyze_type_e getType() const { return mGroupType; }
     uint64_t getDepsFlag() const { return mDepsFlag; }
     void setDepsFlag(uint64_t new_deps) { mDepsFlag = new_deps; }
+    void setDepsFlagAndClearMap(uint64_t new_deps);
 
     RkAiqCore* getAiqCore() { return mAiqCore; }
     void setDelayCnts(int8_t delayCnts);
+    void setVicapScaleFlag(bool mode);
  private:
     void msgReduction(std::map<uint32_t, GroupMessage>& msgMap);
     int8_t getMsgDelayCnt(XCamMessageType &msg_id);
@@ -82,6 +84,7 @@ class RkAiqAnalyzerGroup {
     std::map<uint32_t, GroupMessage> mGroupMsgMap;
     MessageHandleWrapper mHandler;
     int8_t mUserSetDelayCnts;
+    bool mVicapScaleStart{false};
 };
 
 class RkAiqAnalyzeGroupMsgHdlThread : public Thread {

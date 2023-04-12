@@ -44,6 +44,15 @@ using namespace std;
 #define MAXPACKETSIZE 18192
 #define MAX_CLIENT 1000
 
+// define IPCSERVER module logs
+#define LOGD_IPC(...) XCAM_MODULE_LOG_DEBUG(XCORE_LOG_MODULE_IPC, 0xff, ##__VA_ARGS__)
+#define LOGE_IPC(...) XCAM_MODULE_LOG_ERROR(XCORE_LOG_MODULE_IPC, 0xff, ##__VA_ARGS__)
+#define LOGW_IPC(...) XCAM_MODULE_LOG_WARNING(XCORE_LOG_MODULE_IPC, 0xff, ##__VA_ARGS__)
+#define LOGV_IPC(...) XCAM_MODULE_LOG_VERBOSE(XCORE_LOG_MODULE_IPC, 0xff, ##__VA_ARGS__)
+#define LOGI_IPC(...) XCAM_MODULE_LOG_INFO(XCORE_LOG_MODULE_IPC, 0xff, ##__VA_ARGS__)
+#define LOG1_IPC(...) XCAM_MODULE_LOG_LOW1(XCORE_LOG_MODULE_IPC, 0xff, ##__VA_ARGS__)
+
+
 typedef struct rk_aiq_sys_ctx_s rk_aiq_sys_ctx_t;
 
 using RecvCallBack =

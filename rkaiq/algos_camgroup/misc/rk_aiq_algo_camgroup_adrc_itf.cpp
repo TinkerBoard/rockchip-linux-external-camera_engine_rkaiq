@@ -426,10 +426,13 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             !bypass_tuning_params || !bypass_expo_params || pAdrcGrpCtx->ifReCalcStAuto ||
             pAdrcGrpCtx->ifReCalcStManual || !pAdrcGrpCtx->isDampStable;
         if (pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->update) {
+            // store new proc res
             pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->bDrcEn =
                 pAdrcGrpCtx->NextData.Enable;
             memcpy(&pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->DrcProcRes,
                    &pAdrcGrpCtx->AdrcProcRes.DrcProcRes, sizeof(DrcProcRes_t));
+            // store curr data 2 api info
+            AdrcParams2Api(pAdrcGrpCtx);
         }
     }
 

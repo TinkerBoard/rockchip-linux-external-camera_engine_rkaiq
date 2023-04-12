@@ -84,7 +84,7 @@ static void _test_if_hw_lsc_valid(alsc_handle_t hAlsc)
 #endif
 
 
-static XCamReturn illuminant_index_estimation(alsc_mode_data_t& alsc_mode_data, float awbGain[2], uint32_t& illu_case_id)
+XCamReturn illuminant_index_estimation(alsc_mode_data_t& alsc_mode_data, float awbGain[2], uint32_t& illu_case_id)
 {
     LOG1_ALSC( "%s: (enter)\n", __FUNCTION__);
     XCamReturn ret = XCAM_RETURN_ERROR_FAILED;
@@ -374,48 +374,58 @@ static XCamReturn GetLscResIdxByName(alsc_illu_case_t* illu_case, char* name, ui
     return ret;
 }
 
-void UpdateDominateIlluList(List *l, int illu, int listMaxSize)
+void UpdateDominateIlluList(struct list_head* l_head, int illu, int listMaxSize)
 {
-    illu_node_t *pCurNode;
-    illu_node_t *pDelNode;
-    int sizeList;
-    if(listMaxSize == 0) {
+    illu_node_t* pCurNode, * pNode0;
+    if (listMaxSize == 0) {
         return;
     }
-    pCurNode = (illu_node_t*)malloc(sizeof(illu_node_t));
-    pCurNode->value = illu;
-    ListPrepareItem(pCurNode);
-    ListAddTail(l, pCurNode);
-    sizeList = ListNoItems(l);
-    if (sizeList > listMaxSize)
-    {
-        pDelNode = (illu_node_t *)ListRemoveHead(l);
-        free(pDelNode);
+    int sizeList = get_list_num(l_head);
+    if (sizeList < listMaxSize) {
+        pCurNode = (illu_node_t*)malloc(sizeof(illu_node_t));
+        pCurNode->value = illu;
+        list_prepare_item(&pCurNode->node);
+        list_add_tail((struct list_head*)(&pCurNode->node), l_head);
+    }
+    else {
+        // input list
+        //     |-------------------------|
+        //     head<->n0<->n1<->n2<->n3
+        // output list
+        //     |-------------------------|
+        //     n0'<->head<->n1<->n2<->n3
+        //     n0'->value = illu;
+        pNode0 = (illu_node_t*)(l_head->next);
+        pNode0->value = illu;
+        struct list_head* nodeH = l_head;
+        struct list_head* node0 = nodeH->next;
+        list_swap_item(nodeH, node0);
+
     }
 }
 
-void StableIlluEstimation(List l, int listSize, int illuNum, uint32_t& newIllu)
+void StableIlluEstimation(struct list_head * head, int listSize, int illuNum, uint32_t& newIllu)
 {
-    int sizeList = ListNoItems(&l);
-    if(sizeList < listSize || listSize == 0) {
+    int sizeList = get_list_num(head);
+    if (sizeList < listSize || listSize == 0) {
         return;
     }
 
-    List *pNextNode = ListHead(&l);
-    illu_node_t *pL;
-    int *illuSet = (int*)malloc(illuNum*sizeof(int));
-    memset(illuSet, 0, illuNum*sizeof(int));
-    while (NULL != pNextNode)
+    struct list_head* pNextNode = head->next;
+    illu_node_t* pL;
+    int* illuSet = (int*)malloc(illuNum * sizeof(int));
+    memset(illuSet, 0, illuNum * sizeof(int));
+    while (head != pNextNode)
     {
         pL = (illu_node_t*)pNextNode;
         illuSet[pL->value]++;
-        pNextNode = pNextNode->p_next;
+        pNextNode = pNextNode->next;
     }
     int count2 = 0;
     int max_count = 0;
-    for(int i=0; i<illuNum; i++){
-        LOGV_ALSC("illu(%d), count(%d)\n", i,illuSet[i]);
-        if(illuSet[i] > max_count){
+    for (int i = 0; i < illuNum; i++) {
+        LOGV_ALSC("illu(%d), count(%d)\n", i, illuSet[i]);
+        if (illuSet[i] > max_count) {
             max_count = illuSet[i];
             newIllu = i;
         }
@@ -424,9 +434,10 @@ void StableIlluEstimation(List l, int listSize, int illuNum, uint32_t& newIllu)
 
 }
 
+
 static void ClearContext(alsc_handle_t hAlsc)
 {
-    ClearList(&hAlsc->alscRest.dominateIlluList);
+    clear_list(&hAlsc->alscRest.dominateIlluList);
 
     for (uint32_t mode_id = 0; mode_id < USED_FOR_CASE_MAX; mode_id++) {
         if (hAlsc->alsc_mode[mode_id].illu_case != nullptr)
@@ -770,7 +781,7 @@ XCamReturn AlscAutoConfig(alsc_handle_t hAlsc)
     RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
     UpdateDominateIlluList(&hAlsc->alscRest.dominateIlluList, estimateIlluCaseIdx, dominateIlluListSize);
     //TODO: working mode which has only one illuminant case, like gray mode, does not need to estimate index.
-    StableIlluEstimation(hAlsc->alscRest.dominateIlluList, dominateIlluListSize,
+    StableIlluEstimation(&hAlsc->alscRest.dominateIlluList, dominateIlluListSize,
         alsc_mode_now.illu_case_count, estimateIlluCaseIdx);
     hAlsc->alscRest.estimateIlluCaseIdx = estimateIlluCaseIdx;
     alsc_illu_case_t* illu_case = alsc_mode_now.illu_case[estimateIlluCaseIdx];
@@ -902,7 +913,7 @@ XCamReturn AlscConfig
     hAlsc->alscRest.caseIndex = USED_FOR_CASE_NORMAL;
     if((hAlsc->alscSwInfo.grayMode == true && hAlsc->alscRest.caseIndex != USED_FOR_CASE_GRAY)||
         (hAlsc->alscSwInfo.grayMode == false && hAlsc->alscRest.caseIndex == USED_FOR_CASE_GRAY)){
-        ClearList(&hAlsc->alscRest.dominateIlluList);
+         clear_list(&hAlsc->alscRest.dominateIlluList);
     }
     if(hAlsc->alscSwInfo.grayMode){
         hAlsc->alscRest.caseIndex = USED_FOR_CASE_GRAY;
@@ -1000,6 +1011,7 @@ XCamReturn AlscInit(alsc_handle_t *hAlsc, const CamCalibDbV2Context_t* calib2)
     //ret = UpdateLscCalibPara(alsc_context);
     //print_alsc(alsc_context);
     memset(&alsc_context->otpGrad, 0, sizeof(alsc_context->otpGrad));
+    INIT_LIST_HEAD(&alsc_context->alscRest.dominateIlluList);
     LOGI_ALSC("%s: (exit)\n", __FUNCTION__);
     return(ret);
 }

@@ -383,6 +383,7 @@ RkAiqManager::start()
         ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
         RKAIQMNG_CHECK_RET(ret, "apply result thread start error");
     }
+
     _state = AIQ_STATE_STARTED;
 
     EXIT_XCORE_FUNCTION();
@@ -486,9 +487,9 @@ RkAiqManager::updateCalibDb(const CamCalibDbV2Context_t* newCalibDb)
     ret = mRkAiqAnalyzer->setCalib(mCalibDbV2);
 
     if (!mRkAiqAnalyzer->isRunningState()) {
-      mRkAiqAnalyzer->updateCalibDbBrutal(mCalibDbV2);
+        mRkAiqAnalyzer->updateCalibDbBrutal(mCalibDbV2);
     } else {
-      mRkAiqAnalyzer->calibTuning(mCalibDbV2, update_list);
+        mRkAiqAnalyzer->calibTuning(mCalibDbV2, update_list);
     }
 
     EXIT_XCORE_FUNCTION();
@@ -698,6 +699,8 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
 
             (*mHwEvtCb)(&hwevt);
         }
+    } else if (hwres->_buf_type == VICAP_POLL_SCL) {
+        ret = mRkAiqAnalyzer->pushStats(hwres);
     }
 
     EXIT_XCORE_FUNCTION();
@@ -724,6 +727,11 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
     if (aiqParams->mExposureParams.ptr()) {
         aiqParams->mExposureParams->setType(RESULT_TYPE_EXPOSURE_PARAM);
         results_list.push_back(aiqParams->mExposureParams);
+    }
+
+    if (aiqParams->mIrisParams.ptr()) {
+        aiqParams->mIrisParams->setType(RESULT_TYPE_IRIS_PARAM);
+        results_list.push_back(aiqParams->mIrisParams);
     }
 
     if (aiqParams->mFocusParams.ptr()) {
@@ -927,6 +935,9 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
 #endif
 #if RKAIQ_HAVE_AF_V32_LITE || RKAIQ_ONLY_AF_STATS_V32_LITE
     APPLY_ANALYZER_RESULT(AfV32Lite, AF);
+#endif
+#if RKAIQ_HAVE_AFD_V1 || RKAIQ_HAVE_AFD_V2
+    APPLY_ANALYZER_RESULT(Afd, AFD);
 #endif
     mCamHw->applyAnalyzerResult(results_list);
 

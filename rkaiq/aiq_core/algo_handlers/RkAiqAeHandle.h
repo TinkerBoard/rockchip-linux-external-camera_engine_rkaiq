@@ -29,7 +29,7 @@ class RkAiqCustomAeHandle;
 class RkAiqAeHandleInt : public RkAiqHandle {
     friend class RkAiqCustomAeHandle;
 
- public:
+public:
     explicit RkAiqAeHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore), mPreResShared(nullptr), mProcResShared(nullptr) {
         updateExpSwAttrV2  = false;
@@ -60,7 +60,9 @@ class RkAiqAeHandleInt : public RkAiqHandle {
         memset(&mCurExpWinAttr, 0, sizeof(Uapi_ExpWin_t));
         memset(&mNewExpWinAttr, 0, sizeof(Uapi_ExpWin_t));
     };
-    virtual ~RkAiqAeHandleInt() { RkAiqHandle::deInit(); };
+    virtual ~RkAiqAeHandleInt() {
+        RkAiqHandle::deInit();
+    };
     virtual XCamReturn updateConfig(bool needSync);
     virtual XCamReturn prepare();
     virtual XCamReturn preProcess();
@@ -94,17 +96,20 @@ class RkAiqAeHandleInt : public RkAiqHandle {
     virtual XCamReturn getSyncTestAttr(Uapi_AecSyncTest_t* pSyncTestAttr);
     virtual XCamReturn queryExpInfo(Uapi_ExpQueryInfo_t* pExpQueryInfo);
     virtual XCamReturn setLockAeForAf(bool lock_ae);
+    virtual XCamReturn getAfdResForAE(AfdPeakRes_t AfdRes);
     virtual XCamReturn setExpWinAttr(Uapi_ExpWin_t ExpWinAttr);
     virtual XCamReturn getExpWinAttr(Uapi_ExpWin_t* pExpWinAttr);
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
 
- protected:
+protected:
     virtual void init();
-    virtual void deInit() { RkAiqHandle::deInit(); };
+    virtual void deInit() {
+        RkAiqHandle::deInit();
+    };
     SmartPtr<RkAiqAlgoPreResAeIntShared> mPreResShared;
     SmartPtr<RkAiqAlgoProcResAeIntShared> mProcResShared;
 
- private:
+private:
     // TODO: calibv1
     Uapi_ExpSwAttr_t mCurExpSwAttr;
     Uapi_ExpSwAttr_t mNewExpSwAttr;
@@ -151,7 +156,10 @@ class RkAiqAeHandleInt : public RkAiqHandle {
     XCam::Mutex mLockAebyAfMutex;
     bool lockaebyaf = false;
 
- private:
+    XCam::Mutex mGetAfdResMutex;
+    AfdPeakRes_t mAfdRes;
+
+private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAeHandleInt);
 };
 #endif

@@ -838,6 +838,64 @@ static int sample_awb_awbv32_setAllAttr(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi
     //modify
     attr.sync.sync_mode = sync;
     attr.stAuto.wbGainOffset.enable = !attr.stAuto.wbGainOffset.enable;
+    if(attr.stAuto.algMtdTp == RK_AIQ_AWB_ALG_TYPE_GLOABL){
+        attr.stAuto.algMtdTp = RK_AIQ_AWB_ALG_TYPE_GRAYWORD;
+    }else{
+        attr.stAuto.algMtdTp = RK_AIQ_AWB_ALG_TYPE_GLOABL;
+    }
+
+    if(attr.stAuto.dampFactor.dFMax > 0.5){
+        attr.stAuto.dampFactor.dFMax =0.4;
+        attr.stAuto.dampFactor.dFMin = 0.14;
+        attr.stAuto.dampFactor.dFStep=0.074;
+    }else{
+        attr.stAuto.dampFactor.dFMax =0.6;
+        attr.stAuto.dampFactor.dFMin = 0.16;
+        attr.stAuto.dampFactor.dFStep=0.076;
+    }
+
+    if(attr.stAuto.wbGainDaylightClip.enable ==false){
+        attr.stAuto.wbGainDaylightClip.enable =true;
+        attr.stAuto.wbGainDaylightClip.outdoor_cct_min = 10000;
+    }else{
+        attr.stAuto.wbGainDaylightClip.enable =false;
+    }
+    if(attr.stAuto.wbGainClip.enable ==false){
+        attr.stAuto.wbGainClip.enable =true;
+        attr.stAuto.wbGainClip.cct_len = attr.stAuto.wbGainClip.cct_len+1;
+        attr.stAuto.wbGainClip.cct[0]-=100;
+        attr.stAuto.wbGainClip.cct[attr.stAuto.wbGainClip.cct_len-1]=
+           attr.stAuto.wbGainClip.cct[attr.stAuto.wbGainClip.cct_len-2]+100;
+        for(int i=0;i<attr.stAuto.wbGainClip.cct_len;i++){
+            attr.stAuto.wbGainClip.cri_bound_low[i] =0.01;
+            attr.stAuto.wbGainClip.cri_bound_up[i] =0.02;
+        }
+
+    }else{
+        attr.stAuto.wbGainClip.enable =false;
+    }
+    if(attr.stAuto.wbGainAdjust.enable ==false){
+        attr.stAuto.wbGainAdjust.enable = true;
+        attr.stAuto.wbGainAdjust.lutAll_len +=1;
+        memcpy(&attr.stAuto.wbGainAdjust.lutAll[attr.stAuto.wbGainAdjust.lutAll_len-1],
+            &attr.stAuto.wbGainAdjust.lutAll[attr.stAuto.wbGainAdjust.lutAll_len-2],
+            sizeof(CalibDbV2_Awb_Cct_Lut_Cfg_Lv2_t));
+        attr.stAuto.wbGainAdjust.lutAll[attr.stAuto.wbGainAdjust.lutAll_len-1].ctlData +=1000;
+        for(int i=0;i<attr.stAuto.wbGainAdjust.lutAll_len;i++){
+           attr.stAuto.wbGainAdjust.lutAll[i].rgct_in_ds[0]=0.5;
+           attr.stAuto.wbGainAdjust.lutAll[i].rgct_in_ds[9-1]=3.5;
+           attr.stAuto.wbGainAdjust.lutAll[i].bgcri_in_ds[0]=4.5;
+           attr.stAuto.wbGainAdjust.lutAll[i].bgcri_in_ds[11-1]=1.0;
+           for(int j=0;j<9*11;j++){
+                attr.stAuto.wbGainAdjust.lutAll[i].rgct_lut_out[j] +=0.1;
+                attr.stAuto.wbGainAdjust.lutAll[i].bgcri_lut_out[j] -=0.1;
+           }
+        }
+    }else{
+        attr.stAuto.wbGainAdjust.enable = false;
+    }
+     attr.stAuto.wbGainOffset_valid = false;
+     attr.stAuto.multiWindow_valid = false;
     //set
     rk_aiq_user_api2_awbV32_SetAllAttrib(ctx, attr);
     printf("set Awbv32 AllAttr\n\n");

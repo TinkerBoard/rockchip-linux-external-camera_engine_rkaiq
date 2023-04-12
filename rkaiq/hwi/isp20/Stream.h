@@ -190,8 +190,13 @@ public:
     virtual ~RKRawStream      ();
     virtual SmartPtr<V4l2BufferProxy>
     new_v4l2proxy_buffer(SmartPtr<V4l2Buffer> buf, SmartPtr<V4l2Device> dev);
+    virtual SmartPtr<VideoBuffer>
+    new_video_buffer(SmartPtr<V4l2Buffer> buf, SmartPtr<V4l2Device> dev);
+    void set_reserved_data(int bpp);
 public:
     int _dev_index;
+    int _bpp;
+    int _reserved[2];
 protected:
     XCAM_DEAD_COPY (RKRawStream);
 };

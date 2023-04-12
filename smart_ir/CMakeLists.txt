@@ -8,6 +8,22 @@ cmake_minimum_required(VERSION 2.8...3.22)
 
 PROJECT(smart_ir)
 
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/rk_smart_ir.cpp")
+	message("${CMAKE_CURRENT_SOURCE_DIR}/src/rk_smart_ir.cpp not exist, install the libs directly")
+	set(C_LIBRARY_NAME "glibc" CACHE INTERNAL "")
+	if (EXISTS ${CMAKE_CURRENT_LIST_DIR}/../rkaiq/)
+		include(${CMAKE_CURRENT_LIST_DIR}/../rkaiq/cmake/CheckGlibc.cmake)
+		CHECK_GLIBC_VERSION()
+	endif()
+	string(TOLOWER ${RKAIQ_TARGET_SOC} SOC)
+	set(CMAKE_LIBRARY_PATH
+		"${CMAKE_CURRENT_LIST_DIR}/lib/${SOC}/${ARCH}/${C_LIBRARY_NAME}")
+	install(DIRECTORY include/ DESTINATION include/rkaiq/smartIr FILES_MATCHING PATTERN "*.h")
+	install(FILES ${CMAKE_LIBRARY_PATH}/libsmartIr.so DESTINATION lib)
+	install(FILES ${CMAKE_LIBRARY_PATH}/libsmartIr.a DESTINATION lib RENAME libsmartIr.a)
+	return()
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # include(BuildOptions)

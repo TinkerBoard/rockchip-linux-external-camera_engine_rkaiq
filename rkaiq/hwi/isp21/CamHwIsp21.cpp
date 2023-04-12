@@ -80,6 +80,7 @@ CamHwIsp21::dispatchResult(cam3aResultList& list)
         case RESULT_TYPE_IRIS_PARAM:
         case RESULT_TYPE_FOCUS_PARAM:
         case RESULT_TYPE_EXPOSURE_PARAM:
+        case RESULT_TYPE_AFD_PARAM:
             CamHwIsp20::dispatchResult(result);
             break;
         default:

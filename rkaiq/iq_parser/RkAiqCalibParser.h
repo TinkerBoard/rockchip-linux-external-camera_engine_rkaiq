@@ -181,6 +181,7 @@ private:
     bool parseEntrySensorAecGridWeight(const XMLElement*, void* param = NULL);
     bool parseEntrySensorAecIrisCtrlPAttr(const XMLElement*, void* param = NULL);
     bool parseEntrySensorAecIrisCtrlDCAttr(const XMLElement*, void* param = NULL);
+    bool parseEntrySensorAecIrisCtrlHDCAttr(const XMLElement*, void* param = NULL);
     bool parseEntrySensorAecIrisCtrl(const XMLElement*, void* param = NULL);
     bool parseEntrySensorAecManualCtrlLinearAE(const XMLElement*, void* param = NULL);
     bool parseEntrySensorAecManualCtrlHdrAE(const XMLElement*, void* param = NULL);
@@ -225,6 +226,7 @@ private:
     bool parseEntrySensorAecInitValueV21(const XMLElement*, void* param = NULL);
     bool parseEntrySensorAecIrisCtrlPAttrV21(const XMLElement*, void* param = NULL);
     bool parseEntrySensorAecIrisCtrlDCAttrV21(const XMLElement*, void* param = NULL);
+    bool parseEntrySensorAecIrisCtrlHDCAttrV21(const XMLElement*, void* param = NULL);
     bool parseEntrySensorAecIrisCtrlV21(const XMLElement*, void* param = NULL);
     bool parseEntrySensorAecManualCtrlLinearAEV21(const XMLElement*, void* param = NULL);
     bool parseEntrySensorAecManualCtrlHdrAEV21(const XMLElement*, void* param = NULL);

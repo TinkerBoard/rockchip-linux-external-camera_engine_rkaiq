@@ -161,9 +161,9 @@ typedef struct RK_SHARP_Params_V33LT_Select_s {
     float global_gain_alpha;
     // M4_NUMBER_DESC("local_gainscale", "f32", M4_RANGE(0.0, 1.0), "1.0", M4_DIGIT(2))
     float local_gainscale;
+#if 0
     // M4_NUMBER_DESC("global_hf_clip_pos", "u8", M4_RANGE(0, 2), "0", M4_DIGIT(0))
     uint8_t global_hf_clip_pos;
-    #if 0
     // M4_NUMBER_DESC("noiseclip_strength", "f32", M4_RANGE(0, 10.0), "1", M4_DIGIT(1))
     float noiseclip_strength;
     // M4_NUMBER_DESC("enhance_bit", "u8", M4_RANGE(0, 9), "3", M4_DIGIT(0))
@@ -172,7 +172,7 @@ typedef struct RK_SHARP_Params_V33LT_Select_s {
     bool noiseclip_mode;
     // M4_NUMBER_DESC("noise_sigma_clip", "u16", M4_RANGE(0, 1023), "1023", M4_DIGIT(0))
     uint16_t noise_sigma_clip;
-	#endif
+#endif
     // M4_ARRAY_DESC("gain_adj_sharp_strength", "f32", M4_SIZE(1,14), M4_RANGE(0.0,31.275), "[1.0]", M4_DIGIT(3), M4_DYNAMIC(0))
     float gain_adj_sharp_strength[14];
     // M4_ARRAY_DESC("dis_adj_sharp_strength", "f32", M4_SIZE(1,22), M4_RANGE(0.0,1.0), "[1.0]", M4_DIGIT(3), M4_DYNAMIC(0))

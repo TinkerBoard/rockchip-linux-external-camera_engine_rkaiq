@@ -27,7 +27,8 @@
 #include "RkAiqCalibDbTypes.h"
 #include "awb_head.h"
 #include "awb_uapi_head.h"
-
+#define RK_UAPI_AWB_CT_GRID_NUM 15
+#define RK_UAPI_AWB_CT_LUT_NUM 8
 typedef enum rk_aiq_wb_scene_e {
     RK_AIQ_WBCT_INCANDESCENT = 0,
     RK_AIQ_WBCT_FLUORESCENT,
@@ -77,6 +78,7 @@ typedef struct rk_aiq_wb_mwb_attrib_s {
 typedef enum rk_aiq_wb_awb_alg_method_s {
     RK_AIQ_AWB_ALG_TYPE_INVAILD = 0,
     RK_AIQ_AWB_ALG_TYPE_GLOABL = 1,
+    RK_AIQ_AWB_ALG_TYPE_GRAYWORD = 2,
     //add more
 } rk_aiq_wb_awb_alg_method_t;
 
@@ -239,10 +241,44 @@ typedef struct rk_aiq_uapiV2_wbV32_awb_mulWindow_s {
   float window[4][4];//percent
 } rk_aiq_uapiV2_wbV32_awb_mulWindow_t;
 
+typedef struct rk_aiq_uapiV2_wb_awb_cctClipCfg_s {
+    bool enable;
+    float cct[RK_UAPI_AWB_CT_GRID_NUM];
+    int cct_len;
+    float cri_bound_up[RK_UAPI_AWB_CT_GRID_NUM];
+    float cri_bound_low[RK_UAPI_AWB_CT_GRID_NUM];
+} rk_aiq_uapiV2_wb_awb_cctClipCfg_t;
+
+typedef struct rk_aiq_uapiV2_wbV32_awb_gainAdjust_s {
+    bool enable;
+    CalibDbV2_Awb_Ctrl_Dat_Selt_t ctrlDataSelt;
+    CalibDbV2_Awb_Gain_Adj_Dat_Sl_t adjDataSelt;
+    CalibDbV2_Awb_Cct_Lut_Cfg_Lv2_t lutAll[RK_UAPI_AWB_CT_LUT_NUM];
+    int lutAll_len;
+} rk_aiq_uapiV2_wbV32_awb_gainAdjust_t;
+
+typedef struct rk_aiq_uapiV2_wb_awb_dampFactor_s {
+    float dFStep;
+    float dFMin;
+    float dFMax;
+} rk_aiq_uapiV2_wb_awb_dampFactor_t;
+
 typedef struct rk_aiq_uapiV2_wbV32_awb_attrib_s {
-    //rk_aiq_uapiV2_wb_awb_wbGainAdjust_t wbGainAdjust;
+    rk_aiq_wb_awb_alg_method_t algMtdTp;
+    bool algMtdTp_valid;
+    rk_aiq_uapiV2_wb_awb_dampFactor_t dampFactor;
+    bool dampFactor_valid;
     CalibDbV2_Awb_gain_offset_cfg_t wbGainOffset;
+    bool wbGainOffset_valid;
     rk_aiq_uapiV2_wbV32_awb_mulWindow_t  multiWindow;
+    bool multiWindow_valid;
+    CalibDbV2_Awb_DaylgtClip_Cfg_t wbGainDaylightClip;
+    bool wbGainDaylightClip_valid;
+    rk_aiq_uapiV2_wb_awb_cctClipCfg_t wbGainClip;
+    bool wbGainClip_valid;
+    rk_aiq_uapiV2_wbV32_awb_gainAdjust_t wbGainAdjust;
+    bool wbGainAdjust_valid;
+
 } rk_aiq_uapiV2_wbV32_awb_attrib_t;
 
 typedef struct rk_aiq_uapiV2_wbV32_attrib_t {

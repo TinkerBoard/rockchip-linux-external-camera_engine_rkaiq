@@ -141,6 +141,7 @@ cc_rkaiq_library_shared {
         "hwi/isp20/CaptureRawData.cpp",
         "hwi/image_processor.cpp",
         "hwi/isp20/Isp20Evts.cpp",
+        "hwi/isp20/CifScaleStream.cpp",
 
         // // IQ_PARSER_SRC
         // "iq_parser/RkAiqCalibParser.cpp",

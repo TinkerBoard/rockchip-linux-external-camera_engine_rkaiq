@@ -274,6 +274,14 @@ func rkaiq_getAlgosMacros(macros_map map[string]bool) []string {
     if (flag0) {
         cflags = append(cflags, "-DRKAIQ_HAVE_AE_V1=1")
     }
+    flag0 = macros_map["RKAIQ_HAVE_AFD_V1"]
+    if (flag0) {
+        cflags = append(cflags, "-DRKAIQ_HAVE_AFD_V1=1")
+    }
+    flag0 = macros_map["RKAIQ_HAVE_AFD_V2"]
+    if (flag0) {
+        cflags = append(cflags, "-DRKAIQ_HAVE_AFD_V2=1")
+    }
     flag0 = macros_map["RKAIQ_HAVE_DEBAYER_V1"]
     if (flag0) {
         cflags = append(cflags, "-DRKAIQ_HAVE_DEBAYER_V1=1")

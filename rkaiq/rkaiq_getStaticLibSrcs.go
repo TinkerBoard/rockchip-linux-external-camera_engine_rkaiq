@@ -651,6 +651,18 @@ func rkaiq_getStaticLibSrcs(name string, macros_map map[string]bool) []string {
             }
         }
 
+    case "librkaiq_afd":
+	{
+		srcs = srcs[len(srcs):]
+		flag0 := macros_map["RKAIQ_HAVE_AFD_V1"]
+		flag1 := macros_map["RKAIQ_HAVE_AFD_V2"]
+		if flag0 || flag1 {
+			srcs = append(srcs, "afd/rk_aiq_algo_afd_itf.cpp")
+			srcs = append(srcs, "afd/rk_aiq_afd_algo.cpp")
+                        srcs = append(srcs, "afd/rk_aiq_uapi_afd_int.cpp")
+		}
+	}
+
     case "librkaiq_camgroup_misc":
         {
             srcs = srcs[len(srcs):]

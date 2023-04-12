@@ -140,9 +140,9 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(void* pParams_v, void* pSelec
     }
 
     if (iso - iso_low <= iso_high - iso) {
-        pSelect->global_hf_clip_pos = pParams->sharpParamsISO[gain_low].global_hf_clip_pos;
         pSelect->GaussianFilter_radius = pParams->sharpParamsISO[gain_low].GaussianFilter_radius;
 #if RKAIQ_HAVE_SHARP_V33
+        pSelect->global_hf_clip_pos = pParams->sharpParamsISO[gain_low].global_hf_clip_pos;
         pSelect->noiseclip_mode = pParams->sharpParamsISO[gain_low].noiseclip_mode;
 #endif
 #if RKAIQ_HAVE_SHARP_V33_LITE
@@ -150,9 +150,9 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(void* pParams_v, void* pSelec
         pSelect->add_mode     = pParams->sharpParamsISO[gain_low].add_mode;
 #endif
     } else {
-        pSelect->global_hf_clip_pos = pParams->sharpParamsISO[gain_high].global_hf_clip_pos;
         pSelect->GaussianFilter_radius = pParams->sharpParamsISO[gain_high].GaussianFilter_radius;
 #if RKAIQ_HAVE_SHARP_V33
+        pSelect->global_hf_clip_pos = pParams->sharpParamsISO[gain_high].global_hf_clip_pos;
         pSelect->noiseclip_mode = pParams->sharpParamsISO[gain_high].noiseclip_mode;
 #endif
 #if RKAIQ_HAVE_SHARP_V33_LITE
@@ -417,27 +417,6 @@ Asharp_result_V33_t sharp_fix_transfer_V33(void* pSelect_v, RK_SHARP_Fix_V33_t* 
     pFix->sharp_pbf_sigma_shift = CLIP(pbf_sigma_shift, 0, 15);
     pFix->sharp_bf_sigma_shift  = CLIP(bf_sigma_shift, 0, 15);
 
-    if (pSelect->global_hf_clip_pos == 1) {
-        pSelect->dis_adj_sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 64;
-        for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
-            pSelect->hf_clip[i] =
-                MAX(pSelect->hf_clip[i], 256);
-#if RKAIQ_HAVE_SHARP_V33_LITE
-            pSelect->hf_clip_neg[i] = MAX(pSelect->hf_clip_neg[i], 256);
-#endif
-        }
-    } else if (pSelect->global_hf_clip_pos == 2) {
-        pSelect->dis_adj_sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 128;
-        for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
-            pSelect->hf_clip[i] =
-                MAX(pSelect->hf_clip[i], 512);
-#if RKAIQ_HAVE_SHARP_V33_LITE
-            pSelect->hf_clip_neg[i] = MAX(pSelect->hf_clip_neg[i], 512);
-#endif
-        }
-    } else {
-        pSelect->dis_adj_sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 0;
-    }
     // SHARP_SHARP_CLIP_HF_0 (0x0034 -  0x003c)
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
         tmp                    = (int)(pSelect->hf_clip[i] * fPercent);
@@ -611,6 +590,21 @@ Asharp_result_V33_t sharp_fix_transfer_V33(void* pSelect_v, RK_SHARP_Fix_V33_t* 
                                           (1 << RK_SHARP_V33_STRENGTH_TABLE_FIX_BITS));
         pFix->sharp_strength[i] = CLIP(tmp, 0, 128);
     }
+
+    // isp32 only: use sw_sharp_strength21 bit [7:6] to clip over shoot.
+    // 2'b00: No clip
+    // 2'b10: Use 512 to clip
+    // 2'b01: Use 256 to clip
+    // 2'b11: Reserved
+#if RKAIQ_HAVE_SHARP_V33
+    if (pSelect->global_hf_clip_pos == 1) {
+        pFix->sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 0x40;
+    } else if (pSelect->global_hf_clip_pos == 2) {
+        pFix->sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 0x80;
+    } else {
+        pFix->sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN - 1] = 0;
+    }
+#endif
 
     // texture: sharp enhence strength
 #if RKAIQ_HAVE_SHARP_V33
@@ -851,7 +845,9 @@ Asharp_result_V33_t sharp_init_params_json_V33(void* pSharpParams_v, void* pCali
         pSharpParams->sharpParamsISO[i].bf_gain         = pTuningISO->bf_gain;
         pSharpParams->sharpParamsISO[i].bf_add          = pTuningISO->bf_add;
         pSharpParams->sharpParamsISO[i].bf_ratio        = pTuningISO->bf_ratio;
+#if RKAIQ_HAVE_SHARP_V33
         pSharpParams->sharpParamsISO[i].global_hf_clip_pos = pTuningISO->global_hf_clip_pos;
+#endif
 
         for (j = 0; j < 3; j++) {
             pSharpParams->sharpParamsISO[i].prefilter_coeff[j] =

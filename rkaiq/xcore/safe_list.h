@@ -154,7 +154,7 @@ void SafeList<OBj>::clear ()
     SmartLock lock (_mutex);
     SafeList<OBj>::ObjIter i_obj = _obj_list.begin ();
     while (i_obj != _obj_list.end ()) {
-        _obj_list.erase (i_obj++);
+        i_obj = _obj_list.erase (i_obj);
     }
 }
 

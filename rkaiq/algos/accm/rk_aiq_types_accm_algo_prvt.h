@@ -22,7 +22,7 @@
 #include "accm/rk_aiq_types_accm_algo_int.h"
 #include "xcam_log.h"
 #include "xcam_common.h"
-#include "list.h"
+#include "common/list.h"
 
 
 RKAIQ_BEGIN_DECLARE
@@ -38,9 +38,9 @@ typedef struct ccm_3ares_info_s{
 typedef struct accm_rest_s {
     float fSaturation;
 #if RKAIQ_ACCM_ILLU_VOTE
-    List dominateIlluList;//to record domain illuminant
+    struct list_head dominateIlluList;//to record domain illuminant
 #endif
-    List problist;
+    struct list_head problist;
     int dominateIlluProfileIdx;
     const CalibDbV2_Ccm_Matrix_Para_t *pCcmProfile1;
     const CalibDbV2_Ccm_Matrix_Para_t *pCcmProfile2;
@@ -54,16 +54,15 @@ typedef struct accm_rest_s {
 } accm_rest_t;
 
 typedef struct illu_node_s {
-    void*        p_next;       /**< for adding to a list */
+    list_head node;       /**< for adding to a list */
     unsigned int value;
 } illu_node_t;
 
 typedef struct prob_node_s {
-    void*        p_next;       /**< for adding to a list */
+    list_head node;       /**< for adding to a list */
     unsigned int value;
     float prob;
 } prob_node_t;
-
 
 typedef struct accm_context_s {
 #if RKAIQ_HAVE_CCM_V1

@@ -335,10 +335,23 @@ typedef struct {
 } RkAiqDCIrisParam_t;
 
 typedef struct {
+    // M4_NUMBER_DESC("pwmDuty", "s32", M4_RANGE(0,1024), "0", M4_DIGIT(0),M4_HIDE(1))
+    int        target;
+    // M4_BOOL_DESC("update", "0",M4_HIDE(1))
+    bool       update;
+    // M4_NUMBER_DESC("adc", "s32", M4_RANGE(0,1024), "0", M4_DIGIT(0),M4_HIDE(1))
+    int        adc;
+    // M4_NUMBER_DESC("zoomPos", "s32", M4_RANGE(0,1024), "0", M4_DIGIT(0),M4_HIDE(1))
+    int        zoomPos;
+} RkAiqHDCIrisParam_t;
+
+typedef struct {
     // M4_STRUCT_DESC("PIris", "normal_ui_style",M4_HIDE(1))
     RkAiqPIrisParam_t   PIris;
     // M4_STRUCT_DESC("DCIris", "normal_ui_style",M4_HIDE(1))
     RkAiqDCIrisParam_t  DCIris;
+    // M4_STRUCT_DESC("HDCIris", "normal_ui_style",M4_HIDE(1))
+    RkAiqHDCIrisParam_t HDCIris;
 } RkAiqIrisParamComb_t;
 
 typedef struct RKAiqAecExpInfo_s {

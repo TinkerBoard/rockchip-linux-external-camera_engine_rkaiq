@@ -19,15 +19,18 @@
 
 #ifdef SAMPLE_SMART_IR
 
-#include "rk_smart_ir_api.h"
+#include <fcntl.h>
+#include <linux/v4l2-subdev.h>
+#include <linux/videodev2.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <linux/videodev2.h>
-#include <linux/v4l2-subdev.h>
+
+#include "rk_smart_ir_api.h"
 #include "uAPI2/rk_aiq_user_api2_ae.h"
 #include "uAPI2/rk_aiq_user_api2_awb.h"
 #include "uAPI2/rk_aiq_user_api2_sysctl.h"
+
+#define RK_SMART_IR_AUTO_IRLED true
 
 static void sample_smartIr_usage()
 {
@@ -46,9 +49,9 @@ static void sample_smartIr_usage()
     return;
 }
 
-void sample_print_smartIr_info(const void *arg)
+void sample_print_smartIr_info(const void* arg)
 {
-    printf ("enter SmartIr modult test!\n");
+    printf("enter SmartIr modult test!\n");
 }
 
 typedef struct sample_smartIr_s {
@@ -71,12 +74,12 @@ static void enableIrCutter(bool on)
     struct v4l2_control control;
 
     control.id = V4L2_CID_BAND_STOP_FILTER;
-    if(on)
+    if (on)
         control.value = 3; // filter ir
     else
         control.value = 0; // ir in
 
-    int _fd = open (smartIr_ctx->ir_cut_v4ldev, O_RDWR | O_CLOEXEC);
+    int _fd = open(smartIr_ctx->ir_cut_v4ldev, O_RDWR | O_CLOEXEC);
     if (_fd != -1) {
         if (ioctl(_fd, VIDIOC_S_CTRL, &control) < 0) {
             printf("failed to set ircut value %d to device!\n", control.value);
@@ -131,6 +134,16 @@ static void* switch_ir_thread(void* args)
     rk_aiq_isp_stats_t *stats_ref = NULL;
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+    rk_smart_ir_autoled_t auto_irled = { 0 };
+    int irled_cur_value = 100;
+    if (RK_SMART_IR_AUTO_IRLED) {
+        // TODO: set init irled pwm duty
+        auto_irled.is_smooth_convert = false;
+        auto_irled.auto_irled_val = irled_cur_value;
+        auto_irled.auto_irled_min = 10;
+        auto_irled.auto_irled_max = 100;
+    }
+
     while (!smartIr_ctx->tquit) {
         ret = rk_aiq_uapi2_sysctl_get3AStatsBlk(smartIr_ctx->aiq_ctx, &stats_ref, -1);
         if (ret == XCAM_RETURN_NO_ERROR && stats_ref != NULL) {
@@ -138,15 +151,21 @@ static void* switch_ir_thread(void* args)
 
             rk_aiq_uapi2_sysctl_release3AStatsRef(smartIr_ctx->aiq_ctx, stats_ref);
 
+            if (RK_SMART_IR_AUTO_IRLED) {
+                rk_smart_ir_auto_irled(smartIr_ctx->ir_ctx, &auto_irled);
+                if (irled_cur_value != auto_irled.auto_irled_val) {
+                    irled_cur_value = auto_irled.auto_irled_val;
+                    // TODO: update irled pwm duty
+                }
+            }
+
             if (ir_res.status == RK_SMART_IR_STATUS_DAY) {
                 switch_to_day();
             } else if (ir_res.status == RK_SMART_IR_STATUS_NIGHT) {
                 switch_to_night();
             } else {
-
             }
-            printf("SAMPLE_SMART_IR: switch to %s\n",
-                   ir_res.status == RK_SMART_IR_STATUS_DAY ? "DAY" : "Night");
+            printf("SAMPLE_SMART_IR: switch to %s\n", ir_res.status == RK_SMART_IR_STATUS_DAY ? "DAY" : "Night");
         } else {
             if (ret == XCAM_RETURN_NO_ERROR) {
                 printf("aiq has stopped !\n");
@@ -161,8 +180,7 @@ static void* switch_ir_thread(void* args)
     return NULL;
 }
 
-static
-void sample_smartIr_start(const void *arg)
+static void sample_smartIr_start(const void* arg)
 {
     const rk_aiq_sys_ctx_t* ctx = (rk_aiq_sys_ctx_t*)(arg);
     sample_smartIr_t* smartIr_ctx = &g_sample_smartIr_ctx;
@@ -175,8 +193,7 @@ void sample_smartIr_start(const void *arg)
     smartIr_ctx->started = true;
 }
 
-static
-void sample_smartIr_stop(const void *arg)
+static void sample_smartIr_stop(const void* arg)
 {
     const rk_aiq_sys_ctx_t* ctx = (rk_aiq_sys_ctx_t*)(arg);
     sample_smartIr_t* smartIr_ctx = &g_sample_smartIr_ctx;
@@ -193,33 +210,32 @@ void sample_smartIr_stop(const void *arg)
     }
 }
 
-static
-void sample_smartIr_calib(const void *arg)
+static void sample_smartIr_calib(const void* arg)
 {
     const rk_aiq_sys_ctx_t* ctx = (rk_aiq_sys_ctx_t*)(arg);
 
-    //1. make sure no visible light
-    //2. ircutter off, ir on
+    // 1. make sure no visible light
+    // 2. ircutter off, ir on
     switch_to_night();
-    //3. query wb info
+    // 3. query wb info
     rk_aiq_wb_querry_info_t wb_info;
     float RGgain = 0.0f, BGgain = 0.0f;
     int counts = 0;
     rk_aiq_isp_stats_t *stats_ref = NULL;
     printf("SmartIr Calib start ...... \n");
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    while (counts++ < 100 ) {
+    while (counts++ < 100) {
         ret = rk_aiq_uapi2_sysctl_get3AStatsBlk(ctx, &stats_ref, -1);
         if (ret == XCAM_RETURN_NO_ERROR && stats_ref != NULL) {
             printf("stats frame id %d \n", stats_ref->frame_id);
-            if (stats_ref->awb_hw_ver == 4) { //isp32
-                double Rvalue = 0, Gvalue = 0, Bvalue = 0, RGgain = 0, BGgain = 0;
+            if (stats_ref->awb_hw_ver == 4) { // isp32
+                float Rvalue = 0, Gvalue = 0, Bvalue = 0, RGgain = 0, BGgain = 0;
                 for (int i = 0; i < RK_AIQ_AWB_GRID_NUM_TOTAL; i++) {
-                       Rvalue = stats_ref->awb_stats_v32.blockResult[i].Rvalue;
-                       Gvalue = stats_ref->awb_stats_v32.blockResult[i].Gvalue;
-                       Bvalue = stats_ref->awb_stats_v32.blockResult[i].Bvalue;
-                       RGgain = RGgain + Rvalue / Gvalue;
-                       BGgain = BGgain + Bvalue / Gvalue;
+                    Rvalue = (float)stats_ref->awb_stats_v32.blockResult[i].Rvalue;
+                    Gvalue = (float)stats_ref->awb_stats_v32.blockResult[i].Gvalue;
+                    Bvalue = (float)stats_ref->awb_stats_v32.blockResult[i].Bvalue;
+                    RGgain = RGgain + Rvalue / Gvalue;
+                    BGgain = BGgain + Bvalue / Gvalue;
                 }
                 RGgain /= RK_AIQ_AWB_GRID_NUM_TOTAL;
                 BGgain /= RK_AIQ_AWB_GRID_NUM_TOTAL;
@@ -239,25 +255,25 @@ void sample_smartIr_calib(const void *arg)
     printf("SmartIr Calib Done ...... \n");
 }
 
-XCamReturn sample_smartIr_module(const void *arg)
+XCamReturn sample_smartIr_module(const void* arg)
 {
     int key = -1;
     CLEAR();
 
     const demo_context_t *demo_ctx = (demo_context_t *)arg;
     const rk_aiq_sys_ctx_t* ctx;
-    if (demo_ctx->camGroup){
+    if (demo_ctx->camGroup) {
         ctx = (rk_aiq_sys_ctx_t*)(demo_ctx->camgroup_ctx);
     } else {
         ctx = (rk_aiq_sys_ctx_t*)(demo_ctx->aiq_ctx);
     }
 
     if (ctx == NULL) {
-        ERR ("%s, ctx is nullptr\n", __FUNCTION__);
+        ERR("%s, ctx is nullptr\n", __FUNCTION__);
         return XCAM_RETURN_ERROR_PARAM;
     }
 
-    sample_smartIr_usage ();
+    sample_smartIr_usage();
 
     g_sample_smartIr_ctx.tquit = false;
     g_sample_smartIr_ctx.started = false;
@@ -265,29 +281,27 @@ XCamReturn sample_smartIr_module(const void *arg)
     g_sample_smartIr_ctx.ir_ctx = NULL;
 
     do {
-
-        key = getchar ();
+        key = getchar();
         while (key == '\n' || key == '\r')
             key = getchar();
-        printf ("\n");
+        printf("\n");
 
-        switch (key)
-        {
-            case 'h':
-                CLEAR();
-                sample_smartIr_usage();
-                break;
-            case 'e':
-                sample_smartIr_stop(ctx);
-                break;
-            case 's':
-                sample_smartIr_start(ctx);
-                break;
-            case 'c':
-                sample_smartIr_calib(ctx);
-                break;
-            default:
-                break;
+        switch (key) {
+        case 'h':
+            CLEAR();
+            sample_smartIr_usage();
+            break;
+        case 'e':
+            sample_smartIr_stop(ctx);
+            break;
+        case 's':
+            sample_smartIr_start(ctx);
+            break;
+        case 'c':
+            sample_smartIr_calib(ctx);
+            break;
+        default:
+            break;
         }
     } while (key != 'q' && key != 'Q');
 
@@ -297,14 +311,14 @@ XCamReturn sample_smartIr_module(const void *arg)
 }
 
 #else
-void sample_print_smartIr_info(const void *arg)
+void sample_print_smartIr_info(const void* arg)
 {
-    printf ("enter SmartIr modult test!\n");
+    printf("enter SmartIr modult test!\n");
 }
 
-XCamReturn sample_smartIr_module(const void *arg)
+XCamReturn sample_smartIr_module(const void* arg)
 {
-    printf ("Not enabled! Add option SAMPLE_SMART_IR in makefile \n");
+    printf("Not enabled! Add option SAMPLE_SMART_IR in makefile \n");
     return XCAM_RETURN_NO_ERROR;
 }
 #endif

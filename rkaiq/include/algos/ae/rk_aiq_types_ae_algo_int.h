@@ -399,6 +399,18 @@ typedef enum AecHwVersion_e
     AEC_HARDWARE_MAX,
 } AecHwVersion_t;
 
+typedef struct AfdPeakRes_s {
+    bool                    IsFlickExist;
+    int                     spatPeakNum;
+    float                   spatPeakIntv;
+    int                     spatValleyNum;
+    float                   spatValleyIntv;
+    int                     specPeakNum;
+    int                     specMaxPeakIdx;
+    float                   specMainFreq;
+    RKAiqAecExpInfo_t       expinfo[2];
+} AfdPeakRes_t;
+
 typedef struct AecConfig_s {
 
     /*Aec Ctrl Configuration from calibdb, support User Api input Ctrl configuration*/
@@ -429,6 +441,7 @@ typedef struct AecConfig_s {
 
     /*continue to use some old params to keep the same with AecConfig_t*/
     AecDampingMode_t              DampingMode;              /**< damping mode */
+    float                         SetEcmTflicker;
 
     int                           RawWidth;
     int                           RawHeight;
@@ -437,6 +450,9 @@ typedef struct AecConfig_s {
     Aec_uapi_advanced_attr_t      ApiAdvanced;
     Aec_LinAeRange_t              LinAeRange;
     Aec_HdrAeRange_t              HdrAeRange;
+
+    /*add for auto flicker detection*/
+    AfdPeakRes_t                  AfdRes;
 
     /*update attr flag*/
     uint16_t                      IsReconfig;
@@ -484,15 +500,19 @@ typedef struct AecPreResult_s {
 /*****************************************************************************/
 typedef struct AecProcResult_s {
     bool                          IsConverged;
+    bool                          IsEnvChanged;
+    bool                          IsAutoAfd;
     bool                          LongFrmMode;
     float                         LumaDeviation;
     float                         HdrLumaDeviation[MAX_HDR_FRAMENUM];
     int                           exp_set_cnt;
     RKAiqAecExpInfo_t             exp_set_tbl[MAX_AEC_EFFECT_FNUM + 1];
+    float                         SetEcmTflicker;
 } AecProcResult_t;
 
 typedef struct AecPostResult_s {
     RkAiqDCIrisParam_t      DCIris;
+    RkAiqHDCIrisParam_t     HDCIris;
 
 } AecPostResult_t;
 

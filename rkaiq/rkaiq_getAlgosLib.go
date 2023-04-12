@@ -231,6 +231,12 @@ func rkaiq_getAlgosLib(macros_map map[string]bool) []string {
         static_lib = append(static_lib, "librkaiq_ae")
     }
 
+    flag0 = macros_map["RKAIQ_HAVE_AFD_V1"]
+    flag1 = macros_map["RKAIQ_HAVE_AFD_V2"]
+    if (flag0 || flag1) {
+        static_lib = append(static_lib, "librkaiq_afd")
+    }
+
     flag0 = macros_map["RKAIQ_HAVE_DEBAYER_V1"]
     flag1 = macros_map["RKAIQ_HAVE_DEBAYER_V2"]
     flag2 = macros_map["RKAIQ_HAVE_DEBAYER_V2_LITE"]

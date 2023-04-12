@@ -26,6 +26,7 @@
 #include "common/rk-camera-module.h"
 #include "adebayer/rk_aiq_types_adebayer_algo.h"
 #include "ae/rk_aiq_types_ae_algo.h"
+#include "afd/rk_aiq_types_afd_algo.h"
 #include "awb/rk_aiq_types_awb_algo.h"
 #include "alsc/rk_aiq_types_alsc_algo.h"
 #include "accm/rk_aiq_types_accm_algo.h"
@@ -464,6 +465,8 @@ typedef rk_aiq_pdaf_algo_meas_t rk_aiq_isp_pdaf_meas_t;
 
 typedef rk_aiq_ae_meas_params_t rk_aiq_isp_aec_meas_t;
 typedef rk_aiq_hist_meas_params_t rk_aiq_isp_hist_meas_t;
+
+typedef rk_aiq_afd_cfg_t rk_aiq_isp_afd_t;
 
 /**wb gain **/
 

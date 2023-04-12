@@ -208,11 +208,11 @@ static __attribute__((unused)) int j2s_load_ctx_cache(j2s_ctx* ctx,
 
     buf = j2s_read_file(cache_file, &size);
     if (!buf || size <= sizeof(*ctx)) {
-        DBG("invalid cache: '%s'\n", cache_file);
+        DBG("invalid cache: %s\n", cache_file ? cache_file : "nullptr");
         goto err;
     }
 
-    DBG("Loading ctx cache: '%s'\n", cache_file);
+    DBG("Loading ctx cache: %s\n", cache_file ? cache_file : "nullptr");
 
     ptr = (char*)buf;
 
@@ -221,7 +221,7 @@ static __attribute__((unused)) int j2s_load_ctx_cache(j2s_ctx* ctx,
     ptr += sizeof(*ctx);
 
     if (ctx->magic != J2S_MAGIC || ctx->num_obj != J2S_NUM_OBJ || ctx->num_struct != J2S_NUM_STRUCT || ctx->num_enum != J2S_NUM_ENUM || ctx->num_enum_value != J2S_NUM_ENUM_VALUE) {
-        DBG("invalid cache: '%s'\n", cache_file);
+        DBG("invalid cache: %s\n", cache_file ? cache_file : "nullptr");
         goto err;
     }
 
@@ -238,7 +238,7 @@ static __attribute__((unused)) int j2s_load_ctx_cache(j2s_ctx* ctx,
     ptr += ctx->num_enum_value * sizeof(*ctx->enum_values);
 
     if (ptr != (char*)buf + size) {
-        DBG("invalid cache: '%s'\n", cache_file);
+        DBG("invalid cache: %s\n", cache_file ? cache_file : "nullptr");
         goto err;
     }
 

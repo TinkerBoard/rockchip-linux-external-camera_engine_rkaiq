@@ -401,9 +401,12 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                                        pAdrcCtx->ifReCalcStAuto || pAdrcCtx->ifReCalcStManual ||
                                        !pAdrcCtx->isDampStable;
     if (pAdrcProcRes->AdrcProcRes.update) {
+        // store new proc res
         pAdrcProcRes->AdrcProcRes.bDrcEn = pAdrcCtx->NextData.Enable;
         memcpy(&pAdrcProcRes->AdrcProcRes.DrcProcRes, &pAdrcCtx->AdrcProcRes.DrcProcRes,
                sizeof(DrcProcRes_t));
+        // store curr data 2 api info
+        AdrcParams2Api(pAdrcCtx);
     }
 
     pAdrcCtx->CurrData.Enable  = pAdrcCtx->NextData.Enable;

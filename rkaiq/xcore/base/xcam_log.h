@@ -75,6 +75,8 @@ typedef enum {
     XCORE_LOG_MODULE_AWBGROUP,  //100000000FFF
     XCORE_LOG_MODULE_GROUPAEC,  //200000000FFF
     XCORE_LOG_MODULE_RKRAWSTREAM,   //400000000FFF
+    XCORE_LOG_MODULE_IPC,       //800000000FFF
+    XCORE_LOG_MODULE_AFD,   //1000000000FFF
     XCORE_LOG_MODULE_MAX,
 } xcore_log_modules_t;
 
@@ -214,6 +216,20 @@ extern xcore_cam_log_module_info_t g_xcore_log_infos[XCORE_LOG_MODULE_MAX];
 #define LOGI_GAEC(...) LOGI_GAEC_SUBM(0xff, ##__VA_ARGS__)
 #define LOG1_GAEC(...) LOG1_GAEC_SUBM(0xff, ##__VA_ARGS__)
 
+// define aec module logs
+#define LOGD_AFD_SUBM(sub_modules, ...) XCAM_MODULE_LOG_DEBUG(XCORE_LOG_MODULE_AFD, sub_modules, ##__VA_ARGS__)
+#define LOGE_AFD_SUBM(sub_modules, ...) XCAM_MODULE_LOG_ERROR(XCORE_LOG_MODULE_AFD, sub_modules, ##__VA_ARGS__)
+#define LOGW_AFD_SUBM(sub_modules, ...) XCAM_MODULE_LOG_WARNING(XCORE_LOG_MODULE_AFD, sub_modules, ##__VA_ARGS__)
+#define LOGV_AFD_SUBM(sub_modules, ...) XCAM_MODULE_LOG_VERBOSE(XCORE_LOG_MODULE_AFD, sub_modules, ##__VA_ARGS__)
+#define LOGI_AFD_SUBM(sub_modules, ...) XCAM_MODULE_LOG_INFO(XCORE_LOG_MODULE_AFD, sub_modules, ##__VA_ARGS__)
+#define LOG1_AFD_SUBM(sub_modules, ...) XCAM_MODULE_LOG_LOW1(XCORE_LOG_MODULE_AFD, sub_modules, ##__VA_ARGS__)
+
+#define LOGD_AFD(...) LOGD_AFD_SUBM(0xff, ##__VA_ARGS__)
+#define LOGE_AFD(...) LOGE_AFD_SUBM(0xff, ##__VA_ARGS__)
+#define LOGW_AFD(...) LOGW_AFD_SUBM(0xff, ##__VA_ARGS__)
+#define LOGV_AFD(...) LOGV_AFD_SUBM(0xff, ##__VA_ARGS__)
+#define LOGI_AFD(...) LOGI_AFD_SUBM(0xff, ##__VA_ARGS__)
+#define LOG1_AFD(...) LOG1_AFD_SUBM(0xff, ##__VA_ARGS__)
 
 // define awb module logs
 #define LOGD_AWB_SUBM(sub_modules, ...) XCAM_MODULE_LOG_DEBUG(XCORE_LOG_MODULE_AWB, sub_modules, ##__VA_ARGS__)

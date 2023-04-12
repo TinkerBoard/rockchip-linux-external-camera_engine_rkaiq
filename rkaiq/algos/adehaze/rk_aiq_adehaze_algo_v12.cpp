@@ -558,7 +558,7 @@ void stManuGetHistParamsV12(mDehazeAttrV12_t* pStManu, RkAiqAdehazeProcResult_t*
         pProcRes->ProcResV12.dc_en ? pProcRes->ProcResV12.hpara_en : FUNCTION_ENABLE;
 
     pProcRes->ProcResV12.hist_gratio =
-        ClipValueV12(pStManu->hist_setting.HistData.hist_gratio, 0, 8);
+        ClipValueV12(pStManu->hist_setting.HistData.hist_gratio, 5, 3);
     pProcRes->ProcResV12.hist_th_off =
         ClipValueV12(pStManu->hist_setting.HistData.hist_th_off, 8, 0);
     pProcRes->ProcResV12.hist_k     = ClipValueV12(pStManu->hist_setting.HistData.hist_k, 3, 2);
@@ -937,8 +937,8 @@ void GetHistParamsV12(CalibDbDehazeV12_t* pCalibV12, RkAiqAdehazeProcResult_t* p
                                     : FUNCTION_ENABLE;  //  dc en 关闭，hpara必需开
 
     pProcRes->ProcResV12.hist_gratio = DehazeLinearInterpV12(
-                                           pCalibV12->hist_setting.HistData.CtrlData, pCalibV12->hist_setting.HistData.hist_gratio,
-                                           CtrlValue, 0, 8, DHAZ_CTRL_DATA_STEP_MAX);
+        pCalibV12->hist_setting.HistData.CtrlData, pCalibV12->hist_setting.HistData.hist_gratio,
+        CtrlValue, 5, 3, DHAZ_CTRL_DATA_STEP_MAX);
     pProcRes->ProcResV12.hist_th_off = DehazeLinearInterpV12(
                                            pCalibV12->hist_setting.HistData.CtrlData, pCalibV12->hist_setting.HistData.hist_th_off,
                                            CtrlValue, 8, 0, DHAZ_CTRL_DATA_STEP_MAX);

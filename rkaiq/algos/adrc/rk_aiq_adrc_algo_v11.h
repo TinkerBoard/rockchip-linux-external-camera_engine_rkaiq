@@ -22,13 +22,10 @@
 XCamReturn AdrcStart(AdrcContext_t* pAdrcCtx);
 XCamReturn AdrcStop(AdrcContext_t* pAdrcCtx);
 bool DrcEnableSetting(AdrcContext_t* pAdrcCtx);
-void AdrcApiOffConfig(AdrcContext_t* pAdrcCtx);
-void AdrcIQUpdate(AdrcContext_t* pAdrcCtx, AecPreResult_t AecHdrPreResult,
-                  af_preprocess_result_t AfPreResult);
 void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx);
 void AdrcExpoParaProcessing(AdrcContext_t* pAdrcCtx);
 bool AdrcByPassTuningProcessing(AdrcContext_t* pAdrcCtx, AecPreResult_t AecHdrPreResult);
-bool DrcSetGlobalTMO(AdrcContext_t* pAdrcCtx);
+void AdrcParams2Api(AdrcContext_t* pAdrcCtx);
 XCamReturn AdrcInit(AdrcContext_t** ppAdrcCtx, CamCalibDbV2Context_t* pCalibDb);
 XCamReturn AdrcRelease(AdrcContext_t* pAdrcCtx);
 

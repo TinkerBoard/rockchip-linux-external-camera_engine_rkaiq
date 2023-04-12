@@ -99,6 +99,7 @@ include_directories(
     include/algos/adehaze
     include/algos/adpcc
     include/algos/ae
+    include/algos/afd
     include/algos/af
     include/algos/afec
     include/algos/agamma
@@ -498,6 +499,16 @@ if (RKAIQ_HAVE_AE_V1)
     list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqCustomAeHandle.cpp)
 endif()
 
+if (RKAIQ_HAVE_AFD_V1 OR RKAIQ_HAVE_AFD_V2)
+    if (RKAIQ_HAVE_AFD_V1)
+        add_compile_options(-DRKAIQ_HAVE_AFD_V1=1)
+    endif()
+    if (RKAIQ_HAVE_AFD_V2)
+        add_compile_options(-DRKAIQ_HAVE_AFD_V2=1)
+    endif()    
+    list(APPEND ALGO_HANDLE_SRC aiq_core/algo_handlers/RkAiqAfdHandle.cpp)
+endif()
+
 if (RKAIQ_HAVE_DEBAYER_V1 OR RKAIQ_HAVE_DEBAYER_V2 OR RKAIQ_HAVE_DEBAYER_V2_LITE)
     if (RKAIQ_HAVE_DEBAYER_V1)
         add_compile_options(-DRKAIQ_HAVE_DEBAYER_V1=1)
@@ -604,6 +615,7 @@ else()
         hwi/isp20/RawStreamProcUnit.cpp
         hwi/isp20/PdafStreamProcUnit.cpp
         hwi/isp20/CaptureRawData.cpp
+        hwi/isp20/CifScaleStream.cpp
         hwi/isp21/CamHwIsp21.cpp
         hwi/isp3x/CamHwIsp3x.cpp
         hwi/isp32/CamHwIsp32.cpp
@@ -1209,6 +1221,14 @@ target_link_libraries(rkaiq
     rkaiq_adebayer
     )
 list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_adebayer${STATIC_LIB_SUFFIX})
+endif()
+
+if (RKAIQ_HAVE_AFD_V1 OR RKAIQ_HAVE_AFD_V2)
+target_link_libraries(rkaiq
+    PRIVATE
+    rkaiq_afd
+    )
+list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_afd${STATIC_LIB_SUFFIX})
 endif()
 
 if (RKAIQ_HAVE_LSC_V1 OR RKAIQ_HAVE_LSC_V2 OR RKAIQ_HAVE_LSC_V3)

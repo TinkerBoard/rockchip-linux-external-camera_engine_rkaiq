@@ -83,6 +83,8 @@
 #cmakedefine01 RKAIQ_HAVE_CSM_V1
 #cmakedefine01 RKAIQ_HAVE_CGC_V1
 #cmakedefine01 RKAIQ_HAVE_AE_V1
+#cmakedefine01 RKAIQ_HAVE_AFD_V1
+#cmakedefine01 RKAIQ_HAVE_AFD_V2
 #cmakedefine01 RKAIQ_HAVE_DEBAYER_V1
 #cmakedefine01 RKAIQ_HAVE_DEBAYER_V2
 #cmakedefine01 RKAIQ_HAVE_DEBAYER_V2_LITE

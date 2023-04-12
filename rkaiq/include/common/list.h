@@ -248,6 +248,35 @@ static inline void list_prepare_item(void* p_item) {
     ((struct list_head*)p_item)->next = NULL;
     ((struct list_head*)p_item)->prev = NULL;
 }
+
+/**
+*  add by emily
+ * list_swap_item - transpose two adjacent items in the list .
+ * param:   node1  One item in the list
+ * param:   node2  Tne another adjacent item in the list
+ */
+static inline void list_swap_item(struct list_head* node1, struct list_head* node2)
+{
+    // input list
+    //     |------------|
+    //     n0->n1->n2->n3
+    // output list
+    //     |------------|
+    //     n0->n2->n1->n3
+
+    struct list_head* n0, *n3;
+    n0 = node1->prev;
+    n3 = node2->next;
+    if (node1->next == node2) {
+        n3->prev = node1;
+        node1->next = n3;
+        node1->prev = node2;
+        node2->next = node1;
+        node2->prev = n0;
+        n0->next = node2;
+    }
+}
+
 /**
  * print_list -print list.
  * param:   head  The list item to be printed.

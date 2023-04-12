@@ -44,20 +44,24 @@ typedef struct rk_smart_ir_result_s {
     RK_SMART_IR_STATUS_t status;
 } rk_smart_ir_result_t;
 
-rk_smart_ir_ctx_t*
-rk_smart_ir_init(const rk_aiq_sys_ctx_t* ctx);
+typedef struct rk_smart_ir_autoled_s {
+    bool is_smooth_convert;
+    float auto_irled_val;
+    float auto_irled_min;
+    float auto_irled_max;
+} rk_smart_ir_autoled_t;
 
-XCamReturn
-rk_smart_ir_deInit(const rk_smart_ir_ctx_t* ir_ctx);
+rk_smart_ir_ctx_t* rk_smart_ir_init(const rk_aiq_sys_ctx_t* ctx);
 
-XCamReturn
-rk_smart_ir_config(rk_smart_ir_ctx_t* ctx, rk_smart_ir_params_t* config);
+XCamReturn rk_smart_ir_deInit(const rk_smart_ir_ctx_t* ir_ctx);
 
-XCamReturn
-rk_smart_ir_set_status(rk_smart_ir_ctx_t* ctx, rk_smart_ir_result_t result);
+XCamReturn rk_smart_ir_config(rk_smart_ir_ctx_t* ctx, rk_smart_ir_params_t* config);
 
-XCamReturn
-rk_smart_ir_runOnce(rk_smart_ir_ctx_t* ctx, rk_aiq_isp_stats_t* stats_ref, rk_smart_ir_result_t* result);
+XCamReturn rk_smart_ir_set_status(rk_smart_ir_ctx_t* ctx, rk_smart_ir_result_t result);
+
+XCamReturn rk_smart_ir_runOnce(rk_smart_ir_ctx_t* ctx, rk_aiq_isp_stats_t* stats_ref, rk_smart_ir_result_t* result);
+
+XCamReturn rk_smart_ir_auto_irled(rk_smart_ir_ctx_t* ctx, rk_smart_ir_autoled_t* auto_irled);
 
 RKAIQ_END_DECLARE
 

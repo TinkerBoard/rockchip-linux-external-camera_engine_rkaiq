@@ -154,43 +154,6 @@ XCamReturn sample_sharp_setAuto_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mod
     sharpV33_attr.stAuto.stParams.center_x = 0;
     sharpV33_attr.stAuto.stParams.center_y = 0;
 
-
-    int luma_sigma[RK_SHARP_V33_LUMA_POINT_NUM];
-    int luma_point[RK_SHARP_V33_LUMA_POINT_NUM];
-    float pbf_gain;
-    float pbf_add;
-    float pbf_ratio;
-    float gaus_ratio;
-    float sharp_ratio;
-    int lum_clip_h[RK_SHARP_V33_LUMA_POINT_NUM];
-    float bf_gain;
-    float bf_add;
-    float bf_ratio;
-    int global_clip_pos;
-
-    float prefilter_coeff[RK_SHARP_V33_PBF_DIAM * RK_SHARP_V33_PBF_DIAM];
-    float GaussianFilter_coeff[RK_SHARP_V33_RF_DIAM * RK_SHARP_V33_RF_DIAM];
-    float hfBilateralFilter_coeff[RK_SHARP_V33_BF_DIAM * RK_SHARP_V33_BF_DIAM];
-
-    float global_gain;
-    float global_gain_alpha;
-    float local_gainscale;
-
-    float gain_adj_sharp_strength[RK_SHARP_V33_SHARP_ADJ_GAIN_TABLE_LEN];
-    int exgain_bypass;
-
-    float dis_adj_sharp_strength[RK_SHARP_V33_STRENGTH_TABLE_LEN];
-
-    float noiseclip_strength;
-    int enhance_bit;
-    int noiseclip_mode;
-    int noise_sigma_clip;
-
-    float prefilter_sigma;
-    float hfBilateralFilter_sigma;
-    float GaussianFilter_sigma;
-    float GaussianFilter_radius;
-
     for(int i = 0; i < RK_SHARP_V4_MAX_ISO_NUM; i++) {
         sharpV33_attr.stAuto.stParams.iso[i] = 50 * pow(2, i);
 
@@ -259,6 +222,7 @@ XCamReturn sample_sharp_setAuto_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mod
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].enhance_bit = 3;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].noiseclip_mode = 0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].noise_sigma_clip = 1023;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].global_hf_clip_pos = 0;
 
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].gain_adj_sharp_strength[0] = 1;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].gain_adj_sharp_strength[1] = 1;
@@ -628,6 +592,7 @@ XCamReturn sample_sharp_setManual_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_m
     sharpV33_attr.stManual.stSelect.enhance_bit = 3;
     sharpV33_attr.stManual.stSelect.noiseclip_mode = 0;
     sharpV33_attr.stManual.stSelect.noise_sigma_clip = 1023;
+    sharpV33_attr.stManual.stSelect.global_hf_clip_pos = 0;
 
     sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[0] = 1;
     sharpV33_attr.stManual.stSelect.gain_adj_sharp_strength[1] = 1;

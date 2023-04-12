@@ -143,7 +143,6 @@ public:
     virtual XCamReturn rawReproc_genIspParams (uint32_t sequence, rk_aiq_frame_info_t *offline_finfo, int mode) = 0;
     virtual XCamReturn rawReProc_prepare (uint32_t sequence, rk_aiq_frame_info_t *offline_finfo) = 0;
     virtual void setUserSensorFormat(uint16_t width, uint16_t height, uint16_t code) = 0;
-
 private:
     XCAM_DEAD_COPY (ICamHw);
 };

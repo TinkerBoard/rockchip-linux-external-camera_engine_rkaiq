@@ -104,7 +104,12 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
 #endif
     }
 
-    return adaptor->Prepare(config);
+    // prepare maybe called before hw prepared, may just intend to
+    // update calib params before real prepare.
+    if (config->width != 0 && config->height != 0)
+        return adaptor->Prepare(config);
+    else
+        return XCAM_RETURN_NO_ERROR;
 }
 
 static XCamReturn pre_process(const RkAiqAlgoCom* /* inparams */, RkAiqAlgoResCom* /* outparams */) {

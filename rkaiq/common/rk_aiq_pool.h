@@ -96,6 +96,7 @@ typedef struct RkAiqIrisInfoWrapper_s : public XCam::BufferData {
     //RkAiqIrisType_t           IrisType;
     RkAiqPirisInfoWrapper_t   PIris;
     RkAiqDCIrisParam_t        DCIris;
+    RkAiqHDCIrisParam_t       HDCIris;
     uint64_t                  sofTime;
 } RkAiqIrisInfoWrapper_t;
 
@@ -157,6 +158,7 @@ typedef enum _cam3aResultType {
     RESULT_TYPE_DRC_PARAM = 0x28,
     // isp3x result
     RESULT_TYPE_CAC_PARAM = 0x29,
+    RESULT_TYPE_AFD_PARAM = 0x2a,
     RESULT_TYPE_MAX_PARAM,
 } cam3aResultType;
 
@@ -206,7 +208,8 @@ static const char* Cam3aResultType2Str[RESULT_TYPE_MAX_PARAM] = {
     [RESULT_TYPE_ORB_PARAM]          = "ORB",
     [RESULT_TYPE_FOCUS_PARAM]        = "FOCUS",
     [RESULT_TYPE_DRC_PARAM]          = "DRC",
-    [RESULT_TYPE_CAC_PARAM]          = "CAC"
+    [RESULT_TYPE_CAC_PARAM]          = "CAC",
+    [RESULT_TYPE_AFD_PARAM]          = "AFD",
 };
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
@@ -373,6 +376,9 @@ typedef SharedItemProxy<rk_aiq_isp_fec_params_v20_t>        RkAiqIspFecParamsPro
 typedef SharedItemPool<rk_aiq_isp_orb_params_v20_t>         RkAiqIspOrbParamsPool;
 typedef SharedItemProxy<rk_aiq_isp_orb_params_v20_t>        RkAiqIspOrbParamsProxy;
 
+typedef SharedItemPool<rk_aiq_isp_afd_params_t>             RkAiqIspAfdParamsPool;
+typedef SharedItemProxy<rk_aiq_isp_afd_params_t>            RkAiqIspAfdParamsProxy;
+
 //v21 pools
 typedef SharedItemPool<rk_aiq_isp_awb_params_v21_t>         RkAiqIspAwbParamsPoolV21;
 typedef SharedItemProxy<rk_aiq_isp_awb_params_v21_t>        RkAiqIspAwbParamsProxyV21;
@@ -520,7 +526,8 @@ public:
         , mAfV32Params(NULL)
         , mTnrV32Params(NULL)
         , mAwbGainV32Params(NULL)
-        , mAfV32LiteParams(NULL) {
+        , mAfV32LiteParams(NULL)
+        , mAfdParams(NULL) {
     };
     ~RkAiqFullParams() {
         reset();
@@ -610,6 +617,8 @@ public:
 
         // V32 lite differential modules
         mAfV32LiteParams.release();
+
+        mAfdParams.release();
     };
     SmartPtr<RkAiqExpParamsProxy>           mExposureParams;
     SmartPtr<RkAiqFocusParamsProxy>         mFocusParams;
@@ -692,6 +701,8 @@ public:
 
     // V32 lite differential modules
     SmartPtr<RkAiqIspAfParamsProxyV32Lite>   mAfV32LiteParams;
+
+    SmartPtr<RkAiqIspAfdParamsProxy>         mAfdParams;
 private:
     XCAM_DEAD_COPY (RkAiqFullParams);
 };

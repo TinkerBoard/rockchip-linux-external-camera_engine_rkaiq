@@ -55,7 +55,7 @@ void RkAiqAnalyzerGroup::msgReduction(std::map<uint32_t, GroupMessage>& msgMap) 
     // Should let message thread handle the reduction
     if (!mGroupMsgMap.empty()) {
         const auto originalSize = mGroupMsgMap.size();
-        const int numToErase    = originalSize - 6;
+        const int numToErase    = originalSize - 4;
         if (numToErase > 0) {
             int32_t unreadyFlag = mDepsFlag & ~mGroupMsgMap.begin()->second.msg_flags;
             // print missing params
@@ -113,6 +113,10 @@ void RkAiqAnalyzerGroup::setDelayCnts(int8_t delayCnts) {
     mUserSetDelayCnts = delayCnts;
 }
 
+void RkAiqAnalyzerGroup::setVicapScaleFlag(bool mode) {
+    mVicapScaleStart = mode;
+}
+
 bool RkAiqAnalyzerGroup::msgHandle(const SmartPtr<XCamMessage>& msg) {
     if (!((1ULL << msg->msg_id) & mDepsFlag)) {
         return true;
@@ -162,6 +166,14 @@ XCamReturn RkAiqAnalyzerGroup::stop() {
     mGroupMsgMap.clear();
 
     return XCAM_RETURN_NO_ERROR;
+}
+
+void RkAiqAnalyzerGroup::setDepsFlagAndClearMap(uint64_t new_deps)
+{
+    mDepsFlag = new_deps;
+    if (mGroupMsgMap.size()) {
+        mGroupMsgMap.clear();
+    }
 }
 
 bool RkAiqAnalyzeGroupMsgHdlThread::loop() {
@@ -420,6 +432,22 @@ XCamReturn RkAiqAnalyzeGroupManager::groupMessageHandler(std::list<SmartPtr<XCam
             case XCAM_MESSAGE_ADEHAZE_STATS_OK:
                 shared->adehazeStatsBuf = convert_to_XCamVideoBuffer(vdBufMsg->msg);
                 break;
+            case XCAM_MESSAGE_VICAP_POLL_SCL_OK:
+            {
+                RkAiqVicapRawBufInfo_t *buf_info = (RkAiqVicapRawBufInfo_t *)vdBufMsg.ptr()->msg->map();
+                shared->scaleRawInfo.bpp = buf_info->bpp;
+                if (buf_info->flags == RK_AIQ_VICAP_SCALE_HDR_MODE_NORMAL) {
+                    shared->scaleRawInfo.raw_s = convert_to_XCamVideoBuffer(buf_info->raw_s);
+                } else if (buf_info->flags == RK_AIQ_VICAP_SCALE_HDR_MODE_2_HDR) {
+                    shared->scaleRawInfo.raw_l = convert_to_XCamVideoBuffer(buf_info->raw_l);
+                    shared->scaleRawInfo.raw_s = convert_to_XCamVideoBuffer(buf_info->raw_s);
+                } else if (buf_info->flags == RK_AIQ_VICAP_SCALE_HDR_MODE_3_HDR) {
+                    shared->scaleRawInfo.raw_l = convert_to_XCamVideoBuffer(buf_info->raw_l);
+                    shared->scaleRawInfo.raw_s = convert_to_XCamVideoBuffer(buf_info->raw_s);
+                    shared->scaleRawInfo.raw_m = convert_to_XCamVideoBuffer(buf_info->raw_m);
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -491,6 +519,18 @@ XCamReturn RkAiqAnalyzeGroupManager::groupMessageHandler(std::list<SmartPtr<XCam
     if (shared->adehazeStatsBuf) {
         shared->adehazeStatsBuf->unref(shared->adehazeStatsBuf);
         shared->adehazeStatsBuf = nullptr;
+    }
+    if (shared->scaleRawInfo.raw_l) {
+        shared->scaleRawInfo.raw_l->unref(shared->scaleRawInfo.raw_l);
+        shared->scaleRawInfo.raw_l = nullptr;
+    }
+    if (shared->scaleRawInfo.raw_m) {
+        shared->scaleRawInfo.raw_m->unref(shared->scaleRawInfo.raw_m);
+        shared->scaleRawInfo.raw_m = nullptr;
+    }
+    if (shared->scaleRawInfo.raw_s) {
+        shared->scaleRawInfo.raw_s->unref(shared->scaleRawInfo.raw_s);
+        shared->scaleRawInfo.raw_s = nullptr;
     }
 
     return XCAM_RETURN_NO_ERROR;

@@ -169,8 +169,6 @@ FakeCamHwIsp20::init_mipi_devices(rk_sensor_full_info_t *s_info)
             _mipi_tx_devs[i]->set_buffer_count(VIPCAP_TX_BUF_NUM);
             _mipi_rx_devs[i]->set_buffer_count(VIPCAP_TX_BUF_NUM);
         }
-        _mipi_tx_devs[i]->set_buf_sync (true);
-        _mipi_rx_devs[i]->set_buf_sync (true);
         SmartPtr<FakeSensorHw> fakeSensor = mSensorDev.dynamic_cast_ptr<FakeSensorHw>();
         rk_aiq_exposure_sensor_descriptor sns_des;
         fakeSensor->get_sensor_desc(&sns_des);
@@ -232,7 +230,12 @@ FakeCamHwIsp20::enqueueRawFile(const char *path)
         return XCAM_RETURN_ERROR_FAILED;
     }
 
-    parse_rk_rawfile(fp, &vbuf);
+    ret = parse_rk_rawfile(fp, &vbuf);
+    if (ret != XCAM_RETURN_NO_ERROR) {
+        LOGE_CAMHW_SUBM(FAKECAM_SUBM, "Failed to parse rk rawfile!");
+        fclose(fp);
+        return ret;
+    }
     fclose(fp);
     SmartPtr<FakeSensorHw> fakeSensor = mSensorDev.dynamic_cast_ptr<FakeSensorHw>();
     fakeSensor->enqueue_rawbuffer(&vbuf, true);
@@ -603,12 +606,20 @@ FakeCamHwIsp20::parse_rk_rawdata(void *rawdata, struct rk_aiq_vbuf *vbuf)
 
 }
 
-void
+XCamReturn
 FakeCamHwIsp20::parse_rk_rawfile(FILE *fp, struct rk_aiq_vbuf *vbuf)
 {
     unsigned short tag = 0;
     struct _block_header header;
     bool bExit = false;
+
+    if (!_mipi_rx_devs[0]->is_activated()) {
+        LOGE_CAMHW_SUBM(FAKECAM_SUBM, "device(%s) hasn't activated(%d) yet!!!\n",
+                        XCAM_STR (_mipi_rx_devs[0]->get_device_name()),
+                        _mipi_rx_devs[0]->is_activated());
+        return XCAM_RETURN_ERROR_FAILED;
+    }
+
     while(!bExit){
         int ret = fread(&tag, sizeof(tag), 1, fp);
         if (ret == 0)
@@ -819,6 +830,7 @@ FakeCamHwIsp20::parse_rk_rawfile(FILE *fp, struct rk_aiq_vbuf *vbuf)
                                       vbuf->buf_info[2].exp_time_reg);
     }
 
+     return XCAM_RETURN_NO_ERROR;
 }
 
 XCamReturn

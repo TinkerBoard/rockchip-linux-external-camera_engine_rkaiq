@@ -60,6 +60,7 @@
 #include "aynr2/rk_aiq_types_aynr_algo_int_v2.h"
 #include "aynr3/rk_aiq_types_aynr_algo_int_v3.h"
 #include "aynrV22/rk_aiq_types_aynr_algo_int_v22.h"
+#include "afd/rk_aiq_types_afd_algo_int.h"
 #include "eis_head.h"
 #include "orb_head.h"
 #include "rk_aiq_algo_des.h"
@@ -125,6 +126,39 @@ typedef struct _RkAiqAlgoPostResAe {
     RkAiqAlgoResCom res_com;
     AecPostResult_t ae_post_res_rk;
 } RkAiqAlgoPostResAe;
+
+// afd
+typedef struct _RkAiqAlgoConfigAfd {
+    RkAiqAlgoCom com;
+    int          RawWidth;
+    int          RawHeight;
+    /*params related to driver setting*/
+    float        LinePeriodsPerField;
+    float        PixelClockFreqMHZ;
+    float        PixelPeriodsPerLine;
+} RkAiqAlgoConfigAfd;
+
+typedef struct _RkAiqAlgoPreAfd {
+    RkAiqAlgoCom com;
+    int          thumbW;
+    int          thumbH;
+    XCamVideoBuffer* thumbStatsS;
+    XCamVideoBuffer* thumbStatsL;
+} RkAiqAlgoPreAfd;
+
+typedef struct _RkAiqAlgoPreResAfd {
+    RkAiqAlgoResCom res_com;
+} RkAiqAlgoPreResAfd;
+
+typedef struct _RkAiqAlgoProcAfd {
+    RkAiqAlgoCom com;
+    int hdr_mode;
+} RkAiqAlgoProcAfd;
+
+typedef struct _RkAiqAlgoProcResAfd {
+    RkAiqAlgoResCom res_com;
+    AfdProcResult_t afdRes;
+} RkAiqAlgoProcResAfd;
 
 //Awb
 typedef struct _RkAiqAlgoConfigAwb {

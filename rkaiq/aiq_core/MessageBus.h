@@ -53,6 +53,7 @@ enum XCamMessageType {
     XCAM_MESSAGE_BLC_V32_PROC_RES_OK,
     XCAM_MESSAGE_YNR_V3_PROC_RES_OK,
     XCAM_MESSAGE_YNR_V22_PROC_RES_OK,
+    XCAM_MESSAGE_VICAP_POLL_SCL_OK,
 };
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -85,6 +86,7 @@ static const char* MessageType2Str[64] = {
     [XCAM_MESSAGE_BLC_V32_PROC_RES_OK] = "BLC_V32_PROC_RES",
     [XCAM_MESSAGE_YNR_V3_PROC_RES_OK]  = "YNR_V3_PROC_RES",
     [XCAM_MESSAGE_YNR_V22_PROC_RES_OK] = "YNR_V22_PROC_RES",
+    [XCAM_MESSAGE_VICAP_POLL_SCL_OK]   = "VICAP_POLL_SCL",
 };
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop

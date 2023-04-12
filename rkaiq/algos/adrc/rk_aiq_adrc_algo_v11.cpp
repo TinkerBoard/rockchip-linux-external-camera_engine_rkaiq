@@ -337,7 +337,7 @@ void AdrcGetTuningProcResV11(RkAiqAdrcProcResult_t* pAdrcProcRes, NextData_t* pN
     LOG1_ATMO("%s:exit!\n", __FUNCTION__);
 }
 
-void AdrcParams2ApiV11(AdrcContext_t* pAdrcCtx) {
+void AdrcParams2Api(AdrcContext_t* pAdrcCtx) {
     LOG1_ATMO("%s:enter!\n", __FUNCTION__);
 
     // ctrl info
@@ -629,9 +629,6 @@ void AdrcTuningParaProcessing(AdrcContext_t* pAdrcCtx) {
     // get io data
     AdrcGetTuningProcResV11(&pAdrcCtx->AdrcProcRes, &pAdrcCtx->NextData, pAdrcCtx->FrameNumber,
                             pAdrcCtx->FrameID);
-
-    // store curr data 2 api
-    AdrcParams2ApiV11(pAdrcCtx);
 
     // store current handle data to pre data for next loop
     pAdrcCtx->CurrData.AEData.EnvLv = pAdrcCtx->NextData.AEData.EnvLv;

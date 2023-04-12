@@ -28,7 +28,9 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #endif
+#ifdef __ARM_NEON
 #define NEON_OPT
+#endif
 #ifdef NEON_OPT
 #include <arm_neon.h>
 #endif

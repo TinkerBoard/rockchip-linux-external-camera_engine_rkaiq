@@ -113,11 +113,21 @@ bool Thread::start ()
     if (_started)
         return true;
 
+    pthread_attr_t attr;
+    size_t stacksize = 0;
+
+    if (pthread_attr_init(&attr)) {
+        XCAM_ASSERT(0);
+    }
+    if (!pthread_attr_getstacksize(&attr, &stacksize)) {
+        if (stacksize < 2048 * 1024) {
+            stacksize = 2048 * 1024;
+        }
+        pthread_attr_setstacksize(&attr, stacksize);
+    }
+
     if (_policy != -1 || _priority != -1) {
         int ret = -1;
-        pthread_attr_t attr;
-
-        pthread_attr_init(&attr);
 
         if (_policy != -1) {
             ret = pthread_attr_setschedpolicy(&attr, _policy);
@@ -142,19 +152,14 @@ bool Thread::start ()
             XCAM_LOG_WARNING ("Thread(%s) set sched inherit failed.(%d, %s)",
                     XCAM_STR(_name), ret, strerror(ret));
         }
-
-        if (pthread_create (&_thread_id, &attr, (void * (*)(void*))thread_func, this) != 0) {
-            pthread_attr_destroy(&attr);
-            return false;
-        }
-
-        pthread_attr_destroy(&attr);
-    } else {
-        if (pthread_create (&_thread_id, NULL, (void * (*)(void*))thread_func, this) != 0) {
-            return false;
-        }
     }
 
+    if (pthread_create(&_thread_id, &attr, (void* (*)(void*))thread_func, this) != 0) {
+        pthread_attr_destroy(&attr);
+        return false;
+    }
+
+    pthread_attr_destroy(&attr);
     _started = true;
     _stopped = false;
 

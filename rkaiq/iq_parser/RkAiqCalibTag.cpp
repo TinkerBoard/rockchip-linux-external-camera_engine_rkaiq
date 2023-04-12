@@ -508,6 +508,7 @@ uint32_t calib_sensor_aec_AecInitValue_LinearAE_sub_tags[] = {
     CALIB_SENSOR_AEC_INITISPDGAINVALUE_TAG_ID,
     CALIB_SENSOR_AEC_INITPIRISVALUE_TAG_ID,
     CALIB_SENSOR_AEC_INITDCIRISVALUE_TAG_ID,
+    CALIB_SENSOR_AEC_INITHDCIRISVALUE_TAG_ID,
 };
 
 uint32_t calib_sensor_aec_AecInitValue_HdrAE_sub_tags[] = {
@@ -516,6 +517,7 @@ uint32_t calib_sensor_aec_AecInitValue_HdrAE_sub_tags[] = {
     CALIB_SENSOR_AEC_INITISPDGAINVALUE_TAG_ID,
     CALIB_SENSOR_AEC_INITPIRISVALUE_TAG_ID,
     CALIB_SENSOR_AEC_INITDCIRISVALUE_TAG_ID,
+    CALIB_SENSOR_AEC_INITHDCIRISVALUE_TAG_ID,
 };
 
 uint32_t calib_sensor_aec_AecGridWeight_sub_tags[] = {
@@ -581,6 +583,7 @@ uint32_t calib_sensor_aec_AecIrisCtrl_sub_tags[] = {
     CALIB_SENSOR_AEC_IRISCTRL_TYPE_TAG_ID,
     CALIB_SENSOR_AEC_IRISCTRL_P_ATTR_TAG_ID,
     CALIB_SENSOR_AEC_IRISCTRL_DC_ATTR_TAG_ID,
+    CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_TAG_ID,
 };
 
 uint32_t calib_sensor_aec_AecIrisCtrl_PAttr_sub_tags[] = {
@@ -600,6 +603,18 @@ uint32_t calib_sensor_aec_AecIrisCtrl_DCAttr_sub_tags[] = {
     CALIB_SENSOR_AEC_IRISCTRL_DC_ATTR_CLOSE_PWMDUTY_TAG_ID,
 };
 
+uint32_t calib_sensor_aec_AecIrisCtrl_HDCAttr_sub_tags[] = {
+    CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_DAMPOVER_TAG_ID,
+    CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_DAMPUNDER_TAG_ID,
+    CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_ZEROISMAX_TAG_ID,
+    CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_MINTARGET_TAG_ID,
+    CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_MAXTARGET_TAG_ID,
+    CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_ZOOMTARGETDOT_TAG_ID,
+    CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_ZOOMDOT_TAG_ID,
+    CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_IRISTARGETDOT_TAG_ID,
+    CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_GAINDOT_TAG_ID,
+};
+
 uint32_t calib_sensor_aec_AecManualCtrl_sub_tags[] = {
     CALIB_SENSOR_AEC_MANUALCTRL_LINEARAE_TAG_ID,
     CALIB_SENSOR_AEC_MANUALCTRL_HDRAE_TAG_ID,
@@ -615,7 +630,7 @@ uint32_t calib_sensor_aec_AecManualCtrl_LinearAE_sub_tags[] = {
     CALIB_SENSOR_AEC_MANUALCTRL_ISPDGAINVALUE_TAG_ID,
     CALIB_SENSOR_AEC_MANUALCTRL_PIRISVALUE_TAG_ID,
     CALIB_SENSOR_AEC_MANUALCTRL_DCIRISVALUE_TAG_ID,
-
+    CALIB_SENSOR_AEC_MANUALCTRL_HDCIRISVALUE_TAG_ID,
 };
 uint32_t calib_sensor_aec_AecManualCtrl_HdrAE_sub_tags[] = {
     CALIB_SENSOR_AEC_MANUALCTRL_TIMEEN_TAG_ID,
@@ -627,6 +642,7 @@ uint32_t calib_sensor_aec_AecManualCtrl_HdrAE_sub_tags[] = {
     CALIB_SENSOR_AEC_MANUALCTRL_ISPDGAINVALUE_TAG_ID,
     CALIB_SENSOR_AEC_MANUALCTRL_PIRISVALUE_TAG_ID,
     CALIB_SENSOR_AEC_MANUALCTRL_DCIRISVALUE_TAG_ID,
+    CALIB_SENSOR_AEC_MANUALCTRL_HDCIRISVALUE_TAG_ID,
 };
 
 uint32_t calib_sensor_aec_AecEnvLvCalib_sub_tags[] = {
@@ -833,6 +849,7 @@ uint32_t calib_sensor_aec_AecInitValue_LinearAE_v21_sub_tags[] = {
     CALIB_SENSOR_AEC_V21_INITISPDGAINVALUE_TAG_ID,
     CALIB_SENSOR_AEC_V21_INITPIRISVALUE_TAG_ID,
     CALIB_SENSOR_AEC_V21_INITDCIRISVALUE_TAG_ID,
+    CALIB_SENSOR_AEC_V21_INITHDCIRISVALUE_TAG_ID,
 };
 
 uint32_t calib_sensor_aec_AecInitValue_HdrAE_v21_sub_tags[] = {
@@ -841,6 +858,7 @@ uint32_t calib_sensor_aec_AecInitValue_HdrAE_v21_sub_tags[] = {
     CALIB_SENSOR_AEC_V21_INITISPDGAINVALUE_TAG_ID,
     CALIB_SENSOR_AEC_V21_INITPIRISVALUE_TAG_ID,
     CALIB_SENSOR_AEC_V21_INITDCIRISVALUE_TAG_ID,
+    CALIB_SENSOR_AEC_V21_INITHDCIRISVALUE_TAG_ID,
 };
 
 uint32_t calib_sensor_aec_AecRoute_v21_sub_tags[] = {
@@ -899,6 +917,7 @@ uint32_t calib_sensor_aec_AecIrisCtrl_v21_sub_tags[] = {
     CALIB_SENSOR_AEC_V21_IRISCTRL_TYPE_TAG_ID,
     CALIB_SENSOR_AEC_V21_IRISCTRL_P_ATTR_TAG_ID,
     CALIB_SENSOR_AEC_V21_IRISCTRL_DC_ATTR_TAG_ID,
+    CALIB_SENSOR_AEC_V21_INITHDCIRISVALUE_TAG_ID,
 };
 uint32_t calib_sensor_aec_AecIrisCtrl_PAttr_v21_sub_tags[] = {
     CALIB_SENSOR_AEC_V21_IRISCTRL_P_ATTR_TOTALSTEP_TAG_ID,
@@ -917,6 +936,18 @@ uint32_t calib_sensor_aec_AecIrisCtrl_DCAttr_v21_sub_tags[] = {
     CALIB_SENSOR_AEC_V21_IRISCTRL_DC_ATTR_CLOSE_PWMDUTY_TAG_ID,
 };
 
+uint32_t calib_sensor_aec_AecIrisCtrl_HDCAttr_v21_sub_tags[] = {
+    CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_DAMPOVER_TAG_ID,
+    CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_DAMPUNDER_TAG_ID,
+    CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_ZEROISMAX_TAG_ID,
+    CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_MINTARGET_TAG_ID,
+    CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_MAXTARGET_TAG_ID,
+    CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_ZOOMTARGETDOT_TAG_ID,
+    CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_ZOOMDOT_TAG_ID,
+    CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_IRISTARGETDOT_TAG_ID,
+    CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_GAINDOT_TAG_ID,
+};
+
 uint32_t calib_sensor_aec_AecManualCtrl_v21_sub_tags[] = {
     CALIB_SENSOR_AEC_V21_MANUALCTRL_LINEARAE_TAG_ID,
     CALIB_SENSOR_AEC_V21_MANUALCTRL_HDRAE_TAG_ID,
@@ -932,7 +963,7 @@ uint32_t calib_sensor_aec_AecManualCtrl_LinearAE_v21_sub_tags[] = {
     CALIB_SENSOR_AEC_V21_MANUALCTRL_ISPDGAINVALUE_TAG_ID,
     CALIB_SENSOR_AEC_V21_MANUALCTRL_PIRISVALUE_TAG_ID,
     CALIB_SENSOR_AEC_V21_MANUALCTRL_DCIRISVALUE_TAG_ID,
-
+    CALIB_SENSOR_AEC_V21_MANUALCTRL_HDCIRISVALUE_TAG_ID,
 };
 uint32_t calib_sensor_aec_AecManualCtrl_HdrAE_v21_sub_tags[] = {
     CALIB_SENSOR_AEC_V21_MANUALCTRL_TIMEEN_TAG_ID,
@@ -944,6 +975,7 @@ uint32_t calib_sensor_aec_AecManualCtrl_HdrAE_v21_sub_tags[] = {
     CALIB_SENSOR_AEC_V21_MANUALCTRL_ISPDGAINVALUE_TAG_ID,
     CALIB_SENSOR_AEC_V21_MANUALCTRL_PIRISVALUE_TAG_ID,
     CALIB_SENSOR_AEC_V21_MANUALCTRL_DCIRISVALUE_TAG_ID,
+    CALIB_SENSOR_AEC_V21_MANUALCTRL_HDCIRISVALUE_TAG_ID,
 };
 
 uint32_t calib_sensor_aec_AecEnvLvCalib_v21_sub_tags[] = {
@@ -3672,6 +3704,10 @@ calib_tag_info_t g_calib_tag_infos[CALIB_IQ_TAG_END] = {
     {   "InitDCIrisDutyValue", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
         check_tags_array_ignore, NULL
     },
+    [CALIB_SENSOR_AEC_INITHDCIRISVALUE_TAG_ID]        =
+    {   "InitHDCIrisDutyValue", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
 
     [CALIB_SENSOR_AEC_AECGRIDWEIGHT_TAG_ID]         =
     {   "AecGridWeight", CALIB_TAG_TYPE_STRUCT, {-1, -1},
@@ -3775,6 +3811,10 @@ calib_tag_info_t g_calib_tag_infos[CALIB_IQ_TAG_END] = {
     {   "DC", CALIB_TAG_TYPE_UNKNOWN, {-1, -1},
         check_tags_array_ignore, NULL
     },
+    [CALIB_SENSOR_AEC_IRISCTRL_TYPE_HDC_TAG_ID]      =
+    {   "HDC", CALIB_TAG_TYPE_UNKNOWN, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
 
     [CALIB_SENSOR_AEC_IRISCTRL_P_ATTR_TAG_ID]         =
     {   "PIrisAttr", CALIB_TAG_TYPE_STRUCT, {-1, -1},
@@ -3830,6 +3870,47 @@ calib_tag_info_t g_calib_tag_infos[CALIB_IQ_TAG_END] = {
         check_tags_array_ignore, NULL
     },
 
+    [CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_TAG_ID]      =
+    {   "HDCIrisAttr", CALIB_TAG_TYPE_STRUCT, {-1, -1},
+        check_tags_array_info(calib_sensor_aec_AecIrisCtrl_HDCAttr_sub_tags), NULL
+    },
+    [CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_DAMPOVER_TAG_ID]       =
+    {   "DampOver", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_DAMPUNDER_TAG_ID]       =
+    {   "DampUnder", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_ZEROISMAX_TAG_ID]       =
+    {   "ZeroIsMax", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_MINTARGET_TAG_ID]       =
+    {   "MinTarget", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_MAXTARGET_TAG_ID]       =
+    {   "MaxTarget", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_ZOOMTARGETDOT_TAG_ID]       =
+    {   "ZoomTargetDot", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_ZOOMDOT_TAG_ID]       =
+    {   "ZoomDot", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_IRISTARGETDOT_TAG_ID]       =
+    {   "IrisTargetDot", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_IRISCTRL_HDC_ATTR_GAINDOT_TAG_ID]       =
+    {   "GainDot", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+
     [CALIB_SENSOR_AEC_MANUALCTRL_TAG_ID]         =
     {   "AecManualCtrl", CALIB_TAG_TYPE_STRUCT, {-1, -1},
         check_tags_array_info(calib_sensor_aec_AecManualCtrl_sub_tags), NULL
@@ -3878,7 +3959,10 @@ calib_tag_info_t g_calib_tag_infos[CALIB_IQ_TAG_END] = {
     {   "DCIrisValue", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
         check_tags_array_ignore, NULL
     },
-
+    [CALIB_SENSOR_AEC_MANUALCTRL_HDCIRISVALUE_TAG_ID]        =
+    {   "HDCIrisValue", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
 
     [CALIB_SENSOR_AEC_ENVLVCALIB_TAG_ID]      =
     {   "AecEnvLvCalib", CALIB_TAG_TYPE_STRUCT, {-1, -1},
@@ -8195,6 +8279,10 @@ calib_tag_info_t g_calib_tag_infos[CALIB_IQ_TAG_END] = {
     {   "InitDCIrisDutyValue", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
         check_tags_array_ignore, NULL
     },
+    [CALIB_SENSOR_AEC_V21_INITHDCIRISVALUE_TAG_ID]        =
+    {   "InitHDCIrisDutyValue", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
 
     [CALIB_SENSOR_AEC_V21_AECGRIDWEIGHT_TAG_ID]         =
     {   "AecGridWeight", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
@@ -8289,6 +8377,10 @@ calib_tag_info_t g_calib_tag_infos[CALIB_IQ_TAG_END] = {
     {   "DC", CALIB_TAG_TYPE_UNKNOWN, {-1, -1},
         check_tags_array_ignore, NULL
     },
+    [CALIB_SENSOR_AEC_V21_IRISCTRL_TYPE_HDC_TAG_ID]      =
+    {   "HDC", CALIB_TAG_TYPE_UNKNOWN, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
 
     [CALIB_SENSOR_AEC_V21_IRISCTRL_P_ATTR_TAG_ID]         =
     {   "PIrisAttr", CALIB_TAG_TYPE_STRUCT, {-1, -1},
@@ -8344,6 +8436,47 @@ calib_tag_info_t g_calib_tag_infos[CALIB_IQ_TAG_END] = {
         check_tags_array_ignore, NULL
     },
 
+    [CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_TAG_ID]      =
+    {   "HDCIrisAttr", CALIB_TAG_TYPE_STRUCT, {-1, -1},
+        check_tags_array_info(calib_sensor_aec_AecIrisCtrl_HDCAttr_sub_tags), NULL
+    },
+    [CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_DAMPOVER_TAG_ID]       =
+    {   "DampOver", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_DAMPUNDER_TAG_ID]       =
+    {   "DampUnder", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_ZEROISMAX_TAG_ID]       =
+    {   "ZeroIsMax", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_MINTARGET_TAG_ID]       =
+    {   "MinTarget", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_MAXTARGET_TAG_ID]       =
+    {   "MaxTarget", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_ZOOMTARGETDOT_TAG_ID]       =
+    {   "ZoomTargetDot", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_ZOOMDOT_TAG_ID]       =
+    {   "ZoomDot", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_IRISTARGETDOT_TAG_ID]       =
+    {   "IrisTargetDot", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_V21_IRISCTRL_HDC_ATTR_GAINDOT_TAG_ID]       =
+    {   "GainDot", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+
     [CALIB_SENSOR_AEC_V21_MANUALCTRL_TAG_ID]         =
     {   "AecManualCtrl", CALIB_TAG_TYPE_STRUCT, {-1, -1},
         check_tags_array_info(calib_sensor_aec_AecManualCtrl_v21_sub_tags), NULL
@@ -8390,6 +8523,10 @@ calib_tag_info_t g_calib_tag_infos[CALIB_IQ_TAG_END] = {
     },
     [CALIB_SENSOR_AEC_V21_MANUALCTRL_DCIRISVALUE_TAG_ID]        =
     {   "DCIrisValue", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
+        check_tags_array_ignore, NULL
+    },
+    [CALIB_SENSOR_AEC_V21_MANUALCTRL_HDCIRISVALUE_TAG_ID]        =
+    {   "HDCIrisValue", CALIB_TAG_TYPE_DOUBLE, {-1, -1},
         check_tags_array_ignore, NULL
     },
     [CALIB_SENSOR_AEC_V21_ENVLVCALIB_TAG_ID]      =

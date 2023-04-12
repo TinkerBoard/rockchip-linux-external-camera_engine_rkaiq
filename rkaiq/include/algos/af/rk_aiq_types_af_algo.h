@@ -1,6 +1,8 @@
 #ifndef __RK_AIQ_TYPES_AF_ALGO_H__
 #define __RK_AIQ_TYPES_AF_ALGO_H__
 
+#include <sys/time.h>
+
 #include "rk_aiq_comm.h"
 
 RKAIQ_BEGIN_DECLARE

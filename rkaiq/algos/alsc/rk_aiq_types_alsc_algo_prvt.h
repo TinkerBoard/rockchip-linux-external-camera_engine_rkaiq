@@ -25,7 +25,7 @@
 #include "alsc_head.h"
 #include "xcam_log.h"
 #include "xcam_common.h"
-#include "list.h"
+#include "common/list.h"
 #include "RkAiqCalibDbV2Helper.h"
 
 RKAIQ_BEGIN_DECLARE
@@ -49,7 +49,7 @@ typedef struct lsc_matrix
 typedef struct alsc_rest_s {
     uint32_t caseIndex;
     float fVignetting;
-    List dominateIlluList;//to record domain illuminant
+    struct list_head dominateIlluList;//to record domain illuminant
     int estimateIlluCaseIdx;
     uint32_t resIdx;
     pLscTableProfile_t pLscProfile1;
@@ -59,7 +59,7 @@ typedef struct alsc_rest_s {
 } alsc_rest_t;
 
 typedef struct illu_node_s {
-    void*        p_next;       /**< for adding to a list */
+    list_head node;       /**< for adding to a list */
     unsigned int value;
 } illu_node_t;
 
