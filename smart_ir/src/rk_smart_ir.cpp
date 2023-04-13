@@ -253,7 +253,7 @@ rk_smart_ir_runOnce(rk_smart_ir_ctx_t* ctx, rk_aiq_isp_stats_t* stats_ref, rk_sm
                     pow(part_BGgain / cnt - ctx->ir_configs.bggain_base, 2);
         part_Dis = pow(part_Dis, 0.5);
 
-        if (ctx->state == RK_SMART_IR_STATUS_NIGHT && !exp_info.IsConverged) {
+        if (!exp_info.IsConverged) {
             ctx->switch_cnts = 0;
         }
 
