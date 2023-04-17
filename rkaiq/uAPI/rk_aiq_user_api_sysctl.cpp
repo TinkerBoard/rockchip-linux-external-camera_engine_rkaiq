@@ -212,6 +212,11 @@ rk_aiq_uapi_sysctl_preInit_tb_info(const char* sns_ent_name,
         return XCAM_RETURN_ERROR_PARAM;
     }
 
+    if (!g_rk_aiq_init_lib) {
+        rk_aiq_init_lib();
+        g_rk_aiq_init_lib = true;
+    }
+
     std::string sns_ent_name_str(sns_ent_name);
     ret = _get_fast_aewb_from_drv(sns_ent_name_str, fastAeAwbInfo);
     LOGI("%s: magic %x, is_pre_aiq : %d, prd_type : %d, kernel status %d", 
