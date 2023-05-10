@@ -39,6 +39,7 @@ XCamReturn RkAiqAwbHandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifdef RKAIQ_HAVE_AWB_V20
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -102,7 +103,7 @@ XCamReturn RkAiqAwbHandleInt::updateConfig(bool needSync) {
         sendSignal(mCurFFWbgainAttr.sync.sync_mode);
     }
     if (needSync) mCfgMutex.unlock();
-
+#endif
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
@@ -219,6 +220,7 @@ XCamReturn RkAiqAwbHandleInt::setWbV20Attrib(rk_aiq_uapiV2_wbV20_attrib_t att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifdef RKAIQ_HAVE_AWB_V20
     mCfgMutex.lock();
     // TODO
     // check if there is different between att & mCurAtt
@@ -237,7 +239,7 @@ XCamReturn RkAiqAwbHandleInt::setWbV20Attrib(rk_aiq_uapiV2_wbV20_attrib_t att) {
     }
 
     mCfgMutex.unlock();
-
+#endif
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
@@ -249,8 +251,9 @@ XCamReturn RkAiqAwbHandleInt::getWbV20Attrib(rk_aiq_uapiV2_wbV20_attrib_t* att) 
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef RKAIQ_HAVE_AWB_V20
     rk_aiq_uapiV2_awbV20_GetAttrib(mAlgoCtx, att);
-
+#endif
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
@@ -371,6 +374,7 @@ XCamReturn RkAiqAwbHandleInt::setAwbV20Attrib(rk_aiq_uapiV2_wbV20_awb_attrib_t a
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#if defined(RKAIQ_HAVE_AWB_V20) || defined(RKAIQ_HAVE_AWB_V21)
     mCfgMutex.lock();
     // TODO
     // check if there is different between att & mCurAtt
@@ -389,7 +393,7 @@ XCamReturn RkAiqAwbHandleInt::setAwbV20Attrib(rk_aiq_uapiV2_wbV20_awb_attrib_t a
     }
 
     mCfgMutex.unlock();
-
+#endif
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
@@ -401,8 +405,9 @@ XCamReturn RkAiqAwbHandleInt::getAwbV20Attrib(rk_aiq_uapiV2_wbV20_awb_attrib_t* 
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#if defined(RKAIQ_HAVE_AWB_V20) || defined(RKAIQ_HAVE_AWB_V21)
     rk_aiq_uapiV2_awbV20_GetAwbAttrib(mAlgoCtx, att);
-
+#endif
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }

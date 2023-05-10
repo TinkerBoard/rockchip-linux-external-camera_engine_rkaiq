@@ -61,6 +61,7 @@ protected:
 
 private:
 
+#ifndef DISABLE_HANDLE_ATTRIB
 #if RKAIQ_HAVE_DEBAYER_V1
     adebayer_attrib_t mCurAtt;
     adebayer_attrib_t mNewAtt;
@@ -74,6 +75,7 @@ private:
 #if RKAIQ_HAVE_DEBAYER_V2_LITE
     adebayer_v2lite_attrib_t mCurAttV2Lite;
     adebayer_v2lite_attrib_t mNewAttV2Lite;
+#endif
 #endif
 
 private:

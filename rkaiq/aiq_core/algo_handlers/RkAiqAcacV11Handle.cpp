@@ -141,9 +141,15 @@ XCamReturn RkAiqAcacV11HandleInt::processing() {
         RKAIQCORE_CHECK_RET(ret, "acac handle processing failed");
     }
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
 
     ret = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "acac algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();
@@ -158,6 +164,7 @@ XCamReturn RkAiqAcacV11HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     if (updateAtt) {
         mCurAtt   = mNewAtt;
@@ -167,6 +174,7 @@ XCamReturn RkAiqAcacV11HandleInt::updateConfig(bool needSync) {
     }
 
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -180,6 +188,9 @@ XCamReturn RkAiqAcacV11HandleInt::setAttrib(const rkaiq_cac_v11_api_attr_t* att)
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_acac_v11_SetAttrib(mAlgoCtx, att, false);
+#else
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
     // the new params will be effective later when updateConfig
@@ -196,6 +207,7 @@ XCamReturn RkAiqAcacV11HandleInt::setAttrib(const rkaiq_cac_v11_api_attr_t* att)
         updateAtt = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -210,6 +222,11 @@ XCamReturn RkAiqAcacV11HandleInt::getAttrib(rkaiq_cac_v11_api_attr_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+      mCfgMutex.lock();
+      ret = rk_aiq_uapi_acac_v11_GetAttrib(mAlgoCtx, att);
+      mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_acac_v11_GetAttrib(mAlgoCtx, att);
@@ -225,6 +242,7 @@ XCamReturn RkAiqAcacV11HandleInt::getAttrib(rkaiq_cac_v11_api_attr_t* att) {
             att->sync.done      = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;

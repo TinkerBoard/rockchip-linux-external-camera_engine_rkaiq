@@ -15753,8 +15753,8 @@
 	"sys_static_cfg":	{
 		"algoSwitch":	{
 			"enable":	0,
-			"enable_algos":	["ENABLE_AE"],
-			"enable_algos_len":	1
+			"disable_algos":	["DISABLE_AF"],
+			"disable_algos_len":	1
 		}
 	}
 }

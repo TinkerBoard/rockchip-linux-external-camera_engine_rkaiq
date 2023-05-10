@@ -203,8 +203,14 @@ XCamReturn RkAiqAdehazeHandleInt::processing() {
 #ifdef RK_SIMULATOR_HW
     // nothing todo
 #endif
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "adhaz algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();
@@ -242,6 +248,7 @@ XCamReturn RkAiqAdehazeHandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -266,6 +273,7 @@ XCamReturn RkAiqAdehazeHandleInt::updateConfig(bool needSync) {
     }
 
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -282,6 +290,9 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV10(const adehaze_sw_v10_t* att) {
     // if something changed, set att to mNewAtt, and
     // the new params will be effective later when updateConfig
     // called by RkAiqCore
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_adehaze_v10_SetAttrib(mAlgoCtx, const_cast<adehaze_sw_v10_t*>(att), false);
+#else
     bool isChanged = false;
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC &&
         memcmp(&mNewAttV10, att, sizeof(adehaze_sw_v10_t)))
@@ -296,6 +307,7 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV10(const adehaze_sw_v10_t* att) {
         updateAtt  = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -308,6 +320,11 @@ XCamReturn RkAiqAdehazeHandleInt::getSwAttribV10(adehaze_sw_v10_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+      mCfgMutex.lock();
+      ret = rk_aiq_uapi_adehaze_v10_GetAttrib(mAlgoCtx, att);
+      mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_adehaze_v10_GetAttrib(mAlgoCtx, att);
@@ -323,6 +340,7 @@ XCamReturn RkAiqAdehazeHandleInt::getSwAttribV10(adehaze_sw_v10_t* att) {
             att->sync.done      = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -335,6 +353,9 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV11(const adehaze_sw_v11_t* att) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_adehaze_v11_SetAttrib(mAlgoCtx, const_cast<adehaze_sw_v11_t*>(att), false);
+#else
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
     // the new params will be effective later when updateConfig
@@ -353,6 +374,7 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV11(const adehaze_sw_v11_t* att) {
         updateAtt  = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -365,6 +387,11 @@ XCamReturn RkAiqAdehazeHandleInt::getSwAttribV11(adehaze_sw_v11_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+      mCfgMutex.lock();
+      ret = rk_aiq_uapi_adehaze_v11_GetAttrib(mAlgoCtx, att);
+      mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_adehaze_v11_GetAttrib(mAlgoCtx, att);
@@ -380,6 +407,7 @@ XCamReturn RkAiqAdehazeHandleInt::getSwAttribV11(adehaze_sw_v11_t* att) {
             att->sync.done      = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -392,6 +420,9 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV12(const adehaze_sw_v12_t* att) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_adehaze_v12_SetAttrib(mAlgoCtx, const_cast<adehaze_sw_v12_t*>(att), false);
+#else
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
     // the new params will be effective later when updateConfig
@@ -410,6 +441,7 @@ XCamReturn RkAiqAdehazeHandleInt::setSwAttribV12(const adehaze_sw_v12_t* att) {
         updateAtt  = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -422,6 +454,11 @@ XCamReturn RkAiqAdehazeHandleInt::getSwAttribV12(adehaze_sw_v12_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+      mCfgMutex.lock();
+      ret = rk_aiq_uapi_adehaze_v12_GetAttrib(mAlgoCtx, att);
+      mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_adehaze_v12_GetAttrib(mAlgoCtx, att);
@@ -437,6 +474,7 @@ XCamReturn RkAiqAdehazeHandleInt::getSwAttribV12(adehaze_sw_v12_t* att) {
             att->sync.done      = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;

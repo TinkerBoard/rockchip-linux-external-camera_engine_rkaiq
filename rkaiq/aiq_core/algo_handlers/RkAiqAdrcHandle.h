@@ -57,6 +57,7 @@ class RkAiqAdrcHandleInt : virtual public RkAiqHandle {
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
 #if RKAIQ_HAVE_DRC_V10
     drcAttrV10_t mCurAttV10;
     drcAttrV10_t mNewAttV10;
@@ -72,6 +73,7 @@ class RkAiqAdrcHandleInt : virtual public RkAiqHandle {
 #if RKAIQ_HAVE_DRC_V12_LITE
     drcAttrV12Lite_t mCurAttV12Lite;
     drcAttrV12Lite_t mNewAttV12Lite;
+#endif
 #endif
 
  private:

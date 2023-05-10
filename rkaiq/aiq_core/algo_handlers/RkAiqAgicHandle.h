@@ -28,12 +28,14 @@ class RkAiqAgicHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAgicHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
         updateAttV1 = false;
         updateAttV2 = false;
         memset(&mCurAttV1, 0, sizeof(rkaiq_gic_v1_api_attr_t));
         memset(&mNewAttV1, 0, sizeof(rkaiq_gic_v1_api_attr_t));
         memset(&mCurAttV2, 0, sizeof(rkaiq_gic_v2_api_attr_t));
         memset(&mNewAttV2, 0, sizeof(rkaiq_gic_v2_api_attr_t));
+#endif
     }
     virtual ~RkAiqAgicHandleInt() { RkAiqHandle::deInit(); };
     virtual XCamReturn updateConfig(bool needSync);
@@ -52,12 +54,14 @@ class RkAiqAgicHandleInt : virtual public RkAiqHandle {
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
     mutable std::atomic<bool> updateAttV1;
     mutable std::atomic<bool> updateAttV2;
     rkaiq_gic_v1_api_attr_t mCurAttV1;
     rkaiq_gic_v1_api_attr_t mNewAttV1;
     rkaiq_gic_v2_api_attr_t mCurAttV2;
     rkaiq_gic_v2_api_attr_t mNewAttV2;
+#endif
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAgicHandleInt);

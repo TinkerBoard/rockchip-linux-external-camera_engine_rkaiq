@@ -63,7 +63,7 @@ typedef struct alut3d_context_s {
     alut3d_sw_info_t swinfo;
     //ctrl & api
     rk_aiq_lut3d_attrib_t mCurAtt;
-    rk_aiq_lut3d_attrib_t mNewAtt;
+    //rk_aiq_lut3d_attrib_t mNewAtt;
     bool updateAtt;
     bool update;
     bool calib_update;

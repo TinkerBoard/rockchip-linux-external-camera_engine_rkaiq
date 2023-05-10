@@ -36,6 +36,7 @@ XCamReturn RkAiqAcnrV30HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -53,6 +54,7 @@ XCamReturn RkAiqAcnrV30HandleInt::updateConfig(bool needSync) {
     }
 
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -69,12 +71,16 @@ XCamReturn RkAiqAcnrV30HandleInt::setAttrib(const rk_aiq_cnr_attrib_v30_t* att) 
     // the new params will be effective later when updateConfig
     // called by RkAiqCore
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_acnrV30_SetAttrib(mAlgoCtx, att, false);
+#else
     // if something changed
     if (0 != memcmp(&mCurAtt, att, sizeof(rk_aiq_cnr_attrib_v30_t))) {
         mNewAtt   = *att;
         updateAtt = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -86,7 +92,11 @@ XCamReturn RkAiqAcnrV30HandleInt::getAttrib(rk_aiq_cnr_attrib_v30_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-
+#ifdef DISABLE_HANDLE_ATTRIB
+      mCfgMutex.lock();
+      ret = rk_aiq_uapi_acnrV30_GetAttrib(mAlgoCtx, att);
+      mCfgMutex.unlock();
+#else
     if(att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_acnrV30_GetAttrib(mAlgoCtx, att);
@@ -101,6 +111,7 @@ XCamReturn RkAiqAcnrV30HandleInt::getAttrib(rk_aiq_cnr_attrib_v30_t* att) {
             att->sync.done = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -113,11 +124,15 @@ XCamReturn RkAiqAcnrV30HandleInt::setStrength(const rk_aiq_cnr_strength_v30_t *p
 
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_acnrV30_SetChromaSFStrength(mAlgoCtx, pStrength);
+#else
     if (0 != memcmp(&mCurStrength, pStrength, sizeof(mCurStrength))) {
         mNewStrength   = *pStrength;
         updateStrength = true;
         waitSignal(pStrength->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -132,6 +147,11 @@ XCamReturn RkAiqAcnrV30HandleInt::getStrength(rk_aiq_cnr_strength_v30_t *pStreng
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
 
+#ifdef DISABLE_HANDLE_ATTRIB
+        mCfgMutex.lock();
+        ret = rk_aiq_uapi_acnrV30_GetChromaSFStrength(mAlgoCtx, pStrength);
+        mCfgMutex.unlock();
+#else
     if(pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_acnrV30_GetChromaSFStrength(mAlgoCtx, pStrength);
@@ -146,6 +166,7 @@ XCamReturn RkAiqAcnrV30HandleInt::getStrength(rk_aiq_cnr_strength_v30_t *pStreng
             pStrength->sync.done = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -237,8 +258,14 @@ XCamReturn RkAiqAcnrV30HandleInt::processing() {
     acnr_proc_int->hdr_mode = sharedCom->working_mode;
     acnr_proc_int->stAblcV32_proc_res = shared->res_comb.ablcV32_proc_res;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "aynr algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();

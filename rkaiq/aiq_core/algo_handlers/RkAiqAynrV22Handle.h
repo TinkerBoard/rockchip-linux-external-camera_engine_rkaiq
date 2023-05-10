@@ -29,6 +29,7 @@ class RkAiqAynrV22HandleInt : virtual public RkAiqHandle {
 public:
     explicit RkAiqAynrV22HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
         updateAtt      = false;
         updateStrength = false;
         memset(&mCurStrength, 0x00, sizeof(mCurStrength));
@@ -39,6 +40,7 @@ public:
         memset(&mNewAtt, 0x00, sizeof(mNewAtt));
         memset(&mCurInfo, 0x00, sizeof(mCurInfo));
         memset(&mNewInfo, 0x00, sizeof(mNewInfo));
+#endif
     };
     virtual ~RkAiqAynrV22HandleInt() {
         RkAiqHandle::deInit();
@@ -67,6 +69,7 @@ protected:
 
  private:
     // TODO
+#ifndef DISABLE_HANDLE_ATTRIB
     rk_aiq_ynr_attrib_v22_t mCurAtt;
     rk_aiq_ynr_attrib_v22_t mNewAtt;
     rk_aiq_ynr_strength_v22_t mCurStrength;
@@ -75,6 +78,7 @@ protected:
     rk_aiq_ynr_info_v22_t mCurInfo;
     rk_aiq_ynr_info_v22_t mNewInfo;
     mutable std::atomic<bool> updateInfo;
+#endif
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAynrV22HandleInt);

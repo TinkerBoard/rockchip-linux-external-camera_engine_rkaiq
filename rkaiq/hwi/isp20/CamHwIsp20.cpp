@@ -1709,7 +1709,7 @@ CamHwIsp20::poll_buffer_ready (SmartPtr<VideoBuffer> &buf)
 {
     if (buf->_buf_type == ISP_POLL_3A_STATS) {
         // stats is comming, means that next params should be ready
-        if (mNoReadBack) {
+        if (/*mNoReadBack*/true) {
             if (buf->get_sequence() > 0)
                 mParamsAssembler->forceReady(buf->get_sequence() + 1);
             // set all ready params to drv

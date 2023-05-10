@@ -273,14 +273,19 @@ Asharp_result_V33_t Asharp_GetProcResult_V33(Asharp_Context_V33_t* pAsharpCtx,
         return ASHARP_V33_RET_INVALID_PARM;
     }
 
+#if RKAIQ_HAVE_SHARP_V33
+    RK_SHARP_Params_V33_Select_t* stSelect = NULL;
+#else
+    RK_SHARP_Params_V33LT_Select_t* stSelect = NULL;
+#endif
     if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_AUTO) {
-        pAsharpResult->stSelect = pAsharpCtx->stAuto.stSelect;
+        stSelect = &pAsharpCtx->stAuto.stSelect;
     } else if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_MANUAL) {
-        pAsharpResult->stSelect     = pAsharpCtx->stManual.stSelect;
+        stSelect     = &pAsharpCtx->stManual.stSelect;
     }
 
     // transfer to reg value
-    sharp_fix_transfer_V33(&pAsharpResult->stSelect, &pAsharpResult->stFix, &pAsharpCtx->stStrength, &pAsharpCtx->stExpInfo);
+    sharp_fix_transfer_V33(stSelect, &pAsharpResult->stFix, &pAsharpCtx->stStrength, &pAsharpCtx->stExpInfo);
     if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_REG_MANUAL) {
         pAsharpResult->stFix        = pAsharpCtx->stManual.stFix;
         pAsharpCtx->stStrength.percent = 1.0;

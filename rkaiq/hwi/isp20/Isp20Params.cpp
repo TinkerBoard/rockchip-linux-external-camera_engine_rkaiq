@@ -25,7 +25,7 @@
 
 namespace RkCam {
 
-uint32_t IspParamsAssembler::MAX_PENDING_PARAMS = 4;
+uint32_t IspParamsAssembler::MAX_PENDING_PARAMS = 2;
 
 IspParamsAssembler::IspParamsAssembler (const char* name)
     : mLatestReadyFrmId(-1)
@@ -217,7 +217,7 @@ IspParamsAssembler::queue_locked(SmartPtr<cam3aResult>& result)
         uint32_t merge_id = 0;
         for (it = mParamsMap.begin(); it != mParamsMap.end();) {
             if (!(it->second.ready)) {
-                LOGW_CAMHW_SUBM(ISP20PARAM_SUBM, "%s: ready disorderd, NOT ready id(flags:0x%x) %u < ready %u !",
+                LOGW_CAMHW_SUBM(ISP20PARAM_SUBM, "%s: ready disorderd, NOT ready id(flags:0x%llx) %u < ready %u !",
                                 mName.c_str(), it->second.flags, it->first, frame_id);
                 // print missing params
                 std::string missing_conds;

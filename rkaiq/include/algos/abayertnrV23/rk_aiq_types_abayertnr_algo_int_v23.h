@@ -183,7 +183,7 @@ typedef struct Abayertnr_ProcResult_V23_s {
 
     //for sw simultaion
 #if (RKAIQ_HAVE_BAYERTNR_V23)
-    RK_Bayertnr_Params_V23_Select_t st3DSelect;
+    //RK_Bayertnr_Params_V23_Select_t st3DSelect;
 #else
     RK_Bayertnr_Param_V23L_Select_t st3DSelect;
 #endif

@@ -919,7 +919,7 @@ XCamReturn AlscConfig
         hAlsc->alscRest.caseIndex = USED_FOR_CASE_GRAY;
     }
     if(hAlsc->updateAtt) {
-        hAlsc->mCurAtt = hAlsc->mNewAtt;
+        //hAlsc->mCurAtt = hAlsc->mNewAtt;
         AlscAutoParamFree(hAlsc);
         AlscAutoParamClone(hAlsc);
         AlscPrepare(hAlsc);
@@ -938,6 +938,7 @@ XCamReturn AlscConfig
         } else {
             LOGE_ALSC("%s: hAlsc->mCurAtt.mode(%d) is invalid \n", __FUNCTION__, hAlsc->mCurAtt.mode);
         }
+#if 0
         memcpy(hAlsc->mCurAtt.stManual.lsc_sect_size_x, hAlsc->lscHwConf.x_size_tbl,
                sizeof(hAlsc->mCurAtt.stManual.lsc_sect_size_x));
         memcpy(hAlsc->mCurAtt.stManual.lsc_sect_size_y, hAlsc->lscHwConf.y_size_tbl,
@@ -950,6 +951,7 @@ XCamReturn AlscConfig
                sizeof(hAlsc->mCurAtt.stManual.gb_data_tbl));
         memcpy(hAlsc->mCurAtt.stManual.b_data_tbl, hAlsc->lscHwConf.b_data_tbl,
                sizeof(hAlsc->mCurAtt.stManual.b_data_tbl));
+#endif
     } else {
         hAlsc->lscHwConf.lsc_en = false;
     }

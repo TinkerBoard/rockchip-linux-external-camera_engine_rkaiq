@@ -247,16 +247,22 @@ Abayertnr_result_V23_t Abayertnr_GetProcResult_V23(Abayertnr_Context_V23_t *pAba
         return ABAYERTNRV23_RET_INVALID_PARM;
     }
 
+
+#if (RKAIQ_HAVE_BAYERTNR_V23)
+    RK_Bayertnr_Params_V23_Select_t* st3DSelect = NULL;
+#else
+    RK_Bayertnr_Param_V23L_Select_t* st3DSelect = NULL;
+#endif
     if(pAbayertnrCtx->eMode == ABAYERTNRV23_OP_MODE_AUTO) {
-        pAbayertnrResult->st3DSelect = pAbayertnrCtx->stAuto.st3DSelect;
+        st3DSelect = &pAbayertnrCtx->stAuto.st3DSelect;
 
     } else if(pAbayertnrCtx->eMode == ABAYERTNRV23_OP_MODE_MANUAL) {
         //TODO
-        pAbayertnrResult->st3DSelect = pAbayertnrCtx->stManual.st3DSelect;
+        st3DSelect = &pAbayertnrCtx->stManual.st3DSelect;
     }
 
     //transfer to reg value
-    bayertnr_fix_transfer_V23(&pAbayertnrResult->st3DSelect, &pAbayertnrResult->st3DFix, &pAbayertnrCtx->stStrength, &pAbayertnrCtx->stExpInfo);
+    bayertnr_fix_transfer_V23(st3DSelect, &pAbayertnrResult->st3DFix, &pAbayertnrCtx->stStrength, &pAbayertnrCtx->stExpInfo);
 
     if(pAbayertnrCtx->eMode == ABAYERTNRV23_OP_MODE_REG_MANUAL) {
         pAbayertnrResult->st3DFix = pAbayertnrCtx->stManual.st3DFix;

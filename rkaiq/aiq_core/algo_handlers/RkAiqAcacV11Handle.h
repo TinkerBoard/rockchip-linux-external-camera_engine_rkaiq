@@ -28,8 +28,10 @@ class RkAiqAcacV11HandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAcacV11HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
         memset(&mCurAtt, 0, sizeof(rkaiq_cac_v11_api_attr_t));
         memset(&mNewAtt, 0, sizeof(rkaiq_cac_v11_api_attr_t));
+#endif
     };
     virtual ~RkAiqAcacV11HandleInt() { RkAiqHandle::deInit(); };
     virtual XCamReturn updateConfig(bool needSync);
@@ -47,8 +49,10 @@ class RkAiqAcacV11HandleInt : virtual public RkAiqHandle {
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
     rkaiq_cac_v11_api_attr_t mCurAtt;
     rkaiq_cac_v11_api_attr_t mNewAtt;
+#endif
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAcacV11HandleInt);

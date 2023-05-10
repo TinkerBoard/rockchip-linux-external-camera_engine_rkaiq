@@ -55,6 +55,7 @@ class RkAiqAdehazeHandleInt : virtual public RkAiqHandle {
 
  private:
     // TODO
+#ifndef DISABLE_HANDLE_ATTRIB
 #if RKAIQ_HAVE_DEHAZE_V10
     adehaze_sw_v10_t mCurAttV10;
     adehaze_sw_v10_t mNewAttV10;
@@ -66,6 +67,7 @@ class RkAiqAdehazeHandleInt : virtual public RkAiqHandle {
 #if RKAIQ_HAVE_DEHAZE_V12
     adehaze_sw_v12_t mCurAttV12;
     adehaze_sw_v12_t mNewAttV12;
+#endif
 #endif
 
  private:

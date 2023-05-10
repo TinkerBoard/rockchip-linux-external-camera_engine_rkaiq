@@ -33,6 +33,7 @@ class RkAiqAwbV32HandleInt : public RkAiqAwbHandleInt {
  public:
     explicit RkAiqAwbV32HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqAwbHandleInt(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
         memset(&mCurWbV32Attr, 0, sizeof(rk_aiq_uapiV2_wbV32_attrib_t));
         memset(&mNewWbV32Attr, 0, sizeof(rk_aiq_uapiV2_wbV32_attrib_t));
         memset(&mCurWbV32AwbMultiWindowAttr, 0, sizeof(rk_aiq_uapiV2_wbV32_awb_mulWindow_t));
@@ -42,6 +43,7 @@ class RkAiqAwbV32HandleInt : public RkAiqAwbHandleInt {
         updateWbV32Attr = false;
         updateWbV32AwbMultiWindowAttr = false;
         updateWriteAwbInputAttr = false;
+#endif
     };
     virtual ~RkAiqAwbV32HandleInt() {
         RkAiqAwbHandleInt::deInit();
@@ -56,6 +58,7 @@ class RkAiqAwbV32HandleInt : public RkAiqAwbHandleInt {
  protected:
  private:
     // TODO
+#ifndef DISABLE_HANDLE_ATTRIB
     rk_aiq_uapiV2_wbV32_attrib_t mCurWbV32Attr;
     rk_aiq_uapiV2_wbV32_attrib_t mNewWbV32Attr;
     mutable std::atomic<bool> updateWbV32Attr;
@@ -65,6 +68,7 @@ class RkAiqAwbV32HandleInt : public RkAiqAwbHandleInt {
     rk_aiq_uapiV2_awb_wrtIn_attr_t mCurWriteAwbInputAttr;
     rk_aiq_uapiV2_awb_wrtIn_attr_t mNewWriteAwbInputAttr;
     mutable std::atomic<bool>  updateWriteAwbInputAttr;
+#endif
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAwbV32HandleInt);
 };

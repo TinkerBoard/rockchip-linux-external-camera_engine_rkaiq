@@ -29,6 +29,7 @@ class RkAiqAbayertnrV23HandleInt : virtual public RkAiqHandle {
 public:
     explicit RkAiqAbayertnrV23HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
         updateStrength = false;
         updateAtt      = false;
         updateAttLite  = false;
@@ -40,6 +41,7 @@ public:
         memset(&mNewAtt, 0x00, sizeof(mNewAtt));
         memset(&mCurAttLite, 0x00, sizeof(mCurAttLite));
         memset(&mNewAttLite, 0x00, sizeof(mNewAttLite));
+#endif
     };
     virtual ~RkAiqAbayertnrV23HandleInt() {
         RkAiqHandle::deInit();
@@ -66,6 +68,7 @@ protected:
 
 private:
     // TODO
+#ifndef DISABLE_HANDLE_ATTRIB
     rk_aiq_bayertnr_attrib_v23_t mCurAtt;
     rk_aiq_bayertnr_attrib_v23_t mNewAtt;
     rk_aiq_bayertnr_attrib_v23L_t mCurAttLite;
@@ -74,7 +77,7 @@ private:
     rk_aiq_bayertnr_strength_v23_t mCurStrength;
     rk_aiq_bayertnr_strength_v23_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
-
+#endif
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAbayertnrV23HandleInt);
 };

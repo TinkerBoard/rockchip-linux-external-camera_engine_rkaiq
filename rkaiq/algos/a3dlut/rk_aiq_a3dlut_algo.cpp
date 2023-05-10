@@ -329,8 +329,8 @@ XCamReturn Alut3dConfig
 
     LOGD_A3DLUT("%s: updateAtt: %d\n", __FUNCTION__, hAlut3d->updateAtt);
     if(hAlut3d->updateAtt) {
-        hAlut3d->swinfo.invarMode = hAlut3d->mCurAtt.mode & hAlut3d->mNewAtt.mode;
-        hAlut3d->mCurAtt = hAlut3d->mNewAtt;
+        hAlut3d->swinfo.invarMode = 1;
+        //hAlut3d->mCurAtt = hAlut3d->mNewAtt;
     }
 
     LOGD_A3DLUT("%s: byPass: %d  mode:%d \n", __FUNCTION__, hAlut3d->mCurAtt.byPass, hAlut3d->mCurAtt.mode);
@@ -351,20 +351,21 @@ XCamReturn Alut3dConfig
         }
 
         LOGD_A3DLUT("final lutB[7] = %d\n", hAlut3d->lut3d_hw_conf.look_up_table_b[7]);
-
+#if 0
         memcpy(hAlut3d->mCurAtt.stManual.look_up_table_r, hAlut3d->lut3d_hw_conf.look_up_table_r,
                sizeof(hAlut3d->mCurAtt.stManual.look_up_table_r));
         memcpy( hAlut3d->mCurAtt.stManual.look_up_table_g, hAlut3d->lut3d_hw_conf.look_up_table_g,
                 sizeof(hAlut3d->mCurAtt.stManual.look_up_table_g));
         memcpy(hAlut3d->mCurAtt.stManual.look_up_table_b, hAlut3d->lut3d_hw_conf.look_up_table_b,
                sizeof(hAlut3d->mCurAtt.stManual.look_up_table_b));
-
+#endif
     } else {
         hAlut3d->lut3d_hw_conf.enable = false;
         hAlut3d->lut3d_hw_conf.bypass_en = true;
     }
     hAlut3d->updateAtt = false;
     hAlut3d->calib_update = false;
+    hAlut3d->swinfo.invarMode = 0;
 
     LOGD_A3DLUT("%s: enable:(%d),bypass_en(%d) \n", __FUNCTION__,
                 hAlut3d->lut3d_hw_conf.enable,
@@ -408,7 +409,7 @@ static XCamReturn UpdateLut3dCalibV2Para(alut3d_handle_t  hAlut3d)
         return(ret);
     }
 
-    hAlut3d->swinfo.invarMode = hAlut3d->mCurAtt.mode & hAlut3d->mNewAtt.mode;
+    hAlut3d->swinfo.invarMode = 1/*hAlut3d->mCurAtt.mode & hAlut3d->mNewAtt.mode*/;
     if (hAlut3d->mCurAtt.mode == RK_AIQ_LUT3D_MODE_AUTO) {
         hAlut3d->mCurAtt.byPass = !(hAlut3d->calibV2_lut3d->common.enable);
     }

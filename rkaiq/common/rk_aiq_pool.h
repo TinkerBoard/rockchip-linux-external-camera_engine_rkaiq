@@ -27,25 +27,45 @@ namespace RkCam {
 
 typedef struct RKAiqAecExpInfoWrapper_s : public XCam::BufferData {
     RKAiqAecExpInfo_t aecExpInfo;
-    RKAiqExpI2cParam_t exp_i2c_params;
-    RKAiqAecExpInfo_t exp_tbl[MAX_AEC_EFFECT_FNUM + 1];
+    RKAiqExpI2cParam_t* exp_i2c_params;
+    RKAiqAecExpInfo_t* exp_tbl;
     Sensor_dpcc_res_t SensorDpccInfo;
     int exp_tbl_size;
     int algo_id;
     uint32_t frame_id;
-    struct RKAiqAecExpInfoWrapper_s& operator=(const struct RKAiqAecExpInfoWrapper_s& set)
+    explicit RKAiqAecExpInfoWrapper_s () {
+        exp_i2c_params = NULL;
+        exp_tbl = NULL;
+        exp_tbl_size = 0;
+    }
+
+    void copy(const struct RKAiqAecExpInfoWrapper_s& set)
     {
         this->aecExpInfo = set.aecExpInfo;
-        if (set.exp_i2c_params.bValid)
-            this->exp_i2c_params = set.exp_i2c_params;
-        else
-            this->exp_i2c_params.bValid = false;
+        if (set.exp_i2c_params && (set.exp_i2c_params)->bValid) {
+            this->exp_i2c_params = (RKAiqExpI2cParam_t*)malloc(sizeof(RKAiqExpI2cParam_t));
+            memcpy(this->exp_i2c_params, set.exp_i2c_params, sizeof(RKAiqExpI2cParam_t));
+        } else
+            this->exp_i2c_params = NULL;
+
         this->SensorDpccInfo = set.SensorDpccInfo;
-        this->exp_tbl_size = set.exp_tbl_size;
+        this->exp_tbl_size = 0;
         this->algo_id = set.algo_id;
-        memcpy(this->exp_tbl, set.exp_tbl, sizeof(set.exp_tbl));
-        return *this;
+        this->exp_tbl = NULL;
     }
+    void reset () {
+       if (exp_i2c_params)
+           free(exp_i2c_params);
+       if (exp_tbl) {
+           LOGD_AEC("frame_id :%d, exp_i2c_params %p, exp_tbl %p, exp_tbl_size: %d \n ",
+                frame_id, exp_i2c_params, exp_tbl, exp_tbl_size);
+           free(exp_tbl);
+       }
+       exp_i2c_params = NULL;
+       exp_tbl = NULL;
+    }
+private:
+    XCAM_DEAD_COPY (RKAiqAecExpInfoWrapper_s);
 } RKAiqAecExpInfoWrapper_t;
 
 typedef RKAiqAecExpInfoWrapper_t rk_aiq_exposure_params_wrapper_t;

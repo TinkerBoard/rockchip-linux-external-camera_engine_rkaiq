@@ -32,6 +32,7 @@ class RkAiqAeHandleInt : public RkAiqHandle {
 public:
     explicit RkAiqAeHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore), mPreResShared(nullptr), mProcResShared(nullptr) {
+#ifndef DISABLE_HANDLE_ATTRIB
         updateExpSwAttrV2  = false;
         updateLinExpAttrV2 = false;
         updateHdrExpAttrV2 = false;
@@ -59,6 +60,7 @@ public:
         memset(&mNewAecSyncTestAttr, 0, sizeof(Uapi_AecSyncTest_t));
         memset(&mCurExpWinAttr, 0, sizeof(Uapi_ExpWin_t));
         memset(&mNewExpWinAttr, 0, sizeof(Uapi_ExpWin_t));
+#endif
     };
     virtual ~RkAiqAeHandleInt() {
         RkAiqHandle::deInit();
@@ -111,6 +113,7 @@ protected:
 
 private:
     // TODO: calibv1
+#ifndef DISABLE_HANDLE_ATTRIB
     Uapi_ExpSwAttr_t mCurExpSwAttr;
     Uapi_ExpSwAttr_t mNewExpSwAttr;
     Uapi_LinExpAttr_t mCurLinExpAttr;
@@ -152,7 +155,7 @@ private:
     mutable std::atomic<bool> updateExpWinAttr;
 
     uint16_t updateAttr = 0;
-
+#endif
     XCam::Mutex mLockAebyAfMutex;
     bool lockaebyaf = false;
 

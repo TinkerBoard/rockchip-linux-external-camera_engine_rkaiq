@@ -42,6 +42,8 @@ namespace RkCam {
  --------------------------------
 */
 
+#define DISABLE_HANDLE_ATTRIB
+
 class RkAiqCore;
 struct RkAiqAlgosGroupShared_s;
 

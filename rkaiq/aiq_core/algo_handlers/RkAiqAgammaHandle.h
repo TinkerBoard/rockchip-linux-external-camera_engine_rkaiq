@@ -28,6 +28,7 @@ class RkAiqAgammaHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAgammaHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
 #if RKAIQ_HAVE_GAMMA_V10
         memset(&mCurAttV10, 0, sizeof(rk_aiq_gamma_v10_attr_t));
         memset(&mNewAttV10, 0, sizeof(rk_aiq_gamma_v10_attr_t));
@@ -35,6 +36,7 @@ class RkAiqAgammaHandleInt : virtual public RkAiqHandle {
 #if RKAIQ_HAVE_GAMMA_V11
         memset(&mCurAttV11, 0, sizeof(rk_aiq_gamma_v11_attr_t));
         memset(&mNewAttV11, 0, sizeof(rk_aiq_gamma_v11_attr_t));
+#endif
 #endif
     };
     virtual ~RkAiqAgammaHandleInt() { RkAiqHandle::deInit(); };
@@ -58,6 +60,7 @@ class RkAiqAgammaHandleInt : virtual public RkAiqHandle {
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
 #if RKAIQ_HAVE_GAMMA_V10
     rk_aiq_gamma_v10_attr_t mCurAttV10;
     rk_aiq_gamma_v10_attr_t mNewAttV10;
@@ -65,6 +68,7 @@ class RkAiqAgammaHandleInt : virtual public RkAiqHandle {
 #if RKAIQ_HAVE_GAMMA_V11
     rk_aiq_gamma_v11_attr_t mCurAttV11;
     rk_aiq_gamma_v11_attr_t mNewAttV11;
+#endif
 #endif
 
  private:

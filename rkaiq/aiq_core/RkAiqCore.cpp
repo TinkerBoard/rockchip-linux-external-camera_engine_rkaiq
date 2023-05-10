@@ -105,7 +105,7 @@ RkAiqCoreEvtsThread::loop()
 
 // notice that some pool shared items may be cached by other
 // modules(e.g. CamHwIsp20), so here should consider the cached number
-uint16_t RkAiqCore::DEFAULT_POOL_SIZE = 6;
+uint16_t RkAiqCore::DEFAULT_POOL_SIZE = 3;
 
 bool RkAiqCore::isGroupAlgo(int algoType) {
     static auto policy = mProfiles.getAlgoPolicies();
@@ -138,7 +138,7 @@ RkAiqCore::RkAiqCore(int isp_hw_ver)
 #if RKAIQ_HAVE_PDAF
     , mAiqPdafStatsPool(nullptr)
 #endif
-    , mCustomEnAlgosMask(0xffffffffffffffff)
+    , mInitDisAlgosMask(0)
     , groupUpdateMask(0x00)
 {
     ENTER_ANALYZER_FUNCTION();
@@ -298,12 +298,11 @@ RkAiqCore::init(const char* sns_ent_name, const CamCalibDbContext_t* aiqCalib,
     mAlogsComSharedParams.calibv2 = aiqCalibv2;
 
     const CalibDb_AlgoSwitch_t *algoSwitch = &aiqCalibv2->sys_cfg->algoSwitch;
-    if (algoSwitch->enable && algoSwitch->enable_algos) {
-        mCustomEnAlgosMask = 0x0;
-        for (uint16_t i = 0; i < algoSwitch->enable_algos_len; i++)
-            mCustomEnAlgosMask |= 1ULL << algoSwitch->enable_algos[i];
+    if (algoSwitch->enable && algoSwitch->disable_algos) {
+        for (uint16_t i = 0; i < algoSwitch->disable_algos_len; i++)
+            mInitDisAlgosMask |= 1ULL << algoSwitch->disable_algos[i];
     }
-    LOGI_ANALYZER("mCustomEnAlgosMask: 0x%" PRIx64 "\n", mCustomEnAlgosMask);
+    LOGI_ANALYZER("mInitDisAlgosMask: 0x%" PRIx64 "\n", mInitDisAlgosMask);
     addDefaultAlgos(mAlgosDesArray);
 #if RKAIQ_HAVE_ASD_V10
     initCpsl();
@@ -1135,7 +1134,7 @@ RkAiqCore::addDefaultAlgos(const struct RkAiqAlgoDesCommExt* algoDes)
     for (size_t i = 0; algoDes[i].des != NULL; i++) {
         int algo_type = algoDes[i].des->type;
         // enable only the specified algorithm modules
-        if (!((1ULL << algo_type) & mCustomEnAlgosMask))
+        if ((1ULL << algo_type) & mInitDisAlgosMask)
             continue;
         int64_t grpMask = 1ULL << algoDes[i].group;
 #ifdef RKAIQ_ENABLE_PARSER_V1
@@ -2428,7 +2427,7 @@ void RkAiqCore::newAiqParamsPool()
                 if (!mAiqAecStatsPool.ptr())
                     mAiqAecStatsPool = new RkAiqAecStatsPool("RkAiqAecStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqExpParamsPool =
-                    new RkAiqExpParamsPool("RkAiqExpParams", MAX_AEC_EFFECT_FNUM * 4);
+                    new RkAiqExpParamsPool("RkAiqExpParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIrisParamsPool = new RkAiqIrisParamsPool("RkAiqIrisParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIspAecParamsPool =
                     new RkAiqIspAecParamsPool("RkAiqIspAecParams", RkAiqCore::DEFAULT_POOL_SIZE);

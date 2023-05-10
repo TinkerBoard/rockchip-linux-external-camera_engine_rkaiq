@@ -214,7 +214,7 @@ typedef struct Asharp_Auto_Attr_V33LT_s {
 typedef struct Asharp_ProcResult_V33_s {
 #if RKAIQ_HAVE_SHARP_V33
     // for sw simultaion
-    RK_SHARP_Params_V33_Select_t stSelect;
+   // RK_SHARP_Params_V33_Select_t stSelect;
 #else
     // for isp32 lite version
     // for sw simultaion

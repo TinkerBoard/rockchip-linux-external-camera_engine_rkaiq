@@ -926,8 +926,8 @@ int RkAiqCalibDbV2::CamCalibDbFreeSysStaticCtx(CalibDb_SysStaticCfg_ParaV2_t* sy
 {
     CalibDb_AlgoSwitch_t* algoSwitch = &sys_static->algoSwitch;
 
-    if (algoSwitch->enable_algos)
-        calib_free(algoSwitch->enable_algos);
+    if (algoSwitch->disable_algos)
+        calib_free(algoSwitch->disable_algos);
 
     return 0;
 }

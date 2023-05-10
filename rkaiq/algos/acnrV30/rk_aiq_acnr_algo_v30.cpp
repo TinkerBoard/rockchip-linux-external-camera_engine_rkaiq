@@ -257,14 +257,15 @@ AcnrV30_result_t Acnr_GetProcResult_V30(Acnr_Context_V30_t *pAcnrCtx, Acnr_ProcR
         return ACNRV30_RET_INVALID_PARM;
     }
 
+    RK_CNR_Params_V30_Select_t* stSelect = NULL;
     if(pAcnrCtx->eMode == ACNRV30_OP_MODE_AUTO) {
-        pAcnrResult->stSelect = pAcnrCtx->stAuto.stSelect;
+        stSelect = &pAcnrCtx->stAuto.stSelect;
     } else if(pAcnrCtx->eMode == ACNRV30_OP_MODE_MANUAL) {
-        pAcnrResult->stSelect = pAcnrCtx->stManual.stSelect;
+        stSelect = &pAcnrCtx->stManual.stSelect;
     }
 
     //transfer to reg value
-    cnr_fix_transfer_V30(&pAcnrResult->stSelect, &pAcnrResult->stFix,  &pAcnrCtx->stExpInfo, &pAcnrCtx->stStrength);
+    cnr_fix_transfer_V30(stSelect, &pAcnrResult->stFix,  &pAcnrCtx->stExpInfo, &pAcnrCtx->stStrength);
 
     if(pAcnrCtx->eMode == ACNRV30_OP_MODE_REG_MANUAL) {
         pAcnrResult->stFix = pAcnrCtx->stManual.stFix;

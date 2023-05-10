@@ -433,8 +433,8 @@ public:
     void post_message (SmartPtr<XCamMessage> &msg);
     int32_t getGroupId(RkAiqAlgoType_t type);
     XCamReturn getGroupSharedParams(uint64_t groupId, RkAiqAlgosGroupShared_t* &shared);
-    uint64_t getCustomEnAlgosMask() {
-        return mCustomEnAlgosMask;
+    uint64_t getInitDisAlgosMask() {
+        return mInitDisAlgosMask;
     }
     // TODO(Cody): Just AF use it, should it be public ?
     SmartPtr<RkAiqHandle>* getCurAlgoTypeHandle(int algo_type);
@@ -694,7 +694,7 @@ private:
     int mSpHeight;
     int mSpAlignedWidth;
     int mSpAlignedHeight;
-    uint64_t mCustomEnAlgosMask;
+    uint64_t mInitDisAlgosMask;
     // update calib for each group
     XCam::Mutex _update_mutex;
     XCam::Cond _update_done_cond;

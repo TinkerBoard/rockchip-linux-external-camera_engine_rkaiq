@@ -7,7 +7,7 @@ rk_aiq_uapi_a3dlut_SetAttrib(RkAiqAlgoContext *ctx,
 {
 
     alut3d_context_t* alut3d_context = (alut3d_context_t*)ctx->a3dlut_para;
-    alut3d_context->mNewAtt = *attr;
+    alut3d_context->mCurAtt = *attr;
     alut3d_context->updateAtt = true;
 
     return XCAM_RETURN_NO_ERROR;
@@ -19,6 +19,14 @@ rk_aiq_uapi_a3dlut_GetAttrib(const RkAiqAlgoContext *ctx,
 {
 
     alut3d_context_t* alut3d_context = (alut3d_context_t*)ctx->a3dlut_para;
+
+    //TODO: use stManual as current params
+    memcpy(alut3d_context->mCurAtt.stManual.look_up_table_r, alut3d_context->lut3d_hw_conf.look_up_table_r,
+           sizeof(alut3d_context->mCurAtt.stManual.look_up_table_r));
+    memcpy( alut3d_context->mCurAtt.stManual.look_up_table_g, alut3d_context->lut3d_hw_conf.look_up_table_g,
+            sizeof(alut3d_context->mCurAtt.stManual.look_up_table_g));
+    memcpy(alut3d_context->mCurAtt.stManual.look_up_table_b, alut3d_context->lut3d_hw_conf.look_up_table_b,
+           sizeof(alut3d_context->mCurAtt.stManual.look_up_table_b));
 
     memcpy(attr, &alut3d_context->mCurAtt, sizeof(rk_aiq_lut3d_attrib_t));
 

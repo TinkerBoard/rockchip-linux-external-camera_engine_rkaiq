@@ -195,7 +195,7 @@ typedef struct Acnr_Auto_Attr_V30_s
 typedef struct Acnr_ProcResult_V30_s {
 
     //for sw simultaion
-    RK_CNR_Params_V30_Select_t stSelect;
+    //RK_CNR_Params_V30_Select_t stSelect;
 
     //for hw register
     RK_CNR_Fix_V30_t stFix;

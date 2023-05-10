@@ -4902,8 +4902,8 @@
 	"sys_static_cfg":	{
 		"algoSwitch":	{
 			"enable":	0,
-			"enable_algos":	[],
-			"enable_algos_len":	0
+			"disable_algos":	[],
+			"disable_algos_len":	0
 		}
 	}
 }

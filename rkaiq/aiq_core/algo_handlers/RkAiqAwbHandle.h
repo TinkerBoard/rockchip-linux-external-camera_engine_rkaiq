@@ -32,19 +32,23 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
         : RkAiqHandle(des, aiqCore), mProcResShared(nullptr) {
         memset(&mCurAtt, 0, sizeof(rk_aiq_wb_attrib_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_wb_attrib_t));
+#ifdef RKAIQ_HAVE_AWB_V20
         memset(&mCurWbV20Attr, 0, sizeof(mCurWbV20Attr));
+        memset(&mNewWbV20Attr, 0, sizeof(mNewWbV20Attr));
+#endif
+#if defined(RKAIQ_HAVE_AWB_V20) || defined(RKAIQ_HAVE_AWB_V21)
+        memset(&mCurWbAwbAttr, 0, sizeof(mCurWbAwbAttr));
+        memset(&mNewWbAwbAttr, 0, sizeof(mNewWbAwbAttr));
+#endif
         memset(&mCurWbOpModeAttr, 0, sizeof(mCurWbOpModeAttr));
         mCurWbOpModeAttr.mode = RK_AIQ_WB_MODE_MAX;
-        memset(&mCurWbMwbAttr, 0, sizeof(mCurWbMwbAttr));
-        memset(&mCurWbAwbAttr, 0, sizeof(mCurWbAwbAttr));
         memset(&mCurWbAwbWbGainAdjustAttr, 0, sizeof(mCurWbAwbWbGainAdjustAttr));
         memset(&mCurWbAwbWbGainOffsetAttr, 0, sizeof(mCurWbAwbWbGainOffsetAttr));
         memset(&mCurWbAwbMultiWindowAttr, 0, sizeof(mCurWbAwbMultiWindowAttr));
-        memset(&mNewWbV20Attr, 0, sizeof(mNewWbV20Attr));
         memset(&mNewWbOpModeAttr, 0, sizeof(mNewWbOpModeAttr));
         mNewWbOpModeAttr.mode = RK_AIQ_WB_MODE_MAX;
+        memset(&mCurWbMwbAttr, 0, sizeof(mCurWbMwbAttr));
         memset(&mNewWbMwbAttr, 0, sizeof(mNewWbMwbAttr));
-        memset(&mNewWbAwbAttr, 0, sizeof(mNewWbAwbAttr));
         memset(&mNewWbAwbWbGainAdjustAttr, 0, sizeof(mNewWbAwbWbGainAdjustAttr));
         memset(&mNewWbAwbWbGainOffsetAttr, 0, sizeof(mNewWbAwbWbGainOffsetAttr));
         memset(&mNewWbAwbMultiWindowAttr, 0, sizeof(mNewWbAwbMultiWindowAttr));
@@ -62,10 +66,14 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
     virtual ~RkAiqAwbHandleInt() {
             freeWbGainAdjustAttrib(&mNewWbAwbWbGainAdjustAttr);
             freeWbGainAdjustAttrib(&mCurWbAwbWbGainAdjustAttr);
+#ifdef RKAIQ_HAVE_AWB_V20
             freeWbGainAdjustAttrib(&mCurWbV20Attr.stAuto.wbGainAdjust);
             freeWbGainAdjustAttrib(&mNewWbV20Attr.stAuto.wbGainAdjust);
+#endif
+#if defined(RKAIQ_HAVE_AWB_V20) || defined(RKAIQ_HAVE_AWB_V21)
             freeWbGainAdjustAttrib(&mCurWbAwbAttr.wbGainAdjust);
             freeWbGainAdjustAttrib(&mNewWbAwbAttr.wbGainAdjust);
+#endif
             RkAiqHandle::deInit();
         };
     virtual XCamReturn updateConfig(bool needSync);
@@ -108,14 +116,18 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
  protected:
     rk_aiq_wb_attrib_t mCurAtt;
     rk_aiq_wb_attrib_t mNewAtt;
+#ifdef RKAIQ_HAVE_AWB_V20
     rk_aiq_uapiV2_wbV20_attrib_t mCurWbV20Attr;
     rk_aiq_uapiV2_wbV20_attrib_t mNewWbV20Attr;
+#endif
     rk_aiq_uapiV2_wb_opMode_t mCurWbOpModeAttr;
     rk_aiq_uapiV2_wb_opMode_t mNewWbOpModeAttr;
     rk_aiq_wb_mwb_attrib_t mCurWbMwbAttr;
     rk_aiq_wb_mwb_attrib_t mNewWbMwbAttr;
+#if defined(RKAIQ_HAVE_AWB_V20) || defined(RKAIQ_HAVE_AWB_V21)
     rk_aiq_uapiV2_wbV20_awb_attrib_t mCurWbAwbAttr;
     rk_aiq_uapiV2_wbV20_awb_attrib_t mNewWbAwbAttr;
+#endif
     rk_aiq_uapiV2_wb_awb_wbGainAdjust_t mCurWbAwbWbGainAdjustAttr;
     rk_aiq_uapiV2_wb_awb_wbGainAdjust_t mNewWbAwbWbGainAdjustAttr;
     rk_aiq_uapiV2_wb_awb_wbGainOffset_t mCurWbAwbWbGainOffsetAttr;

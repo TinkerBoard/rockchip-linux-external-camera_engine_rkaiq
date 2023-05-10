@@ -36,6 +36,7 @@ XCamReturn RkAiqAgammaHandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -54,7 +55,7 @@ XCamReturn RkAiqAgammaHandleInt::updateConfig(bool needSync) {
     }
 
     if (needSync) mCfgMutex.unlock();
-
+#endif
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
@@ -66,6 +67,9 @@ XCamReturn RkAiqAgammaHandleInt::setAttribV10(const rk_aiq_gamma_v10_attr_t* att
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_agamma_v10_SetAttrib(mAlgoCtx, att, false);
+#else
     // check if there is different between att & mCurAttV10(sync)/mNewAttV10(async)
     // if something changed, set att to mNewAttV10, and
     // the new params will be effective later when updateConfig
@@ -84,7 +88,7 @@ XCamReturn RkAiqAgammaHandleInt::setAttribV10(const rk_aiq_gamma_v10_attr_t* att
         updateAtt = true;
         waitSignal(att->sync.sync_mode);
     }
-
+#endif
     mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();
@@ -96,6 +100,12 @@ XCamReturn RkAiqAgammaHandleInt::getAttribV10(rk_aiq_gamma_v10_attr_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapi_agamma_v10_GetAttrib(mAlgoCtx, att);
+    att->sync.done = true;
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_agamma_v10_GetAttrib(mAlgoCtx, att);
@@ -111,7 +121,7 @@ XCamReturn RkAiqAgammaHandleInt::getAttribV10(rk_aiq_gamma_v10_attr_t* att) {
             att->sync.done      = true;
         }
     }
-
+#endif
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
@@ -123,6 +133,9 @@ XCamReturn RkAiqAgammaHandleInt::setAttribV11(const rk_aiq_gamma_v11_attr_t* att
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_agamma_v11_SetAttrib(mAlgoCtx, att, false);
+#else
     // check if there is different between att & mCurAttV11(sync)/mNewAttV11(async)
     // if something changed, set att to mNewAttV11, and
     // the new params will be effective later when updateConfig
@@ -141,6 +154,7 @@ XCamReturn RkAiqAgammaHandleInt::setAttribV11(const rk_aiq_gamma_v11_attr_t* att
         updateAtt  = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -153,6 +167,12 @@ XCamReturn RkAiqAgammaHandleInt::getAttribV11(rk_aiq_gamma_v11_attr_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapi_agamma_v11_GetAttrib(mAlgoCtx, att);
+    att->sync.done = true;
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_agamma_v11_GetAttrib(mAlgoCtx, att);
@@ -168,6 +188,7 @@ XCamReturn RkAiqAgammaHandleInt::getAttribV11(rk_aiq_gamma_v11_attr_t* att) {
             att->sync.done      = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -244,8 +265,14 @@ XCamReturn RkAiqAgammaHandleInt::processing() {
     agamma_proc_int->calib = sharedCom->calib;
 #endif
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "agamma algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();

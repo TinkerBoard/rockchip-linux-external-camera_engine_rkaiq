@@ -130,7 +130,7 @@ typedef struct alsc_context_s {
 
     //ctrl & api
     rk_aiq_lsc_attrib_t mCurAtt;
-    rk_aiq_lsc_attrib_t mNewAtt;
+    //rk_aiq_lsc_attrib_t mNewAtt;
     bool updateAtt;
 
     //in some cases, the scene does not change, so it doesn't need to calculate in every frame;

@@ -55,7 +55,7 @@ void RkAiqAnalyzerGroup::msgReduction(std::map<uint32_t, GroupMessage>& msgMap) 
     // Should let message thread handle the reduction
     if (!mGroupMsgMap.empty()) {
         const auto originalSize = mGroupMsgMap.size();
-        const int numToErase    = originalSize - 4;
+        const int numToErase    = originalSize - 2;
         if (numToErase > 0) {
             int32_t unreadyFlag = mDepsFlag & ~mGroupMsgMap.begin()->second.msg_flags;
             // print missing params
@@ -569,14 +569,14 @@ XCamReturn RkAiqAnalyzeGroupManager::thumbnailsGroupMessageHandler(
 #endif
 
 void RkAiqAnalyzeGroupManager::parseAlgoGroup(const struct RkAiqAlgoDesCommExt* algoDes) {
-    uint64_t enAlgosMask = mAiqCore->getCustomEnAlgosMask();
+    uint64_t disAlgosMask = mAiqCore->getInitDisAlgosMask();
     if (mSingleThreadMode) {
         mMsgThrd = new RkAiqAnalyzeGroupMsgHdlThread("GrpMsgThrd", nullptr);
         XCAM_ASSERT(mMsgThrd.ptr() != nullptr);
     }
     for (size_t i = 0; algoDes[i].des != NULL; i++) {
         int algo_type = algoDes[i].des->type;
-        if (!((1ULL << algo_type) & enAlgosMask))
+        if ((1ULL << algo_type) & disAlgosMask)
             continue;
         uint64_t deps_flag = 0;
         for (size_t j = 0; j < algoDes[i].grpConds.size; j++)
