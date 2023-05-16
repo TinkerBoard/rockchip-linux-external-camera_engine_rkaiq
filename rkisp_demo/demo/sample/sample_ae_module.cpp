@@ -52,6 +52,8 @@ static void sample_ae_usage()
     printf("\t Y) AE:         test async mode.\n");
     printf("\t Z) AE:         test async mode, twice set.\n\n");
 
+    printf("\t C) AE:         enter hall dc-iris calib.\n");
+
     printf("\t q/Q) AE:         return to main sample screen.\n");
     printf("\n");
     printf("\t please press the key: \n\n");
@@ -62,6 +64,108 @@ static void sample_ae_usage()
 void sample_print_ae_info(const void *arg)
 {
     printf ("enter AE modult test!\n");
+}
+
+static int sample_hall_dciris_calib(const rk_aiq_sys_ctx_t* ctx) {
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    /*  PARAMS CONFIG:
+        fix_time:       manual time
+        fix_gain:       manual gain
+        iris_val_open:  target value when iris is fully open
+        iris_val_close: target value when iris is fully closed
+        iris_val_step:  iris target calib step
+        iris_max_diam:  equivalent diameter when iris is fully open
+        iris_diam:      iris diameter need to be calibrated
+    */
+    float fix_time = 0.04f, fix_gain = 1.0f;
+    int iris_val_open = 0, iris_val_close = 500, iris_val_step = 10;
+    float iris_max_diam = 10.0f;
+    float iris_diam[] = { 10.0, 9.9, 9.8, 9.7, 9.6, 9.5, 9.4, 9.3, 9.2, 9.1, 9.0 };
+
+    Uapi_ExpSwAttrV2_t expSwAttr;
+    ret = rk_aiq_user_api2_ae_getExpSwAttr(ctx, &expSwAttr);
+    // fix aec
+    expSwAttr.AecOpType = RK_AIQ_OP_MODE_MANUAL;
+    expSwAttr.stManual.LinearAE.ManualGainEn = true;
+    expSwAttr.stManual.LinearAE.ManualTimeEn = true;
+    expSwAttr.stManual.LinearAE.GainValue = fix_gain;
+    expSwAttr.stManual.LinearAE.TimeValue = fix_time;
+    // fix ae grid weight
+    uint8_t GridWeights[225] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+                               };
+    memcpy(expSwAttr.GridWeights.uCoeff, GridWeights, sizeof(expSwAttr.GridWeights.uCoeff));
+    ret = rk_aiq_user_api2_ae_setExpSwAttr(ctx, expSwAttr);
+    // config iris
+    Uapi_IrisAttrV2_t irisAttr;
+    ret = rk_aiq_user_api2_ae_getIrisAttr(ctx, &irisAttr);
+    irisAttr.Params.Enable = true;
+    irisAttr.Params.IrisType = IRISV2_HDC_TYPE;
+    irisAttr.Params.ManualEn = true;
+    irisAttr.Params.ManualAttr.HDCIrisTargetValue = iris_val_open;
+    ret = rk_aiq_user_api2_ae_setIrisAttr(ctx, irisAttr);
+    // TODO: fix af zoom and focus
+
+    printf("HDC IRIS Calib start ...... \n");
+    printf("Calib between IrisTargetValue and IrisGain:\n");
+    int count = -1, cur_iris_val = iris_val_open, cur_iris_gain = 512, iris_val[1024] = { 0 }, iris_gain[1024] = { 0 };
+    float mean_luma_max, cur_mean_luma;
+    Uapi_ExpQueryInfo_t ExpResInfo;
+    sleep(5);
+    ret = rk_aiq_user_api2_ae_queryExpResInfo(ctx, &ExpResInfo);
+    mean_luma_max = ExpResInfo.LinAeInfo.MeanLuma;
+
+    while (count++ < 1024) {
+        ret = rk_aiq_user_api2_ae_getIrisAttr(ctx, &irisAttr);
+        irisAttr.Params.ManualAttr.HDCIrisTargetValue = cur_iris_val;
+        ret = rk_aiq_user_api2_ae_setIrisAttr(ctx, irisAttr);
+        sleep(3);
+        rk_aiq_user_api2_ae_queryExpResInfo(ctx, &ExpResInfo);
+        cur_mean_luma = ExpResInfo.LinAeInfo.MeanLuma;
+        cur_iris_gain = MIN(int(cur_mean_luma / mean_luma_max * 512 + 0.5f), 512);
+        iris_val[count] = cur_iris_val;
+        iris_gain[count] = cur_iris_gain;
+        printf("step id=%d, cur iris val=%d, gain=%d, luma=%f\n", count, cur_iris_val, cur_iris_gain, cur_mean_luma);
+
+        if (iris_val_open - iris_val_close > 0) {
+            if (cur_iris_val <= iris_val_close)
+                break;
+            else
+                cur_iris_val -= iris_val_step;
+        } else {
+            if (cur_iris_val >= iris_val_close)
+                break;
+            else
+                cur_iris_val += iris_val_step;
+        }
+    }
+
+    printf("Calib between IrisDiameter and IrisTargetValue:\n");
+    int iris_diam_count = sizeof(iris_diam) / sizeof(iris_diam[0]);
+    int zoom_target_val, i, dot;
+    float tmp_iris_gain;
+    for (i = 0; i < iris_diam_count; i++) {
+        tmp_iris_gain = (iris_diam[i] * iris_diam[i]) / (iris_max_diam * iris_max_diam) * 512;
+        for (dot = 0; dot < count; dot++) {
+            if (tmp_iris_gain < iris_gain[dot] && tmp_iris_gain > iris_gain[dot + 1])
+                break;
+        }
+        zoom_target_val = int(1.0 * (tmp_iris_gain - iris_gain[dot]) / (iris_gain[dot + 1] - iris_gain[dot]) *
+                              (iris_val[dot + 1] - iris_val[dot]) +
+                              iris_val[dot] + 0.5f);
+        printf("num=%d, iris diameter=%f, val=%d, gain=%d\n", i, iris_diam[i], zoom_target_val, int(tmp_iris_gain));
+    }
+
+    printf("HDC IRIS Calib Done ...... \n");
+
+    return 0;
 }
 
 static int sample_set_ae_onoff(const rk_aiq_sys_ctx_t* ctx, bool on)
@@ -155,19 +259,20 @@ static int sample_set_time_manual_and_gain_auto(const rk_aiq_sys_ctx_t* ctx, rk_
     expSwAttr.sync.sync_mode = sync;
     expSwAttr.sync.done = false;
     expSwAttr.AecOpType = RK_AIQ_OP_MODE_MANUAL;
-    //set time range
-    expSwAttr.stAdvanced.SetAeRangeEn = true;/*must enable*/
-    //LinAE
-    expSwAttr.stAdvanced.SetLinAeRange.stExpTimeRange.Max = 0.03f; /*time_max = 0.03*/
-    expSwAttr.stAdvanced.SetLinAeRange.stExpTimeRange.Min = 0.03f; /*time_min = 0.03*/
-    //HdrAE (can only set one frame, stime + mtime + ltime <= timeMax)
-    expSwAttr.stAdvanced.SetHdrAeRange.stExpTimeRange[0].Max = 0.01f; /*sframe time_max = 0.01*/
-    expSwAttr.stAdvanced.SetHdrAeRange.stExpTimeRange[0].Min = 0.01f; /*sframe time_min = 0.01*/
-    expSwAttr.stAdvanced.SetHdrAeRange.stExpTimeRange[1].Max = 0.01f; /*mframe time_max = 0.01*/
-    expSwAttr.stAdvanced.SetHdrAeRange.stExpTimeRange[1].Min = 0.01f; /*mframe time_min = 0.01*/
-    expSwAttr.stAdvanced.SetHdrAeRange.stExpTimeRange[2].Max = 0.01f; /*lframe time_max = 0.01*/
-    expSwAttr.stAdvanced.SetHdrAeRange.stExpTimeRange[2].Min = 0.01f; /*lframe time_min = 0.01*/
+    //LinearAE
+    expSwAttr.stManual.LinearAE.ManualGainEn = false;
+    expSwAttr.stManual.LinearAE.ManualTimeEn = true;
+    expSwAttr.stManual.LinearAE.ManualIspDgainEn = false;
+    expSwAttr.stManual.LinearAE.TimeValue = 0.01f; /*time = 0.01 s*/
+    //HdrAE (NOTE: hdr total int time should < 1/fps)
+    expSwAttr.stManual.HdrAE.ManualGainEn = false;
+    expSwAttr.stManual.HdrAE.ManualTimeEn = true;
+    expSwAttr.stManual.HdrAE.ManualIspDgainEn = false;
+    expSwAttr.stManual.HdrAE.TimeValue[0] = 0.008f; /*sframe time = 0.008s*/
+    expSwAttr.stManual.HdrAE.TimeValue[1] = 0.01f; /*mframe time = 0.01s*/
+    expSwAttr.stManual.HdrAE.TimeValue[2] = 0.01f; /*lframe time = 0.01s*/
     ret = rk_aiq_user_api2_ae_setExpSwAttr(ctx, expSwAttr);
+
 
     return 0;
 }
@@ -712,6 +817,10 @@ XCamReturn sample_ae_module (const void *arg)
             rk_aiq_user_api2_ae_getExpSwAttr(ctx, &expSwAttr);
             printf("\t sync = %d, done = %d\n", expSwAttr.sync.sync_mode, expSwAttr.sync.done);
             printf("\t get time = %f gain = %f\n", expSwAttr.stManual.LinearAE.TimeValue, expSwAttr.stManual.LinearAE.GainValue);
+            break;
+        case 'C':
+            sample_hall_dciris_calib(ctx);
+            printf("enter hall dc-iris calib\n\n");
             break;
         default:
             break;

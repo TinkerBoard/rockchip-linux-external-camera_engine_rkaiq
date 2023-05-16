@@ -30,9 +30,9 @@ typedef struct rk_aiq_singlecam_3a_result_s {
 
     // ae params
     struct {
-        RKAiqAecExpInfo_t* exp_tbl;
+        RKAiqAecExpInfo_t** exp_tbl;
         int* exp_tbl_size;
-        RKAiqExpI2cParam_t* exp_i2c_params;
+        RKAiqExpI2cParam_t** exp_i2c_params;
         rk_aiq_ae_meas_params_t* _aeMeasParams;
         rk_aiq_hist_meas_params_t* _aeHistMeasParams;
         XCamVideoBuffer* _aecStats;

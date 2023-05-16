@@ -1065,6 +1065,10 @@ void _customGrpAeSingleResSet(rk_aiq_rkAe_config_t* pConfig, rk_aiq_singlecam_3a
                               rk_aiq_customeAe_results_single_t customAeRes)
 {
     // 0.) copy exposure params
+    if (*rk_aiq_singlecam_3a_result->aec.exp_tbl_size == 0) {
+        *rk_aiq_singlecam_3a_result->aec.exp_tbl = (RKAiqAecExpInfo_t*)malloc(sizeof(RKAiqAecExpInfo_t));
+    }
+
     *rk_aiq_singlecam_3a_result->aec.exp_tbl_size = 1;
 
     if(pConfig->IsHdr) {
@@ -1083,7 +1087,7 @@ void _customGrpAeSingleResSet(rk_aiq_rkAe_config_t* pConfig, rk_aiq_singlecam_3a
                                customAeRes.hdr_exp[i].exp_real_params.dcg_mode);
             }
 
-            rk_aiq_singlecam_3a_result->aec.exp_tbl[0].HdrExp[i] = customAeRes.hdr_exp[i];
+            (*rk_aiq_singlecam_3a_result->aec.exp_tbl[0]).HdrExp[i] = customAeRes.hdr_exp[i];
         }
 
     } else {
@@ -1098,21 +1102,24 @@ void _customGrpAeSingleResSet(rk_aiq_rkAe_config_t* pConfig, rk_aiq_singlecam_3a
                            customAeRes.linear_exp.exp_real_params.dcg_mode);
         }
 
-        rk_aiq_singlecam_3a_result->aec.exp_tbl[0].LinearExp = customAeRes.linear_exp;
+        (*rk_aiq_singlecam_3a_result->aec.exp_tbl)[0].LinearExp = customAeRes.linear_exp;
     }
 
-    rk_aiq_singlecam_3a_result->aec.exp_i2c_params->bValid = customAeRes.exp_i2c_params.bValid;
-    rk_aiq_singlecam_3a_result->aec.exp_i2c_params->nNumRegs = customAeRes.exp_i2c_params.nNumRegs;
+    if (*rk_aiq_singlecam_3a_result->aec.exp_i2c_params == NULL) {
+        *rk_aiq_singlecam_3a_result->aec.exp_i2c_params = (RKAiqExpI2cParam_t*)malloc(sizeof(RKAiqExpI2cParam_t));
+    }
+    (*rk_aiq_singlecam_3a_result->aec.exp_i2c_params)->bValid = customAeRes.exp_i2c_params.bValid;
+    (*rk_aiq_singlecam_3a_result->aec.exp_i2c_params)->nNumRegs = customAeRes.exp_i2c_params.nNumRegs;
 
     if(customAeRes.exp_i2c_params.bValid) {
         if(customAeRes.exp_i2c_params.nNumRegs <= MAX_I2CDATA_LEN) {
 
             for(uint32_t i = 0; i < customAeRes.exp_i2c_params.nNumRegs; i++) {
-                rk_aiq_singlecam_3a_result->aec.exp_i2c_params->DelayFrames[i] = customAeRes.exp_i2c_params.pDelayFrames[i];
-                rk_aiq_singlecam_3a_result->aec.exp_i2c_params->RegAddr[i] = customAeRes.exp_i2c_params.pRegAddr[i];
-                rk_aiq_singlecam_3a_result->aec.exp_i2c_params->AddrByteNum[i] = customAeRes.exp_i2c_params.pAddrByteNum[i];
-                rk_aiq_singlecam_3a_result->aec.exp_i2c_params->RegValue[i] = customAeRes.exp_i2c_params.pRegValue[i];
-                rk_aiq_singlecam_3a_result->aec.exp_i2c_params->ValueByteNum[i] = customAeRes.exp_i2c_params.pValueByteNum[i];
+                (*rk_aiq_singlecam_3a_result->aec.exp_i2c_params)->DelayFrames[i] = customAeRes.exp_i2c_params.pDelayFrames[i];
+                (*rk_aiq_singlecam_3a_result->aec.exp_i2c_params)->RegAddr[i] = customAeRes.exp_i2c_params.pRegAddr[i];
+                (*rk_aiq_singlecam_3a_result->aec.exp_i2c_params)->AddrByteNum[i] = customAeRes.exp_i2c_params.pAddrByteNum[i];
+                (*rk_aiq_singlecam_3a_result->aec.exp_i2c_params)->RegValue[i] = customAeRes.exp_i2c_params.pRegValue[i];
+                (*rk_aiq_singlecam_3a_result->aec.exp_i2c_params)->ValueByteNum[i] = customAeRes.exp_i2c_params.pValueByteNum[i];
             }
         } else {
             LOGE("too many i2c data to set!!");
@@ -1122,7 +1129,7 @@ void _customGrpAeSingleResSet(rk_aiq_rkAe_config_t* pConfig, rk_aiq_singlecam_3a
     // 1.) copy hw params
 
     //RK: CIS feature for NR
-    AeCISFeature(pConfig, &rk_aiq_singlecam_3a_result->aec.exp_tbl[0]);
+    AeCISFeature(pConfig, *rk_aiq_singlecam_3a_result->aec.exp_tbl);
 
     //AE new HW config
     if (customAeRes.meas_win.h_size > 0 &&
@@ -1177,8 +1184,8 @@ void _customGrpAeRes2rkGrpAeRes(rk_aiq_rkAe_config_t* pConfig, rk_aiq_singlecam_
         _customGrpAeSingleResSet(pConfig, rk_aiq_singlecam_3a_result[i], tmp_customAeRes);
 
         //copy common result
-        rk_aiq_singlecam_3a_result[i]->aec.exp_tbl[0].frame_length_lines =  customAeProcRes->frame_length_lines;
-        rk_aiq_singlecam_3a_result[i]->aec.exp_tbl[0].Iris =  customAeProcRes->Iris;
+        (*rk_aiq_singlecam_3a_result[i]->aec.exp_tbl)[0].frame_length_lines =  customAeProcRes->frame_length_lines;
+        (*rk_aiq_singlecam_3a_result[i]->aec.exp_tbl)[0].Iris =  customAeProcRes->Iris;
 
         //copy common RK result
         XCamVideoBuffer* XaeProcRes = rk_aiq_singlecam_3a_result[i]->aec._aeProcRes;
