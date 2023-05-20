@@ -8100,7 +8100,7 @@
 									"Manual_curve":	[0, 815, 1467, 1999, 2444, 2825, 3157, 3455, 3727, 4226, 4700, 5178, 5682, 6226, 6820, 7474, 8192]
 								},
 								"Scale_y":	[0, 2, 20, 76, 193, 381, 631, 772, 919, 1066, 1211, 1479, 1700, 1863, 1968, 2024, 2048],
-								"ByPassThr":	0,
+								"ByPassThr":	0.5,
 								"Edge_Weit":	0.0627451,
 								"OutPutLongFrame":	0,
 								"IIR_frame":	2,
@@ -8112,7 +8112,7 @@
 								"Enable":	1,
 								"CtrlDataType":	"CTRLDATATYPE_ISO",
 								"cfg_alpha":	0,
-								"ByPassThr":	0,
+								"ByPassThr":	0.5,
 								"dehaze_setting":	{
 									"en":	0,
 									"air_lc_en":	1,
@@ -13280,9 +13280,10 @@
 	"uapi_len":	0,
 	"sys_static_cfg":	{
 		"algoSwitch":	{
-			"enable":	0,
-			"disable_algos":	["DISABLE_AF"],
-			"disable_algos_len":	1
+			"enable":	1,
+			"disable_algos":	["DISABLE_AF", "DISABLE_AFD", "DISABLE_AFEC",
+				"DISABLE_ALDCH", "DISABLE_ADEGAMMA", "DISABLE_AMERGE", "DISABLE_AWDR"],
+			"disable_algos_len":	7
 		}
 	}
 }

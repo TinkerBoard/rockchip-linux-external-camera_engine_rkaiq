@@ -161,7 +161,9 @@ private:
 
     XCam::Mutex mGetAfdResMutex;
     AfdPeakRes_t mAfdRes;
-
+#if RKAIQ_HAVE_AF
+    SmartPtr<RkAiqHandle>* mAf_handle;
+#endif
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAeHandleInt);
 };

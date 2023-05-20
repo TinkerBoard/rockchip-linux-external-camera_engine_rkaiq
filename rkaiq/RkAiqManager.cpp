@@ -35,6 +35,8 @@ namespace RkCam {
         return ret; \
     }
 
+#define DISABLE_RESULT_APPLY_THREADS
+
 bool
 RkAiqMngCmdThread::loop ()
 {
@@ -106,7 +108,9 @@ RkAiqManager::RkAiqManager(const char* sns_ent_name,
                            rk_aiq_metas_cb metas_cb)
     : mCamHw(NULL)
     , mRkAiqAnalyzer(NULL)
+#ifndef DISABLE_RESULT_APPLY_THREADS
     , mAiqRstAppTh(new RkAiqRstApplyThread(this))
+#endif
     , mAiqMngCmdTh(new RkAiqMngCmdThread(this))
 #ifdef ISP_HW_V20
     , mRkLumaAnalyzer(NULL)
@@ -312,7 +316,9 @@ RkAiqManager::prepare(uint32_t width, uint32_t height, rk_aiq_working_mode_t mod
     SmartPtr<RkAiqFullParamsProxy> initParams = mRkAiqAnalyzer->getAiqFullParams();
 
     if (mTbInfo.is_pre_aiq) {
+#ifndef DISABLE_RESULT_APPLY_THREADS
         mAiqRstAppTh->triger_start();
+#endif
     }
 #ifdef RKAIQ_ENABLE_CAMGROUP
     if (!mCamGroupCoreManager) {
@@ -359,9 +365,11 @@ RkAiqManager::start()
     }
 
     if (mTbInfo.is_pre_aiq) {
+#ifndef DISABLE_RESULT_APPLY_THREADS
         bool bret = mAiqRstAppTh->start();
         ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
         RKAIQMNG_CHECK_RET(ret, "apply result thread start error");
+#endif
     }
 
     ret = mRkAiqAnalyzer->start();
@@ -377,11 +385,13 @@ RkAiqManager::start()
     RKAIQMNG_CHECK_RET(ret, "camhw start error %d", ret);
 
     if (!mTbInfo.is_pre_aiq) {
+#ifndef DISABLE_RESULT_APPLY_THREADS
         mAiqRstAppTh->triger_start();
 
         bool bret = mAiqRstAppTh->start();
         ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
         RKAIQMNG_CHECK_RET(ret, "apply result thread start error");
+#endif
     }
 
     _state = AIQ_STATE_STARTED;
@@ -402,11 +412,12 @@ RkAiqManager::stop(bool keep_ext_hw_st)
         return ret;
     }
 
+#ifndef DISABLE_RESULT_APPLY_THREADS
     mAiqRstAppTh->triger_stop();
     bool bret = mAiqRstAppTh->stop();
     ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
     RKAIQMNG_CHECK_RET(ret, "apply result thread stop error");
-
+#endif
     ret = mRkAiqAnalyzer->stop();
     RKAIQMNG_CHECK_RET(ret, "analyzer stop error %d", ret);
 
@@ -951,9 +962,12 @@ RkAiqManager::rkAiqCalcDone(SmartPtr<RkAiqFullParamsProxy> &results)
 {
     ENTER_XCORE_FUNCTION();
 
+#ifndef DISABLE_RESULT_APPLY_THREADS
     XCAM_ASSERT (mAiqRstAppTh.ptr());
     mAiqRstAppTh->push_results(results);
-
+#else
+    applyAnalyzerResult(results);
+#endif
     EXIT_XCORE_FUNCTION();
 }
 
@@ -1130,11 +1144,12 @@ XCamReturn RkAiqManager::swWorkingModeDyn(rk_aiq_working_mode_t mode)
     // 1. stop analyzer, re-preapre with the new mode
     // 2. stop luma analyzer, re-preapre with the new mode
     LOGI_ANALYZER("stop analyzer ...");
+#ifndef DISABLE_RESULT_APPLY_THREADS
     mAiqRstAppTh->triger_stop();
     bool bret = mAiqRstAppTh->stop();
     ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
     RKAIQMNG_CHECK_RET(ret, "apply result thread stop error");
-
+#endif
     ret = mRkAiqAnalyzer->stop();
     RKAIQMNG_CHECK_RET(ret, "analyzer stop error %d", ret);
 
@@ -1182,12 +1197,13 @@ restart:
     RKAIQMNG_CHECK_RET(ret, "pause hwi error %d", ret);
 
     // 7. restart analyzer
+#ifndef DISABLE_RESULT_APPLY_THREADS
     LOGI_ANALYZER("restart analyzer");
     mAiqRstAppTh->triger_start();
     bret = mAiqRstAppTh->start();
     ret = bret ? XCAM_RETURN_NO_ERROR : XCAM_RETURN_ERROR_FAILED;
     RKAIQMNG_CHECK_RET(ret, "apply result thread start error");
-
+#endif
     ret = mRkAiqAnalyzer->start();
     RKAIQMNG_CHECK_RET(ret, "analyzer start error %d", ret);
 

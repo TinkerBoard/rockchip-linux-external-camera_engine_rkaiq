@@ -104,8 +104,9 @@ static RkAiqGrpCondition_t grp0Cond[] = {
     [0] = {XCAM_MESSAGE_SOF_INFO_OK, 0},
     [1] = {XCAM_MESSAGE_AE_PRE_RES_OK, 0},
     [2] = {XCAM_MESSAGE_AE_PROC_RES_OK, 0},
-    [3] = {XCAM_MESSAGE_AEC_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
-    [4] = {XCAM_MESSAGE_BLC_V32_PROC_RES_OK, 0},
+    //[3] = {XCAM_MESSAGE_AEC_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
+    [3] = {XCAM_MESSAGE_BLC_V32_PROC_RES_OK, 0},
+    [4] = {XCAM_MESSAGE_AWB_PROC_RES_OK, 0},
 };
 static RkAiqGrpConditions_t grp0Conds = {grp_conds_array_info(grp0Cond)};
 
@@ -187,13 +188,13 @@ static struct RkAiqAlgoDesCommExt g_default_3a_des[] = {
     { &g_RkIspAlgoDescAgainV2.common,       RK_AIQ_CORE_ANALYZE_GRP0,   2, 2, 2,    grp0Conds          },
 #endif
 #if RKAIQ_HAVE_CCM_V2
-    { &g_RkIspAlgoDescAccm.common,          RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp1Conds          },
+    { &g_RkIspAlgoDescAccm.common,          RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp0Conds          },
 #endif
 #if RKAIQ_HAVE_3DLUT_V1
-    { &g_RkIspAlgoDescA3dlut.common,        RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp1Conds          },
+    { &g_RkIspAlgoDescA3dlut.common,        RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp0Conds          },
 #endif
 #if RKAIQ_HAVE_LSC_V3
-    { &g_RkIspAlgoDescAlsc.common,          RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp1Conds          },
+    { &g_RkIspAlgoDescAlsc.common,          RK_AIQ_CORE_ANALYZE_GRP1,   0, 0, 0,    grp0Conds          },
 #endif
 #if RKAIQ_HAVE_DPCC_V1
     { &g_RkIspAlgoDescAdpcc.common,         RK_AIQ_CORE_ANALYZE_OTHER,  0, 0, 0,    otherGrpCondsV3x   },

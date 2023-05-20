@@ -33,7 +33,9 @@ void RkAiqAeHandleInt::init() {
     mProcOutParam = NULL;
     mPostInParam  = (RkAiqAlgoCom*)(new RkAiqAlgoPostAe());
     mPostOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoPostResAe());
-
+#if RKAIQ_HAVE_AF
+    mAf_handle = mAiqCore->getCurAlgoTypeHandle(RK_AIQ_ALGO_TYPE_AF);
+#endif
     EXIT_ANALYZER_FUNCTION();
 }
 
@@ -1090,12 +1092,10 @@ XCamReturn RkAiqAeHandleInt::processing() {
     }
 
 #if RKAIQ_HAVE_AF
-    SmartPtr<RkAiqHandle>* af_handle = mAiqCore->getCurAlgoTypeHandle(RK_AIQ_ALGO_TYPE_AF);
-    int algo_id                      = (*af_handle)->getAlgoId();
-
-    if (af_handle) {
+    if (mAf_handle) {
+        int algo_id                      = (*mAf_handle)->getAlgoId();
         if (algo_id == 0) {
-            RkAiqAfHandleInt* af_algo = dynamic_cast<RkAiqAfHandleInt*>(af_handle->ptr());
+            RkAiqAfHandleInt* af_algo = dynamic_cast<RkAiqAfHandleInt*>(mAf_handle->ptr());
             RkAiqAlgoProcResAe* ae_res = &mProcResShared->result;
 
             af_algo->setAeStable(ae_res->ae_proc_res_rk.IsConverged);

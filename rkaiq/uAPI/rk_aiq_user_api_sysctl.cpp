@@ -1074,7 +1074,9 @@ algoHandle(const rk_aiq_sys_ctx_t* ctx, const int algo_type)
     RkCam::RkAiqHandle* handle =
         const_cast<RkCam::RkAiqHandle*>(ctx->_analyzer->getAiqAlgoHandle(algo_type));
 
-    XCAM_ASSERT(handle);
+    //XCAM_ASSERT(handle);
+    if (!handle)
+        return NULL;
 
     int algo_id = handle->getAlgoId();
 
