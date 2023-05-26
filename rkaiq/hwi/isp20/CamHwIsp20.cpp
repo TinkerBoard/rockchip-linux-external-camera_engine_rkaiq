@@ -2719,8 +2719,9 @@ CamHwIsp20::prepare(uint32_t width, uint32_t height, int mode, int t_delay, int 
     //sof event
     if (!mIspSofStream.ptr()) {
         if (mNoReadBack) {
-            if (mTbInfo.prd_type == RK_AIQ_PRD_TYPE_TB_DOORLOCK ||
-                mTbInfo.prd_type == RK_AIQ_PRD_TYPE_TB_BATIPC) {
+            if ((mTbInfo.prd_type == RK_AIQ_PRD_TYPE_TB_DOORLOCK ||
+                mTbInfo.prd_type == RK_AIQ_PRD_TYPE_TB_BATIPC) &&
+                mTbInfo.is_pre_aiq) {
                 mIspSofStream = new RKSofEventStream(_cif_csi2_sd, ISP_POLL_SOF);
             } else {
                 mIspSofStream = new RKSofEventStream(mIspCoreDev, ISP_POLL_SOF);
