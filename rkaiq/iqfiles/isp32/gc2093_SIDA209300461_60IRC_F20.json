@@ -183,7 +183,7 @@
 								"AecEnvLvCalib":	{
 									"Enable":	0,
 									"CalibFNumber":	1.6,
-									"CurveCoeff":	[0.02859, 0.5972]
+									"CurveCoeff":	[40.662718, 144.319241]
 								},
 								"AecWinScale":	{
 									"InRawWinScale":	{
@@ -7979,7 +7979,7 @@
 								"AecEnvLvCalib":	{
 									"Enable":	0,
 									"CalibFNumber":	1.6,
-									"CurveCoeff":	[0.02859, 0.5972]
+									"CurveCoeff":	[40.662718, 144.319241]
 								},
 								"AecWinScale":	{
 									"InRawWinScale":	{
