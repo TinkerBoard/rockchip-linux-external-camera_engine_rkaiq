@@ -753,7 +753,7 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
 #define APPLY_ANALYZER_RESULT(lc, BC) \
     if (aiqParams->m##lc##Params.ptr()) { \
         aiqParams->m##lc##Params->setType(RESULT_TYPE_##BC##_PARAM); \
-        aiqParams->m##lc##Params->setId(aiqParams->m##lc##Params->data()->frame_id); \
+        aiqParams->m##lc##Params->setId(aiqParams->mFrmId); \
         results_list.push_back(aiqParams->m##lc##Params); \
     } \
 
@@ -1113,9 +1113,36 @@ void RkAiqManager::setDefMirrorFlip()
     /* set defalut mirror & flip from iq*/
     CalibDb_Sensor_ParaV2_t* sensor =
         (CalibDb_Sensor_ParaV2_t*)(CALIBDBV2_GET_MODULE_PTR(mCalibDbV2, sensor_calib));
-    bool def_mirr = sensor->CISFlip & 0x1 ? true : false;
-    bool def_flip = sensor->CISFlip & 0x2 ? true : false;
-    setMirrorFlip(def_mirr, def_flip, 0);
+
+    if (mTbInfo.prd_type == RK_AIQ_PRD_TYPE_TB_DOORLOCK ||
+        mTbInfo.prd_type == RK_AIQ_PRD_TYPE_TB_BATIPC) {
+        XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+        ret = mCamHw->getSensorFlip(mCurMirror, mCurFlip);
+        if (ret == XCAM_RETURN_NO_ERROR) {
+            sensor->CISFlip = 0x0;
+            if (mCurMirror) {
+                sensor->CISFlip |= 0x1;
+            }
+            if (mCurFlip) {
+                sensor->CISFlip |= 0x2;
+            }
+
+            LOGI_ANALYZER("get mirror %d, flip %d from sensor driver", mCurMirror, mCurFlip);
+
+            // notify aiq sensor flip is changed
+            mRkAiqAnalyzer->setSensorFlip(mCurMirror, mCurFlip);
+            if (updateCalibDb(mCalibDbV2) < 0) {
+                LOGW_ANALYZER("Failed to updateCalibDb for update sensor mirror/flip");
+            }
+        } else {
+            LOGW_ANALYZER("Failed to get mirror/flip from sensor driver");
+        }
+    } else {
+        bool def_mirr = sensor->CISFlip & 0x1 ? true : false;
+        bool def_flip = sensor->CISFlip & 0x2 ? true : false;
+        setMirrorFlip(def_mirr, def_flip, 0);
+    }
 }
 
 XCamReturn RkAiqManager::swWorkingModeDyn_msg(rk_aiq_working_mode_t mode) {

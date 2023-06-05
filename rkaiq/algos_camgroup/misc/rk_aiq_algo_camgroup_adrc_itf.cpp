@@ -157,9 +157,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         LOGD_ATMO("%s: It's capturing, using pre frame params\n", __func__);
         pAdrcGrpCtx->isCapture = false;
     } else {
-        bool Enable = DrcEnableSetting(pAdrcGrpCtx);
-
-        if (Enable) {
+        if (DrcEnableSetting(pAdrcGrpCtx, pAdrcGrpProcRes->camgroupParmasArray[0]->_adrcConfig)) {
             // get LongFrmMode
             XCamVideoBuffer* xCamAeProcRes = pAdrcGrpParams->camgroupParmasArray[0]->aec._aeProcRes;
             RkAiqAlgoProcResAe* pAEProcRes = NULL;
@@ -395,22 +393,38 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         RkAiqAlgoPreResAe* pAEPreRes  = NULL;
         if (xCamAePreRes) {
             pAEPreRes = (RkAiqAlgoPreResAe*)xCamAePreRes->map(xCamAePreRes);
-            bypass_tuning_params =
-                AdrcByPassTuningProcessing(pAdrcGrpCtx, pAEPreRes->ae_pre_res_rk);
+            if (pAdrcGrpCtx->FrameNumber == LINEAR_NUM)
+                pAdrcGrpCtx->NextData.AEData.EnvLv = pAEPreRes->ae_pre_res_rk.GlobalEnvLv[0];
+            else if (pAdrcGrpCtx->FrameNumber == HDR_2X_NUM ||
+                     pAdrcGrpCtx->FrameNumber == HDR_3X_NUM)
+                pAdrcGrpCtx->NextData.AEData.EnvLv = pAEPreRes->ae_pre_res_rk.GlobalEnvLv[1];
+            else
+                pAdrcGrpCtx->NextData.AEData.EnvLv = ENVLVMIN;
+            // Normalize the current envLv for AEC
+            pAdrcGrpCtx->NextData.AEData.EnvLv =
+                (pAdrcGrpCtx->NextData.AEData.EnvLv - MIN_ENV_LV) / (MAX_ENV_LV - MIN_ENV_LV);
+            pAdrcGrpCtx->NextData.AEData.EnvLv =
+                LIMIT_VALUE(pAdrcGrpCtx->NextData.AEData.EnvLv, ENVLVMAX, ENVLVMIN);
         } else {
-                AecPreResult_t AecHdrPreResult;
-                memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
-                bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcGrpCtx, AecHdrPreResult);
-                bypass_tuning_params = false;
-                LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
+            pAdrcGrpCtx->NextData.AEData.EnvLv = ENVLVMIN;
+            LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
         }
+
+        // get motion coef
+        pAdrcGrpCtx->NextData.MotionCoef = MOVE_COEF_DEFAULT;
+
+        // get bypass_tuning_params
+        bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcGrpCtx);
 
         // get tuning paras
         if (!bypass_tuning_params || !pAdrcGrpCtx->isDampStable)
-            AdrcTuningParaProcessing(pAdrcGrpCtx);
+            AdrcTuningParaProcessing(pAdrcGrpCtx,
+                                     pAdrcGrpProcRes->camgroupParmasArray[0]->_adrcConfig);
 
         // expo para process
-        if (!bypass_expo_params || !pAdrcGrpCtx->isDampStable) AdrcExpoParaProcessing(pAdrcGrpCtx);
+        if (!bypass_expo_params || !pAdrcGrpCtx->isDampStable)
+            AdrcExpoParaProcessing(pAdrcGrpCtx,
+                                   pAdrcGrpProcRes->camgroupParmasArray[0]->_adrcConfig);
         } else {
             LOGD_ATMO("%s: Group Drc Enable is OFF, Bypass Drc !!! \n", __func__);
         }
@@ -421,22 +435,19 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         __func__);
 
     // output ProcRes
-    for (int i = 0; i < pAdrcGrpProcRes->arraySize; i++) {
+    for (int i = 1; i < pAdrcGrpProcRes->arraySize; i++) {
         pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->update =
             !bypass_tuning_params || !bypass_expo_params || pAdrcGrpCtx->ifReCalcStAuto ||
             pAdrcGrpCtx->ifReCalcStManual || !pAdrcGrpCtx->isDampStable;
-        if (pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->update) {
-            // store new proc res
-            pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->bDrcEn =
-                pAdrcGrpCtx->NextData.Enable;
-            memcpy(&pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->DrcProcRes,
-                   &pAdrcGrpCtx->AdrcProcRes.DrcProcRes, sizeof(DrcProcRes_t));
-            // store curr data 2 api info
-            AdrcParams2Api(pAdrcGrpCtx);
-        }
+        pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->bDrcEn =
+            pAdrcGrpProcRes->camgroupParmasArray[0]->_adrcConfig->bDrcEn;
+        pAdrcGrpProcRes->camgroupParmasArray[i]->_adrcConfig->DrcProcRes =
+            pAdrcGrpProcRes->camgroupParmasArray[0]->_adrcConfig->DrcProcRes;
     }
-
-    pAdrcGrpCtx->CurrData.Enable  = pAdrcGrpCtx->NextData.Enable;
+    // update curr data 2 api info
+    if (pAdrcGrpProcRes->camgroupParmasArray[0]->_adrcConfig->update) {
+        AdrcParams2Api(pAdrcGrpCtx, pAdrcGrpProcRes->camgroupParmasArray[0]->_adrcConfig);
+    }
     pAdrcGrpCtx->ifReCalcStAuto   = false;
     pAdrcGrpCtx->ifReCalcStManual = false;
 

@@ -30,9 +30,11 @@ class RkAiqAfHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAfHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore), mProcResShared(nullptr) {
+#ifndef DISABLE_HANDLE_ATTRIB
         memset(&mCurAtt, 0, sizeof(rk_aiq_af_attrib_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_af_attrib_t));
         isUpdateAttDone     = false;
+#endif
         isUpdateZoomPosDone = false;
     };
     virtual ~RkAiqAfHandleInt() { RkAiqHandle::deInit(); };
@@ -68,10 +70,12 @@ class RkAiqAfHandleInt : virtual public RkAiqHandle {
  private:
     bool getValueFromFile(const char* path, int* pos);
 
+#ifndef DISABLE_HANDLE_ATTRIB
     // TODO
     rk_aiq_af_attrib_t mCurAtt;
     rk_aiq_af_attrib_t mNewAtt;
     mutable std::atomic<bool> isUpdateAttDone;
+#endif
     mutable std::atomic<bool> isUpdateZoomPosDone;
     int mLastZoomIndex;
 

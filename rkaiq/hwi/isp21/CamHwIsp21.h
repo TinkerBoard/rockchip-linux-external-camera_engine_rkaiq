@@ -38,7 +38,7 @@ public:
     XCamReturn setIspParamsSync(uint32_t frameId);
     XCamReturn setIsppParamsSync(uint32_t frameId);
 protected:
-    virtual XCamReturn setIspConfig();
+    virtual XCamReturn setIspConfig(cam3aResultList* result_list = NULL);
     virtual XCamReturn dispatchResult(SmartPtr<cam3aResult> cam3a_result);
     virtual XCamReturn dispatchResult(cam3aResultList& list);
     virtual bool isOnlineByWorkingMode();

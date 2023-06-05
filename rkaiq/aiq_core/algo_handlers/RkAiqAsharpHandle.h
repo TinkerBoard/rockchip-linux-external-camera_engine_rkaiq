@@ -56,12 +56,14 @@ protected:
     };
 
 private:
+#ifndef DISABLE_HANDLE_ATTRIB
     // TODO
     rk_aiq_sharp_attrib_t mCurAtt;
     rk_aiq_sharp_attrib_t mNewAtt;
     rk_aiq_sharp_IQpara_t mCurIQPara;
     rk_aiq_sharp_IQpara_t mNewIQPara;
     bool updateIQpara = false;
+#endif
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAsharpHandleInt);

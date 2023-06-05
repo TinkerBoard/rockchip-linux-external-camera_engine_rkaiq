@@ -25,6 +25,7 @@
 
 namespace RkCam {
 
+#ifndef DISABLE_PARAMS_ASSEMBLER
 uint32_t IspParamsAssembler::MAX_PENDING_PARAMS = 2;
 
 IspParamsAssembler::IspParamsAssembler (const char* name)
@@ -429,6 +430,7 @@ IspParamsAssembler::stop() {
     started = false;
     reset_locked();
 }
+#endif
 
 template <typename T>
 struct ConvertAeHelper {

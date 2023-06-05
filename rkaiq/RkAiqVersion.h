@@ -697,10 +697,14 @@
  * v5.0x1.2-rc4
  * - afd: add afd algo
  * - awb: modify apis
+ *
+ * v5.0x1.2-rc5
+ * - optimize cpu usage
+ * - modify blc and sharp api attribs
  */
 
-#define RK_AIQ_VERSION_REAL_V "v5.0x1.2-rc4"
-#define RK_AIQ_RELEASE_DATE "2023-04-11"
+#define RK_AIQ_VERSION_REAL_V "v5.0x1.2-rc5"
+#define RK_AIQ_RELEASE_DATE "2023-06-05"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

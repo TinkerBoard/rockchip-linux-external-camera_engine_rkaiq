@@ -124,15 +124,13 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     else if (pAgammaHandle->agammaAttrV11.mode == RK_AIQ_GAMMA_MODE_AUTO)
         bypass = !pAgammaHandle->ifReCalcStAuto;
 #endif
+
+    if (!bypass) AgammaProcessing(pAgammaHandle, pProcRes);
+
+    pProcRes->update = !bypass;
+
     pAgammaHandle->ifReCalcStAuto   = false;
     pAgammaHandle->ifReCalcStManual = false;
-
-    if (!bypass) {
-        AgammaProcessing(pAgammaHandle);
-    }
-
-    // set proc res
-    AgammaSetProcRes(pProcRes, pAgammaHandle, bypass);
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);
     return ret;

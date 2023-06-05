@@ -40,6 +40,7 @@ XCamReturn RkAiqArawnrV2HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -73,6 +74,7 @@ XCamReturn RkAiqArawnrV2HandleInt::updateConfig(bool needSync) {
     }
 
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -83,6 +85,9 @@ XCamReturn RkAiqArawnrV2HandleInt::setAttrib(rk_aiq_bayernr_attrib_v2_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_arawnrV2_SetAttrib(mAlgoCtx, att, false);
+#else
     // TODO
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
@@ -95,6 +100,7 @@ XCamReturn RkAiqArawnrV2HandleInt::setAttrib(rk_aiq_bayernr_attrib_v2_t* att) {
         updateAtt = true;
         waitSignal();
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -118,6 +124,9 @@ XCamReturn RkAiqArawnrV2HandleInt::setIQPara(rk_aiq_bayernr_IQPara_V2_t* para) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    // TODO
+#else
     // TODO
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
@@ -130,6 +139,7 @@ XCamReturn RkAiqArawnrV2HandleInt::setIQPara(rk_aiq_bayernr_IQPara_V2_t* para) {
         updateIQpara = true;
         waitSignal();
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -154,9 +164,13 @@ XCamReturn RkAiqArawnrV2HandleInt::setSFStrength(float fPercent) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_rawnrV2_SetSFStrength(mAlgoCtx, fPercent);
+#else
     mNew2DStrength   = fPercent;
     update2DStrength = true;
     waitSignal();
+#endif
 
     mCfgMutex.unlock();
     EXIT_ANALYZER_FUNCTION();
@@ -179,10 +193,14 @@ XCamReturn RkAiqArawnrV2HandleInt::setTFStrength(float fPercent) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_rawnrV2_SetTFStrength(mAlgoCtx, fPercent);
+#else
 
     mNew3DStrength   = fPercent;
     update3DStrength = true;
     waitSignal();
+#endif
 
     mCfgMutex.unlock();
     EXIT_ANALYZER_FUNCTION();
@@ -264,8 +282,14 @@ XCamReturn RkAiqArawnrV2HandleInt::processing() {
     arawnr_proc_int->iso      = sharedCom->iso;
     arawnr_proc_int->hdr_mode = sharedCom->working_mode;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "aynr algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();

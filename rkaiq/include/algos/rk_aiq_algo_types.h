@@ -539,7 +539,7 @@ typedef struct _RkAiqAlgoProcA3dlut {
 
 typedef struct _RkAiqAlgoProcResA3dlut {
     RkAiqAlgoResCom res_com;
-    rk_aiq_lut3d_cfg_t lut3d_hw_conf;
+    rk_aiq_lut3d_cfg_t* lut3d_hw_conf;
     bool lut3d_update;
 } RkAiqAlgoProcResA3dlut;
 
@@ -604,8 +604,8 @@ typedef struct _RkAiqAlgoProcAccm {
 typedef struct _RkAiqAlgoProcResAccm {
     RkAiqAlgoResCom res_com;
     union {
-        rk_aiq_ccm_cfg_t accm_hw_conf;
-        rk_aiq_ccm_cfg_v2_t accm_hw_conf_v2;
+        rk_aiq_ccm_cfg_t* accm_hw_conf;
+        rk_aiq_ccm_cfg_v2_t* accm_hw_conf_v2;
     };
     bool ccm_update;
 } RkAiqAlgoProcResAccm;
@@ -731,7 +731,7 @@ typedef struct _RkAiqAlgoProcAgic {
 
 typedef struct _RkAiqAlgoProcResAgic {
     RkAiqAlgoResCom res_com;
-    AgicProcResult_t gicRes;
+    AgicProcResult_t* gicRes;
 } RkAiqAlgoProcResAgic;
 
 // aie
@@ -785,7 +785,7 @@ typedef struct _RkAiqAlgoProcAlsc {
 
 typedef struct _RkAiqAlgoProcResAlsc {
     RkAiqAlgoResCom res_com;
-    rk_aiq_lsc_cfg_t alsc_hw_conf;
+    rk_aiq_lsc_cfg_t* alsc_hw_conf;
 } RkAiqAlgoProcResAlsc;
 
 // aorb

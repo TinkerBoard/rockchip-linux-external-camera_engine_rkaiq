@@ -29,8 +29,10 @@ class RkAiqArawnrV2HandleInt : virtual public RkAiqHandle {
 public:
     explicit RkAiqArawnrV2HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
         memset(&mCurAtt, 0, sizeof(rk_aiq_bayernr_attrib_v2_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_bayernr_attrib_v2_t));
+#endif
     };
     virtual ~RkAiqArawnrV2HandleInt() {
         RkAiqHandle::deInit();
@@ -58,6 +60,7 @@ protected:
     };
 
 private:
+#ifndef DISABLE_HANDLE_ATTRIB
     // TODO
     rk_aiq_bayernr_attrib_v2_t mCurAtt;
     rk_aiq_bayernr_attrib_v2_t mNewAtt;
@@ -70,6 +73,7 @@ private:
     bool updateIQpara     = false;
     bool update2DStrength = false;
     bool update3DStrength = false;
+#endif
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqArawnrV2HandleInt);

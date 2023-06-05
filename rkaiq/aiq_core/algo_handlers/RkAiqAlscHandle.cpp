@@ -237,6 +237,13 @@ XCamReturn RkAiqAlscHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    if (!shared->fullParams || !shared->fullParams->mLscParams.ptr()) {
+        LOGE_ALSC("[%d]: no lsc buf !", shared->frameId);
+        return XCAM_RETURN_BYPASS;
+    }
+
+    alsc_proc_res_int->alsc_hw_conf = &shared->fullParams->mLscParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "alsc handle processing failed");
@@ -359,7 +366,9 @@ XCamReturn RkAiqAlscHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     } else {
         lsc_param->frame_id = shared->frameId;
     }
+#if 0//moved to processing out params
     lsc_param->result = alsc_rk->alsc_hw_conf;
+#endif
     if (sharedCom->sns_mirror) {
         for (int i = 0; i < LSC_DATA_TBL_V_SIZE; i++) {
             for (int j = 0; j < LSC_DATA_TBL_H_SIZE; j++) {

@@ -1403,7 +1403,7 @@ SensorHw::get_mirror_flip(bool& mirror, bool& flip)
     mirror = ctrl.value ? true : false;
 
     ctrl.id = V4L2_CID_VFLIP;
-    if (io_control(VIDIOC_S_CTRL, &ctrl) < 0) {
+    if (io_control(VIDIOC_G_CTRL, &ctrl) < 0) {
         LOGW_CAMHW_SUBM(SENSOR_SUBM, "failed to set vflip (val: %d)", ctrl.value);
         return XCAM_RETURN_ERROR_IOCTL;
     }

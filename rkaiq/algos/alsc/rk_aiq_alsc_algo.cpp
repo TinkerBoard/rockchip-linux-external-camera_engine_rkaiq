@@ -246,7 +246,7 @@ static XCamReturn VignInterpolateMatrices
  *****************************************************************************/
 static XCamReturn Damping
 (
-    const float     damp,               /**< damping coefficient */
+    float     damp,               /**< damping coefficient */
     lsc_matrix_t*  pMatrixUndamped,   /**< undamped new computed matrices */
     lsc_matrix_t*  pMatrixDamped      /**< old matrices and XCamReturn */
 ) {
@@ -263,6 +263,24 @@ static XCamReturn Damping
         uint32_t greenr;
         uint32_t greenb;
         uint32_t blue;
+        float dis=0;
+        float dis_th=0.015;
+        bool speedDamp = true;
+        dis = (float)(pMatrixDamped->LscMatrix[CAM_4CH_COLOR_COMPONENT_RED].uCoeff[0]-
+            pMatrixUndamped->LscMatrix[CAM_4CH_COLOR_COMPONENT_RED].uCoeff[0])/
+            (pMatrixDamped->LscMatrix[CAM_4CH_COLOR_COMPONENT_RED].uCoeff[0]+
+            pMatrixUndamped->LscMatrix[CAM_4CH_COLOR_COMPONENT_RED].uCoeff[0]);
+        speedDamp = fabs(dis)<dis_th;
+        dis = (float)(pMatrixDamped->LscMatrix[CAM_4CH_COLOR_COMPONENT_BLUE].uCoeff[17*17-1]-
+            pMatrixUndamped->LscMatrix[CAM_4CH_COLOR_COMPONENT_BLUE].uCoeff[17*17-1])/
+            (pMatrixDamped->LscMatrix[CAM_4CH_COLOR_COMPONENT_BLUE].uCoeff[17*17-1]+
+            pMatrixUndamped->LscMatrix[CAM_4CH_COLOR_COMPONENT_BLUE].uCoeff[17*17-1]);
+        speedDamp &= fabs(dis)<dis_th;
+        if(speedDamp){
+            damp = 0;
+            f1_ = 0;
+            f2_ = 65536;
+        }
 
         for (i = 0; i < (17 * 17); i++) {
             red     = (f1_ * (uint32_t)pMatrixDamped->LscMatrix[CAM_4CH_COLOR_COMPONENT_RED].uCoeff[i])
@@ -834,7 +852,8 @@ XCamReturn AlscAutoConfig(alsc_handle_t hAlsc)
     // 5) . Damping
     float dampCoef = (hAlsc->calibLscV2->alscCoef.damp_enable && hAlsc->count > 1) ? hAlsc->alscSwInfo.awbIIRDampCoef : 0;
     ret = Damping(dampCoef, &hAlsc->alscRest.undampedLscMatrixTable, &hAlsc->alscRest.dampedLscMatrixTable);
-
+    hAlsc->smartRunRes.lscTableConverge = !memcmp(&hAlsc->alscRest.undampedLscMatrixTable,&hAlsc->alscRest.dampedLscMatrixTable,
+        sizeof(hAlsc->alscRest.undampedLscMatrixTable));
     // 6 set to ic
     genLscMatrixToHwConf(&hAlsc->alscRest.dampedLscMatrixTable, &hAlsc->lscHwConf, &hAlsc->otpGrad);
 
@@ -901,6 +920,44 @@ XCamReturn AlscManualGrad(alsc_handle_t hAlsc) {
     return ret;
 }
 
+
+void JudgeAutoRun
+(
+    alsc_handle_t hAlsc
+
+) {
+    bool gainStable;
+    bool wbgainStable;
+    float wb_th = hAlsc->smartRunCfg.wbgain_th*hAlsc->smartRunCfg.wbgain_th;
+    if (fabs(hAlsc->alscSwInfo.sensorGain - hAlsc->smartRunRes.last_gain) > hAlsc->smartRunCfg.gain_th) {
+        hAlsc->smartRunRes.last_gain = hAlsc->alscSwInfo.sensorGain;
+        gainStable = false;
+    } else {
+        gainStable = true;
+    }
+
+    if ((hAlsc->smartRunRes.last_awbGain[0]-hAlsc->alscSwInfo.awbGain[0])*(hAlsc->smartRunRes.last_awbGain[0]-hAlsc->alscSwInfo.awbGain[0])
+         + (hAlsc->smartRunRes.last_awbGain[1]-hAlsc->alscSwInfo.awbGain[1])*(hAlsc->smartRunRes.last_awbGain[1]-hAlsc->alscSwInfo.awbGain[1]) > wb_th) {
+        hAlsc->smartRunRes.last_awbGain[0] = hAlsc->alscSwInfo.awbGain[0];
+        hAlsc->smartRunRes.last_awbGain[1] = hAlsc->alscSwInfo.awbGain[1];
+        wbgainStable = false;
+        LOGD_ALSC("update wbgain: %f, %f\n", hAlsc->alscSwInfo.awbGain[0], hAlsc->alscSwInfo.awbGain[1]);
+    } else {
+        wbgainStable = true;
+        hAlsc->alscSwInfo.awbGain[0] = hAlsc->smartRunRes.last_awbGain[0];
+        hAlsc->alscSwInfo.awbGain[1] = hAlsc->smartRunRes.last_awbGain[1];
+    }
+
+    bool notRunflag = wbgainStable && gainStable
+        && hAlsc->smartRunRes.lscTableConverge
+        && !(hAlsc->smartRunRes.forceRunFlag);
+    hAlsc->smartRunRes.samrtRunFlag = !notRunflag;
+    LOGD_ALSC("smartRun(%d),awbStable(%d),aeStable(%d),lscTableConverge(%d),forceRunFlag(%d)",hAlsc->smartRunRes.samrtRunFlag,
+        wbgainStable,gainStable,hAlsc->smartRunRes.lscTableConverge,hAlsc->smartRunRes.forceRunFlag);
+    hAlsc->smartRunRes.forceRunFlag =false;
+}
+
+
 XCamReturn AlscConfig
 (
     alsc_handle_t hAlsc
@@ -913,7 +970,8 @@ XCamReturn AlscConfig
     hAlsc->alscRest.caseIndex = USED_FOR_CASE_NORMAL;
     if((hAlsc->alscSwInfo.grayMode == true && hAlsc->alscRest.caseIndex != USED_FOR_CASE_GRAY)||
         (hAlsc->alscSwInfo.grayMode == false && hAlsc->alscRest.caseIndex == USED_FOR_CASE_GRAY)){
-         clear_list(&hAlsc->alscRest.dominateIlluList);
+        hAlsc->smartRunRes.forceRunFlag = true;
+        clear_list(&hAlsc->alscRest.dominateIlluList);
     }
     if(hAlsc->alscSwInfo.grayMode){
         hAlsc->alscRest.caseIndex = USED_FOR_CASE_GRAY;
@@ -930,7 +988,8 @@ XCamReturn AlscConfig
     if(hAlsc->mCurAtt.byPass != true ) {
         hAlsc->lscHwConf.lsc_en = true;
         if(hAlsc->mCurAtt.mode == RK_AIQ_LSC_MODE_AUTO) {
-            if (hAlsc->auto_mode_need_run_algo) {
+            JudgeAutoRun(hAlsc);
+            if (hAlsc->smartRunRes.samrtRunFlag) {
                 AlscAutoConfig(hAlsc);
             }
         } else if(hAlsc->mCurAtt.mode == RK_AIQ_LSC_MODE_MANUAL) {
@@ -1008,8 +1067,14 @@ XCamReturn AlscInit(alsc_handle_t *hAlsc, const CamCalibDbV2Context_t* calib2)
     alsc_context->mCurAtt.byPass = !calib2_lsc->common.enable;
     alsc_context->count = 0;
     alsc_context->mCurAtt.mode = RK_AIQ_LSC_MODE_AUTO;
+    alsc_context->smartRunCfg.enable = true;
+    alsc_context->smartRunCfg.wbgain_th= 0.05;
+    alsc_context->smartRunCfg.gain_th= 0.2;
+    alsc_context->smartRunRes.last_gain = -1;
+    alsc_context->smartRunRes.last_awbGain[0]= -1;
+    alsc_context->smartRunRes.last_awbGain[1]= -1;
+    alsc_context->smartRunRes.forceRunFlag = true;
     //alsc_context->alscSwInfo.prepare_type = RK_AIQ_ALGO_CONFTYPE_UPDATECALIB | RK_AIQ_ALGO_CONFTYPE_NEEDRESET;
-    alsc_context->auto_mode_need_run_algo = true;
     //ret = UpdateLscCalibPara(alsc_context);
     //print_alsc(alsc_context);
     memset(&alsc_context->otpGrad, 0, sizeof(alsc_context->otpGrad));
@@ -1050,8 +1115,7 @@ XCamReturn AlscPrepare(alsc_handle_t hAlsc)
     }
 
     hAlsc->mCurAtt.byPass = !hAlsc->calibLscV2->common.enable;
-    hAlsc->auto_mode_need_run_algo = true;
-
+    hAlsc->smartRunRes.forceRunFlag = true;
     const CalibDbV2_Lsc_Common_t& lsc_com = hAlsc->calibLscV2->common;
     const CalibDbV2_Lsc_Resolution_t* calib_lsc_res = nullptr;
     for(int i = 0; i < lsc_com.resolutionAll_len; i++) {

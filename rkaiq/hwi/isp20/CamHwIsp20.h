@@ -30,9 +30,11 @@
 #include "RawStreamProcUnit.h"
 #include "SPStreamProcUnit.h"
 #include "PdafStreamProcUnit.h"
+#ifdef ISP_HW_V20
 #include "TnrStreamProcUnit.h"
 #include "NrStreamProcUnit.h"
 #include "FecParamStream.h"
+#endif
 #include "thumbnails.h"
 #include "CifScaleStream.h"
 
@@ -216,7 +218,7 @@ private:
     XCamReturn get_sensor_pdafinfo(rk_sensor_full_info_t *sensor_info, rk_sensor_pdaf_info_t *pdaf_info);
 protected:
     XCAM_DEAD_COPY(CamHwIsp20);
-    virtual XCamReturn setIspConfig();
+    virtual XCamReturn setIspConfig(cam3aResultList* result_list = NULL);
     virtual XCamReturn poll_buffer_ready (SmartPtr<VideoBuffer> &buf) override;
     enum cam_hw_state_e {
         CAM_HW_STATE_INVALID,
@@ -389,7 +391,9 @@ protected:
 
     std::map<uint32_t, SmartPtr<RkAiqIspEffParamsProxy>> _effecting_ispparam_map;
     SmartPtr<RkAiqIspEffParamsPool> mEffectIspParamsPool;
+#ifndef DISABLE_PARAMS_ASSEMBLER
     SmartPtr<IspParamsAssembler> mParamsAssembler;
+#endif
     uint32_t mPpModuleInitEns;
     bool mVicapIspPhyLinkSupported; // if phsical link between vicap and isp, only isp3x support now
     SmartPtr<IspParamsSplitter> mParamsSplitter;

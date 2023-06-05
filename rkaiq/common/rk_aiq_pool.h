@@ -63,6 +63,7 @@ typedef struct RKAiqAecExpInfoWrapper_s : public XCam::BufferData {
        }
        exp_i2c_params = NULL;
        exp_tbl = NULL;
+       exp_tbl_size = 0;
     }
 private:
     XCAM_DEAD_COPY (RKAiqAecExpInfoWrapper_s);
@@ -554,7 +555,9 @@ public:
     };
 
     void reset() {
+        // MUST release, cause some malloc was made in mExposureParams
         mExposureParams.release();
+#if 0// Do not release to save cpu usage
         mFocusParams.release();
         mIrisParams.release();
         mCpslParams.release();
@@ -639,7 +642,9 @@ public:
         mAfV32LiteParams.release();
 
         mAfdParams.release();
+#endif
     };
+    uint32_t                                mFrmId;
     SmartPtr<RkAiqExpParamsProxy>           mExposureParams;
     SmartPtr<RkAiqFocusParamsProxy>         mFocusParams;
     SmartPtr<RkAiqIrisParamsProxy>          mIrisParams;

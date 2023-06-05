@@ -1243,8 +1243,7 @@ XCamReturn RkAiqAeHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPara
         exp_param->exp_tbl_size = ae_rk->ae_proc_res_rk.exp_set_cnt;
         LOGD_AEC("frame_id:%d, malloc exp_tbl: %p\n", shared->frameId, exp_param->exp_tbl);
     } else {
-        exp_param->exp_tbl_size = 0;
-        exp_param->exp_tbl = NULL;
+        exp_param->reset();
     }
     exp_param->algo_id      = 0;//algo_id;
 

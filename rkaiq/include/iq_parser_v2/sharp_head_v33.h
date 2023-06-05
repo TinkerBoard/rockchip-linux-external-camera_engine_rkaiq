@@ -41,6 +41,11 @@ typedef struct CalibDbV2_SharpV33_kernel_s {
     float GaussianFilter_coeff[6];
     // M4_ARRAY_DESC("hfBilateralFilter_coeff", "f32", M4_SIZE(1,3), M4_RANGE(0.0,1.0), "[0.2042,0.1238,0.0751]", M4_DIGIT(4), M4_DYNAMIC(0))
     float hfBilateralFilter_coeff[3];
+
+    // M4_ARRAY_DESC("GaussianFilter_coeff_0", "f32", M4_SIZE(1,6), M4_RANGE(0.0,1.0), "[0.0632,0.0558,0.0492,0.0383,0.0338,0.0232]", M4_DIGIT(4), M4_DYNAMIC(0))
+    float GaussianFilter_coeff_0[6];
+    // M4_ARRAY_DESC("GaussianFilter_coeff_1", "f32", M4_SIZE(1,6), M4_RANGE(0.0,1.0), "[0.0632,0.0558,0.0492,0.0383,0.0338,0.0232]", M4_DIGIT(4), M4_DYNAMIC(0))
+    float GaussianFilter_coeff_1[6];
 } CalibDbV2_SharpV33_kernel_t;
 
 typedef struct CalibDbV2_SharpV33_Ksigma_s {
@@ -52,6 +57,15 @@ typedef struct CalibDbV2_SharpV33_Ksigma_s {
     float GaussianFilter_sigma;
     // M4_NUMBER_MARK_DESC("GaussianFilter_radius", "u8", M4_RANGE(1, 2), "2", M4_DIGIT(0))
     uint8_t GaussianFilter_radius;
+
+    // M4_NUMBER_MARK_DESC("GaussianFilter_sigma_0", "f32", M4_RANGE(0.0, 100.0), "1.0", M4_DIGIT(2))
+    float GaussianFilter_sigma_0;
+    // M4_NUMBER_MARK_DESC("GaussianFilter_sigma_1", "f32", M4_RANGE(0.0, 100.0), "1.0", M4_DIGIT(2))
+    float GaussianFilter_sigma_1;
+    // M4_NUMBER_MARK_DESC("GaussianFilter_radius_0", "u8", M4_RANGE(1, 2), "2", M4_DIGIT(0))
+    uint8_t GaussianFilter_radius_0;
+    // M4_NUMBER_MARK_DESC("GaussianFilter_radius_1", "u8", M4_RANGE(1, 2), "2", M4_DIGIT(0))
+    uint8_t GaussianFilter_radius_1;
 
 } CalibDbV2_SharpV33_Ksigma_t;
 
@@ -70,6 +84,12 @@ typedef struct CalibDbV2_SharpV33_T_ISO_s {
     float gaus_ratio;
     // M4_NUMBER_DESC("sharp_ratio", "f32", M4_RANGE(0.0, 31.275), "8", M4_DIGIT(2))
     float sharp_ratio;
+
+    // M4_NUMBER_DESC("sharp_ratio_0", "f32", M4_RANGE(0.0, 31.275), "4", M4_DIGIT(2))
+    float sharp_ratio_0;
+    // M4_NUMBER_DESC("sharp_ratio_1", "f32", M4_RANGE(0.0, 31.275), "4", M4_DIGIT(2))
+    float sharp_ratio_1;
+
     // M4_NUMBER_DESC("bf_gain", "f32", M4_RANGE(0.0, 4.0), "0.5", M4_DIGIT(2))
     float bf_gain;
     // M4_NUMBER_DESC("bf_ratio", "f32", M4_RANGE(0.0, 1.0), "0.5", M4_DIGIT(2))
@@ -117,6 +137,8 @@ typedef struct CalibDbV2_SharpV33_T_Set_s {
 typedef struct CalibDbV2_SharpV33_Tuning_s {
     // M4_BOOL_DESC("enable", "1")
     bool enable;
+    // M4_BOOL_DESC("sharp_ratio_seperate_en", "0")
+    bool sharp_ratio_seperate_en;
     // M4_BOOL_DESC("kernel_sigma_enable", "0")
     bool kernel_sigma_enable;
     // M4_BOOL_DESC("Center_Mode", "0")
@@ -161,6 +183,12 @@ typedef struct CalibDbV2_SharpV33LT_T_ISO_s {
     float gaus_ratio;
     // M4_NUMBER_DESC("sharp_ratio", "f32", M4_RANGE(0.0, 31.275), "8", M4_DIGIT(2))
     float sharp_ratio;
+
+    // M4_NUMBER_DESC("sharp_ratio_0", "f32", M4_RANGE(0.0, 31.275), "4", M4_DIGIT(2))
+    float sharp_ratio_0;
+    // M4_NUMBER_DESC("sharp_ratio_1", "f32", M4_RANGE(0.0, 31.275), "4", M4_DIGIT(2))
+    float sharp_ratio_1;
+
     // M4_NUMBER_DESC("bf_gain", "f32", M4_RANGE(0.0, 4.0), "0.5", M4_DIGIT(2))
     float bf_gain;
     // M4_NUMBER_DESC("bf_ratio", "f32", M4_RANGE(0.0, 1.0), "0.5", M4_DIGIT(2))
@@ -211,6 +239,8 @@ typedef struct CalibDbV2_SharpV33LT_T_Set_s {
 typedef struct CalibDbV2_SharpV33LT_Tuning_s {
     // M4_BOOL_DESC("enable", "1")
     bool enable;
+    // M4_BOOL_DESC("sharp_ratio_seperate_en", "0")
+    bool sharp_ratio_seperate_en;
     // M4_BOOL_DESC("kernel_sigma_enable", "0")
     bool kernel_sigma_enable;
     // M4_BOOL_DESC("Center_Mode", "0")

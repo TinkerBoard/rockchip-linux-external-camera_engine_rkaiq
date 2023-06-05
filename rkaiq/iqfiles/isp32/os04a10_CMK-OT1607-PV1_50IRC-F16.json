@@ -3159,7 +3159,7 @@
 								"enable":	1,
 								"thumbds_w":	8,
 								"thumbds_h":	4,
-								"trans_en":	0,
+								"trans_en":	1,
 								"lo_enable":	1,
 								"Setting":	[{
 										"SNR_Mode":	"LSNR",
@@ -8078,7 +8078,7 @@
 									"Frm0TimeDot_len":	6,
 									"Frm0GainDot":	[1, 1, 4, 8, 15.5, 32],
 									"Frm0GainDot_len":	6,
-									"Frm0IspDGainDot":	[1, 1, 1, 1, 1, 60],
+									"Frm0IspDGainDot":	[1, 1, 1, 1, 1, 1],
 									"Frm0IspDGainDot_len":	6,
 									"Frm1TimeDot":	[0, 0.03, 0.03, 0.03, 0.03, 0.03],
 									"Frm1TimeDot_len":	6,
@@ -10947,7 +10947,7 @@
 								"enable":	1,
 								"thumbds_w":	0,
 								"thumbds_h":	0,
-								"trans_en":	0,
+								"trans_en":	1,
 								"lo_enable":	1,
 								"Setting":	[{
 										"SNR_Mode":	"LSNR",

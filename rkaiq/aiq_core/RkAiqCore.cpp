@@ -106,6 +106,7 @@ RkAiqCoreEvtsThread::loop()
 // notice that some pool shared items may be cached by other
 // modules(e.g. CamHwIsp20), so here should consider the cached number
 uint16_t RkAiqCore::DEFAULT_POOL_SIZE = 3;
+static uint16_t FULLPARMAS_MAX_PENDING_SIZE = 2;
 
 bool RkAiqCore::isGroupAlgo(int algoType) {
     static auto policy = mProfiles.getAlgoPolicies();
@@ -124,7 +125,7 @@ RkAiqCore::RkAiqCore(int isp_hw_ver)
     , mState(RK_AIQ_CORE_STATE_INVALID)
     , mCb(NULL)
     , mIsSingleThread(false)
-    , mAiqParamsPool(new RkAiqFullParamsPool("RkAiqFullParams", 32))
+    , mAiqParamsPool(new RkAiqFullParamsPool("RkAiqFullParams", RkAiqCore::DEFAULT_POOL_SIZE))
     , mAiqCpslParamsPool(new RkAiqCpslParamsPool("RkAiqCpslParamsPool", RkAiqCore::DEFAULT_POOL_SIZE))
     , mAiqStatsPool(nullptr)
     , mAiqSofInfoWrapperPool(new RkAiqSofInfoWrapperPool("RkAiqSofPoolWrapper", RkAiqCore::DEFAULT_POOL_SIZE))
@@ -180,6 +181,7 @@ RkAiqCore::RkAiqCore(int isp_hw_ver)
     mTranslator     = new RkAiqResourceTranslatorV32();
     mIsSingleThread = true;
 #endif
+    mFullParamsPendingMap.clear();
     EXIT_ANALYZER_FUNCTION();
 }
 
@@ -435,6 +437,10 @@ RkAiqCore::stop()
     }
     mIspStatsCond.broadcast ();
     mSafeEnableAlgo = true;
+    {
+        SmartLock locker (_mFullParam_mutex);
+        mFullParamsPendingMap.clear();
+    }
     EXIT_ANALYZER_FUNCTION();
 
     return XCAM_RETURN_NO_ERROR;
@@ -593,13 +599,14 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
         SmartPtr<RkAiqFullParams> curParams = mAiqCurParams->data();
         if (curParams.ptr() && curParams->mExposureParams.ptr()) {
             shared->curExp =
-                curParams->mExposureParams->data()->exp_tbl[0];
+                curParams->mExposureParams->data()->aecExpInfo;
         }
         mapIter++;
     }
 
     analyzeInternal(RK_AIQ_CORE_ANALYZE_AE);
     analyzeInternal(RK_AIQ_CORE_ANALYZE_ALL);
+    mFullParamsPendingMap.clear();
     freeSharebuf(RK_AIQ_CORE_ANALYZE_GRP1);
     // syncVicapScaleMode();
 
@@ -663,26 +670,17 @@ void RkAiqCore::getDummyAlgoRes(int type, uint32_t frame_id) {
 }
 
 SmartPtr<RkAiqFullParamsProxy>
-RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e type)
+RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e grp_type)
 {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     SmartPtr<RkAiqFullParamsProxy> aiqParamProxy = NULL;
-    if (mAiqParamsPool->has_free_items())
-        aiqParamProxy = mAiqParamsPool->get_item();
+    RkAiqFullParams* aiqParams = NULL;
+    bool got_full_buf = false;
 
-    if (!aiqParamProxy.ptr()) {
-        LOGE_ANALYZER("no free aiq params buffer!");
-        return NULL;
-    }
-
-    RkAiqFullParams* aiqParams = aiqParamProxy->data().ptr();
-
-    RKAIQCORE_CHECK_RET_NULL(ret, "get params failed");
-
-    std::vector<SmartPtr<RkAiqHandle>>& algo_list = mRkAiqCoreGroupManager->getGroupAlgoList(type);
+    std::vector<SmartPtr<RkAiqHandle>>& algo_list = mRkAiqCoreGroupManager->getGroupAlgoList(grp_type);
     SmartPtr<RkAiqFullParams> curParams           = mAiqCurParams->data();
     for (auto& algoHdl : algo_list) {
         RkAiqHandle* curHdl = algoHdl.ptr();
@@ -694,11 +692,44 @@ RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e type)
                     auto* shared = (RkAiqCore::RkAiqAlgosGroupShared_t*)(curHdl->getGroupShared());
                     uint32_t frame_id = -1;
                     if (shared) frame_id = shared->frameId;
+
+                    if (!got_full_buf) {
+                        SmartLock locker (_mFullParam_mutex);
+                        if (mFullParamsPendingMap.count(frame_id)) {
+                            aiqParamProxy = mFullParamsPendingMap[frame_id].proxy;
+                            LOGD_ANALYZER("[%d] pending params, algo_type: 0x%x, grp_type: 0x%x, params_ptr: %p",
+                                frame_id, type, grp_type, aiqParamProxy->data().ptr());
+
+                        } else {
+                            if (mAiqParamsPool->has_free_items())
+                                aiqParamProxy = mAiqParamsPool->get_item();
+
+                            if (!aiqParamProxy.ptr()) {
+                                LOGE_ANALYZER("no free aiq params buffer!");
+                                return NULL;
+                            }
+
+                            LOGD_ANALYZER("[%d] new params, algo_type: 0x%x, grp_type: 0x%x, params_ptr: %p",
+                                 frame_id, type, grp_type, aiqParamProxy->data().ptr());
+
+                            mFullParamsPendingMap[frame_id].proxy = aiqParamProxy;
+                        }
+
+                        mFullParamsPendingMap[frame_id].groupMasks |= 1ULL << grp_type;
+                        if (mFullParamsPendingMap[frame_id].groupMasks == mFullParamReqGroupsMasks)
+                            mFullParamsPendingMap[frame_id].ready = true;
+                        else
+                            mFullParamsPendingMap[frame_id].ready = false;
+                        aiqParams = aiqParamProxy->data().ptr();
+                        got_full_buf = true;
+                    }
+
                     ret = getAiqParamsBuffer(aiqParams, type, frame_id);
                     if (ret) break;
                     if (!mAlogsComSharedParams.init && isGroupAlgo(type)) {
                         getDummyAlgoRes(type, frame_id);
                     }
+                    shared->fullParams = aiqParams;
                     got_buffer = true;
                 }
                 if (mAlogsComSharedParams.init || !isGroupAlgo(type)) {
@@ -795,38 +826,52 @@ XCamReturn
 RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, int type, uint32_t frame_id)
 {
 #define NEW_PARAMS_BUFFER(lc, BC)                                                              \
-    if (mAiqIsp##lc##ParamsPool->has_free_items()) {                                           \
-        aiqParams->m##lc##Params                        = mAiqIsp##lc##ParamsPool->get_item(); \
+    if (!aiqParams->m##lc##Params.ptr()) { \
+        if (mAiqIsp##lc##ParamsPool->has_free_items()) {        \
+            aiqParams->m##lc##Params                        = mAiqIsp##lc##ParamsPool->get_item(); \
+            aiqParams->m##lc##Params->data()->frame_id      = frame_id;                            \
+        } else {                                                                                   \
+            LOGE_ANALYZER("no free %s buffer for Id: %d !", #BC, frame_id);                                              \
+            return XCAM_RETURN_ERROR_MEM;                                                          \
+        } \
+    } else { \
         aiqParams->m##lc##Params->data()->frame_id      = frame_id;                            \
-    } else {                                                                                   \
-        LOGE_ANALYZER("no free %s buffer!", #BC);                                              \
-        return XCAM_RETURN_ERROR_MEM;                                                          \
     }
 
 #define NEW_PARAMS_BUFFER_WITH_V(lc, BC, v)                                         \
-    if (mAiqIsp##lc##V##v##ParamsPool->has_free_items()) {                          \
-        aiqParams->m##lc##V##v##Params = mAiqIsp##lc##V##v##ParamsPool->get_item(); \
-        aiqParams->m##lc##V##v##Params->data()->frame_id = frame_id;                \
-    } else {                                                                        \
-        LOGE_ANALYZER("no free %s buffer!", #BC);                                   \
-        return XCAM_RETURN_ERROR_MEM;                                               \
+    if (!aiqParams->m##lc##V##v##Params.ptr()) { \
+        if (mAiqIsp##lc##V##v##ParamsPool->has_free_items()) {                          \
+            aiqParams->m##lc##V##v##Params = mAiqIsp##lc##V##v##ParamsPool->get_item(); \
+            aiqParams->m##lc##V##v##Params->data()->frame_id = frame_id;                \
+        } else {                                                                        \
+            LOGE_ANALYZER("no free %s buffer for Id: %d !", #BC, frame_id);                                   \
+            return XCAM_RETURN_ERROR_MEM;                                               \
+        } \
+    } else { \
+            aiqParams->m##lc##V##v##Params->data()->frame_id = frame_id;                \
     }
 
     switch (type) {
     case RK_AIQ_ALGO_TYPE_AE:
-        if (mAiqExpParamsPool->has_free_items()) {
-            aiqParams->mExposureParams = mAiqExpParamsPool->get_item();
-            aiqParams->mExposureParams->data()->frame_id = frame_id;
+        if (!aiqParams->mExposureParams.ptr()) {
+            if (mAiqExpParamsPool->has_free_items()) {
+                aiqParams->mExposureParams = mAiqExpParamsPool->get_item();
+                aiqParams->mExposureParams->data()->frame_id = frame_id;
+            } else {
+                LOGE_ANALYZER("no free exposure params buffer for id: %d !",frame_id);
+                return XCAM_RETURN_ERROR_MEM;
+            }
         } else {
-            LOGE_ANALYZER("no free exposure params buffer!");
-            return XCAM_RETURN_ERROR_MEM;
+            aiqParams->mExposureParams->data()->frame_id = frame_id;
         }
 
-        if (mAiqIrisParamsPool->has_free_items()) {
-            aiqParams->mIrisParams = mAiqIrisParamsPool->get_item();
-        } else {
-            LOGE_ANALYZER("no free iris params buffer!");
-            return XCAM_RETURN_ERROR_MEM;
+        if (!aiqParams->mIrisParams.ptr()) {
+            if (mAiqIrisParamsPool->has_free_items()) {
+                aiqParams->mIrisParams = mAiqIrisParamsPool->get_item();
+            } else {
+                LOGE_ANALYZER("no free iris params buffer!");
+                return XCAM_RETURN_ERROR_MEM;
+            }
         }
 
         NEW_PARAMS_BUFFER(Aec, aec);
@@ -849,11 +894,13 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, int type, uint32_t fra
 #endif
         break;
     case RK_AIQ_ALGO_TYPE_AF:
-        if (mAiqFocusParamsPool->has_free_items()) {
-            aiqParams->mFocusParams = mAiqFocusParamsPool->get_item();
-        } else {
-            LOGE_ANALYZER("no free focus params buffer!");
-            return XCAM_RETURN_ERROR_MEM;
+        if (!aiqParams->mFocusParams.ptr()) {
+            if (mAiqFocusParamsPool->has_free_items()) {
+                aiqParams->mFocusParams = mAiqFocusParamsPool->get_item();
+            } else {
+                LOGE_ANALYZER("no free focus params buffer for id : %d !", frame_id);
+                return XCAM_RETURN_ERROR_MEM;
+            }
         }
 #if defined(ISP_HW_V32_LITE)
         NEW_PARAMS_BUFFER_WITH_V(Af, af, 32Lite);
@@ -2376,10 +2423,43 @@ RkAiqCore::handle_message (const SmartPtr<XCamMessage> &msg)
 XCamReturn RkAiqCore::groupAnalyze(uint64_t grpId, const RkAiqAlgosGroupShared_t* shared) {
     ENTER_ANALYZER_FUNCTION();
 
-    SmartPtr<RkAiqFullParamsProxy> fullParam;
+    SmartPtr<RkAiqFullParamsProxy> fullParam = NULL;
 
-    fullParam = analyzeInternal(static_cast<rk_aiq_core_analyze_type_e>(grpId));
+    analyzeInternal(static_cast<rk_aiq_core_analyze_type_e>(grpId));
+    {
+        SmartLock locker (_mFullParam_mutex);
+        if (mFullParamsPendingMap.count(shared->frameId) &&
+            mFullParamsPendingMap[shared->frameId].ready) {
+#if 1
+            for (auto item = mFullParamsPendingMap.begin(); item != mFullParamsPendingMap.end();) {
+                if (item->first <= shared->frameId) {
+                    fullParam = item->second.proxy;
+                    fullParam->data()->mFrmId = item->first;
+                    item = mFullParamsPendingMap.erase(item);
+                    LOGD_ANALYZER("[%d]:%p fullParams done !", fullParam->data()->mFrmId, fullParam->data().ptr());
+                } else
+                    break;
+            }
+#else
+            auto item = mFullParamsPendingMap.find(shared->frameId);
+            fullParam = item->second.proxy;
+            fullParam->data()->mFrmId = shared->frameId;
+            mFullParamsPendingMap.erase(item);
+            LOGD_ANALYZER("[%d]:%p fullParams done !", fullParam->data()->mFrmId, fullParam->data().ptr());
+#endif
+        } else {
+            uint16_t counts = mFullParamsPendingMap.size();
+            if (counts > FULLPARMAS_MAX_PENDING_SIZE) {
+                auto item = mFullParamsPendingMap.begin();
+                fullParam = item->second.proxy;
+                mFullParamsPendingMap.erase(item);
+                fullParam->data()->mFrmId = shared->frameId;
+                LOGW_ANALYZER("force [%d->%d]:%p fullParams done !", item->first, shared->frameId, fullParam->data().ptr());
+            }
+        }
+    }
     if (fullParam.ptr()) {
+        LOG1_ANALYZER("cb [%d] fullParams done !", shared->frameId);
 #ifdef RKAIQ_ENABLE_CAMGROUP
         if (mCamGroupCoreManager)
             mCamGroupCoreManager->RelayAiqCoreResults(this, fullParam);
@@ -2389,7 +2469,7 @@ XCamReturn RkAiqCore::groupAnalyze(uint64_t grpId, const RkAiqAlgosGroupShared_t
 #endif
             mCb->rkAiqCalcDone(fullParam);
     }
-
+exit:
     EXIT_ANALYZER_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
 }
@@ -3170,6 +3250,14 @@ RkAiqCore::newAiqGroupAnayzer()
 {
     mRkAiqCoreGroupManager = new RkAiqAnalyzeGroupManager(this, mIsSingleThread);
     mRkAiqCoreGroupManager->parseAlgoGroup(mAlgosDesArray);
+    std::map<uint64_t, SmartPtr<RkAiqAnalyzerGroup>> groupMaps =
+            mRkAiqCoreGroupManager->getGroups();
+
+    for (auto it : groupMaps) {
+        LOGI_ANALYZER("req >>>>> : 0x%llx", it.first);
+        mFullParamReqGroupsMasks |= 1ULL << it.first;
+    }
+
     return XCAM_RETURN_NO_ERROR;
 }
 

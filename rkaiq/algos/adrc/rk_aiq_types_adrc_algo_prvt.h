@@ -175,22 +175,15 @@ typedef struct AdrcAEData_s {
 } AdrcAEData_t;
 
 typedef struct CurrData_s {
-    bool Enable;
     float MotionCoef;
     drc_OpMode_t ApiMode;
-    int FrameID;
     AdrcAEData_t AEData;
-    FrameNumber_t FrameNumber;
     DrcHandleData_t HandleData;
 } CurrData_t;
 
 typedef struct NextData_s {
-    bool Enable;
     float MotionCoef;
     float Damp;
-    float LumaWeight[225];
-    int FrameID;
-    FrameNumber_t FrameNumber;
     AdrcAEData_t AEData;
     DrcHandleData_t HandleData;
     DrcOhters_t Others;
@@ -218,7 +211,6 @@ typedef struct AdrcContext_s {
     AdrcState_t state;
     CurrData_t CurrData;
     NextData_t NextData;
-    RkAiqAdrcProcResult_t AdrcProcRes;
     uint32_t FrameID;
     FrameNumber_t FrameNumber;
 } AdrcContext_t;

@@ -45,8 +45,10 @@ class RkAiqAcgcHandleInt : virtual public RkAiqHandle {
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAcgcHandleInt);
 
+#ifndef DISABLE_HANDLE_ATTRIB
     rk_aiq_uapi_acgc_attrib_t mCurAtt;
     rk_aiq_uapi_acgc_attrib_t mNewAtt;
+#endif
 };
 #endif
 

@@ -149,6 +149,7 @@ XCamReturn sample_sharp_setAuto_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mod
     sharpV33_attr.eMode = ASHARP_V33_OP_MODE_AUTO;
     sharpV33_attr.stAuto.stParams.enable = 1;
     sharpV33_attr.stAuto.stParams.kernel_sigma_enable = 1;
+    sharpV33_attr.stAuto.stParams.sharp_ratio_seperate_en = 0;
 
     sharpV33_attr.stAuto.stParams.Center_Mode = 0;
     sharpV33_attr.stAuto.stParams.center_x = 0;
@@ -189,6 +190,8 @@ XCamReturn sample_sharp_setAuto_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mod
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].pbf_ratio = 0.5;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].gaus_ratio = 0.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].sharp_ratio = 10.0;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].sharp_ratio_0 = 10.0;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].sharp_ratio_1 = 10.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].bf_gain = 1.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].bf_add = 0.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].bf_ratio = 0.5;
@@ -209,10 +212,29 @@ XCamReturn sample_sharp_setAuto_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mod
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff[4] = 0.0261;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff[5] = 0.0121;
 
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[0] = 0.0935;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[1] = 0.0724;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[2] = 0.0561;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[3] = 0.0337;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[4] = 0.0261;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[5] = 0.0121;
+
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[0] = 0.0935;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[1] = 0.0724;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[2] = 0.0561;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[3] = 0.0337;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[4] = 0.0261;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[5] = 0.0121;
+
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].prefilter_sigma = 1.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].hfBilateralFilter_sigma = 1.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_sigma = 1.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_radius = 2.0;
+
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_sigma_0 = 1.0;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_radius_0 = 2.0;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_sigma_1 = 1.0;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_radius_1 = 2.0;
 
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].global_gain = 1.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].global_gain_alpha = 0.0;
@@ -284,6 +306,7 @@ XCamReturn sample_sharp_setAuto_v33Lite(const rk_aiq_sys_ctx_t* ctx,
     sharpV33_attr.eMode          = ASHARP_V33_OP_MODE_AUTO;
     sharpV33_attr.stAuto.stParams.enable              = 1;
     sharpV33_attr.stAuto.stParams.kernel_sigma_enable = 1;
+    sharpV33_attr.stAuto.stParams.sharp_ratio_seperate_en = 0;
 
     sharpV33_attr.stAuto.stParams.Center_Mode = 0;
     sharpV33_attr.stAuto.stParams.center_x    = 0;
@@ -348,6 +371,8 @@ XCamReturn sample_sharp_setAuto_v33Lite(const rk_aiq_sys_ctx_t* ctx,
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].bf_gain     = 1.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].bf_add      = 0.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].bf_ratio    = 0.5;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].sharp_ratio_0 = 10.0;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].sharp_ratio_1 = 10.0;
 
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].prefilter_coeff[0] = 0.2042;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].prefilter_coeff[1] = 0.1238;
@@ -364,10 +389,29 @@ XCamReturn sample_sharp_setAuto_v33Lite(const rk_aiq_sys_ctx_t* ctx,
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff[4] = 0.0261;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff[5] = 0.0121;
 
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[0] = 0.0935;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[1] = 0.0724;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[2] = 0.0561;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[3] = 0.0337;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[4] = 0.0261;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_0[5] = 0.0121;
+
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[0] = 0.0935;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[1] = 0.0724;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[2] = 0.0561;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[3] = 0.0337;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[4] = 0.0261;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_coeff_1[5] = 0.0121;
+
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].prefilter_sigma         = 1.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].hfBilateralFilter_sigma = 1.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_sigma    = 1.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_radius   = 2.0;
+
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_sigma_0 = 1.0;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_radius_0 = 2.0;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_sigma_1 = 1.0;
+        sharpV33_attr.stAuto.stParams.sharpParamsISO[i].GaussianFilter_radius_1 = 2.0;
 
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].global_gain       = 1.0;
         sharpV33_attr.stAuto.stParams.sharpParamsISO[i].global_gain_alpha = 0.0;
@@ -525,6 +569,7 @@ XCamReturn sample_sharp_setManual_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_m
     sharpV33_attr.eMode = ASHARP_V33_OP_MODE_MANUAL;
     sharpV33_attr.stManual.stSelect.enable = 1;
     sharpV33_attr.stManual.stSelect.kernel_sigma_enable = 0;
+    sharpV33_attr.stAuto.stParams.sharp_ratio_seperate_en = 0;
 
     sharpV33_attr.stManual.stSelect.luma_point[0] = 0;
     sharpV33_attr.stManual.stSelect.luma_point[1] = 64;
@@ -561,6 +606,8 @@ XCamReturn sample_sharp_setManual_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_m
     sharpV33_attr.stManual.stSelect.bf_gain = 1.0;
     sharpV33_attr.stManual.stSelect.bf_add = 0.0;
     sharpV33_attr.stManual.stSelect.bf_ratio = 0.5;
+    sharpV33_attr.stManual.stSelect.sharp_ratio_0 = 10.0;
+    sharpV33_attr.stManual.stSelect.sharp_ratio_1 = 10.0;
 
     sharpV33_attr.stManual.stSelect.prefilter_coeff[0] = 0.2042;
     sharpV33_attr.stManual.stSelect.prefilter_coeff[1] = 0.1238;
@@ -578,11 +625,31 @@ XCamReturn sample_sharp_setManual_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_m
     sharpV33_attr.stManual.stSelect.GaussianFilter_coeff[4] = 0.0261;
     sharpV33_attr.stManual.stSelect.GaussianFilter_coeff[5] = 0.0121;
 
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[0] = 0.0935;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[1] = 0.0724;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[2] = 0.0561;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[3] = 0.0337;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[4] = 0.0261;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[5] = 0.0121;
+
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[0] = 0.0935;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[1] = 0.0724;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[2] = 0.0561;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[3] = 0.0337;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[4] = 0.0261;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[5] = 0.0121;
+
+
 
     sharpV33_attr.stManual.stSelect.prefilter_sigma = 1.0;
     sharpV33_attr.stManual.stSelect.hfBilateralFilter_sigma = 1.0;
     sharpV33_attr.stManual.stSelect.GaussianFilter_sigma = 1.0;
     sharpV33_attr.stManual.stSelect.GaussianFilter_radius = 2.0;
+
+    sharpV33_attr.stManual.stSelect.GaussianFilter_sigma_0 = 1.0;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_radius_0 = 2.0;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_sigma_1 = 1.0;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_radius_1 = 2.0;
 
     sharpV33_attr.stManual.stSelect.global_gain = 1.0;
     sharpV33_attr.stManual.stSelect.global_gain_alpha = 0.0;
@@ -644,7 +711,7 @@ XCamReturn sample_sharp_setManual_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_m
 }
 
 XCamReturn sample_sharp_setManual_v33Lite(const rk_aiq_sys_ctx_t* ctx,
-                                          rk_aiq_uapi_mode_sync_e sync_mode) {
+        rk_aiq_uapi_mode_sync_e sync_mode) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     rk_aiq_sharp_attrib_v33LT_t sharpV33_attr;
@@ -654,6 +721,7 @@ XCamReturn sample_sharp_setManual_v33Lite(const rk_aiq_sys_ctx_t* ctx,
     sharpV33_attr.eMode          = ASHARP_V33_OP_MODE_MANUAL;
     sharpV33_attr.stManual.stSelect.enable              = 1;
     sharpV33_attr.stManual.stSelect.kernel_sigma_enable = 0;
+    sharpV33_attr.stAuto.stParams.sharp_ratio_seperate_en = 0;
 
     sharpV33_attr.stManual.stSelect.luma_point[0] = 0;
     sharpV33_attr.stManual.stSelect.luma_point[1] = 64;
@@ -711,6 +779,8 @@ XCamReturn sample_sharp_setManual_v33Lite(const rk_aiq_sys_ctx_t* ctx,
     sharpV33_attr.stManual.stSelect.bf_gain     = 1.0;
     sharpV33_attr.stManual.stSelect.bf_add      = 0.0;
     sharpV33_attr.stManual.stSelect.bf_ratio    = 0.5;
+    sharpV33_attr.stManual.stSelect.sharp_ratio_0 = 10.0;
+    sharpV33_attr.stManual.stSelect.sharp_ratio_1 = 10.0;
 
     sharpV33_attr.stManual.stSelect.prefilter_coeff[0] = 0.2042;
     sharpV33_attr.stManual.stSelect.prefilter_coeff[1] = 0.1238;
@@ -727,10 +797,29 @@ XCamReturn sample_sharp_setManual_v33Lite(const rk_aiq_sys_ctx_t* ctx,
     sharpV33_attr.stManual.stSelect.GaussianFilter_coeff[4] = 0.0261;
     sharpV33_attr.stManual.stSelect.GaussianFilter_coeff[5] = 0.0121;
 
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[0] = 0.0935;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[1] = 0.0724;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[2] = 0.0561;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[3] = 0.0337;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[4] = 0.0261;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_0[5] = 0.0121;
+
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[0] = 0.0935;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[1] = 0.0724;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[2] = 0.0561;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[3] = 0.0337;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[4] = 0.0261;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_coeff_1[5] = 0.0121;
+
     sharpV33_attr.stManual.stSelect.prefilter_sigma         = 1.0;
     sharpV33_attr.stManual.stSelect.hfBilateralFilter_sigma = 1.0;
     sharpV33_attr.stManual.stSelect.GaussianFilter_sigma    = 1.0;
     sharpV33_attr.stManual.stSelect.GaussianFilter_radius   = 2.0;
+
+    sharpV33_attr.stManual.stSelect.GaussianFilter_sigma_0    = 1.0;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_radius_0   = 2.0;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_sigma_1    = 1.0;
+    sharpV33_attr.stManual.stSelect.GaussianFilter_radius_1   = 2.0;
 
     sharpV33_attr.stManual.stSelect.global_gain       = 1.0;
     sharpV33_attr.stManual.stSelect.global_gain_alpha = 0.0;
@@ -1304,7 +1393,7 @@ XCamReturn sample_sharp_getAttri_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_mo
 }
 
 XCamReturn sample_sharp_getAttri_v33Lite(const rk_aiq_sys_ctx_t* ctx,
-                                         rk_aiq_uapi_mode_sync_e sync_mode) {
+        rk_aiq_uapi_mode_sync_e sync_mode) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     rk_aiq_sharp_attrib_v33LT_t sharpV33_attr;
@@ -1346,8 +1435,8 @@ XCamReturn sample_sharp_SetDefault_v33(const rk_aiq_sys_ctx_t* ctx, rk_aiq_uapi_
 }
 
 XCamReturn sample_sharp_SetDefault_v33Lite(const rk_aiq_sys_ctx_t* ctx,
-                                           rk_aiq_uapi_mode_sync_e sync_mode,
-                                           rk_aiq_sharp_attrib_v33LT_t& default_sharpV33_attr) {
+        rk_aiq_uapi_mode_sync_e sync_mode,
+        rk_aiq_sharp_attrib_v33LT_t& default_sharpV33_attr) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     ret = rk_aiq_user_api2_asharpV33Lite_SetAttrib(ctx, &default_sharpV33_attr);

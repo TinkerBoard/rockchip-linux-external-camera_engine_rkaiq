@@ -143,7 +143,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                hAlsc->cur_res.name, hAlsc->alscSwInfo.awbIIRDampCoef);
 
     AlscConfig(hAlsc);
-    memcpy(&proResAlsc->alsc_hw_conf, &hAlsc->lscHwConf, sizeof(rk_aiq_lsc_cfg_t));
+    memcpy(proResAlsc->alsc_hw_conf, &hAlsc->lscHwConf, sizeof(rk_aiq_lsc_cfg_t));
 
 #if 1
     if (procAlsc->tx != nullptr) {

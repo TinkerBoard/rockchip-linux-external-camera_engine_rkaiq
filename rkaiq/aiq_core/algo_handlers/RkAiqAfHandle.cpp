@@ -40,6 +40,7 @@ XCamReturn RkAiqAfHandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret                              = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     {
@@ -51,6 +52,7 @@ XCamReturn RkAiqAfHandleInt::updateConfig(bool needSync) {
         }
         if (needSync) mCfgMutex.unlock();
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -63,6 +65,9 @@ XCamReturn RkAiqAfHandleInt::setAttrib(rk_aiq_af_attrib_t* att) {
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_af_SetAttrib(mAlgoCtx, *att, false);
+#else
 
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
@@ -85,6 +90,7 @@ XCamReturn RkAiqAfHandleInt::setAttrib(rk_aiq_af_attrib_t* att) {
                __func__, att->AfMode, att->h_offs, att->v_offs, att->h_size, att->v_size);
         waitSignal(att->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -97,6 +103,11 @@ XCamReturn RkAiqAfHandleInt::getAttrib(rk_aiq_af_attrib_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapi_af_GetAttrib(mAlgoCtx, att);
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_af_GetAttrib(mAlgoCtx, att);
@@ -112,6 +123,7 @@ XCamReturn RkAiqAfHandleInt::getAttrib(rk_aiq_af_attrib_t* att) {
             att->sync.done      = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -518,8 +530,14 @@ XCamReturn RkAiqAfHandleInt::processing() {
     mAeStableMutex.unlock();
 #endif
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret = des->processing(mProcInParam, (RkAiqAlgoResCom*)af_proc_res_int);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     if (ret < 0) {
         LOGE_ANALYZER("af algo processing failed ret %d", ret);
         mProcResShared = NULL;
@@ -539,12 +557,14 @@ XCamReturn RkAiqAfHandleInt::processing() {
     mAiqCore->post_message(msg);
 #endif
 
+#ifndef DISABLE_HANDLE_ATTRIB
     if (updateAtt && isUpdateAttDone) {
         mCurAtt         = mNewAtt;
         updateAtt       = false;
         isUpdateAttDone = false;
         sendSignal(mCurAtt.sync.sync_mode);
     }
+#endif
 
     if (isUpdateZoomPosDone) {
         isUpdateZoomPosDone = false;

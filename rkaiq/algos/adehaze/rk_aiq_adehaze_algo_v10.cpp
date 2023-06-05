@@ -590,17 +590,18 @@ XCamReturn AdehazeRelease(AdehazeHandle_t* pAdehazeCtx) {
     return (ret);
 }
 
-XCamReturn AdehazeProcess(AdehazeHandle_t* pAdehazeCtx) {
+XCamReturn AdehazeProcess(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* pStats,
+                          RkAiqAdehazeProcResult_t* pAdehzeProcRes) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
 
     LOGD_ADEHAZE(" %s: Dehaze module en:%d Dehaze en:%d, Enhance en:%d, Hist en:%d\n", __func__,
-                 pAdehazeCtx->ProcRes.ProcResV10.enable,
-                 (pAdehazeCtx->ProcRes.ProcResV10.dc_en & FUNCTION_ENABLE) &&
-                     (!(pAdehazeCtx->ProcRes.ProcResV10.enhance_en & FUNCTION_ENABLE)),
-                 (pAdehazeCtx->ProcRes.ProcResV10.dc_en & FUNCTION_ENABLE) &&
-                     (pAdehazeCtx->ProcRes.ProcResV10.enhance_en & FUNCTION_ENABLE),
-                 pAdehazeCtx->ProcRes.ProcResV10.hist_en);
+                 pAdehzeProcRes->enable,
+                 (pAdehzeProcRes->ProcResV10.dc_en & FUNCTION_ENABLE) &&
+                     (!(pAdehzeProcRes->ProcResV10.enhance_en & FUNCTION_ENABLE)),
+                 (pAdehzeProcRes->ProcResV10.dc_en & FUNCTION_ENABLE) &&
+                     (pAdehzeProcRes->ProcResV10.enhance_en & FUNCTION_ENABLE),
+                 pAdehzeProcRes->ProcResV10.hist_en);
 
     float CtrlValue = 0.0;
 
@@ -647,67 +648,66 @@ bool AdehazeByPassProcessing(AdehazeHandle_t* pAdehazeCtx) {
  * DehazeEnableSetting()
  *
  *****************************************************************************/
-bool DehazeEnableSetting(AdehazeHandle_t* pAdehazeCtx) {
+bool DehazeEnableSetting(AdehazeHandle_t* pAdehazeCtx, RkAiqAdehazeProcResult_t* pAdehzeProcRes) {
     LOG1_ADEHAZE("%s:enter!\n", __FUNCTION__);
 
     if (pAdehazeCtx->AdehazeAtrrV10.mode == DEHAZE_API_AUTO) {
-        pAdehazeCtx->ProcRes.ProcResV10.enable =
-            pAdehazeCtx->AdehazeAtrrV10.stAuto.DehazeTuningPara.Enable;
+        pAdehzeProcRes->enable = pAdehazeCtx->AdehazeAtrrV10.stAuto.DehazeTuningPara.Enable;
 
         if (pAdehazeCtx->AdehazeAtrrV10.stAuto.DehazeTuningPara.Enable) {
             if (pAdehazeCtx->AdehazeAtrrV10.stAuto.DehazeTuningPara.dehaze_setting.en &&
                 pAdehazeCtx->AdehazeAtrrV10.stAuto.DehazeTuningPara.enhance_setting.en) {
-                pAdehazeCtx->ProcRes.ProcResV10.dc_en      = FUNCTION_ENABLE;
-                pAdehazeCtx->ProcRes.ProcResV10.enhance_en = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.dc_en      = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.enhance_en = FUNCTION_ENABLE;
             } else if (pAdehazeCtx->AdehazeAtrrV10.stAuto.DehazeTuningPara.dehaze_setting.en &&
                        !pAdehazeCtx->AdehazeAtrrV10.stAuto.DehazeTuningPara.enhance_setting.en) {
-                pAdehazeCtx->ProcRes.ProcResV10.dc_en      = FUNCTION_ENABLE;
-                pAdehazeCtx->ProcRes.ProcResV10.enhance_en = FUNCTION_DISABLE;
+                pAdehzeProcRes->ProcResV10.dc_en      = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.enhance_en = FUNCTION_DISABLE;
             } else if (!pAdehazeCtx->AdehazeAtrrV10.stAuto.DehazeTuningPara.dehaze_setting.en &&
                        pAdehazeCtx->AdehazeAtrrV10.stAuto.DehazeTuningPara.enhance_setting.en) {
-                pAdehazeCtx->ProcRes.ProcResV10.dc_en      = FUNCTION_ENABLE;
-                pAdehazeCtx->ProcRes.ProcResV10.enhance_en = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.dc_en      = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.enhance_en = FUNCTION_ENABLE;
             } else {
-                pAdehazeCtx->ProcRes.ProcResV10.dc_en      = FUNCTION_DISABLE;
-                pAdehazeCtx->ProcRes.ProcResV10.enhance_en = FUNCTION_DISABLE;
+                pAdehzeProcRes->ProcResV10.dc_en      = FUNCTION_DISABLE;
+                pAdehzeProcRes->ProcResV10.enhance_en = FUNCTION_DISABLE;
             }
 
             if (pAdehazeCtx->AdehazeAtrrV10.stAuto.DehazeTuningPara.hist_setting.en)
-                pAdehazeCtx->ProcRes.ProcResV10.hist_en = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.hist_en = FUNCTION_ENABLE;
             else
-                pAdehazeCtx->ProcRes.ProcResV10.hist_en = FUNCTION_DISABLE;
+                pAdehzeProcRes->ProcResV10.hist_en = FUNCTION_DISABLE;
         }
     } else if (pAdehazeCtx->AdehazeAtrrV10.mode == DEHAZE_API_MANUAL) {
-        pAdehazeCtx->ProcRes.ProcResV10.enable = pAdehazeCtx->AdehazeAtrrV10.stManual.Enable;
+        pAdehzeProcRes->enable = pAdehazeCtx->AdehazeAtrrV10.stManual.Enable;
 
         if (pAdehazeCtx->AdehazeAtrrV10.stManual.Enable) {
             if (pAdehazeCtx->AdehazeAtrrV10.stManual.dehaze_setting.en &&
                 pAdehazeCtx->AdehazeAtrrV10.stManual.enhance_setting.en) {
-                pAdehazeCtx->ProcRes.ProcResV10.dc_en      = FUNCTION_ENABLE;
-                pAdehazeCtx->ProcRes.ProcResV10.enhance_en = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.dc_en      = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.enhance_en = FUNCTION_ENABLE;
             } else if (pAdehazeCtx->AdehazeAtrrV10.stManual.dehaze_setting.en &&
                        !pAdehazeCtx->AdehazeAtrrV10.stManual.enhance_setting.en) {
-                pAdehazeCtx->ProcRes.ProcResV10.dc_en      = FUNCTION_ENABLE;
-                pAdehazeCtx->ProcRes.ProcResV10.enhance_en = FUNCTION_DISABLE;
+                pAdehzeProcRes->ProcResV10.dc_en      = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.enhance_en = FUNCTION_DISABLE;
             } else if (!pAdehazeCtx->AdehazeAtrrV10.stManual.dehaze_setting.en &&
                        pAdehazeCtx->AdehazeAtrrV10.stManual.enhance_setting.en) {
-                pAdehazeCtx->ProcRes.ProcResV10.dc_en      = FUNCTION_ENABLE;
-                pAdehazeCtx->ProcRes.ProcResV10.enhance_en = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.dc_en      = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.enhance_en = FUNCTION_ENABLE;
             } else {
-                pAdehazeCtx->ProcRes.ProcResV10.dc_en      = FUNCTION_DISABLE;
-                pAdehazeCtx->ProcRes.ProcResV10.enhance_en = FUNCTION_DISABLE;
+                pAdehzeProcRes->ProcResV10.dc_en      = FUNCTION_DISABLE;
+                pAdehzeProcRes->ProcResV10.enhance_en = FUNCTION_DISABLE;
             }
 
             if (pAdehazeCtx->AdehazeAtrrV10.stManual.hist_setting.en)
-                pAdehazeCtx->ProcRes.ProcResV10.hist_en = FUNCTION_ENABLE;
+                pAdehzeProcRes->ProcResV10.hist_en = FUNCTION_ENABLE;
             else
-                pAdehazeCtx->ProcRes.ProcResV10.hist_en = FUNCTION_DISABLE;
+                pAdehzeProcRes->ProcResV10.hist_en = FUNCTION_DISABLE;
         }
     } else {
         LOGE_ADEHAZE("%s: Dehaze api in WRONG MODE!!!, dehaze by pass!!!\n", __FUNCTION__);
-        pAdehazeCtx->ProcRes.ProcResV10.enable = false;
+        pAdehzeProcRes->enable = false;
     }
 
-    return pAdehazeCtx->ProcRes.ProcResV10.enable;
+    return pAdehzeProcRes->enable;
     LOG1_ADEHAZE("%s:exit!\n", __FUNCTION__);
 }

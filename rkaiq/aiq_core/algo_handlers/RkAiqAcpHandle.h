@@ -43,8 +43,10 @@ class RkAiqAcpHandleInt : virtual public RkAiqHandle {
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
     acp_attrib_t mCurAtt;
     acp_attrib_t mNewAtt;
+#endif
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAcpHandleInt);

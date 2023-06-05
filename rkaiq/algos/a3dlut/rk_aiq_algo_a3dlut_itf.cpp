@@ -101,7 +101,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     hAlut3d->swinfo.awbIIRDampCoef = procAlut3d->awbIIRDampCoef;
 
     Alut3dConfig(hAlut3d);
-    memcpy(&proResAlut3d->lut3d_hw_conf, &hAlut3d->lut3d_hw_conf, sizeof(rk_aiq_lut3d_cfg_t));
+    memcpy(proResAlut3d->lut3d_hw_conf, &hAlut3d->lut3d_hw_conf, sizeof(rk_aiq_lut3d_cfg_t));
     proResAlut3d->lut3d_update = hAlut3d->update || hAlut3d->updateAtt || (!hAlut3d->swinfo.lut3dConverged);
 
     LOG1_A3DLUT( "%s: (exit)\n", __FUNCTION__);

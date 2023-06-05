@@ -20,6 +20,7 @@
 
 #include "rk_aiq_comm.h"
 
+
 RKAIQ_BEGIN_DECLARE
 
 
@@ -38,6 +39,8 @@ RKAIQ_BEGIN_DECLARE
 typedef struct RK_SHARP_Params_V33_Select_s {
     // M4_BOOL_DESC("enable", "1")
     bool enable;
+    // M4_BOOL_DESC("sharp_ratio_seperate_en", "0")
+    bool sharp_ratio_seperate_en;
     // M4_BOOL_DESC("kernel_sigma_enable", "1")
     bool kernel_sigma_enable;
     // M4_BOOL_DESC("Center_Mode", "0")
@@ -61,8 +64,15 @@ typedef struct RK_SHARP_Params_V33_Select_s {
     float pbf_add;
     // M4_NUMBER_DESC("gaus_ratio", "f32", M4_RANGE(0.0, 1.0), "0.0", M4_DIGIT(2))
     float gaus_ratio;
+
     // M4_NUMBER_DESC("sharp_ratio", "f32", M4_RANGE(0.0, 31.275), "8", M4_DIGIT(2))
     float sharp_ratio;
+
+    // M4_NUMBER_DESC("sharp_ratio_0", "f32", M4_RANGE(0.0, 31.275), "4", M4_DIGIT(2))
+    float sharp_ratio_0;
+    // M4_NUMBER_DESC("sharp_ratio_1", "f32", M4_RANGE(0.0, 31.275), "4", M4_DIGIT(2))
+    float sharp_ratio_1;
+
     // M4_NUMBER_DESC("bf_gain", "f32", M4_RANGE(0.0, 4.0), "0.5", M4_DIGIT(2))
     float bf_gain;
     // M4_NUMBER_DESC("bf_ratio", "f32", M4_RANGE(0.0, 1.0), "0.5", M4_DIGIT(2))
@@ -101,6 +111,16 @@ typedef struct RK_SHARP_Params_V33_Select_s {
     // M4_NUMBER_MARK_DESC("GaussianFilter_radius", "u8", M4_RANGE(1, 2), "2", M4_DIGIT(0))
     uint8_t GaussianFilter_radius;
 
+    // M4_NUMBER_MARK_DESC("GaussianFilter_sigma_0", "f32", M4_RANGE(0.0, 100.0), "1.0", M4_DIGIT(2))
+    float GaussianFilter_sigma_0;
+    // M4_NUMBER_MARK_DESC("GaussianFilter_sigma_1", "f32", M4_RANGE(0.0, 100.0), "1.0", M4_DIGIT(2))
+    float GaussianFilter_sigma_1;
+    // M4_NUMBER_MARK_DESC("GaussianFilter_radius_0", "u8", M4_RANGE(1, 2), "2", M4_DIGIT(0))
+    uint8_t GaussianFilter_radius_0;
+    // M4_NUMBER_MARK_DESC("GaussianFilter_radius_1", "u8", M4_RANGE(1, 2), "2", M4_DIGIT(0))
+    uint8_t GaussianFilter_radius_1;
+
+
 
     // M4_ARRAY_DESC("prefilter_coeff", "f32", M4_SIZE(1,3), M4_RANGE(0,1), "[0.2042,0.1238,0.0751]", M4_DIGIT(4), M4_DYNAMIC(0))
     float prefilter_coeff[3];
@@ -109,11 +129,18 @@ typedef struct RK_SHARP_Params_V33_Select_s {
     // M4_ARRAY_DESC("hfBilateralFilter_coeff", "f32", M4_SIZE(1,3), M4_RANGE(0.0,1.0), "[0.2042,0.1238,0.0751]", M4_DIGIT(4), M4_DYNAMIC(0))
     float hfBilateralFilter_coeff[3];
 
+    // M4_ARRAY_DESC("GaussianFilter_coeff_0", "f32", M4_SIZE(1,6), M4_RANGE(0.0,1.0), "[0.0632,0.0558,0.0492,0.0383,0.0338,0.0232]", M4_DIGIT(4), M4_DYNAMIC(0))
+    float GaussianFilter_coeff_0[6];
+    // M4_ARRAY_DESC("GaussianFilter_coeff_1", "f32", M4_SIZE(1,6), M4_RANGE(0.0,1.0), "[0.0632,0.0558,0.0492,0.0383,0.0338,0.0232]", M4_DIGIT(4), M4_DYNAMIC(0))
+    float GaussianFilter_coeff_1[6];
+
 } RK_SHARP_Params_V33_Select_t;
 
 typedef struct RK_SHARP_Params_V33LT_Select_s {
     // M4_BOOL_DESC("enable", "1")
     bool enable;
+    // M4_BOOL_DESC("sharp_ratio_seperate_en", "0")
+    bool sharp_ratio_seperate_en;
     // M4_BOOL_DESC("kernel_sigma_enable", "1")
     bool kernel_sigma_enable;
     // M4_BOOL_DESC("Center_Mode", "0")
@@ -125,7 +152,7 @@ typedef struct RK_SHARP_Params_V33LT_Select_s {
     bool clip_hf_mode;
     // M4_BOOL_DESC("add_mode", "0")
     bool add_mode;
-	
+
 
     // M4_ARRAY_DESC("luma_point", "u16", M4_SIZE(1,8), M4_RANGE(0,1024), "[0, 64, 128, 256, 384, 640, 896, 1024]", M4_DIGIT(1), M4_DYNAMIC(0))
     uint16_t luma_point[8];
@@ -147,8 +174,15 @@ typedef struct RK_SHARP_Params_V33LT_Select_s {
     float pbf_add;
     // M4_NUMBER_DESC("gaus_ratio", "f32", M4_RANGE(0.0, 1.0), "0.0", M4_DIGIT(2))
     float gaus_ratio;
+
     // M4_NUMBER_DESC("sharp_ratio", "f32", M4_RANGE(0.0, 31.275), "8", M4_DIGIT(2))
     float sharp_ratio;
+
+    // M4_NUMBER_DESC("sharp_ratio_0", "f32", M4_RANGE(0.0, 31.275), "4", M4_DIGIT(2))
+    float sharp_ratio_0;
+    // M4_NUMBER_DESC("sharp_ratio_1", "f32", M4_RANGE(0.0, 31.275), "4", M4_DIGIT(2))
+    float sharp_ratio_1;
+
     // M4_NUMBER_DESC("bf_gain", "f32", M4_RANGE(0.0, 4.0), "0.5", M4_DIGIT(2))
     float bf_gain;
     // M4_NUMBER_DESC("bf_ratio", "f32", M4_RANGE(0.0, 1.0), "0.5", M4_DIGIT(2))
@@ -189,6 +223,14 @@ typedef struct RK_SHARP_Params_V33LT_Select_s {
     // M4_NUMBER_MARK_DESC("GaussianFilter_radius", "u8", M4_RANGE(1, 2), "2", M4_DIGIT(0))
     uint8_t GaussianFilter_radius;
 
+    // M4_NUMBER_MARK_DESC("GaussianFilter_sigma_0", "f32", M4_RANGE(0.0, 100.0), "1.0", M4_DIGIT(2))
+    float GaussianFilter_sigma_0;
+    // M4_NUMBER_MARK_DESC("GaussianFilter_sigma_1", "f32", M4_RANGE(0.0, 100.0), "1.0", M4_DIGIT(2))
+    float GaussianFilter_sigma_1;
+    // M4_NUMBER_MARK_DESC("GaussianFilter_radius_0", "u8", M4_RANGE(1, 2), "2", M4_DIGIT(0))
+    uint8_t GaussianFilter_radius_0;
+    // M4_NUMBER_MARK_DESC("GaussianFilter_radius_1", "u8", M4_RANGE(1, 2), "2", M4_DIGIT(0))
+    uint8_t GaussianFilter_radius_1;
 
     // M4_ARRAY_DESC("prefilter_coeff", "f32", M4_SIZE(1,3), M4_RANGE(0,1), "[0.2042,0.1238,0.0751]", M4_DIGIT(4), M4_DYNAMIC(0))
     float prefilter_coeff[3];
@@ -196,6 +238,11 @@ typedef struct RK_SHARP_Params_V33LT_Select_s {
     float GaussianFilter_coeff[6];
     // M4_ARRAY_DESC("hfBilateralFilter_coeff", "f32", M4_SIZE(1,3), M4_RANGE(0.0,1.0), "[0.2042,0.1238,0.0751]", M4_DIGIT(4), M4_DYNAMIC(0))
     float hfBilateralFilter_coeff[3];
+
+    // M4_ARRAY_DESC("GaussianFilter_coeff_0", "f32", M4_SIZE(1,6), M4_RANGE(0.0,1.0), "[0.0632,0.0558,0.0492,0.0383,0.0338,0.0232]", M4_DIGIT(4), M4_DYNAMIC(0))
+    float GaussianFilter_coeff_0[6];
+    // M4_ARRAY_DESC("GaussianFilter_coeff_1", "f32", M4_SIZE(1,6), M4_RANGE(0.0,1.0), "[0.0632,0.0558,0.0492,0.0383,0.0338,0.0232]", M4_DIGIT(4), M4_DYNAMIC(0))
+    float GaussianFilter_coeff_1[6];
 
 } RK_SHARP_Params_V33LT_Select_t;
 

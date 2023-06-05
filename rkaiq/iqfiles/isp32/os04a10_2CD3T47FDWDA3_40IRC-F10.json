@@ -3231,7 +3231,7 @@
 								"enable":	1,
 								"thumbds_w":	8,
 								"thumbds_h":	4,
-								"trans_en":	0,
+								"trans_en":	1,
 								"lo_enable":	1,
 								"Setting":	[{
 										"SNR_Mode":	"LSNR",
@@ -11091,7 +11091,7 @@
 								"enable":	1,
 								"thumbds_w":	8,
 								"thumbds_h":	4,
-								"trans_en":	0,
+								"trans_en":	1,
 								"lo_enable":	1,
 								"Setting":	[{
 										"SNR_Mode":	"LSNR",

@@ -43,8 +43,10 @@ class RkAiqAtmoHandleInt : virtual public RkAiqHandle {
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
     atmo_attrib_t mCurAtt;
     atmo_attrib_t mNewAtt;
+#endif
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAtmoHandleInt);

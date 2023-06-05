@@ -48,10 +48,12 @@ protected:
         RkAiqHandle::deInit();
     };
 private:
+#ifndef DISABLE_HANDLE_ATTRIB
     rk_aiq_gain_attrib_v2_t mCurAtt;
     rk_aiq_gain_attrib_v2_t mNewAtt;
     rk_aiq_gain_info_v2_t mCurInfo;
     rk_aiq_gain_info_v2_t mNewInfo;
+#endif
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAgainV2HandleInt);
 };
 #endif

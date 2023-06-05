@@ -43,8 +43,10 @@ class RkAiqAieHandleInt : virtual public RkAiqHandle {
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
     aie_attrib_t mCurAtt;
     aie_attrib_t mNewAtt;
+#endif
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAieHandleInt);

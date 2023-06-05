@@ -36,6 +36,7 @@ XCamReturn RkAiqAcpHandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -45,6 +46,7 @@ XCamReturn RkAiqAcpHandleInt::updateConfig(bool needSync) {
         updateAtt = false;
     }
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -55,6 +57,9 @@ XCamReturn RkAiqAcpHandleInt::setAttrib(const acp_attrib_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_acp_SetAttrib(mAlgoCtx, att, false);
+#else
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
     // the new params will be effective later when updateConfig
@@ -72,6 +77,7 @@ XCamReturn RkAiqAcpHandleInt::setAttrib(const acp_attrib_t* att) {
         updateAtt = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -83,6 +89,11 @@ XCamReturn RkAiqAcpHandleInt::getAttrib(acp_attrib_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapi_acp_GetAttrib(mAlgoCtx, att);
+    mCfgMutex.unlock();
+#else
 
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
@@ -99,6 +110,7 @@ XCamReturn RkAiqAcpHandleInt::getAttrib(acp_attrib_t* att) {
             att->sync.done      = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -165,8 +177,14 @@ XCamReturn RkAiqAcpHandleInt::processing() {
         RKAIQCORE_CHECK_RET(ret, "acp handle processing failed");
     }
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "acp algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();

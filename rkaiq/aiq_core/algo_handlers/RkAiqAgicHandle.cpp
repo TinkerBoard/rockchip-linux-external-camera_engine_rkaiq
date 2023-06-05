@@ -247,6 +247,13 @@ XCamReturn RkAiqAgicHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    if (!shared->fullParams || !shared->fullParams->mGicParams.ptr()) {
+        LOGE_ALSC("[%d]: no gic buf !", shared->frameId);
+        return XCAM_RETURN_BYPASS;
+    }
+
+    agic_proc_res_int->gicRes = &shared->fullParams->mGicParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "agic handle processing failed");
@@ -358,7 +365,9 @@ XCamReturn RkAiqAgicHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
         } else {
             gic_param->frame_id = shared->frameId;
         }
+#if 0//moved to processing out params
         memcpy(&gic_param->result, &agic_rk->gicRes, sizeof(AgicProcResult_t));
+#endif
     }
 
     cur_params->mGicParams = params->mGicParams;

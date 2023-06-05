@@ -29,8 +29,10 @@ class RkAiqAsharpV3HandleInt : virtual public RkAiqHandle {
 public:
     explicit RkAiqAsharpV3HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
         memset(&mCurAtt, 0, sizeof(rk_aiq_sharp_attrib_v3_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_sharp_attrib_v3_t));
+#endif
     };
     virtual ~RkAiqAsharpV3HandleInt() {
         RkAiqHandle::deInit();
@@ -56,6 +58,7 @@ protected:
     };
 
 private:
+#ifndef DISABLE_HANDLE_ATTRIB
     // TODO
     rk_aiq_sharp_attrib_v3_t mCurAtt;
     rk_aiq_sharp_attrib_v3_t mNewAtt;
@@ -65,6 +68,7 @@ private:
     float mNewStrength;
     bool updateIQpara   = false;
     bool updateStrength = false;
+#endif
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAsharpV3HandleInt);

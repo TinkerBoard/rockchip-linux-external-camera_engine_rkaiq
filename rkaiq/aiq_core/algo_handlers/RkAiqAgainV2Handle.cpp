@@ -36,6 +36,7 @@ XCamReturn RkAiqAgainV2HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -47,6 +48,7 @@ XCamReturn RkAiqAgainV2HandleInt::updateConfig(bool needSync) {
     }
 
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -58,6 +60,9 @@ XCamReturn RkAiqAgainV2HandleInt::setAttrib(const rk_aiq_gain_attrib_v2_t* att) 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_againV2_SetAttrib(mAlgoCtx, att, false);
+#else
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
     // the new params will be effective later when updateConfig
@@ -76,6 +81,7 @@ XCamReturn RkAiqAgainV2HandleInt::setAttrib(const rk_aiq_gain_attrib_v2_t* att) 
         updateAtt = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -88,6 +94,11 @@ XCamReturn RkAiqAgainV2HandleInt::getAttrib(rk_aiq_gain_attrib_v2_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapi_againV2_GetAttrib(mAlgoCtx, att);
+    mCfgMutex.unlock();
+#else
     if(att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_againV2_GetAttrib(mAlgoCtx, att);
@@ -102,6 +113,7 @@ XCamReturn RkAiqAgainV2HandleInt::getAttrib(rk_aiq_gain_attrib_v2_t* att) {
             att->sync.done = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -200,8 +212,14 @@ XCamReturn RkAiqAgainV2HandleInt::processing() {
     again_proc_int->iso      = sharedCom->iso;
     again_proc_int->hdr_mode = sharedCom->working_mode;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "again algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();

@@ -63,25 +63,6 @@ rk_aiq_uapi_aldch_v21_SetAttrib(RkAiqAlgoContext *ctx,
     }
 
     if (0 != memcmp(&ldch_contex->user_config, &attr, sizeof(rk_aiq_ldch_v21_attrib_t))) {
-        if (attr.update_lut_mode == RK_AIQ_LDCH_UPDATE_LUT_FROM_EXTERNAL_BUFFER && \
-            attr.lut.update_flag) {
-            if (!ldch_contex->_lutCache.ptr()) {
-                ldch_contex->_lutCache = new LutCache(attr.lut.u.buffer.size);
-            } else if (attr.lut.u.buffer.size != ldch_contex->_lutCache->GetSize()) {
-                ldch_contex->_lutCache.release();
-                ldch_contex->_lutCache = new LutCache(attr.lut.u.buffer.size);
-            }
-
-            if (ldch_contex->_lutCache.ptr()) {
-                if (ldch_contex->_lutCache->GetBuffer()) {
-                    memcpy(ldch_contex->_lutCache->GetBuffer(), attr.lut.u.buffer.addr, attr.lut.u.buffer.size);
-                }
-            } else {
-                LOGE_ALDCH("Failed to malloc ldch cache!");
-                return XCAM_RETURN_ERROR_MEM;
-            }
-        }
-
         memcpy(&ldch_contex->user_config, &attr, sizeof(attr));
         ldch_contex->isAttribUpdated = true;
     }

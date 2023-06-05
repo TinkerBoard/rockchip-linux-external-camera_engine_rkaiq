@@ -13280,7 +13280,7 @@
 	"uapi_len":	0,
 	"sys_static_cfg":	{
 		"algoSwitch":	{
-			"enable":	1,
+			"enable":	0,
 			"disable_algos":	["DISABLE_AF", "DISABLE_AFD", "DISABLE_AFEC",
 				"DISABLE_ALDCH", "DISABLE_ADEGAMMA", "DISABLE_AMERGE", "DISABLE_AWDR"],
 			"disable_algos_len":	7

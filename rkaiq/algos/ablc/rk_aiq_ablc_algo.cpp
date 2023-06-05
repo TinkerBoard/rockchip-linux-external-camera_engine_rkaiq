@@ -11,7 +11,7 @@ AblcResult_t AblcJsonParamInit(AblcParams_t *pParams, AblcParaV2_t* pBlcCalibPar
     }
 
     pParams->enable = pBlcCalibParams->enable;
-    for(int i = 0; i < pParams->len; i++) {
+    for(int i = 0; i < ABLC_MAX_ISO_LEVEL; i++) {
         pParams->iso[i] = pBlcCalibParams->BLC_Data.ISO[i];
         pParams->blc_r[i] = pBlcCalibParams->BLC_Data.R_Channel[i];
         pParams->blc_gr[i] = pBlcCalibParams->BLC_Data.Gr_Channel[i];
@@ -61,13 +61,8 @@ AblcResult_t Ablc_Select_Params_By_ISO(AblcParams_t *pParams, AblcSelect_t *pSel
     }
 
 
-    if(pParams->len < 1) {
-        LOGE_ABLC("%s(%d): param len is less than 1!\n", __FUNCTION__, __LINE__);
-        return ABLC_RET_NULL_POINTER;
-    }
-
     isoValue = pExpInfo->arIso[pExpInfo->hdr_mode];
-    for(i = 0; i < pParams->len - 1; i++)
+    for(i = 0; i < ABLC_MAX_ISO_LEVEL - 1; i++)
     {
         if(isoValue >= pParams->iso[i] && isoValue <= pParams->iso[i + 1])
         {
@@ -84,7 +79,7 @@ AblcResult_t Ablc_Select_Params_By_ISO(AblcParams_t *pParams, AblcSelect_t *pSel
         }
     }
 
-    if(i == pParams->len - 1) {
+    if(i == ABLC_MAX_ISO_LEVEL - 1) {
         if(isoValue < pParams->iso[0])
         {
             isoLowlevel = 0;
@@ -92,10 +87,10 @@ AblcResult_t Ablc_Select_Params_By_ISO(AblcParams_t *pParams, AblcSelect_t *pSel
             ratio = 0;
         }
 
-        if(isoValue > pParams->iso[pParams->len - 1])
+        if(isoValue > pParams->iso[ABLC_MAX_ISO_LEVEL - 1])
         {
-            isoLowlevel = pParams->len - 2;
-            isoHighlevel = pParams->len - 1;
+            isoLowlevel = ABLC_MAX_ISO_LEVEL - 2;
+            isoHighlevel = ABLC_MAX_ISO_LEVEL - 1;
             ratio = 0;
         }
     }
@@ -124,47 +119,6 @@ AblcResult_t Ablc_Select_Params_By_ISO(AblcParams_t *pParams, AblcSelect_t *pSel
     LOG1_ABLC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ABLC_RET_SUCCESS;
 }
-/******************************************************************************
- * BlcNewMalloc()
- ***************************************************************************/
-void BlcNewMalloc
-(
-    AblcParams_t*           pBlcPara,
-    AblcParaV2_t*         pBlcCalibParams
-) {
-    LOG1_ABLC( "%s:enter!\n", __FUNCTION__);
-
-    // initial checks
-    DCT_ASSERT(pBlcPara != NULL);
-    DCT_ASSERT(pBlcCalibParams != NULL);
-
-    if(pBlcPara->len != pBlcCalibParams->BLC_Data.ISO_len) {
-        if(pBlcPara->iso)
-            free(pBlcPara->iso);
-
-        if(pBlcPara->blc_b)
-            free(pBlcPara->blc_b);
-
-        if(pBlcPara->blc_gb)
-            free(pBlcPara->blc_gb);
-
-        if(pBlcPara->blc_gr)
-            free(pBlcPara->blc_gr);
-
-        if(pBlcPara->blc_r)
-            free(pBlcPara->blc_r);
-
-        pBlcPara->len = pBlcCalibParams->BLC_Data.ISO_len;
-        pBlcPara->iso = (float*)malloc(sizeof(float) * (pBlcCalibParams->BLC_Data.ISO_len));
-        pBlcPara->blc_r = (float*)malloc(sizeof(float) * (pBlcCalibParams->BLC_Data.R_Channel_len));
-        pBlcPara->blc_gr = (float*)malloc(sizeof(float) * (pBlcCalibParams->BLC_Data.Gr_Channel_len));
-        pBlcPara->blc_gb = (float*)malloc(sizeof(float) * (pBlcCalibParams->BLC_Data.Gb_Channel_len));
-        pBlcPara->blc_b = (float*)malloc(sizeof(float) * (pBlcCalibParams->BLC_Data.B_Channel_len));
-
-    }
-
-    LOG1_ABLC( "%s:exit!\n", __FUNCTION__);
-}
 
 AblcResult_t AblcParamsUpdate(AblcContext_t *pAblcCtx, CalibDbV2_Ablc_t *pCalibDb)
 {
@@ -177,12 +131,10 @@ AblcResult_t AblcParamsUpdate(AblcContext_t *pAblcCtx, CalibDbV2_Ablc_t *pCalibD
     }
 
     //blc0
-    BlcNewMalloc(&pAblcCtx->stBlc0Params, &pCalibDb->BlcTuningPara);
     AblcJsonParamInit(&pAblcCtx->stBlc0Params, &pCalibDb->BlcTuningPara);
 
     //blc1
     if (CHECK_ISP_HW_V3X()) {
-        BlcNewMalloc(&pAblcCtx->stBlc1Params, &pCalibDb->Blc1TuningPara);
         AblcJsonParamInit(&pAblcCtx->stBlc1Params, &pCalibDb->Blc1TuningPara);
     }
 
@@ -230,38 +182,7 @@ AblcResult_t AblcRelease(AblcContext_t *pAblcCtx)
         LOGE_ABLC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
         return ABLC_RET_NULL_POINTER;
     }
-
-    if(pAblcCtx->stBlc0Params.iso)
-        free(pAblcCtx->stBlc0Params.iso);
-
-    if(pAblcCtx->stBlc0Params.blc_b)
-        free(pAblcCtx->stBlc0Params.blc_b);
-
-    if(pAblcCtx->stBlc0Params.blc_gb)
-        free(pAblcCtx->stBlc0Params.blc_gb);
-
-    if(pAblcCtx->stBlc0Params.blc_gr)
-        free(pAblcCtx->stBlc0Params.blc_gr);
-
-    if(pAblcCtx->stBlc0Params.blc_r)
-        free(pAblcCtx->stBlc0Params.blc_r);
-
-
-    if(pAblcCtx->stBlc1Params.iso)
-        free(pAblcCtx->stBlc1Params.iso);
-
-    if(pAblcCtx->stBlc1Params.blc_b)
-        free(pAblcCtx->stBlc1Params.blc_b);
-
-    if(pAblcCtx->stBlc1Params.blc_gb)
-        free(pAblcCtx->stBlc1Params.blc_gb);
-
-    if(pAblcCtx->stBlc1Params.blc_gr)
-        free(pAblcCtx->stBlc1Params.blc_gr);
-
-    if(pAblcCtx->stBlc1Params.blc_r)
-        free(pAblcCtx->stBlc1Params.blc_r);
-
+	
     memset(pAblcCtx, 0x00, sizeof(AblcContext_t));
     free(pAblcCtx);
 

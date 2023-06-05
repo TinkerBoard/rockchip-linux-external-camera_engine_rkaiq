@@ -122,21 +122,22 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     else if (pAgammaGrpCtx->agammaAttrV11.mode == RK_AIQ_GAMMA_MODE_AUTO)
         bypass = !pAgammaGrpCtx->ifReCalcStAuto;
 #endif
-    pAgammaGrpCtx->ifReCalcStAuto   = false;
-    pAgammaGrpCtx->ifReCalcStManual = false;
 
-    if (!bypass) AgammaProcessing(pAgammaGrpCtx);
+    if (!bypass)
+        AgammaProcessing(pAgammaGrpCtx, pAgammaGrpProcRes->camgroupParmasArray[0]->_agammaConfig);
 
     // set proc res
-    AgammaSetProcRes(pAgammaGrpProcRes->camgroupParmasArray[0]->_agammaConfig, pAgammaGrpCtx,
-                     bypass);
-    if (!bypass) {
-        for (int i = 0; i < pAgammaGrpProcRes->arraySize; i++) {
+    pAgammaGrpProcRes->camgroupParmasArray[0]->_agammaConfig->update = !bypass;
+    if (pAgammaGrpProcRes->camgroupParmasArray[0]->_agammaConfig->update) {
+        for (int i = 1; i < pAgammaGrpProcRes->arraySize; i++) {
             memcpy(pAgammaGrpProcRes->camgroupParmasArray[i]->_agammaConfig,
                    pAgammaGrpProcRes->camgroupParmasArray[0]->_agammaConfig,
                    sizeof(AgammaProcRes_t));
         }
     }
+
+    pAgammaGrpCtx->ifReCalcStAuto   = false;
+    pAgammaGrpCtx->ifReCalcStManual = false;
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);
     return ret;

@@ -122,7 +122,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
         pAgicCtx->ProcRes.gic_cfg_update = false;
     }
 
-    memcpy(&pAgicProcResParams->gicRes, &pAgicCtx->ProcRes, sizeof(AgicProcResult_t));
+    memcpy(pAgicProcResParams->gicRes, &pAgicCtx->ProcRes, sizeof(AgicProcResult_t));
 
     LOG1_AGIC("enter!");
     return XCAM_RETURN_NO_ERROR;

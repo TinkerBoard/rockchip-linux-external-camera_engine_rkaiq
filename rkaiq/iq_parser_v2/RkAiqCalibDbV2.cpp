@@ -1335,33 +1335,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeGammaV2Ctx(CalibDbV2_gamma_v11_t* gamma) {
 #if RKAIQ_HAVE_BLC_V1
 int RkAiqCalibDbV2::CamCalibDbFreeBlcCtx(CalibDbV2_Ablc_t* blc)
 {
-    AblcParaV2_t* BlcTuningPara = &blc->BlcTuningPara;
-    AblcParaV2_t* Blc1TuningPara = &blc->Blc1TuningPara;
-    Blc_data_t* BLC_Data = &BlcTuningPara->BLC_Data;
-    Blc_data_t* BLC1_Data = &Blc1TuningPara->BLC_Data;
-    if (BLC_Data->ISO)
-        calib_free(BLC_Data->ISO);
-    if (BLC_Data->R_Channel)
-        calib_free(BLC_Data->R_Channel);
-    if (BLC_Data->Gr_Channel)
-        calib_free(BLC_Data->Gr_Channel);
-    if (BLC_Data->Gb_Channel)
-        calib_free(BLC_Data->Gb_Channel);
-    if (BLC_Data->B_Channel)
-        calib_free(BLC_Data->B_Channel);
-
-    if (BLC1_Data->ISO)
-        calib_free(BLC1_Data->ISO);
-    if (BLC1_Data->R_Channel)
-        calib_free(BLC1_Data->R_Channel);
-    if (BLC1_Data->Gr_Channel)
-        calib_free(BLC1_Data->Gr_Channel);
-    if (BLC1_Data->Gb_Channel)
-        calib_free(BLC1_Data->Gb_Channel);
-    if (BLC1_Data->B_Channel)
-        calib_free(BLC1_Data->B_Channel);
-
-
     return 0;
 }
 #endif
@@ -1369,42 +1342,6 @@ int RkAiqCalibDbV2::CamCalibDbFreeBlcCtx(CalibDbV2_Ablc_t* blc)
 #if RKAIQ_HAVE_BLC_V32
 int RkAiqCalibDbV2::CamCalibDbFreeBlcV32Ctx(CalibDbV2_Blc_V32_t* blc_v32)
 {
-    AblcV32ParaV2_t* Blc0TuingPara = &blc_v32->Blc0TuningPara;
-    AblcV32ParaV2_t* Blc1TuingPara = &blc_v32->Blc1TuningPara;
-    AblcV32OBPara_t* BlcOBTuningPara = &blc_v32->BlcObPara;
-    Blc_data_V32_t* BLC0_Data = &Blc0TuingPara->BLC_Data;
-    Blc_data_V32_t* BLC1_Data = &Blc1TuingPara->BLC_Data;
-    Blc_ob_dataV32_t* BLC_OB_Data = &BlcOBTuningPara->BLC_OB_Data;
-
-    if (BLC0_Data->ISO)
-        calib_free(BLC0_Data->ISO);
-    if (BLC0_Data->R_Channel)
-        calib_free(BLC0_Data->R_Channel);
-    if (BLC0_Data->Gr_Channel)
-        calib_free(BLC0_Data->Gr_Channel);
-    if (BLC0_Data->Gb_Channel)
-        calib_free(BLC0_Data->Gb_Channel);
-    if (BLC0_Data->B_Channel)
-        calib_free(BLC0_Data->B_Channel);
-
-    if (BLC1_Data->ISO)
-        calib_free(BLC1_Data->ISO);
-    if (BLC1_Data->R_Channel)
-        calib_free(BLC1_Data->R_Channel);
-    if (BLC1_Data->Gr_Channel)
-        calib_free(BLC1_Data->Gr_Channel);
-    if (BLC1_Data->Gb_Channel)
-        calib_free(BLC1_Data->Gb_Channel);
-    if (BLC1_Data->B_Channel)
-        calib_free(BLC1_Data->B_Channel);
-
-    if (BLC_OB_Data->ISO)
-        calib_free(BLC_OB_Data->ISO);
-    if (BLC_OB_Data->isp_ob_Offset)
-        calib_free(BLC_OB_Data->isp_ob_Offset);
-    if (BLC_OB_Data->isp_ob_preDgain)
-        calib_free(BLC_OB_Data->isp_ob_preDgain);
-
     return 0;
 }
 #endif

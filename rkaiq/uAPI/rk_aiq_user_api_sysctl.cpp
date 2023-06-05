@@ -313,11 +313,13 @@ static int rk_aiq_offline_init(rk_aiq_sys_ctx_t* ctx)
     }
 
 #ifdef ANDROID_OS
-    int use_fakecam = atoi(use_as_fake_cam_env);
-    if (use_fakecam > 0) {
-        ctx->_use_fakecam = true;
-    } else {
-        ctx->_use_fakecam = false;
+    if (!ctx->_use_fakecam) {
+        int use_fakecam = atoi(use_as_fake_cam_env);
+        if (use_fakecam > 0) {
+            ctx->_use_fakecam = true;
+        } else {
+            ctx->_use_fakecam = false;
+        }
     }
 #else
     if (use_as_fake_cam_env)

@@ -33,13 +33,17 @@ class RkAiqAwbV21HandleInt : public RkAiqAwbHandleInt {
  public:
     explicit RkAiqAwbV21HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqAwbHandleInt(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
         memset(&mCurWbV21Attr, 0, sizeof(rk_aiq_uapiV2_wbV21_attrib_t));
         memset(&mNewWbV21Attr, 0, sizeof(rk_aiq_uapiV2_wbV21_attrib_t));
         updateWbV21Attr = false;
+#endif
     };
     virtual ~RkAiqAwbV21HandleInt() {
+#ifndef DISABLE_HANDLE_ATTRIB
         freeWbGainAdjustAttrib(&mNewWbV21Attr.stAuto.wbGainAdjust);
         freeWbGainAdjustAttrib(&mCurWbV21Attr.stAuto.wbGainAdjust);
+#endif
         RkAiqAwbHandleInt::deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);
@@ -48,10 +52,12 @@ class RkAiqAwbV21HandleInt : public RkAiqAwbHandleInt {
 
  protected:
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
     // TODO
     rk_aiq_uapiV2_wbV21_attrib_t mCurWbV21Attr;
     rk_aiq_uapiV2_wbV21_attrib_t mNewWbV21Attr;
     mutable std::atomic<bool> updateWbV21Attr;
+#endif
 
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAwbV21HandleInt);

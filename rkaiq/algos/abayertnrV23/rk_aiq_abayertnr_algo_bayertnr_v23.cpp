@@ -123,20 +123,22 @@ Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(void* pParams_v, void* 
 
     for (i = 0; i < 16; i++)
     {
-        pSelect->lumapoint[i] =
+        /*pSelect->lumapoint[i] =
             float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lumapoint[i]
-            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lumapoint[i];
-        pSelect->sigma[i] =
+            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lumapoint[i];*/
+        pSelect->lumapoint[i] = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->lumapoint[i] : pHighISO->lumapoint[i];
+	pSelect->sigma[i] =
             float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->sigma[i]
             + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->sigma[i];
     }
 
     for (i = 0; i < 16; i++)
     {
-        pSelect->lumapoint2[i] =
+        /*pSelect->lumapoint2[i] =
             float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lumapoint2[i]
-            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lumapoint2[i];
-        pSelect->lo_sigma[i] =
+            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lumapoint2[i];*/
+        pSelect->lumapoint2[i] = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->lumapoint2[i] : pHighISO->lumapoint2[i];
+	pSelect->lo_sigma[i] =
             float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lo_sigma[i]
             + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lo_sigma[i];
         pSelect->hi_sigma[i] =

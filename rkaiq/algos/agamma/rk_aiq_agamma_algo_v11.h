@@ -27,10 +27,9 @@
 
 RKAIQ_BEGIN_DECLARE
 
-XCamReturn AgammaInit(AgammaHandle_t** para, CamCalibDbV2Context_t* pCalib);
-XCamReturn AgammaRelease(AgammaHandle_t* para);
-void AgammaProcessing(AgammaHandle_t* para);
-void AgammaSetProcRes(AgammaProcRes_t* AgammaProcRes, AgammaHandle_t* pGammaCtx, bool bypass);
+XCamReturn AgammaInit(AgammaHandle_t** pGammaCtx, CamCalibDbV2Context_t* pCalib);
+XCamReturn AgammaRelease(AgammaHandle_t* pGammaCtx);
+void AgammaProcessing(AgammaHandle_t* pGammaCtx, AgammaProcRes_t* pProcRes);
 
 RKAIQ_END_DECLARE
 

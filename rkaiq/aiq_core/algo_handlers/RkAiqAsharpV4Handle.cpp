@@ -41,6 +41,7 @@ XCamReturn RkAiqAsharpV4HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -58,6 +59,7 @@ XCamReturn RkAiqAsharpV4HandleInt::updateConfig(bool needSync) {
     }
 
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -68,6 +70,9 @@ XCamReturn RkAiqAsharpV4HandleInt::setAttrib(rk_aiq_sharp_attrib_v4_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_asharpV4_SetAttrib(mAlgoCtx, att, false);
+#else
 
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
@@ -87,6 +92,7 @@ XCamReturn RkAiqAsharpV4HandleInt::setAttrib(rk_aiq_sharp_attrib_v4_t* att) {
         updateAtt = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -99,6 +105,11 @@ XCamReturn RkAiqAsharpV4HandleInt::getAttrib(rk_aiq_sharp_attrib_v4_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapi_asharpV4_GetAttrib(mAlgoCtx, att);
+    mCfgMutex.unlock();
+#else
     if(att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_asharpV4_GetAttrib(mAlgoCtx, att);
@@ -113,6 +124,7 @@ XCamReturn RkAiqAsharpV4HandleInt::getAttrib(rk_aiq_sharp_attrib_v4_t* att) {
             att->sync.done = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -124,6 +136,9 @@ XCamReturn RkAiqAsharpV4HandleInt::setStrength(rk_aiq_sharp_strength_v4_t *pStre
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_asharpV4_SetStrength(mAlgoCtx, pStrength);
+#else
     bool isChanged = false;
     if (pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && \
             memcmp(&mNewStrength, pStrength, sizeof(*pStrength)))
@@ -137,6 +152,7 @@ XCamReturn RkAiqAsharpV4HandleInt::setStrength(rk_aiq_sharp_strength_v4_t *pStre
         updateStrength = true;
         waitSignal(pStrength->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
     EXIT_ANALYZER_FUNCTION();
@@ -149,6 +165,11 @@ XCamReturn RkAiqAsharpV4HandleInt::getStrength(rk_aiq_sharp_strength_v4_t *pStre
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapi_asharpV4_GetStrength(mAlgoCtx, pStrength);
+    mCfgMutex.unlock();
+#else
     if(pStrength->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_asharpV4_GetStrength(mAlgoCtx, pStrength);
@@ -163,6 +184,7 @@ XCamReturn RkAiqAsharpV4HandleInt::getStrength(rk_aiq_sharp_strength_v4_t *pStre
             pStrength->sync.done = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -253,8 +275,14 @@ XCamReturn RkAiqAsharpV4HandleInt::processing() {
     asharp_proc_int->iso      = sharedCom->iso;
     asharp_proc_int->hdr_mode = sharedCom->working_mode;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "asharp algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();

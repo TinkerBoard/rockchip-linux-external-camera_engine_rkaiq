@@ -40,6 +40,7 @@ XCamReturn RkAiqAynrV2HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -66,6 +67,7 @@ XCamReturn RkAiqAynrV2HandleInt::updateConfig(bool needSync) {
     }
 
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -76,6 +78,9 @@ XCamReturn RkAiqAynrV2HandleInt::setAttrib(rk_aiq_ynr_attrib_v2_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_aynrV2_SetAttrib(mAlgoCtx, att, false);
+#else
     // TODO
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
@@ -88,6 +93,7 @@ XCamReturn RkAiqAynrV2HandleInt::setAttrib(rk_aiq_ynr_attrib_v2_t* att) {
         updateAtt = true;
         waitSignal();
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -111,6 +117,9 @@ XCamReturn RkAiqAynrV2HandleInt::setIQPara(rk_aiq_ynr_IQPara_V2_t* para) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    // TODO
+#else
     // TODO
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
@@ -123,6 +132,7 @@ XCamReturn RkAiqAynrV2HandleInt::setIQPara(rk_aiq_ynr_IQPara_V2_t* para) {
         updateIQpara = true;
         waitSignal();
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -146,10 +156,14 @@ XCamReturn RkAiqAynrV2HandleInt::setStrength(float fPercent) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_aynrV2_SetLumaSFStrength(mAlgoCtx, fPercent);
+#else
 
     mNewStrength   = fPercent;
     updateStrength = true;
     waitSignal();
+#endif
 
     mCfgMutex.unlock();
     EXIT_ANALYZER_FUNCTION();
@@ -233,8 +247,14 @@ XCamReturn RkAiqAynrV2HandleInt::processing() {
     aynr_proc_int->iso      = sharedCom->iso;
     aynr_proc_int->hdr_mode = sharedCom->working_mode;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "aynr algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();

@@ -24,7 +24,7 @@
 
 RKAIQ_BEGIN_DECLARE
 
-#define ABLC_MAX_ISO_LEVEL 13
+#define ABLC_MAX_ISO_LEVEL (13)
 #define ABLC_MAX_CHANNEL_NUM 4
 
 
@@ -35,21 +35,16 @@ RKAIQ_BEGIN_DECLARE
 /*****************************************************************************/
 
 typedef struct Blc_data_s {
-    // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* ISO;
-    int ISO_len;
-    // M4_ARRAY_DESC("R_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* R_Channel;
-    int R_Channel_len;
-    // M4_ARRAY_DESC("Gr_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* Gr_Channel;
-    int Gr_Channel_len;
-    // M4_ARRAY_DESC("Gb_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* Gb_Channel;
-    int Gb_Channel_len;
-    // M4_ARRAY_DESC("B_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* B_Channel;
-    int B_Channel_len;
+    // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,13), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(0))
+    float ISO[ABLC_MAX_ISO_LEVEL];
+    // M4_ARRAY_DESC("R_Channel", "f32", M4_SIZE(1,13), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(0))
+    float R_Channel[ABLC_MAX_ISO_LEVEL];
+    // M4_ARRAY_DESC("Gr_Channel", "f32", M4_SIZE(1,13), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(0))
+    float Gr_Channel[ABLC_MAX_ISO_LEVEL];
+    // M4_ARRAY_DESC("Gb_Channel", "f32", M4_SIZE(1,13), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(0))
+    float Gb_Channel[ABLC_MAX_ISO_LEVEL];
+    // M4_ARRAY_DESC("B_Channel", "f32", M4_SIZE(1,13), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(0))
+    float B_Channel[ABLC_MAX_ISO_LEVEL];
 } Blc_data_t;
 
 typedef struct AblcParaV2_s {

@@ -25,6 +25,7 @@ XCamReturn RkAiqAwbV21HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -88,6 +89,7 @@ XCamReturn RkAiqAwbV21HandleInt::updateConfig(bool needSync) {
         sendSignal(mCurFFWbgainAttr.sync.sync_mode);
     }
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -99,6 +101,9 @@ XCamReturn RkAiqAwbV21HandleInt::setWbV21Attrib(rk_aiq_uapiV2_wbV21_attrib_t att
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapiV2_awbV21_SetAttrib(mAlgoCtx, att, false);
+#else
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
     // the new params will be effective later when updateConfig
@@ -120,6 +125,7 @@ XCamReturn RkAiqAwbV21HandleInt::setWbV21Attrib(rk_aiq_uapiV2_wbV21_attrib_t att
         updateWbV21Attr = true;
         waitSignal(att.sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -132,6 +138,11 @@ XCamReturn RkAiqAwbV21HandleInt::getWbV21Attrib(rk_aiq_uapiV2_wbV21_attrib_t* at
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapiV2_awbV21_GetAttrib(mAlgoCtx, att);
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapiV2_awbV21_GetAttrib(mAlgoCtx, att);
@@ -152,6 +163,7 @@ XCamReturn RkAiqAwbV21HandleInt::getWbV21Attrib(rk_aiq_uapiV2_wbV21_attrib_t* at
             att->sync.done = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;

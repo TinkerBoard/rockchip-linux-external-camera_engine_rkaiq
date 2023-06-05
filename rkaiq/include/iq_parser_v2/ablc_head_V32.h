@@ -20,7 +20,7 @@
 
 RKAIQ_BEGIN_DECLARE
 
-#define ABLCV32_MAX_ISO_LEVEL   13
+#define ABLCV32_MAX_ISO_LEVEL   (13)
 #define ABLCV32_MAX_CHANNEL_NUM 4
 
 /*****************************************************************************/
@@ -30,21 +30,16 @@ RKAIQ_BEGIN_DECLARE
 /*****************************************************************************/
 
 typedef struct Blc_data_V32_s {
-    // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* ISO;
-    int ISO_len;
-    // M4_ARRAY_DESC("R_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* R_Channel;
-    int R_Channel_len;
-    // M4_ARRAY_DESC("Gr_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* Gr_Channel;
-    int Gr_Channel_len;
-    // M4_ARRAY_DESC("Gb_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* Gb_Channel;
-    int Gb_Channel_len;
-    // M4_ARRAY_DESC("B_Channel", "f32", M4_SIZE(1,100), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* B_Channel;
-    int B_Channel_len;
+    // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,13), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(0))
+    float ISO[ABLCV32_MAX_ISO_LEVEL];
+    // M4_ARRAY_DESC("R_Channel", "f32", M4_SIZE(1,13), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(0))
+    float R_Channel[ABLCV32_MAX_ISO_LEVEL];
+    // M4_ARRAY_DESC("Gr_Channel", "f32", M4_SIZE(1,13), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(0))
+    float Gr_Channel[ABLCV32_MAX_ISO_LEVEL];
+    // M4_ARRAY_DESC("Gb_Channel", "f32", M4_SIZE(1,13), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(0))
+    float Gb_Channel[ABLCV32_MAX_ISO_LEVEL];
+    // M4_ARRAY_DESC("B_Channel", "f32", M4_SIZE(1,13), M4_RANGE(0,4095), "0",M4_DIGIT(4), M4_DYNAMIC(0))
+    float B_Channel[ABLCV32_MAX_ISO_LEVEL];
 } Blc_data_V32_t;
 
 typedef struct AblcV32ParaV2_s {
@@ -55,15 +50,12 @@ typedef struct AblcV32ParaV2_s {
 } AblcV32ParaV2_t;
 
 typedef struct Blc_ob_dataV32_s {
-    // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,100), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* ISO;
-    int ISO_len;
-    // M4_ARRAY_DESC("isp_ob_Offset", "f32", M4_SIZE(1,100), M4_RANGE(0,511), "0",M4_DIGIT(4), M4_DYNAMIC(1))
-    float* isp_ob_Offset;
-    int isp_ob_Offset_len;
-    // M4_ARRAY_DESC("isp_ob_preDgain", "f32", M4_SIZE(1,100), M4_RANGE(0,256), "1",M4_DIGIT(2), M4_DYNAMIC(1))
-    float* isp_ob_preDgain;
-    int isp_ob_preDgain_len;
+    // M4_ARRAY_DESC("ISO", "f32", M4_SIZE(1,13), M4_RANGE(0,10000000), "50",M4_DIGIT(4), M4_DYNAMIC(0))
+    float ISO[ABLCV32_MAX_ISO_LEVEL];
+    // M4_ARRAY_DESC("isp_ob_Offset", "f32", M4_SIZE(1,13), M4_RANGE(0,511), "0",M4_DIGIT(4), M4_DYNAMIC(0))
+    float isp_ob_Offset[ABLCV32_MAX_ISO_LEVEL];
+    // M4_ARRAY_DESC("isp_ob_preDgain", "f32", M4_SIZE(1,13), M4_RANGE(0,256), "1",M4_DIGIT(2), M4_DYNAMIC(0))
+    float isp_ob_preDgain[ABLCV32_MAX_ISO_LEVEL];
 } Blc_ob_dataV32_t;
 
 typedef struct AblcV32OBPara_s {

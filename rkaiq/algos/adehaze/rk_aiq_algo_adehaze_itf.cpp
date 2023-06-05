@@ -145,13 +145,10 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     AdehazeGetCurrData(pAdehazeHandle, pProcPara);
     AdehazeByPassProcessing(pAdehazeHandle);
 
-    bool Enable = DehazeEnableSetting(pAdehazeHandle);
-
-    if (Enable) {
-        AdehazeGetStats(pAdehazeHandle, &pProcPara->stats);
-
-    // process
-    if (!(pAdehazeHandle->byPassProc)) ret = AdehazeProcess(pAdehazeHandle);
+    if (DehazeEnableSetting(pAdehazeHandle, &pProcRes->AdehzeProcRes)) {
+        // process
+        if (!(pAdehazeHandle->byPassProc))
+            ret = AdehazeProcess(pAdehazeHandle, &pProcPara->stats, &pProcRes->AdehzeProcRes);
     } else {
         LOGD_ADEHAZE("Dehaze Enable is OFF, Bypass Dehaze !!! \n");
     }
@@ -159,29 +156,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     LOGD_ADEHAZE("/*************************Adehaze over******************/ \n");
 
     // proc res
-    pProcRes->AdehzeProcRes.enable = pAdehazeHandle->ProcRes.enable;
     pProcRes->AdehzeProcRes.update = !(pAdehazeHandle->byPassProc);
-#if RKAIQ_HAVE_DEHAZE_V10
-    pProcRes->AdehzeProcRes.enable = true;
-    if (pProcRes->AdehzeProcRes.update)
-        memcpy(&pProcRes->AdehzeProcRes, &pAdehazeHandle->ProcRes,
-               sizeof(RkAiqAdehazeProcResult_t));
-#endif
-#if RKAIQ_HAVE_DEHAZE_V11
-    if (pProcRes->AdehzeProcRes.update)
-        memcpy(&pProcRes->AdehzeProcRes.ProcResV11, &pAdehazeHandle->ProcRes.ProcResV11,
-               sizeof(AdehazeV11ProcResult_t));
-#endif
-#if RKAIQ_HAVE_DEHAZE_V11_DUO
-    if (pProcRes->AdehzeProcRes.update)
-        memcpy(&pProcRes->AdehzeProcRes.ProcResV11duo, &pAdehazeHandle->ProcRes.ProcResV11duo,
-               sizeof(AdehazeV11duoProcResult_t));
-#endif
-#if RKAIQ_HAVE_DEHAZE_V12
-    if (pProcRes->AdehzeProcRes.update)
-        memcpy(&pProcRes->AdehzeProcRes.ProcResV12, &pAdehazeHandle->ProcRes.ProcResV12,
-               sizeof(AdehazeV12ProcResult_t));
-#endif
 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;

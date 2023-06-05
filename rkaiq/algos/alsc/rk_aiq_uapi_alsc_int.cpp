@@ -8,6 +8,7 @@ rk_aiq_uapi_alsc_SetAttrib(RkAiqAlgoContext *ctx,
     alsc_context_t* lsc_contex = (alsc_context_t*)ctx->alsc_para;
     lsc_contex->mCurAtt = attr;
     lsc_contex->updateAtt = true;
+    lsc_contex->smartRunRes.forceRunFlag = true;
 
     return XCAM_RETURN_NO_ERROR;
 }

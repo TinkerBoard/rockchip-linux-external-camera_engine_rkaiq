@@ -220,7 +220,6 @@ typedef struct AmergeContext_s {
     AmergeState_t state;
     AmergeCurrData_t CurrData;
     AmergeNextData_t NextData;
-    RkAiqAmergeProcResult_t ProcRes;
     FrameNumber_t FrameNumber;
 } AmergeContext_t;
 

@@ -35,7 +35,7 @@ class CamHwIsp32 : virtual public CamHwIsp3x, virtual public Isp32Params {
     XCamReturn setIspParamsSync(uint32_t frameId);
 
  protected:
-    virtual XCamReturn setIspConfig();
+    virtual XCamReturn setIspConfig(cam3aResultList* result_list = NULL);
 
  private:
     void gen_full_isp_params(const struct isp32_isp_params_cfg* update_params,

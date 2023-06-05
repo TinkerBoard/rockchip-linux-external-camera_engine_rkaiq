@@ -36,6 +36,7 @@ XCamReturn RkAiqAblcV32HandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -46,6 +47,7 @@ XCamReturn RkAiqAblcV32HandleInt::updateConfig(bool needSync) {
     }
 
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -60,6 +62,9 @@ XCamReturn RkAiqAblcV32HandleInt::setAttrib(const rk_aiq_blc_attrib_V32_t* att) 
     // if something changed, set att to mNewAtt, and
     // the new params will be effective later when updateConfig
     // called by RkAiqCore
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_ablc_V32_SetAttrib(mAlgoCtx, const_cast<rk_aiq_blc_attrib_V32_t*>(att), false);
+#else
     bool isChanged = false;
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_ASYNC && memcmp(&mNewAtt, att, sizeof(*att)))
         isChanged = true;
@@ -72,6 +77,7 @@ XCamReturn RkAiqAblcV32HandleInt::setAttrib(const rk_aiq_blc_attrib_V32_t* att) 
         updateAtt = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -84,6 +90,11 @@ XCamReturn RkAiqAblcV32HandleInt::getAttrib(rk_aiq_blc_attrib_V32_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapi_ablc_V32_GetAttrib(mAlgoCtx, att);
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_ablc_V32_GetAttrib(mAlgoCtx, att);
@@ -98,6 +109,7 @@ XCamReturn RkAiqAblcV32HandleInt::getAttrib(rk_aiq_blc_attrib_V32_t* att) {
             att->sync.done = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -203,8 +215,14 @@ XCamReturn RkAiqAblcV32HandleInt::processing() {
     ablc_proc_int->iso      = sharedCom->iso;
     ablc_proc_int->hdr_mode = sharedCom->working_mode;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, (RkAiqAlgoResCom*)(&mProcResShared->result));
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     if (ret < 0) {
         LOGE_ANALYZER("ablcV32 algo processing failed ret %d", ret);
         mProcResShared = NULL;

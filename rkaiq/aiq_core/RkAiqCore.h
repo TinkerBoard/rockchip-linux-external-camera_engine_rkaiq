@@ -393,6 +393,7 @@ public:
         XCamVideoBuffer* pdafStatsBuf;
         RkAiqResComb res_comb;
         rk_aiq_scale_raw_info_t scaleRawInfo;
+        RkAiqFullParams* fullParams;
         void reset() {
             frameId = -1;
             sof     = 0;
@@ -419,6 +420,7 @@ public:
             orbStats = nullptr;
             nrImg       = nullptr;
             pdafStatsBuf = nullptr;
+            fullParams = nullptr;
         }
     } RkAiqAlgosGroupShared_t;
     RkAiqAlgosComShared_t mAlogsComSharedParams;
@@ -715,6 +717,15 @@ private:
     SmartPtr<RkAiqVicapRawBuf_t> mVicapBufs;
     bool mIsEnableVicap{false};
     int mScaleRatio{32};
+    typedef struct {
+        SmartPtr<RkAiqFullParamsProxy> proxy;
+        uint64_t groupMasks;
+        bool ready;
+    } pending_params_t;
+    // key: frame_id
+    std::map<uint32_t, pending_params_t> mFullParamsPendingMap;
+    uint64_t mFullParamReqGroupsMasks{0};
+    XCam::Mutex _mFullParam_mutex;
 };
 
 }

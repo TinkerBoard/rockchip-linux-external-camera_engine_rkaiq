@@ -29,6 +29,7 @@ class RkAiqAynrV3HandleInt : virtual public RkAiqHandle {
 public:
     explicit RkAiqAynrV3HandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
         updateAtt      = false;
         updateStrength = false;
         memset(&mCurStrength, 0x00, sizeof(mCurStrength));
@@ -37,6 +38,7 @@ public:
         mNewStrength.percent = 1.0;
         memset(&mCurAtt, 0x00, sizeof(mCurAtt));
         memset(&mNewAtt, 0x00, sizeof(mNewAtt));
+#endif
     };
     virtual ~RkAiqAynrV3HandleInt() {
         RkAiqHandle::deInit();
@@ -61,12 +63,14 @@ protected:
     SmartPtr<RkAiqAlgoProcResAynrV3IntShared> mProcResShared;
 
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
     // TODO
     rk_aiq_ynr_attrib_v3_t mCurAtt;
     rk_aiq_ynr_attrib_v3_t mNewAtt;
     rk_aiq_ynr_strength_v3_t mCurStrength;
     rk_aiq_ynr_strength_v3_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
+#endif
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAynrV3HandleInt);

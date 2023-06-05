@@ -578,7 +578,7 @@ RawStreamProcUnit::set_csi_mem_word_big_align(uint32_t width, uint32_t height,
 
     for (int i = 0; i < 3; i++) {
         if (!_dev[i].ptr()) {
-            ret = XCAM_RETURN_ERROR_PARAM;
+            ret = XCAM_RETURN_BYPASS;
             break;
         }
 

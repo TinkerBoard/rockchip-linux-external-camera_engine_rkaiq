@@ -53,6 +53,7 @@ class RkAiqAmergeHandleInt : virtual public RkAiqHandle {
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
 #if RKAIQ_HAVE_MERGE_V10
     mergeAttrV10_t mCurAttV10;
     mergeAttrV10_t mNewAttV10;
@@ -64,6 +65,7 @@ class RkAiqAmergeHandleInt : virtual public RkAiqHandle {
 #if RKAIQ_HAVE_MERGE_V12
     mergeAttrV12_t mCurAttV12;
     mergeAttrV12_t mNewAttV12;
+#endif
 #endif
 
  private:

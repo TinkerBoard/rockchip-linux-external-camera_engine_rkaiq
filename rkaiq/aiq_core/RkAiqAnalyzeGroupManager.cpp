@@ -278,11 +278,12 @@ XCamReturn RkAiqAnalyzeGroupManager::stop() {
     if (mSingleThreadMode) {
         mMsgThrd->triger_stop();
         mMsgThrd->stop();
-    } else {
-        for (auto& it : mGroupMap) {
-            it.second->stop();
-        }
     }
+
+    for (auto& it : mGroupMap) {
+        it.second->stop();
+    }
+
     return XCAM_RETURN_NO_ERROR;
 }
 

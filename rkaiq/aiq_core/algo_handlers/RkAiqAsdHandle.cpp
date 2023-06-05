@@ -39,6 +39,7 @@ XCamReturn RkAiqAsdHandleInt::updateConfig(bool needSync) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -49,6 +50,7 @@ XCamReturn RkAiqAsdHandleInt::updateConfig(bool needSync) {
     }
 
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -59,6 +61,9 @@ XCamReturn RkAiqAsdHandleInt::setAttrib(asd_attrib_t att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_asd_SetAttrib(mAlgoCtx, att, false);
+#else
     // TODO
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
@@ -71,6 +76,7 @@ XCamReturn RkAiqAsdHandleInt::setAttrib(asd_attrib_t att) {
         updateAtt = true;
         waitSignal();
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -153,8 +159,14 @@ XCamReturn RkAiqAsdHandleInt::processing() {
         RKAIQCORE_CHECK_RET(ret, "asd handle processing failed");
     }
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "asd algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();

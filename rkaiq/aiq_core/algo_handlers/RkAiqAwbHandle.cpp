@@ -39,6 +39,7 @@ XCamReturn RkAiqAwbHandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
 #ifdef RKAIQ_HAVE_AWB_V20
     if (needSync) mCfgMutex.lock();
     // if something changed
@@ -104,6 +105,7 @@ XCamReturn RkAiqAwbHandleInt::updateConfig(bool needSync) {
     }
     if (needSync) mCfgMutex.unlock();
 #endif
+#endif
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
@@ -113,6 +115,9 @@ XCamReturn RkAiqAwbHandleInt::setAttrib(rk_aiq_wb_attrib_t att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_awb_SetAttrib(mAlgoCtx, att, false);
+#else
     // TODO
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
@@ -125,6 +130,7 @@ XCamReturn RkAiqAwbHandleInt::setAttrib(rk_aiq_wb_attrib_t att) {
         updateAtt = true;
         waitSignal();
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -222,6 +228,9 @@ XCamReturn RkAiqAwbHandleInt::setWbV20Attrib(rk_aiq_uapiV2_wbV20_attrib_t att) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 #ifdef RKAIQ_HAVE_AWB_V20
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapiV2_awbV20_SetAttrib(mAlgoCtx, att, false);
+#else
     // TODO
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
@@ -237,6 +246,7 @@ XCamReturn RkAiqAwbHandleInt::setWbV20Attrib(rk_aiq_uapiV2_wbV20_attrib_t att) {
         updateWbV20Attr = true;
         waitSignal();
     }
+#endif
 
     mCfgMutex.unlock();
 #endif
@@ -263,6 +273,9 @@ XCamReturn RkAiqAwbHandleInt::setWbOpModeAttrib(rk_aiq_uapiV2_wb_opMode_t att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapiV2_awb_SetMwbMode(mAlgoCtx, att.mode, false);
+#else
 
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
@@ -282,7 +295,7 @@ XCamReturn RkAiqAwbHandleInt::setWbOpModeAttrib(rk_aiq_uapiV2_wb_opMode_t att) {
         updateWbOpModeAttr = true;
         waitSignal(att.sync.sync_mode);
     }
-
+#endif
     mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();
@@ -294,6 +307,11 @@ XCamReturn RkAiqAwbHandleInt::getWbOpModeAttrib(rk_aiq_uapiV2_wb_opMode_t* att) 
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapiV2_awb_GetMwbMode(mAlgoCtx, &att->mode);
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapiV2_awb_GetMwbMode(mAlgoCtx, &att->mode);
@@ -309,6 +327,7 @@ XCamReturn RkAiqAwbHandleInt::getWbOpModeAttrib(rk_aiq_uapiV2_wb_opMode_t* att) 
             att->sync.done = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -320,6 +339,9 @@ XCamReturn RkAiqAwbHandleInt::setMwbAttrib(rk_aiq_wb_mwb_attrib_t att) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapiV2_awb_SetMwbAttrib(mAlgoCtx, att, false);
+#else
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
     // the new params will be effective later when updateConfig
@@ -338,6 +360,7 @@ XCamReturn RkAiqAwbHandleInt::setMwbAttrib(rk_aiq_wb_mwb_attrib_t att) {
         updateWbMwbAttr = true;
         waitSignal(att.sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -350,6 +373,11 @@ XCamReturn RkAiqAwbHandleInt::getMwbAttrib(rk_aiq_wb_mwb_attrib_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapiV2_awb_GetMwbAttrib(mAlgoCtx, att);
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapiV2_awb_GetMwbAttrib(mAlgoCtx, att);
@@ -365,6 +393,7 @@ XCamReturn RkAiqAwbHandleInt::getMwbAttrib(rk_aiq_wb_mwb_attrib_t* att) {
             att->sync.done = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -376,6 +405,9 @@ XCamReturn RkAiqAwbHandleInt::setAwbV20Attrib(rk_aiq_uapiV2_wbV20_awb_attrib_t a
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 #if defined(RKAIQ_HAVE_AWB_V20) || defined(RKAIQ_HAVE_AWB_V21)
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapiV2_awbV20_SetAwbAttrib(mAlgoCtx, att, false);
+#else
     // TODO
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
@@ -391,6 +423,7 @@ XCamReturn RkAiqAwbHandleInt::setAwbV20Attrib(rk_aiq_uapiV2_wbV20_awb_attrib_t a
         updateWbAwbAttr = true;
         waitSignal();
     }
+#endif
 
     mCfgMutex.unlock();
 #endif
@@ -412,6 +445,7 @@ XCamReturn RkAiqAwbHandleInt::getAwbV20Attrib(rk_aiq_uapiV2_wbV20_awb_attrib_t* 
     return ret;
 }
 
+#ifndef DISABLE_HANDLE_ATTRIB
 XCamReturn RkAiqAwbHandleInt::mallocAndCopyWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wbGainAdjust_t* dst,
     const rk_aiq_uapiV2_wb_awb_wbGainAdjust_t *src)
 {
@@ -504,7 +538,7 @@ XCamReturn RkAiqAwbHandleInt::freeWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wbGain
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
-
+#endif
 
 XCamReturn RkAiqAwbHandleInt::setWbAwbWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wbGainAdjust_t att) {
     ENTER_ANALYZER_FUNCTION();
@@ -512,6 +546,9 @@ XCamReturn RkAiqAwbHandleInt::setWbAwbWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wb
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapiV2_awb_SetAwbGainAdjust(mAlgoCtx, att, false);
+#else
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
     // the new params will be effective later when updateConfig
@@ -530,7 +567,7 @@ XCamReturn RkAiqAwbHandleInt::setWbAwbWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wb
         updateWbAwbWbGainAdjustAttr = true;
         waitSignal(att.sync.sync_mode);
     }
-
+#endif
     mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();
@@ -542,6 +579,11 @@ XCamReturn RkAiqAwbHandleInt::getWbAwbWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wb
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapiV2_awb_GetAwbGainAdjust(mAlgoCtx, att);
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapiV2_awb_GetAwbGainAdjust(mAlgoCtx, att);
@@ -560,6 +602,7 @@ XCamReturn RkAiqAwbHandleInt::getWbAwbWbGainAdjustAttrib(rk_aiq_uapiV2_wb_awb_wb
         }
 
     }
+#endif
 
 
     EXIT_ANALYZER_FUNCTION();
@@ -571,6 +614,9 @@ XCamReturn RkAiqAwbHandleInt::setWbAwbWbGainOffsetAttrib(rk_aiq_uapiV2_wb_awb_wb
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapiV2_awb_SetAwbGainOffset(mAlgoCtx, att.gainOffset, false);
+#else
 
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
@@ -590,7 +636,7 @@ XCamReturn RkAiqAwbHandleInt::setWbAwbWbGainOffsetAttrib(rk_aiq_uapiV2_wb_awb_wb
         updateWbAwbWbGainOffsetAttr = true;
         waitSignal(att.sync.sync_mode);
     }
-
+#endif
     mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();
@@ -602,6 +648,11 @@ XCamReturn RkAiqAwbHandleInt::getWbAwbWbGainOffsetAttrib(rk_aiq_uapiV2_wb_awb_wb
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapiV2_awb_GetAwbGainOffset(mAlgoCtx, &att->gainOffset);
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapiV2_awb_GetAwbGainOffset(mAlgoCtx, &att->gainOffset);
@@ -619,6 +670,7 @@ XCamReturn RkAiqAwbHandleInt::getWbAwbWbGainOffsetAttrib(rk_aiq_uapiV2_wb_awb_wb
             att->sync.done      = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -629,6 +681,10 @@ XCamReturn RkAiqAwbHandleInt::setWbAwbMultiWindowAttrib(rk_aiq_uapiV2_wb_awb_mul
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapiV2_awb_SetAwbMultiwindow(mAlgoCtx, att.multiWindw, false);
+#else
 
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
@@ -648,6 +704,7 @@ XCamReturn RkAiqAwbHandleInt::setWbAwbMultiWindowAttrib(rk_aiq_uapiV2_wb_awb_mul
         updateWbAwbMultiWindowAttr = true;
         waitSignal(att.sync.sync_mode);
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -660,6 +717,11 @@ XCamReturn RkAiqAwbHandleInt::getWbAwbMultiWindowAttrib(rk_aiq_uapiV2_wb_awb_mul
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapiV2_awb_GetAwbMultiwindow(mAlgoCtx, &att->multiWindw);
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapiV2_awb_GetAwbMultiwindow(mAlgoCtx, &att->multiWindw);
@@ -677,6 +739,7 @@ XCamReturn RkAiqAwbHandleInt::getWbAwbMultiWindowAttrib(rk_aiq_uapiV2_wb_awb_mul
             att->sync.done      = true;
         }
     }
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -687,7 +750,9 @@ XCamReturn RkAiqAwbHandleInt::setFFWbgainAttrib(rk_aiq_uapiV2_awb_ffwbgain_attr_
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
-
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapiV2_awb_SetFstFrWbgain(mAlgoCtx, att.wggain, false);
+#else
     // check if there is different between att & mCurAtt(sync)/mNewAtt(async)
     // if something changed, set att to mNewAtt, and
     // the new params will be effective later when updateConfig
@@ -706,7 +771,7 @@ XCamReturn RkAiqAwbHandleInt::setFFWbgainAttrib(rk_aiq_uapiV2_awb_ffwbgain_attr_
         updateFFWbgainAttr = true;
         waitSignal(att.sync.sync_mode);
     }
-
+#endif
     mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();
@@ -834,11 +899,17 @@ XCamReturn RkAiqAwbHandleInt::processing() {
         }
     }
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
 #if 0
     ret = des->processing(mProcInParam, mProcOutParam);
 #else
     ret = des->processing(mProcInParam, (RkAiqAlgoResCom*)awb_proc_res_int);
+#endif
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
 #endif
     if (ret < 0) {
         LOGE_ANALYZER("awb algo processing failed ret %d", ret);

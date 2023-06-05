@@ -102,7 +102,9 @@ CamHwIsp20::CamHwIsp20()
     _dbg_drv_mem_ctx.mem_info = (void*)(dbg_mem_info_array);
 
     xcam_mem_clear(_crop_rect);
+#ifndef DISABLE_PARAMS_ASSEMBLER
     mParamsAssembler = new IspParamsAssembler("ISP_PARAMS_ASSEMBLER");
+#endif
     mVicapIspPhyLinkSupported = false;
     mIspStremEvtTh = NULL;
     mIsGroupMode = false;
@@ -1709,6 +1711,7 @@ CamHwIsp20::poll_buffer_ready (SmartPtr<VideoBuffer> &buf)
 {
     if (buf->_buf_type == ISP_POLL_3A_STATS) {
         // stats is comming, means that next params should be ready
+#ifndef DISABLE_PARAMS_ASSEMBLER
         if (/*mNoReadBack*/true) {
             if (buf->get_sequence() > 0)
                 mParamsAssembler->forceReady(buf->get_sequence() + 1);
@@ -1720,6 +1723,7 @@ CamHwIsp20::poll_buffer_ready (SmartPtr<VideoBuffer> &buf)
             }
 
         }
+#endif
     } else if (buf->_buf_type == ISP_POLL_PARAMS) {
         const SmartPtr<V4l2BufferProxy> v4lbuf = buf.dynamic_cast_ptr<V4l2BufferProxy>();
         struct isp2x_isp_params_cfg* data = (struct isp2x_isp_params_cfg*)(v4lbuf->get_v4l2_userptr());
@@ -2887,6 +2891,7 @@ CamHwIsp20::start()
         return XCAM_RETURN_ERROR_FAILED;
     }
 
+#ifndef DISABLE_PARAMS_ASSEMBLER
     // set inital params
     if (mParamsAssembler.ptr()) {
         mParamsAssembler->setCamPhyId(mCamPhyId);
@@ -2898,7 +2903,7 @@ CamHwIsp20::start()
         if (mParamsAssembler->ready())
             setIspConfig();
     }
-
+#endif
     if (mLumaStream.ptr())
         mLumaStream->start();
     if (mIspSofStream.ptr()) {
@@ -2968,10 +2973,12 @@ CamHwIsp20::start()
     _is_exit = false;
     _state = CAM_HW_STATE_STARTED;
 
+#ifndef DISABLE_PARAMS_ASSEMBLER
     // in fastboot server stage, F1 param maybe ready
     // before _state = CAM_HW_STATE_STARTED.
     if (mParamsAssembler->ready())
         setIspConfig();
+#endif
     EXIT_CAMHW_FUNCTION();
     return ret;
 }
@@ -3141,9 +3148,10 @@ XCamReturn CamHwIsp20::stop()
         LOGE_CAMHW_SUBM(ISP20HW_SUBM, "stop isp core dev err: %d\n", ret);
     }
 
+#ifndef DISABLE_PARAMS_ASSEMBLER
     if (mParamsAssembler.ptr())
         mParamsAssembler->stop();
-
+#endif
     if (mIspStremEvtTh.ptr()) {
         mIspStremEvtTh->stop();
         if (_isp_stream_status == ISP_STREAM_STATUS_STREAM_ON) {
@@ -3245,9 +3253,10 @@ XCamReturn CamHwIsp20::pause()
     if (mFecParamStream.ptr())
         mFecParamStream->stop();
 #endif
+#ifndef DISABLE_PARAMS_ASSEMBLER
     if (mParamsAssembler.ptr())
         mParamsAssembler->stop();
-
+#endif
     if (mPdafStreamUnit.ptr())
         mPdafStreamUnit->stop();
 
@@ -3346,6 +3355,7 @@ XCamReturn CamHwIsp20::resume()
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     SmartPtr<BaseSensorHw> sensorHw = mSensorDev.dynamic_cast_ptr<BaseSensorHw>();
 
+#ifndef DISABLE_PARAMS_ASSEMBLER
     // set inital params
     ret = mParamsAssembler->start();
     if (ret < 0) {
@@ -3354,7 +3364,7 @@ XCamReturn CamHwIsp20::resume()
 
     if (mParamsAssembler->ready())
         setIspConfig();
-
+#endif
     ret = hdr_mipi_start_mode(_hdr_mode);
     if (ret < 0) {
         LOGE_CAMHW_SUBM(ISP20HW_SUBM, "hdr mipi start err: %d\n", ret);
@@ -5789,10 +5799,13 @@ CamHwIsp20::handleIsp3aReslut(cam3aResultList& list)
 
         for (auto& result : list) {
             result->setId(0);
+#ifndef DISABLE_PARAMS_ASSEMBLER
             mParamsAssembler->addReadyCondition(result->getType());
+#endif
         }
     }
 
+#ifndef DISABLE_PARAMS_ASSEMBLER
     mParamsAssembler->queue(list);
 
     // set all ready params to drv
@@ -5807,7 +5820,12 @@ CamHwIsp20::handleIsp3aReslut(cam3aResultList& list)
             break;
         }
     }
-
+#else
+    SmartLock locker(_stop_cond_mutex);
+    if (_isp_stream_status != ISP_STREAM_STATUS_STREAM_OFF) {
+        ret = setIspConfig(&list);
+    }
+#endif
     EXIT_CAMHW_FUNCTION();
     return ret;
 }
@@ -5968,9 +5986,12 @@ CamHwIsp20::handleIsp3aReslut(SmartPtr<cam3aResult> &result)
             }
         }
 
+#ifndef DISABLE_PARAMS_ASSEMBLER
         mParamsAssembler->addReadyCondition(result->getType());
+#endif
     }
 
+#ifndef DISABLE_PARAMS_ASSEMBLER
     mParamsAssembler->queue(result);
 
     // set all ready params to drv
@@ -5985,7 +6006,15 @@ CamHwIsp20::handleIsp3aReslut(SmartPtr<cam3aResult> &result)
             break;
         }
     }
-
+#else
+    SmartLock locker(_stop_cond_mutex);
+    if (_isp_stream_status != ISP_STREAM_STATUS_STREAM_OFF) {
+        ret = setIspConfig();
+        if (ret != XCAM_RETURN_NO_ERROR) {
+            LOGE_CAMHW_SUBM(ISP20HW_SUBM, "setIspConfig failed !");
+        }
+    }
+#endif
     EXIT_CAMHW_FUNCTION();
     return ret;
 }
@@ -6082,7 +6111,7 @@ bool CamHwIsp20::getParamsForEffMap(uint32_t frameId)
 }
 
 XCamReturn
-CamHwIsp20::setIspConfig()
+CamHwIsp20::setIspConfig(cam3aResultList* result_list)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
@@ -6106,6 +6135,7 @@ CamHwIsp20::setIspConfig()
     } else
         return XCAM_RETURN_BYPASS;
 
+#ifndef DISABLE_PARAMS_ASSEMBLER
     cam3aResultList ready_results;
     ret = mParamsAssembler->deQueOne(ready_results, frameId);
     if (ret != XCAM_RETURN_NO_ERROR) {
@@ -6113,7 +6143,10 @@ CamHwIsp20::setIspConfig()
         mIspParamsDev->return_buffer_to_pool (v4l2buf);
         return XCAM_RETURN_ERROR_PARAM;
     }
-
+#else
+    cam3aResultList& ready_results = *result_list;
+    frameId = (*ready_results.begin())->getId();
+#endif
     LOGD_ANALYZER("----------%s, start config id(%d)'s isp params", __FUNCTION__, frameId);
 
     struct isp2x_isp_params_cfg update_params;

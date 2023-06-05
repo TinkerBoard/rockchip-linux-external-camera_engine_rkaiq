@@ -219,7 +219,7 @@ CamHwIsp3x::gen_full_isp_params(const struct isp3x_isp_params_cfg* update_params
 }
 
 XCamReturn
-CamHwIsp3x::setIspConfig()
+CamHwIsp3x::setIspConfig(cam3aResultList* result_list)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
@@ -243,6 +243,7 @@ CamHwIsp3x::setIspConfig()
     } else
         return XCAM_RETURN_BYPASS;
 
+#ifndef DISABLE_PARAMS_ASSEMBLER
     cam3aResultList ready_results;
     ret = mParamsAssembler->deQueOne(ready_results, frameId);
     if (ret != XCAM_RETURN_NO_ERROR) {
@@ -250,6 +251,10 @@ CamHwIsp3x::setIspConfig()
         mIspParamsDev->return_buffer_to_pool (v4l2buf);
         return XCAM_RETURN_ERROR_PARAM;
     }
+#else
+    cam3aResultList& ready_results = *result_list;
+    frameId = (*ready_results.begin())->getId();
+#endif
 
     LOGD_ANALYZER("----------%s, start config id(%u)'s isp params", __FUNCTION__, frameId);
 

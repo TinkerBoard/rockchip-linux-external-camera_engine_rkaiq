@@ -141,70 +141,29 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     AdehazeGetCurrDataGroup(pAdehazeGrpHandle, pGrpProcPara->camgroupParmasArray[0]);
     AdehazeByPassProcessing(pAdehazeGrpHandle);
 
-    bool Enable = DehazeEnableSetting(pAdehazeGrpHandle);
-
-    if (Enable) {
-    // process
-    if (!(pAdehazeGrpHandle->byPassProc)) ret = AdehazeProcess(pAdehazeGrpHandle);
+    if (DehazeEnableSetting(pAdehazeGrpHandle,
+                            pGrpProcResPara->camgroupParmasArray[0]->_adehazeConfig)) {
+        // dehaze group dehaze not ready for now
+        rkisp_adehaze_stats_t dehazeStats;
+        memset(&dehazeStats, 0x0, sizeof(rkisp_adehaze_stats_t));
+        // process
+        if (!(pAdehazeGrpHandle->byPassProc))
+            ret = AdehazeProcess(pAdehazeGrpHandle, &dehazeStats,
+                                 pGrpProcResPara->camgroupParmasArray[0]->_adehazeConfig);
     } else {
         LOGD_ADEHAZE("Group Dehaze Enable is OFF, Bypass Dehaze !!! \n");
     }
 
     LOGD_ADEHAZE("/*************************Adehaze Group Over******************/ \n");
 
+    pGrpProcResPara->camgroupParmasArray[0]->_adehazeConfig->update =
+        !(pAdehazeGrpHandle->byPassProc);
     // proc res
-    pAdehazeGrpHandle->ProcRes.enable = pAdehazeGrpHandle->ProcRes.enable;
-    pAdehazeGrpHandle->ProcRes.update = !(pAdehazeGrpHandle->byPassProc);
-#if RKAIQ_HAVE_DEHAZE_V10
-    pAdehazeGrpHandle->ProcRes.enable = true;
-    pAdehazeGrpHandle->ProcRes.update = !(pAdehazeGrpHandle->byPassProc);
-    if (pAdehazeGrpHandle->ProcRes.update) {
-        for (int i = 0; i < pGrpProcResPara->arraySize; i++) {
-            pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->enable =
-                pAdehazeGrpHandle->ProcRes.enable;
-            pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->update =
-                pAdehazeGrpHandle->ProcRes.update;
-            memcpy(&pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->ProcResV10,
-                   &pAdehazeGrpHandle->ProcRes.ProcResV10, sizeof(AdehazeV10ProcResult_t));
-        }
+    for (int i = 1; i < pGrpProcResPara->arraySize; i++) {
+        memcpy(pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig,
+               pGrpProcResPara->camgroupParmasArray[0]->_adehazeConfig,
+               sizeof(RkAiqAdehazeProcResult_t));
     }
-#endif
-#if RKAIQ_HAVE_DEHAZE_V11
-    if (pAdehazeGrpHandle->ProcRes.update) {
-        for (int i = 0; i < pGrpProcResPara->arraySize; i++) {
-            pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->enable =
-                pAdehazeGrpHandle->ProcRes.enable;
-            pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->update =
-                pAdehazeGrpHandle->ProcRes.update;
-            memcpy(&pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->ProcResV11,
-                   &pAdehazeGrpHandle->ProcRes.ProcResV11, sizeof(AdehazeV11ProcResult_t));
-        }
-    }
-#endif
-#if RKAIQ_HAVE_DEHAZE_V11_DUO
-    if (pAdehazeGrpHandle->ProcRes.update) {
-        for (int i = 0; i < pGrpProcResPara->arraySize; i++) {
-            pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->enable =
-                pAdehazeGrpHandle->ProcRes.enable;
-            pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->update =
-                pAdehazeGrpHandle->ProcRes.update;
-            memcpy(&pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->ProcResV11duo,
-                   &pAdehazeGrpHandle->ProcRes.ProcResV11duo, sizeof(AdehazeV11duoProcResult_t));
-        }
-    }
-#endif
-#if RKAIQ_HAVE_DEHAZE_V12
-    if (pAdehazeGrpHandle->ProcRes.update) {
-        for (int i = 0; i < pGrpProcResPara->arraySize; i++) {
-            pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->enable =
-                pAdehazeGrpHandle->ProcRes.enable;
-            pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->update =
-                pAdehazeGrpHandle->ProcRes.update;
-            memcpy(&pGrpProcResPara->camgroupParmasArray[i]->_adehazeConfig->ProcResV12,
-                   &pAdehazeGrpHandle->ProcRes.ProcResV12, sizeof(AdehazeV12ProcResult_t));
-        }
-    }
-#endif
 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;

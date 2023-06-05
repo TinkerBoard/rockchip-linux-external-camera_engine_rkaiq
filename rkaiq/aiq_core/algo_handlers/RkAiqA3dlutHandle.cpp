@@ -183,6 +183,13 @@ XCamReturn RkAiqA3dlutHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    if (!shared->fullParams || !shared->fullParams->mLut3dParams.ptr()) {
+        LOGE_A3DLUT("[%d]: no 3dlut buf !", shared->frameId);
+        return XCAM_RETURN_BYPASS;
+    }
+
+    a3dlut_proc_res_int->lut3d_hw_conf = &shared->fullParams->mLut3dParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "a3dlut handle processing failed");
@@ -309,12 +316,13 @@ XCamReturn RkAiqA3dlutHandleInt::genIspResult(RkAiqFullParams* params,
     }
 
     RkAiqAlgoProcResA3dlut* a3dlut_rk = (RkAiqAlgoProcResA3dlut*)a3dlut_com;
+#if 0//moved to processing out params
     if (!a3dlut_rk->lut3d_hw_conf.enable || a3dlut_rk->lut3d_hw_conf.bypass_en) {
         lut3d_param->result.enable = a3dlut_rk->lut3d_hw_conf.enable;
         lut3d_param->result.bypass_en = a3dlut_rk->lut3d_hw_conf.bypass_en;
     } else
         lut3d_param->result               = a3dlut_rk->lut3d_hw_conf;
-
+#endif
     if (!this->getAlgoId()) {
         RkAiqAlgoProcResA3dlut* a3dlut_rk_int = (RkAiqAlgoProcResA3dlut*)a3dlut_com;
     }

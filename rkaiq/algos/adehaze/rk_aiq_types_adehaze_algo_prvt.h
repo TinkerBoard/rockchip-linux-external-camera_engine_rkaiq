@@ -105,8 +105,6 @@ typedef struct AdehazeHandle_s {
     AdehazeAePreResV11_t CurrDataV12;
     AdehazeAePreResV11_t PreDataV12;
 #endif
-    RkAiqAdehazeProcResult_t ProcRes;
-    rkisp_adehaze_stats_t stats;
     int width;
     int height;
     int strength;

@@ -156,9 +156,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         LOGD_ATMO("%s: It's capturing, using pre frame params\n", __func__);
         pAdrcCtx->isCapture = false;
     } else {
-        bool Enable = DrcEnableSetting(pAdrcCtx);
-
-        if (Enable) {
+        if (DrcEnableSetting(pAdrcCtx, &pAdrcProcRes->AdrcProcRes)) {
             // get Sensor Info
             XCamVideoBuffer* xCamAeProcRes = pAdrcParams->com.u.proc.res_comb->ae_proc_res;
             RkAiqAlgoProcResAe* pAEProcRes = NULL;
@@ -344,19 +342,32 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             pAdrcCtx->NextData.AEData.L2M_Ratio = LONG_FRAME_MODE_RATIO;
         }
 
-        // get ae pre res and bypass_tuning_params
+        // get ae pre res
         XCamVideoBuffer* xCamAePreRes = pAdrcParams->com.u.proc.res_comb->ae_pre_res;
         RkAiqAlgoPreResAe* pAEPreRes  = NULL;
         if (xCamAePreRes) {
             pAEPreRes            = (RkAiqAlgoPreResAe*)xCamAePreRes->map(xCamAePreRes);
-            bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcCtx, pAEPreRes->ae_pre_res_rk);
+            if (pAdrcCtx->FrameNumber == LINEAR_NUM)
+                pAdrcCtx->NextData.AEData.EnvLv = pAEPreRes->ae_pre_res_rk.GlobalEnvLv[0];
+            else if (pAdrcCtx->FrameNumber == HDR_2X_NUM || pAdrcCtx->FrameNumber == HDR_3X_NUM)
+                pAdrcCtx->NextData.AEData.EnvLv = pAEPreRes->ae_pre_res_rk.GlobalEnvLv[1];
+            else
+                pAdrcCtx->NextData.AEData.EnvLv = ENVLVMIN;
+            // Normalize the current envLv for AEC
+            pAdrcCtx->NextData.AEData.EnvLv =
+                (pAdrcCtx->NextData.AEData.EnvLv - MIN_ENV_LV) / (MAX_ENV_LV - MIN_ENV_LV);
+            pAdrcCtx->NextData.AEData.EnvLv =
+                LIMIT_VALUE(pAdrcCtx->NextData.AEData.EnvLv, ENVLVMAX, ENVLVMIN);
         } else {
-                AecPreResult_t AecHdrPreResult;
-                memset(&AecHdrPreResult, 0x0, sizeof(AecPreResult_t));
-                bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcCtx, AecHdrPreResult);
-                bypass_tuning_params = false;
-                LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
+            pAdrcCtx->NextData.AEData.EnvLv = ENVLVMIN;
+            LOGW_ATMO("%s: ae Pre result is null!!!\n", __FUNCTION__);
         }
+
+        // get motion coef
+        pAdrcCtx->NextData.MotionCoef = MOVE_COEF_DEFAULT;
+
+        // get bypass_tuning_params
+        bypass_tuning_params = AdrcByPassTuningProcessing(pAdrcCtx);
 
         // get bypass_expo_params
         if (pAdrcCtx->NextData.AEData.L2S_Ratio >= RATIO_DEFAULT &&
@@ -382,10 +393,12 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         }
 
         // get tuning paras
-        if (!bypass_tuning_params || !pAdrcCtx->isDampStable) AdrcTuningParaProcessing(pAdrcCtx);
+        if (!bypass_tuning_params || !pAdrcCtx->isDampStable)
+            AdrcTuningParaProcessing(pAdrcCtx, &pAdrcProcRes->AdrcProcRes);
 
         // get expo related paras
-        if (!bypass_expo_params || !pAdrcCtx->isDampStable) AdrcExpoParaProcessing(pAdrcCtx);
+        if (!bypass_expo_params || !pAdrcCtx->isDampStable)
+            AdrcExpoParaProcessing(pAdrcCtx, &pAdrcProcRes->AdrcProcRes);
 
         } else {
             LOGD_ATMO("%s: Drc Enable is OFF, Bypass Drc !!! \n", __func__);
@@ -400,16 +413,10 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     pAdrcProcRes->AdrcProcRes.update = !bypass_tuning_params || !bypass_expo_params ||
                                        pAdrcCtx->ifReCalcStAuto || pAdrcCtx->ifReCalcStManual ||
                                        !pAdrcCtx->isDampStable;
+    // update curr data 2 api info
     if (pAdrcProcRes->AdrcProcRes.update) {
-        // store new proc res
-        pAdrcProcRes->AdrcProcRes.bDrcEn = pAdrcCtx->NextData.Enable;
-        memcpy(&pAdrcProcRes->AdrcProcRes.DrcProcRes, &pAdrcCtx->AdrcProcRes.DrcProcRes,
-               sizeof(DrcProcRes_t));
-        // store curr data 2 api info
-        AdrcParams2Api(pAdrcCtx);
+        AdrcParams2Api(pAdrcCtx, &pAdrcProcRes->AdrcProcRes);
     }
-
-    pAdrcCtx->CurrData.Enable  = pAdrcCtx->NextData.Enable;
     pAdrcCtx->ifReCalcStAuto   = false;
     pAdrcCtx->ifReCalcStManual = false;
 

@@ -22,7 +22,7 @@
 RKAIQ_BEGIN_DECLARE
 
 Asharp_result_V33_t sharp_select_params_by_ISO_V33(void* pParams_v, void* pSelect_v,
-                                                   Asharp_ExpInfo_V33_t* pExpInfo) {
+        Asharp_ExpInfo_V33_t* pExpInfo) {
     Asharp_result_V33_t res = ASHARP_V33_RET_SUCCESS;
 #if RKAIQ_HAVE_SHARP_V33
     RK_SHARP_Params_V33_t* pParams        = (RK_SHARP_Params_V33_t*)pParams_v;
@@ -120,6 +120,7 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(void* pParams_v, void* pSelec
 
     pSelect->Center_Mode    = pParams->Center_Mode;
     pSelect->kernel_sigma_enable = pParams->kernel_sigma_enable;
+    pSelect->sharp_ratio_seperate_en = pParams->sharp_ratio_seperate_en;
     for (int i = 0; i < RK_SHARP_V33_LUMA_POINT_NUM; i++) {
         pSelect->luma_point[i] =
             pParams->sharpParamsISO[gain_low].luma_point[i];
@@ -140,6 +141,8 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(void* pParams_v, void* pSelec
     }
 
     if (iso - iso_low <= iso_high - iso) {
+        pSelect->GaussianFilter_radius_0 = pParams->sharpParamsISO[gain_low].GaussianFilter_radius_0;
+        pSelect->GaussianFilter_radius_1 = pParams->sharpParamsISO[gain_low].GaussianFilter_radius_1;
         pSelect->GaussianFilter_radius = pParams->sharpParamsISO[gain_low].GaussianFilter_radius;
 #if RKAIQ_HAVE_SHARP_V33
         pSelect->global_hf_clip_pos = pParams->sharpParamsISO[gain_low].global_hf_clip_pos;
@@ -150,6 +153,8 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(void* pParams_v, void* pSelec
         pSelect->add_mode     = pParams->sharpParamsISO[gain_low].add_mode;
 #endif
     } else {
+        pSelect->GaussianFilter_radius_0 = pParams->sharpParamsISO[gain_high].GaussianFilter_radius_0;
+        pSelect->GaussianFilter_radius_1 = pParams->sharpParamsISO[gain_high].GaussianFilter_radius_1;
         pSelect->GaussianFilter_radius = pParams->sharpParamsISO[gain_high].GaussianFilter_radius;
 #if RKAIQ_HAVE_SHARP_V33
         pSelect->global_hf_clip_pos = pParams->sharpParamsISO[gain_high].global_hf_clip_pos;
@@ -167,9 +172,16 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(void* pParams_v, void* pSelec
     pSelect->hfBilateralFilter_sigma =
         INTERP_V4(pParams->sharpParamsISO[gain_low].hfBilateralFilter_sigma,
                   pParams->sharpParamsISO[gain_high].hfBilateralFilter_sigma, ratio);
+    pSelect->GaussianFilter_sigma_0 =
+        INTERP_V4(pParams->sharpParamsISO[gain_low].GaussianFilter_sigma_0,
+                  pParams->sharpParamsISO[gain_high].GaussianFilter_sigma_0, ratio);
+    pSelect->GaussianFilter_sigma_1 =
+        INTERP_V4(pParams->sharpParamsISO[gain_low].GaussianFilter_sigma_1,
+                  pParams->sharpParamsISO[gain_high].GaussianFilter_sigma_1, ratio);
     pSelect->GaussianFilter_sigma =
         INTERP_V4(pParams->sharpParamsISO[gain_low].GaussianFilter_sigma,
                   pParams->sharpParamsISO[gain_high].GaussianFilter_sigma, ratio);
+
     pSelect->pbf_gain =
         INTERP_V4(pParams->sharpParamsISO[gain_low].pbf_gain,
                   pParams->sharpParamsISO[gain_high].pbf_gain, ratio);
@@ -183,9 +195,17 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(void* pParams_v, void* pSelec
     pSelect->gaus_ratio =
         INTERP_V4(pParams->sharpParamsISO[gain_low].gaus_ratio,
                   pParams->sharpParamsISO[gain_high].gaus_ratio, ratio);
+
+    pSelect->sharp_ratio_0 =
+        INTERP_V4(pParams->sharpParamsISO[gain_low].sharp_ratio_0,
+                  pParams->sharpParamsISO[gain_high].sharp_ratio_0, ratio);
+    pSelect->sharp_ratio_1 =
+        INTERP_V4(pParams->sharpParamsISO[gain_low].sharp_ratio_1,
+                  pParams->sharpParamsISO[gain_high].sharp_ratio_1, ratio);
     pSelect->sharp_ratio =
         INTERP_V4(pParams->sharpParamsISO[gain_low].sharp_ratio,
                   pParams->sharpParamsISO[gain_high].sharp_ratio, ratio);
+
 
     pSelect->bf_gain =
         INTERP_V4(pParams->sharpParamsISO[gain_low].bf_gain,
@@ -203,9 +223,16 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(void* pParams_v, void* pSelec
     }
 
     for (int i = 0; i < 6; i++) {
+        pSelect->GaussianFilter_coeff_0[i] =
+            INTERP_V4(pParams->sharpParamsISO[gain_low].GaussianFilter_coeff_0[i],
+                      pParams->sharpParamsISO[gain_high].GaussianFilter_coeff_0[i], ratio);
+        pSelect->GaussianFilter_coeff_1[i] =
+            INTERP_V4(pParams->sharpParamsISO[gain_low].GaussianFilter_coeff_1[i],
+                      pParams->sharpParamsISO[gain_high].GaussianFilter_coeff_1[i], ratio);
         pSelect->GaussianFilter_coeff[i] =
             INTERP_V4(pParams->sharpParamsISO[gain_low].GaussianFilter_coeff[i],
                       pParams->sharpParamsISO[gain_high].GaussianFilter_coeff[i], ratio);
+
     }
 
     for (int i = 0; i < 3; i++) {
@@ -256,8 +283,8 @@ Asharp_result_V33_t sharp_select_params_by_ISO_V33(void* pParams_v, void* pSelec
 }
 
 Asharp_result_V33_t sharp_fix_transfer_V33(void* pSelect_v, RK_SHARP_Fix_V33_t* pFix,
-                                           rk_aiq_sharp_strength_v33_t* pStrength,
-                                           Asharp_ExpInfo_V33_t* pExpInfo) {
+        rk_aiq_sharp_strength_v33_t* pStrength,
+        Asharp_ExpInfo_V33_t* pExpInfo) {
     int sum_coeff, offset;
     int pbf_sigma_shift     = 0;
     int bf_sigma_shift      = 0;
@@ -352,8 +379,14 @@ Asharp_result_V33_t sharp_fix_transfer_V33(void* pSelect_v, RK_SHARP_Fix_V33_t* 
     tmp                     = (int)ROUND_F(pSelect->gaus_ratio / fPercent *
                                            (1 << RK_SHARP_V33_GAUS_RATIO_FIX_BITS));
     pFix->sharp_gaus_ratio  = CLIP(tmp, 0, 0x80);
-    tmp                     = (int)ROUND_F(pSelect->sharp_ratio * fPercent *
-                                           (1 << RK_SHARP_V33_SHARP_RATIO_FIX_BITS));
+    if(pSelect->sharp_ratio_seperate_en) {
+        tmp = (int)ROUND_F( (pSelect->sharp_ratio_0 + pSelect->sharp_ratio_1) * fPercent *
+                            (1 << RK_SHARP_V33_SHARP_RATIO_FIX_BITS));
+    } else {
+        tmp = (int)ROUND_F(pSelect->sharp_ratio * fPercent *
+                           (1 << RK_SHARP_V33_SHARP_RATIO_FIX_BITS));
+    }
+
     pFix->sharp_sharp_ratio = CLIP(tmp, 0, 127);
     tmp                     = (int)ROUND_F(pSelect->bf_ratio / fPercent *
                                            (1 << RK_SHARP_V33_BF_RATIO_FIX_BITS));
@@ -509,37 +542,101 @@ Asharp_result_V33_t sharp_fix_transfer_V33(void* pSelect_v, RK_SHARP_Fix_V33_t* 
     // bf coeff
     // rk_sharp_V33_rfCoeff : [4], [1], [0]
     float range_filter[6];
-    LOGD_ASHARP("GaussianFilter_sigma = %f ,GaussianFilter_radius %f \n",
-                pSelect->GaussianFilter_sigma,
-                pSelect->GaussianFilter_radius);
+    float kernel0_ratio = 0, kernel1_ratio = 0;
+    if(pSelect->sharp_ratio_seperate_en) {
+        kernel0_ratio = pSelect->sharp_ratio_0 / (pSelect->sharp_ratio_0 + pSelect->sharp_ratio_1);
+        kernel1_ratio = pSelect->sharp_ratio_1 / (pSelect->sharp_ratio_0 + pSelect->sharp_ratio_1);
+        LOGD_ASHARP("GaussianFilter_sigma = %f %f ,GaussianFilter_radius %f %f \n",
+                    pSelect->GaussianFilter_sigma_0, pSelect->GaussianFilter_sigma_1,
+                    pSelect->GaussianFilter_radius_0, pSelect->GaussianFilter_radius_1);
+    } else {
+        LOGD_ASHARP("GaussianFilter_sigma = %f ,GaussianFilter_radius %f \n",
+                    pSelect->GaussianFilter_sigma,
+                    pSelect->GaussianFilter_radius);
+    }
     if (pSelect->kernel_sigma_enable) {
         float gauss_dis_table_5x5[6] = {0.0, 1.0, 2.0, 4.0, 5.0, 8.0};
         float gauss_dis_table_3x3[6] = {0.0, 1.0, 2.0, 1000, 1000, 1000};
         double e                     = 2.71828182845905;
-        float sigma                  = pSelect->GaussianFilter_sigma;
-        float sum_gauss_coeff        = 0.0;
-        if (pSelect->GaussianFilter_radius == 2) {
+        if(pSelect->sharp_ratio_seperate_en) {
+            float sigma                 = pSelect->GaussianFilter_sigma_0;
+            float sigma1                  = pSelect->GaussianFilter_sigma_1;
+            float range_filter_1[6];
+            float sum_gauss_coeff        = 0.0;
+            float sum_gauss_coeff_1        = 0.0;
+            if (pSelect->GaussianFilter_radius_0 == 2) {
+                for (int i = 0; i < 6; i++) {
+                    float tmp       = pow(e, -gauss_dis_table_5x5[i] / 2.0 / sigma / sigma);
+                    range_filter[i] = tmp;
+                }
+            } else {
+                for (int i = 0; i < 6; i++) {
+                    float tmp       = pow(e, -gauss_dis_table_3x3[i] / 2.0 / sigma / sigma);
+                    range_filter[i] = tmp;
+                }
+            }
+
+            if (pSelect->GaussianFilter_radius_1 == 2) {
+                for (int i = 0; i < 6; i++) {
+                    float tmp       = pow(e, -gauss_dis_table_5x5[i] / 2.0 / sigma1 / sigma1);
+                    range_filter_1[i] = tmp;
+                }
+            } else {
+                for (int i = 0; i < 6; i++) {
+                    float tmp       = pow(e, -gauss_dis_table_3x3[i] / 2.0 / sigma1 / sigma1);
+                    range_filter_1[i] = tmp;
+                }
+            }
+
+            sum_gauss_coeff = range_filter[0] + 4 * range_filter[1] + 4 * range_filter[2] +
+                              4 * range_filter[3] + 8 * range_filter[4] + 4 * range_filter[5];
             for (int i = 0; i < 6; i++) {
-                float tmp       = pow(e, -gauss_dis_table_5x5[i] / 2.0 / sigma / sigma);
-                range_filter[i] = tmp;
+                range_filter[i] = range_filter[i] / sum_gauss_coeff;
+            }
+
+            sum_gauss_coeff_1 = range_filter_1[0] + 4 * range_filter_1[1] + 4 * range_filter_1[2] +
+                                4 * range_filter_1[3] + 8 * range_filter_1[4] + 4 * range_filter_1[5];
+            for (int i = 0; i < 6; i++) {
+                range_filter_1[i] = range_filter_1[i] / sum_gauss_coeff_1;
+            }
+
+
+            for (int i = 0; i < 6; i++) {
+                range_filter[i] = kernel0_ratio * range_filter[i] + kernel1_ratio * range_filter_1[i];
+                LOGD_ASHARP("kernel_sigma_enable:%d range_filter_combine[%d]:%f\n",
+                            pSelect->kernel_sigma_enable, i, range_filter[i]);
             }
         } else {
-            for (int i = 0; i < 6; i++) {
-                float tmp       = pow(e, -gauss_dis_table_3x3[i] / 2.0 / sigma / sigma);
-                range_filter[i] = tmp;
+            float sigma                  = pSelect->GaussianFilter_sigma;
+            float sum_gauss_coeff        = 0.0;
+            if (pSelect->GaussianFilter_radius == 2) {
+                for (int i = 0; i < 6; i++) {
+                    float tmp       = pow(e, -gauss_dis_table_5x5[i] / 2.0 / sigma / sigma);
+                    range_filter[i] = tmp;
+                }
+            } else {
+                for (int i = 0; i < 6; i++) {
+                    float tmp       = pow(e, -gauss_dis_table_3x3[i] / 2.0 / sigma / sigma);
+                    range_filter[i] = tmp;
+                }
             }
-        }
 
-        sum_gauss_coeff = range_filter[0] + 4 * range_filter[1] + 4 * range_filter[2] +
-                          4 * range_filter[3] + 8 * range_filter[4] + 4 * range_filter[5];
-        for (int i = 0; i < 6; i++) {
-            range_filter[i] = range_filter[i] / sum_gauss_coeff;
-            LOGD_ASHARP("kernel_sigma_enable:%d range_filter[%d]:%f\n",
-                        pSelect->kernel_sigma_enable, i, range_filter[i]);
+            sum_gauss_coeff = range_filter[0] + 4 * range_filter[1] + 4 * range_filter[2] +
+                              4 * range_filter[3] + 8 * range_filter[4] + 4 * range_filter[5];
+            for (int i = 0; i < 6; i++) {
+                range_filter[i] = range_filter[i] / sum_gauss_coeff;
+                LOGD_ASHARP("kernel_sigma_enable:%d range_filter[%d]:%f\n",
+                            pSelect->kernel_sigma_enable, i, range_filter[i]);
+            }
         }
     } else {
         for (int i = 0; i < 6; i++) {
-            range_filter[i] = pSelect->GaussianFilter_coeff[i];
+            if(pSelect->sharp_ratio_seperate_en) {
+                range_filter[i] = kernel0_ratio * pSelect->GaussianFilter_coeff_0[i]
+                                  + kernel1_ratio * pSelect->GaussianFilter_coeff_1[i];
+            } else {
+                range_filter[i] = pSelect->GaussianFilter_coeff[i];
+            }
             LOGD_ASHARP("kernel_sigma_enable:%d range_filter[%d]:%f\n",
                         pSelect->kernel_sigma_enable, i, range_filter[i]);
         }
@@ -750,7 +847,7 @@ Asharp_result_V33_t sharp_fix_printf_V33(RK_SHARP_Fix_V33_t* pFix) {
 }
 
 Asharp_result_V33_t sharp_get_setting_by_name_json_V33(void* pCalibdbV2_v, char* name,
-                                                       int* tuning_idx) {
+        int* tuning_idx) {
     int i = 0;
     Asharp_result_V33_t res = ASHARP_V33_RET_SUCCESS;
 
@@ -786,7 +883,7 @@ Asharp_result_V33_t sharp_get_setting_by_name_json_V33(void* pCalibdbV2_v, char*
 }
 
 Asharp_result_V33_t sharp_init_params_json_V33(void* pSharpParams_v, void* pCalibdbV2_v,
-                                               int tuning_idx) {
+        int tuning_idx) {
     Asharp_result_V33_t res = ASHARP_V33_RET_SUCCESS;
     int i                   = 0;
     int j                   = 0;
@@ -815,6 +912,7 @@ Asharp_result_V33_t sharp_init_params_json_V33(void* pSharpParams_v, void* pCali
 
     pSharpParams->enable              = pCalibdbV2->TuningPara.enable;
     pSharpParams->kernel_sigma_enable = pCalibdbV2->TuningPara.kernel_sigma_enable;
+    pSharpParams->sharp_ratio_seperate_en = pCalibdbV2->TuningPara.sharp_ratio_seperate_en;
     pSharpParams->Center_Mode         = pCalibdbV2->TuningPara.Center_Mode;
     for (i = 0; i < pCalibdbV2->TuningPara.Setting[tuning_idx].Tuning_ISO_len &&
             i < RK_SHARP_V33_MAX_ISO_NUM;
@@ -841,7 +939,10 @@ Asharp_result_V33_t sharp_init_params_json_V33(void* pSharpParams_v, void* pCali
         pSharpParams->sharpParamsISO[i].pbf_add         = pTuningISO->pbf_add;
         pSharpParams->sharpParamsISO[i].pbf_ratio       = pTuningISO->pbf_ratio;
         pSharpParams->sharpParamsISO[i].gaus_ratio      = pTuningISO->gaus_ratio;
+        pSharpParams->sharpParamsISO[i].sharp_ratio_0     = pTuningISO->sharp_ratio_0;
+        pSharpParams->sharpParamsISO[i].sharp_ratio_1     = pTuningISO->sharp_ratio_1;
         pSharpParams->sharpParamsISO[i].sharp_ratio     = pTuningISO->sharp_ratio;
+
         pSharpParams->sharpParamsISO[i].bf_gain         = pTuningISO->bf_gain;
         pSharpParams->sharpParamsISO[i].bf_add          = pTuningISO->bf_add;
         pSharpParams->sharpParamsISO[i].bf_ratio        = pTuningISO->bf_ratio;
@@ -861,10 +962,15 @@ Asharp_result_V33_t sharp_init_params_json_V33(void* pSharpParams_v, void* pCali
         }
 
         for (j = 0; j < 6; j++) {
+            pSharpParams->sharpParamsISO[i].GaussianFilter_coeff_0[j] =
+                pTuningISO->kernel_para.GaussianFilter_coeff_0[j];
+            pSharpParams->sharpParamsISO[i].GaussianFilter_coeff_1[j] =
+                pTuningISO->kernel_para.GaussianFilter_coeff_1[j];
             pSharpParams->sharpParamsISO[i].GaussianFilter_coeff[j] =
                 pTuningISO->kernel_para.GaussianFilter_coeff[j];
             LOGD_ASHARP("kernel: index[%d][%d] = %f\n", i, j,
                         pSharpParams->sharpParamsISO[i].GaussianFilter_coeff[j]);
+
         }
 
         pSharpParams->sharpParamsISO[i].global_gain       = pTuningISO->global_gain;
@@ -892,8 +998,14 @@ Asharp_result_V33_t sharp_init_params_json_V33(void* pSharpParams_v, void* pCali
 
         pSharpParams->sharpParamsISO[i].prefilter_sigma = pTuningISO->kernel_sigma.prefilter_sigma;
         pSharpParams->sharpParamsISO[i].hfBilateralFilter_sigma = pTuningISO->kernel_sigma.hfBilateralFilter_sigma;
+
+        pSharpParams->sharpParamsISO[i].GaussianFilter_sigma_0 = pTuningISO->kernel_sigma.GaussianFilter_sigma_0;
+        pSharpParams->sharpParamsISO[i].GaussianFilter_radius_0 = pTuningISO->kernel_sigma.GaussianFilter_radius_0;
+        pSharpParams->sharpParamsISO[i].GaussianFilter_sigma_1 = pTuningISO->kernel_sigma.GaussianFilter_sigma_1;
+        pSharpParams->sharpParamsISO[i].GaussianFilter_radius_1 = pTuningISO->kernel_sigma.GaussianFilter_radius_1;
         pSharpParams->sharpParamsISO[i].GaussianFilter_sigma = pTuningISO->kernel_sigma.GaussianFilter_sigma;
         pSharpParams->sharpParamsISO[i].GaussianFilter_radius = pTuningISO->kernel_sigma.GaussianFilter_radius;
+
     }
 
     LOGI_ASHARP("%s(%d): exit\n", __FUNCTION__, __LINE__);
@@ -901,7 +1013,7 @@ Asharp_result_V33_t sharp_init_params_json_V33(void* pSharpParams_v, void* pCali
 }
 
 Asharp_result_V33_t sharp_config_setting_param_json_V33(void* pParams_v, void* pCalibdbV2_v,
-                                                        char* param_mode, char* snr_name) {
+        char* param_mode, char* snr_name) {
     Asharp_result_V33_t res = ASHARP_V33_RET_SUCCESS;
     int tuning_idx          = 0;
 #if RKAIQ_HAVE_SHARP_V33

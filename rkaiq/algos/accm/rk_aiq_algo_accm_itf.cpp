@@ -106,9 +106,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
     AccmConfig(hAccm);
 #if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-    memcpy(&proResAccm->accm_hw_conf_v2, &hAccm->ccmHwConf_v2, sizeof(rk_aiq_ccm_cfg_v2_t));
+    memcpy(proResAccm->accm_hw_conf_v2, &hAccm->ccmHwConf_v2, sizeof(rk_aiq_ccm_cfg_v2_t));
 #else
-    memcpy(&proResAccm->accm_hw_conf, &hAccm->ccmHwConf, sizeof(rk_aiq_ccm_cfg_t));
+    memcpy(proResAccm->accm_hw_conf, &hAccm->ccmHwConf, sizeof(rk_aiq_ccm_cfg_t));
 #endif
     proResAccm->ccm_update = hAccm->update ||hAccm->updateAtt || (!hAccm->accmSwInfo.ccmConverged);
     LOG1_ACCM( "%s: (exit)\n", __FUNCTION__);

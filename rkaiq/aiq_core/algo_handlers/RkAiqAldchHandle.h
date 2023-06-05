@@ -33,12 +33,14 @@ class RkAiqAldchHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAldchHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
 #if (RKAIQ_HAVE_LDCH_V21)
         memset(&mCurAtt, 0, sizeof(rk_aiq_ldch_v21_attrib_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_ldch_v21_attrib_t));
 #else
         memset(&mCurAtt, 0, sizeof(rk_aiq_ldch_attrib_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_ldch_attrib_t));
+#endif
 #endif
     };
     virtual ~RkAiqAldchHandleInt() { RkAiqHandle::deInit(); };
@@ -52,6 +54,7 @@ class RkAiqAldchHandleInt : virtual public RkAiqHandle {
 #if (RKAIQ_HAVE_LDCH_V21)
     XCamReturn setAttrib(const rk_aiq_ldch_v21_attrib_t* att);
     XCamReturn getAttrib(rk_aiq_ldch_v21_attrib_t* att);
+    XCamReturn copyLutFromExtBuffer(const rk_aiq_ldch_v21_attrib_t* att);
 #else
     XCamReturn setAttrib(const rk_aiq_ldch_attrib_t* att);
     XCamReturn getAttrib(rk_aiq_ldch_attrib_t* att);
@@ -62,12 +65,14 @@ class RkAiqAldchHandleInt : virtual public RkAiqHandle {
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
 #if (RKAIQ_HAVE_LDCH_V21)
     rk_aiq_ldch_v21_attrib_t mCurAtt;
     rk_aiq_ldch_v21_attrib_t mNewAtt;
 #else
     rk_aiq_ldch_attrib_t mCurAtt;
     rk_aiq_ldch_attrib_t mNewAtt;
+#endif
 #endif
 
  private:

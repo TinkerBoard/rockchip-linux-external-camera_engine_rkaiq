@@ -35,6 +35,7 @@ XCamReturn RkAiqAmergeHandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -58,6 +59,7 @@ XCamReturn RkAiqAmergeHandleInt::updateConfig(bool needSync) {
 #endif
     }
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -69,6 +71,9 @@ XCamReturn RkAiqAmergeHandleInt::setAttribV10(const mergeAttrV10_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_amerge_v10_SetAttrib(mAlgoCtx, att, false);
+#else
 
     // check if there is different between att & mCurAttV10(sync)/mNewAttV10(async)
     // if something changed, set att to mNewAttV10, and
@@ -88,6 +93,7 @@ XCamReturn RkAiqAmergeHandleInt::setAttribV10(const mergeAttrV10_t* att) {
         updateAtt  = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
     mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();
@@ -98,6 +104,11 @@ XCamReturn RkAiqAmergeHandleInt::getAttribV10(mergeAttrV10_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapi_amerge_v10_GetAttrib(mAlgoCtx, att);
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_amerge_v10_GetAttrib(mAlgoCtx, att);
@@ -113,7 +124,7 @@ XCamReturn RkAiqAmergeHandleInt::getAttribV10(mergeAttrV10_t* att) {
             att->sync.done      = true;
         }
     }
-
+#endif
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
@@ -126,6 +137,9 @@ XCamReturn RkAiqAmergeHandleInt::setAttribV11(const mergeAttrV11_t* att) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_amerge_v11_SetAttrib(mAlgoCtx, att, false);
+#else
     // check if there is different between att & mCurAttV11(sync)/mNewAttV11(async)
     // if something changed, set att to mNewAttV11, and
     // the new params will be effective later when updateConfig
@@ -144,6 +158,7 @@ XCamReturn RkAiqAmergeHandleInt::setAttribV11(const mergeAttrV11_t* att) {
         updateAtt  = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
     mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();
@@ -154,6 +169,11 @@ XCamReturn RkAiqAmergeHandleInt::getAttribV11(mergeAttrV11_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapi_amerge_v11_GetAttrib(mAlgoCtx, att);
+    mCfgMutex.unlock();
+#else
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
         rk_aiq_uapi_amerge_v11_GetAttrib(mAlgoCtx, att);
@@ -169,7 +189,7 @@ XCamReturn RkAiqAmergeHandleInt::getAttribV11(mergeAttrV11_t* att) {
             att->sync.done      = true;
         }
     }
-
+#endif
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
@@ -182,6 +202,9 @@ XCamReturn RkAiqAmergeHandleInt::setAttribV12(const mergeAttrV12_t* att) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_amerge_v12_SetAttrib(mAlgoCtx, att, false);
+#else
     // check if there is different between att & mCurAttV12(sync)/mNewAttV12(async)
     // if something changed, set att to mNewAttV12, and
     // the new params will be effective later when updateConfig
@@ -200,6 +223,7 @@ XCamReturn RkAiqAmergeHandleInt::setAttribV12(const mergeAttrV12_t* att) {
         updateAtt = true;
         waitSignal(att->sync.sync_mode);
     }
+#endif
     mCfgMutex.unlock();
 
     EXIT_ANALYZER_FUNCTION();
@@ -209,6 +233,11 @@ XCamReturn RkAiqAmergeHandleInt::getAttribV12(mergeAttrV12_t* att) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+    rk_aiq_uapi_amerge_v12_GetAttrib(mAlgoCtx, att);
+    mCfgMutex.unlock();
+#else
 
     if (att->sync.sync_mode == RK_AIQ_UAPI_MODE_SYNC) {
         mCfgMutex.lock();
@@ -225,7 +254,7 @@ XCamReturn RkAiqAmergeHandleInt::getAttribV12(mergeAttrV12_t* att) {
             att->sync.done      = true;
         }
     }
-
+#endif
     EXIT_ANALYZER_FUNCTION();
     return ret;
 }
@@ -295,8 +324,14 @@ XCamReturn RkAiqAmergeHandleInt::processing() {
         RKAIQCORE_CHECK_RET(ret, "amerge handle processing failed");
     }
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "amerge algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();

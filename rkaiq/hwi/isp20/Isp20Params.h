@@ -26,6 +26,8 @@ namespace RkCam {
 
 #define ISP20PARAM_SUBM (0x2)
 
+#define DISABLE_PARAMS_ASSEMBLER
+
 typedef struct AntiTmoFlicker_s {
     int preFrameNum;
     bool FirstChange;
@@ -40,6 +42,7 @@ enum params_type {
     ISPP_PARAMS,
 };
 
+#ifndef DISABLE_PARAMS_ASSEMBLER
 class IspParamsAssembler {
 public:
     explicit IspParamsAssembler(const char* name);
@@ -82,6 +85,7 @@ private:
     cam3aResultList mInitParamsList;
     bool started;
 };
+#endif
 
 class Isp20Params {
 public:

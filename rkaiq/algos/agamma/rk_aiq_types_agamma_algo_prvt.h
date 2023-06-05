@@ -51,7 +51,6 @@ typedef struct AgammaHandle_s {
     rk_aiq_gamma_v11_attr_t agammaAttrV11;
 #endif
     rk_aiq_gamma_op_mode_t CurrApiMode;
-    AgammaProcRes_t ProcRes;
     int working_mode;
 } AgammaHandle_t;
 

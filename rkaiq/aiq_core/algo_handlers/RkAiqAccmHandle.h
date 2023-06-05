@@ -28,6 +28,7 @@ class RkAiqAccmHandleInt : virtual public RkAiqHandle {
  public:
     explicit RkAiqAccmHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
 #if RKAIQ_HAVE_CCM_V1
         memset(&mCurAtt, 0, sizeof(rk_aiq_ccm_attrib_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_ccm_attrib_t));
@@ -35,6 +36,7 @@ class RkAiqAccmHandleInt : virtual public RkAiqHandle {
 #if RKAIQ_HAVE_CCM_V2
         memset(&mCurAttV2, 0, sizeof(rk_aiq_ccm_v2_attrib_t));
         memset(&mNewAttV2, 0, sizeof(rk_aiq_ccm_v2_attrib_t));
+#endif
 #endif
     };
     virtual ~RkAiqAccmHandleInt() { RkAiqHandle::deInit(); };
@@ -60,6 +62,7 @@ class RkAiqAccmHandleInt : virtual public RkAiqHandle {
     virtual void deInit() { RkAiqHandle::deInit(); };
 
  private:
+#ifndef DISABLE_HANDLE_ATTRIB
     // TODO
 #if RKAIQ_HAVE_CCM_V1
     rk_aiq_ccm_attrib_t mCurAtt;
@@ -68,6 +71,7 @@ class RkAiqAccmHandleInt : virtual public RkAiqHandle {
 #if RKAIQ_HAVE_CCM_V2
     rk_aiq_ccm_v2_attrib_t mCurAttV2;
     rk_aiq_ccm_v2_attrib_t mNewAttV2;
+#endif
 #endif
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAccmHandleInt);

@@ -40,6 +40,7 @@ XCamReturn RkAiqArawnrHandleInt::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+#ifndef DISABLE_HANDLE_ATTRIB
     if (needSync) mCfgMutex.lock();
     // if something changed
     if (updateAtt) {
@@ -66,6 +67,7 @@ XCamReturn RkAiqArawnrHandleInt::updateConfig(bool needSync) {
     }
 
     if (needSync) mCfgMutex.unlock();
+#endif
 
     EXIT_ANALYZER_FUNCTION();
     return ret;
@@ -76,6 +78,9 @@ XCamReturn RkAiqArawnrHandleInt::setAttrib(rk_aiq_bayernr_attrib_v1_t* att) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_abayernr_SetAttrib_v1(mAlgoCtx, att, false);
+#else
     // TODO
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
@@ -88,6 +93,7 @@ XCamReturn RkAiqArawnrHandleInt::setAttrib(rk_aiq_bayernr_attrib_v1_t* att) {
         updateAtt = true;
         waitSignal();
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -111,6 +117,9 @@ XCamReturn RkAiqArawnrHandleInt::setIQPara(rk_aiq_bayernr_IQPara_V1_t* para) {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_abayernr_SetIQPara_v1(mAlgoCtx, para, false);
+#else
     // TODO
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
@@ -123,6 +132,7 @@ XCamReturn RkAiqArawnrHandleInt::setIQPara(rk_aiq_bayernr_IQPara_V1_t* para) {
         updateIQpara = true;
         waitSignal();
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -148,6 +158,9 @@ XCamReturn RkAiqArawnrHandleInt::setJsonPara(rk_aiq_bayernr_JsonPara_V1_t* para)
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     mCfgMutex.lock();
+#ifdef DISABLE_HANDLE_ATTRIB
+    ret = rk_aiq_uapi_abayernr_SetJsonPara_v1(mAlgoCtx, para, false);
+#else
     // TODO
     // check if there is different between att & mCurAtt
     // if something changed, set att to mNewAtt, and
@@ -160,6 +173,7 @@ XCamReturn RkAiqArawnrHandleInt::setJsonPara(rk_aiq_bayernr_JsonPara_V1_t* para)
         updateJsonpara = true;
         waitSignal();
     }
+#endif
 
     mCfgMutex.unlock();
 
@@ -267,8 +281,14 @@ XCamReturn RkAiqArawnrHandleInt::processing() {
     arawnr_proc_int->iso      = sharedCom->iso;
     arawnr_proc_int->hdr_mode = sharedCom->working_mode;
 
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.lock();
+#endif
     RkAiqAlgoDescription* des = (RkAiqAlgoDescription*)mDes;
     ret                       = des->processing(mProcInParam, mProcOutParam);
+#ifdef DISABLE_HANDLE_ATTRIB
+    mCfgMutex.unlock();
+#endif
     RKAIQCORE_CHECK_RET(ret, "aynr algo processing failed");
 
     EXIT_ANALYZER_FUNCTION();

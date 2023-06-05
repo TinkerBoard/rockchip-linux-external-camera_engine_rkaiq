@@ -31,7 +31,6 @@
 
 RKAIQ_BEGIN_DECLARE
 
-void AdehazeGetStats(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* ROData);
 XCamReturn AdehazeGetCurrData(AdehazeHandle_t* pAdehazeCtx, RkAiqAlgoProcAdhaz* procPara);
 #ifdef RKAIQ_ENABLE_CAMGROUP
 XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx,
@@ -39,9 +38,10 @@ XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx,
 #endif
 XCamReturn AdehazeInit(AdehazeHandle_t** para, CamCalibDbV2Context_t* calib);
 XCamReturn AdehazeRelease(AdehazeHandle_t* para);
-XCamReturn AdehazeProcess(AdehazeHandle_t* para);
+XCamReturn AdehazeProcess(AdehazeHandle_t* para, rkisp_adehaze_stats_t* pStats,
+                          RkAiqAdehazeProcResult_t* pAdehzeProcRes);
 bool AdehazeByPassProcessing(AdehazeHandle_t* pAdehazeCtx);
-bool DehazeEnableSetting(AdehazeHandle_t* pAdehazeCtx);
+bool DehazeEnableSetting(AdehazeHandle_t* pAdehazeCtx, RkAiqAdehazeProcResult_t* pAdehzeProcRes);
 
 RKAIQ_END_DECLARE
 

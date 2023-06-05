@@ -110,6 +110,20 @@ typedef struct alsc_otp_grad_s
     uint16_t lsc_gb[LSC_DATA_TBL_SIZE];
 } alsc_otp_grad_t;
 
+typedef struct smart_lsc_run_cfg_s {
+    bool  enable;
+    float gain_th;
+    float wbgain_th;
+} smart_lsc_cfg_run_t;
+
+typedef struct smart_lsc_run_res_s {
+    bool forceRunFlag;//update by api or prepare;
+    float last_gain;
+    float last_awbGain[2];
+    bool samrtRunFlag;//update by above paras
+    bool lscTableConverge;
+} smart_lsc_run_res_t;
+
 typedef struct alsc_context_s {
     const CalibDbV2_LSC_t   *calibLscV2;
     CalibDbV2_LSC_t   fixed_calib;
@@ -133,12 +147,14 @@ typedef struct alsc_context_s {
     //rk_aiq_lsc_attrib_t mNewAtt;
     bool updateAtt;
 
-    //in some cases, the scene does not change, so it doesn't need to calculate in every frame;
-    bool auto_mode_need_run_algo;
     AlscState_t eState;
 
     // otp grad
     alsc_otp_grad_t otpGrad;
+
+    //smart run
+    smart_lsc_cfg_run_t smartRunCfg;
+    smart_lsc_run_res_t smartRunRes;
 } alsc_context_t ;
 
 typedef alsc_context_t* alsc_handle_t ;

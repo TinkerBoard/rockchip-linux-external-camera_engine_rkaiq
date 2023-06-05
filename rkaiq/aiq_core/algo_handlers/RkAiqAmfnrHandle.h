@@ -29,12 +29,14 @@ class RkAiqAmfnrHandleInt : virtual public RkAiqHandle {
 public:
     explicit RkAiqAmfnrHandleInt(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqHandle(des, aiqCore) {
+#ifndef DISABLE_HANDLE_ATTRIB
         memset(&mCurAtt, 0, sizeof(rk_aiq_mfnr_attrib_v1_t));
         memset(&mNewAtt, 0, sizeof(rk_aiq_mfnr_attrib_v1_t));
         memset(&mCurIQPara, 0, sizeof(rk_aiq_mfnr_IQPara_V1_t));
         memset(&mNewIQPara, 0, sizeof(rk_aiq_mfnr_IQPara_V1_t));
         memset(&mCurJsonPara, 0, sizeof(rk_aiq_mfnr_JsonPara_V1_t));
         memset(&mNewJsonPara, 0, sizeof(rk_aiq_mfnr_JsonPara_V1_t));
+#endif
     };
     virtual ~RkAiqAmfnrHandleInt() {
         RkAiqHandle::deInit();
@@ -63,6 +65,7 @@ protected:
     };
 
 private:
+#ifndef DISABLE_HANDLE_ATTRIB
     rk_aiq_mfnr_attrib_v1_t mCurAtt;
     rk_aiq_mfnr_attrib_v1_t mNewAtt;
     rk_aiq_mfnr_IQPara_V1_t mCurIQPara;
@@ -71,6 +74,7 @@ private:
     rk_aiq_mfnr_JsonPara_V1_t mNewJsonPara;
     bool updateIQpara   = false;
     bool updateJsonpara = false;
+#endif
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAmfnrHandleInt);

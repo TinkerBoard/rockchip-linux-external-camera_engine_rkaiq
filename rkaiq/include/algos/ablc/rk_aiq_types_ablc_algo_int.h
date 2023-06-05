@@ -68,11 +68,11 @@ typedef enum AblcParamMode_e {
 typedef struct AblcParams_s {
     bool enable;
     int len;
-    float* iso;
-    float* blc_r;
-    float* blc_gr;
-    float* blc_gb;
-    float* blc_b;
+    float iso[ABLC_MAX_ISO_LEVEL];
+    float blc_r[ABLC_MAX_ISO_LEVEL];
+    float blc_gr[ABLC_MAX_ISO_LEVEL];
+    float blc_gb[ABLC_MAX_ISO_LEVEL];
+    float blc_b[ABLC_MAX_ISO_LEVEL];
 } AblcParams_t;
 
 #if 0
