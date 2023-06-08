@@ -338,6 +338,7 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
     ldchCtx->zero_interp_en = 0;
     ldchCtx->sample_avr_en  = 0;
     ldchCtx->bic_mode_en    = 1;
+    ldchCtx->force_map_en   = 0;
     ldchCtx->map13p3_en     = 0;
     memcpy(ldchCtx->bicubic, default_bic_table, sizeof(default_bic_table));
 
@@ -551,20 +552,24 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         ldchPreOut->ldch_result.zero_interp_en = ldchCtx->zero_interp_en;
         ldchPreOut->ldch_result.sample_avr_en = ldchCtx->sample_avr_en;
         ldchPreOut->ldch_result.bic_mode_en = ldchCtx->bic_mode_en;
+        ldchPreOut->ldch_result.force_map_en = ldchCtx->force_map_en;
+        ldchPreOut->ldch_result.map13p3_en = ldchCtx->map13p3_en;
         memcpy(ldchPreOut->ldch_result.bicubic, ldchCtx->bicubic, sizeof(ldchCtx->bicubic));
     }
 
     ldchPreOut->ldch_result.base.update = true;
     ldchPreOut->ldch_result.base.sw_ldch_en = ldchCtx->ldch_en;
 
-    LOGV_ALDCH("en:%d, level:%d, h/v: %dx%x, interp_en:%d, avr_en:%d, bic_en:%d\n",
+    LOGV_ALDCH("en:%d, level:%d, h/v: %dx%d, interp_en:%d, avr_en:%d, bic_en:%d, force_map_en:%d, map13p3_en:%d\n",
             ldchCtx->ldch_en,
             ldchCtx->correct_level,
             ldchCtx->lut_h_size,
             ldchCtx->lut_v_size,
             ldchCtx->zero_interp_en,
             ldchCtx->sample_avr_en,
-            ldchCtx->bic_mode_en);
+            ldchCtx->bic_mode_en,
+            ldchCtx->force_map_en,
+            ldchCtx->map13p3_en);
 
     LOGV_ALDCH("update_lut_mode %d, lut fd %d\n",
             ldchCtx->user_config.update_lut_mode,

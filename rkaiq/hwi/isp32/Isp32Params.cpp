@@ -2012,7 +2012,6 @@ void Isp32Params::convertAiqAldchToIsp32Params(struct isp32_isp_params_cfg& isp_
 {
     struct isp32_ldch_cfg *pLdchCfg = &isp_cfg.others.ldch_cfg;
 
-    // TODO: add update flag for ldch
     if (ldch_cfg.ldch_en) {
         isp_cfg.module_ens |= ISP32_MODULE_LDCH;
         isp_cfg.module_en_update |= ISP32_MODULE_LDCH;
@@ -2026,6 +2025,8 @@ void Isp32Params::convertAiqAldchToIsp32Params(struct isp32_isp_params_cfg& isp_
         pLdchCfg->zero_interp_en = ldch_cfg.zero_interp_en;
         pLdchCfg->sample_avr_en = ldch_cfg.sample_avr_en;
         pLdchCfg->bic_mode_en = ldch_cfg.bic_mode_en;
+        pLdchCfg->force_map_en = ldch_cfg.force_map_en;
+        pLdchCfg->map13p3_en = ldch_cfg.map13p3_en;
         memcpy(pLdchCfg->bicubic, ldch_cfg.bicubic, sizeof(ldch_cfg.bicubic));
 
         LOGV_CAMHW_SUBM(ISP20PARAM_SUBM, "enable ldch h/v size: %dx%d, buf_fd: %d",

@@ -378,6 +378,8 @@ XCamReturn RkAiqAldchHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullP
             ldch_param->result.zero_interp_en = aldch_rk->ldch_result.zero_interp_en;
             ldch_param->result.sample_avr_en = aldch_rk->ldch_result.sample_avr_en;
             ldch_param->result.bic_mode_en = aldch_rk->ldch_result.bic_mode_en;
+            ldch_param->result.force_map_en = aldch_rk->ldch_result.force_map_en;
+            ldch_param->result.map13p3_en = aldch_rk->ldch_result.map13p3_en;
             memcpy(ldch_param->result.bicubic, aldch_rk->ldch_result.bicubic,
                    sizeof(aldch_rk->ldch_result.bicubic));
         }
