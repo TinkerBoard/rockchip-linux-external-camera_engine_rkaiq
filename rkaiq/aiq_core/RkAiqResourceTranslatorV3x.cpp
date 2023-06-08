@@ -1030,7 +1030,8 @@ XCamReturn RkAiqResourceTranslatorV3x::translateMultiAwbStats(const SmartPtr<Vid
         return XCAM_RETURN_BYPASS;
     }
 
-    rkisp_effect_params_v20 ispParams = {0};
+    rkisp_effect_params_v20 ispParams;
+    memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveIspParams(left_stats->frame_id, ispParams) < 0) {
         LOGE("fail to get ispParams ,ignore\n");
         return XCAM_RETURN_BYPASS;
@@ -1163,9 +1164,9 @@ RkAiqResourceTranslatorV3x::translateMultiAdehazeStats(const SmartPtr<VideoBuffe
     if(left_stats->frame_id != right_stats->frame_id || left_stats->meas_type != right_stats->meas_type) {
         LOGE_ANALYZER("status params(frmid or meas_type) of left isp and right isp are different");
         return XCAM_RETURN_ERROR_PARAM;
-    }
-    else
+    } else {
         LOGI_ANALYZER("stats: frame_id: %d,  meas_type; 0x%x", left_stats->frame_id, left_stats->meas_type);
+    }
 
     //adehaze stats v3.x
     statsInt->adehaze_stats_valid = left_stats->meas_type >> 17 & 1;

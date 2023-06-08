@@ -628,7 +628,7 @@ else()
 endif()
 
 if (RKAIQ_HAVE_MULTIISP)
-    add_compile_options(-DRKAIQ_HAVE_MUTIISP)
+    add_compile_options(-DRKAIQ_HAVE_MULTIISP)
     set(HWI_SRC
         ${HWI_SRC}
         hwi/IspParamsSplitter.cpp
