@@ -589,6 +589,10 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
         SmartPtr<SofEventBuffer> evtbuf = hwres.dynamic_cast_ptr<SofEventBuffer>();
         SmartPtr<SofEventData> evtdata = evtbuf->get_data();
         SmartPtr<ispHwEvt_t> hw_evt = mCamHwIsp20->make_ispHwEvt(evtdata->_frameid, V4L2_EVENT_FRAME_SYNC, evtdata->_timestamp);
+        if (mTbInfo.is_pre_aiq) {
+            LOGE("<TB> skip real sof %d\n", evtdata->_frameid);
+            return ret;
+        }
         mRkAiqAnalyzer->pushEvts(hw_evt);
         // TODO: moved to aiq core ?
         if (mMetasCb) {
