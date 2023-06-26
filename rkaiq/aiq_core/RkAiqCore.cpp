@@ -2507,7 +2507,7 @@ void RkAiqCore::newAiqParamsPool()
                 if (!mAiqAecStatsPool.ptr())
                     mAiqAecStatsPool = new RkAiqAecStatsPool("RkAiqAecStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqExpParamsPool =
-                    new RkAiqExpParamsPool("RkAiqExpParams", RkAiqCore::DEFAULT_POOL_SIZE);
+                    new RkAiqExpParamsPool("RkAiqExpParams", 4);
                 mAiqIrisParamsPool = new RkAiqIrisParamsPool("RkAiqIrisParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIspAecParamsPool =
                     new RkAiqIspAecParamsPool("RkAiqIspAecParams", RkAiqCore::DEFAULT_POOL_SIZE);
