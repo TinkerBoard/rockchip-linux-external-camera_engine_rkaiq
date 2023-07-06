@@ -1483,6 +1483,7 @@ CamHwIsp20::init(const char* sns_ent_name)
     sensorHw->setCamPhyId(mCamPhyId);
     mSensorDev = sensorHw;
     mSensorDev->open();
+    sensorHw->setTbInfo (mTbInfo.is_pre_aiq);
 
     Isp20Params::setCamPhyId(mCamPhyId);
 

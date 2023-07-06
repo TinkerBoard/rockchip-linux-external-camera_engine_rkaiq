@@ -96,10 +96,14 @@ public:
     virtual XCamReturn on_dqueue(int dev_idx, SmartPtr<V4l2BufferProxy> buf_proxy) { return XCAM_RETURN_NO_ERROR; }
     virtual bool is_virtual_sensor() { return false; }
     virtual XCamReturn set_sync_mode(uint32_t mode) {return XCAM_RETURN_NO_ERROR;}
+    void setTbInfo(bool is_pre_aiq) {
+        mTbIsPreAiq = is_pre_aiq;
+    }
 protected:
     XCAM_DEAD_COPY (BaseSensorHw);
     uint32_t get_v4l2_pixelformat(uint32_t pixelcode);
     int mCamPhyId;
+    bool mTbIsPreAiq;
 };
 
 class SensorHw : public BaseSensorHw {

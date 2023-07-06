@@ -46,6 +46,8 @@ SensorHw::SensorHw(const char* name)
     _mirror = false;
     _update_mirror_flip = false;
     _is_i2c_exp = false;
+    mTbIsPreAiq = false;
+
     EXIT_CAMHW_FUNCTION();
 }
 
@@ -621,11 +623,13 @@ SensorHw::setExposureParams(SmartPtr<RkAiqExpParamsProxy>& expPar)
         }
         if (!exp->exp_i2c_params) {
             _is_i2c_exp = false;
-            if (_working_mode == RK_AIQ_WORKING_MODE_NORMAL)
-                setLinearSensorExposure(&exp->aecExpInfo);
-            else
-                setHdrSensorExposure(&exp->aecExpInfo);
-            setSensorDpcc(&exp->SensorDpccInfo);
+            if (!mTbIsPreAiq) {
+                if (_working_mode == RK_AIQ_WORKING_MODE_NORMAL)
+                    setLinearSensorExposure(&exp->aecExpInfo);
+                else
+                    setHdrSensorExposure(&exp->aecExpInfo);
+                setSensorDpcc(&exp->SensorDpccInfo);
+            }
         } else {
             _is_i2c_exp = true;
             pending_split_exps_t new_exps;
@@ -647,6 +651,8 @@ SensorHw::setExposureParams(SmartPtr<RkAiqExpParamsProxy>& expPar)
         _last_dcg_gain_mode = expPar;
         LOGD_CAMHW_SUBM(SENSOR_SUBM, "exp-sync: first set exp, add id[0] to the effected exp map\n");
     } else {
+        if (mTbIsPreAiq)
+            return XCAM_RETURN_NO_ERROR;
         if (exp->algo_id == 0) {
             if (exp->exp_tbl_size > 0) {
                 SmartPtr<RkAiqExpParamsProxy> expParamsProxy = NULL;
