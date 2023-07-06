@@ -108,6 +108,7 @@ prepare(RkAiqAlgoCom* params)
     }
 
     AlscPrepare((alsc_handle_t)(params->ctx->alsc_para));
+    params->ctx->alsc_para->isReCal_ = true;
 
     hAlsc->eState = ALSC_STATE_STOPPED;
     LOG1_ALSC( "%s: (exit)\n", __FUNCTION__);
@@ -137,15 +138,21 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     procAlsc->alsc_sw_info.grayMode = procPara->com.u.proc.gray_mode;
     hAlsc->alscSwInfo = procAlsc->alsc_sw_info;
     //LOGI_ALSC( "%s alsc_proc_com.u.init:%d \n", __FUNCTION__, inparams->u.proc.init);
+    LOGD_ALSC( "=============== lsc count:%d =============\n", hAlsc->count);
     LOGD_ALSC( "%s: sensorGain:%f, awbGain:%f,%f, resName:%s, awbIIRDampCoef:%f\n", __FUNCTION__,
                hAlsc->alscSwInfo.sensorGain,
                hAlsc->alscSwInfo.awbGain[0], hAlsc->alscSwInfo.awbGain[1],
                hAlsc->cur_res.name, hAlsc->alscSwInfo.awbIIRDampCoef);
 
     AlscConfig(hAlsc);
-    memcpy(proResAlsc->alsc_hw_conf, &hAlsc->lscHwConf, sizeof(rk_aiq_lsc_cfg_t));
-
-#if 1
+    if (hAlsc->isReCal_) {
+        memcpy(proResAlsc->alsc_hw_conf, &hAlsc->lscHwConf, sizeof(rk_aiq_lsc_cfg_t));
+        outparams->cfg_update = true;
+        hAlsc->isReCal_ = false;
+    } else {
+        outparams->cfg_update = false;
+    }
+#if 0
     if (procAlsc->tx != nullptr) {
         XCamVideoBuffer* txBuf = procAlsc->tx;
         /*

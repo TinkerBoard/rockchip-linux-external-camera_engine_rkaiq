@@ -796,16 +796,16 @@ typedef struct CalibDb_HDCIris_AttrV2_s {
     // M4_NUMBER_DESC("MaxTarget", "s32", M4_RANGE(0,1023), "1023", M4_DIGIT(0),M4_HIDE(0))
     int         MaxTarget;
 
-    // M4_NUMBER_DESC("ZoomTargetDot", "s32", M4_SIZE(1,256), M4_RANGE(0,1023), "1023", M4_DIGIT(0),M4_HIDE(0))
+    // M4_ARRAY_DESC("ZoomTargetDot", "s32", M4_SIZE(1,256), M4_RANGE(0,1023), "1023", M4_DIGIT(0), M4_DYNAMIC(1),M4_HIDE(0))
     int         ZoomTargetDot[AECV2_HDCIRIS_DOT_MAX_NUM];
 
-    // M4_NUMBER_DESC("ZoomDot", "s32", M4_SIZE(1,256), M4_RANGE(-32768,32767), "0", M4_DIGIT(0),M4_HIDE(0))
+    // M4_ARRAY_DESC("ZoomDot", "s32", M4_SIZE(1,256), M4_RANGE(-32768,32767), "0", M4_DIGIT(0), M4_DYNAMIC(1),M4_HIDE(0))
     int         ZoomDot[AECV2_HDCIRIS_DOT_MAX_NUM];
 
-    // M4_NUMBER_DESC("TargetDot", "s32", M4_SIZE(1,256), M4_RANGE(0,1023), "1023", M4_DIGIT(0),M4_HIDE(0))
+    // M4_ARRAY_DESC("TargetDot", "s32", M4_SIZE(1,256), M4_RANGE(0,1023), "1023", M4_DIGIT(0), M4_DYNAMIC(1),M4_HIDE(0))
     int         IrisTargetDot[AECV2_HDCIRIS_DOT_MAX_NUM];
 
-    // M4_NUMBER_DESC("GainDot", "s32", M4_SIZE(1,256), M4_RANGE(1,512), "512", M4_DIGIT(0),M4_HIDE(0))
+    // M4_ARRAY_DESC("GainDot", "s32", M4_SIZE(1,256), M4_RANGE(1,512), "512", M4_DIGIT(0), M4_DYNAMIC(1),M4_HIDE(0))
     int         GainDot[AECV2_HDCIRIS_DOT_MAX_NUM];
 
     // M4_NUMBER_DESC("ZoomTargetDot_len", "s32", M4_RANGE(1,256), "12", M4_DIGIT(0),M4_HIDE(0))

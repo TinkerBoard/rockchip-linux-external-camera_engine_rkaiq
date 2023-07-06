@@ -173,6 +173,8 @@ XCamReturn RkAiqAieHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    aie_proc_res_int->ieRes = &shared->fullParams->mIeParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "aie handle processing failed");
@@ -239,15 +241,30 @@ XCamReturn RkAiqAieHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
         return XCAM_RETURN_NO_ERROR;
     }
 
-    rk_aiq_isp_ie_t* isp_ie = &ie_param->result;
-    isp_ie->base            = aie_com->params_com;
-
-    if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAie* aie_rk = (RkAiqAlgoProcResAie*)aie_com;
-        isp_ie->extra = aie_rk->params;
+    if (aie_com->res_com.cfg_update) {
+        mSyncFlag = shared->frameId;
+        ie_param->sync_flag = mSyncFlag;
+        // copy from algo result
+        // set as the latest result
+        cur_params->mIeParams = params->mIeParams;
+        ie_param->is_update = true;
+        LOGD_AIE("[%d] params from algo", mSyncFlag);
+    } else if (mSyncFlag != ie_param->sync_flag) {
+        ie_param->sync_flag = mSyncFlag;
+        // copy from latest result
+        if (cur_params->mIeParams.ptr()) {
+            ie_param->result = cur_params->mIeParams->data()->result;
+            ie_param->is_update = true;
+        } else {
+            LOGE_AIE("no latest params !");
+            ie_param->is_update = false;
+        }
+        LOGD_AIE("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+    } else {
+        // do nothing, result in buf needn't update
+        ie_param->is_update = false;
+        LOGD_AIE("[%d] params needn't update", shared->frameId);
     }
-
-    cur_params->mIeParams = params->mIeParams;
 
     EXIT_ANALYZER_FUNCTION();
 

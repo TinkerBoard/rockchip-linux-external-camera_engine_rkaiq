@@ -69,7 +69,7 @@ prepare(RkAiqAlgoCom* params)
                 (CalibDbV2_Lut3D_Para_V2_t*)(CALIBDBV2_GET_MODULE_PTR((void*)(para->com.u.prepare.calibv2), lut3d_calib));
 #endif
     }
-           Alut3dPrepare((alut3d_handle_t)(params->ctx->a3dlut_para));
+    Alut3dPrepare((alut3d_handle_t)(params->ctx->a3dlut_para));
 
     LOG1_A3DLUT( "%s: (exit)\n", __FUNCTION__);
     return XCAM_RETURN_NO_ERROR;
@@ -99,10 +99,21 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     hAlut3d->swinfo.awbGain[0] = procAlut3d->awbGain[0];
     hAlut3d->swinfo.awbGain[1] = procAlut3d->awbGain[1];
     hAlut3d->swinfo.awbIIRDampCoef = procAlut3d->awbIIRDampCoef;
+    hAlut3d->swinfo.awbConverged = procAlut3d->awbConverged;
 
     Alut3dConfig(hAlut3d);
-    memcpy(proResAlut3d->lut3d_hw_conf, &hAlut3d->lut3d_hw_conf, sizeof(rk_aiq_lut3d_cfg_t));
-    proResAlut3d->lut3d_update = hAlut3d->update || hAlut3d->updateAtt || (!hAlut3d->swinfo.lut3dConverged);
+    if (hAlut3d->lut3d_hw_conf.enable || !hAlut3d->lut3d_hw_conf.bypass_en) {
+        LOGD_A3DLUT("update:%d, updateAtt: %d, converge: %d\n",
+                hAlut3d->update, hAlut3d->updateAtt, hAlut3d->swinfo.lut3dConverged);
+        proResAlut3d->res_com.cfg_update = hAlut3d->update || hAlut3d->updateAtt || (!hAlut3d->swinfo.lut3dConverged);
+    } else {
+        proResAlut3d->res_com.cfg_update = hAlut3d->updateAtt || hAlut3d->calib_update;
+    }
+
+    hAlut3d->calib_update = false;
+    hAlut3d->updateAtt = false;
+    if (proResAlut3d->res_com.cfg_update)
+        memcpy(proResAlut3d->lut3d_hw_conf, &hAlut3d->lut3d_hw_conf, sizeof(rk_aiq_lut3d_cfg_t));
 
     LOG1_A3DLUT( "%s: (exit)\n", __FUNCTION__);
     return XCAM_RETURN_NO_ERROR;

@@ -333,14 +333,15 @@ Again_result_V2_t Again_GetProcResult_V2(Again_Context_V2_t *pAgainCtx, Again_Pr
         return AGAINV2_RET_INVALID_PARM;
     }
 
+    RK_GAIN_Select_V2_t* stSelect = NULL;
     if(pAgainCtx->eMode == AGAINV2_OP_MODE_AUTO) {
-        pAgainResult->stSelect = pAgainCtx->stAuto.stSelect;
+        stSelect = &pAgainCtx->stAuto.stSelect;
     } else if(pAgainCtx->eMode == AGAINV2_OP_MODE_MANUAL) {
-        pAgainResult->stSelect = pAgainCtx->stManual.stSelect;
+        stSelect = &pAgainCtx->stManual.stSelect;
     }
 
     //transfer to reg value
-    gain_fix_transfer_v2(&pAgainResult->stSelect, &pAgainResult->stFix, &pAgainCtx->stExpInfo, pAgainCtx->stGainState.ratio);
+    gain_fix_transfer_v2(stSelect, pAgainResult->stFix, &pAgainCtx->stExpInfo, pAgainCtx->stGainState.ratio);
 
     LOGI_ANR("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return AGAINV2_RET_SUCCESS;

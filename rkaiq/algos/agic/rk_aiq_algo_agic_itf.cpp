@@ -58,16 +58,16 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
         LOGD_AGIC("%s: Agic Reload Para!\n", __FUNCTION__);
 
 #if RKAIQ_HAVE_GIC_V1
-            CalibDbV2_Gic_V20_t* calibv2_agic_calib_V20 =
-                (CalibDbV2_Gic_V20_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, agic_calib_v20));
-            pAgicCtx->full_param.gic_v20 = calibv2_agic_calib_V20;
-            GicV1CalibToAttr(calibv2_agic_calib_V20, &pAgicCtx->attr.v1);
+        CalibDbV2_Gic_V20_t* calibv2_agic_calib_V20 =
+            (CalibDbV2_Gic_V20_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, agic_calib_v20));
+        pAgicCtx->full_param.gic_v20 = calibv2_agic_calib_V20;
+        GicV1CalibToAttr(calibv2_agic_calib_V20, &pAgicCtx->attr.v1);
 #endif
 #if RKAIQ_HAVE_GIC_V2
-            CalibDbV2_Gic_V21_t* calibv2_agic_calib_V21 =
-                (CalibDbV2_Gic_V21_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, agic_calib_v21));
-            pAgicCtx->full_param.gic_v21 = calibv2_agic_calib_V21;
-            GicV2CalibToAttr(calibv2_agic_calib_V21, &pAgicCtx->attr.v2);
+        CalibDbV2_Gic_V21_t* calibv2_agic_calib_V21 =
+            (CalibDbV2_Gic_V21_t*)(CALIBDBV2_GET_MODULE_PTR(calibv2, agic_calib_v21));
+        pAgicCtx->full_param.gic_v21 = calibv2_agic_calib_V21;
+        GicV2CalibToAttr(calibv2_agic_calib_V21, &pAgicCtx->attr.v2);
 #endif
 
         pAgicCtx->calib_changed = true;
@@ -115,14 +115,13 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     pAgicCtx->Gic_Scene_mode = 0;
     if (pAgicCtx->last_iso != iso || pAgicCtx->calib_changed) {
         AgicProcess(pAgicCtx, iso, pAgicCtx->Gic_Scene_mode);
-        AgicGetProcResult(pAgicCtx);
         pAgicCtx->calib_changed          = false;
-        pAgicCtx->ProcRes.gic_cfg_update = true;
+        AgicGetProcResult(pAgicCtx, pAgicProcResParams->gicRes);
+        outparams->cfg_update = true;
+        pAgicCtx->last_iso = iso;
     } else {
-        pAgicCtx->ProcRes.gic_cfg_update = false;
+        outparams->cfg_update = false;
     }
-
-    memcpy(pAgicProcResParams->gicRes, &pAgicCtx->ProcRes, sizeof(AgicProcResult_t));
 
     LOG1_AGIC("enter!");
     return XCAM_RETURN_NO_ERROR;
@@ -137,15 +136,15 @@ static XCamReturn post_process(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* ou
 
 RkAiqAlgoDescription g_RkIspAlgoDescAgic = {
     .common =
-        {
-            .version         = RKISP_ALGO_AGIC_VERSION,
-            .vendor          = RKISP_ALGO_AGIC_VENDOR,
-            .description     = RKISP_ALGO_AGIC_DESCRIPTION,
-            .type            = RK_AIQ_ALGO_TYPE_AGIC,
-            .id              = 0,
-            .create_context  = create_context,
-            .destroy_context = destroy_context,
-        },
+    {
+        .version         = RKISP_ALGO_AGIC_VERSION,
+        .vendor          = RKISP_ALGO_AGIC_VENDOR,
+        .description     = RKISP_ALGO_AGIC_DESCRIPTION,
+        .type            = RK_AIQ_ALGO_TYPE_AGIC,
+        .id              = 0,
+        .create_context  = create_context,
+        .destroy_context = destroy_context,
+    },
     .prepare      = prepare,
     .pre_process  = NULL,
     .processing   = processing,

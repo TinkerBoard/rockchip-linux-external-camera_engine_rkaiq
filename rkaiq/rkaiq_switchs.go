@@ -244,7 +244,7 @@ func rkaiq_macro_switch(soc string) map[string]bool {
         macros_map["RKAIQ_HAVE_WDR_V1"] = true
         macros_map["RKAIQ_HAVE_LDCH_V21"] = false
         macros_map["RKAIQ_HAVE_LDCH_V10"] = true
-        macros_map["RKAIQ_HAVE_FEC_V10"] = true
+        macros_map["RKAIQ_HAVE_FEC_V10"] = false 
         macros_map["RKAIQ_HAVE_CSM_V1"] = true
         macros_map["RKAIQ_HAVE_CGC_V1"] = true
         macros_map["RKAIQ_HAVE_AE_V1"] = true
@@ -295,7 +295,7 @@ func rkaiq_macro_switch(soc string) map[string]bool {
         macros_map["RKAIQ_HAVE_BLC_V32"] = false
         macros_map["RKAIQ_HAVE_ANR_V1"] = false
         macros_map["RKAIQ_HAVE_AMD_V1"] = false
-        macros_map["RKAIQ_HAVE_PDAF"] = true
+        macros_map["RKAIQ_HAVE_PDAF"] = false
         macros_map["RKAIQ_HAVE_AF_V20"] = true
         macros_map["RKAIQ_HAVE_AF_V30"] = false
         macros_map["RKAIQ_HAVE_AF_V31"] = false
@@ -370,7 +370,7 @@ func rkaiq_macro_switch(soc string) map[string]bool {
         macros_map["RKAIQ_HAVE_BLC_V32"] = false
         macros_map["RKAIQ_HAVE_ANR_V1"] = true
         macros_map["RKAIQ_HAVE_AMD_V1"] = false
-        macros_map["RKAIQ_HAVE_PDAF"] = true
+        macros_map["RKAIQ_HAVE_PDAF"] = false
         macros_map["RKAIQ_HAVE_AF_V20"] = true
         macros_map["RKAIQ_HAVE_AF_V30"] = false
         macros_map["RKAIQ_HAVE_AF_V31"] = false

@@ -404,7 +404,7 @@ void
 CaptureRawData::write_metadata_to_file(const char* dir_path,
                                         uint32_t frame_id,
                                         rkisp_effect_params_v20& ispParams,
-                                        SmartPtr<RkAiqExpParamsProxy>& expParams,
+                                        SmartPtr<RkAiqSensorExpParamsProxy>& expParams,
                                         SmartPtr<RkAiqAfInfoProxy>& afParams,
                                         int working_mode)
 {
@@ -887,7 +887,7 @@ void CaptureRawData::save_metadata_and_register
 (
     uint32_t frameId,
     rkisp_effect_params_v20& ispParams,
-    SmartPtr<RkAiqExpParamsProxy>& expParams,
+    SmartPtr<RkAiqSensorExpParamsProxy>& expParams,
     SmartPtr<RkAiqAfInfoProxy>& afParams,
     int working_mode
 )

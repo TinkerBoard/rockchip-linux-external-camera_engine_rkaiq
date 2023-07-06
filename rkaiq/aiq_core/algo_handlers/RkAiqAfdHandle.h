@@ -40,6 +40,9 @@ public:
     virtual XCamReturn postProcess();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
     // TODO add algo specific methords, this is a sample
+    void setAeProcRes(RkAiqAlgoProcResAeShared_t* aeProcRes) {
+        mAeProcRes = *aeProcRes;
+    }
 
 protected:
     virtual void init();
@@ -47,7 +50,7 @@ protected:
         RkAiqHandle::deInit();
     };
     bool mAfdSyncAly{true};
-
+    RkAiqAlgoProcResAeShared_t mAeProcRes;
 private:
 
 private:

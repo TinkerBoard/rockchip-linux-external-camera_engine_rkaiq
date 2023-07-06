@@ -135,6 +135,7 @@ static XCamReturn prepare(RkAiqAlgoCom* params) {
 static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
     XCamReturn ret                  = XCAM_RETURN_NO_ERROR;
+    bool dehaze_bypass_processing   = true;
     AdehazeHandle_t* pAdehazeHandle = (AdehazeHandle_t*)inparams->ctx;
     RkAiqAlgoProcAdhaz* pProcPara   = (RkAiqAlgoProcAdhaz*)inparams;
     RkAiqAlgoProcResAdhaz* pProcRes = (RkAiqAlgoProcResAdhaz*)outparams;
@@ -143,12 +144,25 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     LOGD_ADEHAZE("/*************************Adehaze Start******************/ \n");
 
     AdehazeGetCurrData(pAdehazeHandle, pProcPara);
-    AdehazeByPassProcessing(pAdehazeHandle);
 
-    if (DehazeEnableSetting(pAdehazeHandle, &pProcRes->AdehzeProcRes)) {
+    if (DehazeEnableSetting(pAdehazeHandle, pProcRes->AdehzeProcRes)) {
+        dehaze_bypass_processing = AdehazeByPassProcessing(pAdehazeHandle);
         // process
-        if (!(pAdehazeHandle->byPassProc))
-            ret = AdehazeProcess(pAdehazeHandle, &pProcPara->stats, &pProcRes->AdehzeProcRes);
+        if (!dehaze_bypass_processing) {
+#if RKAIQ_HAVE_DEHAZE_V10
+            ret = AdehazeProcess(pAdehazeHandle, pProcPara->dehaze_stats_v10, pProcRes->AdehzeProcRes);
+#endif
+#if RKAIQ_HAVE_DEHAZE_V11
+            ret = AdehazeProcess(pAdehazeHandle, pProcPara->dehaze_stats_v11, pProcRes->AdehzeProcRes);
+#endif
+#if RKAIQ_HAVE_DEHAZE_V11_DUO
+            ret = AdehazeProcess(pAdehazeHandle, pProcPara->dehaze_stats_v11_duo, pProcRes->AdehzeProcRes);
+#endif
+#if RKAIQ_HAVE_DEHAZE_V12
+            ret = AdehazeProcess(pAdehazeHandle, pProcPara->dehaze_stats_v12, pProcPara->stats_true,
+                                 pProcRes->AdehzeProcRes);
+#endif
+        }
     } else {
         LOGD_ADEHAZE("Dehaze Enable is OFF, Bypass Dehaze !!! \n");
     }
@@ -156,7 +170,9 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
     LOGD_ADEHAZE("/*************************Adehaze over******************/ \n");
 
     // proc res
-    pProcRes->AdehzeProcRes.update = !(pAdehazeHandle->byPassProc);
+    outparams->cfg_update = !dehaze_bypass_processing || inparams->u.proc.init;
+    if (pAdehazeHandle->ifReCalcStManual) pAdehazeHandle->ifReCalcStManual = false;
+    if (pAdehazeHandle->ifReCalcStAuto) pAdehazeHandle->ifReCalcStAuto = false;
 
     LOG1_ADEHAZE("EIXT: %s \n", __func__);
     return ret;

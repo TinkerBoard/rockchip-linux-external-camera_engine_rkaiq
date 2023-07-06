@@ -32,7 +32,7 @@ RkAiqResourceTranslatorV32::RkAiqResourceTranslatorV32() {}
 XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuffer>& from,
         SmartPtr<RkAiqAecStatsProxy>& to) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-  
+
 #if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     // 0) blc awb cfg
 
@@ -88,11 +88,11 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
     bls_g = ((isp_ob_offset_g + bls1_val.gr) * awb1_gain_gr + 128) / 256;
     bls_b = ((isp_ob_offset_rb + bls1_val.b) * awb1_gain_b + 128) / 256;
 
-#endif  
+#endif
 
 #if defined(ISP_HW_V32)
 
-    const SmartPtr<Isp20StatsBuffer> buf = from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf = from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp32_isp_stat_buffer* stats;
     SmartPtr<RkAiqAecStats> statsInt = to->data();
 
@@ -218,9 +218,11 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
             round_part = div_part / 2;
             break;
         }
-
+        uint64_t SumHistPix = 0;
+        float HistMean = 0.0f;
 
         for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
+
 
             tmp = (i - ob - bls1 > 0) ? (i * awb1_gain - bls + round_part) / div_part : 0;
             tmp = (tmp > ISP3X_HIST_BIN_N_MAX - 1) ? (ISP3X_HIST_BIN_N_MAX - 1) : tmp;
@@ -230,17 +232,51 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
             statsInt->aec_stats.ae_data.chn[index1].rawhist_big.bins[tmp] +=
                 stats->params.rawhist1.hist_bin[i];
 
+            SumHistPix += stats->params.rawhist1.hist_bin[i];
         }
+
+        for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
+            HistMean += (float)(stats->params.rawhist1.hist_bin[i] * (i + 1)) / (float)SumHistPix ;
+        }
+        // NOTE: tmp use yuvae mean
+        statsInt->aec_stats.ae_data.yuvae.mean[index1] = (uint8_t)HistMean;
+
     } else {
 
         if(is_hdr || AeSwapMode == AEC_RAWSWAP_MODE_S_LITE) {
             memcpy(statsInt->aec_stats.ae_data.chn[index0].rawhist_lite.bins,
                    stats->params.rawhist0.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+
+            uint64_t SumHistPix = 0;
+            float HistMean = 0.0f;
+
+            for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++)
+                SumHistPix += stats->params.rawhist0.hist_bin[i];
+
+            for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
+                HistMean += (float)(stats->params.rawhist0.hist_bin[i] * (i + 1)) / (float)SumHistPix;
+            }
+
+            // NOTE: tmp use yuvae mean
+            statsInt->aec_stats.ae_data.yuvae.mean[index0] = (uint8_t)HistMean;
         }
 
         if(is_hdr || AeSwapMode == AEC_RAWSWAP_MODE_M_LITE) {
             memcpy(statsInt->aec_stats.ae_data.chn[index1].rawhist_big.bins,
                    stats->params.rawhist1.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+
+            uint64_t SumHistPix = 0;
+            float HistMean = 0.0f;
+
+            for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++)
+                SumHistPix += stats->params.rawhist1.hist_bin[i];
+
+            for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
+                HistMean += (float)(stats->params.rawhist1.hist_bin[i] * (i + 1)) / (float)SumHistPix;
+            }
+
+            // NOTE: tmp use yuvae mean
+            statsInt->aec_stats.ae_data.yuvae.mean[index1] = (uint8_t)HistMean;
         }
     }
 
@@ -332,6 +368,7 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
             }
             break;
         case AEC_RAWSEL_MODE_TMO:
+#if 0
             for (int i = 0; i < ISP3X_RAWAEBIG_MEAN_NUM; i++) {
                 statsInt->aec_stats.ae_data.extra.rawae_big.channelr_xy[i] =
                     stats->params.rawae3_0.data[i].channelr_xy;
@@ -350,6 +387,7 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
             }
             memcpy(statsInt->aec_stats.ae_data.extra.rawhist_big.bins,
                    stats->params.rawhist3.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+#endif
             break;
 
         default:
@@ -457,7 +495,7 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
 
 #if defined(ISP_HW_V32_LITE)
 
-    const SmartPtr<Isp20StatsBuffer> buf = from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf = from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp32_lite_stat_buffer* stats;
     SmartPtr<RkAiqAecStats> statsInt = to->data();
 
@@ -527,6 +565,7 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
         }
     }
 
+
     //HIST-LITE (RAWHIST0)
     if (bls_cfg->bls1_en && !is_hdr) {
 
@@ -574,6 +613,8 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
         }
 
         int oneBinWidth = 256 / ISP32L_HIST_LITE_BIN_N_MAX;
+        uint64_t SumHistPix = 0;
+        float HistMean = 0.0f;
 
         for (int i = 0; i < ISP32L_HIST_LITE_BIN_N_MAX; i++) {
 
@@ -586,12 +627,33 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
 
             statsInt->aec_stats.ae_data.chn[index0].rawhist_lite.bins[tmp] +=
                 stats->params.rawhist0.hist_bin[i];
+            SumHistPix += stats->params.rawhist0.hist_bin[i];
         }
+
+        for (int i = 0; i < ISP32L_HIST_LITE_BIN_N_MAX; i++) {
+            HistMean += (float)(stats->params.rawhist0.hist_bin[i] * (i + 1) * oneBinWidth) / (float)SumHistPix ;
+        }
+        // NOTE: tmp use yuvae mean
+        statsInt->aec_stats.ae_data.yuvae.mean[index0] = (uint8_t)HistMean;
     } else {
 
         if(is_hdr || AeSwapMode == AEC_RAWSWAP_MODE_S_LITE) {
             memcpy(statsInt->aec_stats.ae_data.chn[index0].rawhist_lite.bins,
                    stats->params.rawhist0.hist_bin, ISP32L_HIST_LITE_BIN_N_MAX * sizeof(u32));
+
+            int oneBinWidth = 256 / ISP32L_HIST_LITE_BIN_N_MAX;
+            uint64_t SumHistPix = 0;
+            float HistMean = 0.0f;
+
+            for (int i = 0; i < ISP32L_HIST_LITE_BIN_N_MAX; i++)
+                SumHistPix += stats->params.rawhist0.hist_bin[i];
+
+            for (int i = 0; i < ISP32L_HIST_LITE_BIN_N_MAX; i++) {
+                HistMean += (float)(stats->params.rawhist0.hist_bin[i] * (i + 1) * oneBinWidth) / (float)SumHistPix;
+            }
+
+            // NOTE: tmp use yuvae mean
+            statsInt->aec_stats.ae_data.yuvae.mean[index0] = (uint8_t)HistMean;
         }
 
     }
@@ -676,6 +738,8 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
                 break;
             }
 
+            uint64_t SumHistPix = 0;
+            float HistMean = 0.0f;
 
             for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
                 tmp = (i - ob - bls1 > 0) ? (i * awb1_gain - bls + round_part) / div_part : 0;
@@ -683,10 +747,30 @@ XCamReturn RkAiqResourceTranslatorV32::translateAecStats(const SmartPtr<VideoBuf
 
                 statsInt->aec_stats.ae_data.chn[AeSelMode].rawhist_big.bins[tmp] +=
                     stats->params.rawhist3.hist_bin[i];
+                SumHistPix += stats->params.rawhist3.hist_bin[i];
             }
+
+            for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
+                HistMean += (float)(stats->params.rawhist3.hist_bin[i] * (i + 1)) / (float)SumHistPix ;
+            }
+            // NOTE: tmp use yuvae mean
+            statsInt->aec_stats.ae_data.yuvae.mean[AeSelMode] = (uint8_t)HistMean;
         } else {
             memcpy(statsInt->aec_stats.ae_data.chn[AeSelMode].rawhist_big.bins,
                    stats->params.rawhist3.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+
+            uint64_t SumHistPix = 0;
+            float HistMean = 0.0f;
+
+            for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++)
+                SumHistPix += stats->params.rawhist3.hist_bin[i];
+
+            for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
+                HistMean += (float)(stats->params.rawhist3.hist_bin[i] * (i + 1)) / (float)SumHistPix;
+            }
+
+            // NOTE: tmp use yuvae mean
+            statsInt->aec_stats.ae_data.yuvae.mean[AeSelMode] = (uint8_t)HistMean;
         }
         break;
     case AEC_RAWSEL_MODE_TMO:
@@ -866,8 +950,8 @@ XCamReturn RkAiqResourceTranslatorV32::translateAwbStats(const SmartPtr<VideoBuf
         SmartPtr<RkAiqAwbStatsProxy>& to) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 #if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
 #if defined(ISP_HW_V32)
     struct rkisp32_isp_stat_buffer *stats;
     stats = (struct rkisp32_isp_stat_buffer*)(buf->get_v4l2_userptr());
@@ -890,7 +974,6 @@ XCamReturn RkAiqResourceTranslatorV32::translateAwbStats(const SmartPtr<VideoBuf
         LOGE_ANALYZER("AWB stats invalid, ignore");
         return XCAM_RETURN_BYPASS;
     }
-    memset(&statsInt->awb_stats_v32, 0, sizeof(statsInt->awb_stats_v32));
 
     if (stats->params.info2ddr.owner == RKISP_INFO2DRR_OWNER_AWB) {
         statsInt->awb_stats_v32.dbginfo_fd = stats->params.info2ddr.buf_fd;
@@ -919,24 +1002,33 @@ XCamReturn RkAiqResourceTranslatorV32::translateAwbStats(const SmartPtr<VideoBuf
             stats->params.rawawb.sum[i].bgain_big;
         statsInt->awb_stats_v32.light[i].xYType[RK_AIQ_AWB_XY_TYPE_BIG_V201].WpNo =
             stats->params.rawawb.sum[i].wp_num_big;
+        statsInt->awb_stats_v32.WpNo2[i] =  stats->params.rawawb.sum[i].wp_num2;
     }
+    memset(&statsInt->awb_stats_v32.sumBlkRGB, 0, sizeof(statsInt->awb_stats_v32.sumBlkRGB));
 #if defined(ISP_HW_V32)
     for(int i = 0; i < RK_AIQ_AWB_GRID_NUM_TOTAL; i++) {
         statsInt->awb_stats_v32.blockResult[i].Rvalue = stats->params.rawawb.ramdata[i].r;
         statsInt->awb_stats_v32.blockResult[i].Gvalue = stats->params.rawawb.ramdata[i].g;
         statsInt->awb_stats_v32.blockResult[i].Bvalue = stats->params.rawawb.ramdata[i].b;
         statsInt->awb_stats_v32.blockResult[i].WpNo = stats->params.rawawb.ramdata[i].wp;
+        statsInt->awb_stats_v32.sumBlkRGB.Rvalue += statsInt->awb_stats_v32.blockResult[i].Rvalue ;
+        statsInt->awb_stats_v32.sumBlkRGB.Gvalue += statsInt->awb_stats_v32.blockResult[i].Gvalue;
+        statsInt->awb_stats_v32.sumBlkRGB.Bvalue +=  statsInt->awb_stats_v32.blockResult[i].Bvalue;
     }
+
 #elif defined(ISP_HW_V32_LITE)
     for(int i = 0; i < ISP32L_RAWAWB_RAMDATA_RGB_NUM; i++) {
         statsInt->awb_stats_v32.blockResult[i].Rvalue = stats->params.rawawb.ramdata_r[i];
         statsInt->awb_stats_v32.blockResult[i].Gvalue = stats->params.rawawb.ramdata_g[i];
         statsInt->awb_stats_v32.blockResult[i].Bvalue = stats->params.rawawb.ramdata_b[i];
-        if(i%2==0){
-            statsInt->awb_stats_v32.blockResult[i].WpNo = stats->params.rawawb.ramdata_wpnum0[i/2];
-        }else{
-            statsInt->awb_stats_v32.blockResult[i].WpNo = stats->params.rawawb.ramdata_wpnum1[i/2];
+        if(i % 2 == 0) {
+            statsInt->awb_stats_v32.blockResult[i].WpNo = stats->params.rawawb.ramdata_wpnum0[i / 2];
+        } else {
+            statsInt->awb_stats_v32.blockResult[i].WpNo = stats->params.rawawb.ramdata_wpnum1[i / 2];
         }
+        statsInt->awb_stats_v32.sumBlkRGB.Rvalue += statsInt->awb_stats_v32.blockResult[i].Rvalue ;
+        statsInt->awb_stats_v32.sumBlkRGB.Gvalue += statsInt->awb_stats_v32.blockResult[i].Gvalue;
+        statsInt->awb_stats_v32.sumBlkRGB.Bvalue +=  statsInt->awb_stats_v32.blockResult[i].Bvalue;
     }
 #endif
     for(int i = 0; i < RK_AIQ_AWB_WP_HIST_BIN_NUM; i++) {
@@ -948,9 +1040,6 @@ XCamReturn RkAiqResourceTranslatorV32::translateAwbStats(const SmartPtr<VideoBuf
         }
     }
 
-    for(int i = 0; i < statsInt->awb_stats_v32.awb_cfg_effect_v32.lightNum; i++) {
-        statsInt->awb_stats_v32.WpNo2[i] =  stats->params.rawawb.sum[i].wp_num2;
-    }
     for(int i = 0; i < RK_AIQ_AWB_STAT_WP_RANGE_NUM_V201; i++) {
         statsInt->awb_stats_v32.excWpRangeResult[i].RgainValue = stats->params.rawawb.sum_exc[i].rgain_exc;
         statsInt->awb_stats_v32.excWpRangeResult[i].BgainValue = stats->params.rawawb.sum_exc[i].bgain_exc;
@@ -976,8 +1065,8 @@ XCamReturn RkAiqResourceTranslatorV32::translateAfStats(const SmartPtr<VideoBuff
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 #if defined(ISP_HW_V32)
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp32_isp_stat_buffer *stats;
     SmartPtr<RkAiqAfStats> statsInt = to->data();
 
@@ -1063,8 +1152,8 @@ XCamReturn RkAiqResourceTranslatorV32::translateAfStats(const SmartPtr<VideoBuff
 #endif
 
 #if defined(ISP_HW_V32_LITE)
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp32_lite_stat_buffer *stats_lite;
     SmartPtr<RkAiqAfStats> statsInt = to->data();
 
@@ -1146,7 +1235,7 @@ XCamReturn RkAiqResourceTranslatorV32::translateAdehazeStats(const SmartPtr<Vide
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
 #if defined(ISP_HW_V32)
-    const SmartPtr<Isp20StatsBuffer> buf = from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf = from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp32_isp_stat_buffer* stats;
     SmartPtr<RkAiqAdehazeStats> statsInt = to->data();
 
@@ -1172,7 +1261,7 @@ XCamReturn RkAiqResourceTranslatorV32::translateAdehazeStats(const SmartPtr<Vide
 #endif
 
 #if defined(ISP_HW_V32_LITE)
-    const SmartPtr<Isp20StatsBuffer> buf = from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf = from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp32_lite_stat_buffer* stats;
     SmartPtr<RkAiqAdehazeStats> statsInt = to->data();
 

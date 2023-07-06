@@ -953,8 +953,6 @@ FakeCamHwIsp21::~FakeCamHwIsp21()
 XCamReturn
 FakeCamHwIsp21::init(const char* sns_ent_name)
 {
-    xcam_mem_clear (_full_active_isp21_params);
-
     return FakeCamHwIsp20::init(sns_ent_name);
 }
 
@@ -1007,8 +1005,6 @@ FakeCamHwIsp3x::~FakeCamHwIsp3x()
 XCamReturn
 FakeCamHwIsp3x::init(const char* sns_ent_name)
 {
-    xcam_mem_clear (_full_active_isp3x_params);
-
     return FakeCamHwIsp20::init(sns_ent_name);
 }
 
@@ -1061,8 +1057,6 @@ FakeCamHwIsp32::~FakeCamHwIsp32()
 XCamReturn
 FakeCamHwIsp32::init(const char* sns_ent_name)
 {
-    xcam_mem_clear (_full_active_isp32_params);
-
     return FakeCamHwIsp20::init(sns_ent_name);
 }
 

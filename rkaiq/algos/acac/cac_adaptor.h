@@ -75,7 +75,8 @@ class CacAlgoAdaptor {
     bool enable_  = false;
     bool started_ = false;
     bool valid_   = true;
-
+    bool isReCal_ = true;
+    int  lastIso_ = 0;
     std::unique_ptr<LutBufferManager> lut_manger_;
     std::vector<std::unique_ptr<LutBuffer>> current_lut_ = {};
 

@@ -195,7 +195,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
     stExpInfo.blc_ob_predgain = 1.0;
     if(pAcnrProcParams != NULL) {
-        stExpInfo.blc_ob_predgain = pAcnrProcParams->stAblcV32_proc_res.isp_ob_predgain;
+        stExpInfo.blc_ob_predgain = pAcnrProcParams->stAblcV32_proc_res->isp_ob_predgain;
         if(stExpInfo.blc_ob_predgain != pAcnrCtx->stExpInfo.blc_ob_predgain) {
             pAcnrCtx->isReCalculate |= 1;
         }
@@ -316,10 +316,10 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         }
 
         Acnr_GetProcResult_V30(pAcnrCtx, &pAcnrProcResParams->stAcnrProcResult);
-        pAcnrProcResParams->stAcnrProcResult.isNeedUpdate = true;
+        outparams->cfg_update = true;
         LOGD_ANR("recalculate: %d delta_iso:%d \n ", pAcnrCtx->isReCalculate, DeltaISO);
     } else {
-        pAcnrProcResParams->stAcnrProcResult.isNeedUpdate = false;
+        outparams->cfg_update = false;
     }
 #endif
 

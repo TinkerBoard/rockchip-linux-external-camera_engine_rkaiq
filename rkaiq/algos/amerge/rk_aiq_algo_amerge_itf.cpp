@@ -152,18 +152,9 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
         } else {
             // get LongFrmMode
             XCamVideoBuffer* xCamAeProcRes = pAmergeParams->com.u.proc.res_comb->ae_proc_res;
-            RkAiqAlgoProcResAe* pAEProcRes = NULL;
-            if (xCamAeProcRes) {
-                pAEProcRes = (RkAiqAlgoProcResAe*)xCamAeProcRes->map(xCamAeProcRes);
-                pAmergeCtx->NextData.CtrlData.ExpoData.LongFrmMode =
-                    pAEProcRes->ae_proc_res_rk.LongFrmMode &&
-                    (pAmergeCtx->FrameNumber != LINEAR_NUM);
-            } else {
-                AecProcResult_t AeProcResult;
-                memset(&AeProcResult, 0x0, sizeof(AecProcResult_t));
-                LOGW_AMERGE("%s: Ae Proc result is null!!!\n", __FUNCTION__);
-                pAmergeCtx->NextData.CtrlData.ExpoData.LongFrmMode = false;
-            }
+            pAmergeCtx->NextData.CtrlData.ExpoData.LongFrmMode =
+                pAmergeParams->LongFrmMode &&
+                (pAmergeCtx->FrameNumber != LINEAR_NUM);
 
             // get ae pre res
             XCamVideoBuffer* xCamAePreRes = pAmergeParams->com.u.proc.res_comb->ae_pre_res;
@@ -282,7 +273,7 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
         // get bypass_expo_process
         if (pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS >= RATIO_DEFAULT &&
             pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM >= RATIO_DEFAULT) {
-            if (pAmergeCtx->FrameID <= 2)
+            if (pAmergeCtx->FrameID <= INIT_CALC_PARAMS_NUM)
                 bypass_expo_process = false;
             else if (pAmergeCtx->ifReCalcStAuto || pAmergeCtx->ifReCalcStManual)
                 bypass_expo_process = false;
@@ -290,21 +281,33 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
                      !pAmergeCtx->NextData.CtrlData.ExpoData.LongFrmMode)
                 bypass_expo_process = false;
 #if RKAIQ_HAVE_MERGE_V10
-            else if (pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLS !=
-                         pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS ||
-                     pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLM !=
-                         pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM)
+            else if ((pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLS -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS) > FLT_EPSILON ||
+                     (pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLS -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS) < -FLT_EPSILON ||
+                     (pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLM -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM) > FLT_EPSILON ||
+                     (pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLM -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM) < -FLT_EPSILON)
                 bypass_expo_process = false;
 #endif
 #if RKAIQ_HAVE_MERGE_V11 || RKAIQ_HAVE_MERGE_V12
-            else if (pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLS !=
-                         pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS ||
-                     pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLM !=
-                         pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM ||
-                     pAmergeCtx->CurrData.CtrlData.ExpoData.SGain !=
-                         pAmergeCtx->NextData.CtrlData.ExpoData.SGain ||
-                     pAmergeCtx->CurrData.CtrlData.ExpoData.MGain !=
-                         pAmergeCtx->NextData.CtrlData.ExpoData.MGain)
+            else if ((pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLS -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS) > FLT_EPSILON ||
+                     (pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLS -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.RatioLS) < -FLT_EPSILON ||
+                     (pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLM -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM) > FLT_EPSILON ||
+                     (pAmergeCtx->CurrData.CtrlData.ExpoData.RatioLM -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.RatioLM) < -FLT_EPSILON ||
+                     (pAmergeCtx->CurrData.CtrlData.ExpoData.SGain -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.SGain) > FLT_EPSILON ||
+                     (pAmergeCtx->CurrData.CtrlData.ExpoData.SGain -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.SGain) < -FLT_EPSILON ||
+                     (pAmergeCtx->CurrData.CtrlData.ExpoData.MGain -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.MGain) > FLT_EPSILON ||
+                     (pAmergeCtx->CurrData.CtrlData.ExpoData.MGain -
+                      pAmergeCtx->NextData.CtrlData.ExpoData.MGain) < -FLT_EPSILON)
                 bypass_expo_process = false;
 #endif
             else
@@ -318,28 +321,30 @@ static XCamReturn AmergeProcess(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* o
 
         // get tuning para process
         if (!bypass_tuning_process)
-            AmergeTuningProcessing(pAmergeCtx, &pAmergeProcRes->AmergeProcRes);
+            AmergeTuningProcessing(pAmergeCtx, pAmergeProcRes->AmergeProcRes);
 
         // get expo para process
-        if (!bypass_expo_process)
+        if (!bypass_expo_process || !bypass_tuning_process)
             AmergeExpoProcessing(pAmergeCtx, &pAmergeCtx->NextData.CtrlData.ExpoData,
-                                 &pAmergeProcRes->AmergeProcRes);
+                                 pAmergeProcRes->AmergeProcRes);
         }
 
-        pAmergeCtx->ifReCalcStAuto   = false;
-        pAmergeCtx->ifReCalcStManual = false;
-
+        if (pAmergeCtx->ifReCalcStAuto) pAmergeCtx->ifReCalcStAuto = false;
+        if (pAmergeCtx->ifReCalcStManual) pAmergeCtx->ifReCalcStManual = false;
+        outparams->cfg_update = !bypass_tuning_process || !bypass_expo_process;
         LOGD_AMERGE(
             "%s:/#####################################Amerge "
             "Over#####################################/ \n",
             __func__);
     } else {
+        // TODO: disable merge
+        if (inparams->u.proc.init)
+            outparams->cfg_update = true;
+        else
+            outparams->cfg_update = false;
         LOGD_AMERGE("%s FrameID:%d, It's in Linear Mode, Merge function bypass_tuning_process\n",
                     __FUNCTION__, pAmergeCtx->FrameID);
     }
-
-    // transfer proc res
-    pAmergeProcRes->AmergeProcRes.update = !bypass_tuning_process || !bypass_expo_process;
 
     LOG1_AMERGE("%s:Exit!\n", __FUNCTION__);
     return(XCAM_RETURN_NO_ERROR);

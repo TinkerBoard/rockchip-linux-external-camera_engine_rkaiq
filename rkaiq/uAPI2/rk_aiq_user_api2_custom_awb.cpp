@@ -156,6 +156,10 @@ static XCamReturn AwbDemoProcessing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCo
     RkAiqAlgoProcAwb* AwbProcParams = (RkAiqAlgoProcAwb*)inparams;
     RkAiqAlgoProcResAwb* AwbProcResParams = (RkAiqAlgoProcResAwb*)outparams;
     RkAiqAwbAlgoContext* algo_ctx = (RkAiqAwbAlgoContext*)inparams->ctx;
+
+    AwbProcResParams->awb_cfg_update = true;
+    AwbProcResParams->awb_gain_update= true;
+
     if (algo_ctx->isGroupMode) {
         LOGE_AWB("wrong awb mode");
         return ret;
@@ -163,21 +167,32 @@ static XCamReturn AwbDemoProcessing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCo
 
     if(!inparams->u.proc.init) { // init=ture, stats=null
         rk_aiq_customAwb_stats_t customStats;
-        if (!AwbProcParams->awbStatsBuf) {
-            LOGE_AWB("awb stats is null");
-            return(XCAM_RETURN_BYPASS);
-        }
-        RkAiqAwbStats *xAwbStats = (RkAiqAwbStats*)AwbProcParams->awbStatsBuf->map(AwbProcParams->awbStatsBuf);
-        if (!xAwbStats) {
-            LOGE_AWB("awb stats is null");
-            return(XCAM_RETURN_BYPASS);
-        }
 #if RKAIQ_HAVE_AWB_V21
-        _rkAwbStats2CustomAwbStats(&customStats, &xAwbStats->awb_stats_v3x);
-        WriteMeasureResult(xAwbStats->awb_stats_v3x,algo_ctx->log_level);
+    #if defined(ISP_HW_V30)
+        if (!AwbProcParams->awb_statsBuf_v3x) {
+            LOGE_AWB("awb stats is null");
+            return(XCAM_RETURN_BYPASS);
+        }
+    #else
+        if (!AwbProcParams->awb_statsBuf_v201) {
+            LOGE_AWB("awb stats is null");
+            return(XCAM_RETURN_BYPASS);
+        }
+    #endif
 #elif RKAIQ_HAVE_AWB_V32
-        _rkAwbStats2CustomAwbStats(&customStats, &xAwbStats->awb_stats_v32);
-        WriteMeasureResult(xAwbStats->awb_stats_v32,algo_ctx->log_level);
+        if (!AwbProcParams->awb_statsBuf_v32) {
+            LOGE_AWB("awb stats is null");
+            return(XCAM_RETURN_BYPASS);
+        }
+#endif
+#if RKAIQ_HAVE_AWB_V21
+        rk_aiq_isp_awb_stats_v3x_t* xAwbStats = AwbProcParams->awb_statsBuf_v3x;
+        _rkAwbStats2CustomAwbStats(&customStats, xAwbStats);
+        WriteMeasureResult(*xAwbStats,algo_ctx->log_level);
+#elif RKAIQ_HAVE_AWB_V32
+        rk_aiq_isp_awb_stats_v32_t* xAwbStats = AwbProcParams->awb_statsBuf_v32;
+        _rkAwbStats2CustomAwbStats(&customStats, xAwbStats);
+        WriteMeasureResult(*xAwbStats,algo_ctx->log_level);
 #endif
         if (algo_ctx->cbs.pfn_awb_run)
             algo_ctx->cbs.pfn_awb_run(algo_ctx->aiq_ctx,
@@ -199,11 +214,11 @@ static XCamReturn AwbDemoProcessing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCo
     _customAwbHw2rkAwbHwCfg(&algo_ctx->customRes, &algo_ctx->rkCfg.awbHwConfig);
     // gen part of proc result which is from customRes
     _customAwbRes2rkAwbRes(AwbProcResParams, &algo_ctx->customRes,algo_ctx->rkCfg.awbHwConfig);
-    WriteDataForThirdParty(AwbProcResParams->awb_hw1_para,algo_ctx->log_level);
+    WriteDataForThirdParty(*AwbProcResParams->awb_hw1_para,algo_ctx->log_level);
 #elif RKAIQ_HAVE_AWB_V32
 
 #if (RKAIQ_HAVE_BLC_V32)
-       AblcProc_V32_t *ablc_res_v32 = &AwbProcParams->ablcProcResV32;
+       AblcProc_V32_t *ablc_res_v32 = AwbProcParams->ablcProcResV32;
 #else
        AblcProc_V32_t *ablc_res_v32 = nullptr;
 #endif
@@ -266,15 +281,15 @@ static XCamReturn AwbDemoProcessing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCo
     awb_window_check(&algo_ctx->rkCfg,awbHwConfigFull->windowSet);
     _customAwbHw2rkAwbHwCfg(&algo_ctx->customRes, awbHwConfigFull);
     //update by other para
-    AwbProcResParams->wbgainApplyPosition =
+    AwbProcResParams->awb_gain_algo->applyPosition =
         ((rk_aiq_working_mode_t)working_mode == RK_AIQ_WORKING_MODE_NORMAL) ? IN_AWBGAIN1 :IN_AWBGAIN0;
     calcInputBitIs12Bit( &awbHwConfigFull->inputBitIs12Bit, awbHwConfigFull->frameChoose, working_mode,ablc_res_v32);
     calcInputRightShift212Bit(&awbHwConfigFull->inputShiftEnable,awbHwConfigFull->frameChoose, working_mode,ablc_res_v32);
-    ConfigWbgainBaseOnBlc(ablc_res_v32,AwbProcResParams->wbgainApplyPosition,&algo_ctx->customRes.awb_gain_algo);
-    ret = ConfigPreWbgain2(awbHwConfigFull,algo_ctx->customRes.awb_gain_algo,AwbProcResParams->wbgainApplyPosition);
+    ConfigWbgainBaseOnBlc(ablc_res_v32,AwbProcResParams->awb_gain_algo->applyPosition,&algo_ctx->customRes.awb_gain_algo);
+    ret = ConfigPreWbgain2(awbHwConfigFull,algo_ctx->customRes.awb_gain_algo,AwbProcResParams->awb_gain_algo->applyPosition);
     RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
     ret = ConfigBlc2(ablc_res_v32,algo_ctx->customRes.awb_gain_algo,
-        AwbProcResParams->wbgainApplyPosition,working_mode,awbHwConfigFull);
+        AwbProcResParams->awb_gain_algo->applyPosition,working_mode,awbHwConfigFull);
     RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
     ConfigOverexposureValue(ablc_res_v32,hdrmge_gain0_1,working_mode, awbHwConfigFull);
     if( awbHwConfigFull->frameChoose == CALIB_AWB_INPUT_DRC){
@@ -284,7 +299,7 @@ static XCamReturn AwbDemoProcessing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCo
     }
     // gen part of proc result which is from customRes
     _customAwbRes2rkAwbRes(AwbProcResParams, &algo_ctx->customRes,*awbHwConfigFull);
-    WriteDataForThirdParty(AwbProcResParams->awb_hw32_para,algo_ctx->log_level);
+    WriteDataForThirdParty(*AwbProcResParams->awb_hw32_para,algo_ctx->log_level);
 #endif
     LOG1_AWB_SUBM(0xff, "%s EXIT", __func__);
     return XCAM_RETURN_NO_ERROR;

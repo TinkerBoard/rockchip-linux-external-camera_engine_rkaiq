@@ -32,10 +32,18 @@
 
 template<class T>
 struct rk_aiq_isp_params_t : public XCam::BufferData {
+    /* should be the first member */
+    union {
+        bool is_update;
+        char aligned[4]; // for aligned to 4
+    };
     T   result;
-    uint32_t update_mask;
-    uint32_t module_enable_mask;
     uint32_t frame_id;
+    uint32_t sync_flag;
+    rk_aiq_isp_params_t() {
+        is_update = false;
+        sync_flag = (uint32_t)(-2); // initial value should be different with handler's
+    }
 };
 
 //common

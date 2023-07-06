@@ -121,10 +121,8 @@ XCamReturn RkAiqAmdHandleInt::processing() {
     MediaBuffer_t* mbuf = amd_proc_res_int->amd_proc_res.st_ratio;
     if (mbuf) {
         MotionBufMetaData_t* metadata = (MotionBufMetaData_t*)mbuf->pMetaData;
-        SmartPtr<BufferProxy> msg_data = new BufferProxy(mProcResShared);
-        msg_data->set_sequence(shared->frameId);
-        SmartPtr<XCamMessage> msg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_AMD_PROC_RES_OK, metadata->frame_id, msg_data);
+        mProcResShared->set_sequence(shared->frameId);
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_AMD_PROC_RES_OK, metadata->frame_id, mProcResShared);
         mAiqCore->post_message(msg);
     }
 

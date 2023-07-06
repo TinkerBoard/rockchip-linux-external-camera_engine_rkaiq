@@ -34,8 +34,8 @@ RkAiqResourceTranslatorV21::translateAwbStats (const SmartPtr<VideoBuffer> &from
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 #if defined(ISP_HW_V21)
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp_isp21_stat_buffer *stats;
     SmartPtr<RkAiqAwbStats> statsInt = to->data();
 
@@ -114,8 +114,8 @@ XCamReturn
 RkAiqResourceTranslatorV21::translateAdehazeStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAdehazeStatsProxy> &to)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp_isp21_stat_buffer *stats;
     SmartPtr<RkAiqAdehazeStats> statsInt = to->data();
 

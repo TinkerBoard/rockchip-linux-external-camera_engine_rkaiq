@@ -728,18 +728,6 @@ XCamReturn rk_aiq_uapi2_resetZoom(const rk_aiq_sys_ctx_t* ctx);
 XCamReturn rk_aiq_uapi2_setAngleZ(const rk_aiq_sys_ctx_t* ctx, float angleZ);
 
 /*
-*****************************
-*
-* Desc: get/set CustomAf Result
-* Argument:
-*
-*
-*****************************
-*/
-XCamReturn rk_aiq_uapi2_getCustomAfRes(const rk_aiq_sys_ctx_t* ctx, rk_tool_customAf_res_t *attr);
-XCamReturn rk_aiq_uapi2_setCustomAfRes(const rk_aiq_sys_ctx_t* ctx, rk_tool_customAf_res_t *attr);
-
-/*
 **********************************************************
 * Color Correction
 **********************************************************

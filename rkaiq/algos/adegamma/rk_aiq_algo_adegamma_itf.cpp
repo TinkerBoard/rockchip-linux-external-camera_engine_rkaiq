@@ -63,7 +63,6 @@ prepare(RkAiqAlgoCom* params)
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     AdegammaHandle_t * AdegammaHandle = (AdegammaHandle_t *)params->ctx;
     RkAiqAlgoConfigAdegamma* pCfgParam = (RkAiqAlgoConfigAdegamma*)params;
-    rk_aiq_degamma_cfg_t *adegamma_config = &AdegammaHandle->adegamma_config;
     AdegammaHandle->working_mode = pCfgParam->com.u.prepare.working_mode;
     AdegammaHandle->prepare_type = pCfgParam->com.u.prepare.conf_type;
 
@@ -74,12 +73,14 @@ prepare(RkAiqAlgoCom* params)
         LOGD_ADEGAMMA("%s: Adegamma Reload Para!!!\n", __FUNCTION__);
     }
 
-	if (pCfgParam->com.u.proc.gray_mode)
+    if (pCfgParam->com.u.proc.gray_mode)
         AdegammaHandle->Scene_mode = DEGAMMA_OUT_NIGHT;
     else if (DEGAMMA_OUT_NORMAL == AdegammaHandle->working_mode)
         AdegammaHandle->Scene_mode = DEGAMMA_OUT_NORMAL;
     else
         AdegammaHandle->Scene_mode = DEGAMMA_OUT_HDR;
+
+    AdegammaHandle->isReCal_ = true;
 
     LOG1_ADEGAMMA("EXIT: %s \n", __func__);
     return ret;
@@ -93,7 +94,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     AdegammaHandle_t * AdegammaHandle = (AdegammaHandle_t *)inparams->ctx;
     RkAiqAlgoProcResAdegamma* procResPara = (RkAiqAlgoProcResAdegamma*)outparams;
-    AdegammaProcRes_t* AdegammaProcRes = (AdegammaProcRes_t*)&procResPara->adegamma_proc_res;
+    AdegammaProcRes_t* AdegammaProcRes = procResPara->adegamma_proc_res;
 
     if (inparams->u.proc.gray_mode)
         AdegammaHandle->Scene_mode = DEGAMMA_OUT_NIGHT;
@@ -102,9 +103,13 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     else
         AdegammaHandle->Scene_mode = DEGAMMA_OUT_HDR;
 
-    AdegammaProcessing(AdegammaHandle);
-    //set proc res
-    AdegammaSetProcRes(AdegammaProcRes, &AdegammaHandle->adegamma_config);
+    if (AdegammaHandle->isReCal_) {
+        AdegammaProcessing(AdegammaHandle, AdegammaProcRes);
+        outparams->cfg_update = true;
+        AdegammaHandle->isReCal_ = false;
+    } else {
+        outparams->cfg_update = false;
+    }
 
     LOG1_ADEGAMMA("EXIT: %s \n", __func__);
     return ret;

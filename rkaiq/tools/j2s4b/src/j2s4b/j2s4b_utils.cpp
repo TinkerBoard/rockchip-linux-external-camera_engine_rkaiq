@@ -19,7 +19,7 @@
 
 using namespace RkCam;
 
-#define J2S_POOL_SIZE (1024 * 1024)
+#define J2S_POOL_SIZE (2048 * 1024)
 
 static int aligned_size(int ori_size, int alig) {
   return (ori_size + (alig - 1)) & ~(alig - 1);
@@ -66,6 +66,10 @@ void *j2s_alloc_data(j2s_ctx *ctx, size_t size, size_t* real_size) {
     return NULL;
   }
 
+  if (j2s_pool->used + size >= J2S_POOL_SIZE) {
+      ERR("Error: j2s poll over flow!!\n");
+      return NULL;
+  }
   if (!j2s_pool->data) {
     j2s_pool->data = (uint8_t *)malloc(J2S_POOL_SIZE);
     ptr = j2s_pool->data;

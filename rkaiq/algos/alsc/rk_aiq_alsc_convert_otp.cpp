@@ -22,9 +22,13 @@ void convertLscTableParameter(resolution_t *cur_res, alsc_otp_grad_t *otpGrad,
             srcLscWidth, srcLscHeight, dstWidth,
             dstHeight, bayer);
 
-    if ((dstWidth > srcLscWidth)&&(dstHeight > srcLscHeight))
+    if (dstWidth == srcLscWidth && dstHeight == srcLscHeight) {
+        return;
+    }
+
+    if (dstWidth > srcLscWidth && dstHeight > srcLscHeight)
     {
-        if (((dstWidth / 2) < srcLscWidth) && ((dstHeight / 2) < srcLscHeight))
+        if ((dstWidth / 2 <= srcLscWidth) && (dstHeight / 2 <= srcLscHeight))
         {
             dstWidth = dstWidth / 2;
             dstHeight = dstHeight / 2;
@@ -32,6 +36,12 @@ void convertLscTableParameter(resolution_t *cur_res, alsc_otp_grad_t *otpGrad,
             LOGE_ALSC("Failed to handle: src %dx%d, dst %dx%x, return!\n",
                     srcLscWidth, srcLscHeight, dstWidth, dstHeight);
             return;
+        }
+    } else if (dstWidth < srcLscWidth && dstHeight < srcLscHeight) {
+        if ((dstWidth <= srcLscWidth / 2) && (dstHeight <= srcLscHeight / 2))
+        {
+            srcLscWidth = srcLscWidth / 2;
+            srcLscHeight = srcLscHeight / 2;
         }
     }
 

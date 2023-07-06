@@ -102,8 +102,6 @@ typedef struct AblcProc_s {
     float blc1_gr;
     float blc1_gb;
     float blc1_b;
-
-    bool isNeedUpdate;
 } AblcProc_t;
 
 

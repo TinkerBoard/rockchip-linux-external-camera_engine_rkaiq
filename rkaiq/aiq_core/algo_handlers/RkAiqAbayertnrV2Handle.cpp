@@ -269,6 +269,8 @@ XCamReturn RkAiqAbayertnrV2HandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    abayertnr_proc_res_int->stAbayertnrProcResult.st3DFix = &shared->fullParams->mTnrV3xParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "aynr handle processing failed");
@@ -342,12 +344,33 @@ XCamReturn RkAiqAbayertnrV2HandleInt::genIspResult(RkAiqFullParams* params,
         } else {
             tnr_param->frame_id = shared->frameId;
         }
-        memcpy(&tnr_param->result, &atnr_rk->stAbayertnrProcResult.st3DFix,
-               sizeof(RK_Bayertnr_Fix_V2_t));
+
+        if (atnr_rk->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            tnr_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mTnrV3xParams = params->mTnrV3xParams;
+            tnr_param->is_update = true;
+            LOGD_ANR("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != tnr_param->sync_flag) {
+            tnr_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mTnrV3xParams.ptr()) {
+                tnr_param->result = cur_params->mTnrV3xParams->data()->result;
+                tnr_param->is_update = true;
+            } else {
+                LOGE_ANR("no latest params !");
+                tnr_param->is_update = false;
+            }
+            LOGD_ANR("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            tnr_param->is_update = false;
+            LOGD_ANR("[%d] params needn't update", shared->frameId);
+        }
         LOGD_ANR("oyyf: %s:%d output isp param end \n", __FUNCTION__, __LINE__);
     }
-
-    cur_params->mTnrV3xParams = params->mTnrV3xParams;
 
     EXIT_ANALYZER_FUNCTION();
 

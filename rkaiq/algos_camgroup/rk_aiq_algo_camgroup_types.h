@@ -24,19 +24,21 @@
 #include "rk_aiq_algo_types.h"
 #include "RkAiqCalibDbV2Helper.h"
 
+#define IS_UPDATE_MEM(result_ptr, result_offset) \
+    *((bool*)((char*)(result_ptr) - (result_offset)))
+
 typedef struct rk_aiq_singlecam_3a_result_s {
     uint8_t _camId;
     uint32_t _frameId;
-
     // ae params
     struct {
-        RKAiqAecExpInfo_t** exp_tbl;
+        RKAiqAecExpInfo_t* exp_tbl;
         int* exp_tbl_size;
-        RKAiqExpI2cParam_t** exp_i2c_params;
+        RKAiqExpI2cParam_t* exp_i2c_params;
         rk_aiq_ae_meas_params_t* _aeMeasParams;
         rk_aiq_hist_meas_params_t* _aeHistMeasParams;
         XCamVideoBuffer* _aecStats;
-        XCamVideoBuffer* _aeProcRes;
+        RkAiqAlgoProcResAeShared_t _aeProcRes;
         XCamVideoBuffer* _aePreRes;
         RKAiqAecExpInfo_t _effAecExpInfo;
         bool _bEffAecExpValid;
@@ -182,6 +184,7 @@ typedef struct _RkAiqAlgoCamGroupProcIn {
     bool _gray_mode;
     int working_mode;
     bool _is_bw_sensor;
+    size_t _offset_is_update;
 } RkAiqAlgoCamGroupProcIn;
 
 #endif

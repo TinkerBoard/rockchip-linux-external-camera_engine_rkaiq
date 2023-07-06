@@ -120,6 +120,8 @@ XCamReturn RkAiqAfdHandleInt::preProcess() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    afd_pre_int->aeProcRes = &mAeProcRes;
+
     ret = RkAiqHandle::preProcess();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "afd handle preProcess failed");
@@ -231,12 +233,7 @@ XCamReturn RkAiqAfdHandleInt::genIspResult(RkAiqFullParams* params,
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
     RkAiqAlgoProcResAfd* afd_com = (RkAiqAlgoProcResAfd*)mProcOutParam;
     rk_aiq_isp_afd_params_t* afd_param = params->mAfdParams->data().ptr();
-    XCamVideoBuffer* xCamAeProcRes = shared->res_comb.ae_proc_res;
-    RkAiqAlgoProcResAe* pAEProcRes = NULL;
-    if (xCamAeProcRes) {
-        pAEProcRes = (RkAiqAlgoProcResAe*)xCamAeProcRes->map(xCamAeProcRes);
-        afd_param->result.enable = pAEProcRes->ae_proc_res_rk.IsAutoAfd;
-    }
+    afd_param->result.enable = mAeProcRes.IsAutoAfd;
     getScaleRatio(&afd_param->result.ratio);
     cur_params->mAfdParams = params->mAfdParams;
     if (!afd_com) {

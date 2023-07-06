@@ -67,24 +67,35 @@ XCamReturn AdegammaPreProc(AdegammaHandle_t* para)
 
 }
 
-void AdegammaAutoProc(rk_aiq_degamma_cfg_t* pConfig, CalibDbV2_Adegmma_t* pAtuoPara)
+void AdegammaAutoProc(CalibDbV2_Adegmma_t* pAtuoPara, AdegammaProcRes_t* AdegammaProcRes)
 {
     LOG1_ADEGAMMA("ENTER: %s \n", __func__);
 
-    pConfig->degamma_en = pAtuoPara->DegammaTuningPara.degamma_en;
+    AdegammaProcRes->degamma_en = pAtuoPara->DegammaTuningPara.degamma_en;
 
     //get X_axis
     int tmp[DEGAMMA_CRUVE_X_KNOTS];
     for(int i = 0; i < DEGAMMA_CRUVE_X_KNOTS; i++) {
         tmp[i] = pAtuoPara->DegammaTuningPara.X_axis[i + 1] - pAtuoPara->DegammaTuningPara.X_axis[i];
         tmp[i] = log(tmp[i]) / log(2) - DEGAMMA_CRUVE_X_NORMALIZE_FACTOR;
-        pConfig->degamma_X[i] = tmp[i];
+        tmp[i] = DEGAMMA_LIMIT_VALUE(tmp[i], DEGAMMA_CRUVE_X_MAX, DEGAMMA_CRUVE_X_MIN);
     }
 
+    int tmp0 = 0, tmp1 = 0;
+    for(int i = 0; i < 8; i++) {
+        tmp0 |= ((tmp[i]) << (4 * i));
+        tmp1 |= ((tmp[i + 8]) << (4 * i));
+    }
+    AdegammaProcRes->degamma_X_d0 = tmp0;
+    AdegammaProcRes->degamma_X_d1 = tmp1;
+
     for(int i = 0; i < DEGAMMA_CRUVE_Y_KNOTS; i++) {
-        pConfig->degamma_tableR[i] = pAtuoPara->DegammaTuningPara.curve_R[i];
-        pConfig->degamma_tableG[i] = pAtuoPara->DegammaTuningPara.curve_G[i];
-        pConfig->degamma_tableB[i] = pAtuoPara->DegammaTuningPara.curve_B[i];
+        AdegammaProcRes->degamma_tableR[i] =
+            DEGAMMA_LIMIT_VALUE(pAtuoPara->DegammaTuningPara.curve_R[i], DEGAMMA_CRUVE_Y_MAX, DEGAMMA_CRUVE_Y_MIN);
+        AdegammaProcRes->degamma_tableG[i] =
+            DEGAMMA_LIMIT_VALUE(pAtuoPara->DegammaTuningPara.curve_G[i], DEGAMMA_CRUVE_Y_MAX, DEGAMMA_CRUVE_Y_MIN);
+        AdegammaProcRes->degamma_tableB[i] =
+            DEGAMMA_LIMIT_VALUE(pAtuoPara->DegammaTuningPara.curve_B[i], DEGAMMA_CRUVE_Y_MAX, DEGAMMA_CRUVE_Y_MIN);
     }
 
     LOGD_ADEGAMMA("%s X_axis:%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", __func__, pAtuoPara->DegammaTuningPara.X_axis[0], pAtuoPara->DegammaTuningPara.X_axis[1],
@@ -96,96 +107,62 @@ void AdegammaAutoProc(rk_aiq_degamma_cfg_t* pConfig, CalibDbV2_Adegmma_t* pAtuoP
     LOG1_ADEGAMMA("EXIT: %s \n", __func__);
 }
 
-void AdegammaApiManualProc(AdegammaHandle_t* para)
+void AdegammaApiManualProc(AdegammaHandle_t* para, AdegammaProcRes_t* AdegammaProcRes)
 {
     LOG1_ADEGAMMA("ENTER: %s \n", __func__);
 
-    para->adegamma_config.degamma_en = para->adegammaAttr.stManual.en ;
+    AdegammaProcRes->degamma_en = para->adegammaAttr.stManual.en ;
 
     //get X_axis
     int tmp[DEGAMMA_CRUVE_X_KNOTS];
     for(int i = 0; i < DEGAMMA_CRUVE_X_KNOTS; i++) {
         tmp[i] = para->adegammaAttr.stManual.X_axis[i + 1] - para->adegammaAttr.stManual.X_axis[i];
         tmp[i] = log(tmp[i]) / log(2) - DEGAMMA_CRUVE_X_NORMALIZE_FACTOR;
-        para->adegamma_config.degamma_X[i] = tmp[i];
+        tmp[i] = DEGAMMA_LIMIT_VALUE(tmp[i], DEGAMMA_CRUVE_X_MAX, DEGAMMA_CRUVE_X_MIN);
     }
-
-    for(int i = 0; i < DEGAMMA_CRUVE_Y_KNOTS; i++) {
-        para->adegamma_config.degamma_tableR[i] = para->adegammaAttr.stManual.curve_R[i];
-        para->adegamma_config.degamma_tableG[i] = para->adegammaAttr.stManual.curve_G[i];
-        para->adegamma_config.degamma_tableB[i] = para->adegammaAttr.stManual.curve_B[i];
-    }
-
-    LOG1_ADEGAMMA("EXIT: %s \n", __func__);
-}
-
-void AdegammaProcessing(AdegammaHandle_t* para)
-{
-    LOG1_ADEGAMMA("ENTER: %s \n", __func__);
-    LOGD_ADEGAMMA("===============================Adegamma Start===============================\n", __func__);
-
-
-    if(para->adegammaAttr.mode == RK_AIQ_DEGAMMA_MODE_OFF) { //run iq degamma
-        LOGD_ADEGAMMA(" %s: Adegamma api off !!!\n", __func__);
-        AdegammaAutoProc(&para->adegamma_config, para->pCalibDb);
-    }
-    else if(para->adegammaAttr.mode == RK_AIQ_DEGAMMA_MODE_MANUAL) { //run manual degamma, for client api
-        LOGD_ADEGAMMA(" %s: Adegamma api on, Mode is Manual\n", __func__);
-        AdegammaApiManualProc( para);
-    }
-    else if(para->adegammaAttr.mode == RK_AIQ_DEGAMMA_MODE_TOOL) { //run tool degamma,for tool
-        LOGD_ADEGAMMA(" %s: Adegamma api on, Mode is Tool\n", __func__);
-        AdegammaAutoProc(&para->adegamma_config, &para->adegammaAttr.stTool);
-    }
-    else
-        LOGE_ADEGAMMA(" %s: Wrong degamma mode !!!\n", __func__);
-
-    //limit para
-    for(int i = 0; i < DEGAMMA_CRUVE_X_KNOTS; i++)
-        para->adegamma_config.degamma_X[i] =
-            DEGAMMA_LIMIT_VALUE(para->adegamma_config.degamma_X[i], DEGAMMA_CRUVE_X_MAX, DEGAMMA_CRUVE_X_MIN);
-    for(int i = 0; i < DEGAMMA_CRUVE_Y_KNOTS; i++) {
-        para->adegamma_config.degamma_tableR[i] =
-            DEGAMMA_LIMIT_VALUE(para->adegamma_config.degamma_tableR[i], DEGAMMA_CRUVE_Y_MAX, DEGAMMA_CRUVE_Y_MIN);
-        para->adegamma_config.degamma_tableG[i] =
-            DEGAMMA_LIMIT_VALUE(para->adegamma_config.degamma_tableG[i], DEGAMMA_CRUVE_Y_MAX, DEGAMMA_CRUVE_Y_MIN);
-        para->adegamma_config.degamma_tableB[i] =
-            DEGAMMA_LIMIT_VALUE(para->adegamma_config.degamma_tableB[i], DEGAMMA_CRUVE_Y_MAX, DEGAMMA_CRUVE_Y_MIN);
-    }
-
-    LOGD_ADEGAMMA(" %s: gamma_en:%d\n", __func__, para->adegamma_config.degamma_en);
-    LOGD_ADEGAMMA("%s degamma_X:%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", __func__, para->adegamma_config.degamma_X[0], para->adegamma_config.degamma_X[1],
-                  para->adegamma_config.degamma_X[2], para->adegamma_config.degamma_X[3], para->adegamma_config.degamma_X[4], para->adegamma_config.degamma_X[5],
-                  para->adegamma_config.degamma_X[6], para->adegamma_config.degamma_X[7], para->adegamma_config.degamma_X[8], para->adegamma_config.degamma_X[9],
-                  para->adegamma_config.degamma_X[10], para->adegamma_config.degamma_X[11], para->adegamma_config.degamma_X[12], para->adegamma_config.degamma_X[13],
-                  para->adegamma_config.degamma_X[14], para->adegamma_config.degamma_X[15]);
-
-    //transfer scene mode to degamma api
-    para->adegammaAttr.Scene_mode = para->Scene_mode;
-
-    LOG1_ADEGAMMA("EXIT: %s \n", __func__);
-}
-
-void AdegammaSetProcRes(AdegammaProcRes_t* AdegammaProcRes, rk_aiq_degamma_cfg_t* adegamma_config)
-{
-    LOG1_ADEGAMMA("ENTER: %s \n", __func__);
-
-    AdegammaProcRes->degamma_en = adegamma_config->degamma_en;
 
     int tmp0 = 0, tmp1 = 0;
     for(int i = 0; i < 8; i++) {
-        tmp0 |= ((adegamma_config->degamma_X[i]) << (4 * i));
-        tmp1 |= ((adegamma_config->degamma_X[i + 8]) << (4 * i));
+        tmp0 |= ((tmp[i]) << (4 * i));
+        tmp1 |= ((tmp[i + 8]) << (4 * i));
     }
     AdegammaProcRes->degamma_X_d0 = tmp0;
     AdegammaProcRes->degamma_X_d1 = tmp1;
 
-
     for(int i = 0; i < DEGAMMA_CRUVE_Y_KNOTS; i++) {
-        AdegammaProcRes->degamma_tableR[i] = adegamma_config->degamma_tableR[i];
-        AdegammaProcRes->degamma_tableG[i] = adegamma_config->degamma_tableG[i];
-        AdegammaProcRes->degamma_tableB[i] = adegamma_config->degamma_tableB[i];
+        AdegammaProcRes->degamma_tableR[i] =
+            DEGAMMA_LIMIT_VALUE(para->adegammaAttr.stManual.curve_R[i], DEGAMMA_CRUVE_Y_MAX, DEGAMMA_CRUVE_Y_MIN);
+        AdegammaProcRes->degamma_tableG[i] =
+            DEGAMMA_LIMIT_VALUE(para->adegammaAttr.stManual.curve_G[i], DEGAMMA_CRUVE_Y_MAX, DEGAMMA_CRUVE_Y_MIN);
+        AdegammaProcRes->degamma_tableB[i] =
+            DEGAMMA_LIMIT_VALUE(para->adegammaAttr.stManual.curve_B[i], DEGAMMA_CRUVE_Y_MAX, DEGAMMA_CRUVE_Y_MIN);
     }
+
+    LOG1_ADEGAMMA("EXIT: %s \n", __func__);
+}
+
+void AdegammaProcessing(AdegammaHandle_t* para, AdegammaProcRes_t* AdegammaProcRes)
+{
+    LOG1_ADEGAMMA("ENTER: %s \n", __func__);
+    LOGD_ADEGAMMA("===============================Adegamma Start===============================\n", __func__);
+
+    if(para->adegammaAttr.mode == RK_AIQ_DEGAMMA_MODE_OFF) { //run iq degamma
+        LOGD_ADEGAMMA(" %s: Adegamma api off !!!\n", __func__);
+        AdegammaAutoProc(para->pCalibDb, AdegammaProcRes);
+    }
+    else if(para->adegammaAttr.mode == RK_AIQ_DEGAMMA_MODE_MANUAL) { //run manual degamma, for client api
+        LOGD_ADEGAMMA(" %s: Adegamma api on, Mode is Manual\n", __func__);
+        AdegammaApiManualProc(para, AdegammaProcRes);
+    }
+    else if(para->adegammaAttr.mode == RK_AIQ_DEGAMMA_MODE_TOOL) { //run tool degamma,for tool
+        LOGD_ADEGAMMA(" %s: Adegamma api on, Mode is Tool\n", __func__);
+        AdegammaAutoProc(&para->adegammaAttr.stTool, AdegammaProcRes);
+    }
+    else
+        LOGE_ADEGAMMA(" %s: Wrong degamma mode !!!\n", __func__);
+
+    //transfer scene mode to degamma api
+    para->adegammaAttr.Scene_mode = para->Scene_mode;
 
     LOGD_ADEGAMMA("%s DEGAMMA_DX0:%d GAMMA_DX1:%d\n", __func__, AdegammaProcRes->degamma_X_d0, AdegammaProcRes->degamma_X_d1);
     LOGD_ADEGAMMA("%s DEGAMMA_R_Y:%d %d %d %d %d %d %d %d\n", __func__, AdegammaProcRes->degamma_tableR[0], AdegammaProcRes->degamma_tableR[1],

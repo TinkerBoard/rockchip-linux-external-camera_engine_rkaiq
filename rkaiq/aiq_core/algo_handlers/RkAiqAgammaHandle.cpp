@@ -256,6 +256,8 @@ XCamReturn RkAiqAgammaHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    agamma_proc_res_int->GammaProcRes = &shared->fullParams->mAgammaParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "agamma handle processing failed");
@@ -329,10 +331,32 @@ XCamReturn RkAiqAgammaHandleInt::genIspResult(RkAiqFullParams* params,
             agamma_param->frame_id = shared->frameId;
         }
 
-        agamma_param->result = agamma_int->GammaProcRes;
-    }
+        if (agamma_com->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            agamma_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mAgammaParams = params->mAgammaParams;
+            agamma_param->is_update = true;
+            LOGD_AGAMMA("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != agamma_param->sync_flag) {
+            agamma_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mAgammaParams.ptr()) {
+                agamma_param->result = cur_params->mAgammaParams->data()->result;
+                agamma_param->is_update = true;
+            } else {
+                LOGE_AGAMMA("no latest params !");
+                agamma_param->is_update = false;
+            }
+            LOGD_AGAMMA("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            agamma_param->is_update = false;
+            LOGD_AGAMMA("[%d] params needn't update", shared->frameId);
+        }
 
-    cur_params->mAgammaParams = params->mAgammaParams;
+    }
 
     EXIT_ANALYZER_FUNCTION();
 

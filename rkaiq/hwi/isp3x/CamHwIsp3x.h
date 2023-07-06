@@ -35,14 +35,8 @@ public:
     virtual XCamReturn init(const char* sns_ent_name);
     virtual XCamReturn stop();
     XCamReturn setIspParamsSync();
-protected:
-    virtual XCamReturn setIspConfig(cam3aResultList* result_list = NULL);
-private:
-    void gen_full_isp_params(const struct isp3x_isp_params_cfg* update_params,
-                             struct isp3x_isp_params_cfg* full_params,
-                             uint64_t* module_en_update_partial,
-                             uint64_t* module_cfg_update_partial);
-    struct isp3x_isp_params_cfg _full_active_isp3x_params;
+    virtual void updateEffParams(void* params, void* ori_params);
+    virtual bool processTb(void* params);
 };
 
 }

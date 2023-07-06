@@ -27,7 +27,10 @@ public:
     explicit RkAiqCustomAeHandle(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqAeHandleInt (des, aiqCore) {};
     virtual ~RkAiqCustomAeHandle() {
+        deInit();
     };
+    virtual void init();
+    virtual void deInit();
     virtual XCamReturn updateConfig(bool needSync);
     virtual XCamReturn preProcess();
     virtual XCamReturn processing();

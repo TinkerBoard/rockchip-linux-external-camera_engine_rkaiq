@@ -327,6 +327,13 @@ XCamReturn RkAiqAdebayerHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+#if RKAIQ_HAVE_DEBAYER_V1
+    adebayer_proc_res_int->debayerResV1.config = &shared->fullParams->mDebayerParams->data()->result;
+#endif
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
+    adebayer_proc_res_int->debayerResV2.config = &shared->fullParams->mDebayerV32Params->data()->result;
+#endif
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "adebayer handle processing failed");
@@ -403,22 +410,48 @@ XCamReturn RkAiqAdebayerHandleInt::genIspResult(RkAiqFullParams* params,
         } else {
             debayer_param->frame_id = shared->frameId;
         }
+
+        if (adebayer_com->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            debayer_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
 #if RKAIQ_HAVE_DEBAYER_V1
-        memcpy(&debayer_param->result, &adebayer_rk->debayerResV1.config, sizeof(AdebayerHwConfigV1_t));
+            cur_params->mDebayerParams = params->mDebayerParams;
 #endif
 #if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
-        memcpy(&debayer_param->result, &adebayer_rk->debayerResV2.config, sizeof(AdebayerHwConfigV2_t));
+            cur_params->mDebayerV32Params = params->mDebayerV32Params;
 #endif
-
+            debayer_param->is_update = true;
+            LOGD_ADEBAYER("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != debayer_param->sync_flag) {
+            debayer_param->sync_flag = mSyncFlag;
+            // copy from latest result
+#if RKAIQ_HAVE_DEBAYER_V1
+            if (cur_params->mDebayerParams.ptr()) {
+                debayer_param->result = cur_params->mDebayerParams->data()->result;
+                debayer_param->is_update = true;
+            } else {
+                LOGE_ADEBAYER("no latest params !");
+                debayer_param->is_update = false;
+            }
+#endif
+#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
+            if (cur_params->mDebayerV32Params.ptr()) {
+                debayer_param->result = cur_params->mDebayerV32Params->data()->result;
+                debayer_param->is_update = true;
+            } else {
+                LOGE_ADEBAYER("no latest params !");
+                debayer_param->is_update = false;
+            }
+#endif
+            LOGD_ADEBAYER("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            debayer_param->is_update = false;
+            LOGD_ADEBAYER("[%d] params needn't update", shared->frameId);
+        }
     }
-
-#if RKAIQ_HAVE_DEBAYER_V1
-    cur_params->mDebayerParams = params->mDebayerParams;
-#endif
-#if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
-    cur_params->mDebayerV32Params = params->mDebayerV32Params;
-#endif
-
 
     EXIT_ANALYZER_FUNCTION();
 

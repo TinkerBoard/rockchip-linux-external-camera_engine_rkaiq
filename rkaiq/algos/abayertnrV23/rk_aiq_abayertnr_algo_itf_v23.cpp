@@ -201,8 +201,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     stExpInfo.blc_ob_predgain = 1.0f;
     if(pAbayertnrProcParams != NULL) {
         LOGD_ANR(" predgain:%f\n",
-                 pAbayertnrProcParams->stAblcV32_proc_res.isp_ob_predgain);
-        stExpInfo.blc_ob_predgain = pAbayertnrProcParams->stAblcV32_proc_res.isp_ob_predgain;
+                 pAbayertnrProcParams->stAblcV32_proc_res->isp_ob_predgain);
+        stExpInfo.blc_ob_predgain = pAbayertnrProcParams->stAblcV32_proc_res->isp_ob_predgain;
         if(stExpInfo.blc_ob_predgain != pAbayertnrCtx->stExpInfo.blc_ob_predgain) {
             pAbayertnrCtx->isReCalculate |= 1;
         }
@@ -324,9 +324,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
         LOGD_ANR("recalculate: %d delta_iso:%d \n ", pAbayertnrCtx->isReCalculate, delta_iso);
 
-        pAbayertnrProcResParams->stAbayertnrProcResult.isNeedUpdate = true;
+        outparams->cfg_update = true;
     } else {
-        pAbayertnrProcResParams->stAbayertnrProcResult.isNeedUpdate = false;
+        outparams->cfg_update = false;
     }
 
     pAbayertnrCtx->isReCalculate = 0;

@@ -169,13 +169,10 @@ typedef struct Aynr_Auto_Attr_V3_s
 typedef struct Aynr_ProcResult_V3_s {
 
     //for sw simultaion
-    RK_YNR_Params_V3_Select_t stSelect;
+    RK_YNR_Params_V3_Select_t* stSelect;
 
     //for hw register
-    RK_YNR_Fix_V3_t stFix;
-
-    bool isNeedUpdate;
-
+    RK_YNR_Fix_V3_t* stFix;
 } Aynr_ProcResult_V3_t;
 
 

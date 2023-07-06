@@ -211,7 +211,7 @@ public:
     uint32_t sensor_output_width;
     uint32_t sensor_output_height;
 protected:
-    XCamReturn applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results);
+    XCamReturn applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results, bool ignoreIsUpdate = false);
     XCamReturn swWorkingModeDyn(rk_aiq_working_mode_t mode);
 private:
     enum aiq_state_e {

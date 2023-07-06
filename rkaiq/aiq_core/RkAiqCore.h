@@ -82,12 +82,13 @@ public:
         :  XCamMessage(msg_id, id)
         , msg(message)
     {};
+    RkAiqCoreMsg() {};
     virtual ~RkAiqCoreMsg() {};
 
     SmartPtr<StandardMsg> msg;
 
 private:
-    XCAM_DEAD_COPY (RkAiqCoreMsg);
+    //XCAM_DEAD_COPY (RkAiqCoreMsg);
 };
 
 typedef RkAiqCoreMsg<VideoBuffer>                       RkAiqCoreVdBufMsg;
@@ -379,10 +380,10 @@ public:
         RKAiqAecExpInfo_t curExp;
         RKAiqAecExpInfo_t nxtExp;
         rk_aiq_amd_params_t amdResParams;
-        XCamVideoBuffer* aecStatsBuf;
-        XCamVideoBuffer* awbStatsBuf;
-        XCamVideoBuffer* afStatsBuf;
-        XCamVideoBuffer* adehazeStatsBuf;
+        RkAiqAecStats* aecStatsBuf;
+        RkAiqAwbStats* awbStatsBuf;
+        RkAiqAfStats* afStatsBuf;
+        RkAiqAdehazeStats* adehazeStatsBuf;
         XCamVideoBuffer* sp;
         XCamVideoBuffer* ispGain;
         XCamVideoBuffer* kgGain;
@@ -390,7 +391,7 @@ public:
         XCamVideoBuffer* tx;
         XCamVideoBuffer* orbStats;
         XCamVideoBuffer* nrImg;
-        XCamVideoBuffer* pdafStatsBuf;
+        RkAiqPdafStats* pdafStatsBuf;
         RkAiqResComb res_comb;
         rk_aiq_scale_raw_info_t scaleRawInfo;
         RkAiqFullParams* fullParams;
@@ -402,10 +403,6 @@ public:
             xcam_mem_clear(preExp);
             xcam_mem_clear(curExp);
             xcam_mem_clear(nxtExp);
-            xcam_mem_clear(res_comb.ablc_proc_res);
-            xcam_mem_clear(res_comb.ablcV32_proc_res);
-            xcam_mem_clear(res_comb.aynrV22_proc_res);
-            xcam_mem_clear(res_comb.aynrV3_proc_res);
             xcam_mem_clear(scaleRawInfo);
             ispStats = nullptr;
             sp = nullptr;
@@ -432,7 +429,7 @@ public:
 
     isp_drv_share_mem_ops_t *mShareMemOps;
 
-    void post_message (SmartPtr<XCamMessage> &msg);
+    void post_message (RkAiqCoreVdBufMsg& msg);
     int32_t getGroupId(RkAiqAlgoType_t type);
     XCamReturn getGroupSharedParams(uint64_t groupId, RkAiqAlgosGroupShared_t* &shared);
     uint64_t getInitDisAlgosMask() {
@@ -726,6 +723,9 @@ private:
     std::map<uint32_t, pending_params_t> mFullParamsPendingMap;
     uint64_t mFullParamReqGroupsMasks{0};
     XCam::Mutex _mFullParam_mutex;
+    uint32_t mLatestParamsDoneId {0};
+    uint32_t mLatestEvtsId {0};
+    uint32_t mLatestStatsId {0};
 };
 
 }

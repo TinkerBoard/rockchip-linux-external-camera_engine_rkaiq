@@ -31,6 +31,7 @@ rk_aiq_uapi_acsm_SetAttrib(RkAiqAlgoContext* ctx,
 
     AcsmContext_t* pAcsmCtx = &ctx->acsmCtx;
     pAcsmCtx->params = attr->param;
+    pAcsmCtx->isReCal_ = true;
     return XCAM_RETURN_NO_ERROR;
 }
 

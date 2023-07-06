@@ -258,22 +258,21 @@ Aynr_result_V3_t Aynr_GetProcResult_V3(Aynr_Context_V3_t *pAynrCtx, Aynr_ProcRes
     }
 
     if(pAynrCtx->eMode == AYNRV3_OP_MODE_AUTO) {
-        pAynrResult->stSelect = pAynrCtx->stAuto.stSelect;
+        pAynrResult->stSelect = &pAynrCtx->stAuto.stSelect;
     } else if(pAynrCtx->eMode == AYNRV3_OP_MODE_MANUAL) {
         //TODO
-        pAynrResult->stSelect = pAynrCtx->stManual.stSelect;
+        pAynrResult->stSelect = &pAynrCtx->stManual.stSelect;
     }
 
     //transfer to reg value
-    ynr_fix_transfer_V3(&pAynrResult->stSelect, &pAynrResult->stFix, &pAynrCtx->stStrength, &pAynrCtx->stExpInfo);
+    ynr_fix_transfer_V3(pAynrResult->stSelect, pAynrResult->stFix, &pAynrCtx->stStrength, &pAynrCtx->stExpInfo);
 
     if(pAynrCtx->eMode == AYNRV3_OP_MODE_REG_MANUAL) {
-        pAynrResult->stFix = pAynrCtx->stManual.stFix;
+        *pAynrResult->stFix = pAynrCtx->stManual.stFix;
         pAynrCtx->stStrength.strength_enable = false;
         pAynrCtx->stStrength.percent = 1.0;
     }
 
-    pAynrCtx->stProcResult = *pAynrResult;
     LOGI_ANR("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return AYNRV3_RET_SUCCESS;
 }

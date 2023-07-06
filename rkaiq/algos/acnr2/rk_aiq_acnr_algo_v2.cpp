@@ -257,22 +257,22 @@ AcnrV2_result_t Acnr_GetProcResult_V2(Acnr_Context_V2_t *pAcnrCtx, Acnr_ProcResu
         return ACNRV2_RET_INVALID_PARM;
     }
 
+    RK_CNR_Params_V2_Select_t* stSelect = NULL;
     if(pAcnrCtx->eMode == ACNRV2_OP_MODE_AUTO) {
-        pAcnrResult->stSelect = pAcnrCtx->stAuto.stSelect;
+        stSelect = &pAcnrCtx->stAuto.stSelect;
     } else if(pAcnrCtx->eMode == ACNRV2_OP_MODE_MANUAL) {
-        pAcnrResult->stSelect = pAcnrCtx->stManual.stSelect;
+        stSelect = &pAcnrCtx->stManual.stSelect;
     }
 
     //transfer to reg value
-    cnr_fix_transfer_V2(&pAcnrResult->stSelect, &pAcnrResult->stFix,  &pAcnrCtx->stExpInfo, &pAcnrCtx->stStrength);
+    cnr_fix_transfer_V2(stSelect, pAcnrResult->stFix,  &pAcnrCtx->stExpInfo, &pAcnrCtx->stStrength);
 
     if(pAcnrCtx->eMode == ACNRV2_OP_MODE_REG_MANUAL) {
-        pAcnrResult->stFix = pAcnrCtx->stManual.stFix;
+        *pAcnrResult->stFix = pAcnrCtx->stManual.stFix;
         pAcnrCtx->stStrength.strength_enable = false;
         pAcnrCtx->stStrength.percent = 1.0;
     }
 
-    pAcnrCtx->stProcResult = *pAcnrResult;
 
     LOGI_ANR("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ACNRV2_RET_SUCCESS;

@@ -337,6 +337,8 @@ XCamReturn RkAiqAsharpV33HandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    asharp_proc_res_int->stAsharpProcResult.stFix = &shared->fullParams->mSharpV32Params->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "asharp handle processing failed");
@@ -410,12 +412,33 @@ XCamReturn RkAiqAsharpV33HandleInt::genIspResult(RkAiqFullParams* params,
         } else {
             sharp_param->frame_id = shared->frameId;
         }
-        memcpy(&sharp_param->result, &asharp_rk->stAsharpProcResult.stFix,
-               sizeof(RK_SHARP_Fix_V33_t));
+
+        if (asharp_rk->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            sharp_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mSharpV32Params = params->mSharpV32Params;
+            sharp_param->is_update = true;
+            LOGD_ASHARP("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != sharp_param->sync_flag) {
+            sharp_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mSharpV32Params.ptr()) {
+                sharp_param->result = cur_params->mSharpV32Params->data()->result;
+                sharp_param->is_update = true;
+            } else {
+                LOGE_ASHARP("no latest params !");
+                sharp_param->is_update = false;
+            }
+            LOGD_ASHARP("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            sharp_param->is_update = false;
+            LOGD_ASHARP("[%d] params needn't update", shared->frameId);
+        }
         LOGD_ANR("oyyf: %s:%d output isp param end \n", __FUNCTION__, __LINE__);
     }
-
-    cur_params->mSharpV32Params = params->mSharpV32Params;
 
     EXIT_ANALYZER_FUNCTION();
 

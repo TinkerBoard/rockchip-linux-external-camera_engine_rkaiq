@@ -191,17 +191,27 @@ FakeSensorHw::setExposureParams(SmartPtr<RkAiqExpParamsProxy>& expPar)
     ENTER_CAMHW_FUNCTION();
 
     if (_first) {
-        if (expPar->data()->exp_tbl_size > 0) {
-            int lastIdx = expPar->data()->exp_tbl_size - 1;
-            expPar->data()->aecExpInfo.LinearExp = expPar->data()->exp_tbl[lastIdx].LinearExp;
-            expPar->data()->aecExpInfo.HdrExp[0] = expPar->data()->exp_tbl[lastIdx].HdrExp[0];
-            expPar->data()->aecExpInfo.HdrExp[1] = expPar->data()->exp_tbl[lastIdx].HdrExp[1];
-            expPar->data()->aecExpInfo.HdrExp[2] = expPar->data()->exp_tbl[lastIdx].HdrExp[2];
-            expPar->data()->aecExpInfo.frame_length_lines = expPar->data()->exp_tbl[lastIdx].frame_length_lines;
-            expPar->data()->aecExpInfo.line_length_pixels = expPar->data()->exp_tbl[lastIdx].line_length_pixels;
-            expPar->data()->aecExpInfo.pixel_clock_freq_mhz = expPar->data()->exp_tbl[lastIdx].pixel_clock_freq_mhz;
+        RKAiqAecExpInfoWrapper_t* exp = &expPar->data()->result;
+        SmartPtr<RkAiqSensorExpParamsProxy> expParamsProxy = NULL;
+        if (exp->ae_proc_res_rk.exp_set_cnt > 0) {
+            SmartPtr<rk_aiq_sensor_exp_info_t> tmp;
+            if (_expParamsPool->has_free_items()) {
+                expParamsProxy = _expParamsPool->get_item();
+                tmp = expParamsProxy->data();
+            } else {
+                LOGE_CAMHW_SUBM(SENSOR_SUBM, "%s: no free params buffer!\n", __FUNCTION__);
+                return XCAM_RETURN_ERROR_MEM;
+            }
+            int lastIdx = exp->ae_proc_res_rk.exp_set_cnt - 1;
+            tmp->aecExpInfo.LinearExp = exp->ae_proc_res_rk.exp_set_tbl[lastIdx].LinearExp;
+            tmp->aecExpInfo.HdrExp[0] = exp->ae_proc_res_rk.exp_set_tbl[lastIdx].HdrExp[0];
+            tmp->aecExpInfo.HdrExp[1] = exp->ae_proc_res_rk.exp_set_tbl[lastIdx].HdrExp[1];
+            tmp->aecExpInfo.HdrExp[2] = exp->ae_proc_res_rk.exp_set_tbl[lastIdx].HdrExp[2];
+            tmp->aecExpInfo.frame_length_lines = exp->ae_proc_res_rk.exp_set_tbl[lastIdx].frame_length_lines;
+            tmp->aecExpInfo.line_length_pixels = exp->ae_proc_res_rk.exp_set_tbl[lastIdx].line_length_pixels;
+            tmp->aecExpInfo.pixel_clock_freq_mhz = exp->ae_proc_res_rk.exp_set_tbl[lastIdx].pixel_clock_freq_mhz;
         }
-        _effecting_exp_map[0] = expPar;
+        _effecting_exp_map[0] = expParamsProxy;
         _first = false;
 
         LOGD_CAMHW_SUBM(FAKECAM_SUBM, "exp-sync: first set exp, add id[0] to the effected exp map");
@@ -444,7 +454,7 @@ FakeSensorHw::enqueue_rawbuffer(struct rk_aiq_vbuf *vbuf, bool sync)
 #endif
 
     if (exp_val_valid) {
-        SmartPtr<RkAiqExpParamsProxy> exp_param_prx = _expParamsPool->get_item();
+        SmartPtr<RkAiqSensorExpParamsProxy> exp_param_prx = _expParamsPool->get_item();
 
         exp_param_prx->data()->aecExpInfo.LinearExp.exp_sensor_params.analog_gain_code_global = vbuf->buf_info[0].exp_gain_reg;
         exp_param_prx->data()->aecExpInfo.LinearExp.exp_sensor_params.coarse_integration_time = vbuf->buf_info[0].exp_time_reg;

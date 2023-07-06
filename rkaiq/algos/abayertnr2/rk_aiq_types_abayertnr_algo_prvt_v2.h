@@ -75,7 +75,6 @@ typedef struct Abayertnr_Context_V2_s {
 
     Abayertnr_Auto_Attr_V2_t stAuto;
     Abayertnr_Manual_Attr_V2_t stManual;
-    Abayertnr_ProcResult_V2_t stProcResult;
     // struct list_head* list_bayernr_v2;
 
     rk_aiq_bayertnr_strength_v2_t stStrength;

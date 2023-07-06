@@ -38,7 +38,7 @@ XCamReturn AdehazeGetCurrDataGroup(AdehazeHandle_t* pAdehazeCtx,
 #endif
 XCamReturn AdehazeInit(AdehazeHandle_t** para, CamCalibDbV2Context_t* calib);
 XCamReturn AdehazeRelease(AdehazeHandle_t* para);
-XCamReturn AdehazeProcess(AdehazeHandle_t* para, rkisp_adehaze_stats_t* pStats,
+XCamReturn AdehazeProcess(AdehazeHandle_t* para, dehaze_stats_v11_t* pStats,
                           RkAiqAdehazeProcResult_t* pAdehzeProcRes);
 bool AdehazeByPassProcessing(AdehazeHandle_t* pAdehazeCtx);
 bool DehazeEnableSetting(AdehazeHandle_t* pAdehazeCtx, RkAiqAdehazeProcResult_t* pAdehzeProcRes);

@@ -222,6 +222,9 @@ V4l2Device::open (bool nonblock)
         // get default foramt
         get_format (_format);
     }
+    
+    if (_buf_type == V4L2_BUF_TYPE_META_CAPTURE)
+        _buf_sync = true;
 
     return XCAM_RETURN_NO_ERROR;
 }

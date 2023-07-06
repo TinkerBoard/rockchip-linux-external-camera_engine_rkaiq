@@ -253,6 +253,8 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
     __RKAIQUAPI_DESC_DEF("/uapi/0/measure_info/wb_log/info/awb_strategy_result",
                          rk_tool_awb_strategy_result_t, NULL,
                          rk_aiq_user_api2_awb_getStrategyResult),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/accm_uapi/mode", uapi_wb_mode_t, rk_aiq_set_tool_accm_mode,
+                         rk_aiq_get_accm_mode),
 #if defined(ISP_HW_V21) || defined(ISP_HW_V30)
     __RKAIQUAPI_DESC_DEF("/uapi/0/accm_uapi/Info", rk_aiq_ccm_querry_info_t, NULL,
                          rk_aiq_user_api2_accm_QueryCcmInfo),
@@ -268,6 +270,10 @@ RkAiqUapiDesc_t rkaiq_uapidesc_list[] = {
                          rk_aiq_get_acgc_manual_attr),
     __RKAIQUAPI_DESC_DEF("/uapi/0/acsm_uapi/manual", Csm_Param_t, rk_aiq_set_acsm_manual_attr,
                          rk_aiq_get_acsm_manual_attr),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/a3dlut_uapi/mode", uapi_wb_mode_t, rk_aiq_set_tool_3dlut_mode,
+                         rk_aiq_get_a3dlut_mode),
+    __RKAIQUAPI_DESC_DEF("/uapi/0/a3dlut_uapi/manual", rk_aiq_lut3d_mlut3d_attrib_t,
+                         rk_aiq_set_a3dlut_manual_attr, rk_aiq_get_a3dlut_manual_attr),
 
 #if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
     __RKAIQUAPI_DESC_DEF("/uapi/0/ablc_uapi/manual", ablc_uapi_manual_t,

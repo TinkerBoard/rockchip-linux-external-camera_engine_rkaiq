@@ -518,8 +518,10 @@ void SocketServer::Deinit() {
     this->tunning_thread->join();
   // shutdown(client_socket, SHUT_RDWR);
   // close(client_socket);
+#ifndef __ANDROID__
   unlink(serverAddress.sun_path);
   close(sockfd);
+#endif
   this->accept_threads_ = nullptr;
   this->tunning_thread = nullptr;
   if (_stop_fds[0] != -1)

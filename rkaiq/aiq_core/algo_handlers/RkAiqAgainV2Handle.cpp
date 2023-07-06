@@ -200,8 +200,7 @@ XCamReturn RkAiqAgainV2HandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
-    static int auvnr_proc_framecnt = 0;
-    auvnr_proc_framecnt++;
+    again_proc_res_int->stAgainProcResult.stFix = &shared->fullParams->mGainV3xParams->data()->result;
 
     ret = RkAiqHandle::processing();
     if (ret) {
@@ -278,13 +277,34 @@ XCamReturn RkAiqAgainV2HandleInt::genIspResult(RkAiqFullParams* params,
             }
             LOGD_ANR("oyyf: %s:%d output gain  param start\n", __FUNCTION__, __LINE__);
 
-            memcpy(&gain_param->result, &again_rk->stAgainProcResult.stFix,
-                   sizeof(RK_GAIN_Fix_V2_t));
+            if (again_rk->res_com.cfg_update) {
+                mSyncFlag = shared->frameId;
+                gain_param->sync_flag = mSyncFlag;
+                // copy from algo result
+                // set as the latest result
+                cur_params->mGainV3xParams = params->mGainV3xParams;
+                gain_param->is_update = true;
+                LOGD_ANR("[%d] params from algo", mSyncFlag);
+            } else if (mSyncFlag != gain_param->sync_flag) {
+                gain_param->sync_flag = mSyncFlag;
+                // copy from latest result
+                if (cur_params->mGainV3xParams.ptr()) {
+                    gain_param->result = cur_params->mGainV3xParams->data()->result;
+                    gain_param->is_update = true;
+                } else {
+                    LOGE_ANR("no latest params !");
+                    gain_param->is_update = false;
+                }
+                LOGD_ANR("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+            } else {
+                // do nothing, result in buf needn't update
+                gain_param->is_update = false;
+                LOGD_ANR("[%d] params needn't update", shared->frameId);
+            }
+
             LOGD_ANR("oyyf: %s:%d output gain param end \n", __FUNCTION__, __LINE__);
         }
     }
-
-    cur_params->mGainV3xParams = params->mGainV3xParams;
 
     EXIT_ANALYZER_FUNCTION();
 

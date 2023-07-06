@@ -34,18 +34,18 @@ static rk_aiq_acgc_params_t g_cgc_def = {
 static XCamReturn
 create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
 {
-    RkAiqAlgoContext *ctx = new RkAiqAlgoContext();
+    AcgcContext_t *ctx = new AcgcContext_t();
     if (ctx == NULL) {
         LOGE_ACGC( "%s: create acgc context fail!\n", __FUNCTION__);
         return XCAM_RETURN_ERROR_MEM;
     }
 
-    ctx->acgcCtx.calibv2         = cfg->calibv2;
-    rk_aiq_acgc_params_t* params = &ctx->acgcCtx.params;
+    ctx->calibv2                 = cfg->calibv2;
+    rk_aiq_acgc_params_t* params = &ctx->params;
     memset(params, 0, sizeof(*params));
-    if (ctx->acgcCtx.calibv2) {
+    if (ctx->calibv2) {
         Cgc_Param_t* cgc =
-            (Cgc_Param_t*)(CALIBDBV2_GET_MODULE_PTR(ctx->acgcCtx.calibv2, cgc));
+            (Cgc_Param_t*)(CALIBDBV2_GET_MODULE_PTR(ctx->calibv2, cgc));
         if (cgc) {
             *params = *cgc;
         } else {
@@ -57,7 +57,7 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
         *params = g_cgc_def;
     }
 
-    *context = ctx;
+    *context = (RkAiqAlgoContext *)ctx;
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -83,6 +83,9 @@ prepare(RkAiqAlgoCom* params)
 #endif
         }
     }
+
+    params->ctx->acgcCtx.isReCal_ = true;
+
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -101,7 +104,15 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     if (ctx->acgcCtx.params.op_mode == RK_AIQ_OP_MODE_AUTO) {
         ctx->acgcCtx.params = g_cgc_def;
     }
-    res_com->acgc_res = ctx->acgcCtx.params;
+
+    if (ctx->acgcCtx.isReCal_) {
+        *res_com->acgc_res = ctx->acgcCtx.params;
+        outparams->cfg_update = true;
+        ctx->acgcCtx.isReCal_ = false;
+    } else {
+        outparams->cfg_update = false;
+    }
+
     return XCAM_RETURN_NO_ERROR;
 }
 

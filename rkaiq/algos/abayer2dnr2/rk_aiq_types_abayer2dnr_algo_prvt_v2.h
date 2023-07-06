@@ -75,7 +75,6 @@ typedef struct Abayer2dnr_Context_V2_s {
 
     Abayer2dnr_Auto_Attr_V2_t stAuto;
     Abayer2dnr_Manual_Attr_V2_t stManual;
-    Abayer2dnr_ProcResult_V2_t stProcResult;
 
     rk_aiq_bayer2dnr_strength_v2_t stStrength;
 

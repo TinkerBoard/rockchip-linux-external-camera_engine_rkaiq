@@ -254,8 +254,15 @@ protected:
     virtual bool convert3aResultsToIspCfg(SmartPtr<cam3aResult> &result, void* isp_cfg_p, bool is_multi_isp = false);
     SmartPtr<cam3aResult> get_3a_result (cam3aResultList &results, int32_t type);
     // std::map<int, std::list<SmartPtr<cam3aResult>>> _cam3aConfig;
-    SmartPtr<cam3aResult> mBlcResult = NULL;
-    bool _lsc_en;
+    cam3aResult* mBlcResult{NULL};
+    cam3aResult* mAwbParams{NULL};
+    cam3aResult* mAfParams{NULL};
+    bool _lsc_en{false};
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
+	struct isp32_isp_meas_cfg mLatestMeasCfg;
+	struct isp32_bls_cfg mLatestBlsCfg;
+	struct isp32_awb_gain_cfg mLatestWbGainCfg;
+#endif
 };
 }
 #endif

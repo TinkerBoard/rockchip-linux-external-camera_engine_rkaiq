@@ -5,7 +5,7 @@
 
 int AdpccInterpolation(int inPara, int* inMatrixX, int* inMatrixY)
 {
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
     int returnValue = 1;
 
     float value = 1.0;
@@ -29,18 +29,20 @@ int AdpccInterpolation(int inPara, int* inMatrixX, int* inMatrixY)
 
     returnValue = (int)(value + 0.5);
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOGI_ADPCC("%s(%d): inPara %d, returnValue %d", __FUNCTION__, __LINE__, inPara, returnValue);
+
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return returnValue;
 }
 
 AdpccResult_t html_params_init(Adpcc_html_param_t *pParams)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pParams == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid input params\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid input params", __FUNCTION__, __LINE__);
         return ret;
     }
 
@@ -361,7 +363,7 @@ AdpccResult_t html_params_init(Adpcc_html_param_t *pParams)
     memset(pBpt, 0x00, sizeof(Adpcc_bpt_params_t));
     memset(pPdaf, 0x00, sizeof(Adpcc_pdaf_params_t));
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 
 }
@@ -369,17 +371,17 @@ AdpccResult_t html_params_init(Adpcc_html_param_t *pParams)
 AdpccResult_t dpcc_sensor_params_init(CalibDb_Dpcc_Sensor_t *pSensor, CalibDbV2_Dpcc_t *pCalib)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pSensor == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid input params\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid input params", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pCalib == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid input params\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid input params", __FUNCTION__, __LINE__);
         return ret;
     }
 
@@ -392,7 +394,7 @@ AdpccResult_t dpcc_sensor_params_init(CalibDb_Dpcc_Sensor_t *pSensor, CalibDbV2_
         pSensor->level_multiple[i] = (float)(pCalib->DpccTuningPara.Sensor_dpcc.SensorDpcc_Data.level_multiple[i]);
     }
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 
 }
@@ -400,17 +402,17 @@ AdpccResult_t dpcc_sensor_params_init(CalibDb_Dpcc_Sensor_t *pSensor, CalibDbV2_
 AdpccResult_t dpcc_fast_mode_basic_params_init(CalibDb_Dpcc_Fast_Mode_t *pFast, CalibDbV2_Dpcc_t *pCalib)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pFast == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid input params\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid input params", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pCalib == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid input params\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid input params", __FUNCTION__, __LINE__);
         return ret;
     }
 
@@ -426,7 +428,7 @@ AdpccResult_t dpcc_fast_mode_basic_params_init(CalibDb_Dpcc_Fast_Mode_t *pFast, 
         pFast->fast_mode_triple_level[i] = pCalib->DpccTuningPara.Fast_Mode.Fast_Data.Triple_level[i];
     }
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 
 }
@@ -434,17 +436,17 @@ AdpccResult_t dpcc_fast_mode_basic_params_init(CalibDb_Dpcc_Fast_Mode_t *pFast, 
 AdpccResult_t dpcc_expert_mode_basic_params_init(Adpcc_basic_params_t *pBasic, CalibDbV2_Dpcc_t *pCalib)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pBasic == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid input params\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid input params", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pCalib == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid input params\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid input params", __FUNCTION__, __LINE__);
         return ret;
     }
 
@@ -604,7 +606,7 @@ AdpccResult_t dpcc_expert_mode_basic_params_init(Adpcc_basic_params_t *pBasic, C
 
     }
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 
 }
@@ -612,17 +614,17 @@ AdpccResult_t dpcc_expert_mode_basic_params_init(Adpcc_basic_params_t *pBasic, C
 AdpccResult_t dpcc_pdaf_params_init(Adpcc_pdaf_params_t *pPdaf, CalibDb_Dpcc_Pdaf_V20_t *pCalib)
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pPdaf == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid input params\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid input params", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pCalib == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid input params\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid input params", __FUNCTION__, __LINE__);
         return ret;
     }
 
@@ -642,7 +644,7 @@ AdpccResult_t dpcc_pdaf_params_init(Adpcc_pdaf_params_t *pPdaf, CalibDb_Dpcc_Pda
     pPdaf->pdaf_wrapy_num = pCalib->wrapy_num;
     pPdaf->pdaf_forward_med = pCalib->forward_med;
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 }
 
@@ -652,17 +654,17 @@ AdpccResult_t Api_Expert_mode_select(
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
 
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pSelect == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pstmaunal == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
@@ -818,11 +820,11 @@ AdpccResult_t Api_Expert_mode_select(
     pSelect->rnd_offs_1_g = pstmaunal->stOnfly.expert_mode.rnd_offs_1_g;
 
 
-    LOGD_ADPCC("%s:(%d) %d %d %d %d %d\n", __FUNCTION__, __LINE__,
+    LOGD_ADPCC("%s:(%d) %d %d %d %d %d", __FUNCTION__, __LINE__,
                pSelect->enable, pSelect->line_thr_2_g, pSelect->line_mad_fac_2_rb,
                pSelect->ro_lim_2_g, pSelect->rnd_offs_2_g);
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 }
 
@@ -832,17 +834,17 @@ AdpccResult_t Expert_mode_param_cpy(
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
 
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pSelect == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pParams == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
@@ -998,11 +1000,11 @@ AdpccResult_t Expert_mode_param_cpy(
     pSelect->rnd_offs_1_g = pParams->rnd_offs_1_g;
 
 
-    LOGD_ADPCC("%s:(%d) %d %d %d %d %d\n", __FUNCTION__, __LINE__,
+    LOGD_ADPCC("%s:(%d) %d %d %d %d %d", __FUNCTION__, __LINE__,
                pSelect->enable, pSelect->line_thr_2_g, pSelect->line_mad_fac_2_rb,
                pSelect->ro_lim_2_g, pSelect->rnd_offs_2_g);
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 }
 
@@ -1019,30 +1021,30 @@ AdpccResult_t Expert_mode_select_basic_params_by_ISO(
     float ratio = 0.0;
     int iso = 50;
 
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pParams == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pSelect == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pExpInfo == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     iso = pExpInfo->arPreResIso[pExpInfo->hdr_mode];
 
     for(int i = 0; i < DPCC_MAX_ISO_LEVEL - 1; i++) {
-        LOGD_ADPCC("%s:(%d) iso:%d %d %d\n", __FUNCTION__, __LINE__,
+        LOGD_ADPCC("%s:(%d) iso:%d %d %d", __FUNCTION__, __LINE__,
                    iso, pParams->arBasic[i].iso, pParams->arBasic[i + 1].iso);
         if(iso >= pParams->arBasic[i].iso && iso < pParams->arBasic[i + 1].iso) {
             lowLevel = i;
@@ -1067,21 +1069,21 @@ AdpccResult_t Expert_mode_select_basic_params_by_ISO(
         ratio = 1.0;
     }
 
-    LOGD_ADPCC("%s:(%d) iso:%d lowLevel:%d hightLevel:%d lowIso:%d HighIso:%d ratio:%f\n",
+    LOGD_ADPCC("%s:(%d) iso:%d lowLevel:%d hightLevel:%d lowIso:%d HighIso:%d ratio:%f",
                __FUNCTION__, __LINE__, iso, lowLevel, highLevel, lowIso, highIso, ratio);
 
     // copy param from pParams->arBasic[lowLevel]
     ret = Expert_mode_param_cpy(pSelect, &pParams->arBasic[lowLevel]);
     if (ret != ADPCC_RET_SUCCESS) {
-        LOGE_ADPCC("%s(%d): failed to copy Expert mode params\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): failed to copy Expert mode params", __FUNCTION__, __LINE__);
         return ret;
     }
 
-    LOGD_ADPCC("%s:(%d) %d %d %d %d %d\n", __FUNCTION__, __LINE__,
+    LOGD_ADPCC("%s:(%d) %d %d %d %d %d", __FUNCTION__, __LINE__,
                pSelect->enable, pSelect->line_thr_2_g, pSelect->line_mad_fac_2_rb,
                pSelect->ro_lim_2_g, pSelect->rnd_offs_2_g);
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ret;
 }
 
@@ -1089,7 +1091,7 @@ void Fast_mode_Triple_level_Setting(
     Adpcc_basic_cfg_params_t *pSelect,
     int level)
 {
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     switch (level)
     {
@@ -1464,11 +1466,11 @@ void Fast_mode_Triple_level_Setting(
         pSelect->pg_fac_3_g = 0;
         break;
     default:
-        LOGE_ADPCC("%s(%d): Wrong fast mode level!!!\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): Wrong fast mode level!!!", __FUNCTION__, __LINE__);
         break;
     }
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
 
 }
 
@@ -1477,7 +1479,7 @@ void Fast_mode_Triple_Setting(
     Adpcc_basic_cfg_params_t *pSelect,
     int iso)
 {
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     int level = AdpccInterpolation(iso, pParams->stAuto.stFastMode.ISO, pParams->stAuto.stFastMode.fast_mode_triple_level);
 
@@ -1489,10 +1491,10 @@ void Fast_mode_Triple_Setting(
     level = LIMIT_VALUE(level, FASTMODELEVELMAX, FASTMODELEVELMIN);
     Fast_mode_Triple_level_Setting(pSelect, level);
 
-    LOGD_ADPCC("%s(%d): Dpcc fast mode triple en:%d level:%d\n", __FUNCTION__, __LINE__,
+    LOGD_ADPCC("%s(%d): Dpcc fast mode triple en:%d level:%d", __FUNCTION__, __LINE__,
                pParams->stAuto.stFastMode.fast_mode_triple_en, level);
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
 
 }
 
@@ -1500,7 +1502,7 @@ void Fast_mode_Double_level_Setting(
     Adpcc_basic_cfg_params_t *pSelect,
     int level)
 {
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     switch (level)
     {
@@ -1875,12 +1877,12 @@ void Fast_mode_Double_level_Setting(
         pSelect->pg_fac_2_g = 0;
         break;
     default:
-        LOGE_ADPCC("%s(%d): Wrong fast mode level!!!\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): Wrong fast mode level!!!", __FUNCTION__, __LINE__);
         break;
     }
 
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
 
 }
 
@@ -1889,7 +1891,7 @@ void Fast_mode_Double_Setting(
     Adpcc_basic_cfg_params_t *pSelect,
     int iso)
 {
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
 
     int level = AdpccInterpolation(iso, pParams->stAuto.stFastMode.ISO, pParams->stAuto.stFastMode.fast_mode_double_level);
@@ -1902,10 +1904,10 @@ void Fast_mode_Double_Setting(
     level = LIMIT_VALUE(level, FASTMODELEVELMAX, FASTMODELEVELMIN);
     Fast_mode_Double_level_Setting(pSelect, level);
 
-    LOGD_ADPCC("%s(%d): Dpcc fast mode double en:%d level:%d\n", __FUNCTION__, __LINE__,
+    LOGD_ADPCC("%s(%d): Dpcc fast mode double en:%d level:%d", __FUNCTION__, __LINE__,
                pParams->stAuto.stFastMode.fast_mode_double_en, level);
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
 
 }
 
@@ -1913,7 +1915,7 @@ void Fast_mode_Single_level_Setting(
     Adpcc_basic_cfg_params_t *pSelect,
     int level)
 {
-    LOG1_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     switch (level)
     {
@@ -2288,11 +2290,11 @@ void Fast_mode_Single_level_Setting(
         pSelect->pg_fac_1_g = 0;
         break;
     default:
-        LOGE_ADPCC("%s(%d): Wrong fast mode level!!!\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): Wrong fast mode level!!!", __FUNCTION__, __LINE__);
         break;
     }
 
-    LOG1_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
 
 }
 
@@ -2301,7 +2303,7 @@ void Fast_mode_Single_Setting(
     Adpcc_basic_cfg_params_t *pSelect,
     int iso)
 {
-    LOG1_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     int level = AdpccInterpolation(iso, pParams->stAuto.stFastMode.ISO, pParams->stAuto.stFastMode.fast_mode_single_level);
 
@@ -2314,9 +2316,9 @@ void Fast_mode_Single_Setting(
     Fast_mode_Single_level_Setting(pSelect, level);
 
 
-    LOGD_ADPCC("%s(%d): Dpcc fast mode single en:%d level:%d\n", __FUNCTION__, __LINE__, pParams->stAuto.stFastMode.fast_mode_single_en, level);
+    LOGD_ADPCC("%s(%d): Dpcc fast mode single en:%d level:%d", __FUNCTION__, __LINE__, pParams->stAuto.stFastMode.fast_mode_single_en, level);
 
-    LOG1_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
 
 }
 
@@ -2328,23 +2330,23 @@ AdpccResult_t Fast_mode_select_basic_params_by_ISO(
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
     int iso = 50;
 
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pParams == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pSelect == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pExpInfo == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
@@ -2382,7 +2384,7 @@ AdpccResult_t Fast_mode_select_basic_params_by_ISO(
     Fast_mode_Triple_Setting(pParams, pSelect, iso);
 
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 }
 
@@ -2393,23 +2395,23 @@ AdpccResult_t Api_Fast_mode_select(
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
 
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pParams == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pSelect == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pAttr == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
@@ -2451,7 +2453,7 @@ AdpccResult_t Api_Fast_mode_select(
     Fast_mode_Triple_level_Setting(pSelect, pAttr->fast_mode_triple_level);
 
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 }
 
@@ -2461,23 +2463,23 @@ AdpccResult_t Api_select_bpt_params(
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
 
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pSelect == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pstmaunal == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     memcpy(pSelect, &pstmaunal->stBpt, sizeof(Adpcc_bpt_params_t));
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 }
 
@@ -2488,29 +2490,29 @@ AdpccResult_t select_bpt_params_by_ISO(
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
 
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pParams == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pSelect == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pExpInfo == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     memcpy(pSelect, pParams, sizeof(Adpcc_bpt_params_t));
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ret;
 }
 
@@ -2520,23 +2522,23 @@ AdpccResult_t Api_select_pdaf_params(
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
 
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pSelect == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pstmaunal == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     memcpy(pSelect, &pstmaunal->stPdaf, sizeof(Adpcc_pdaf_params_t));
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 }
 
@@ -2547,29 +2549,29 @@ AdpccResult_t select_pdaf_params_by_ISO(
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
 
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pParams == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pSelect == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pExpInfo == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     memcpy(pSelect, pParams, sizeof(Adpcc_pdaf_params_t));
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ret;
 }
 
@@ -2580,17 +2582,17 @@ AdpccResult_t DpccExpertMode(
 {
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
 
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pParams == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
     if(pSelect == NULL) {
         ret = ADPCC_RET_NULL_POINTER;
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ret;
     }
 
@@ -2602,7 +2604,7 @@ AdpccResult_t DpccExpertMode(
 
     memcpy(pSelect, pParams, sizeof(Adpcc_pdaf_params_t));
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
 }
 
@@ -2613,7 +2615,7 @@ int GetCurrDpccValue
     float         inMatrixX[13],
     float         inMatrixY[13]
 ) {
-    LOG1_ADPCC( "%s:enter!\n", __FUNCTION__);
+    LOG1_ADPCC( "%s:enter!", __FUNCTION__);
     float x1 = 0.0f;
     float x2 = 0.0f;
     float value1 = 0.0f;
@@ -2646,12 +2648,12 @@ int GetCurrDpccValue
     int out = (int)(outPara + 0.5);
 
     return out;
-    LOG1_ADPCC( "%s:exit!\n", __FUNCTION__);
+    LOG1_ADPCC( "%s:exit!", __FUNCTION__);
 }
 
 void Api_Sensor_dpcc_process(AdpccContext_t *pAdpccCtx)
 {
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     pAdpccCtx->SenDpccRes.enable = pAdpccCtx->stManual.stSensorDpcc.en;
     pAdpccCtx->SenDpccRes.cur_single_dpcc = pAdpccCtx->stManual.stSensorDpcc.single_level;
@@ -2659,15 +2661,15 @@ void Api_Sensor_dpcc_process(AdpccContext_t *pAdpccCtx)
     pAdpccCtx->SenDpccRes.total_dpcc = pAdpccCtx->stManual.stSensorDpcc.max_level;
 
     if (pAdpccCtx->SenDpccRes.enable == false) {
-        LOGD_ADPCC("%s(%d):sensor dpcc setting off!!\n", __FUNCTION__, __LINE__);
+        LOGD_ADPCC("%s(%d):sensor dpcc setting off!!", __FUNCTION__, __LINE__);
     } else {
-        LOGD_ADPCC("%s(%d):sensor dpcc setting on!!\n", __FUNCTION__, __LINE__);
+        LOGD_ADPCC("%s(%d):sensor dpcc setting on!!", __FUNCTION__, __LINE__);
     }
 
-    LOGD_ADPCC("%s(%d):Api sensor dpcc cur_s_dpcc:%d cur_m_dpcc:%d total_dpcc:%d!!\n", __FUNCTION__, __LINE__,
+    LOGD_ADPCC("%s(%d):Api sensor dpcc cur_s_dpcc:%d cur_m_dpcc:%d total_dpcc:%d!!", __FUNCTION__, __LINE__,
                pAdpccCtx->SenDpccRes.cur_single_dpcc, pAdpccCtx->SenDpccRes.cur_multiple_dpcc, pAdpccCtx->SenDpccRes.total_dpcc);
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
 
 }
 
@@ -2675,7 +2677,7 @@ void Sensor_dpcc_process(AdpccContext_t *pAdpccCtx)
 {
 
 
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
     int iso = 0;
     if(pAdpccCtx->stExpInfo.hdr_mode == 0)
         iso = pAdpccCtx->stExpInfo.arProcResIso[0];
@@ -2695,22 +2697,22 @@ void Sensor_dpcc_process(AdpccContext_t *pAdpccCtx)
     pAdpccCtx->SenDpccRes.total_dpcc = (int)(pAdpccCtx->stAuto.stSensorDpcc.max_level + 0.5);
 
     if (pAdpccCtx->SenDpccRes.enable == false) {
-        LOGD_ADPCC("%s(%d):sensor dpcc setting off!!\n", __FUNCTION__, __LINE__);
+        LOGD_ADPCC("%s(%d):sensor dpcc setting off!!", __FUNCTION__, __LINE__);
     } else {
-        LOGD_ADPCC("%s(%d):sensor dpcc setting on!!\n", __FUNCTION__, __LINE__);
+        LOGD_ADPCC("%s(%d):sensor dpcc setting on!!", __FUNCTION__, __LINE__);
     }
 
-    LOGD_ADPCC("%s(%d):ISO:%d sensor dpcc cur_s_dpcc:%d cur_m_dpcc:%d total_dpcc:%d!!\n", __FUNCTION__, __LINE__, iso,
+    LOGD_ADPCC("%s(%d):ISO:%d sensor dpcc cur_s_dpcc:%d cur_m_dpcc:%d total_dpcc:%d!!", __FUNCTION__, __LINE__, iso,
                pAdpccCtx->SenDpccRes.cur_single_dpcc, pAdpccCtx->SenDpccRes.cur_multiple_dpcc, pAdpccCtx->SenDpccRes.total_dpcc);
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
 
 }
 
 AdpccResult_t AdpccReloadPara(AdpccContext_t *pAdpccCtx, CamCalibDbV2Context_t *pCalibDb)
 {
-    LOGI_ADPCC(" %s(%d): enter!\n", __FUNCTION__, __LINE__);
-    LOGD_ADPCC(" %s(%d): Adpcc Reload Para, prepare type is %d!\n", __FUNCTION__, __LINE__, pAdpccCtx->prepare_type);
+    LOG1_ADPCC(" %s(%d): enter!", __FUNCTION__, __LINE__);
+    LOGD_ADPCC(" %s(%d): Adpcc Reload Para, prepare type is %d!", __FUNCTION__, __LINE__, pAdpccCtx->prepare_type);
 
     //init fix param for algo
     CalibDbV2_Dpcc_t* calibv2_adpcc_calib =
@@ -2722,7 +2724,7 @@ AdpccResult_t AdpccReloadPara(AdpccContext_t *pAdpccCtx, CamCalibDbV2Context_t *
     dpcc_pdaf_params_init(&pAdpccCtx->stAuto.stPdafParams, &pAdpccCtx->stDpccCalib.DpccTuningPara.Dpcc_pdaf);
     dpcc_sensor_params_init(&pAdpccCtx->stAuto.stSensorDpcc, &pAdpccCtx->stDpccCalib);
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ADPCC_RET_SUCCESS;
 }
 
@@ -2730,11 +2732,11 @@ AdpccResult_t AdpccInit(AdpccContext_t **ppAdpccCtx, CamCalibDbV2Context_t *pCal
 {
     AdpccContext_t * pAdpccCtx;
 
-    LOGI_ADPCC(" %s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC(" %s(%d): enter!", __FUNCTION__, __LINE__);
 
     pAdpccCtx = (AdpccContext_t *)malloc(sizeof(AdpccContext_t));
     if(pAdpccCtx == NULL) {
-        LOGE_ADPCC("%s(%d): invalid inputparams\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): invalid inputparams", __FUNCTION__, __LINE__);
         return ADPCC_RET_NULL_POINTER;
     }
 
@@ -2770,72 +2772,72 @@ AdpccResult_t AdpccInit(AdpccContext_t **ppAdpccCtx, CamCalibDbV2Context_t *pCal
         pAdpccCtx->PreAe.arProcResTime[i] = 0.01;
     }
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ADPCC_RET_SUCCESS;
 
 }
 
 AdpccResult_t AdpccRelease(AdpccContext_t *pAdpccCtx)
 {
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
     if(pAdpccCtx == NULL) {
-        LOGE_ADPCC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): null pointer", __FUNCTION__, __LINE__);
         return ADPCC_RET_NULL_POINTER;
     }
 
     memset(pAdpccCtx, 0x00, sizeof(AdpccContext_t));
     free(pAdpccCtx);
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ADPCC_RET_SUCCESS;
 }
 
 AdpccResult_t AdpccConfig(AdpccContext_t *pAdpccCtx, AdpccConfig_t* pAdpccConfig)
 {
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
 
     if(pAdpccCtx == NULL) {
-        LOGE_ADPCC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): null pointer", __FUNCTION__, __LINE__);
         return ADPCC_RET_INVALID_PARM;
     }
 
     if(pAdpccConfig == NULL) {
-        LOGE_ADPCC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): null pointer", __FUNCTION__, __LINE__);
         return ADPCC_RET_INVALID_PARM;
     }
 
     //pAdpccCtx->eMode = pAdpccConfig->eMode;
     //pAdpccCtx->eState = pAdpccConfig->eState;
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return ADPCC_RET_SUCCESS;
 }
 
 AdpccResult_t AdpccReConfig(AdpccContext_t *pAdpccCtx, AdpccConfig_t* pAdpccConfig)
 {
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
     //need todo what?
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ADPCC_RET_SUCCESS;
 }
 
 AdpccResult_t AdpccPreProcess(AdpccContext_t *pAdpccCtx)
 {
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
     //need todo what?
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ADPCC_RET_SUCCESS;
 }
 
-AdpccResult_t AdpccProcess(AdpccContext_t *pAdpccCtx, AdpccExpInfo_t *pExpInfo)
+AdpccResult_t AdpccProcess(AdpccContext_t *pAdpccCtx, AdpccExpInfo_t *pExpInfo, AdpccProcResult_t* pAdpccResult)
 {
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): enter!", __FUNCTION__, __LINE__);
     AdpccResult_t ret = ADPCC_RET_SUCCESS;
 
     if(pAdpccCtx == NULL) {
-        LOGE_ADPCC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): null pointer", __FUNCTION__, __LINE__);
         return ADPCC_RET_INVALID_PARM;
     }
 
@@ -2847,16 +2849,16 @@ AdpccResult_t AdpccProcess(AdpccContext_t *pAdpccCtx, AdpccExpInfo_t *pExpInfo)
     memcpy(&pAdpccCtx->stExpInfo, pExpInfo, sizeof(AdpccExpInfo_t));
 
     if(pAdpccCtx->eMode == ADPCC_OP_MODE_AUTO) {
-        LOGD_ADPCC("%s(%d): Adpcc Auto mode!!!\n", __FUNCTION__, __LINE__);
+        LOGD_ADPCC("%s(%d): Adpcc Auto mode!!!", __FUNCTION__, __LINE__);
         bool fast_enable = pAdpccCtx->stAuto.stFastMode.fast_mode_en == 0 ? false : true;
 
         if(fast_enable == false)
-            ret = Expert_mode_select_basic_params_by_ISO(&pAdpccCtx->stAuto.stBasicParams, &pAdpccCtx->stAuto.stBasicSelect, pExpInfo);
+            ret = Expert_mode_select_basic_params_by_ISO(&pAdpccCtx->stAuto.stBasicParams, &pAdpccResult->stBasic, pExpInfo);
         else
-            ret = Fast_mode_select_basic_params_by_ISO(pAdpccCtx, &pAdpccCtx->stAuto.stBasicSelect, pExpInfo);
+            ret = Fast_mode_select_basic_params_by_ISO(pAdpccCtx, &pAdpccResult->stBasic, pExpInfo);
 
-        ret = select_bpt_params_by_ISO(&pAdpccCtx->stAuto.stBptParams, &pAdpccCtx->stAuto.stBptSelect, pExpInfo);
-        ret = select_pdaf_params_by_ISO(&pAdpccCtx->stAuto.stPdafParams, &pAdpccCtx->stAuto.stPdafSelect, pExpInfo);
+        ret = select_bpt_params_by_ISO(&pAdpccCtx->stAuto.stBptParams, &pAdpccResult->stBpt, pExpInfo);
+        ret = select_pdaf_params_by_ISO(&pAdpccCtx->stAuto.stPdafParams, &pAdpccResult->stPdaf, pExpInfo);
 
         //sensor dpcc
         if(pAdpccCtx->stAuto.stSensorDpcc.en != 0 )
@@ -2864,14 +2866,14 @@ AdpccResult_t AdpccProcess(AdpccContext_t *pAdpccCtx, AdpccExpInfo_t *pExpInfo)
 
     } else if(pAdpccCtx->eMode == ADPCC_OP_MODE_MANUAL) {
         //TODO
-        LOGD_ADPCC("%s(%d): Adpcc Manual mode!!!\n", __FUNCTION__, __LINE__);
+        LOGD_ADPCC("%s(%d): Adpcc Manual mode!!!", __FUNCTION__, __LINE__);
         if(pAdpccCtx->stManual.stOnfly.mode == ADPCC_ONFLY_MODE_FAST)
-            ret = Api_Fast_mode_select(pAdpccCtx, &pAdpccCtx->stManual.stOnfly.expert_mode, &pAdpccCtx->stManual.stOnfly.fast_mode);
+            ret = Api_Fast_mode_select(pAdpccCtx, &pAdpccResult->stBasic, &pAdpccCtx->stManual.stOnfly.fast_mode);
         else
-            ret = Api_Expert_mode_select(&pAdpccCtx->stManual.stOnfly.expert_mode, &pAdpccCtx->stManual);
+            ret = Api_Expert_mode_select(&pAdpccResult->stBasic, &pAdpccCtx->stManual);
 
-        ret = Api_select_bpt_params(&pAdpccCtx->stManual.stBpt, &pAdpccCtx->stManual);
-        ret = Api_select_pdaf_params(&pAdpccCtx->stManual.stPdaf, &pAdpccCtx->stManual);
+        ret = Api_select_bpt_params(&pAdpccResult->stBpt, &pAdpccCtx->stManual);
+        ret = Api_select_pdaf_params(&pAdpccResult->stPdaf, &pAdpccCtx->stManual);
 
         //sensor dpcc api
         if(pAdpccCtx->stManual.stSensorDpcc.en)
@@ -2899,46 +2901,11 @@ AdpccResult_t AdpccProcess(AdpccContext_t *pAdpccCtx, AdpccExpInfo_t *pExpInfo)
             Sensor_dpcc_process(pAdpccCtx);
     }*/
     else
-        LOGE_ADPCC("%s(%d): Wrong api mode in dpcc!!!\n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s(%d): Wrong api mode in dpcc!!!", __FUNCTION__, __LINE__);
 
 
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
+    LOG1_ADPCC("%s(%d): exit!", __FUNCTION__, __LINE__);
     return ret;
-}
-
-AdpccResult_t AdpccGetProcResult(AdpccContext_t *pAdpccCtx, AdpccProcResult_t* pAdpccResult)
-{
-    LOGI_ADPCC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
-
-    if(pAdpccCtx == NULL) {
-        LOGE_ADPCC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ADPCC_RET_INVALID_PARM;
-    }
-
-    if(pAdpccResult == NULL) {
-        LOGE_ADPCC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
-        return ADPCC_RET_INVALID_PARM;
-    }
-
-    if(pAdpccCtx->eMode == ADPCC_OP_MODE_AUTO) {
-        pAdpccResult->stBasic = pAdpccCtx->stAuto.stBasicSelect;
-        pAdpccResult->stBpt = pAdpccCtx->stAuto.stBptSelect;
-        pAdpccResult->stPdaf = pAdpccCtx->stAuto.stPdafSelect;
-    } else if(pAdpccCtx->eMode == ADPCC_OP_MODE_MANUAL) {
-        //TODO
-        pAdpccResult->stBasic = pAdpccCtx->stManual.stOnfly.expert_mode;
-        pAdpccResult->stBpt = pAdpccCtx->stManual.stBpt;
-        pAdpccResult->stPdaf = pAdpccCtx->stManual.stPdaf;
-    } /*else if(pAdpccCtx->eMode == ADPCC_OP_MODE_TOOL) {
-        //TODO
-        pAdpccResult->stBasic = pAdpccCtx->stAuto.stBasicSelect;
-        pAdpccResult->stBpt = pAdpccCtx->stAuto.stBptSelect;
-        pAdpccResult->stPdaf = pAdpccCtx->stAuto.stPdafSelect;
-    }*/
-
-
-    LOGI_ADPCC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
-    return ADPCC_RET_SUCCESS;
 }
 
 

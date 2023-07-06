@@ -16,6 +16,7 @@ typedef struct _RkAiqAlgoContext {
     rk_aiq_aie_params_int_t sharp_params;
     rk_aiq_aie_params_int_t emboss_params;
     rk_aiq_aie_params_int_t sketch_params;
+    bool isReCal_;
 } RkAiqAlgoContext;
 
 #endif//__RKAIQ_TYPES_ALGO_AIE_PRVT_H__

@@ -62,7 +62,7 @@ public:
     virtual void releaseParams();
  protected:
     rkisp_effect_params_v20 _ispParams;
-    SmartPtr<RkAiqExpParamsProxy> _expParams;
+    SmartPtr<RkAiqSensorExpParamsProxy> _expParams;
  private:
     XCAM_DEAD_COPY (RkAiqResourceTranslator);
 };

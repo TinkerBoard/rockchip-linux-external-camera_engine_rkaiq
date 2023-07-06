@@ -32,8 +32,7 @@ RKAIQ_BEGIN_DECLARE
 XCamReturn AdegammaInit(AdegammaHandle_t** para, CamCalibDbV2Context_t* calib);
 XCamReturn AdegammaRelease(AdegammaHandle_t* para);
 XCamReturn AdegammaPreProc(AdegammaHandle_t* para);
-void AdegammaProcessing(AdegammaHandle_t* para);
-void AdegammaSetProcRes(AdegammaProcRes_t* AgammaProcRes, rk_aiq_degamma_cfg_t* agamma_config);
+void AdegammaProcessing(AdegammaHandle_t* para, AdegammaProcRes_t* AdegammaProcRes);
 
 
 RKAIQ_END_DECLARE

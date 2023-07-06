@@ -35,7 +35,10 @@ XCamReturn rk_aiq_uapi_amerge_v10_GetAttrib(RkAiqAlgoContext* ctx, mergeAttrV10_
     attr->opMode = pAmergeCtx->mergeAttrV10.opMode;
     memcpy(&attr->stManual, &pAmergeCtx->mergeAttrV10.stManual, sizeof(mMergeAttrV10_t));
     memcpy(&attr->stAuto, &pAmergeCtx->mergeAttrV10.stAuto, sizeof(CalibDbV2_merge_v10_t));
-    memcpy(&attr->Info, &pAmergeCtx->mergeAttrV10.Info, sizeof(MergeCurrCtlData_t));
+    // get info
+    attr->Info.Envlv    = pAmergeCtx->NextData.CtrlData.ExpoData.EnvLv;
+    attr->Info.ISO      = pAmergeCtx->NextData.CtrlData.ExpoData.ISO;
+    attr->Info.MoveCoef = pAmergeCtx->NextData.CtrlData.MoveCoef;
 
     return ret;
 }
@@ -75,7 +78,10 @@ XCamReturn rk_aiq_uapi_amerge_v11_GetAttrib(RkAiqAlgoContext* ctx, mergeAttrV11_
     attr->opMode = pAmergeCtx->mergeAttrV11.opMode;
     memcpy(&attr->stAuto, &pAmergeCtx->mergeAttrV11.stAuto, sizeof(CalibDbV2_merge_v11_t));
     memcpy(&attr->stManual, &pAmergeCtx->mergeAttrV11.stManual, sizeof(mMergeAttrV11_t));
-    memcpy(&attr->Info, &pAmergeCtx->mergeAttrV11.Info, sizeof(MergeCurrCtlData_t));
+    // get info
+    attr->Info.Envlv    = pAmergeCtx->NextData.CtrlData.ExpoData.EnvLv;
+    attr->Info.ISO      = pAmergeCtx->NextData.CtrlData.ExpoData.ISO;
+    attr->Info.MoveCoef = pAmergeCtx->NextData.CtrlData.MoveCoef;
 
     return ret;
 }
@@ -115,7 +121,10 @@ XCamReturn rk_aiq_uapi_amerge_v12_GetAttrib(RkAiqAlgoContext* ctx, mergeAttrV12_
     attr->opMode = pAmergeCtx->mergeAttrV12.opMode;
     memcpy(&attr->stAuto, &pAmergeCtx->mergeAttrV12.stAuto, sizeof(CalibDbV2_merge_v12_t));
     memcpy(&attr->stManual, &pAmergeCtx->mergeAttrV12.stManual, sizeof(mMergeAttrV12_t));
-    memcpy(&attr->Info, &pAmergeCtx->mergeAttrV12.Info, sizeof(MergeCurrCtlData_t));
+    // get info
+    attr->Info.Envlv    = pAmergeCtx->NextData.CtrlData.ExpoData.EnvLv;
+    attr->Info.ISO      = pAmergeCtx->NextData.CtrlData.ExpoData.ISO;
+    attr->Info.MoveCoef = pAmergeCtx->NextData.CtrlData.MoveCoef;
 
     return ret;
 }

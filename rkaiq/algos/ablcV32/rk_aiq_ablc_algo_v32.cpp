@@ -365,7 +365,7 @@ AblcResult_V32_t AblcV32Init(AblcContext_V32_t** ppAblcCtx, CamCalibDbV2Context_
     // init params for algo work
     pAblcCtx->eMode = ABLC_V32_OP_MODE_AUTO;
     pAblcCtx->isReCalculate |= 1;
-    pAblcCtx->isUpdateParam = true;
+    pAblcCtx->isUpdateParam = false;
 
     CalibDbV2_Blc_V32_t* ablc_calib =
         (CalibDbV2_Blc_V32_t*)(CALIBDBV2_GET_MODULE_PTR((void*)pCalibDb, ablcV32_calib));
@@ -413,100 +413,137 @@ AblcResult_V32_t AblcV32Process(AblcContext_V32_t* pAblcCtx, AblcExpInfo_V32_t* 
 
     if (pAblcCtx->eMode == ABLC_V32_OP_MODE_AUTO) {
         LOGD_ABLC("%s:(%d) Ablc auto !!! \n", __FUNCTION__, __LINE__);
-        ret = Ablc_Select_Params_By_ISO_V32(&pAblcCtx->stBlc0Params, &pAblcCtx->stBlc0Select,
-                                            pExpInfo);
-        if (pAblcCtx->stBlc0Select.enable) {
-
-            pAblcCtx->ProcRes.enable = pAblcCtx->stBlc0Select.enable;
-            pAblcCtx->ProcRes.blc_r  = pAblcCtx->stBlc0Select.blc_r;
-            pAblcCtx->ProcRes.blc_gr = pAblcCtx->stBlc0Select.blc_gr;
-            pAblcCtx->ProcRes.blc_gb = pAblcCtx->stBlc0Select.blc_gb;
-            pAblcCtx->ProcRes.blc_b  = pAblcCtx->stBlc0Select.blc_b;
-        } else {
-            pAblcCtx->ProcRes.enable = false;
-            pAblcCtx->ProcRes.blc_r  = 0;
-            pAblcCtx->ProcRes.blc_gr = 0;
-            pAblcCtx->ProcRes.blc_gb = 0;
-            pAblcCtx->ProcRes.blc_b  = 0;
-        }
-
-        ret = Ablc_Select_Params_By_ISO_V32(&pAblcCtx->stBlc1Params, &pAblcCtx->stBlc1Select,
-                                            pExpInfo);
-        if (pAblcCtx->stBlc1Select.enable) {
-            //hdr won't use blc1
-            pAblcCtx->ProcRes.blc1_enable = pAblcCtx->stBlc1Select.enable;
-            pAblcCtx->ProcRes.blc1_r      = pAblcCtx->stBlc1Select.blc_r * pExpInfo->isp_dgain[0];
-            pAblcCtx->ProcRes.blc1_gr     = pAblcCtx->stBlc1Select.blc_gr * pExpInfo->isp_dgain[0];
-            pAblcCtx->ProcRes.blc1_gb     = pAblcCtx->stBlc1Select.blc_gb * pExpInfo->isp_dgain[0];
-            pAblcCtx->ProcRes.blc1_b      = pAblcCtx->stBlc1Select.blc_b * pExpInfo->isp_dgain[0];
-        } else {
-            pAblcCtx->ProcRes.blc1_enable = false;
-            pAblcCtx->ProcRes.blc1_r      = 0;
-            pAblcCtx->ProcRes.blc1_gr     = 0;
-            pAblcCtx->ProcRes.blc1_gb     = 0;
-            pAblcCtx->ProcRes.blc1_b      = 0;
-        }
-
-        ret = Ablc_Select_OBParams_By_ISO_V32(&pAblcCtx->stBlcOBParams,
-                                              &pAblcCtx->stBlcOBSelect, pExpInfo);
-        if (pAblcCtx->stBlcOBSelect.enable) {
-            pAblcCtx->ProcRes.blc_ob_enable = pAblcCtx->stBlcOBSelect.enable;
-            // isp_ob_offset algo result
-            pAblcCtx->ProcRes.isp_ob_offset = pAblcCtx->stBlcOBSelect.ob_offset;
-            // isp_ob_predgain algo result
-            pAblcCtx->ProcRes.isp_ob_predgain = pAblcCtx->stBlcOBSelect.ob_predgain;
-            // isp_ob_max algo result
-            pAblcCtx->ProcRes.isp_ob_max = (int)(4096 * pAblcCtx->ProcRes.isp_ob_predgain) - pAblcCtx->ProcRes.isp_ob_offset;
-        } else {
-            pAblcCtx->ProcRes.blc_ob_enable   = false;
-            pAblcCtx->ProcRes.isp_ob_offset   = 0;
-            pAblcCtx->ProcRes.isp_ob_predgain = 1;
-            pAblcCtx->ProcRes.isp_ob_max      = 0xfffff;
-        }
+        ret = Ablc_Select_Params_By_ISO_V32(&pAblcCtx->stBlc0Params, &pAblcCtx->stBlc0Select, pExpInfo);
+        ret = Ablc_Select_Params_By_ISO_V32(&pAblcCtx->stBlc1Params, &pAblcCtx->stBlc1Select, pExpInfo);
+        ret = Ablc_Select_OBParams_By_ISO_V32(&pAblcCtx->stBlcOBParams, &pAblcCtx->stBlcOBSelect, pExpInfo);
+        pAblcCtx->stBlc1Select.blc_r *= pExpInfo->isp_dgain[0];
+        pAblcCtx->stBlc1Select.blc_gr *= pExpInfo->isp_dgain[0];
+        pAblcCtx->stBlc1Select.blc_gb *= pExpInfo->isp_dgain[0];
+        pAblcCtx->stBlc1Select.blc_b *= pExpInfo->isp_dgain[0];
     } else if (pAblcCtx->eMode == ABLC_V32_OP_MODE_MANUAL) {
         LOGE_ABLC("%s:(%d) Ablc manual !!! \n", __FUNCTION__, __LINE__);
-        pAblcCtx->ProcRes.enable = pAblcCtx->stBlc0Manual.enable;
-        pAblcCtx->ProcRes.blc_r  = pAblcCtx->stBlc0Manual.blc_r;
-        pAblcCtx->ProcRes.blc_gr = pAblcCtx->stBlc0Manual.blc_gr;
-        pAblcCtx->ProcRes.blc_gb = pAblcCtx->stBlc0Manual.blc_gb;
-        pAblcCtx->ProcRes.blc_b  = pAblcCtx->stBlc0Manual.blc_b;
 
-        pAblcCtx->ProcRes.blc1_enable = pAblcCtx->stBlc1Manual.enable;
-        pAblcCtx->ProcRes.blc1_r      = pAblcCtx->stBlc1Manual.blc_r * pExpInfo->isp_dgain[0];
-        pAblcCtx->ProcRes.blc1_gr     = pAblcCtx->stBlc1Manual.blc_gr * pExpInfo->isp_dgain[0];
-        pAblcCtx->ProcRes.blc1_gb     = pAblcCtx->stBlc1Manual.blc_gb * pExpInfo->isp_dgain[0];
-        pAblcCtx->ProcRes.blc1_b      = pAblcCtx->stBlc1Manual.blc_b * pExpInfo->isp_dgain[0];
-
-        if (pAblcCtx->stBlcOBManual.enable) {
-            pAblcCtx->ProcRes.blc_ob_enable = pAblcCtx->stBlcOBManual.enable;
-            // isp_ob_offset
-            pAblcCtx->ProcRes.isp_ob_offset = pAblcCtx->stBlcOBManual.ob_offset;
-            // isp_ob_predgain
-            pAblcCtx->ProcRes.isp_ob_predgain = pAblcCtx->stBlcOBManual.ob_predgain;
-            // isp_ob_max
-            pAblcCtx->ProcRes.isp_ob_max = (int)(4096 * pAblcCtx->stBlcOBManual.ob_predgain) - pAblcCtx->stBlcOBManual.ob_offset;
-        } else {
-            pAblcCtx->ProcRes.blc_ob_enable   = false;
-            pAblcCtx->ProcRes.isp_ob_offset   = 0;
-            pAblcCtx->ProcRes.isp_ob_predgain = 1;
-            pAblcCtx->ProcRes.isp_ob_max      = 0xfffff;
-        }
+        pAblcCtx->stBlc1Manual.blc_r *= pExpInfo->isp_dgain[0];
+        pAblcCtx->stBlc1Manual.blc_gr *= pExpInfo->isp_dgain[0];
+        pAblcCtx->stBlc1Manual.blc_gb *= pExpInfo->isp_dgain[0];
+        pAblcCtx->stBlc1Manual.blc_b *= pExpInfo->isp_dgain[0];
     } else {
         LOGE_ABLC("%s(%d): not support mode:%d!\n", __FUNCTION__, __LINE__, pAblcCtx->eMode);
     }
 
-    LOGD_ABLC("%s(%d): Ablc en:%d blc:%d %d %d %d \n", __FUNCTION__, __LINE__,
-              pAblcCtx->ProcRes.enable, pAblcCtx->ProcRes.blc_r, pAblcCtx->ProcRes.blc_gr,
-              pAblcCtx->ProcRes.blc_gb, pAblcCtx->ProcRes.blc_b);
-
-    LOGD_ABLC("%s(%d): Ablc1 en:%d blc:%d %d %d %d \n", __FUNCTION__, __LINE__,
-              pAblcCtx->ProcRes.blc1_enable, pAblcCtx->ProcRes.blc1_r, pAblcCtx->ProcRes.blc1_gr,
-              pAblcCtx->ProcRes.blc1_gb, pAblcCtx->ProcRes.blc1_b);
-    LOGD_ABLC("%s(%d): AblcOB en:%d ob_offset: %d ob_predgain: %f ob_max: %d \n", __FUNCTION__,
-              __LINE__, pAblcCtx->ProcRes.blc_ob_enable, pAblcCtx->ProcRes.isp_ob_offset,
-              pAblcCtx->ProcRes.isp_ob_predgain, pAblcCtx->ProcRes.isp_ob_max);
-
     LOG1_ABLC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
 
     return ret;
+}
+
+//ablc get result
+AblcResult_V32_t Ablc_GetProcResult_V32(AblcContext_V32_t* pAblcCtx, AblcProc_V32_t* pAblcResult)
+{
+    LOGD_ABLC("%s(%d): enter!\n", __FUNCTION__, __LINE__);
+
+    if (pAblcCtx == NULL) {
+        LOGE_ABLC("%s(%d): null pointer\n", __FUNCTION__, __LINE__);
+        return ABLC_V32_RET_NULL_POINTER;
+    }
+
+    if (pAblcResult == NULL) {
+        LOGE_ABLC("%s(%d): null pointer \n", __FUNCTION__, __LINE__);
+        return ABLC_V32_RET_NULL_POINTER;
+    }
+
+    if (pAblcCtx->eMode == ABLC_V32_OP_MODE_AUTO) {
+        if (pAblcCtx->stBlc0Select.enable) {
+            pAblcResult->enable = pAblcCtx->stBlc0Select.enable;
+            pAblcResult->blc_r  = pAblcCtx->stBlc0Select.blc_r;
+            pAblcResult->blc_gr = pAblcCtx->stBlc0Select.blc_gr;
+            pAblcResult->blc_gb = pAblcCtx->stBlc0Select.blc_gb;
+            pAblcResult->blc_b  = pAblcCtx->stBlc0Select.blc_b;
+        } else {
+            pAblcResult->enable = false;
+            pAblcResult->blc_r  = 0;
+            pAblcResult->blc_gr = 0;
+            pAblcResult->blc_gb = 0;
+            pAblcResult->blc_b  = 0;
+        }
+        if (pAblcCtx->stBlc1Select.enable) {
+            //hdr won't use blc1
+            pAblcResult->blc1_enable = pAblcCtx->stBlc1Select.enable;
+            pAblcResult->blc1_r      = pAblcCtx->stBlc1Select.blc_r;
+            pAblcResult->blc1_gr     = pAblcCtx->stBlc1Select.blc_gr;
+            pAblcResult->blc1_gb     = pAblcCtx->stBlc1Select.blc_gb;
+            pAblcResult->blc1_b      = pAblcCtx->stBlc1Select.blc_b;
+        } else {
+            pAblcResult->blc1_enable = false;
+            pAblcResult->blc1_r      = 0;
+            pAblcResult->blc1_gr     = 0;
+            pAblcResult->blc1_gb     = 0;
+            pAblcResult->blc1_b      = 0;
+        }
+        if (pAblcCtx->stBlcOBSelect.enable) {
+            pAblcResult->blc_ob_enable = pAblcCtx->stBlcOBSelect.enable;
+            // isp_ob_offset algo result
+            pAblcResult->isp_ob_offset = pAblcCtx->stBlcOBSelect.ob_offset;
+            // isp_ob_predgain algo result
+            pAblcResult->isp_ob_predgain = pAblcCtx->stBlcOBSelect.ob_predgain;
+            // isp_ob_max algo result
+            pAblcResult->isp_ob_max = (int)(4096 * pAblcResult->isp_ob_predgain) - pAblcResult->isp_ob_offset;
+        } else {
+            pAblcResult->blc_ob_enable   = false;
+            pAblcResult->isp_ob_offset   = 0;
+            pAblcResult->isp_ob_predgain = 1;
+            pAblcResult->isp_ob_max      = 0xfffff;
+        }
+    } else if (pAblcCtx->eMode == ABLC_V32_OP_MODE_MANUAL){
+        pAblcResult->enable = pAblcCtx->stBlc0Manual.enable;
+        if (pAblcResult->enable) {
+            pAblcResult->blc_r  = pAblcCtx->stBlc0Manual.blc_r;
+            pAblcResult->blc_gr = pAblcCtx->stBlc0Manual.blc_gr;
+            pAblcResult->blc_gb = pAblcCtx->stBlc0Manual.blc_gb;
+            pAblcResult->blc_b  = pAblcCtx->stBlc0Manual.blc_b;
+        } else {
+            pAblcResult->enable = false;
+            pAblcResult->blc_r  = 0;
+            pAblcResult->blc_gr = 0;
+            pAblcResult->blc_gb = 0;
+            pAblcResult->blc_b  = 0;
+        }
+        if (pAblcCtx->stBlc1Manual.enable) {
+            pAblcResult->blc1_enable = pAblcCtx->stBlc1Manual.enable;
+            pAblcResult->blc1_r      = pAblcCtx->stBlc1Manual.blc_r;
+            pAblcResult->blc1_gr     = pAblcCtx->stBlc1Manual.blc_gr;
+            pAblcResult->blc1_gb     = pAblcCtx->stBlc1Manual.blc_gb;
+            pAblcResult->blc1_b      = pAblcCtx->stBlc1Manual.blc_b;
+        }
+        if (pAblcCtx->stBlcOBManual.enable) {
+            pAblcResult->blc_ob_enable = pAblcCtx->stBlcOBManual.enable;
+            // isp_ob_offset
+            pAblcResult->isp_ob_offset = pAblcCtx->stBlcOBManual.ob_offset;
+            // isp_ob_predgain
+            pAblcResult->isp_ob_predgain = pAblcCtx->stBlcOBManual.ob_predgain;
+            // isp_ob_max
+            pAblcResult->isp_ob_max = (int)(4096 * pAblcCtx->stBlcOBManual.ob_predgain) - pAblcCtx->stBlcOBManual.ob_offset;
+        } else {
+            pAblcResult->blc_ob_enable   = false;
+            pAblcResult->isp_ob_offset   = 0;
+            pAblcResult->isp_ob_predgain = 1;
+            pAblcResult->isp_ob_max      = 0xfffff;
+        }
+    }
+
+    if (pAblcCtx->stExpInfo.hdr_mode) {
+        //hdr_mode won't use blc1
+        pAblcResult->blc1_enable = false;
+        pAblcResult->blc1_r      = 0;
+        pAblcResult->blc1_gr     = 0;
+        pAblcResult->blc1_gb     = 0;
+        pAblcResult->blc1_b      = 0;
+
+        //hdr_mode won't use blc_ob
+        pAblcResult->blc_ob_enable   = false;
+        pAblcResult->isp_ob_offset   = 0;
+        pAblcResult->isp_ob_predgain = 1;
+        pAblcResult->isp_ob_max      = 0xfffff;
+    }
+
+    return ABLC_V32_RET_SUCCESS;
 }

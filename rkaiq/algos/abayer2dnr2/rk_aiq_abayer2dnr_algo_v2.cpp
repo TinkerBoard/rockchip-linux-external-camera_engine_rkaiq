@@ -233,23 +233,22 @@ Abayer2dnr_result_V2_t Abayer2dnr_GetProcResult_V2(Abayer2dnr_Context_V2_t *pAba
         return ABAYER2DNR_RET_INVALID_PARM;
     }
 
+    RK_Bayer2dnr_Params_V2_Select_t* st2DSelect = NULL;
     if(pAbayernrCtx->eMode == ABAYER2DNR_OP_MODE_AUTO) {
-
-        pAbayernrResult->st2DSelect = pAbayernrCtx->stAuto.st2DSelect;
+        st2DSelect = &pAbayernrCtx->stAuto.st2DSelect;
     } else if(pAbayernrCtx->eMode == ABAYER2DNR_OP_MODE_MANUAL) {
-        pAbayernrResult->st2DSelect = pAbayernrCtx->stManual.st2DSelect;
+        st2DSelect = &pAbayernrCtx->stManual.st2DSelect;
     }
 
     //transfer to reg value
-    bayer2dnr_fix_transfer_V2(&pAbayernrResult->st2DSelect, &pAbayernrResult->st2DFix, &pAbayernrCtx->stStrength, &pAbayernrCtx->stExpInfo);
+    bayer2dnr_fix_transfer_V2(st2DSelect, pAbayernrResult->st2DFix, &pAbayernrCtx->stStrength, &pAbayernrCtx->stExpInfo);
 
     if(pAbayernrCtx->eMode == ABAYER2DNR_OP_MODE_REG_MANUAL) {
-        pAbayernrResult->st2DFix = pAbayernrCtx->stManual.st2Dfix;
+        *pAbayernrResult->st2DFix = pAbayernrCtx->stManual.st2Dfix;
         pAbayernrCtx->stStrength.percent = 1.0;
         pAbayernrCtx->stStrength.strength_enable = false;
     }
 
-    pAbayernrCtx->stProcResult = *pAbayernrResult;
     LOGD_ANR("%s:%d xml:local:%d mode:%d  reg: local gain:%d  mfnr gain:%d mode:%d\n",
              __FUNCTION__, __LINE__);
 

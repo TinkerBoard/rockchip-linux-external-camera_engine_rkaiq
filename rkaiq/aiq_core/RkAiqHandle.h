@@ -143,6 +143,7 @@ class RkAiqHandle {
     RkAiqHandle* mParentHdl;
     bool mIsMulRun;
     bool mPostShared;
+    uint32_t mSyncFlag{(uint32_t)(-1)};
 };
 
 template <typename T>

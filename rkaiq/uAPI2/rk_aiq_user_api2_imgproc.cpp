@@ -3500,26 +3500,6 @@ XCamReturn rk_aiq_uapi2_setAngleZ(const rk_aiq_sys_ctx_t* ctx, float angleZ)
     return ret;
 }
 
-XCamReturn rk_aiq_uapi2_getCustomAfRes(const rk_aiq_sys_ctx_t* ctx, rk_tool_customAf_res_t *attr)
-{
-    XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    IMGPROC_FUNC_ENTER
-    ret = rk_aiq_user_api2_af_getCustomAfRes(ctx, attr);
-    IMGPROC_FUNC_EXIT
-
-    return ret;
-}
-
-XCamReturn rk_aiq_uapi2_setCustomAfRes(const rk_aiq_sys_ctx_t* ctx, rk_tool_customAf_res_t *attr)
-{
-    XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    IMGPROC_FUNC_ENTER
-    ret = rk_aiq_user_api2_af_setCustomAfRes(ctx, attr);
-    IMGPROC_FUNC_EXIT
-
-    return ret;
-}
-
 /*
 **********************************************************
 * Color Correction

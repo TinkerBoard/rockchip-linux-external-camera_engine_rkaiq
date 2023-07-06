@@ -323,7 +323,7 @@ RkAiqManager::prepare(uint32_t width, uint32_t height, rk_aiq_working_mode_t mod
 #ifdef RKAIQ_ENABLE_CAMGROUP
     if (!mCamGroupCoreManager) {
 #endif
-        ret = applyAnalyzerResult(initParams);
+        ret = applyAnalyzerResult(initParams, true);
         RKAIQMNG_CHECK_RET(ret, "set initial params error %d", ret);
 #ifdef RKAIQ_ENABLE_CAMGROUP
     }
@@ -359,7 +359,7 @@ RkAiqManager::start()
             initParams->data()->mIsppMeasParams->data()->frame_id = 0;
         }
 #endif
-        applyAnalyzerResult(initParams);
+        applyAnalyzerResult(initParams, true);
     } else if (_state == AIQ_STATE_STARTED) {
         return ret;
     }
@@ -581,14 +581,16 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
     } else if (hwres->_buf_type == ISPP_POLL_NR_STATS) {
         ret = mRkAiqAnalyzer->pushStats(hwres);
     } else if (hwres->_buf_type == ISP_POLL_SOF) {
-        xcam_get_runtime_log_level();
-
         SmartPtr<CamHwIsp20> mCamHwIsp20 = mCamHw.dynamic_cast_ptr<CamHwIsp20>();
         mCamHwIsp20->notify_sof(hwres);
 
         SmartPtr<SofEventBuffer> evtbuf = hwres.dynamic_cast_ptr<SofEventBuffer>();
         SmartPtr<SofEventData> evtdata = evtbuf->get_data();
         SmartPtr<ispHwEvt_t> hw_evt = mCamHwIsp20->make_ispHwEvt(evtdata->_frameid, V4L2_EVENT_FRAME_SYNC, evtdata->_timestamp);
+
+        if (evtdata->_frameid % 100 == 0)
+            xcam_get_runtime_log_level();
+
         if (mTbInfo.is_pre_aiq) {
             LOGE("<TB> skip real sof %d\n", evtdata->_frameid);
             return ret;
@@ -724,7 +726,7 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
 }
 
 XCamReturn
-RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
+RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results, bool ignoreIsUpdate)
 {
     ENTER_XCORE_FUNCTION();
     //xcam_get_runtime_log_level();
@@ -749,15 +751,19 @@ RkAiqManager::applyAnalyzerResult(SmartPtr<RkAiqFullParamsProxy>& results)
         results_list.push_back(aiqParams->mIrisParams);
     }
 
-    if (aiqParams->mFocusParams.ptr()) {
+    if (aiqParams->mFocusParams.ptr() && (ignoreIsUpdate || aiqParams->mFocusParams->data()->is_update)) {
         aiqParams->mFocusParams->setType(RESULT_TYPE_FOCUS_PARAM);
+        aiqParams->mFocusParams->data()->is_update = false;
         results_list.push_back(aiqParams->mFocusParams);
     }
 
+
 #define APPLY_ANALYZER_RESULT(lc, BC) \
-    if (aiqParams->m##lc##Params.ptr()) { \
+    if (aiqParams->m##lc##Params.ptr() && (ignoreIsUpdate || aiqParams->m##lc##Params->data()->is_update)) { \
+        LOGD("new result type: %s", #BC);\
         aiqParams->m##lc##Params->setType(RESULT_TYPE_##BC##_PARAM); \
         aiqParams->m##lc##Params->setId(aiqParams->mFrmId); \
+        aiqParams->m##lc##Params->data()->is_update = false; \
         results_list.push_back(aiqParams->m##lc##Params); \
     } \
 

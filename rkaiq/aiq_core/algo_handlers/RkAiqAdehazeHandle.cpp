@@ -138,58 +138,60 @@ XCamReturn RkAiqAdehazeHandleInt::processing() {
 
     RkAiqAdehazeStats* xDehazeStats = nullptr;
     if (shared->adehazeStatsBuf) {
-        xDehazeStats = (RkAiqAdehazeStats*)shared->adehazeStatsBuf->map(shared->adehazeStatsBuf);
+        xDehazeStats = shared->adehazeStatsBuf;
         if (!xDehazeStats) LOGE_ADEHAZE("dehaze stats is null");
     } else {
         LOGW_ADEHAZE("the xcamvideobuffer of isp stats is null");
     }
 
     if (!xDehazeStats || !xDehazeStats->adehaze_stats_valid) {
-        LOGE_ADEHAZE("no adehaze stats, ignore!");
-        adhaz_proc_int->stats.stats_true = false;
+        LOGW_ADEHAZE("no adehaze stats, ignore!");
+        adhaz_proc_int->stats_true = false;
     } else {
-        adhaz_proc_int->stats.stats_true = true;
+        adhaz_proc_int->stats_true = true;
 
 #if RKAIQ_HAVE_DEHAZE_V10
-        memcpy(&adhaz_proc_int->stats.dehaze_stats_v10,
-               &xDehazeStats->adehaze_stats.dehaze_stats_v10, sizeof(dehaze_stats_v10_t));
+    adhaz_proc_int->dehaze_stats_v10 = &xDehazeStats->adehaze_stats.dehaze_stats_v10;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11
-        memcpy(&adhaz_proc_int->stats.dehaze_stats_v11,
-               &xDehazeStats->adehaze_stats.dehaze_stats_v11, sizeof(dehaze_stats_v11_t));
+    adhaz_proc_int->dehaze_stats_v11 = &xDehazeStats->adehaze_stats.dehaze_stats_v11;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
-        memcpy(&adhaz_proc_int->stats.dehaze_stats_v11_duo,
-               &xDehazeStats->adehaze_stats.dehaze_stats_v11_duo, sizeof(dehaze_stats_v11_duo_t));
+    adhaz_proc_int->dehaze_stats_v11_duo = &xDehazeStats->adehaze_stats.dehaze_stats_v11_duo;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
-        memcpy(&adhaz_proc_int->stats.dehaze_stats_v12,
-               &xDehazeStats->adehaze_stats.dehaze_stats_v12, sizeof(dehaze_stats_v12_t));
+    adhaz_proc_int->dehaze_stats_v12 = &xDehazeStats->adehaze_stats.dehaze_stats_v12;
 #endif
     }
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
 #if RKAIQ_HAVE_YNR_V3
-    for (int i = 0; i < YNR_V3_ISO_CURVE_POINT_NUM; i++)
-        adhaz_proc_int->sigma_v3[i] = shared->res_comb.aynrV3_proc_res.stSelect.sigma[i];
+    if (shared->res_comb.aynrV22_proc_res) {
+        for (int i = 0; i < YNR_V3_ISO_CURVE_POINT_NUM; i++)
+            adhaz_proc_int->sigma_v3[i] = shared->res_comb.aynrV3_proc_res->stSelect->sigma[i];
+    }
 #else
     for (int i = 0; i < YNR_V3_ISO_CURVE_POINT_NUM; i++) adhaz_proc_int->sigma_v3[i] = 0.0f;
 #endif
 #endif
 #if RKAIQ_HAVE_DEHAZE_V12
 #if RKAIQ_HAVE_YNR_V22
-    for (int i = 0; i < YNR_V22_ISO_CURVE_POINT_NUM; i++)
-        adhaz_proc_int->sigma_v22[i] = shared->res_comb.aynrV22_proc_res.stSelect.sigma[i];
+    if (shared->res_comb.aynrV22_proc_res) {
+        for (int i = 0; i < YNR_V22_ISO_CURVE_POINT_NUM; i++)
+            adhaz_proc_int->sigma_v22[i] = shared->res_comb.aynrV22_proc_res->stSelect->sigma[i];
+    }
 #else
     for (int i = 0; i < YNR_V22_ISO_CURVE_POINT_NUM; i++) adhaz_proc_int->sigma_v22[i] = 0.0f;
 #endif
 #if RKAIQ_HAVE_BLC_V32
-    adhaz_proc_int->OBResV12.blc_ob_enable   = shared->res_comb.ablcV32_proc_res.blc_ob_enable;
-    adhaz_proc_int->OBResV12.isp_ob_predgain = shared->res_comb.ablcV32_proc_res.isp_ob_predgain;
+    adhaz_proc_int->OBResV12.blc_ob_enable   = shared->res_comb.ablcV32_proc_res->blc_ob_enable;
+    adhaz_proc_int->OBResV12.isp_ob_predgain = shared->res_comb.ablcV32_proc_res->isp_ob_predgain;
 #else
     adhaz_proc_int->OBResV12.blc_ob_enable   = false;
     adhaz_proc_int->OBResV12.isp_ob_predgain = 1.0f;
 #endif
 #endif
+
+    adhaz_proc_res_int->AdehzeProcRes = &shared->fullParams->mDehazeParams->data()->result;
 
     ret = RkAiqHandle::processing();
     if (ret) {
@@ -501,13 +503,31 @@ XCamReturn RkAiqAdehazeHandleInt::genIspResult(RkAiqFullParams* params,
     } else {
         dehaze_param->frame_id = shared->frameId;
     }
-    dehaze_param->result = adhaz_com->AdehzeProcRes;
 
-    if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAdhaz* adhaz_rk = (RkAiqAlgoProcResAdhaz*)adhaz_com;
+    if (adhaz_com->res_com.cfg_update) {
+        mSyncFlag = shared->frameId;
+        dehaze_param->sync_flag = mSyncFlag;
+        // copy from algo result
+        // set as the latest result
+        cur_params->mDehazeParams = params->mDehazeParams;
+        dehaze_param->is_update = true;
+        LOGD_ADEHAZE("[%d] params from algo", mSyncFlag);
+    } else if (mSyncFlag != dehaze_param->sync_flag) {
+        dehaze_param->sync_flag = mSyncFlag;
+        // copy from latest result
+        if (cur_params->mDehazeParams.ptr()) {
+            dehaze_param->result = cur_params->mDehazeParams->data()->result;
+            dehaze_param->is_update = true;
+        } else {
+            LOGE_ADEHAZE("no latest params !");
+            dehaze_param->is_update = false;
+        }
+        LOGD_ADEHAZE("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+    } else {
+        // do nothing, result in buf needn't update
+        dehaze_param->is_update = false;
+        LOGD_ADEHAZE("[%d] params needn't update", shared->frameId);
     }
-
-    cur_params->mDehazeParams = params->mDehazeParams;
 
     EXIT_ANALYZER_FUNCTION();
 

@@ -95,7 +95,6 @@ typedef struct rkaiq_gic_v2_hw_param_s {
 } __attribute__((packed)) rkaiq_gic_v2_hw_param_t;
 
 typedef struct AgicProcResult_s {
-    bool gic_cfg_update;
     union {
         rkaiq_gic_v1_hw_param_t ProcResV20;
         rkaiq_gic_v2_hw_param_t ProcResV21;

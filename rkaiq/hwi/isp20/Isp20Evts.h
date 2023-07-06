@@ -37,7 +37,7 @@ public:
     }
     virtual ~Isp20Evt() {}
 
-    XCamReturn getExpInfoParams(SmartPtr<RkAiqExpParamsProxy>& expInfo, uint32_t frameId);
+    XCamReturn getExpInfoParams(SmartPtr<RkAiqSensorExpParamsProxy>& expInfo, uint32_t frameId);
 
     void setSofTimeStamp(int64_t timestamp) {
         mTimestamp = timestamp;

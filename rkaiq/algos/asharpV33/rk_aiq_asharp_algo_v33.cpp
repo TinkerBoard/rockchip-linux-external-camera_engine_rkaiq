@@ -285,9 +285,9 @@ Asharp_result_V33_t Asharp_GetProcResult_V33(Asharp_Context_V33_t* pAsharpCtx,
     }
 
     // transfer to reg value
-    sharp_fix_transfer_V33(stSelect, &pAsharpResult->stFix, &pAsharpCtx->stStrength, &pAsharpCtx->stExpInfo);
+    sharp_fix_transfer_V33(stSelect, pAsharpResult->stFix, &pAsharpCtx->stStrength, &pAsharpCtx->stExpInfo);
     if (pAsharpCtx->eMode == ASHARP_V33_OP_MODE_REG_MANUAL) {
-        pAsharpResult->stFix        = pAsharpCtx->stManual.stFix;
+        *pAsharpResult->stFix        = pAsharpCtx->stManual.stFix;
         pAsharpCtx->stStrength.percent = 1.0;
     }
 

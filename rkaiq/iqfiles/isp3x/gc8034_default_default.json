@@ -1290,7 +1290,7 @@
 							"MergeTuningPara":	{
 								"BaseFrm":	"BASEFRAME_LONG",
 								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
-								"ByPassThr":	0,
+								"ByPassThr":	0.01,
 								"LongFrmModeData":	{
 									"OECurve":	{
 										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
@@ -1361,7 +1361,7 @@
 									"Manual_curve":	[0, 558, 1087, 1588, 2063, 2515, 2944, 3353, 3744, 4473, 5139, 5751, 6316, 6838, 7322, 7772, 8192]
 								},
 								"Scale_y":	[0, 2, 20, 76, 193, 381, 631, 772, 919, 1066, 1211, 1479, 1700, 1863, 1968, 2024, 2048],
-								"ByPassThr":	0,
+								"ByPassThr":	0.01,
 								"Edge_Weit":	1,
 								"OutPutLongFrame":	0,
 								"IIR_frame":	2,
@@ -1380,7 +1380,7 @@
 								"Enable":	1,
 								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"cfg_alpha":	1,
-								"ByPassThr":	0,
+								"ByPassThr":	0.01,
 								"dehaze_setting":	{
 									"en":	1,
 									"air_lc_en":	1,
@@ -5812,10 +5812,13 @@
 									"pdBlkLevel":	64,
 									"pdSearchRadius":	1,
 									"pdMirrorInCalib":	0,
+									"pdChangeLeftRight":	0,
 									"pdVsImgoutMirror":	0,
 									"pdLRInDiffLine":	1,
 									"pdWidth":	508,
 									"pdHeight":	1528,
+									"pdMaxWidth":	508,
+									"pdMaxHeight":	1528,
 									"pdVerBinning":	1,
 									"pdFrmInValid":	0,
 									"pdDgainValid":	0,
@@ -5923,7 +5926,18 @@
 												}],
 											"fineSearchTbl_len":	2
 										}],
-									"pdIsoPara_len":	3
+									"pdIsoPara_len":	3,
+									"pdResoInf":	[{
+											"imageWidth":	0,
+											"imageHeight":	0,
+											"pdOutWidth":	0,
+											"pdOutHeight":	0,
+											"pdCropX":	0,
+											"pdCropY":	0,
+											"pdBaseWidth":	0,
+											"pdBaseHeight":	0
+										}],
+									"pdResoInf_len":	1
 								},
 								"vcmcfg":	{
 									"max_logical_pos":	64,

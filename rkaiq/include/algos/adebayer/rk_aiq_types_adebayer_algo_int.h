@@ -112,11 +112,11 @@ typedef struct AdebayerSeletedParamV2Lite_s {
 } AdebayerSeletedParamV2Lite_t;
 
 typedef struct AdebayerProcResultV1_s {
-    AdebayerHwConfigV1_t config;
+    AdebayerHwConfigV1_t* config;
 } AdebayerProcResultV1_t;
 
 typedef struct AdebayerProcResultV2_s {
-    AdebayerHwConfigV2_t config;
+    AdebayerHwConfigV2_t* config;
 } AdebayerProcResultV2_t;
 
 #endif//__RKAIQ_TYPES_ADEBAYER_ALGO_INT_H__

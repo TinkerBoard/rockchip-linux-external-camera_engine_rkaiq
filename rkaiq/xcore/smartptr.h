@@ -210,6 +210,17 @@ public:
         return ret;
     }
 
+    template <typename ObjDerive>
+    ObjDerive* get_cast_ptr () const {
+        ObjDerive *obj_derive(NULL);
+        if (!_ref)
+            return NULL;
+        obj_derive = dynamic_cast<ObjDerive*>(_ptr);
+        if (!obj_derive)
+            return NULL;
+        return obj_derive;
+    }
+
 private:
     template <typename ObjD>
     void set_pointer (ObjD *obj, RefObj *ref) {

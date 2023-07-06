@@ -28,13 +28,12 @@
 
 
 typedef struct AdegammaHandle_s {
-    rk_aiq_degamma_cfg_t  adegamma_config;
     CalibDbV2_Adegmma_t *pCalibDb;
     rk_aiq_degamma_attr_t adegammaAttr;
-    AdegammaProcRes_t ProcRes;
     int working_mode;
     int Scene_mode;
     int prepare_type;
+    bool isReCal_;
 } AdegammaHandle_t;
 
 #endif

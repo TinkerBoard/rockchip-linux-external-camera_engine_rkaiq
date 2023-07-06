@@ -38,18 +38,8 @@ XCamReturn AgammaInit(AgammaHandle_t** pGammaCtx, CamCalibDbV2Context_t* pCalib)
         return XCAM_RETURN_ERROR_MEM;
     }
     memcpy(&handle->agammaAttrV10.stAuto, calibv2_agamma_calib, sizeof(CalibDbV2_gamma_v10_t));
-
-    // default para
-    handle->CurrApiMode                     = RK_AIQ_GAMMA_MODE_AUTO;
     handle->agammaAttrV10.mode              = RK_AIQ_GAMMA_MODE_AUTO;
-    handle->agammaAttrV10.stManual.Gamma_en = handle->agammaAttrV10.stAuto.GammaTuningPara.Gamma_en;
-    handle->agammaAttrV10.stManual.Gamma_out_segnum =
-        handle->agammaAttrV10.stAuto.GammaTuningPara.Gamma_out_segnum;
-    handle->agammaAttrV10.stManual.Gamma_out_offset =
-        handle->agammaAttrV10.stAuto.GammaTuningPara.Gamma_out_offset;
-    for (int i = 0; i < CALIBDB_AGAMMA_KNOTS_NUM_V10; i++)
-        handle->agammaAttrV10.stManual.Gamma_curve[i] =
-            handle->agammaAttrV10.stAuto.GammaTuningPara.Gamma_curve[i];
+    handle->ifReCalcStAuto                  = true;
 
     *pGammaCtx = handle;
     LOG1_AGAMMA("EXIT: %s \n", __func__);

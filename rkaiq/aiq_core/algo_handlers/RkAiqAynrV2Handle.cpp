@@ -238,6 +238,8 @@ XCamReturn RkAiqAynrV2HandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    aynr_proc_res_int->stAynrProcResult.stFix = &shared->fullParams->mYnrV21Params->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "aynr handle processing failed");
@@ -310,11 +312,32 @@ XCamReturn RkAiqAynrV2HandleInt::genIspResult(RkAiqFullParams* params,
         } else {
             ynr_param->frame_id = shared->frameId;
         }
-        memcpy(&ynr_param->result, &aynr_rk->stAynrProcResult.stFix, sizeof(RK_YNR_Fix_V2_t));
+
+        if (aynr_rk->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            ynr_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            cur_params->mYnrV21Params = params->mYnrV21Params;
+            ynr_param->is_update = true;
+            LOGD_ANR("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != ynr_param->sync_flag) {
+            ynr_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mYnrV21Params.ptr()) {
+                ynr_param->result = cur_params->mYnrV21Params->data()->result;
+                ynr_param->is_update = true;
+            } else {
+                LOGE_ANR("no latest params !");
+                ynr_param->is_update = false;
+            }
+            LOGD_ANR("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            ynr_param->is_update = false;
+            LOGD_ANR("[%d] params needn't update", shared->frameId);
+        }
         LOGD_ANR("oyyf: %s:%d output isp param end \n", __FUNCTION__, __LINE__);
     }
-
-    cur_params->mYnrV21Params = params->mYnrV21Params;
 
     EXIT_ANALYZER_FUNCTION();
 

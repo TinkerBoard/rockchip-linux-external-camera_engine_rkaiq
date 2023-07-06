@@ -71,7 +71,7 @@ protected:
     rk_aiq_ynr_strength_v3_t mNewStrength;
     mutable std::atomic<bool> updateStrength;
 #endif
-
+    Aynr_ProcResult_V3_t mLatestparam; 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAynrV3HandleInt);
 };

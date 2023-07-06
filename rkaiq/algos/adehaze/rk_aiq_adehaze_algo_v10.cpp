@@ -566,16 +566,14 @@ XCamReturn AdehazeInit(AdehazeHandle_t** pAdehazeCtx, CamCalibDbV2Context_t* pCa
     XCamReturn ret          = XCAM_RETURN_NO_ERROR;
     AdehazeHandle_t* handle = (AdehazeHandle_t*)calloc(1, sizeof(AdehazeHandle_t));
 
-    // isp20
     CalibDbV2_dehaze_v10_t* calibv2_adehaze_calib_V10 =
         (CalibDbV2_dehaze_v10_t*)(CALIBDBV2_GET_MODULE_PTR(pCalib, adehaze_calib));
     memcpy(&handle->CalibV10, calibv2_adehaze_calib_V10, sizeof(CalibDbV2_dehaze_v10_t));
-
-    handle->PreDataV10.ISO     = 50.0;
-    handle->PreDataV10.ApiMode = DEHAZE_API_AUTO;
-
-    // set api default
-    handle->AdehazeAtrrV10.mode                                               = DEHAZE_API_AUTO;
+    handle->AdehazeAtrrV10.mode = DEHAZE_API_AUTO;
+    handle->ifReCalcStAuto      = true;
+    handle->ifReCalcStManual    = false;
+    handle->isCapture           = false;
+    handle->is_multi_isp_mode   = false;
 
     *pAdehazeCtx = handle;
     LOG1_ADEHAZE("EXIT: %s \n", __func__);
@@ -590,7 +588,7 @@ XCamReturn AdehazeRelease(AdehazeHandle_t* pAdehazeCtx) {
     return (ret);
 }
 
-XCamReturn AdehazeProcess(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* pStats,
+XCamReturn AdehazeProcess(AdehazeHandle_t* pAdehazeCtx, dehaze_stats_v10_t* pStats,
                           RkAiqAdehazeProcResult_t* pAdehzeProcRes) {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
@@ -617,32 +615,31 @@ XCamReturn AdehazeProcess(AdehazeHandle_t* pAdehazeCtx, rkisp_adehaze_stats_t* p
 
 bool AdehazeByPassProcessing(AdehazeHandle_t* pAdehazeCtx) {
     LOG1_ADEHAZE("ENTER: %s \n", __func__);
+    bool byPassProc = true;
 
-    if (pAdehazeCtx->FrameID <= 2) pAdehazeCtx->byPassProc = false;
+    if (pAdehazeCtx->FrameID <= INIT_CALC_PARAMS_NUM)
+        byPassProc = false;
     else if (pAdehazeCtx->AdehazeAtrrV10.mode != pAdehazeCtx->PreDataV10.ApiMode)
-        pAdehazeCtx->byPassProc = false;
+        byPassProc = false;
     else if (pAdehazeCtx->AdehazeAtrrV10.mode == DEHAZE_API_MANUAL)
-        pAdehazeCtx->byPassProc = !pAdehazeCtx->ifReCalcStManual;
+        byPassProc = !pAdehazeCtx->ifReCalcStManual;
     else if (pAdehazeCtx->AdehazeAtrrV10.mode == DEHAZE_API_AUTO) {
         float diff = (pAdehazeCtx->PreDataV10.ISO - pAdehazeCtx->CurrDataV10.ISO) /
                      pAdehazeCtx->PreDataV10.ISO;
         if (diff > pAdehazeCtx->CalibV10.DehazeTuningPara.ByPassThr ||
-            diff < (0 - pAdehazeCtx->CalibV10.DehazeTuningPara.ByPassThr))
-            pAdehazeCtx->byPassProc = false;
+            diff < -pAdehazeCtx->CalibV10.DehazeTuningPara.ByPassThr)
+            byPassProc = false;
         else
-            pAdehazeCtx->byPassProc = true;
+            byPassProc = true;
 
-        pAdehazeCtx->byPassProc = pAdehazeCtx->byPassProc && !pAdehazeCtx->ifReCalcStManual;
+        byPassProc = byPassProc && !pAdehazeCtx->ifReCalcStManual;
     }
 
-    LOGD_ADEHAZE("%s:FrameID:%d byPassProc:%d ISO:%f\n", __func__, pAdehazeCtx->FrameID,
-                 pAdehazeCtx->byPassProc, pAdehazeCtx->CurrData.V30.ISO);
-
-    pAdehazeCtx->ifReCalcStManual = false;
-    pAdehazeCtx->ifReCalcStAuto   = false;
+    LOGD_ADEHAZE("%s:FrameID:%d byPassProc:%d ISO:%f\n", __func__, pAdehazeCtx->FrameID, byPassProc,
+                 pAdehazeCtx->CurrData.V30.ISO);
 
     LOG1_ADEHAZE("EXIT: %s \n", __func__);
-    return pAdehazeCtx->byPassProc;
+    return byPassProc;
 }
 /******************************************************************************
  * DehazeEnableSetting()

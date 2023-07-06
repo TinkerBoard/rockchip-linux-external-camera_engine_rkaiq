@@ -365,12 +365,35 @@ XCamReturn RkAiqAgicHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
         } else {
             gic_param->frame_id = shared->frameId;
         }
+
+        if (agic_com->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            gic_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mGicParams = params->mGicParams;
+            gic_param->is_update = true;
+            LOGD_AGIC("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != gic_param->sync_flag) {
+            gic_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mGicParams.ptr()) {
+                gic_param->result = cur_params->mGicParams->data()->result;
+                gic_param->is_update = true;
+            } else {
+                LOGE_AGIC("no latest params !");
+                gic_param->is_update = false;
+            }
+            LOGD_AGIC("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            gic_param->is_update = false;
+            LOGD_AGIC("[%d] params needn't update", shared->frameId);
+        }
 #if 0//moved to processing out params
         memcpy(&gic_param->result, &agic_rk->gicRes, sizeof(AgicProcResult_t));
 #endif
     }
-
-    cur_params->mGicParams = params->mGicParams;
 
     EXIT_ANALYZER_FUNCTION();
 

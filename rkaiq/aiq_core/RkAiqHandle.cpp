@@ -41,6 +41,7 @@ RkAiqHandle::RkAiqHandle(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
     mParentHdl = NULL;
     mIsMulRun = false;
     mPostShared = true;
+    mSyncFlag = (uint32_t)(-1);
 }
 
 RkAiqHandle::~RkAiqHandle() {

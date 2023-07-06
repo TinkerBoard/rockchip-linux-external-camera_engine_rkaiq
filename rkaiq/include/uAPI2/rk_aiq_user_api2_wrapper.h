@@ -141,6 +141,10 @@ XCamReturn rk_aiq_set_adehaze_v12_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
 XCamReturn rk_aiq_get_adehaze_v12_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
         mDehazeAttrV12_t* manual);
 
+XCamReturn rk_aiq_set_tool_accm_mode(rk_aiq_sys_ctx_t *ctx, uapi_wb_mode_t *mode);
+
+XCamReturn rk_aiq_get_accm_mode(rk_aiq_sys_ctx_t *ctx, uapi_wb_mode_t *mode);
+
 XCamReturn rk_aiq_set_accm_v1_manual_attr(const rk_aiq_sys_ctx_t* sys_ctx,
         rk_aiq_ccm_mccm_attrib_t* manual);
 

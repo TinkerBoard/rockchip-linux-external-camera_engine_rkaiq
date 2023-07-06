@@ -96,6 +96,7 @@ struct XCamMessage {
     XCamMessageType  msg_id;
     unsigned frame_id;
 
+    XCamMessage () {};
     XCamMessage (XCamMessageType type, unsigned id)
         : msg_id (type)
         , frame_id (id) {};

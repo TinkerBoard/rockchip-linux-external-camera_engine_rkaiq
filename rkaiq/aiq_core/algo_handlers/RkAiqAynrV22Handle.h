@@ -79,6 +79,7 @@ protected:
     rk_aiq_ynr_info_v22_t mNewInfo;
     mutable std::atomic<bool> updateInfo;
 #endif
+    Aynr_ProcResult_V22_t mLatestparam;
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAynrV22HandleInt);

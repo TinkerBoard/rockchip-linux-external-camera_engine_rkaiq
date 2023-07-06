@@ -74,6 +74,7 @@ class IspParamsSplitter;
 #define ISP_PARAMS_EFFECT_DELAY_CNT     2
 #define CAM_INDEX_FOR_1608              8
 
+#define DISABLE_PARAMS_POLL_THREAD
 // FIXME: share 1608 data ptr(aiq/rawdata)
 typedef struct sensor_info_share_s {
     RawStreamProcUnit*          raw_proc_unit[CAM_INDEX_FOR_1608];  // bind rx by camId
@@ -219,6 +220,8 @@ private:
 protected:
     XCAM_DEAD_COPY(CamHwIsp20);
     virtual XCamReturn setIspConfig(cam3aResultList* result_list = NULL);
+    virtual void updateEffParams(void* params, void* ori_params = NULL) { return; }
+    virtual bool processTb(void* params) { return false; }
     virtual XCamReturn poll_buffer_ready (SmartPtr<VideoBuffer> &buf) override;
     enum cam_hw_state_e {
         CAM_HW_STATE_INVALID,
@@ -263,13 +266,11 @@ protected:
     volatile bool _is_exit;
     bool _linked_to_isp;
     bool _linked_to_1608;
-    struct isp2x_isp_params_cfg _full_active_isp_params;
 #if defined(ISP_HW_V20)
     struct rkispp_params_cfg _full_active_ispp_params;
     uint32_t _ispp_module_init_ens;
     SmartPtr<V4l2SubDevice> _ispp_sd;
 #endif
-    uint64_t _module_cfg_update_frome_drv;
     SmartPtr<V4l2SubDevice> _cif_csi2_sd;
     char sns_name[32];
 public:
@@ -284,18 +285,10 @@ protected:
     // TODO: Sync 1608 sensor start streaming
     static XCam::Mutex  _sync_1608_mutex;
     static bool         _sync_1608_done;
-    void gen_full_isp_params(const struct isp2x_isp_params_cfg* update_params,
-                             struct isp2x_isp_params_cfg* full_params,
-                             uint64_t* module_en_update_partial,
-                             uint64_t* module_cfg_update_partial);
 #if defined(ISP_HW_V20)
     void gen_full_ispp_params(const struct rkispp_params_cfg* update_params,
                               struct rkispp_params_cfg* full_params);
 #endif
-    XCamReturn overrideExpRatioToAiqResults(const uint32_t frameId,
-                                            int module_id,
-                                            cam3aResultList &results,
-                                            int hdr_mode);
 #if 0
     void dump_isp_config(struct isp2x_isp_params_cfg* isp_params,
                          SmartPtr<RkAiqIspParamsProxy> aiq_results,
@@ -332,9 +325,8 @@ protected:
     static void allocMemResource(uint8_t id, void *ops_ctx, void *config, void **mem_ctx);
     static void releaseMemResource(uint8_t id, void *mem_ctx);
     static void* getFreeItem(uint8_t id, void *mem_ctx);
-    uint32_t _isp_module_ens;
+    uint64_t _isp_module_ens{0};
     bool mNoReadBack;
-    uint64_t ispModuleEns;
     rk_aiq_rotation_t _sharp_fbc_rotation;
 
     rk_aiq_ldch_share_mem_info_t ldch_mem_info_array[2 * ISP2X_MESH_BUF_NUM];

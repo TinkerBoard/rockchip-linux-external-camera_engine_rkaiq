@@ -29,7 +29,7 @@
 
 namespace RkCam {
 
-const int RkPollThread::default_poll_timeout = 300; // ms
+const int RkPollThread::default_poll_timeout = -1; // ms
 
 const char*
 RKStream::poll_type_to_str[ISP_POLL_POST_MAX] =

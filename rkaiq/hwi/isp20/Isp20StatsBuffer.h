@@ -40,7 +40,7 @@ public:
                               SmartPtr<RkAiqIrisParamsProxy> IrisParams);
     virtual ~Isp20StatsBuffer() {};
 
-    XCamReturn getEffectiveExpParams (uint32_t frameId, SmartPtr<RkAiqExpParamsProxy>& expParams) {
+    XCamReturn getEffectiveExpParams (uint32_t frameId, SmartPtr<RkAiqSensorExpParamsProxy>& expParams) {
         XCAM_ASSERT (mSensor.ptr ());
         return mSensor->getEffectiveExpParams(expParams, frameId);
     }

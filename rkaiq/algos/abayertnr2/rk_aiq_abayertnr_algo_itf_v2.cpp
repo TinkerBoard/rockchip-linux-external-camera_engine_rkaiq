@@ -279,9 +279,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
         LOGD_ANR("recalculate: %d delta_iso:%d \n ", pAbayertnrCtx->isReCalculate, delta_iso);
 
-        pAbayertnrProcResParams->stAbayertnrProcResult.isNeedUpdate = true;
+        outparams->cfg_update = true;
     } else {
-        pAbayertnrProcResParams->stAbayertnrProcResult.isNeedUpdate = false;
+        outparams->cfg_update = false;
     }
 
     pAbayertnrCtx->isReCalculate = 0;

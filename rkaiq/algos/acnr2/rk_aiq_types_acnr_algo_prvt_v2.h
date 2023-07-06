@@ -37,7 +37,6 @@ typedef struct Acnr_Context_V2_s {
 
     Acnr_Auto_Attr_V2_t stAuto;
     Acnr_Manual_Attr_V2_t stManual;
-    Acnr_ProcResult_V2_t stProcResult;
 
     // struct list_head* list_cnr_v2;
 

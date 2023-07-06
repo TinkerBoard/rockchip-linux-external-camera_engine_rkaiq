@@ -167,7 +167,7 @@ typedef struct _RkAiqAlgoCom {
 
 // generic result type
 typedef struct _RkAiqAlgoResCom {
-    char place_holder[1];
+    bool cfg_update;
 } RkAiqAlgoResCom;
 
 typedef struct _RkAiqAlgoDescription {

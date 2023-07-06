@@ -1468,9 +1468,9 @@ void _customAwbRes2rkAwbRes( RkAiqAlgoProcResAwb* rkAwbProcRes,
 {
 
     rkAwbProcRes->awbConverged = customAwbProcRes->IsConverged;
-    rkAwbProcRes->awb_gain_algo= customAwbProcRes->awb_gain_algo;
+    *rkAwbProcRes->awb_gain_algo= customAwbProcRes->awb_gain_algo;
     rkAwbProcRes->awb_smooth_factor = customAwbProcRes->awb_smooth_factor;
-    rkAwbProcRes->awb_hw1_para=  awbHwConfig;
+    *rkAwbProcRes->awb_hw1_para=  awbHwConfig;
 }
 
 static XCamReturn _rkAwbStats2CustomGroupAwbStats( rk_aiq_singlecam_3a_result_t ** rk_aiq_singlecam_3a_result , int camera_num,rk_aiq_customAwb_stats_t *customStats)
@@ -1582,6 +1582,8 @@ static XCamReturn _customGruopAwbRes2rkAwbRes(rk_aiq_singlecam_3a_result_t ** rk
         memcpy(&procResPara->awb_gain_algo, _awbGainParams, sizeof(rk_aiq_wb_gain_t));
         procResPara->awb_smooth_factor = customAwbProcRes->awb_smooth_factor;
         procResPara->awbConverged = customAwbProcRes->IsConverged;
+        procResPara->awb_cfg_update = true;
+        procResPara->awb_gain_update= true;
         //WriteDataForThirdParty(*rk_aiq_singlecam_3a_result[i]->awb._awbCfgV3x,XCORE_LOG_LEVEL_LOW1+1,i);
     }
     LOG1_AWB_SUBM(0xff, "%s EXIT", __func__);

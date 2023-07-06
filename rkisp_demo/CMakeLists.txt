@@ -30,6 +30,19 @@ endif()
 if (libdrm_FOUND)
     add_compile_options(${LIBDRM_CFLAGS})
     add_compile_options(-DISPDEMO_ENABLE_DRM=1)
+else()
+    if (TOOLCHAIN_SYSROOT STREQUAL "libc")
+        # use the local drm library in demo dir
+        if (ARCH STREQUAL "aarch64")
+            set(LOCAL_DRM_LIB_DIR ${PROJECT_SOURCE_DIR}/demo/libs/arm64/)
+        elseif (ARCH STREQUAL "arm")
+            set(LOCAL_DRM_LIB_DIR ${PROJECT_SOURCE_DIR}/demo/libs/arm32/)
+        endif()
+
+        SET(LOCAL_DRM_LIB_FOUND true)
+        SET(LOCAL_DRM_LIB drm)
+        add_compile_options(-DISPDEMO_ENABLE_DRM=1)
+    endif()
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -80,6 +93,15 @@ if (ENABLE_SMARTIR_API)
     add_compile_options(-DSAMPLE_SMART_IR)
 endif()
 
+# set(ENABLE_ISPFEC_API true)
+if (ENABLE_ISPFEC_API)
+	set(ISPFEC_INSTALLED_DIR ${PROJECT_SOURCE_DIR}/../IspFec/build/linux/output/${ARCH}/installed/)
+	set(ISPFEC_INCLUDE_DIR ${ISPFEC_INSTALLED_DIR}/include/)
+	set(ISPFEC_LIB_DIR ${ISPFEC_INSTALLED_DIR}/lib/)
+	set(ISPFEC_LIB IspFec)
+	add_compile_options(-DISPFEC_API)
+endif()
+
 include_directories(
     deps/include
     demo
@@ -91,6 +113,7 @@ include_directories(
     ${RK_AIQ_INCLUDE_DIR}
     demo/sample/
 	${SMARTIR_INCLUDE_DIR}
+    ${ISPFEC_INCLUDE_DIR}
     ${RK_AIQ_HEADER_DIR}
     )
 
@@ -98,10 +121,12 @@ if (libdrm_FOUND)
     aux_source_directory(demo DIR_SRCS)
     aux_source_directory(demo/drmDsp DRMDSP_DIR_SRCS)
     aux_source_directory(demo/sample SAMPLE_DIR_SRCS)
+elseif (LOCAL_DRM_LIB_FOUND)
+    set (DIR_SRCS demo/rkisp_demo.cpp demo/drmDsp.c)
+    aux_source_directory(demo/drmDsp DRMDSP_DIR_SRCS)
+    aux_source_directory(demo/sample SAMPLE_DIR_SRCS)
 else()
-    set (DIR_SRCS
-        demo/rkisp_demo.cpp
-        )
+    set (DIR_SRCS demo/rkisp_demo.cpp)
     aux_source_directory(demo/sample SAMPLE_DIR_SRCS)
 endif()
 
@@ -144,18 +169,18 @@ message(${LIBRARY_OUTPUT_PATH})
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 if (libdrm_FOUND)
-link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}"
-	"${PROJECT_SOURCE_DIR}/deps/lib" "${SMARTIR_INSTALLED_LIB_DIR}")
+    link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}"
+        "${PROJECT_SOURCE_DIR}/deps/lib" "${SMARTIR_INSTALLED_LIB_DIR}" "${ISPFEC_LIB_DIR}")
 else()
-link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}"
-	"${SMARTIR_INSTALLED_LIB_DIR}")
+    link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${IIO_LIB_DIR}"
+        "${SMARTIR_INSTALLED_LIB_DIR}" "${LOCAL_DRM_LIB_DIR}"  "${ISPFEC_LIB_DIR}")
 endif()
 add_executable(rkisp_demo ${DIR_SRCS})
 if (libdrm_FOUND)
-target_link_libraries(rkisp_demo rga drm ${RK_AIQ_LIB} ${IIO_LIBS}
-	${SMARTIR_LIB} pthread)
+    target_link_libraries(rkisp_demo rga drm ${RK_AIQ_LIB} ${IIO_LIBS}
+        ${SMARTIR_LIB} ${ISPFEC_LIB} pthread)
 else()
-target_link_libraries(rkisp_demo ${RK_AIQ_LIB} ${IIO_LIBS} ${SMARTIR_LIB} pthread)
+    target_link_libraries(rkisp_demo ${RK_AIQ_LIB} ${IIO_LIBS} ${SMARTIR_LIB} ${LOCAL_DRM_LIB} ${ISPFEC_LIB} pthread)
 endif()
 
 if (libdrm_FOUND)

@@ -75,59 +75,50 @@ Abayer2dnr_result_V23_t bayer2dnr_select_params_by_ISO_V23(RK_Bayer2dnr_Params_V
     pSelect->enable = pParams->enable;
     pSelect->hdrdgain_ctrl_en = pParams->hdrdgain_ctrl_en;
 
-    pSelect->filter_strength = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->filter_strength
-                               + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->filter_strength;
+    float ratio = 0;
+    ratio = float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow);
 
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->gauss_guide
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->gauss_guide;
-    pSelect->gauss_guide = tmpf != 0;
-
-    for (i = 0; i < 16; i++)
-    {
-        pSelect->lumapoint[i] = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lumapoint[i]
-                                + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lumapoint[i];
-        pSelect->sigma[i] = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->sigma[i]
-                            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->sigma[i];
-    }
-
-    pSelect->edgesofts = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->edgesofts
-                         + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->edgesofts;
-    pSelect->ratio = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->ratio
-                     + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->ratio;
-    pSelect->weight = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->weight
-                      + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->weight;
-#if 1
-    pSelect->pix_diff = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->pix_diff
-                        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->pix_diff;
-    pSelect->diff_thld = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->diff_thld
-                         + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->diff_thld;
-#endif
-
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->gain_bypass
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->gain_bypass;
-    pSelect->gain_bypass = tmpf != 0;
-
-    pSelect->gain_scale = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->gain_scale
-                          + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->gain_scale;
+    pSelect->filter_strength = ratio * (pHighISO->filter_strength - pLowISO->filter_strength) + pLowISO->filter_strength;
 
     for (i = 0; i < 16; i++) {
-        pSelect->gain_lumapoint[i] = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->gain_lumapoint[i]
-                                     + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->gain_lumapoint[i];
-
-        pSelect->gain_adj[i] = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->gain_adj[i]
-                               + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->gain_adj[i];
+        pSelect->sigma[i] = ratio * (pHighISO->sigma[i] - pLowISO->sigma[i]) + pLowISO->sigma[i];
+        pSelect->gain_adj[i] = ratio * (pHighISO->gain_adj[i] - pLowISO->gain_adj[i]) + pLowISO->gain_adj[i];
     }
 
+    pSelect->edgesofts = ratio * (pHighISO->edgesofts - pLowISO->edgesofts) + pLowISO->edgesofts;
+    pSelect->ratio = ratio * (pHighISO->ratio - pLowISO->ratio) + pLowISO->ratio;
+    pSelect->weight = ratio * (pHighISO->weight - pLowISO->weight) + pLowISO->weight;
+    pSelect->pix_diff = ratio * (pHighISO->pix_diff - pLowISO->pix_diff) + pLowISO->pix_diff;
+    pSelect->diff_thld = ratio * (pHighISO->diff_thld - pLowISO->diff_thld) + pLowISO->diff_thld;
 
-    pSelect->trans_mode = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->trans_mode : pHighISO->trans_mode;
-    pSelect->trans_offset = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->trans_offset : pHighISO->trans_offset;
-    pSelect->itrans_offset = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->itrans_offset : pHighISO->itrans_offset;
-    pSelect->trans_datmax = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->trans_datmax : pHighISO->trans_datmax;
+    pSelect->gain_scale = ratio * (pHighISO->gain_scale - pLowISO->gain_scale) + pLowISO->gain_scale;
+    pSelect->hdr_dgain_scale_s = ratio * (pHighISO->hdr_dgain_scale_s - pLowISO->hdr_dgain_scale_s) + pLowISO->hdr_dgain_scale_s;
+    pSelect->hdr_dgain_scale_m = ratio * (pHighISO->hdr_dgain_scale_m - pLowISO->hdr_dgain_scale_m) + pLowISO->hdr_dgain_scale_m;
 
-    pSelect->hdr_dgain_scale_s = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hdr_dgain_scale_s
-                                 + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hdr_dgain_scale_s;
-    pSelect->hdr_dgain_scale_m = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hdr_dgain_scale_m
-                                 + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hdr_dgain_scale_m;
+    if((isoGain - isoGainLow) <= (isoGainHig - isoGain) ) {
+        pSelect->gauss_guide = pLowISO->gauss_guide;
+        pSelect->gain_bypass = pLowISO->gain_bypass;
+        pSelect->trans_mode = pLowISO->trans_mode;
+        pSelect->trans_offset = pLowISO->trans_offset;
+        pSelect->itrans_offset = pLowISO->itrans_offset;
+        pSelect->trans_datmax = pLowISO->trans_datmax;
+        for (i = 0; i < 16; i++) {
+            pSelect->gain_lumapoint[i] = pLowISO->gain_lumapoint[i];
+            pSelect->lumapoint[i] = pLowISO->lumapoint[i];
+        }
+    } else {
+        pSelect->gauss_guide = pHighISO->gauss_guide;
+        pSelect->gain_bypass = pHighISO->gain_bypass;
+        pSelect->trans_mode = pHighISO->trans_mode;
+        pSelect->trans_offset = pHighISO->trans_offset;
+        pSelect->itrans_offset = pHighISO->itrans_offset;
+        pSelect->trans_datmax = pHighISO->trans_datmax;
+        for (i = 0; i < 16; i++) {
+            pSelect->gain_lumapoint[i] = pHighISO->gain_lumapoint[i];
+            pSelect->lumapoint[i] = pHighISO->lumapoint[i];
+        }
+    }
+
     return res;
 }
 

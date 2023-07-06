@@ -174,6 +174,8 @@ prepare(RkAiqAlgoCom* params)
 #endif
     }
 
+    params->ctx->isReCal_ = true;
+
     return XCAM_RETURN_NO_ERROR;
 }
 #if 0
@@ -213,11 +215,14 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         ctx->last_params.mode = ctx->params.mode;
         ctx->params.mode = RK_AIQ_IE_EFFECT_BW;
         ctx->skip_frame = ctx->last_params.skip_frame;
+        ctx->isReCal_ = true;
     } else if (!inparams->u.proc.gray_mode &&
                ctx->params.mode == RK_AIQ_IE_EFFECT_BW) {
         // force non gray_mode by aiq framework
-        if (ctx->skip_frame && --ctx->skip_frame == 0)
+        if (ctx->skip_frame && --ctx->skip_frame == 0) {
             ctx->params.mode = ctx->last_params.mode;
+            ctx->isReCal_ = true;
+        }
         if (ctx->skip_frame) {
             LOGE_AIE("still need skip %d frame!!! \n", ctx->skip_frame);
         }
@@ -238,9 +243,16 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         break;
     }
 #endif
-    if (int_params)
-        res->params = *int_params;
-    res->params_com = ctx->params;
+
+    if (ctx->isReCal_) {
+        res->ieRes->base = ctx->params;
+        if (int_params)
+            res->ieRes->extra = *int_params;
+        outparams->cfg_update = true;
+        ctx->isReCal_ = false;
+    } else {
+        outparams->cfg_update = false;
+    }
 
     return XCAM_RETURN_NO_ERROR;
 }

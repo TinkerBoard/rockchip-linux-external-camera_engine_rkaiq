@@ -216,13 +216,13 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             result = XCAM_RETURN_ERROR_FAILED;
             LOGE_ABLC("%s: processing ABLC failed (%d)\n", __FUNCTION__, ret);
         }
-        pAblcCtx->ProcRes.isNeedUpdate = true;
+        pAblcProcResParams->res_com.cfg_update = true;
+        memcpy(pAblcProcResParams->ablc_proc_res, &pAblcCtx->ProcRes, sizeof(AblcProc_t));
         LOGD_ABLC("%s:%d processing ABLC recalculate delta_iso:%d \n", __FUNCTION__, __LINE__, delta_iso);
     } else {
-        pAblcCtx->ProcRes.isNeedUpdate = false;
+        pAblcProcResParams->res_com.cfg_update = false;
     }
 
-    memcpy(&pAblcProcResParams->ablc_proc_res, &pAblcCtx->ProcRes, sizeof(AblcProc_t));
     pAblcCtx->isReCalculate = 0;
 
     LOG1_ABLC("%s: (exit)\n", __FUNCTION__ );

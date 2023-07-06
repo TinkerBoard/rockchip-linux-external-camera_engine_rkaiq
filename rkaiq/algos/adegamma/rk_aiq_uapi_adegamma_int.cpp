@@ -37,6 +37,7 @@ rk_aiq_uapi_adegamma_SetAttrib(RkAiqAlgoContext *ctx,
         memcpy(&degamma_handle->adegammaAttr.stManual, &attr.stManual, sizeof(Adegamma_api_manual_t));
     if(attr.mode == RK_AIQ_DEGAMMA_MODE_TOOL)
         rk_aiq_uapi_adegama_SetTool(&degamma_handle->adegammaAttr.stTool, &attr.stTool);
+    degamma_handle->isReCal_ = true;
 
     LOG1_ADEGAMMA(" %s: Exit\n", __func__);
     return ret;

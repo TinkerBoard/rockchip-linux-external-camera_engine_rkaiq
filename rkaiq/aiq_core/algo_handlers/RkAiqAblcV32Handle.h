@@ -63,6 +63,7 @@ private:
     rk_aiq_blc_attrib_V32_t mCurAtt;
     rk_aiq_blc_attrib_V32_t mNewAtt;
 #endif
+    rk_aiq_isp_blc_v32_t* mLatestparam; 
 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAblcV32HandleInt);

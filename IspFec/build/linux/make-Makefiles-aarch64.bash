@@ -20,6 +20,7 @@ cmake -G "Ninja" \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=YES \
     -DISP_HW_VERSION=${ISP_HW_VERSION} \
     -DCMAKE_INSTALL_PREFIX="installed" \
+    -DRK_GDC_GEN_MESH_ONLINE=ON \
     $SOURCE_PATH \
 && ninja -j$(nproc) \
 && ninja install

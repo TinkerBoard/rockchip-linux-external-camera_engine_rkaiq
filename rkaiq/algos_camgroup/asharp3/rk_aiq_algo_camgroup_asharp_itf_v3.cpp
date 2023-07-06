@@ -223,6 +223,9 @@ static XCamReturn groupAsharpV3Processing(const RkAiqAlgoCom* inparams, RkAiqAlg
     if(CHECK_ISP_HW_V21()) {
         Asharp_Context_V3_t * asharp_contex_v3 = asharp_group_contex->asharp_contex_v3;
         Asharp_ProcResult_V3_t stAsharpResultV3;
+        RK_SHARP_Fix_V3_t stFix;
+        stAsharpResultV3.stFix = &stFix;
+
         deltaIso = abs(stExpInfoV3.arIso[stExpInfoV3.hdr_mode] - asharp_contex_v3->stExpInfo.arIso[stExpInfoV3.hdr_mode]);
         if(deltaIso > ASHARPV3_RECALCULATE_DELTA_ISO) {
             asharp_contex_v3->isReCalculate |= 1;
@@ -234,14 +237,16 @@ static XCamReturn groupAsharpV3Processing(const RkAiqAlgoCom* inparams, RkAiqAlg
                 ret = XCAM_RETURN_ERROR_FAILED;
                 LOGE_ASHARP("%s: processing ASHARP failed (%d)\n", __FUNCTION__, ret);
             }
-            stAsharpResultV3.isNeedUpdate = true;
+            outparams->cfg_update = true;
             LOGD_ASHARP("recalculate: %d delta_iso:%d \n ", asharp_contex_v3->isReCalculate, deltaIso);
         } else {
-            stAsharpResultV3.isNeedUpdate = true;
+            outparams->cfg_update = false;
         }
         Asharp_GetProcResult_V3(asharp_contex_v3, &stAsharpResultV3);
         for (int i = 0; i < procResParaGroup->arraySize; i++) {
-            *(procResParaGroup->camgroupParmasArray[i]->asharp._asharp_procRes_v3) = stAsharpResultV3.stFix;
+            *(procResParaGroup->camgroupParmasArray[i]->asharp._asharp_procRes_v3) = *stAsharpResultV3.stFix;
+            IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->asharp._asharp_procRes_v3), procParaGroup->_offset_is_update) =
+                outparams->cfg_update;
         }
         asharp_contex_v3->isReCalculate = 0;
     }

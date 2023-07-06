@@ -220,6 +220,11 @@ static XCamReturn groupAbayernrV2Processing(const RkAiqAlgoCom* inparams, RkAiqA
     if(CHECK_ISP_HW_V21()) {
         Abayernr_Context_V2_t * abayernr_contex_v2 = abayernr_group_contex->abayernr_contex_v2;
         Abayernr_ProcResult_V2_t stAbayernrResultV2;
+        RK_Bayernr_2D_Fix_V2_t st2DFix;
+        RK_Bayernr_3D_Fix_V2_t st3DFix;
+        stAbayernrResultV2.st2DFix = &st2DFix;
+        stAbayernrResultV2.st3DFix = &st3DFix;
+
         deltaIso = abs(stExpInfoV2.arIso[stExpInfoV2.hdr_mode] - abayernr_contex_v2->stExpInfo.arIso[stExpInfoV2.hdr_mode]);
         if(deltaIso > ABAYERNRV2_DELTA_ISO) {
             abayernr_contex_v2->isReCalculate |= 1;
@@ -231,15 +236,17 @@ static XCamReturn groupAbayernrV2Processing(const RkAiqAlgoCom* inparams, RkAiqA
                 ret = XCAM_RETURN_ERROR_FAILED;
                 LOGE_ANR("%s: processing ANR failed (%d)\n", __FUNCTION__, ret);
             }
-            stAbayernrResultV2.isNeedUpdate = true;
+            outparams->cfg_update = true;
             LOGD_ANR("recalculate: %d delta_iso:%d \n ", abayernr_contex_v2->isReCalculate, deltaIso);
         } else {
-            stAbayernrResultV2.isNeedUpdate = false;
+            outparams->cfg_update = true;
         }
         Abayernr_GetProcResult_V2(abayernr_contex_v2, &stAbayernrResultV2);
         for (int i = 0; i < procResParaGroup->arraySize; i++) {
-            procResParaGroup->camgroupParmasArray[i]->abayernr._abayernr_procRes_v1->st2DParam = stAbayernrResultV2.st2DFix;
-            procResParaGroup->camgroupParmasArray[i]->abayernr._abayernr_procRes_v1->st3DParam = stAbayernrResultV2.st3DFix;
+            procResParaGroup->camgroupParmasArray[i]->abayernr._abayernr_procRes_v1->st2DParam = *stAbayernrResultV2.st2DFix;
+            procResParaGroup->camgroupParmasArray[i]->abayernr._abayernr_procRes_v1->st3DParam = *stAbayernrResultV2.st3DFix;
+            IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->abayernr._abayernr_procRes_v1), procParaGroup->_offset_is_update) =
+                outparams->cfg_update;
         }
         abayernr_contex_v2->isReCalculate = 0;
 

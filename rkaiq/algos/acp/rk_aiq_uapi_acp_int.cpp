@@ -15,6 +15,7 @@ XCamReturn rk_aiq_uapi_acp_SetAttrib(RkAiqAlgoContext* ctx,
     pAcpCtx->params.contrast = attr->contrast;
     pAcpCtx->params.saturation = attr->saturation;
     pAcpCtx->params.hue = attr->hue;
+    pAcpCtx->isReCal_ = true;
     return XCAM_RETURN_NO_ERROR;
 }
 

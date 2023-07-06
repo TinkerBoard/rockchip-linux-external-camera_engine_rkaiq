@@ -101,6 +101,12 @@ XCamReturn RkAiqAldchHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+#if (RKAIQ_HAVE_LDCH_V21)
+    aldch_proc_res_int->ldch_result = &shared->fullParams->mLdchV32Params->data()->result;
+#else
+    aldch_proc_res_int->ldch_result = &shared->fullParams->mLdchParams->data()->result;
+#endif
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "aldch handle processing failed");
@@ -362,53 +368,43 @@ XCamReturn RkAiqAldchHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullP
         ldch_param->frame_id = shared->frameId;
     }
 
+    if (aldch_com->res_com.cfg_update) {
+        mSyncFlag = shared->frameId;
+        ldch_param->sync_flag = mSyncFlag;
+        // copy from algo result
+        // set as the latest result
 #if (RKAIQ_HAVE_LDCH_V21)
-    RkAiqAlgoProcResAldchV21* aldch_rk = (RkAiqAlgoProcResAldchV21*)aldch_com;
-
-    if (aldch_rk->ldch_result.base.update) {
-        ldch_param->update_mask |= RKAIQ_ISP_LDCH_ID;
-        ldch_param->result.ldch_en = aldch_rk->ldch_result.base.sw_ldch_en;
-        if (ldch_param->result.ldch_en) {
-            ldch_param->result.lut_h_size = aldch_rk->ldch_result.base.lut_h_size;
-            ldch_param->result.lut_v_size = aldch_rk->ldch_result.base.lut_v_size;
-            ldch_param->result.lut_size   = aldch_rk->ldch_result.base.lut_map_size;
-            ldch_param->result.lut_mem_fd = aldch_rk->ldch_result.base.lut_mapxy_buf_fd;
-
-            ldch_param->result.frm_end_dis = aldch_rk->ldch_result.frm_end_dis;
-            ldch_param->result.zero_interp_en = aldch_rk->ldch_result.zero_interp_en;
-            ldch_param->result.sample_avr_en = aldch_rk->ldch_result.sample_avr_en;
-            ldch_param->result.bic_mode_en = aldch_rk->ldch_result.bic_mode_en;
-            ldch_param->result.force_map_en = aldch_rk->ldch_result.force_map_en;
-            ldch_param->result.map13p3_en = aldch_rk->ldch_result.map13p3_en;
-            memcpy(ldch_param->result.bicubic, aldch_rk->ldch_result.bicubic,
-                   sizeof(aldch_rk->ldch_result.bicubic));
-        }
-    } else {
-        ldch_param->update_mask &= ~RKAIQ_ISP_LDCH_ID;
-    }
-
-    cur_params->mLdchV32Params = params->mLdchV32Params;
+        cur_params->mLdchV32Params = params->mLdchV32Params;
 #else
-    RkAiqAlgoProcResAldch* aldch_rk = (RkAiqAlgoProcResAldch*)aldch_com;
-
-    if (aldch_rk->ldch_result.update) {
-        ldch_param->update_mask |= RKAIQ_ISP_LDCH_ID;
-        ldch_param->result.ldch_en = aldch_rk->ldch_result.sw_ldch_en;
-        if (ldch_param->result.ldch_en) {
-            ldch_param->result.lut_h_size = aldch_rk->ldch_result.lut_h_size;
-            ldch_param->result.lut_v_size = aldch_rk->ldch_result.lut_v_size;
-            ldch_param->result.lut_size   = aldch_rk->ldch_result.lut_map_size;
-            ldch_param->result.lut_mem_fd = aldch_rk->ldch_result.lut_mapxy_buf_fd;
-        }
-    } else {
-        ldch_param->update_mask &= ~RKAIQ_ISP_LDCH_ID;
-    }
-
-    cur_params->mLdchParams = params->mLdchParams;
+        cur_params->mLdchParams = params->mLdchParams;
 #endif
-
-    if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAldch* aldch_rk = (RkAiqAlgoProcResAldch*)aldch_com;
+        ldch_param->is_update = true;
+        LOGD_ALDCH("[%d] params from algo", mSyncFlag);
+    } else if (mSyncFlag != ldch_param->sync_flag) {
+        ldch_param->sync_flag = mSyncFlag;
+        // copy from latest result
+#if (RKAIQ_HAVE_LDCH_V21)
+        if (cur_params->mLdchV32Params.ptr()) {
+            ldch_param->is_update = true;
+            ldch_param->result = cur_params->mLdchV32Params->data()->result;
+        } else {
+            LOGE_ALDCH("no latest params !");
+            ldch_param->is_update = false;
+        }
+#else
+        if (cur_params->mLdchParams.ptr()) {
+            ldch_param->is_update = true;
+            ldch_param->result = cur_params->mLdchParams->data()->result;
+        } else {
+            LOGE_ALDCH("no latest params !");
+            ldch_param->is_update = false;
+        }
+#endif
+        LOGD_ALDCH("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+    } else {
+        // do nothing, result in buf needn't update
+        ldch_param->is_update = false;
+        LOGD_ALDCH("[%d] params needn't update", shared->frameId);
     }
 
     EXIT_ANALYZER_FUNCTION();

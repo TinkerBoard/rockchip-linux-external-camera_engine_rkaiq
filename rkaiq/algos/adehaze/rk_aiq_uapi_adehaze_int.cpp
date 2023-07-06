@@ -98,14 +98,18 @@ XCamReturn rk_aiq_uapi_adehaze_v11_GetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v
     attr->mode = pAdehazeHandle->AdehazeAtrrV11.mode;
     memcpy(&attr->stManual, &pAdehazeHandle->AdehazeAtrrV11.stManual, sizeof(mDehazeAttrV11_t));
     memcpy(&attr->stAuto, &pAdehazeHandle->AdehazeAtrrV11.stAuto, sizeof(CalibDbV2_dehaze_v11_t));
-    memcpy(&attr->Info, &pAdehazeHandle->AdehazeAtrrV11.Info, sizeof(mDehazeAttrInfoV11_t));
+    // get info
+    attr->Info.EnvLv = pAdehazeHandle->CurrDataV11.EnvLv;
+    attr->Info.ISO   = pAdehazeHandle->CurrDataV11.ISO;
 #endif
 #if RKAIQ_HAVE_DEHAZE_V11_DUO
     attr->mode = pAdehazeHandle->AdehazeAtrrV11duo.mode;
     memcpy(&attr->stManual, &pAdehazeHandle->AdehazeAtrrV11duo.stManual, sizeof(mDehazeAttrV11_t));
     memcpy(&attr->stAuto, &pAdehazeHandle->AdehazeAtrrV11duo.stAuto,
            sizeof(CalibDbV2_dehaze_v11_t));
-    memcpy(&attr->Info, &pAdehazeHandle->AdehazeAtrrV11duo.Info, sizeof(mDehazeAttrInfoV11_t));
+    // get info
+    attr->Info.EnvLv = pAdehazeHandle->CurrDataV11duo.EnvLv;
+    attr->Info.ISO   = pAdehazeHandle->CurrDataV11duo.ISO;
 #endif
 
     return ret;
@@ -149,9 +153,11 @@ XCamReturn rk_aiq_uapi_adehaze_v12_GetAttrib(RkAiqAlgoContext* ctx, adehaze_sw_v
     AdehazeHandle_t* pAdehazeHandle = (AdehazeHandle_t*)ctx;
 
     attr->mode = pAdehazeHandle->AdehazeAtrrV12.mode;
-    attr->Info = pAdehazeHandle->AdehazeAtrrV12.Info;
     memcpy(&attr->stManual, &pAdehazeHandle->AdehazeAtrrV12.stManual, sizeof(mDehazeAttrV12_t));
     memcpy(&attr->stAuto, &pAdehazeHandle->AdehazeAtrrV12.stAuto, sizeof(CalibDbV2_dehaze_v12_t));
+    // get info
+    attr->Info.EnvLv = pAdehazeHandle->CurrDataV12.EnvLv;
+    attr->Info.ISO   = pAdehazeHandle->CurrDataV12.ISO;
 
     return ret;
 }

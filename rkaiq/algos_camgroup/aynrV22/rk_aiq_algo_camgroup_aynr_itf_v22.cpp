@@ -243,6 +243,9 @@ static XCamReturn groupAynrV22Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
     if(CHECK_ISP_HW_V32() || CHECK_ISP_HW_V32_LITE()) {
         Aynr_Context_V22_t * aynr_contex_v22 = aynr_group_contex->aynr_contex_v22;
         Aynr_ProcResult_V22_t stAynrResultV22;
+        RK_YNR_Fix_V22_t stFix;
+        stAynrResultV22.stFix = &stFix;
+
         deltaIso = abs(stExpInfoV22.arIso[stExpInfoV22.hdr_mode] - aynr_contex_v22->stExpInfo.arIso[stExpInfoV22.hdr_mode]);
         if(deltaIso > AYNRV22_RECALCULATE_DELTA_ISO) {
             aynr_contex_v22->isReCalculate |= 1;
@@ -257,16 +260,21 @@ static XCamReturn groupAynrV22Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
                 ret = XCAM_RETURN_ERROR_FAILED;
                 LOGE_ANR("%s: processing ANR failed (%d)\n", __FUNCTION__, ret);
             }
-            stAynrResultV22.isNeedUpdate = true;
+            Aynr_GetProcResult_V22(aynr_contex_v22, &stAynrResultV22);
+            outparams->cfg_update = true;
             LOGD_ANR("recalculate: %d delta_iso:%d \n ", aynr_contex_v22->isReCalculate, deltaIso);
         } else {
-            stAynrResultV22.isNeedUpdate = true;
+            outparams->cfg_update = false;
         }
-        Aynr_GetProcResult_V22(aynr_contex_v22, &stAynrResultV22);
+
         for (int i = 0; i < procResParaGroup->arraySize; i++) {
-            *(procResParaGroup->camgroupParmasArray[i]->aynr._aynr_procRes_v22) = stAynrResultV22.stFix;
-            memcpy(procResParaGroup->camgroupParmasArray[i]->aynr_sigma._aynr_sigma_v22,
-                   stAynrResultV22.stSelect.sigma, sizeof(stAynrResultV22.stSelect.sigma));
+            if (aynr_contex_v22->isReCalculate) {
+                *(procResParaGroup->camgroupParmasArray[i]->aynr._aynr_procRes_v22) = *stAynrResultV22.stFix;
+                memcpy(procResParaGroup->camgroupParmasArray[i]->aynr_sigma._aynr_sigma_v22,
+                       stAynrResultV22.stSelect->sigma, sizeof(stAynrResultV22.stSelect->sigma));
+            }
+            IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->aynr._aynr_procRes_v22), procParaGroup->_offset_is_update) =
+                outparams->cfg_update;
         }
         aynr_contex_v22->isReCalculate = 0;
     }

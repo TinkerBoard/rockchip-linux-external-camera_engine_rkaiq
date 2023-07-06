@@ -12,6 +12,7 @@ rk_aiq_uapi_aie_SetAttrib(RkAiqAlgoContext* ctx,
     }
 
     ctx->params.mode = attr->mode;
+    ctx->isReCal_ = true;
 
     return XCAM_RETURN_NO_ERROR;
 }

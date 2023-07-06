@@ -86,8 +86,8 @@ prepare(RkAiqAlgoCom* params)
         memcpy(&pAgammaHandle->agammaAttrV11.stAuto, calibv2_agamma_calib,
                sizeof(CalibDbV2_gamma_v11_t));  // reload iq
 #endif
+        pAgammaHandle->ifReCalcStAuto = true;
     }
-    pAgammaHandle->ifReCalcStAuto = true;
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);
     return ret;
@@ -101,11 +101,11 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     AgammaHandle_t* pAgammaHandle = (AgammaHandle_t *)inparams->ctx;
     pAgammaHandle->FrameID                 = inparams->frame_id;
     RkAiqAlgoProcResAgamma* pAgammaProcRes = (RkAiqAlgoProcResAgamma*)outparams;
-    AgammaProcRes_t* pProcRes = (AgammaProcRes_t*)&pAgammaProcRes->GammaProcRes;
+    AgammaProcRes_t* pProcRes = pAgammaProcRes->GammaProcRes;
     bool bypass                            = true;
 
 #if RKAIQ_HAVE_GAMMA_V10
-    if (pAgammaHandle->FrameID <= 2)
+    if (pAgammaHandle->FrameID <= INIT_CALC_PARAMS_NUM || inparams->u.proc.init)
         bypass = false;
     else if (pAgammaHandle->agammaAttrV10.mode != pAgammaHandle->CurrApiMode)
         bypass = false;
@@ -115,7 +115,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         bypass = !pAgammaHandle->ifReCalcStAuto;
 #endif
 #if RKAIQ_HAVE_GAMMA_V11
-    if (pAgammaHandle->FrameID <= 2)
+    if (pAgammaHandle->FrameID <= INIT_CALC_PARAMS_NUM || inparams->u.proc.init)
         bypass = false;
     else if (pAgammaHandle->agammaAttrV11.mode != pAgammaHandle->CurrApiMode)
         bypass = false;
@@ -127,10 +127,10 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
     if (!bypass) AgammaProcessing(pAgammaHandle, pProcRes);
 
-    pProcRes->update = !bypass;
+    outparams->cfg_update = !bypass;
 
-    pAgammaHandle->ifReCalcStAuto   = false;
-    pAgammaHandle->ifReCalcStManual = false;
+    if (pAgammaHandle->ifReCalcStAuto) pAgammaHandle->ifReCalcStAuto = false;
+    if (pAgammaHandle->ifReCalcStManual) pAgammaHandle->ifReCalcStManual = false;
 
     LOG1_AGAMMA("EXIT: %s \n", __func__);
     return ret;

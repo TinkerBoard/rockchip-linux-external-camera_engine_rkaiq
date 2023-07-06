@@ -47,6 +47,12 @@ cc_prebuilt_library_static {
     },
 }
 
+cc_library_headers {
+	name: "librkaiq_headers",
+	export_include_dirs: ["include"],
+	vendor_available: true,
+}
+
 cc_rkaiq_library_shared {
     name: "librkaiq",
     vendor: true,

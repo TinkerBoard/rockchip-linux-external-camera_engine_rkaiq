@@ -55,6 +55,7 @@ typedef struct AdpccContext_s {
     bool isBlackSensor;
 
     int prepare_type;
+    bool isReCal_;
 } AdpccContext_t;
 
 typedef struct _RkAiqAlgoContext {

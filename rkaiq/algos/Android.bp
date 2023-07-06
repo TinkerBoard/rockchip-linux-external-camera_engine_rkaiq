@@ -57,17 +57,8 @@ subdirs = [
     "algos/awb",
     "algos/af",
     "algos/asd",
+    "algos/afd",
 ]
-
-cc_rkaiq_library_static {
-    name: "librkaiq_afd",
-    vendor: true,
-    defaults: ["algo_defaults"],
-
-    include_dirs: [
-        "external/camera_engine_rkaiq/include/algos/afd",
-    ],
-}
 
 cc_rkaiq_library_static {
     name: "librkaiq_amerge",

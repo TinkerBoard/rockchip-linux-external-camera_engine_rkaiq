@@ -418,30 +418,7 @@ typedef RkAiqExpParamComb_t rk_aiq_exposure_params_comb_t;
 typedef RKAiqAecExpInfo_t rk_aiq_exposure_params_t;
 
 // focus
-typedef struct
-{
-    bool vcm_config_valid;
-    bool zoomfocus_modifypos;
-    bool focus_correction;
-    bool zoom_correction;
-    bool lens_pos_valid;
-    bool zoom_pos_valid;
-    bool send_zoom_reback;
-    bool send_focus_reback;
-    bool end_zoom_chg;
-    bool focus_noreback;
-    int next_pos_num;
-    int next_lens_pos[RKAIQ_RAWAF_NEXT_ZOOMFOCUS_NUM];
-    int next_zoom_pos[RKAIQ_RAWAF_NEXT_ZOOMFOCUS_NUM];
-    int use_manual;
-    int auto_focpos;
-    int auto_zoompos;
-    int manual_focpos;
-    int manual_zoompos;
-    int vcm_start_ma;
-    int vcm_end_ma;
-} rk_aiq_focus_params_t;
-
+typedef rk_aiq_af_algo_focus_pos_t rk_aiq_focus_params_t;
 // isp
 
 #pragma pack(1)
@@ -507,32 +484,9 @@ typedef struct {
     int UNKNOWN;
 } rk_aiq_isp_yuvconv_t;
 
-typedef struct {
-    int ldch_en;
-    int lut_h_size;
-    int lut_v_size;
-    int lut_size;
-    unsigned int lut_mem_fd;
-} rk_aiq_isp_ldch_t;
+typedef ldch_process_result_t rk_aiq_isp_ldch_t;
 
-typedef struct {
-    unsigned char fec_en;
-    int usage;
-    unsigned char config;
-    unsigned char crop_en;
-    unsigned int crop_width;
-    unsigned int crop_height;
-    unsigned char mesh_density;
-    unsigned int mesh_size;
-    unsigned int mesh_buf_fd;
-    //unsigned short sw_mesh_xi[FEC_MESH_XY_NUM_ALGO];
-    //unsigned char sw_mesh_xf[FEC_MESH_XY_NUM_ALGO];
-    //unsigned short sw_mesh_yi[FEC_MESH_XY_NUM_ALGO];
-    //unsigned char sw_mesh_yf[FEC_MESH_XY_NUM_ALGO];
-    int img_buf_index;
-    int img_buf_size;
-    uint32_t frame_id;
-} rk_aiq_isp_fec_t;
+typedef fec_preprocess_result_t rk_aiq_isp_fec_t;
 
 typedef rk_aiq_acgc_params_t rk_aiq_isp_cgc_t;
 

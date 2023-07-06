@@ -558,8 +558,8 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
 {
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
 
     SmartPtr<RkAiqAecStats> statsInt = to->data();
 
@@ -585,7 +585,7 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
     }
 
     SmartPtr<RkAiqIrisParamsProxy> irisParams = buf->get_iris_params();
-    SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
+    SmartPtr<RkAiqSensorExpParamsProxy> expParams = nullptr;
     rkisp_effect_params_v20 ispParams;
     memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveExpParams(left_stats->frame_id, expParams) < 0)
@@ -651,6 +651,8 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
 
     s16   hist_bls1;
     float hist_bls_ratio;
+    uint64_t SumHistPix[3] = {0, 0, 0};
+    float HistMean[3] = {0.0f, 0.0f, 0.0f};
 
     switch(AeSwapMode)
     {
@@ -713,6 +715,23 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
         MergeAecHistBinStats(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins, left_stats->params.rawhist2.hist_bin,
                              right_stats->params.rawhist2.hist_bin, HistWinSplitMode[2], hist_bls1, hist_bls_ratio);
 
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            SumHistPix[0] += statsInt->aec_stats.ae_data.chn[0].rawhist_lite.bins[i];
+            SumHistPix[1] += statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i];
+            SumHistPix[2] += statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i];
+        }
+
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            HistMean[0] += (float)(statsInt->aec_stats.ae_data.chn[0].rawhist_lite.bins[i] * (i + 1)) / (float)SumHistPix[0];
+            HistMean[1] += (float)(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[1];
+            HistMean[2] += (float)(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[2];
+        }
+
+        // NOTE: tmp use yuvae mean
+        statsInt->aec_stats.ae_data.yuvae.mean[0] = (uint8_t)HistMean[0];
+        statsInt->aec_stats.ae_data.yuvae.mean[1] = (uint8_t)HistMean[1];
+        statsInt->aec_stats.ae_data.yuvae.mean[2] = (uint8_t)HistMean[2];
+
         break;
 
     case AEC_RAWSWAP_MODE_M_LITE:
@@ -772,6 +791,23 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
         MergeAecHistBinStats(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins, left_stats->params.rawhist2.hist_bin,
                              right_stats->params.rawhist2.hist_bin, HistWinSplitMode[2], hist_bls1, hist_bls_ratio);
 
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            SumHistPix[0] += statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i];
+            SumHistPix[1] += statsInt->aec_stats.ae_data.chn[1].rawhist_lite.bins[i];
+            SumHistPix[2] += statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i];
+        }
+
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            HistMean[0] += (float)(statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[0];
+            HistMean[1] += (float)(statsInt->aec_stats.ae_data.chn[1].rawhist_lite.bins[i] * (i + 1)) / (float)SumHistPix[1];
+            HistMean[2] += (float)(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[2];
+        }
+
+        // NOTE: tmp use yuvae mean
+        statsInt->aec_stats.ae_data.yuvae.mean[0] = (uint8_t)HistMean[0];
+        statsInt->aec_stats.ae_data.yuvae.mean[1] = (uint8_t)HistMean[1];
+        statsInt->aec_stats.ae_data.yuvae.mean[2] = (uint8_t)HistMean[2];
+
         break;
 
     case AEC_RAWSWAP_MODE_L_LITE:
@@ -827,6 +863,23 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
         MergeAecWinLiteStats(&statsInt->aec_stats.ae_data.chn[2].rawae_lite, &left_stats->params.rawae0, &right_stats->params.rawae0, AeWinSplitMode[0], bls1_val, bls_ratio);
         MergeAecHistBinStats(statsInt->aec_stats.ae_data.chn[2].rawhist_lite.bins, left_stats->params.rawhist0.hist_bin,
                              right_stats->params.rawhist0.hist_bin, HistWinSplitMode[0], hist_bls1, hist_bls_ratio);
+
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            SumHistPix[0] += statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i];
+            SumHistPix[1] += statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i];
+            SumHistPix[2] += statsInt->aec_stats.ae_data.chn[2].rawhist_lite.bins[i];
+        }
+
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            HistMean[0] += (float)(statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[0];
+            HistMean[1] += (float)(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[1];
+            HistMean[2] += (float)(statsInt->aec_stats.ae_data.chn[2].rawhist_lite.bins[i] * (i + 1)) / (float)SumHistPix[2];
+        }
+
+        // NOTE: tmp use yuvae mean
+        statsInt->aec_stats.ae_data.yuvae.mean[0] = (uint8_t)HistMean[0];
+        statsInt->aec_stats.ae_data.yuvae.mean[1] = (uint8_t)HistMean[1];
+        statsInt->aec_stats.ae_data.yuvae.mean[2] = (uint8_t)HistMean[2];
 
         break;
 
@@ -997,8 +1050,8 @@ RkAiqResourceTranslatorV3x::translateMultiAecStats(const SmartPtr<VideoBuffer>& 
 XCamReturn RkAiqResourceTranslatorV3x::translateMultiAwbStats(const SmartPtr<VideoBuffer>& from, SmartPtr<RkAiqAwbStatsProxy>& to)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
 
     SmartPtr<RkAiqAwbStats> statsInt = to->data();
 
@@ -1141,8 +1194,8 @@ RkAiqResourceTranslatorV3x::translateMultiAdehazeStats(const SmartPtr<VideoBuffe
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
 
     SmartPtr<RkAiqAdehazeStats> statsInt = to->data();
 
@@ -1198,8 +1251,8 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 #if defined(ISP_HW_V30)
 
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp3x_isp_stat_buffer *stats;
     SmartPtr<RkAiqAecStats> statsInt = to->data();
 
@@ -1218,7 +1271,7 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                   mCamPhyId, stats->frame_id, stats->meas_type);
 
     SmartPtr<RkAiqIrisParamsProxy> irisParams = buf->get_iris_params();
-    SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
+    SmartPtr<RkAiqSensorExpParamsProxy> expParams = nullptr;
     rkisp_effect_params_v20 ispParams;
     memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveExpParams(stats->frame_id, expParams) < 0)
@@ -1270,6 +1323,9 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
     LOGE("bls_ratio[%f-%f-%f]", bls_ratio[0], bls_ratio[1], bls_ratio[2]);
 #endif
 
+    uint64_t SumHistPix[3] = {0, 0, 0};
+    float HistMean[3] = {0.0f, 0.0f, 0.0f};
+
     switch(AeSwapMode) {
     case AEC_RAWSWAP_MODE_S_LITE:
         meas_type = ((stats->meas_type >> 7) & (0x01)) & ((stats->meas_type >> 11) & (0x01));
@@ -1305,6 +1361,8 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
             memset(statsInt->aec_stats.ae_data.chn[0].rawhist_lite.bins, 0, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
             memset(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins, 0, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
             memset(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins, 0, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+
+
             for(int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
                 int tmp;
                 switch(isp_params->rawhist0.mode) {
@@ -1329,11 +1387,45 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                 statsInt->aec_stats.ae_data.chn[0].rawhist_lite.bins[tmp] += stats->params.rawhist0.hist_bin[i];
                 statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[tmp] += stats->params.rawhist1.hist_bin[i];
                 statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[tmp] += stats->params.rawhist2.hist_bin[i];
+
+                SumHistPix[0] += stats->params.rawhist0.hist_bin[i];
+                SumHistPix[1] += stats->params.rawhist1.hist_bin[i];
+                SumHistPix[2] += stats->params.rawhist2.hist_bin[i];
             }
+
+            for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
+                HistMean[0] += (float)(stats->params.rawhist0.hist_bin[i] * (i + 1)) / (float)SumHistPix[0];
+                HistMean[1] += (float)(stats->params.rawhist1.hist_bin[i] * (i + 1)) / (float)SumHistPix[1];
+                HistMean[2] += (float)(stats->params.rawhist2.hist_bin[i] * (i + 1)) / (float)SumHistPix[2];
+            }
+
+            // NOTE: tmp use yuvae mean
+            statsInt->aec_stats.ae_data.yuvae.mean[0] = (uint8_t)HistMean[0];
+            statsInt->aec_stats.ae_data.yuvae.mean[1] = (uint8_t)HistMean[1];
+            statsInt->aec_stats.ae_data.yuvae.mean[2] = (uint8_t)HistMean[2];
         } else {
             memcpy(statsInt->aec_stats.ae_data.chn[0].rawhist_lite.bins, stats->params.rawhist0.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
             memcpy(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins, stats->params.rawhist1.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
             memcpy(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins, stats->params.rawhist2.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+
+
+            for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+                SumHistPix[0] += statsInt->aec_stats.ae_data.chn[0].rawhist_lite.bins[i];
+                SumHistPix[1] += statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i];
+                SumHistPix[2] += statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i];
+            }
+
+            for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+                HistMean[0] += (float)(statsInt->aec_stats.ae_data.chn[0].rawhist_lite.bins[i] * (i + 1)) / (float)SumHistPix[0];
+                HistMean[1] += (float)(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[1];
+                HistMean[2] += (float)(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[2];
+            }
+
+            // NOTE: tmp use yuvae mean
+            statsInt->aec_stats.ae_data.yuvae.mean[0] = (uint8_t)HistMean[0];
+            statsInt->aec_stats.ae_data.yuvae.mean[1] = (uint8_t)HistMean[1];
+            statsInt->aec_stats.ae_data.yuvae.mean[2] = (uint8_t)HistMean[2];
+
         }
 
         break;
@@ -1398,11 +1490,47 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                 statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[tmp] += stats->params.rawhist1.hist_bin[i];
                 statsInt->aec_stats.ae_data.chn[1].rawhist_lite.bins[tmp] += stats->params.rawhist0.hist_bin[i];
                 statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[tmp] += stats->params.rawhist2.hist_bin[i];
+
+                SumHistPix[0] += stats->params.rawhist0.hist_bin[i];
+                SumHistPix[1] += stats->params.rawhist1.hist_bin[i];
+                SumHistPix[2] += stats->params.rawhist2.hist_bin[i];
             }
+
+            for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
+                HistMean[0] += (float)(stats->params.rawhist0.hist_bin[i] * (i + 1)) / (float)SumHistPix[0];
+                HistMean[1] += (float)(stats->params.rawhist1.hist_bin[i] * (i + 1)) / (float)SumHistPix[1];
+                HistMean[2] += (float)(stats->params.rawhist2.hist_bin[i] * (i + 1)) / (float)SumHistPix[2];
+            }
+
+            // NOTE: tmp use yuvae mean
+            statsInt->aec_stats.ae_data.yuvae.mean[0] = (uint8_t)HistMean[1];
+            statsInt->aec_stats.ae_data.yuvae.mean[1] = (uint8_t)HistMean[0];
+            statsInt->aec_stats.ae_data.yuvae.mean[2] = (uint8_t)HistMean[2];
+
+
         } else {
             memcpy(statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins, stats->params.rawhist1.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
             memcpy(statsInt->aec_stats.ae_data.chn[1].rawhist_lite.bins, stats->params.rawhist0.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
             memcpy(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins, stats->params.rawhist2.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+
+
+            for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+                SumHistPix[0] += statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i];
+                SumHistPix[1] += statsInt->aec_stats.ae_data.chn[1].rawhist_lite.bins[i];
+                SumHistPix[2] += statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i];
+            }
+
+            for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+                HistMean[0] += (float)(statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[0];
+                HistMean[1] += (float)(statsInt->aec_stats.ae_data.chn[1].rawhist_lite.bins[i] * (i + 1)) / (float)SumHistPix[1];
+                HistMean[2] += (float)(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[2];
+            }
+
+            // NOTE: tmp use yuvae mean
+            statsInt->aec_stats.ae_data.yuvae.mean[0] = (uint8_t)HistMean[0];
+            statsInt->aec_stats.ae_data.yuvae.mean[1] = (uint8_t)HistMean[1];
+            statsInt->aec_stats.ae_data.yuvae.mean[2] = (uint8_t)HistMean[2];
+
         }
 
         break;
@@ -1467,11 +1595,45 @@ RkAiqResourceTranslatorV3x::translateAecStats (const SmartPtr<VideoBuffer> &from
                 statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[tmp] += stats->params.rawhist2.hist_bin[i];
                 statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[tmp] += stats->params.rawhist1.hist_bin[i];
                 statsInt->aec_stats.ae_data.chn[2].rawhist_lite.bins[tmp] += stats->params.rawhist0.hist_bin[i];
+
+                SumHistPix[0] += stats->params.rawhist0.hist_bin[i];
+                SumHistPix[1] += stats->params.rawhist1.hist_bin[i];
+                SumHistPix[2] += stats->params.rawhist2.hist_bin[i];
             }
+
+            for (int i = 0; i < ISP3X_HIST_BIN_N_MAX; i++) {
+                HistMean[0] += (float)(stats->params.rawhist0.hist_bin[i] * (i + 1)) / (float)SumHistPix[0];
+                HistMean[1] += (float)(stats->params.rawhist1.hist_bin[i] * (i + 1)) / (float)SumHistPix[1];
+                HistMean[2] += (float)(stats->params.rawhist2.hist_bin[i] * (i + 1)) / (float)SumHistPix[2];
+            }
+
+            // NOTE: tmp use yuvae mean
+            statsInt->aec_stats.ae_data.yuvae.mean[0] = (uint8_t)HistMean[2];
+            statsInt->aec_stats.ae_data.yuvae.mean[1] = (uint8_t)HistMean[1];
+            statsInt->aec_stats.ae_data.yuvae.mean[2] = (uint8_t)HistMean[0];
+
         } else {
             memcpy(statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins, stats->params.rawhist2.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
             memcpy(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins, stats->params.rawhist1.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
             memcpy(statsInt->aec_stats.ae_data.chn[2].rawhist_lite.bins, stats->params.rawhist0.hist_bin, ISP3X_HIST_BIN_N_MAX * sizeof(u32));
+
+            for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+                SumHistPix[0] += statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i];
+                SumHistPix[1] += statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i];
+                SumHistPix[2] += statsInt->aec_stats.ae_data.chn[2].rawhist_lite.bins[i];
+            }
+
+            for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+                HistMean[0] += (float)(statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[0];
+                HistMean[1] += (float)(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[1];
+                HistMean[2] += (float)(statsInt->aec_stats.ae_data.chn[2].rawhist_lite.bins[i] * (i + 1)) / (float)SumHistPix[2];
+            }
+
+            // NOTE: tmp use yuvae mean
+            statsInt->aec_stats.ae_data.yuvae.mean[0] = (uint8_t)HistMean[0];
+            statsInt->aec_stats.ae_data.yuvae.mean[1] = (uint8_t)HistMean[1];
+            statsInt->aec_stats.ae_data.yuvae.mean[2] = (uint8_t)HistMean[2];
+
         }
         break;
 
@@ -1784,8 +1946,8 @@ RkAiqResourceTranslatorV3x::translateAwbStats (const SmartPtr<VideoBuffer> &from
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 #if defined(ISP_HW_V30)
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp3x_isp_stat_buffer *stats;
     SmartPtr<RkAiqAwbStats> statsInt = to->data();
 
@@ -1968,8 +2130,8 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
     };
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp3x_isp_stat_buffer *left_stats, *right_stats;
     SmartPtr<RkAiqAfStats> statsInt = to->data();
     SmartPtr<RkAiqAfInfoProxy> afParams = buf->get_af_params();
@@ -1998,7 +2160,7 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
         return XCAM_RETURN_BYPASS;
     }
 
-    SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
+    SmartPtr<RkAiqSensorExpParamsProxy> expParams = nullptr;
     if (buf->getEffectiveExpParams(left_stats->frame_id, expParams) < 0)
         LOGE("fail to get expParams");
     if (expParams.ptr())
@@ -2336,8 +2498,8 @@ XCamReturn
 RkAiqResourceTranslatorV3x::translateAfStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAfStatsProxy> &to)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp3x_isp_stat_buffer *stats;
     SmartPtr<RkAiqAfStats> statsInt = to->data();
 
@@ -2360,7 +2522,7 @@ RkAiqResourceTranslatorV3x::translateAfStats (const SmartPtr<VideoBuffer> &from,
     memset(&statsInt->af_stats_v3x, 0, sizeof(rk_aiq_isp_af_stats_v3x_t));
     statsInt->frame_id = stats->frame_id;
 
-    SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
+    SmartPtr<RkAiqSensorExpParamsProxy> expParams = nullptr;
     if (buf->getEffectiveExpParams(stats->frame_id, expParams) < 0)
         LOGE("fail to get expParams");
     if (expParams.ptr())
@@ -2409,8 +2571,8 @@ RkAiqResourceTranslatorV3x::translateAdehazeStats (const SmartPtr<VideoBuffer> &
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp3x_isp_stat_buffer *stats;
     SmartPtr<RkAiqAdehazeStats> statsInt = to->data();
 

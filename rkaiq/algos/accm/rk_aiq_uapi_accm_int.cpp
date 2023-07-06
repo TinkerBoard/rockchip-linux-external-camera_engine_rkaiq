@@ -9,7 +9,8 @@ rk_aiq_uapi_accm_SetAttrib(RkAiqAlgoContext *ctx,
 {
 
     accm_context_t* ccm_contex = (accm_context_t*)ctx->accm_para;
-    ccm_contex->mNewAtt = *attr;
+    ccm_contex->invarMode = ccm_contex->mCurAtt.mode & attr->mode;
+    ccm_contex->mCurAtt = *attr;
     ccm_contex->updateAtt = true;
     return XCAM_RETURN_NO_ERROR;
 }
@@ -20,6 +21,10 @@ rk_aiq_uapi_accm_GetAttrib(const RkAiqAlgoContext *ctx,
 {
 
     accm_context_t* ccm_contex = (accm_context_t*)ctx->accm_para;
+    memcpy(ccm_contex->mCurAtt.stManual.ccMatrix, ccm_contex->ccmHwConf.matrix, sizeof(ccm_contex->ccmHwConf.matrix));
+    memcpy(ccm_contex->mCurAtt.stManual.ccOffsets, ccm_contex->ccmHwConf.offs, sizeof(ccm_contex->ccmHwConf.offs));
+    memcpy(ccm_contex->mCurAtt.stManual.y_alpha_curve, ccm_contex->ccmHwConf.alp_y, sizeof(ccm_contex->ccmHwConf.alp_y));
+    ccm_contex->mCurAtt.stManual.low_bound_pos_bit = ccm_contex->ccmHwConf.bound_bit;
 
     memcpy(attr, &ccm_contex->mCurAtt, sizeof(rk_aiq_ccm_attrib_t));
 
@@ -50,7 +55,8 @@ rk_aiq_uapi_accm_v2_SetAttrib(RkAiqAlgoContext *ctx,
 {
 
     accm_context_t* ccm_contex = (accm_context_t*)ctx->accm_para;
-    ccm_contex->mNewAttV2 = *attr;
+    ccm_contex->invarMode = ccm_contex->mCurAttV2.mode & attr->mode;
+    ccm_contex->mCurAttV2 = *attr;
     ccm_contex->updateAtt = true;
     return XCAM_RETURN_NO_ERROR;
 }
@@ -61,6 +67,21 @@ rk_aiq_uapi_accm_v2_GetAttrib(const RkAiqAlgoContext *ctx,
 {
 
     accm_context_t* ccm_contex = (accm_context_t*)ctx->accm_para;
+
+    memcpy(ccm_contex->mCurAttV2.stManual.ccMatrix, ccm_contex->ccmHwConf_v2.matrix,
+            sizeof(float)*9);
+    memcpy(ccm_contex->mCurAttV2.stManual.ccOffsets, ccm_contex->ccmHwConf_v2.offs,
+            sizeof(float)*3);
+    memcpy(ccm_contex->mCurAttV2.stManual.y_alpha_curve, ccm_contex->ccmHwConf_v2.alp_y,
+            sizeof(float)*CCM_CURVE_DOT_NUM_V2);
+    memcpy(ccm_contex->mCurAttV2.stManual.enh_rgb2y_para, ccm_contex->ccmHwConf_v2.enh_rgb2y_para,
+            sizeof(unsigned char)*3);
+    ccm_contex->mCurAttV2.stManual.enh_adj_en  = ccm_contex->ccmHwConf_v2.enh_adj_en;
+    ccm_contex->mCurAttV2.stManual.enh_rat_max = ccm_contex->ccmHwConf_v2.enh_rat_max;
+    ccm_contex->mCurAttV2.stManual.highy_adj_en  = ccm_contex->ccmHwConf_v2.highy_adj_en;
+    ccm_contex->mCurAttV2.stManual.asym_enable  = ccm_contex->ccmHwConf_v2.asym_adj_en;
+    ccm_contex->mCurAttV2.stManual.bound_pos_bit  = ccm_contex->ccmHwConf_v2.bound_bit;
+    ccm_contex->mCurAttV2.stManual.right_pos_bit  = ccm_contex->ccmHwConf_v2.right_bit;
 
     memcpy(attr, &ccm_contex->mCurAttV2, sizeof(rk_aiq_ccm_v2_attrib_t));
 

@@ -63,7 +63,7 @@ private:
     rk_aiq_blc_attrib_t mCurAtt;
     rk_aiq_blc_attrib_t mNewAtt;
 #endif
-
+    rk_aiq_isp_blc_t* mLatestparam; 
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAblcHandleInt);
 };

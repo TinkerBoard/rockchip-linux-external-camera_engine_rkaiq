@@ -220,14 +220,11 @@ typedef struct Asharp_ProcResult_V33_s {
 #else
     // for isp32 lite version
     // for sw simultaion
-    RK_SHARP_Params_V33LT_Select_t stSelect;
+    //RK_SHARP_Params_V33LT_Select_t stSelect;
 #endif
 
     // for hw register
-    RK_SHARP_Fix_V33_t stFix;
-
-    bool isNeedUpdate;
-
+    RK_SHARP_Fix_V33_t* stFix;
 } Asharp_ProcResult_V33_t;
 
 typedef struct Asharp_Config_V33_s {

@@ -47,7 +47,7 @@ XCamReturn RkAiqResourceTranslator::translateIspStats(
     const SmartPtr<RkAiqAfStatsProxy>& afStat, const SmartPtr<RkAiqAtmoStatsProxy>& tmoStat,
     const SmartPtr<RkAiqAdehazeStatsProxy>& dehazeStat) {
     XCamReturn ret                       = XCAM_RETURN_NO_ERROR;
-    const SmartPtr<Isp20StatsBuffer> buf = from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf = from.get_cast_ptr<Isp20StatsBuffer>();
     struct rkisp_isp2x_stat_buffer* stats;
     SmartPtr<RkAiqIspStats> statsInt = to->data();
 
@@ -77,8 +77,8 @@ RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, S
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 #if defined(ISP_HW_V20) || defined(ISP_HW_V21)
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
 #if defined(ISP_HW_V21)
     struct rkisp_isp21_stat_buffer *stats;
 #else
@@ -104,7 +104,7 @@ RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, S
                   stats->meas_type, buf->get_sequence());
 
     SmartPtr<RkAiqIrisParamsProxy> irisParams = buf->get_iris_params();
-    SmartPtr<RkAiqExpParamsProxy> expParams = nullptr;
+    SmartPtr<RkAiqSensorExpParamsProxy> expParams = nullptr;
     rkisp_effect_params_v20 ispParams;
     memset(&ispParams, 0, sizeof(ispParams));
     if (buf->getEffectiveExpParams(stats->frame_id, expParams) < 0)
@@ -127,6 +127,8 @@ RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, S
     AeSelMode = ispParams.isp_params.meas.rawae3.rawae_sel;
 #endif
     unsigned int meas_type = 0;
+    uint64_t SumHistPix[3] = {0, 0, 0};
+    float HistMean[3] = {0.0f, 0.0f, 0.0f};
 
     switch(AeSwapMode) {
     case AEC_RAWSWAP_MODE_S_LITE:
@@ -158,6 +160,19 @@ RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, S
         memcpy(statsInt->aec_stats.ae_data.chn[0].rawhist_lite.bins, stats->params.rawhist0.hist_bin, ISP2X_HIST_BIN_N_MAX * sizeof(u32));
         memcpy(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins, stats->params.rawhist1.hist_bin, ISP2X_HIST_BIN_N_MAX * sizeof(u32));
         memcpy(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins, stats->params.rawhist2.hist_bin, ISP2X_HIST_BIN_N_MAX * sizeof(u32));
+
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            SumHistPix[0] += statsInt->aec_stats.ae_data.chn[0].rawhist_lite.bins[i];
+            SumHistPix[1] += statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i];
+            SumHistPix[2] += statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i];
+        }
+
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            HistMean[0] += (float)(statsInt->aec_stats.ae_data.chn[0].rawhist_lite.bins[i] * (i + 1)) / (float)SumHistPix[0];
+            HistMean[1] += (float)(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[1];
+            HistMean[2] += (float)(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[2];
+        }
+
         break;
 
     case AEC_RAWSWAP_MODE_M_LITE:
@@ -190,6 +205,19 @@ RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, S
         memcpy(statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins, stats->params.rawhist1.hist_bin, ISP2X_HIST_BIN_N_MAX * sizeof(u32));
         memcpy(statsInt->aec_stats.ae_data.chn[1].rawhist_lite.bins, stats->params.rawhist0.hist_bin, ISP2X_HIST_BIN_N_MAX * sizeof(u32));
         memcpy(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins, stats->params.rawhist2.hist_bin, ISP2X_HIST_BIN_N_MAX * sizeof(u32));
+
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            SumHistPix[0] += statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i];
+            SumHistPix[1] += statsInt->aec_stats.ae_data.chn[1].rawhist_lite.bins[i];
+            SumHistPix[2] += statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i];
+        }
+
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            HistMean[0] += (float)(statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[0];
+            HistMean[1] += (float)(statsInt->aec_stats.ae_data.chn[1].rawhist_lite.bins[i] * (i + 1)) / (float)SumHistPix[1];
+            HistMean[2] += (float)(statsInt->aec_stats.ae_data.chn[2].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[2];
+        }
+
         break;
 
     case AEC_RAWSWAP_MODE_L_LITE:
@@ -222,6 +250,19 @@ RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, S
         memcpy(statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins, stats->params.rawhist2.hist_bin, ISP2X_HIST_BIN_N_MAX * sizeof(u32));
         memcpy(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins, stats->params.rawhist1.hist_bin, ISP2X_HIST_BIN_N_MAX * sizeof(u32));
         memcpy(statsInt->aec_stats.ae_data.chn[2].rawhist_lite.bins, stats->params.rawhist0.hist_bin, ISP2X_HIST_BIN_N_MAX * sizeof(u32));
+
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            SumHistPix[0] += statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i];
+            SumHistPix[1] += statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i];
+            SumHistPix[2] += statsInt->aec_stats.ae_data.chn[2].rawhist_lite.bins[i];
+        }
+
+        for (int i = 0; i < ISP2X_HIST_BIN_N_MAX; i++) {
+            HistMean[0] += (float)(statsInt->aec_stats.ae_data.chn[0].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[0];
+            HistMean[1] += (float)(statsInt->aec_stats.ae_data.chn[1].rawhist_big.bins[i] * (i + 1)) / (float)SumHistPix[1];
+            HistMean[2] += (float)(statsInt->aec_stats.ae_data.chn[2].rawhist_lite.bins[i] * (i + 1)) / (float)SumHistPix[2];
+        }
+
         break;
 
     default:
@@ -229,6 +270,11 @@ RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, S
         return XCAM_RETURN_ERROR_PARAM;
         break;
     }
+
+    // NOTE: tmp use yuvae mean
+    statsInt->aec_stats.ae_data.yuvae.mean[0] = (uint8_t)HistMean[0];
+    statsInt->aec_stats.ae_data.yuvae.mean[1] = (uint8_t)HistMean[1];
+    statsInt->aec_stats.ae_data.yuvae.mean[2] = (uint8_t)HistMean[2];
 
     switch(AeSelMode) {
     case AEC_RAWSEL_MODE_CHN_0:
@@ -301,12 +347,14 @@ RkAiqResourceTranslator::translateAecStats (const SmartPtr<VideoBuffer> &from, S
     }
 
     //yuvae
+#if 0
     for(int i = 0; i < ISP2X_YUVAE_MEAN_NUM; i++) {
         statsInt->aec_stats.ae_data.yuvae.mean[i] = stats->params.yuvae.mean[i];
         if(i < ISP2X_YUVAE_SUBWIN_NUM)
             statsInt->aec_stats.ae_data.yuvae.ro_yuvae_sumy[i] = stats->params.yuvae.ro_yuvae_sumy[i];
     }
     memcpy(statsInt->aec_stats.ae_data.sihist.bins, stats->params.sihst.win_stat[0].hist_bins, ISP2X_SIHIST_WIN_NUM * sizeof(u32));
+#endif
 
     if (expParams.ptr()) {
 
@@ -353,8 +401,8 @@ RkAiqResourceTranslator::translateAwbStats (const SmartPtr<VideoBuffer> &from, S
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 #if defined(ISP_HW_V20)
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr <Isp20StatsBuffer>();
     struct rkisp_isp2x_stat_buffer *stats;
     SmartPtr<RkAiqAwbStats> statsInt = to->data();
 
@@ -464,8 +512,8 @@ XCamReturn
 RkAiqResourceTranslator::translateAtmoStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAtmoStatsProxy> &to)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr <Isp20StatsBuffer>();
     struct rkisp_isp2x_stat_buffer *stats;
     SmartPtr<RkAiqAtmoStats> statsInt = to->data();
 
@@ -506,8 +554,8 @@ XCamReturn
 RkAiqResourceTranslator::translateAdehazeStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAdehazeStatsProxy> &to)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr <Isp20StatsBuffer>();
     struct rkisp_isp2x_stat_buffer *stats;
     SmartPtr<RkAiqAdehazeStats> statsInt = to->data();
 
@@ -545,8 +593,8 @@ XCamReturn
 RkAiqResourceTranslator::translateAfStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqAfStatsProxy> &to)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    const SmartPtr<Isp20StatsBuffer> buf =
-        from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf =
+        from.get_cast_ptr<Isp20StatsBuffer>();
 #if defined(ISP_HW_V21)
     struct rkisp_isp21_stat_buffer *stats;
 #else
@@ -610,6 +658,9 @@ RkAiqResourceTranslator::translateAfStats (const SmartPtr<VideoBuffer> &from, Sm
 
             statsInt->af_stats.angleZ = afParams->data()->angleZ;
         }
+
+        if (_expParams.ptr())
+            statsInt->aecExpInfo = _expParams->data()->aecExpInfo;
     }
 
     to->set_sequence(stats->frame_id);
@@ -622,8 +673,8 @@ XCamReturn
 RkAiqResourceTranslator::translatePdafStats (const SmartPtr<VideoBuffer> &from, SmartPtr<RkAiqPdafStatsProxy> &to, bool sns_mirror)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    const SmartPtr<PdafBufferProxy> buf =
-        from.dynamic_cast_ptr<PdafBufferProxy>();
+    PdafBufferProxy* buf =
+        from.get_cast_ptr<PdafBufferProxy>();
     void *pdafstats = (void *)(buf->get_v4l2_userptr());
     SmartPtr<RkAiqPdafStats> statsInt = to->data();
 
@@ -673,7 +724,7 @@ RkAiqResourceTranslator::translatePdafStats (const SmartPtr<VideoBuffer> &from, 
         pixelperline = 2 * pdWidth;
         for (j = 0; j < pdHeight; j++) {
             pdData = (uint16_t *)pdafstats + j * pixelperline;
-            for (i = 0; i < pixelperline / 16 * 16; i+=16) {
+            for (i = 0; i < pixelperline / 16 * 16; i += 16) {
                 vld2_data = vld2q_u16(pdData);
                 vst1q_u16(pdLData, vld2_data.val[0]);
                 vst1q_u16(pdRData, vld2_data.val[1]);
@@ -683,9 +734,9 @@ RkAiqResourceTranslator::translatePdafStats (const SmartPtr<VideoBuffer> &from, 
             }
 
             if (pixelperline % 16) {
-                for (i = 0; i < pixelperline % 16; i+=2) {
+                for (i = 0; i < pixelperline % 16; i += 2) {
                     *pdLData++ = pdData[i];
-                    *pdRData++ = pdData[i+1];
+                    *pdRData++ = pdData[i + 1];
                 }
             }
         }
@@ -693,9 +744,9 @@ RkAiqResourceTranslator::translatePdafStats (const SmartPtr<VideoBuffer> &from, 
         pixelperline = 2 * pdWidth;
         for (j = 0; j < pdHeight; j++) {
             pdData = (uint16_t *)pdafstats + j * pixelperline;
-            for (i = 0; i < pixelperline; i+=2) {
+            for (i = 0; i < pixelperline; i += 2) {
                 *pdLData++ = pdData[i];
-                *pdRData++ = pdData[i+1];
+                *pdRData++ = pdData[i + 1];
             }
         }
 #endif
@@ -703,7 +754,7 @@ RkAiqResourceTranslator::translatePdafStats (const SmartPtr<VideoBuffer> &from, 
         pdWidth = pdaf->pdWidth;
         pdHeight = pdaf->pdHeight >> 1;
         pixelperline = pdaf->pdWidth;
-        for (j = 0; j < 2 * pdHeight; j+=2) {
+        for (j = 0; j < 2 * pdHeight; j += 2) {
             memcpy(pdRData, pdData, pixelperline * sizeof(uint16_t));
             pdData += pixelperline;
             memcpy(pdLData, pdData, pixelperline * sizeof(uint16_t));
@@ -753,8 +804,8 @@ RkAiqResourceTranslator::translateOrbStats (const SmartPtr<VideoBuffer> &from,
         SmartPtr<RkAiqOrbStatsProxy> &to)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    const SmartPtr<V4l2BufferProxy> nr_stats_buf =
-        from.dynamic_cast_ptr<V4l2BufferProxy>();
+    V4l2BufferProxy* nr_stats_buf =
+        from.get_cast_ptr<V4l2BufferProxy>();
     SmartPtr<RkAiqOrbStats> statsInt = to->data();
 
     struct rkispp_stats_nrbuf *stats = NULL;
@@ -774,7 +825,7 @@ RkAiqResourceTranslator::translateOrbStats (const SmartPtr<VideoBuffer> &from,
 XCamReturn
 RkAiqResourceTranslator::getParams(const SmartPtr<VideoBuffer>& from)
 {
-    const SmartPtr<Isp20StatsBuffer> buf = from.dynamic_cast_ptr<Isp20StatsBuffer>();
+    Isp20StatsBuffer* buf = from.get_cast_ptr<Isp20StatsBuffer>();
 #ifdef ISP_HW_V32_LITE
     auto stats = (struct rkisp32_lite_stat_buffer*)(buf->get_v4l2_userptr());
 #elif ISP_HW_V32

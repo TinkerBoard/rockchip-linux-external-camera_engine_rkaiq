@@ -241,29 +241,29 @@ Abayertnr_result_V2_t Abayertnr_GetProcResult_V2(Abayertnr_Context_V2_t *pAbayer
         return ABAYERTNRV2_RET_INVALID_PARM;
     }
 
+    RK_Bayertnr_Params_V2_Select_t* st3DSelect = NULL;
     if(pAbayertnrCtx->eMode == ABAYERTNRV2_OP_MODE_AUTO) {
-        pAbayertnrResult->st3DSelect = pAbayertnrCtx->stAuto.st3DSelect;
+        st3DSelect = &pAbayertnrCtx->stAuto.st3DSelect;
 
     } else if(pAbayertnrCtx->eMode == ABAYERTNRV2_OP_MODE_MANUAL) {
         //TODO
-        pAbayertnrResult->st3DSelect = pAbayertnrCtx->stManual.st3DSelect;
+        st3DSelect = &pAbayertnrCtx->stManual.st3DSelect;
     }
 
     //transfer to reg value
-    bayertnr_fix_transfer_V2(&pAbayertnrResult->st3DSelect, &pAbayertnrResult->st3DFix, &pAbayertnrCtx->stStrength, &pAbayertnrCtx->stExpInfo);
+    bayertnr_fix_transfer_V2(st3DSelect, pAbayertnrResult->st3DFix, &pAbayertnrCtx->stStrength, &pAbayertnrCtx->stExpInfo);
 
     if(pAbayertnrCtx->eMode == ABAYERTNRV2_OP_MODE_REG_MANUAL) {
-        pAbayertnrResult->st3DFix = pAbayertnrCtx->stManual.st3DFix;
+        *pAbayertnrResult->st3DFix = pAbayertnrCtx->stManual.st3DFix;
         pAbayertnrCtx->stStrength.strength_enable = false;
         pAbayertnrCtx->stStrength.percent = 1.0;
     }
 
-    pAbayertnrCtx->stProcResult = *pAbayertnrResult;
 
     LOGD_ANR("%s:%d abayertnr eMode:%d bypass:%d iso:%d fstrength:%f\n",
              __FUNCTION__, __LINE__,
              pAbayertnrCtx->eMode,
-             pAbayertnrResult->st3DFix.bay3d_bypass_en,
+             pAbayertnrResult->st3DFix->bay3d_bypass_en,
              pAbayertnrCtx->stExpInfo.arIso[pAbayertnrCtx->stExpInfo.hdr_mode],
              pAbayertnrCtx->stStrength.percent);
 

@@ -201,6 +201,8 @@ XCamReturn RkAiqAblcV32HandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    mProcResShared->result.ablcV32_proc_res = &shared->fullParams->mBlcV32Params->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret < 0) {
         LOGE_ANALYZER("ablcV32 handle processing failed ret %d", ret);
@@ -233,25 +235,36 @@ XCamReturn RkAiqAblcV32HandleInt::processing() {
         return ret;
     }
 
+    if (!mProcResShared->result.res_com.cfg_update) {
+        mProcResShared->result.ablcV32_proc_res = mLatestparam;
+        LOGD_ABLC("[%d] copy results from latest !", shared->frameId);
+    }
+
     if (mAiqCore->mAlogsComSharedParams.init) {
         RkAiqCore::RkAiqAlgosGroupShared_t* grpShared = nullptr;
         uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_AWB);
         if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
             if (grpShared)
-                memcpy(&grpShared->res_comb.ablcV32_proc_res, &mProcResShared->result.ablcV32_proc_res,
-                       sizeof(mProcResShared->result.ablcV32_proc_res));
+                grpShared->res_comb.ablcV32_proc_res = mProcResShared->result.ablcV32_proc_res;
         }
         grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_GRP0);
         if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
             if (grpShared)
-                memcpy(&grpShared->res_comb.ablcV32_proc_res, &mProcResShared->result.ablcV32_proc_res,
-                       sizeof(mProcResShared->result.ablcV32_proc_res));
+                grpShared->res_comb.ablcV32_proc_res = mProcResShared->result.ablcV32_proc_res;
+        }
+        grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_GRP1);
+        if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
+            if (grpShared)
+                grpShared->res_comb.ablcV32_proc_res = mProcResShared->result.ablcV32_proc_res;
+        }
+        grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_DHAZ);
+        if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
+            if (grpShared)
+                grpShared->res_comb.ablcV32_proc_res = mProcResShared->result.ablcV32_proc_res;
         }
     } else if (mPostShared) {
-        SmartPtr<BufferProxy> msg_data = new BufferProxy(mProcResShared);
-        msg_data->set_sequence(shared->frameId);
-        SmartPtr<XCamMessage> msg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_BLC_V32_PROC_RES_OK, shared->frameId, msg_data);
+        mProcResShared->set_sequence(shared->frameId);
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_BLC_V32_PROC_RES_OK, shared->frameId, mProcResShared);
         mAiqCore->post_message(msg);
     }
 
@@ -315,15 +328,37 @@ XCamReturn RkAiqAblcV32HandleInt::genIspResult(RkAiqFullParams* params,
             blc_param->frame_id = shared->frameId;
         }
 
-        memcpy(&blc_param->result, &ablc_com->ablcV32_proc_res, sizeof(ablc_com->ablcV32_proc_res));
+        if (ablc_com->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            blc_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mBlcV32Params = params->mBlcV32Params;
+            mLatestparam = &cur_params->mBlcV32Params->data()->result;
+            blc_param->is_update = true;
+            LOGD_ABLC("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != blc_param->sync_flag) {
+            blc_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mBlcV32Params.ptr()) {
+                blc_param->result = cur_params->mBlcV32Params->data()->result;
+                blc_param->is_update = true;
+            } else {
+                LOGE_ABLC("no latest params !");
+                blc_param->is_update = false;
+            }
+            LOGD_ABLC("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            blc_param->is_update = false;
+            // do nothing, result in buf needn't update
+            LOGD_ABLC("[%d] params needn't update", shared->frameId);
+        }
 
         // printf("!!!!!!handle get proc result : offset:0x%x gain:0x%x max:0x%x \n",
         // ablc_com->ablcV32_proc_res.isp_ob_offset,
         // ablc_com->ablcV32_proc_res.isp_ob_predgain,ablc_com->ablcV32_proc_res.isp_ob_max);
         LOGD_ABLC("yys: %s:%d output isp param end \n", __FUNCTION__, __LINE__);
     }
-
-    cur_params->mBlcV32Params = params->mBlcV32Params;
 
     mProcResShared = NULL;
 

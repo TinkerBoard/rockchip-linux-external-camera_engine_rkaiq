@@ -26,6 +26,7 @@
 #include "common/rk_aiq_pool.h"
 #include "aiq_core/MessageBus.h"
 #include "aiq_core/RkAiqCamgroupHandle.h"
+#include "aiq_core/RkAiqCore.h"
 #include "rk_aiq.h"
 
 using namespace XCam;
@@ -50,10 +51,6 @@ typedef struct rk_aiq_singlecam_result_s {
             stats_buf->unref(stats_buf);
 
         stats_buf = _3aResults.aec._aecStats;
-        if (stats_buf)
-            stats_buf->unref(stats_buf);
-
-        stats_buf = _3aResults.aec._aeProcRes;
         if (stats_buf)
             stats_buf->unref(stats_buf);
 
@@ -166,7 +163,7 @@ public:
     virtual ~RkAiqCamGroupManager();
 
     // folowing called by single RkAiq
-    void processAiqCoreMsgs(RkAiqCore* src, SmartPtr<XCamMessage> &msg);
+    void processAiqCoreMsgs(RkAiqCore* src, RkAiqCoreVdBufMsg& msg);
     void RelayAiqCoreResults(RkAiqCore* src, SmartPtr<RkAiqFullParamsProxy> &results);
     XCamReturn sofSync(RkAiqManager* aiqManager, SmartPtr<VideoBuffer>& sof_evt);
 

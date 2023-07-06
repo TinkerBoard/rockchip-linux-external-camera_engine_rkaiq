@@ -27,6 +27,7 @@ set(RK_ISPFEC_LIB_DIR ${RK_ISPFEC_INSTALLED_DIR}/lib)
 message("rkIspFec lib path" ${RK_ISPFEC_LIB_DIR})
 
 include_directories(
+    ./
     include/
     include_prv/
     )
@@ -36,6 +37,32 @@ set (IspFec_SRC
 	src/RkIspFecHw.cpp
 	src/RkIspFecHwMgr.cpp
 	)
+
+set(ISP_FEC_STATIC_LIB_ARS)
+set(STATIC_LIB_PREFIX $<TARGET_FILE:)
+set(STATIC_LIB_SUFFIX >)
+
+if(RK_GDC_GEN_MESH_ONLINE)
+	list(APPEND IspFec_SRC
+	     src/gen_mesh/genMesh.cpp
+	     src/RkIspFecGenMesh.cpp
+	     )
+
+    set(GENMESH_LIBS genMeshLib)
+    if(ARCH STREQUAL "aarch64")
+        set(GENMESH_LIBS_DIR
+            ${PROJECT_SOURCE_DIR}/src/gen_mesh/linux/genMesh_static_64bit/
+            )
+    else()
+        set(GENMESH_LIBS_DIR
+            ${PROJECT_SOURCE_DIR}/src/gen_mesh/linux/genMesh_static_32bit/
+            )
+    endif()
+
+    list(APPEND ISP_FEC_STATIC_LIB_ARS ${GENMESH_LIBS_DIR}/libgenMeshLib.a)
+    add_compile_options(-DGENMESH_ONLINE)
+endif()
+
 list(APPEND DIR_SRCS ${AFDEMO_DIR_SRCS})
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/all_lib/${CMAKE_BUILD_TYPE})
@@ -48,10 +75,34 @@ message(${LIBRARY_OUTPUT_PATH})
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-link_directories("${RK_ISPFEC_LIB_DIR}")
+link_directories("${RK_ISPFEC_LIB_DIR}" "${GENMESH_LIBS_DIR}")
 add_library(IspFec SHARED ${IspFec_SRC})
 
+target_link_libraries(IspFec
+	PRIVATE
+    ${GENMESH_LIBS})
+
 add_library(IspFec_static STATIC ${IspFec_SRC})
+set_target_properties(IspFec_static PROPERTIES FOLDER "IspFec")
+set_target_properties(IspFec_static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+
+list(APPEND ISP_FEC_STATIC_LIB_ARS
+    ${STATIC_LIB_PREFIX}IspFec_static${STATIC_LIB_SUFFIX}
+    )
+
+
+#build static libIspFec_static.a
+foreach(STATIC_LIB_AR ${ISP_FEC_STATIC_LIB_ARS})
+        add_custom_command (TARGET IspFec_static POST_BUILD
+        COMMAND ${CMAKE_AR} x ${STATIC_LIB_AR}
+        )
+endforeach()
+
+add_custom_command (TARGET IspFec_static POST_BUILD
+        COMMAND ${CMAKE_AR} rcs ${CMAKE_LIBRARY_PATH}/libIspFec_static.a *.o
+        COMMAND ${CMAKE_STRIP} --strip-debug ${CMAKE_LIBRARY_PATH}/libIspFec_static.a
+        COMMAND rm *.o
+        )
 
 install(DIRECTORY include/ DESTINATION include/IspFec FILES_MATCHING PATTERN "*.h")
 install(FILES ${CMAKE_LIBRARY_PATH}/libIspFec.so DESTINATION lib)

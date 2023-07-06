@@ -104,6 +104,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     RkAiqAlgoCamGroupProcOut* procResParaGroup = (RkAiqAlgoCamGroupProcOut*)outparams;
     AblcContext_V32_t* pAblcCtx = (AblcContext_V32_t *)inparams->ctx;
     AblcExpInfo_V32_t stExpInfo;
+    AblcProc_V32_t   ablcV32_proc_res;
+
     memset(&stExpInfo, 0x00, sizeof(AblcExpInfo_t));
 
     LOGD_ABLC("%s:%d init:%d hdr mode:%d  \n",
@@ -117,6 +119,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         stExpInfo.arAGain[i] = 1.0;
         stExpInfo.arDGain[i] = 1.0;
         stExpInfo.arTime[i] = 0.01;
+        stExpInfo.isp_dgain[i] = 1.0;
     }
 
     if(procParaGroup->working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
@@ -137,12 +140,14 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             stExpInfo.arAGain[0] = pAERes->LinearExp.exp_real_params.analog_gain;
             stExpInfo.arDGain[0] = pAERes->LinearExp.exp_real_params.digital_gain;
             stExpInfo.arTime[0] = pAERes->LinearExp.exp_real_params.integration_time;
+            stExpInfo.isp_dgain[0] = pAERes->LinearExp.exp_real_params.isp_dgain;
             stExpInfo.arIso[0] = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * 50;
         } else {
             for(int i = 0; i < 3; i++) {
                 stExpInfo.arAGain[i] = pAERes->HdrExp[i].exp_real_params.analog_gain;
                 stExpInfo.arDGain[i] = pAERes->HdrExp[i].exp_real_params.digital_gain;
                 stExpInfo.arTime[i] = pAERes->HdrExp[i].exp_real_params.integration_time;
+                stExpInfo.isp_dgain[i] = pAERes->HdrExp[i].exp_real_params.isp_dgain;
                 stExpInfo.arIso[i] = stExpInfo.arAGain[i] * stExpInfo.arDGain[i] * 50;
 
                 LOGD_ABLC("%s:%d index:%d again:%f dgain:%f time:%f iso:%d hdr_mode:%d\n",
@@ -174,9 +179,14 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         LOGD_ABLC("%s:%d processing ABLC recalculate delta_iso:%d \n", __FUNCTION__, __LINE__, delta_iso);
     }
 
+    Ablc_GetProcResult_V32(pAblcCtx, &ablcV32_proc_res);
 
     for (int i = 0; i < procResParaGroup->arraySize; i++) {
-        *(procResParaGroup->camgroupParmasArray[i]->ablc._blcConfig_v32) = pAblcCtx->ProcRes;
+        if (pAblcCtx->isReCalculate)
+            *(procResParaGroup->camgroupParmasArray[i]->ablc._blcConfig_v32) = ablcV32_proc_res;
+        //TODO
+        IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->ablc._blcConfig_v32), procParaGroup->_offset_is_update) =
+            pAblcCtx->isReCalculate;
     }
 
     pAblcCtx->isReCalculate = 0;

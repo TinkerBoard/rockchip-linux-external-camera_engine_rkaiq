@@ -268,6 +268,8 @@ XCamReturn RkAiqAbayer2dnrV2HandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    arawnr_proc_res_int->stArawnrProcResult.st2DFix = &shared->fullParams->mBaynrV3xParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "aynr handle processing failed");
@@ -340,12 +342,33 @@ XCamReturn RkAiqAbayer2dnrV2HandleInt::genIspResult(RkAiqFullParams* params,
         } else {
             rawnr_param->frame_id = shared->frameId;
         }
-        memcpy(&rawnr_param->result, &arawnr_rk->stArawnrProcResult.st2DFix,
-               sizeof(RK_Bayer2dnr_Fix_V2_t));
+
+        if (arawnr_rk->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            rawnr_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mBaynrV3xParams = params->mBaynrV3xParams;
+            rawnr_param->is_update = true;
+            LOGD_ANR("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != rawnr_param->sync_flag) {
+            rawnr_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mBaynrV3xParams.ptr()) {
+                rawnr_param->result = cur_params->mBaynrV3xParams->data()->result;
+                rawnr_param->is_update = true;
+            } else {
+                LOGE_ANR("no latest params !");
+                rawnr_param->is_update = false;
+            }
+            LOGD_ANR("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            rawnr_param->is_update = false;
+            LOGD_ANR("[%d] params needn't update", shared->frameId);
+        }
         LOGD_ANR("oyyf: %s:%d output isp param end \n", __FUNCTION__, __LINE__);
     }
-
-    cur_params->mBaynrV3xParams = params->mBaynrV3xParams;
 
     EXIT_ANALYZER_FUNCTION();
 

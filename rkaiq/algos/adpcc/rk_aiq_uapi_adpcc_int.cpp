@@ -12,7 +12,7 @@ rk_aiq_uapi_adpcc_SetAttrib(RkAiqAlgoContext *ctx,
     pAdpccCtx->stAuto = attr->stAuto;
     pAdpccCtx->stManual = attr->stManual;
     //memcpy(&pAdpccCtx->stTool, &attr->stTool, sizeof(CalibDbV2_Dpcc_t));
-
+    pAdpccCtx->isReCal_ = true;
     return XCAM_RETURN_NO_ERROR;
 }
 

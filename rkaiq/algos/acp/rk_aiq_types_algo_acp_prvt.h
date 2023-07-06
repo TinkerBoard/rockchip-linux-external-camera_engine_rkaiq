@@ -11,6 +11,7 @@ typedef struct AcpContext_s {
     CamCalibDbContext_t* calib;
     CamCalibDbV2Context_t *calibv2;
     rk_aiq_acp_params_t params;
+    bool isReCal_;
 } AcpContext_t;
 
 typedef struct _RkAiqAlgoContext {

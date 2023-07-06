@@ -291,14 +291,14 @@ static XCamReturn SatSelectCcmProfiles
 
     if (fSaturation >= pCcmProfiles[0]->saturation) {
         *pCcmProfile1 = pCcmProfiles[0];
-        *pCcmProfile2 = NULL;
+        *pCcmProfile2 = pCcmProfiles[0];
         LOGV_ACCM( "select:%s \n", (*pCcmProfile1)->name);
         XCamReturn = XCAM_RETURN_ERROR_OUTOFRANGE;
     } else {
         int32_t nLast = no_ccm - 1;
         if (fSaturation <= pCcmProfiles[nLast]->saturation) {
             *pCcmProfile1 = pCcmProfiles[nLast];
-            *pCcmProfile2 = NULL;
+            *pCcmProfile2 = pCcmProfiles[nLast];
             LOGV_ACCM( "select:%s \n", (*pCcmProfile1)->name);
             XCamReturn = XCAM_RETURN_ERROR_OUTOFRANGE;
         } else {
@@ -400,11 +400,12 @@ static XCamReturn SatInterpolateOffset
  *****************************************************************************/
 XCamReturn Damping
 (
-    const float         damp,                /**< damping coefficient */
+    const float       damp,                /**< damping coefficient */
     float *pMatrixUndamped,   /**< undamped new computed matrices */
     float *pMatrixDamped,     /**< old matrices and result */
     float *pOffsetUndamped,   /**< undamped new computed offsets */
-    float *pOffsetDamped      /**< old offset and result */
+    float *pOffsetDamped,     /**< old offset and result */
+    bool *converge_flag
 )
 {
     XCamReturn result = XCAM_RETURN_ERROR_PARAM;
@@ -412,6 +413,7 @@ XCamReturn Damping
     if ( (pMatrixUndamped != NULL) && (pMatrixDamped != NULL)
             && (pOffsetUndamped != NULL) && (pOffsetDamped != NULL) )
     {
+        bool flag = false;
         int32_t i;
         float f = (1.0f - damp);
 
@@ -419,18 +421,24 @@ XCamReturn Damping
         for( i = 0; i < 9; i++ )
         {
             pMatrixDamped[i] = (damp * pMatrixDamped[i]) + (f *  pMatrixUndamped[i]);
+            if (!flag) flag = (fabs(pMatrixDamped[i] - pMatrixUndamped[i]) > DIVMIN);
         }
 
         /* calc. damped cc offsets */
         pOffsetDamped[CAM_3CH_COLOR_COMPONENT_RED]
             = (damp * pOffsetDamped[CAM_3CH_COLOR_COMPONENT_RED])
-              + (f * pOffsetUndamped[CAM_3CH_COLOR_COMPONENT_RED]);
+            + (f * pOffsetUndamped[CAM_3CH_COLOR_COMPONENT_RED]);
         pOffsetDamped[CAM_3CH_COLOR_COMPONENT_GREEN]
             = (damp * pOffsetDamped[CAM_3CH_COLOR_COMPONENT_GREEN])
-              + (f * pOffsetUndamped[CAM_3CH_COLOR_COMPONENT_GREEN]);
+            + (f * pOffsetUndamped[CAM_3CH_COLOR_COMPONENT_GREEN]);
         pOffsetDamped[CAM_3CH_COLOR_COMPONENT_BLUE]
             = (damp * pOffsetDamped[CAM_3CH_COLOR_COMPONENT_BLUE])
-              + (f * pOffsetUndamped[CAM_3CH_COLOR_COMPONENT_BLUE]);
+            + (f * pOffsetUndamped[CAM_3CH_COLOR_COMPONENT_BLUE]);
+
+        for (i = 0; i < 3 && !flag; i++)
+            flag = (fabs(pOffsetDamped[i] - pOffsetUndamped[i]) > DIVMIN);
+
+        *converge_flag = !flag;
 
         result = XCAM_RETURN_NO_ERROR;
     }
@@ -447,14 +455,17 @@ void Saturationadjust(float fScale, float flevel1, float *pccMatrixA)
         }
      } else {
         flevel1 = (flevel1 - 50) / 50 + 1;
-        LOGV_ACCM("Satura: %f \n", flevel1);
+        LOGD_ACCM("Satura: %f \n", flevel1);
         memcpy(&Matrix_tmp, pccMatrixA, sizeof(Matrix_tmp));
         float *pccMatrixB;
         pccMatrixB = Matrix_tmp;
-        /* M =  (M0 - E) * fscale + E
-           M' = ycbcr2rgb[ sat_matrix * rgb2ycbcr(M) ]
-           M1 = (M' - E) / fscale + E
-        */
+        /* ************************************
+        *  M_A =  (M0 - E) * fscale + E
+        *  M_B = rgb2ycbcr(M_A)
+        *  M_B' = ycbcr2rgb[ sat_matrix * M_B ]
+        *  M_A' = (M_B' - E) / fscale + E
+        *  return (M_A')
+        * ***********************************/
         if ( (pccMatrixA != NULL) && (pccMatrixB != NULL) )
         {
             for(int i =0; i < 9; i++)
@@ -643,7 +654,6 @@ static void StableIlluEstimation(struct list_head * head, int listSize, int illu
         illuSet[pL->value]++;
         pNextNode = pNextNode->next;
     }
-    int count2 = 0;
     int max_count = 0;
     for (int i = 0; i < illuNum; i++) {
         LOGV_ACCM("illu(%d), count(%d)\n", i, illuSet[i]);
@@ -759,13 +769,11 @@ XCamReturn selectCCM(const CalibDbV2_Ccm_Tuning_Para_t* pCcm, accm_handle_t hAcc
     RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
 #if RKAIQ_ACCM_ILLU_VOTE
     UpdateDominateIlluList(&hAccm->accmRest.dominateIlluList, dominateIlluProfileIdx, dominateIlluListSize);
-    StableIlluEstimation(hAccm->accmRest.dominateIlluList, dominateIlluListSize, pCcm->aCcmCof_len,
+    StableIlluEstimation(&hAccm->accmRest.dominateIlluList, dominateIlluListSize, pCcm->aCcmCof_len,
                          hAccm->accmSwInfo.varianceLuma, varianceLumaTh,
                          hAccm->accmSwInfo.awbConverged, hAccm->accmRest.dominateIlluProfileIdx,
                          &dominateIlluProfileIdx);
 #endif
-
-    hAccm->accmRest.dominateIlluProfileIdx = dominateIlluProfileIdx;
 
     // 2)
     const CalibDbV2_Ccm_Accm_Cof_Para_t* pDomIlluProfile = &pCcm->aCcmCof[dominateIlluProfileIdx];
@@ -773,36 +781,57 @@ XCamReturn selectCCM(const CalibDbV2_Ccm_Tuning_Para_t* pCcm, accm_handle_t hAcc
                     pDomIlluProfile->gain_sat_curve.sat,
                     4,
                     hAccm->accmSwInfo.sensorGain, &fSaturation);
+    LOGD_ACCM("pickCCMprof = graymode chg (%d) || calib_update (%d) || dominateIlluProfileIdx: %d->%d || fSaturation: %f->%f\n",
+            hAccm->isReCal_, hAccm->calib_update, hAccm->accmRest.dominateIlluProfileIdx, dominateIlluProfileIdx,
+            hAccm->accmRest.fSaturation, fSaturation);
 
+    hAccm->isReCal_ = hAccm->isReCal_ ||
+                        hAccm->calib_update ||
+                        (dominateIlluProfileIdx != hAccm->accmRest.dominateIlluProfileIdx) ||
+                        (fabs(fSaturation - hAccm->accmRest.fSaturation) > DIVMIN);
+
+    hAccm->accmRest.dominateIlluProfileIdx = dominateIlluProfileIdx;
     hAccm->accmRest.fSaturation =  fSaturation;
 
     //3)
-    ret = SatSelectCcmProfiles(hAccm->accmRest.fSaturation, pDomIlluProfile->matrixUsed_len,
-                               hAccm->pCcmMatrixAll[dominateIlluProfileIdx], &pCcmProfile1,
-                               &pCcmProfile2);
-    if (ret == XCAM_RETURN_NO_ERROR) {
+    if (hAccm->isReCal_) {
+        ret = SatSelectCcmProfiles(hAccm->accmRest.fSaturation, pDomIlluProfile->matrixUsed_len,
+                                hAccm->pCcmMatrixAll[dominateIlluProfileIdx], &pCcmProfile1,
+                                &pCcmProfile2);
         if (pCcmProfile1 && pCcmProfile2) {
-            LOGD_ACCM("final fSaturation: %f (%f .. %f)\n", hAccm->accmRest.fSaturation,
-                      pCcmProfile1->saturation, pCcmProfile2->saturation);
-            ret = SatInterpolateMatrices(hAccm->accmRest.fSaturation, pCcmProfile1, pCcmProfile2,
-                                         hAccm->accmRest.undampedCcmMatrix);
-            RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
-
-            ret = SatInterpolateOffset(hAccm->accmRest.fSaturation, pCcmProfile1, pCcmProfile2,
-                                       hAccm->accmRest.undampedCcOffset);
-            RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
+            hAccm->isReCal_ = hAccm->calib_update ||
+                            strcmp(pCcmProfile1->name, hAccm->accmRest.pCcmProfile1->name) ||
+                            strcmp(pCcmProfile2->name, hAccm->accmRest.pCcmProfile2->name);
+            LOGD_ACCM("CcmProfile changed: %d = calib_update(%d) || pCcmProfile1/2 changed",
+                        hAccm->isReCal_, hAccm->calib_update);
+        } else {
+            LOGD_ACCM("check %s pCcmProfile: %p %p \n", pDomIlluProfile->name, pCcmProfile1, pCcmProfile2);
+            return XCAM_RETURN_ERROR_PARAM;
         }
-    } else if (ret == XCAM_RETURN_ERROR_OUTOFRANGE) {
-        /* we don't need to interpolate */
-        LOGD_ACCM("final fSaturation: %f (%f)\n",   hAccm->accmRest.fSaturation, pCcmProfile1->saturation);
-        memcpy(hAccm->accmRest.undampedCcmMatrix, pCcmProfile1->ccMatrix, sizeof(float)*9);
-        memcpy(hAccm->accmRest.undampedCcOffset, pCcmProfile1->ccOffsets, sizeof(float)*3);
-        ret = XCAM_RETURN_NO_ERROR;
-    } else {
-        return (ret);
+        if (hAccm->isReCal_) {
+            if (ret == XCAM_RETURN_NO_ERROR) {
+                LOGD_ACCM("final fSaturation: %f (%f .. %f)\n", hAccm->accmRest.fSaturation,
+                        pCcmProfile1->saturation, pCcmProfile2->saturation);
+                ret = SatInterpolateMatrices(hAccm->accmRest.fSaturation, pCcmProfile1, pCcmProfile2,
+                                            hAccm->accmRest.undampedCcmMatrix);
+                RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
+
+                ret = SatInterpolateOffset(hAccm->accmRest.fSaturation, pCcmProfile1, pCcmProfile2,
+                                        hAccm->accmRest.undampedCcOffset);
+                RETURN_RESULT_IF_DIFFERENT(ret, XCAM_RETURN_NO_ERROR);
+            } else if (ret == XCAM_RETURN_ERROR_OUTOFRANGE) {
+                /* we don't need to interpolate */
+                LOGD_ACCM("final fSaturation: %f (%f)\n",   hAccm->accmRest.fSaturation, pCcmProfile1->saturation);
+                memcpy(hAccm->accmRest.undampedCcmMatrix, pCcmProfile1->ccMatrix, sizeof(float)*9);
+                memcpy(hAccm->accmRest.undampedCcOffset, pCcmProfile1->ccOffsets, sizeof(float)*3);
+                ret = XCAM_RETURN_NO_ERROR;
+            } else {
+                return (ret);
+            }
+        }
+        hAccm->accmRest.pCcmProfile1 = pCcmProfile1;
+        hAccm->accmRest.pCcmProfile2 = pCcmProfile2;
     }
-    hAccm->accmRest.pCcmProfile1 = pCcmProfile1;
-    hAccm->accmRest.pCcmProfile2 = pCcmProfile2;
 
     return (ret);
 }

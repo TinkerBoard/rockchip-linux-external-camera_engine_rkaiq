@@ -92,6 +92,9 @@ prepare(RkAiqAlgoCom* params)
 #endif
         }
     }
+
+    params->ctx->acsmCtx.isReCal_ = true;
+
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -110,7 +113,14 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     if (ctx->acsmCtx.params.op_mode == RK_AIQ_OP_MODE_AUTO) {
         ctx->acsmCtx.params = g_csm_def;
     }
-    res_com->acsm_res = ctx->acsmCtx.params;
+
+    if (ctx->acsmCtx.isReCal_) {
+        *res_com->acsm_res = ctx->acsmCtx.params;
+        outparams->cfg_update = true;
+        ctx->acsmCtx.isReCal_ = false;
+    } else {
+        outparams->cfg_update = false;
+    }
 
     return XCAM_RETURN_NO_ERROR;
 }

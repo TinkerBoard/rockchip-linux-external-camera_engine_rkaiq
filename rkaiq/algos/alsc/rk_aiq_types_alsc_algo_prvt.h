@@ -50,7 +50,7 @@ typedef struct alsc_rest_s {
     uint32_t caseIndex;
     float fVignetting;
     struct list_head dominateIlluList;//to record domain illuminant
-    int estimateIlluCaseIdx;
+    uint32_t estimateIlluCaseIdx;
     uint32_t resIdx;
     pLscTableProfile_t pLscProfile1;
     pLscTableProfile_t pLscProfile2;
@@ -120,7 +120,7 @@ typedef struct smart_lsc_run_res_s {
     bool forceRunFlag;//update by api or prepare;
     float last_gain;
     float last_awbGain[2];
-    bool samrtRunFlag;//update by above paras
+    bool res3aChg;
     bool lscTableConverge;
 } smart_lsc_run_res_t;
 
@@ -155,6 +155,7 @@ typedef struct alsc_context_s {
     //smart run
     smart_lsc_cfg_run_t smartRunCfg;
     smart_lsc_run_res_t smartRunRes;
+    bool isReCal_;
 } alsc_context_t ;
 
 typedef alsc_context_t* alsc_handle_t ;

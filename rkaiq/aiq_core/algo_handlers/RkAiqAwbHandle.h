@@ -152,6 +152,8 @@ class RkAiqAwbHandleInt : public RkAiqHandle {
     mutable std::atomic<bool> updateWbAwbMultiWindowAttr;
     mutable std::atomic<bool> updateFFWbgainAttr;
 #endif
+    uint32_t mWbGainSyncFlag{(uint32_t)(-1)};
+    uint32_t mWbParamSyncFlag{(uint32_t)(-1)};
  private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAwbHandleInt);
 };

@@ -117,13 +117,11 @@ typedef struct AgainV2_Auto_Attr_V2_s
 } Again_Auto_Attr_V2_t;
 
 typedef struct AgainV2_ProcResult_V2_s {
-    bool isNeedUpdate;
-
     //for sw simultaion
-    RK_GAIN_Select_V2_t stSelect;
+    //RK_GAIN_Select_V2_t stSelect;
 
     //for hw register
-    RK_GAIN_Fix_V2_t stFix;
+    RK_GAIN_Fix_V2_t* stFix;
 
 } Again_ProcResult_V2_t;
 

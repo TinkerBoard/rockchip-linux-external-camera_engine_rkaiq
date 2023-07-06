@@ -258,16 +258,16 @@ Aynr_result_V22_t Aynr_GetProcResult_V22(Aynr_Context_V22_t *pAynrCtx, Aynr_Proc
     }
 
     if(pAynrCtx->eMode == AYNRV22_OP_MODE_AUTO) {
-        pAynrResult->stSelect = pAynrCtx->stAuto.stSelect;
+        pAynrResult->stSelect = &pAynrCtx->stAuto.stSelect;
     } else if(pAynrCtx->eMode == AYNRV22_OP_MODE_MANUAL) {
-        pAynrResult->stSelect = pAynrCtx->stManual.stSelect;
+        pAynrResult->stSelect = &pAynrCtx->stManual.stSelect;
     }
 
     //transfer to reg value
-    ynr_fix_transfer_V22(&pAynrResult->stSelect, &pAynrResult->stFix, &pAynrCtx->stStrength, &pAynrCtx->stExpInfo);
+    ynr_fix_transfer_V22(pAynrResult->stSelect, pAynrResult->stFix, &pAynrCtx->stStrength, &pAynrCtx->stExpInfo);
 
     if(pAynrCtx->eMode == AYNRV22_OP_MODE_REG_MANUAL) {
-        pAynrResult->stFix = pAynrCtx->stManual.stFix;
+        *pAynrResult->stFix = pAynrCtx->stManual.stFix;
         pAynrCtx->stStrength.percent = 1.0;
     }
 

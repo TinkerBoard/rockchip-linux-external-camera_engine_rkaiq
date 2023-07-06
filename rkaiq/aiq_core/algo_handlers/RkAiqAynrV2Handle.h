@@ -69,7 +69,6 @@ private:
     bool updateIQpara   = false;
     bool updateStrength = false;
 #endif
-
 private:
     DECLARE_HANDLE_REGISTER_TYPE(RkAiqAynrV2HandleInt);
 };

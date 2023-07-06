@@ -30,7 +30,7 @@ void RkAiqAwbHandleInt::init() {
     RkAiqHandle::deInit();
     mConfig      = (RkAiqAlgoCom*)(new RkAiqAlgoConfigAwb());
     mProcInParam = (RkAiqAlgoCom*)(new RkAiqAlgoProcAwb());
-    // mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAwb());
+    mProcOutParam = (RkAiqAlgoResCom*)(new RkAiqAlgoProcResAwb());
 
     EXIT_ANALYZER_FUNCTION();
 }
@@ -841,23 +841,52 @@ XCamReturn RkAiqAwbHandleInt::processing() {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     RkAiqAlgoProcAwb* awb_proc_int = (RkAiqAlgoProcAwb*)mProcInParam;
-#if 0
-    RkAiqAlgoProcResAwb* awb_proc_res_int = (RkAiqAlgoProcResAwb*)mProcOutParam;
-#else
-    mProcResShared           = new RkAiqAlgoProcResAwbIntShared();
-    if (!mProcResShared.ptr()) {
-        LOGE("new awb mProcOutParam failed, bypass!");
-        return XCAM_RETURN_BYPASS;
-    }
-    RkAiqAlgoProcResAwb* awb_proc_res_int = &mProcResShared->result;
-    // mProcOutParam = (RkAiqAlgoResCom*)awb_proc_res_int;
-#endif
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    awb_proc_int->awbStatsBuf = shared->awbStatsBuf;
+
+    if (!sharedCom->init) {
+        if (shared->awbStatsBuf == nullptr) {
+            LOGE("no awb stats, ignore!");
+            return XCAM_RETURN_BYPASS;
+        }
+    }
+
+    RkAiqAlgoProcResAwb* awb_proc_res_int = (RkAiqAlgoProcResAwb*)mProcOutParam;
+
+#if RKAIQ_HAVE_AWB_V32
+    if (shared->awbStatsBuf)
+        awb_proc_int->awb_statsBuf_v32 = &shared->awbStatsBuf->awb_stats_v32;
+    else
+        awb_proc_int->awb_statsBuf_v32 = NULL;
+#elif RKAIQ_HAVE_AWB_V21
+    #if defined(ISP_HW_V30)
+        if (shared->awbStatsBuf)
+            awb_proc_int->awb_statsBuf_v3x = &shared->awbStatsBuf->awb_stats_v3x;
+        else
+            awb_proc_int->awb_statsBuf_v3x = NULL;
+        awb_proc_int->blc_cfg_effect = &shared->awbStatsBuf->blc_cfg_effect;
+    #else
+        if (shared->awbStatsBuf)
+            awb_proc_int->awb_statsBuf_v201 = &shared->awbStatsBuf->awb_stats_v201;
+        else
+            awb_proc_int->awb_statsBuf_v201 = NULL;
+    #endif
+#elif RKAIQ_HAVE_AWB_V20
+    if (shared->awbStatsBuf)
+        awb_proc_int->awbStatsBuf = &shared->awbStatsBuf->awb_stats;
+    else
+        awb_proc_int->awbStatsBuf = NULL;
+#else
+    LOGE_AWB("module_hw_version of awb is isvalid!!!!");
+#endif
+
+    if (shared->aecStatsBuf)
+        awb_proc_int->aecStatsBuf = &shared->aecStatsBuf->aec_stats;
+    else
+        awb_proc_int->aecStatsBuf = NULL;
+
     awb_proc_int->ablcProcResVaid = false;
-#if defined(ISP_HW_V30)
 #if RKAIQ_HAVE_BLC_V1
     /*SmartPtr<RkAiqHandle>* ablc_handle = mAiqCore->getCurAlgoTypeHandle(RK_AIQ_ALGO_TYPE_ABLC);
     int algo_id                      = (*ablc_handle)->getAlgoId();
@@ -872,7 +901,6 @@ XCamReturn RkAiqAwbHandleInt::processing() {
     awb_proc_int->ablcProcRes= shared->res_comb.ablc_proc_res;
     awb_proc_int->ablcProcResVaid = true;
 #endif
-#endif
 #if RKAIQ_HAVE_BLC_V32
         awb_proc_int->ablcProcResV32= shared->res_comb.ablcV32_proc_res;
         awb_proc_int->ablcProcResVaid = true;
@@ -880,23 +908,29 @@ XCamReturn RkAiqAwbHandleInt::processing() {
     // for otp awb
     awb_proc_int->awb_otp = &sharedCom->snsDes.otp_awb;
 
+#if defined(ISP_HW_V30)
+    awb_proc_res_int->awb_hw1_para = &shared->fullParams->mAwbV3xParams->data()->result;
+#elif defined(ISP_HW_V21)
+    awb_proc_res_int->awb_hw1_para = &shared->fullParams->mAwbV21Params->data()->result;
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
+    awb_proc_res_int->awb_hw32_para = &shared->fullParams->mAwbV32Params->data()->result;
+#else
+    awb_proc_res_int->awb_hw0_para = &shared->fullParams->mAwbParams->data()->result;
+#endif
+
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
+    awb_proc_res_int->awb_gain_algo = &shared->fullParams->mAwbGainV32Params->data()->result;
+#else
+    awb_proc_res_int->awb_gain_algo = &shared->fullParams->mAwbGainParams->data()->result;
+#endif
+
     ret = RkAiqHandle::processing();
     if (ret < 0) {
         LOGE_ANALYZER("awb handle processing failed ret %d", ret);
-        mProcResShared = NULL;
         return ret;
     } else if (ret == XCAM_RETURN_BYPASS) {
         LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
-        mProcResShared = NULL;
         return ret;
-    }
-
-    if (!sharedCom->init) {
-        if (shared->awbStatsBuf == nullptr) {
-            LOGE("no awb stats, ignore!");
-            mProcResShared.release();
-            return XCAM_RETURN_BYPASS;
-        }
     }
 
 #ifdef DISABLE_HANDLE_ATTRIB
@@ -913,34 +947,40 @@ XCamReturn RkAiqAwbHandleInt::processing() {
 #endif
     if (ret < 0) {
         LOGE_ANALYZER("awb algo processing failed ret %d", ret);
-        mProcResShared = NULL;
         return ret;
     } else if (ret == XCAM_RETURN_BYPASS) {
         LOGW_ANALYZER("%s:%d bypass !", __func__, __LINE__);
         ret = XCAM_RETURN_NO_ERROR;
-        mProcResShared = NULL;
     }
 
-    if (mAiqCore->mAlogsComSharedParams.init) {
-        RkAiqCore::RkAiqAlgosGroupShared_t* grpShared = nullptr;
-        uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_GRP1);
-        if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
-            if (grpShared) {
-                SmartPtr<BufferProxy> procResProxy = new BufferProxy(mProcResShared);
-                procResProxy->set_sequence(0);
+    if (awb_proc_res_int->awb_cfg_update || awb_proc_res_int->awb_gain_update) {
+        if (getAlgoId() == 0) {
+            mProcResShared = new RkAiqAlgoProcResAwbIntShared();
+        }
+        memcpy(&mProcResShared->result.awb_gain_algo, awb_proc_res_int->awb_gain_algo, sizeof(rk_aiq_wb_gain_t));
+        mProcResShared->result.awb_smooth_factor = awb_proc_res_int->awb_smooth_factor;
+        mProcResShared->result.varianceLuma = awb_proc_res_int->varianceLuma;
+        mProcResShared->result.awbConverged = awb_proc_res_int->awbConverged;
+    } else {
+        LOGD_AWB("awb results not updated");
+    }
 
-                if (procResProxy.ptr()) {
-                    XCamVideoBuffer* xCamAwbProcRes = convert_to_XCamVideoBuffer(procResProxy);
+    if (mPostShared) {
+        if (mAiqCore->mAlogsComSharedParams.init) {
+            RkAiqCore::RkAiqAlgosGroupShared_t* grpShared = nullptr;
+            uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_GRP1);
+            if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
+                if (grpShared) {
+                    mProcResShared->set_sequence(0);
+                    XCamVideoBuffer* xCamAwbProcRes = convert_to_XCamVideoBuffer(mProcResShared);
                     grpShared->res_comb.awb_proc_res = xCamAwbProcRes;
                 }
             }
+        } else {
+            mProcResShared->set_sequence(shared->frameId);
+            RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_AWB_PROC_RES_OK, shared->frameId, mProcResShared);
+            mAiqCore->post_message(msg);
         }
-    } else if (mPostShared) {
-        SmartPtr<BufferProxy> msg_data = new BufferProxy(mProcResShared);
-        msg_data->set_sequence(shared->frameId);
-        SmartPtr<XCamMessage> msg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_AWB_PROC_RES_OK, shared->frameId, msg_data);
-        mAiqCore->post_message(msg);
     }
 
     EXIT_ANALYZER_FUNCTION();
@@ -984,61 +1024,17 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
     ENTER_ANALYZER_FUNCTION();
 
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+
+    if (mIsMulRun && this->getAlgoId() == 0) {
+        // do nothing for rkawb if custom algo running with rk algo
+        return ret;
+    }
+
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
-    if (!mProcResShared.ptr()) {
-#if defined(ISP_HW_V30)
-        params->mAwbV3xParams = cur_params->mAwbV3xParams;
-        params->mAwbV3xParams->data()->frame_id = shared->frameId;
-#elif defined(ISP_HW_V21)
-        params->mAwbV21Params = cur_params->mAwbV21Params;
-        params->mAwbV21Params->data()->frame_id = shared->frameId;
-#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-        params->mAwbV32Params = cur_params->mAwbV32Params;
-        params->mAwbV32Params->data()->frame_id = shared->frameId;
-#else
-        params->mAwbParams = cur_params->mAwbParams;
-        params->mAwbParams->data()->frame_id = shared->frameId;
-#endif
-#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-        params->mAwbGainV32Params = cur_params->mAwbGainV32Params;
-        params->mAwbGainV32Params->data()->frame_id = shared->frameId;
-#else
-        params->mAwbGainParams = cur_params->mAwbGainParams;
-        params->mAwbGainParams->data()->frame_id = shared->frameId;
-#endif
-        return XCAM_RETURN_BYPASS;
-    }
-
-    RkAiqAlgoProcResAwb* awb_com                = &mProcResShared->result;
-
-    if (!awb_com) {
-        LOGD_ANALYZER("no awb result");
-#if defined(ISP_HW_V30)
-        params->mAwbV3xParams = cur_params->mAwbV3xParams;
-        params->mAwbV3xParams->data()->frame_id = shared->frameId;
-#elif defined(ISP_HW_V21)
-        params->mAwbV21Params = cur_params->mAwbV21Params;
-        params->mAwbV21Params->data()->frame_id = shared->frameId;
-#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-        params->mAwbV32Params = cur_params->mAwbV32Params;
-        params->mAwbV32Params->data()->frame_id = shared->frameId;
-#else
-        params->mAwbParams = cur_params->mAwbParams;
-        params->mAwbParams->data()->frame_id = shared->frameId;
-#endif
-#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-        params->mAwbGainV32Params = cur_params->mAwbGainV32Params;
-        params->mAwbGainV32Params->data()->frame_id = shared->frameId;
-#else
-        params->mAwbGainParams = cur_params->mAwbGainParams;
-        params->mAwbGainParams->data()->frame_id = shared->frameId;
-#endif
-        mProcResShared = NULL;
-        return XCAM_RETURN_BYPASS;
-    }
+    RkAiqAlgoProcResAwb* awb_com                = (RkAiqAlgoProcResAwb*)mProcOutParam;
 
 #if defined(ISP_HW_V30)
     rk_aiq_isp_awb_params_v3x_t* awb_param = params->mAwbV3xParams->data().ptr();
@@ -1054,18 +1050,7 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
 #else
     rk_aiq_isp_awb_gain_params_v20_t* awb_gain_param = params->mAwbGainParams->data().ptr();
 #endif
-    RkAiqAlgoProcResAwb* awb_rk                      = (RkAiqAlgoProcResAwb*)awb_com;
 
-#if 0
-    isp_param->awb_gain_update = awb_rk->awb_gain_update;
-    isp_param->awb_cfg_update = awb_rk->awb_cfg_update;
-    isp_param->awb_gain = awb_rk->awb_gain_algo;
-    isp_param->awb_cfg = awb_rk->awb_hw0_para;
-    //isp_param->awb_cfg_v201 = awb_rk->awb_hw1_para;
-#else
-    // TODO: update states
-    // awb_gain_param->result.awb_gain_update = awb_rk->awb_gain_update;
-    // isp_param->awb_cfg_update = awb_rk->awb_cfg_update;
     if (sharedCom->init) {
         awb_gain_param->frame_id = 0;
         awb_param->frame_id      = 0;
@@ -1073,46 +1058,99 @@ XCamReturn RkAiqAwbHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPar
         awb_gain_param->frame_id = shared->frameId;
         awb_param->frame_id      = shared->frameId;
     }
+
+    if (awb_com->awb_gain_update) {
+        mWbGainSyncFlag = shared->frameId;
+        awb_gain_param->sync_flag = mWbGainSyncFlag;
 #if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-    rk_aiq_wb_gain_v32_t *awb_gain_v32 = &awb_gain_param->result;
-    awb_gain_v32->rgain = awb_rk->awb_gain_algo.rgain;
-    awb_gain_v32->grgain = awb_rk->awb_gain_algo.grgain;
-    awb_gain_v32->gbgain = awb_rk->awb_gain_algo.gbgain;
-    awb_gain_v32->bgain = awb_rk->awb_gain_algo.bgain;
-    awb_gain_v32->applyPosition = awb_rk->wbgainApplyPosition;
+        cur_params->mAwbGainV32Params = params->mAwbGainV32Params ;
 #else
-    awb_gain_param->result     = awb_rk->awb_gain_algo;
+        cur_params->mAwbGainParams = params->mAwbGainParams ;
 #endif
-#if defined(ISP_HW_V30) || defined(ISP_HW_V21)
-    awb_param->result = awb_rk->awb_hw1_para;
-#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-    awb_param->result = awb_rk->awb_hw32_para;
+        awb_gain_param->is_update = true;
+        LOGD_AWB("[%d] wbgain params from algo", mWbGainSyncFlag);
+    } else if (mWbGainSyncFlag != awb_param->sync_flag) {
+        awb_gain_param->sync_flag = mWbGainSyncFlag;
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
+        if (cur_params->mAwbGainV32Params.ptr()) {
+            awb_gain_param->is_update = true;
+            awb_gain_param->result = cur_params->mAwbGainV32Params->data()->result;
+        } else {
+            LOGE_AWB("no latest params !");
+            awb_gain_param->is_update = false;
+        }
 #else
-    awb_param->result = awb_rk->awb_hw0_para;
+        if (cur_params->mAwbGainParams.ptr()) {
+            awb_gain_param->is_update = true;
+            awb_gain_param->result = cur_params->mAwbGainParams->data()->result;
+        } else {
+            LOGE_AWB("no latest params !");
+            awb_gain_param->is_update = false;
+        }
 #endif
-
-#endif
-
-    if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAwb* awb_rk_int = (RkAiqAlgoProcResAwb*)awb_com;
+        LOGD_AWB("[%d] wbgain from latest [%d]", shared->frameId, mWbGainSyncFlag);
+    } else {
+        // do nothing, result in buf needn't update
+        awb_gain_param->is_update = false;
+        LOGD_AWB("[%d] wbgain params needn't update", shared->frameId);
     }
 
+    if (awb_com->awb_cfg_update) {
+        mWbParamSyncFlag = shared->frameId;
+        awb_param->sync_flag = mWbParamSyncFlag;
 #if defined(ISP_HW_V30)
-    cur_params->mAwbV3xParams  = params->mAwbV3xParams;
+        cur_params->mAwbV3xParams  = params->mAwbV3xParams;
 #elif defined(ISP_HW_V21)
-    cur_params->mAwbV21Params  = params->mAwbV21Params;
+        cur_params->mAwbV21Params  = params->mAwbV21Params;
 #elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-    cur_params->mAwbV32Params  = params->mAwbV32Params;
+        cur_params->mAwbV32Params  = params->mAwbV32Params;
 #else
-    cur_params->mAwbParams     = params->mAwbParams;
+        cur_params->mAwbParams     = params->mAwbParams;
 #endif
-#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-    cur_params->mAwbGainV32Params = params->mAwbGainV32Params;
+        awb_param->is_update = true;
+        LOGD_AWB("[%d] params from algo", mWbParamSyncFlag);
+    } else if (mWbParamSyncFlag != awb_param->sync_flag) {
+        awb_param->sync_flag = mWbParamSyncFlag;
+        // copy from latest result
+#if defined(ISP_HW_V30)
+        if (cur_params->mAwbV3xParams.ptr()) {
+            awb_param->is_update = true;
+            awb_param->result = cur_params->mAwbV3xParams->data()->result;
+        } else {
+            LOGE_AWB("no latest params !");
+            awb_param->is_update = false;
+        }
+#elif defined(ISP_HW_V21)
+        if (cur_params->mAwbV21Params.ptr()) {
+            awb_param->is_update = true;
+            awb_param->result = cur_params->mAwbV21Params->data()->result;
+        } else {
+            LOGE_AWB("no latest params !");
+            awb_param->is_update = false;
+        }
+#elif defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
+        if (cur_params->mAwbV32Params.ptr()) {
+            awb_param->is_update = true;
+            awb_param->result = cur_params->mAwbV32Params->data()->result;
+        } else {
+            LOGE_AWB("no latest params !");
+            awb_param->is_update = false;
+        }
 #else
-    cur_params->mAwbGainParams = params->mAwbGainParams;
+        if (cur_params->mAwbParams.ptr()) {
+            awb_param->is_update = true;
+            awb_param->result = cur_params->mAwbParams->data()->result;
+        } else {
+            LOGE_AWB("no latest params !");
+            awb_param->is_update = false;
+        }
 #endif
-
-    mProcResShared = NULL;
+        LOGD_AWB("[%d] params from latest [%d]", shared->frameId, mWbParamSyncFlag);
+    } else {
+        awb_param->is_update = false;
+        // do nothing, result in buf needn't update
+        LOGD_AWB("[%d] params needn't update", shared->frameId);
+    }
 
     EXIT_ANALYZER_FUNCTION();
 

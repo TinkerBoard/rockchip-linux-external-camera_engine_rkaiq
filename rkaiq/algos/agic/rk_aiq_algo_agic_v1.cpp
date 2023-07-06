@@ -236,93 +236,95 @@ XCamReturn AgicStop(AgicContext_t* pAgicCtx) {
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn AgicPreProcess(AgicContext_t* pAgicCtx) { return XCAM_RETURN_NO_ERROR; }
+XCamReturn AgicPreProcess(AgicContext_t* pAgicCtx) {
+    return XCAM_RETURN_NO_ERROR;
+}
 
-void AgicGetProcResultV20(AgicContext_t* pAgicCtx) {
+void AgicGetProcResultV20(AgicContext_t* pAgicCtx, AgicProcResult_t* pAgicRes) {
     LOG1_AGIC("enter!");
 
-    pAgicCtx->ProcRes.gic_en = pAgicCtx->ConfigData.ConfigV20.gic_en == 0 ? false : true;
-    pAgicCtx->ProcRes.ProcResV20.edge_open = pAgicCtx->ConfigData.ConfigV20.edge_open;
-    pAgicCtx->ProcRes.ProcResV20.regmingradthrdark2 =
+    pAgicRes->gic_en = pAgicCtx->ConfigData.ConfigV20.gic_en == 0 ? false : true;
+    pAgicRes->ProcResV20.edge_open = pAgicCtx->ConfigData.ConfigV20.edge_open;
+    pAgicRes->ProcResV20.regmingradthrdark2 =
         pAgicCtx->ConfigData.ConfigV20.regmingradthrdark2;
-    pAgicCtx->ProcRes.ProcResV20.regmingradthrdark1 =
+    pAgicRes->ProcResV20.regmingradthrdark1 =
         pAgicCtx->ConfigData.ConfigV20.regmingradthrdark1;
-    pAgicCtx->ProcRes.ProcResV20.regminbusythre = pAgicCtx->ConfigData.ConfigV20.regminbusythre;
-    pAgicCtx->ProcRes.ProcResV20.regdarkthre    = pAgicCtx->ConfigData.ConfigV20.regdarkthre;
-    pAgicCtx->ProcRes.ProcResV20.regmaxcorvboth = pAgicCtx->ConfigData.ConfigV20.regmaxcorvboth;
-    pAgicCtx->ProcRes.ProcResV20.regdarktthrehi = pAgicCtx->ConfigData.ConfigV20.regdarktthrehi;
-    pAgicCtx->ProcRes.ProcResV20.regkgrad2dark =
+    pAgicRes->ProcResV20.regminbusythre = pAgicCtx->ConfigData.ConfigV20.regminbusythre;
+    pAgicRes->ProcResV20.regdarkthre    = pAgicCtx->ConfigData.ConfigV20.regdarkthre;
+    pAgicRes->ProcResV20.regmaxcorvboth = pAgicCtx->ConfigData.ConfigV20.regmaxcorvboth;
+    pAgicRes->ProcResV20.regdarktthrehi = pAgicCtx->ConfigData.ConfigV20.regdarktthrehi;
+    pAgicRes->ProcResV20.regkgrad2dark =
         (int)(log(double(pAgicCtx->ConfigData.ConfigV20.regkgrad2dark)) / log((double)2) + 0.5f);
-    pAgicCtx->ProcRes.ProcResV20.regkgrad1dark =
+    pAgicRes->ProcResV20.regkgrad1dark =
         (int)(log(double(pAgicCtx->ConfigData.ConfigV20.regkgrad1dark)) / log((double)2) + 0.5f);
 
-    pAgicCtx->ProcRes.ProcResV20.regstrengthglobal_fix =
+    pAgicRes->ProcResV20.regstrengthglobal_fix =
         (int)(pAgicCtx->ConfigData.ConfigV20.globalStrength * (1 << 7));
-    if (pAgicCtx->ProcRes.ProcResV20.regstrengthglobal_fix > (1 << 7) - 1)
-        pAgicCtx->ProcRes.ProcResV20.regstrengthglobal_fix = 7 + 1;
+    if (pAgicRes->ProcResV20.regstrengthglobal_fix > (1 << 7) - 1)
+        pAgicRes->ProcResV20.regstrengthglobal_fix = 7 + 1;
     else
-        pAgicCtx->ProcRes.ProcResV20.regstrengthglobal_fix =
-            int(log(double((1 << 7) - pAgicCtx->ProcRes.ProcResV20.regstrengthglobal_fix)) /
-                    log((double)2) +
+        pAgicRes->ProcResV20.regstrengthglobal_fix =
+            int(log(double((1 << 7) - pAgicRes->ProcResV20.regstrengthglobal_fix)) /
+                log((double)2) +
                 0.5f);
 
-    pAgicCtx->ProcRes.ProcResV20.regdarkthrestep =
+    pAgicRes->ProcResV20.regdarkthrestep =
         int(log(double(pAgicCtx->ConfigData.ConfigV20.regdarktthrehi -
                        pAgicCtx->ConfigData.ConfigV20.regdarkthre)) /
-                log((double)2) +
+            log((double)2) +
             0.5f);
-    pAgicCtx->ProcRes.ProcResV20.regkgrad2 =
+    pAgicRes->ProcResV20.regkgrad2 =
         (int)(log(double(pAgicCtx->ConfigData.ConfigV20.regkgrad2)) / log((double)2) + 0.5f);
-    pAgicCtx->ProcRes.ProcResV20.regkgrad1 =
+    pAgicRes->ProcResV20.regkgrad1 =
         (int)(log(double(pAgicCtx->ConfigData.ConfigV20.regkgrad1)) / log((double)2) + 0.5f);
-    pAgicCtx->ProcRes.ProcResV20.reggbthre =
+    pAgicRes->ProcResV20.reggbthre =
         int(log(double(pAgicCtx->ConfigData.ConfigV20.reggbthre)) / log((double)2) + 0.5f);
-    pAgicCtx->ProcRes.ProcResV20.regmaxcorv     = pAgicCtx->ConfigData.ConfigV20.regmaxcorv;
-    pAgicCtx->ProcRes.ProcResV20.regmingradthr1 = pAgicCtx->ConfigData.ConfigV20.regmingradthr1;
-    pAgicCtx->ProcRes.ProcResV20.regmingradthr2 = pAgicCtx->ConfigData.ConfigV20.regmingradthr2;
-    pAgicCtx->ProcRes.ProcResV20.gr_ratio       = pAgicCtx->ConfigData.ConfigV20.gr_ratio;
-    pAgicCtx->ProcRes.ProcResV20.dnloscale =
+    pAgicRes->ProcResV20.regmaxcorv     = pAgicCtx->ConfigData.ConfigV20.regmaxcorv;
+    pAgicRes->ProcResV20.regmingradthr1 = pAgicCtx->ConfigData.ConfigV20.regmingradthr1;
+    pAgicRes->ProcResV20.regmingradthr2 = pAgicCtx->ConfigData.ConfigV20.regmingradthr2;
+    pAgicRes->ProcResV20.gr_ratio       = pAgicCtx->ConfigData.ConfigV20.gr_ratio;
+    pAgicRes->ProcResV20.dnloscale =
         (int)(pAgicCtx->ConfigData.ConfigV20.dnloscale * (1 << 7));
-    pAgicCtx->ProcRes.ProcResV20.dnhiscale =
+    pAgicRes->ProcResV20.dnhiscale =
         (int)(pAgicCtx->ConfigData.ConfigV20.dnhiscale * (1 << 7));
-    pAgicCtx->ProcRes.ProcResV20.reglumapointsstep =
+    pAgicRes->ProcResV20.reglumapointsstep =
         pAgicCtx->ConfigData.ConfigV20.reglumapointsstep;
-    pAgicCtx->ProcRes.ProcResV20.gvaluelimitlo = (int)pAgicCtx->ConfigData.ConfigV20.gvaluelimitlo;
-    pAgicCtx->ProcRes.ProcResV20.gvaluelimithi = (int)pAgicCtx->ConfigData.ConfigV20.gvaluelimithi;
-    pAgicCtx->ProcRes.ProcResV20.fusionratiohilimt1 =
+    pAgicRes->ProcResV20.gvaluelimitlo = (int)pAgicCtx->ConfigData.ConfigV20.gvaluelimitlo;
+    pAgicRes->ProcResV20.gvaluelimithi = (int)pAgicCtx->ConfigData.ConfigV20.gvaluelimithi;
+    pAgicRes->ProcResV20.fusionratiohilimt1 =
         (int)(pAgicCtx->ConfigData.ConfigV20.fusionratiohilimt1 * (1 << 7));
-    pAgicCtx->ProcRes.ProcResV20.regstrength_fix =
+    pAgicRes->ProcResV20.regstrength_fix =
         (int)(pAgicCtx->ConfigData.ConfigV20.textureStrength * (1 << 7));
 
     for (int i = 0; i < 15; i++) {
-        pAgicCtx->ProcRes.ProcResV20.sigma_y[i] =
+        pAgicRes->ProcResV20.sigma_y[i] =
             (int)(pAgicCtx->ConfigData.ConfigV20.sigma_y[i] * (1 << 7));
     }
 
-    pAgicCtx->ProcRes.ProcResV20.noise_cut_en = pAgicCtx->ConfigData.ConfigV20.noise_cut_en;
-    pAgicCtx->ProcRes.ProcResV20.noise_coe_a  = pAgicCtx->ConfigData.ConfigV20.noise_coe_a;
-    pAgicCtx->ProcRes.ProcResV20.noise_coe_b  = pAgicCtx->ConfigData.ConfigV20.noise_coe_b;
-    pAgicCtx->ProcRes.ProcResV20.diff_clip    = pAgicCtx->ConfigData.ConfigV20.diff_clip;
+    pAgicRes->ProcResV20.noise_cut_en = pAgicCtx->ConfigData.ConfigV20.noise_cut_en;
+    pAgicRes->ProcResV20.noise_coe_a  = pAgicCtx->ConfigData.ConfigV20.noise_coe_a;
+    pAgicRes->ProcResV20.noise_coe_b  = pAgicCtx->ConfigData.ConfigV20.noise_coe_b;
+    pAgicRes->ProcResV20.diff_clip    = pAgicCtx->ConfigData.ConfigV20.diff_clip;
 
-    if (pAgicCtx->ProcRes.ProcResV20.regkgrad2dark < pAgicCtx->ProcRes.ProcResV20.regkgrad2)
-        GIC_SWAP(int, pAgicCtx->ProcRes.ProcResV20.regkgrad2dark,
-                 pAgicCtx->ProcRes.ProcResV20.regkgrad2);
+    if (pAgicRes->ProcResV20.regkgrad2dark < pAgicRes->ProcResV20.regkgrad2)
+        GIC_SWAP(int, pAgicRes->ProcResV20.regkgrad2dark,
+                 pAgicRes->ProcResV20.regkgrad2);
 
-    if (pAgicCtx->ProcRes.ProcResV20.regmingradthrdark1 <
-        pAgicCtx->ProcRes.ProcResV20.regmingradthr1)
-        GIC_SWAP(int, pAgicCtx->ProcRes.ProcResV20.regmingradthrdark1,
-                 pAgicCtx->ProcRes.ProcResV20.regmingradthr1);
+    if (pAgicRes->ProcResV20.regmingradthrdark1 <
+            pAgicRes->ProcResV20.regmingradthr1)
+        GIC_SWAP(int, pAgicRes->ProcResV20.regmingradthrdark1,
+                 pAgicRes->ProcResV20.regmingradthr1);
 
-    if (pAgicCtx->ProcRes.ProcResV20.regmingradthrdark2 <
-        pAgicCtx->ProcRes.ProcResV20.regmingradthr2)
-        GIC_SWAP(int, pAgicCtx->ProcRes.ProcResV20.regmingradthrdark2,
-                 pAgicCtx->ProcRes.ProcResV20.regmingradthr2);
+    if (pAgicRes->ProcResV20.regmingradthrdark2 <
+            pAgicRes->ProcResV20.regmingradthr2)
+        GIC_SWAP(int, pAgicRes->ProcResV20.regmingradthrdark2,
+                 pAgicRes->ProcResV20.regmingradthr2);
 
-    if (pAgicCtx->ProcRes.ProcResV20.regdarktthrehi < pAgicCtx->ProcRes.ProcResV20.regdarkthre)
-        GIC_SWAP(int, pAgicCtx->ProcRes.ProcResV20.regdarktthrehi,
-                 pAgicCtx->ProcRes.ProcResV20.regdarkthre);
+    if (pAgicRes->ProcResV20.regdarktthrehi < pAgicRes->ProcResV20.regdarkthre)
+        GIC_SWAP(int, pAgicRes->ProcResV20.regdarktthrehi,
+                 pAgicRes->ProcResV20.regdarkthre);
 
-    GicV1DumpReg(&pAgicCtx->ProcRes.ProcResV20);
+    GicV1DumpReg(&pAgicRes->ProcResV20);
 
     LOG1_AGIC("exit!");
 }
@@ -335,7 +337,8 @@ void AgicProcessV20(AgicContext_t* pAgicCtx, int ISO) {
     int iso_lo = 50, iso_hi = 50;
     int index          = 0;
     short LumaPoints[] = {0,    128,  256,  384,  512,  640,  768, 896,
-                          1024, 1536, 2048, 2560, 3072, 3584, 4096};
+                          1024, 1536, 2048, 2560, 3072, 3584, 4096
+                         };
 
     LOGD_AGIC("enter, ISO=%d", ISO);
 
@@ -415,7 +418,7 @@ XCamReturn AgicProcess(AgicContext_t* pAgicCtx, int ISO, int mode) {
     return XCAM_RETURN_NO_ERROR;
 }
 
-XCamReturn AgicGetProcResult(AgicContext_t* pAgicCtx) {
+XCamReturn AgicGetProcResult(AgicContext_t* pAgicCtx, AgicProcResult_t* pAgicRes) {
     LOG1_AGIC("enter!");
 
     if (pAgicCtx == NULL) {
@@ -423,7 +426,7 @@ XCamReturn AgicGetProcResult(AgicContext_t* pAgicCtx) {
         return XCAM_RETURN_ERROR_PARAM;
     }
 
-    AgicGetProcResultV20(pAgicCtx);
+    AgicGetProcResultV20(pAgicCtx, pAgicRes);
 
     LOG1_AGIC("exit!");
     return XCAM_RETURN_NO_ERROR;

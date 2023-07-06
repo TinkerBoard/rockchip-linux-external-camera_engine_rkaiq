@@ -811,7 +811,7 @@ AdebayerGetProcResult
 
 
     // TODO: copy regvalue result
-    pAdebayerResult->config = pAdebayerCtx->config;
+    *pAdebayerResult->config = pAdebayerCtx->config;
     pAdebayerCtx->config.updatecfg = false;
 
     LOGI_ADEBAYER("%s(%d): exit!\n", __FUNCTION__, __LINE__);

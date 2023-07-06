@@ -497,7 +497,7 @@ RawStreamProcUnit::trigger_isp_readback()
                     _camHw->getEffectiveIspParams(ispParams, sequence);
 
                     SmartPtr<BaseSensorHw> mSensorSubdev = _camHw->mSensorDev.dynamic_cast_ptr<BaseSensorHw>();
-                    SmartPtr<RkAiqExpParamsProxy> ExpParams = nullptr;
+                    SmartPtr<RkAiqSensorExpParamsProxy> ExpParams = nullptr;
                     mSensorSubdev->getEffectiveExpParams(ExpParams, sequence);
 
                     SmartPtr<LensHw> mLensSubdev = _camHw->mLensDev.dynamic_cast_ptr<LensHw>();

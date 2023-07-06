@@ -89,7 +89,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     rk_aiq_singlecam_3a_result_t* scam_3a_res = procParaGroup->camgroupParmasArray[0];
     XCamVideoBuffer* awb_proc_res = scam_3a_res->awb._awbProcRes;
     if (awb_proc_res) {
-        RkAiqAlgoProcResAwb* awb_res = (RkAiqAlgoProcResAwb*)awb_proc_res->map(awb_proc_res);
+        RkAiqAlgoProcResAwbShared_t* awb_res = (RkAiqAlgoProcResAwbShared_t*)awb_proc_res->map(awb_proc_res);
         if(awb_res) {
             if(awb_res->awb_gain_algo.grgain < DIVMIN ||
                     awb_res->awb_gain_algo.gbgain < DIVMIN ) {
@@ -143,9 +143,24 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
                hAlut3d->swinfo.awbIIRDampCoef);
 
     Alut3dConfig(hAlut3d);
+    if (hAlut3d->lut3d_hw_conf.enable || !hAlut3d->lut3d_hw_conf.bypass_en) {
+        LOGD_A3DLUT("update:%d, updateAtt: %d, converge: %d\n",
+                hAlut3d->update, hAlut3d->updateAtt, hAlut3d->swinfo.lut3dConverged);
+        outparams->cfg_update = hAlut3d->update || hAlut3d->updateAtt || (!hAlut3d->swinfo.lut3dConverged);
+    } else {
+        outparams->cfg_update = hAlut3d->updateAtt || hAlut3d->calib_update;
+    }
 
+    hAlut3d->calib_update = false;
+    hAlut3d->updateAtt = false;
     for (int i = 0; i < procResParaGroup->arraySize; i++) {
-        *(procResParaGroup->camgroupParmasArray[i]->_lut3dCfg) = hAlut3d->lut3d_hw_conf;
+        if (outparams->cfg_update) {
+            *(procResParaGroup->camgroupParmasArray[i]->_lut3dCfg) =
+                hAlut3d->lut3d_hw_conf;
+        }
+        //TODO
+        IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->_lut3dCfg), procParaGroup->_offset_is_update) =
+            outparams->cfg_update;
     }
 
     LOG1_A3DLUT( "%s: (exit)\n", __FUNCTION__);

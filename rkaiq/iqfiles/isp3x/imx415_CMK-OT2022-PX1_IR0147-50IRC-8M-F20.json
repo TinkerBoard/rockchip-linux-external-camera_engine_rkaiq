@@ -1290,7 +1290,7 @@
 							"MergeTuningPara":	{
 								"BaseFrm":	"BASEFRAME_LONG",
 								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
-								"ByPassThr":	0,
+								"ByPassThr":	0.01,
 								"LongFrmModeData":	{
 									"OECurve":	{
 										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
@@ -1361,7 +1361,7 @@
 									"Manual_curve":	[0, 558, 1087, 1588, 2063, 2515, 2944, 3353, 3744, 4473, 5139, 5751, 6316, 6838, 7322, 7772, 8192]
 								},
 								"Scale_y":	[0, 2, 20, 76, 193, 381, 631, 772, 919, 1066, 1211, 1479, 1700, 1863, 1968, 2024, 2048],
-								"ByPassThr":	0,
+								"ByPassThr":	0.01,
 								"Edge_Weit":	0.0627451,
 								"OutPutLongFrame":	0,
 								"IIR_frame":	2,
@@ -1380,7 +1380,7 @@
 								"Enable":	1,
 								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"cfg_alpha":	0,
-								"ByPassThr":	0,
+								"ByPassThr":	0.01,
 								"dehaze_setting":	{
 									"en":	0,
 									"air_lc_en":	1,
@@ -1619,11 +1619,11 @@
 						"aldch":	{
 							"param":	{
 								"ldch_en":	0,
-								"meshfile":	"LDCH_mesh_2688_1520_os04a10_4IR",
-								"correct_level":	255,
-								"correct_level_max":	255,
-								"light_center":	[1351.12, 739.486],
-								"coefficient":	[-1830.26, 0.000423795, -2.50767e-007, 1.27247e-010]
+								"meshfile":	"LDCH_mesh_3840_2160_imx415_4IR",
+								"correct_level":	251,
+								"correct_level_max":	251,
+								"light_center":	[1956.3909119999998438, 1140.6355200000000422],
+								"coefficient":	[-2819.4072493821618081, 0.0000316126581792, 0.0000000688410142, -0.0000000000130686]
 							}
 						},
 						"cpsl":	{
@@ -5939,10 +5939,13 @@
 									"pdBlkLevel":	64,
 									"pdSearchRadius":	3,
 									"pdMirrorInCalib":	1,
+									"pdChangeLeftRight":	0,
 									"pdVsImgoutMirror":	0,
 									"pdLRInDiffLine":	0,
 									"pdWidth":	508,
 									"pdHeight":	760,
+									"pdMaxWidth":	508,
+									"pdMaxHeight":	760,
 									"pdVerBinning":	0,
 									"pdFrmInValid":	1,
 									"pdDgainValid":	0,
@@ -6023,7 +6026,18 @@
 												}],
 											"fineSearchTbl_len":	2
 										}],
-									"pdIsoPara_len":	2
+									"pdIsoPara_len":	2,
+									"pdResoInf":	[{
+											"imageWidth":	0,
+											"imageHeight":	0,
+											"pdOutWidth":	0,
+											"pdOutHeight":	0,
+											"pdCropX":	0,
+											"pdCropY":	0,
+											"pdBaseWidth":	0,
+											"pdBaseHeight":	0
+										}],
+									"pdResoInf_len":	1
 								},
 								"vcmcfg":	{
 									"max_logical_pos":	64,
@@ -7456,7 +7470,7 @@
 							"MergeTuningPara":	{
 								"BaseFrm":	"BASEFRAME_LONG",
 								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
-								"ByPassThr":	0,
+								"ByPassThr":	0.01,
 								"LongFrmModeData":	{
 									"OECurve":	{
 										"CtrlData":	[0, 0.005, 0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1],
@@ -7527,7 +7541,7 @@
 									"Manual_curve":	[0, 558, 1087, 1588, 2063, 2515, 2944, 3353, 3744, 4473, 5139, 5751, 6316, 6838, 7322, 7772, 8192]
 								},
 								"Scale_y":	[0, 2, 20, 76, 193, 381, 631, 772, 919, 1066, 1211, 1479, 1700, 1863, 1968, 2024, 2048],
-								"ByPassThr":	0,
+								"ByPassThr":	0.01,
 								"Edge_Weit":	0.0627451,
 								"OutPutLongFrame":	0,
 								"IIR_frame":	2,
@@ -7546,7 +7560,7 @@
 								"Enable":	1,
 								"CtrlDataType":	"CTRLDATATYPE_ENVLV",
 								"cfg_alpha":	0,
-								"ByPassThr":	0,
+								"ByPassThr":	0.01,
 								"dehaze_setting":	{
 									"en":	0,
 									"air_lc_en":	1,
@@ -12105,10 +12119,13 @@
 									"pdBlkLevel":	64,
 									"pdSearchRadius":	3,
 									"pdMirrorInCalib":	1,
+									"pdChangeLeftRight":	0,
 									"pdVsImgoutMirror":	0,
 									"pdLRInDiffLine":	0,
 									"pdWidth":	508,
 									"pdHeight":	760,
+									"pdMaxWidth":	508,
+									"pdMaxHeight":	760,
 									"pdVerBinning":	0,
 									"pdFrmInValid":	1,
 									"pdDgainValid":	0,
@@ -12189,7 +12206,18 @@
 												}],
 											"fineSearchTbl_len":	2
 										}],
-									"pdIsoPara_len":	2
+									"pdIsoPara_len":	2,
+									"pdResoInf":	[{
+											"imageWidth":	0,
+											"imageHeight":	0,
+											"pdOutWidth":	0,
+											"pdOutHeight":	0,
+											"pdCropX":	0,
+											"pdCropY":	0,
+											"pdBaseWidth":	0,
+											"pdBaseHeight":	0
+										}],
+									"pdResoInf_len":	1
 								},
 								"vcmcfg":	{
 									"max_logical_pos":	64,

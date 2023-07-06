@@ -26,6 +26,7 @@
 #include "common/rk-camera-module.h"
 #include "v4l2_buffer_proxy.h"
 #include "rk_aiq_offline_raw.h"
+
 /************ BELOW FROM kernel/include/uapi/linux/rk-preisp.h ************/
 
 /* test hdr function */
@@ -86,7 +87,7 @@ public:
     virtual int get_sensor_desc(rk_aiq_exposure_sensor_descriptor* sns_des) { return 0;}
 
     virtual XCamReturn get_sensor_descriptor (rk_aiq_exposure_sensor_descriptor* sns_des) { return XCAM_RETURN_NO_ERROR;}
-    virtual XCamReturn getEffectiveExpParams(SmartPtr<RkAiqExpParamsProxy>& ExpParams, uint32_t frame_id) { return XCAM_RETURN_NO_ERROR;}
+    virtual XCamReturn getEffectiveExpParams(SmartPtr<RkAiqSensorExpParamsProxy>& ExpParams, uint32_t frame_id) { return XCAM_RETURN_NO_ERROR;}
     virtual XCamReturn set_working_mode(int mode) { return XCAM_RETURN_NO_ERROR;}
     virtual XCamReturn set_exp_delay_info(int time_delay, int gain_delay, int hcg_lcg_mode_delay) { return XCAM_RETURN_NO_ERROR;}
     virtual XCamReturn set_mirror_flip(bool mirror, bool flip, int32_t& skip_frame_sequence) { return XCAM_RETURN_NO_ERROR;}
@@ -122,7 +123,7 @@ public:
     virtual int get_sensor_desc(rk_aiq_exposure_sensor_descriptor* sns_des);
 
     virtual XCamReturn get_sensor_descriptor (rk_aiq_exposure_sensor_descriptor* sns_des);
-    virtual XCamReturn getEffectiveExpParams(SmartPtr<RkAiqExpParamsProxy>& ExpParams, uint32_t frame_id);
+    virtual XCamReturn getEffectiveExpParams(SmartPtr<RkAiqSensorExpParamsProxy>& ExpParams, uint32_t frame_id);
     virtual XCamReturn set_working_mode(int mode);
     virtual XCamReturn set_exp_delay_info(int time_delay, int gain_delay, int hcg_lcg_mode_delay);
     virtual XCamReturn set_mirror_flip(bool mirror, bool flip, int32_t& skip_frame_sequence);
@@ -136,16 +137,16 @@ public:
 protected:
     Mutex _mutex;
     int _working_mode;
-    std::list<std::pair<SmartPtr<RkAiqExpParamsProxy>, bool>> _exp_list;
-    std::map<int, SmartPtr<RkAiqExpParamsProxy>> _effecting_exp_map;
+    std::list<std::pair<SmartPtr<RkAiqSensorExpParamsProxy>, bool>> _exp_list;
+    std::map<int, SmartPtr<RkAiqSensorExpParamsProxy>> _effecting_exp_map;
     bool _first;
     uint32_t _frame_sequence;
     rk_aiq_exposure_sensor_descriptor _sensor_desc;
-    std::list<SmartPtr<RkAiqExpParamsProxy>> _delayed_gain_list;
-    std::list<SmartPtr<RkAiqExpParamsProxy>> _delayed_dcg_gain_mode_list;
-    SmartPtr<RkAiqExpParamsProxy> _last_exp_time;
-    SmartPtr<RkAiqExpParamsProxy> _last_exp_gain;
-    SmartPtr<RkAiqExpParamsProxy> _last_dcg_gain_mode;
+    std::list<SmartPtr<RkAiqSensorExpParamsProxy>> _delayed_gain_list;
+    std::list<SmartPtr<RkAiqSensorExpParamsProxy>> _delayed_dcg_gain_mode_list;
+    SmartPtr<RkAiqSensorExpParamsProxy> _last_exp_time;
+    SmartPtr<RkAiqSensorExpParamsProxy> _last_exp_gain;
+    SmartPtr<RkAiqSensorExpParamsProxy> _last_dcg_gain_mode;
     int _gain_delay;
     int _time_delay;
     bool _gain_delayed;
@@ -153,7 +154,7 @@ protected:
     bool _dcg_gain_mode_delayed;
     bool _dcg_gain_mode_with_time;
     bool _is_i2c_exp;
-    SmartPtr<RkAiqExpParamsPool> _expParamsPool;
+    SmartPtr<RkAiqSensorExpParamsPool> _expParamsPool;
 
     enum {
         RK_EXP_UPDATE_TIME,
@@ -197,7 +198,7 @@ protected:
     XCamReturn setExposure(uint32_t frameid);
     XCamReturn setSensorDpcc(Sensor_dpcc_res_t* SensorDpccInfo);
     XCamReturn composeExpParam( RKAiqAecExpInfo_t* timeValid, RKAiqAecExpInfo_t* gainValid, RKAiqAecExpInfo_t* dcgGainModeValid, RKAiqAecExpInfo_t* newExp);
-    XCamReturn split_locked(SmartPtr<RkAiqExpParamsProxy>& exp_param, uint32_t sof_id);
+    XCamReturn split_locked(SmartPtr<RkAiqSensorExpParamsProxy>& exp_param, uint32_t sof_id);
     XCamReturn handle_sof_internal(int64_t time, uint32_t frameid);
     XCamReturn setI2cDAta(pending_split_exps_t* exps);
     int get_nr_switch(rk_aiq_sensor_nr_switch_t* nr_switch);

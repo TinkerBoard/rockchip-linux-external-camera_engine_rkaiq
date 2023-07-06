@@ -241,10 +241,10 @@ Abayer2dnr_result_V23_t Abayer2dnr_GetProcResult_V23(Abayer2dnr_Context_V23_t *p
     }
 
     //transfer to reg value
-    bayer2dnr_fix_transfer_V23(st2DSelect, &pAbayernrResult->st2DFix, &pAbayernrCtx->stStrength, &pAbayernrCtx->stExpInfo);
+    bayer2dnr_fix_transfer_V23(st2DSelect, pAbayernrResult->st2DFix, &pAbayernrCtx->stStrength, &pAbayernrCtx->stExpInfo);
 
     if(pAbayernrCtx->eMode == ABAYER2DNR_V23_OP_MODE_REG_MANUAL) {
-        pAbayernrResult->st2DFix = pAbayernrCtx->stManual.st2Dfix;
+        *pAbayernrResult->st2DFix = pAbayernrCtx->stManual.st2Dfix;
         pAbayernrCtx->stStrength.percent = 1.0;
     }
 

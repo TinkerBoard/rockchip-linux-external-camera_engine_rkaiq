@@ -37,17 +37,12 @@ public:
     virtual XCamReturn stop();
     XCamReturn setIspParamsSync(uint32_t frameId);
     XCamReturn setIsppParamsSync(uint32_t frameId);
+    virtual void updateEffParams(void* params, void* ori_params);
+    virtual bool processTb(void* params);
 protected:
-    virtual XCamReturn setIspConfig(cam3aResultList* result_list = NULL);
     virtual XCamReturn dispatchResult(SmartPtr<cam3aResult> cam3a_result);
     virtual XCamReturn dispatchResult(cam3aResultList& list);
     virtual bool isOnlineByWorkingMode();
-private:
-    void gen_full_isp_params(const struct isp21_isp_params_cfg* update_params,
-                             struct isp21_isp_params_cfg* full_params,
-                             uint64_t* module_en_update_partial,
-                             uint64_t* module_cfg_update_partial);
-    struct isp21_isp_params_cfg _full_active_isp21_params;
 };
 
 }

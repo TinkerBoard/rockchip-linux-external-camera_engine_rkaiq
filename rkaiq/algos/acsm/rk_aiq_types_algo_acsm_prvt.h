@@ -29,6 +29,7 @@
 typedef struct AcsmContext_s {
     CamCalibDbV2Context_t *calibv2;
     rk_aiq_acsm_params_t params;
+    bool isReCal_;
 } AcsmContext_t;
 
 typedef struct _RkAiqAlgoContext {

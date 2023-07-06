@@ -4,23 +4,8 @@
 RKAIQ_BEGIN_DECLARE
 
 #define Math_LOG2(x)    (log((double)x)   / log((double)2))
+#define interp_cnr_v30(value_low, value_high, ratio) (ratio * ((value_high) - (value_low)) + value_low)
 
-float interp_cnr_v30(int ISO_low, int ISO_high, float value_low, float value_high, int ISO)
-{
-    float value = 0.0;
-
-    if (ISO <= ISO_low) {
-        value = value_low;
-    }
-    else if (ISO >= ISO_high) {
-        value = value_high;
-    }
-    else {
-        value = float(ISO - ISO_low) / float(ISO_high - ISO_low) * (value_high - value_low) + value_low;
-    }
-
-    return value;
-}
 
 
 AcnrV30_result_t cnr_select_params_by_ISO_V30(RK_CNR_Params_V30_t *pParams, RK_CNR_Params_V30_Select_t *pSelect, AcnrV30_ExpInfo_t *pExpInfo)
@@ -141,35 +126,37 @@ AcnrV30_result_t cnr_select_params_by_ISO_V30(RK_CNR_Params_V30_t *pParams, RK_C
         }
     }
 
-    pSelect->thumb_sigma = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->thumb_sigma, pHighISO->thumb_sigma, iso);
-    pSelect->thumb_bf_ratio = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->thumb_bf_ratio, pHighISO->thumb_bf_ratio, iso);
+    float ratio = float(iso - isoGainLow) / float(isoGainHigh - isoGainLow);
 
-    pSelect->chroma_filter_strength = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->chroma_filter_strength, pHighISO->chroma_filter_strength, iso);
-    pSelect->chroma_filter_wgt_clip = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->chroma_filter_wgt_clip, pHighISO->chroma_filter_wgt_clip, iso);
-    pSelect->anti_chroma_ghost = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->anti_chroma_ghost, pHighISO->anti_chroma_ghost, iso);
-    pSelect->chroma_filter_uv_gain = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->chroma_filter_uv_gain, pHighISO->chroma_filter_uv_gain, iso);
-    pSelect->wgt_slope = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->wgt_slope, pHighISO->wgt_slope, iso);
+    pSelect->thumb_sigma = interp_cnr_v30( pLowISO->thumb_sigma, pHighISO->thumb_sigma, ratio);
+    pSelect->thumb_bf_ratio = interp_cnr_v30(pLowISO->thumb_bf_ratio, pHighISO->thumb_bf_ratio, ratio);
 
-    pSelect->gaus_ratio = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->gaus_ratio, pHighISO->gaus_ratio, iso);
+    pSelect->chroma_filter_strength = interp_cnr_v30(pLowISO->chroma_filter_strength, pHighISO->chroma_filter_strength, ratio);
+    pSelect->chroma_filter_wgt_clip = interp_cnr_v30(pLowISO->chroma_filter_wgt_clip, pHighISO->chroma_filter_wgt_clip, ratio);
+    pSelect->anti_chroma_ghost = interp_cnr_v30(pLowISO->anti_chroma_ghost, pHighISO->anti_chroma_ghost, ratio);
+    pSelect->chroma_filter_uv_gain = interp_cnr_v30(pLowISO->chroma_filter_uv_gain, pHighISO->chroma_filter_uv_gain, ratio);
+    pSelect->wgt_slope = interp_cnr_v30(pLowISO->wgt_slope, pHighISO->wgt_slope, ratio);
 
-    pSelect->bf_sigmaR = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->bf_sigmaR, pHighISO->bf_sigmaR, iso);
-    pSelect->bf_uvgain = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->bf_uvgain, pHighISO->bf_uvgain, iso);
-    pSelect->bf_ratio = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->bf_ratio, pHighISO->bf_ratio, iso);
-    pSelect->hbf_wgt_clip = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->hbf_wgt_clip, pHighISO->hbf_wgt_clip, iso);
-    pSelect->global_alpha = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->global_alpha, pHighISO->global_alpha, iso);
+    pSelect->gaus_ratio = interp_cnr_v30(pLowISO->gaus_ratio, pHighISO->gaus_ratio, ratio);
 
-    pSelect->saturation_adj_offset = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->saturation_adj_offset, pHighISO->saturation_adj_offset, iso);
-    pSelect->saturation_adj_ratio = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->saturation_adj_ratio, pHighISO->saturation_adj_ratio, iso);
+    pSelect->bf_sigmaR = interp_cnr_v30(pLowISO->bf_sigmaR, pHighISO->bf_sigmaR, ratio);
+    pSelect->bf_uvgain = interp_cnr_v30(pLowISO->bf_uvgain, pHighISO->bf_uvgain, ratio);
+    pSelect->bf_ratio = interp_cnr_v30(pLowISO->bf_ratio, pHighISO->bf_ratio, ratio);
+    pSelect->hbf_wgt_clip = interp_cnr_v30(pLowISO->hbf_wgt_clip, pHighISO->hbf_wgt_clip, ratio);
+    pSelect->global_alpha = interp_cnr_v30(pLowISO->global_alpha, pHighISO->global_alpha, ratio);
 
-    pSelect->global_gain = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->global_gain, pHighISO->global_gain, iso);
-    pSelect->global_gain_alpha = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->global_gain_alpha, pHighISO->global_gain_alpha, iso);
-    pSelect->local_gain_scale = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->local_gain_scale, pHighISO->local_gain_scale, iso);
-    pSelect->global_gain_thumb = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->global_gain_thumb, pHighISO->global_gain_thumb, iso);
-    pSelect->global_gain_alpha_thumb = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->global_gain_alpha_thumb, pHighISO->global_gain_alpha_thumb, iso);
+    pSelect->saturation_adj_offset = interp_cnr_v30(pLowISO->saturation_adj_offset, pHighISO->saturation_adj_offset, ratio);
+    pSelect->saturation_adj_ratio = interp_cnr_v30(pLowISO->saturation_adj_ratio, pHighISO->saturation_adj_ratio, ratio);
+
+    pSelect->global_gain = interp_cnr_v30(pLowISO->global_gain, pHighISO->global_gain, ratio);
+    pSelect->global_gain_alpha = interp_cnr_v30(pLowISO->global_gain_alpha, pHighISO->global_gain_alpha, ratio);
+    pSelect->local_gain_scale = interp_cnr_v30(pLowISO->local_gain_scale, pHighISO->local_gain_scale, ratio);
+    pSelect->global_gain_thumb = interp_cnr_v30(pLowISO->global_gain_thumb, pHighISO->global_gain_thumb, ratio);
+    pSelect->global_gain_alpha_thumb = interp_cnr_v30(pLowISO->global_gain_alpha_thumb, pHighISO->global_gain_alpha_thumb, ratio);
 
     for (int i = 0; i < 13; i++)
     {
-        pSelect->gain_adj_strength_ratio[i] = interp_cnr_v30(isoGainLow, isoGainHigh, pLowISO->gain_adj_strength_ratio[i], pHighISO->gain_adj_strength_ratio[i], iso);
+        pSelect->gain_adj_strength_ratio[i] = interp_cnr_v30(pLowISO->gain_adj_strength_ratio[i], pHighISO->gain_adj_strength_ratio[i], ratio);
     }
 
     return ACNRV30_RET_SUCCESS;

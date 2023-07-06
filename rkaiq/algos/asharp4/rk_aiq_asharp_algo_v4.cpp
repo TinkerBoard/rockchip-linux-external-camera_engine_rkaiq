@@ -261,23 +261,23 @@ Asharp4_result_t Asharp_GetProcResult_V4(Asharp_Context_V4_t *pAsharpCtx, Asharp
         return ASHARP4_RET_INVALID_PARM;
     }
 
+    RK_SHARP_Params_V4_Select_t* stSelect = NULL;
     if(pAsharpCtx->eMode == ASHARP4_OP_MODE_AUTO) {
-        pAsharpResult->stSelect = pAsharpCtx->stAuto.stSelect;
+        stSelect = &pAsharpCtx->stAuto.stSelect;
     } else if(pAsharpCtx->eMode == ASHARP4_OP_MODE_MANUAL) {
         //TODO
-        pAsharpResult->stSelect = pAsharpCtx->stManual.stSelect;
+        stSelect = &pAsharpCtx->stManual.stSelect;
     }
 
     //transfer to reg value
-    sharp_fix_transfer_V4(&pAsharpResult->stSelect, &pAsharpResult->stFix, &pAsharpCtx->stStrength);
+    sharp_fix_transfer_V4(stSelect, pAsharpResult->stFix, &pAsharpCtx->stStrength);
 
     if(pAsharpCtx->eMode == ASHARP4_OP_MODE_REG_MANUAL) {
-        pAsharpResult->stFix = pAsharpCtx->stManual.stFix;
+        *pAsharpResult->stFix = pAsharpCtx->stManual.stFix;
         pAsharpCtx->stStrength.strength_enable = false;
         pAsharpCtx->stStrength.percent = 1.0;
     }
 
-    pAsharpCtx->stProcResult = *pAsharpResult;
     LOGD_ASHARP("%s:%d xml:local:%d mode:%d  reg: local gain:%d  mfnr gain:%d mode:%d\n",
                 __FUNCTION__, __LINE__);
 

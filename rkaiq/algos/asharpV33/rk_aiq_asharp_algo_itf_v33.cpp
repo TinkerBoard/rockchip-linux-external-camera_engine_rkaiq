@@ -189,7 +189,7 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
 
     stExpInfo.blc_ob_predgain = 1.0;
     if(pAsharpProcParams != NULL) {
-        stExpInfo.blc_ob_predgain = pAsharpProcParams->stAblcV32_proc_res.isp_ob_predgain;
+        stExpInfo.blc_ob_predgain = pAsharpProcParams->stAblcV32_proc_res->isp_ob_predgain;
         if(stExpInfo.blc_ob_predgain != pAsharpCtx->stExpInfo.blc_ob_predgain) {
             pAsharpCtx->isReCalculate |= 1;
         }
@@ -296,11 +296,11 @@ static XCamReturn processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outp
         }
 
         Asharp_GetProcResult_V33(pAsharpCtx, &pAsharpProcResParams->stAsharpProcResult);
-        pAsharpProcResParams->stAsharpProcResult.isNeedUpdate = true;
+        outparams->cfg_update = true;
 
         LOGD_ASHARP("recalculate: %d delta_iso:%d \n ", pAsharpCtx->isReCalculate, DeltaIso);
     } else {
-        pAsharpProcResParams->stAsharpProcResult.isNeedUpdate = false;
+        outparams->cfg_update = false;
     }
 
     pAsharpCtx->isReCalculate = 0;

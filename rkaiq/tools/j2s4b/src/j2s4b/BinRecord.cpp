@@ -61,8 +61,8 @@ int BinMapLoader::genBinary(void *buffer, size_t buffer_size) {
   memcpy(buffer, &block_vec[0], block_vec.size());
   memcpy((uint8_t*)buffer + block_vec.size(), &map_vec[0], map_vec.size());
   memcpy((uint8_t*)buffer + block_vec.size() + map_vec.size(), &map_offset,
-         sizeof(map_index_t));
-  memcpy((uint8_t*)buffer + block_vec.size() + map_vec.size() + sizeof(map_index_t),
+         sizeof(size_t));
+  memcpy((uint8_t*)buffer + block_vec.size() + map_vec.size() + sizeof(size_t),
          &map_len, sizeof(map_len));
 
 #ifdef DEBUG
@@ -346,6 +346,11 @@ int BinMapLoader::removeBlock(map_index_t *map_item, size_t map_index,
     uint64_t curr_ptr = (uint64_t)temp_item->ptr_offset;
     int64_t d_diff = curr_dst - start_addr;
     int64_t p_diff = curr_ptr - start_addr;
+
+    if (map_item->ptr_offset == temp_item->ptr_offset) {
+        if (map_item->dst_offset != temp_item->dst_offset)
+            temp_item->ptr_offset = same_item->ptr_offset;
+    }
 
 #if 0
     printf("diff is [%ld], [%ld]\n", d_diff, p_diff);

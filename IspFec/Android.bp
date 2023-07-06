@@ -8,10 +8,10 @@ cc_prebuilt_library_static {
     vendor: true,
     arch: {
         arm: {
-            srcs: ["common/gen_mesh/android/genMesh_static_32bit/libgenMeshLib.a"],
+            srcs: ["src/gen_mesh/android/genMesh_static_32bit/libgenMeshLib.a"],
         },
         arm64: {
-            srcs: ["common/gen_mesh/android/genMesh_static_64bit/libgenMeshLib.a"],
+            srcs: ["src/gen_mesh/android/genMesh_static_64bit/libgenMeshLib.a"],
         },
     },
 }

@@ -179,12 +179,15 @@ Again_result_V2_t gain_select_params_by_ISO_V2(RK_GAIN_Params_V2_t *pParams, RK_
     pExpInfo->isoLevelHig = isoLevelHig;
     pSelect->hdrgain_ctrl_enable = pParams->hdrgain_ctrl_enable;
 
-    pSelect->hdr_gain_scale_s = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->iso_params[isoLevelLow].hdr_gain_scale_s
-                                + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->iso_params[isoLevelHig].hdr_gain_scale_s;
+    float ratio = 0;
+    ratio = float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) ;
+
+    pSelect->hdr_gain_scale_s = ratio * ( pParams->iso_params[isoLevelHig].hdr_gain_scale_s - pParams->iso_params[isoLevelLow].hdr_gain_scale_s)
+                                + pParams->iso_params[isoLevelLow].hdr_gain_scale_s;
 
 
-    pSelect->hdr_gain_scale_m = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pParams->iso_params[isoLevelLow].hdr_gain_scale_m
-                                + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pParams->iso_params[isoLevelHig].hdr_gain_scale_m;
+    pSelect->hdr_gain_scale_m = ratio * ( pParams->iso_params[isoLevelHig].hdr_gain_scale_m - pParams->iso_params[isoLevelLow].hdr_gain_scale_m)
+                                + pParams->iso_params[isoLevelLow].hdr_gain_scale_m;
 
     LOGD_ANR("%s:%d iso:%d high:%d low:%d hdr_gain_scale:%f %f\n",
              __FUNCTION__, __LINE__,

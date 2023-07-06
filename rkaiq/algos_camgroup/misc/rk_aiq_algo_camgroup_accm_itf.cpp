@@ -88,6 +88,8 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     RkAiqAlgoCamGroupProcOut* procResParaGroup = (RkAiqAlgoCamGroupProcOut*)outparams;
     accm_handle_t hAccm = (accm_handle_t)(inparams->ctx->accm_para);
 
+    hAccm->isReCal_ = hAccm->isReCal_ ||
+            (hAccm->accmSwInfo.grayMode != procParaGroup->_gray_mode);
     hAccm->accmSwInfo.grayMode = procParaGroup->_gray_mode;
 
     if (!procParaGroup->arraySize) {
@@ -98,7 +100,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     rk_aiq_singlecam_3a_result_t* scam_3a_res = procParaGroup->camgroupParmasArray[0];
     XCamVideoBuffer* awb_proc_res = scam_3a_res->awb._awbProcRes;
     if (awb_proc_res) {
-        RkAiqAlgoProcResAwb* awb_res = (RkAiqAlgoProcResAwb*)awb_proc_res->map(awb_proc_res);
+        RkAiqAlgoProcResAwbShared_t* awb_res = (RkAiqAlgoProcResAwbShared_t*)awb_proc_res->map(awb_proc_res);
         if(awb_res) {
             if(awb_res->awb_gain_algo.grgain < DIVMIN ||
                     awb_res->awb_gain_algo.gbgain < DIVMIN ) {
@@ -150,15 +152,27 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     LOGD_ACCM( "%s: awbIIRDampCoef:%f\n", __FUNCTION__, hAccm->accmSwInfo.awbIIRDampCoef);
 
     AccmConfig(hAccm);
-
+    outparams->cfg_update = hAccm->isReCal_;
     for (int i = 0; i < procResParaGroup->arraySize; i++) {
 #if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-        *(procResParaGroup->camgroupParmasArray[i]->accm._ccmCfg_v2) = hAccm->ccmHwConf_v2;
+        if (outparams->cfg_update) {
+            *(procResParaGroup->camgroupParmasArray[i]->accm._ccmCfg_v2) =
+                hAccm->ccmHwConf_v2;
+        }
+        //TODO
+        IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->accm._ccmCfg_v2), procParaGroup->_offset_is_update) =
+            outparams->cfg_update;
 #else
-        *(procResParaGroup->camgroupParmasArray[i]->accm._ccmCfg) = hAccm->ccmHwConf;
+        if (outparams->cfg_update) {
+            *(procResParaGroup->camgroupParmasArray[i]->accm._ccmCfg) =
+                hAccm->ccmHwConf;
+        }
+        //TODO
+        IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->accm._ccmCfg), procParaGroup->_offset_is_update) =
+            outparams->cfg_update;
 #endif
     }
-
+    hAccm->isReCal_ = false;
     LOG1_ACCM( "%s: (exit)\n", __FUNCTION__);
     return XCAM_RETURN_NO_ERROR;
 }

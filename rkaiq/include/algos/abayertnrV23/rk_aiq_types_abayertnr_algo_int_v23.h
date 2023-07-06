@@ -185,13 +185,11 @@ typedef struct Abayertnr_ProcResult_V23_s {
 #if (RKAIQ_HAVE_BAYERTNR_V23)
     //RK_Bayertnr_Params_V23_Select_t st3DSelect;
 #else
-    RK_Bayertnr_Param_V23L_Select_t st3DSelect;
+    //RK_Bayertnr_Param_V23L_Select_t st3DSelect;
 #endif
 
     //for hw register
-    RK_Bayertnr_Fix_V23_t st3DFix;
-
-    bool isNeedUpdate;
+    RK_Bayertnr_Fix_V23_t* st3DFix;
 
 } Abayertnr_ProcResult_V23_t;
 

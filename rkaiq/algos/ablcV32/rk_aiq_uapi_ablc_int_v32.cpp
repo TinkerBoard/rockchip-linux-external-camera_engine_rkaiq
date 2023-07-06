@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "rk_aiq_uapi_ablc_int_v32.h"
+#include "rk_aiq_ablc_algo_v32.h"
 
 #include "ablcV32/rk_aiq_types_ablc_algo_prvt_v32.h"
 
@@ -55,7 +56,7 @@ XCamReturn rk_aiq_uapi_ablc_V32_GetProc(const RkAiqAlgoContext* ctx, AblcProc_V3
     AblcContext_V32_t* pAblcCtx = (AblcContext_V32_t*)ctx;
     XCamReturn ret              = XCAM_RETURN_NO_ERROR;
 
-    *ProcRes = pAblcCtx->ProcRes;
+    Ablc_GetProcResult_V32(pAblcCtx, ProcRes);
     return ret;
 }
 

@@ -142,6 +142,8 @@ XCamReturn RkAiqCamgroupHandle::processing(rk_aiq_singlecam_3a_result_t** params
     procIn->_gray_mode = sharedCom->gray_mode;
     procIn->working_mode = sharedCom->working_mode;
     procIn->_is_bw_sensor = sharedCom->is_bw_sensor;
+    procIn->_offset_is_update =
+         (char*)(&((rk_aiq_isp_params_t<int> *)0)->result) - (char*)(&((rk_aiq_isp_params_t<int>*)0)->is_update);
 
     com->ctx         = mAlgoCtx;
     com->frame_id    = params_res_array[0]->_frameId;

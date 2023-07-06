@@ -6,7 +6,7 @@
 RKAIQ_BEGIN_DECLARE
 
 Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(void* pParams_v, void* pSelect_v,
-                                                         Abayertnr_ExpInfo_V23_t* pExpInfo) {
+        Abayertnr_ExpInfo_V23_t* pExpInfo) {
     Abayertnr_result_V23_t res = ABAYERTNRV23_RET_SUCCESS;
     int iso = 50;
 
@@ -107,135 +107,147 @@ Abayertnr_result_V23_t bayertnr_select_params_by_ISO_V23(void* pParams_v, void* 
     pSelect->thumbds_w = pLowISO->thumbds_w;
     pSelect->thumbds_h = pLowISO->thumbds_h;
 
+    float ratio = 0;
+    ratio = float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow);
 
     pSelect->lo_filter_strength =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lo_filter_strength
-        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lo_filter_strength;
+        ratio * (pHighISO->lo_filter_strength - pLowISO->lo_filter_strength) + pLowISO->lo_filter_strength;
 
     pSelect->hi_filter_strength =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hi_filter_strength
-        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hi_filter_strength;
+        ratio * (pHighISO->hi_filter_strength - pLowISO->hi_filter_strength) + pLowISO->hi_filter_strength;
 
     pSelect->soft_threshold_ratio =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->soft_threshold_ratio
-        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->soft_threshold_ratio;
+        ratio * (pHighISO->soft_threshold_ratio - pLowISO->soft_threshold_ratio) + pLowISO->soft_threshold_ratio;
 
 
-    for (i = 0; i < 16; i++)
-    {
-        /*pSelect->lumapoint[i] =
-            float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lumapoint[i]
-            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lumapoint[i];*/
-        pSelect->lumapoint[i] = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->lumapoint[i] : pHighISO->lumapoint[i];
-	pSelect->sigma[i] =
-            float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->sigma[i]
-            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->sigma[i];
-    }
-
-    for (i = 0; i < 16; i++)
-    {
-        /*pSelect->lumapoint2[i] =
-            float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lumapoint2[i]
-            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lumapoint2[i];*/
-        pSelect->lumapoint2[i] = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->lumapoint2[i] : pHighISO->lumapoint2[i];
-	pSelect->lo_sigma[i] =
-            float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lo_sigma[i]
-            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lo_sigma[i];
+    for (i = 0; i < 16; i++) {
+        pSelect->sigma[i] =
+            ratio * (pHighISO->sigma[i] - pLowISO->sigma[i]) + pLowISO->sigma[i];
+        pSelect->lo_sigma[i] =
+            ratio * (pHighISO->lo_sigma[i] - pLowISO->lo_sigma[i]) + pLowISO->lo_sigma[i];
         pSelect->hi_sigma[i] =
-            float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hi_sigma[i]
-            + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hi_sigma[i];
+            ratio * (pHighISO->hi_sigma[i] - pLowISO->hi_sigma[i]) + pLowISO->hi_sigma[i];
     }
-
-
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lo_enable
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lo_enable;
-    pSelect->lo_enable = (tmpf) > 0.5;
-
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hi_enable
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hi_enable;
-    pSelect->hi_enable = (tmpf) > 0.5;
-
-#if (RKAIQ_HAVE_BAYERTNR_V23)
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lo_med_en
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lo_med_en;
-    pSelect->lo_med_en = (tmpf) > 0.5;
-#endif
-
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lo_gsbay_en
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lo_gsbay_en;
-    pSelect->lo_gsbay_en = (tmpf) > 0.5;
-
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->lo_gslum_en
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->lo_gslum_en;
-    pSelect->lo_gslum_en = (tmpf) > 0.5;
-
-#if (RKAIQ_HAVE_BAYERTNR_V23)
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hi_med_en
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hi_med_en;
-    pSelect->hi_med_en = (tmpf) > 0.5;
-#endif
-
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hi_gslum_en
-           + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hi_gslum_en;
-    pSelect->hi_gslum_en = (tmpf) > 0.5;
-
-    pSelect->hi_wgt_comp = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_wgt_comp : pHighISO->hi_wgt_comp;
-    pSelect->lo_clipwgt = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->lo_clipwgt : pHighISO->lo_clipwgt;
-
-    pSelect->global_pk_en = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->global_pk_en : pHighISO->global_pk_en;
-    pSelect->global_pksq = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->global_pksq : pHighISO->global_pksq;
 
     pSelect->hidif_th  =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hidif_th
-        + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hidif_th;
+        ratio * (pHighISO->hidif_th - pLowISO->hidif_th) + pLowISO->hidif_th;
 
-    pSelect->lo_filter_rat0 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->lo_filter_rat0 : pHighISO->lo_filter_rat0;
-    pSelect->lo_filter_thed0 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->lo_filter_thed0 : pHighISO->lo_filter_thed0;
-
-
-    pSelect->hi_filter_abs_ctrl = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_abs_ctrl : pHighISO->hi_filter_abs_ctrl;
-#if (RKAIQ_HAVE_BAYERTNR_V23)
-    pSelect->hi_filter_filt_avg = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_filt_avg : pHighISO->hi_filter_filt_avg;
-    pSelect->hi_filter_filt_bay = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_filt_bay : pHighISO->hi_filter_filt_bay;
-    pSelect->hi_filter_filt_mode = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_filt_mode : pHighISO->hi_filter_filt_mode;
+#if (RKAIQ_HAVE_BAYERTNR_V23_LITE)
+    pSelect->wgtmin =
+        ratio * (pHighISO->wgtmin - pLowISO->wgtmin) + pLowISO->wgtmin;
 #endif
 
-    pSelect->hi_filter_rat0 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_rat0 : pHighISO->hi_filter_rat0;
-    pSelect->hi_filter_thed0 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_thed0 : pHighISO->hi_filter_thed0;
-    pSelect->hi_filter_rat1 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_rat1 : pHighISO->hi_filter_rat1;
-    pSelect->hi_filter_thed1 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->hi_filter_thed1 : pHighISO->hi_filter_thed1;
+    if((isoGain - isoGainLow) <= (isoGainHig - isoGain)) {
+        pSelect->trans_en = pLowISO->trans_en;
+        pSelect->lo_enable = pLowISO->lo_enable;
+        pSelect->hi_enable = pLowISO->hi_enable;
 
+        pSelect->lo_gsbay_en = pLowISO->lo_gsbay_en;
+        pSelect->lo_gslum_en = pLowISO->lo_gslum_en;
+        pSelect->hi_gslum_en = pLowISO->hi_gslum_en;
+
+        pSelect->wgt_use_mode = pLowISO->wgt_use_mode;
+        pSelect->wgt_mge_mode = pLowISO->wgt_mge_mode;
+
+        pSelect->global_pk_en = pLowISO->global_pk_en;
+        pSelect->global_pksq = pLowISO->global_pksq;
+
+        pSelect->hi_wgt_comp = pLowISO->hi_wgt_comp;
+        pSelect->lo_clipwgt = pLowISO->lo_clipwgt;
+
+        for (i = 0; i < 16; i++) {
+            pSelect->lumapoint[i] = pLowISO->lumapoint[i];
+            pSelect->lumapoint2[i] = pLowISO->lumapoint2[i];
+        }
+
+        pSelect->lo_filter_rat0 = pLowISO->lo_filter_rat0;
+        pSelect->lo_filter_thed0 = pLowISO->lo_filter_thed0;
+
+        pSelect->hi_filter_rat0 = pLowISO->hi_filter_rat0;
+        pSelect->hi_filter_thed0 = pLowISO->hi_filter_thed0;
+        pSelect->hi_filter_rat1 = pLowISO->hi_filter_rat1;
+        pSelect->hi_filter_thed1 = pLowISO->hi_filter_thed1;
+
+        pSelect->guass_guide_coeff0 = pLowISO->guass_guide_coeff0;
+        pSelect->guass_guide_coeff1 = pLowISO->guass_guide_coeff1;
+        pSelect->guass_guide_coeff2 = pLowISO->guass_guide_coeff2;
+
+        pSelect->hi_filter_abs_ctrl = pLowISO->hi_filter_abs_ctrl;
 #if (RKAIQ_HAVE_BAYERTNR_V23)
-    tmpf    = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->hi_guass
-              + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->hi_guass;
-    pSelect->hi_guass = (tmpf) > 0.5;
-    tmpf    = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->kl_guass
-              + float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->kl_guass;
-    pSelect->kl_guass = (tmpf) > 0.5;
+        pSelect->lo_med_en = pLowISO->lo_med_en;
+        pSelect->hi_med_en = pLowISO->hi_med_en;
+
+        pSelect->hi_guass = pLowISO->hi_guass;
+        pSelect->kl_guass = pLowISO->kl_guass;
+
+        pSelect->hi_filter_filt_avg = pLowISO->hi_filter_filt_avg;
+        pSelect->hi_filter_filt_bay = pLowISO->hi_filter_filt_bay;
+        pSelect->hi_filter_filt_mode = pLowISO->hi_filter_filt_mode;
+
+        pSelect->guass_guide_coeff3 = pLowISO->guass_guide_coeff3;
 #endif
 
 #if (RKAIQ_HAVE_BAYERTNR_V23_LITE)
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->wgtmm_opt_en +
-           float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->wgtmm_opt_en;
-    pSelect->wgtmm_opt_en = (tmpf) > 0.5;
-    tmpf = float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->wgtmm_sel_en +
-           float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->wgtmm_sel_en;
-    pSelect->wgtmm_sel_en = (tmpf) > 0.5;
-    pSelect->wgtmin =
-        float(isoGainHig - isoGain) / float(isoGainHig - isoGainLow) * pLowISO->wgtmin +
-        float(isoGain - isoGainLow) / float(isoGainHig - isoGainLow) * pHighISO->wgtmin;
+        pSelect->wgtmm_opt_en = pLowISO->wgtmm_opt_en;
+        pSelect->wgtmm_sel_en = pLowISO->wgtmm_sel_en;
 #endif
+    } else {
+        pSelect->trans_en = pHighISO->trans_en;
+        pSelect->lo_enable = pHighISO->lo_enable;
+        pSelect->hi_enable = pHighISO->hi_enable;
 
-    pSelect->wgt_use_mode = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->wgt_use_mode : pHighISO->wgt_use_mode;
-    pSelect->wgt_mge_mode = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->wgt_mge_mode : pHighISO->wgt_mge_mode;
-    pSelect->guass_guide_coeff0 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->guass_guide_coeff0 : pHighISO->guass_guide_coeff0;
-    pSelect->guass_guide_coeff1 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->guass_guide_coeff1 : pHighISO->guass_guide_coeff1;
-    pSelect->guass_guide_coeff2 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->guass_guide_coeff2 : pHighISO->guass_guide_coeff2;
+        pSelect->lo_gsbay_en = pHighISO->lo_gsbay_en;
+        pSelect->lo_gslum_en = pHighISO->lo_gslum_en;
+        pSelect->hi_gslum_en = pHighISO->hi_gslum_en;
+
+        pSelect->wgt_use_mode = pHighISO->wgt_use_mode;
+        pSelect->wgt_mge_mode = pHighISO->wgt_mge_mode;
+
+        pSelect->global_pk_en = pHighISO->global_pk_en;
+        pSelect->global_pksq = pHighISO->global_pksq;
+
+        pSelect->hi_filter_abs_ctrl = pHighISO->hi_filter_abs_ctrl;
+
+        pSelect->hi_wgt_comp = pHighISO->hi_wgt_comp;
+        pSelect->lo_clipwgt = pHighISO->lo_clipwgt;
+
+        for (i = 0; i < 16; i++) {
+            pSelect->lumapoint[i] = pHighISO->lumapoint[i];
+            pSelect->lumapoint2[i] = pHighISO->lumapoint2[i];
+        }
+
+        pSelect->lo_filter_rat0 = pHighISO->lo_filter_rat0;
+        pSelect->lo_filter_thed0 = pHighISO->lo_filter_thed0;
+
+        pSelect->hi_filter_rat0 = pHighISO->hi_filter_rat0;
+        pSelect->hi_filter_thed0 = pHighISO->hi_filter_thed0;
+        pSelect->hi_filter_rat1 = pHighISO->hi_filter_rat1;
+        pSelect->hi_filter_thed1 = pHighISO->hi_filter_thed1;
+
+        pSelect->guass_guide_coeff0 = pHighISO->guass_guide_coeff0;
+        pSelect->guass_guide_coeff1 = pHighISO->guass_guide_coeff1;
+        pSelect->guass_guide_coeff2 = pHighISO->guass_guide_coeff2;
+
 #if (RKAIQ_HAVE_BAYERTNR_V23)
-    pSelect->guass_guide_coeff3 = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->guass_guide_coeff3 : pHighISO->guass_guide_coeff3;
+        pSelect->lo_med_en = pHighISO->lo_med_en;
+        pSelect->hi_med_en = pHighISO->hi_med_en;
+
+        pSelect->hi_guass = pHighISO->hi_guass;
+        pSelect->kl_guass = pHighISO->kl_guass;
+
+        pSelect->hi_filter_filt_avg = pHighISO->hi_filter_filt_avg;
+        pSelect->hi_filter_filt_bay = pHighISO->hi_filter_filt_bay;
+        pSelect->hi_filter_filt_mode = pHighISO->hi_filter_filt_mode;
+
+        pSelect->guass_guide_coeff3 = pHighISO->guass_guide_coeff3;
 #endif
 
-    pSelect->trans_en = (isoGain - isoGainLow) <= (isoGainHig - isoGain) ? pLowISO->trans_en : pHighISO->trans_en;
+#if (RKAIQ_HAVE_BAYERTNR_V23_LITE)
+        pSelect->wgtmm_opt_en = pHighISO->wgtmm_opt_en;
+        pSelect->wgtmm_sel_en = pHighISO->wgtmm_sel_en;
+#endif
+    }
+
     return res;
 }
 
@@ -291,8 +303,8 @@ unsigned short bayertnr_get_trans_V23(int tmpfix)
 }
 
 Abayertnr_result_V23_t bayertnr_fix_transfer_V23(void* pSelect_v, RK_Bayertnr_Fix_V23_t* pFix,
-                                                 rk_aiq_bayertnr_strength_v23_t* pStrength,
-                                                 Abayertnr_ExpInfo_V23_t* pExpInfo) {
+        rk_aiq_bayertnr_strength_v23_t* pStrength,
+        Abayertnr_ExpInfo_V23_t* pExpInfo) {
     int i = 0;
     int tmp;
 
@@ -649,7 +661,7 @@ Abayertnr_result_V23_t bayertnr_fix_printf_V23(RK_Bayertnr_Fix_V23_t * pFix)
 }
 
 Abayertnr_result_V23_t bayertnr_get_setting_by_name_json_V23(void* pCalibdb_v, char* name,
-                                                             int* calib_idx, int* tuning_idx) {
+        int* calib_idx, int* tuning_idx) {
     int i = 0;
     Abayertnr_result_V23_t res = ABAYERTNRV23_RET_SUCCESS;
 
@@ -693,7 +705,7 @@ Abayertnr_result_V23_t bayertnr_get_setting_by_name_json_V23(void* pCalibdb_v, c
 }
 
 Abayertnr_result_V23_t bayertnr_init_params_json_V23(void* pParams_v, void* pCalibdb_v,
-                                                     int calib_idx, int tuning_idx) {
+        int calib_idx, int tuning_idx) {
     Abayertnr_result_V23_t res = ABAYERTNRV23_RET_SUCCESS;
     CalibDbV2_BayerTnrV23_C_ISO_t *pCalibIso = NULL;
 #if (RKAIQ_HAVE_BAYERTNR_V23)
@@ -800,7 +812,7 @@ Abayertnr_result_V23_t bayertnr_init_params_json_V23(void* pParams_v, void* pCal
 }
 
 Abayertnr_result_V23_t bayertnr_config_setting_param_json_V23(void* pParams_v, void* pCalibdbV23_v,
-                                                              char* param_mode, char* snr_name) {
+        char* param_mode, char* snr_name) {
     Abayertnr_result_V23_t res = ABAYERTNRV23_RET_SUCCESS;
     int calib_idx = 0;
     int tuning_idx = 0;

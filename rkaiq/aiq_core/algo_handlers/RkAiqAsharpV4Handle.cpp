@@ -263,8 +263,8 @@ XCamReturn RkAiqAsharpV4HandleInt::processing() {
     RkAiqCore::RkAiqAlgosGroupShared_t* shared =
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
-    static int asharp_proc_framecnt             = 0;
-    asharp_proc_framecnt++;
+
+    asharp_proc_res_int->stAsharpProcResult.stFix = &shared->fullParams->mSharpenV3xParams->data()->result;
 
     ret = RkAiqHandle::processing();
     if (ret) {
@@ -337,12 +337,33 @@ XCamReturn RkAiqAsharpV4HandleInt::genIspResult(RkAiqFullParams* params,
         } else {
             sharp_param->frame_id = shared->frameId;
         }
-        memcpy(&sharp_param->result, &asharp_rk->stAsharpProcResult.stFix,
-               sizeof(RK_SHARP_Fix_V4_t));
+
+        if (asharp_rk->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            sharp_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mSharpenV3xParams = params->mSharpenV3xParams;
+            sharp_param->is_update = true;
+            LOGD_ASHARP("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != sharp_param->sync_flag) {
+            sharp_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mSharpenV3xParams.ptr()) {
+                sharp_param->result = cur_params->mSharpenV3xParams->data()->result;
+                sharp_param->is_update = true;
+            } else {
+                LOGE_ASHARP("no latest params !");
+                sharp_param->is_update = false;
+            }
+            LOGD_ASHARP("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            sharp_param->is_update = false;
+            LOGD_ASHARP("[%d] params needn't update", shared->frameId);
+        }
         LOGD_ANR("oyyf: %s:%d output isp param end \n", __FUNCTION__, __LINE__);
     }
-
-    cur_params->mSharpenV3xParams = params->mSharpenV3xParams;
 
     EXIT_ANALYZER_FUNCTION();
 

@@ -268,6 +268,8 @@ XCamReturn RkAiqAcnrHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    auvnr_proc_res_int->stAuvnrProcResult.stFix = &shared->fullParams->mUvnrParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "auvnr handle processing failed");
@@ -343,13 +345,34 @@ XCamReturn RkAiqAcnrHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
             } else {
                 cnr_param->frame_id = shared->frameId;
             }
-            cnr_param->update_mask |= RKAIQ_ISPP_NR_ID;
-            memcpy(&cnr_param->result, &acnr_rk->stAuvnrProcResult.stFix, sizeof(RK_UVNR_Fix_V1_t));
-        }
-        LOGD_ASHARP("oyyf: %s:%d output isp param end \n", __FUNCTION__, __LINE__);
-    }
 
-    cur_params->mUvnrParams = params->mUvnrParams;
+            if (acnr_rk->res_com.cfg_update) {
+                mSyncFlag = shared->frameId;
+                cnr_param->sync_flag = mSyncFlag;
+                // copy from algo result
+                // set as the latest result
+                cur_params->mUvnrParams = params->mUvnrParams;
+                cnr_param->is_update = true;
+                LOGD_ANR("[%d] params from algo", mSyncFlag);
+            } else if (mSyncFlag != cnr_param->sync_flag) {
+                cnr_param->sync_flag = mSyncFlag;
+                // copy from latest result
+                if (cur_params->mUvnrParams.ptr()) {
+                    cnr_param->result = cur_params->mUvnrParams->data()->result;
+                    cnr_param->is_update = true;
+                } else {
+                    LOGE_ANR("no latest params !");
+                    cnr_param->is_update = false;
+                }
+                LOGD_ANR("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+            } else {
+                // do nothing, result in buf needn't update
+                cnr_param->is_update = false;
+                LOGD_ANR("[%d] params needn't update", shared->frameId);
+            }
+        }
+        LOGD_ANR("oyyf: %s:%d output isp param end \n", __FUNCTION__, __LINE__);
+    }
 
     EXIT_ANALYZER_FUNCTION();
 

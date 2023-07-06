@@ -62,9 +62,10 @@
 #define GAS_L1_DEFAULT          (10)
 #define GAS_L2_DEFAULT          (10)
 #define GAS_L3_DEFAULT          (5)
-
+#define DAMP_STABLE_THR         (FLT_EPSILON)
 #define ISP_RAW_BIT (12)
 #define MFHDR_LOG_Q_BITS (11)
+#define DRC_COMPRESS_Y_OFFSET   (0.0156f)
 #define DSTBITS (ISP_RAW_BIT << MFHDR_LOG_Q_BITS)
 #define OFFSETBITS_INT (SW_DRC_OFFSET_POW2_FIX)
 #define OFFSETBITS (OFFSETBITS_INT << MFHDR_LOG_Q_BITS)
@@ -80,7 +81,7 @@ typedef enum AdrcState_e {
     ADRC_STATE_MAX
 } AdrcState_t;
 
-typedef struct DrcOhters_s {
+typedef struct adrcStaticParams_s {
     bool OutPutLongFrame;
     float curPixWeit;
     float preFrameWeit;
@@ -89,18 +90,21 @@ typedef struct DrcOhters_s {
     float Range_sgm_pre;
     int Space_sgm_cur;
     int Space_sgm_pre;
+    CompressMode_t CompressMode;
+    uint16_t compresManuCurve[ADRC_Y_NUM];
     int Scale_y[ADRC_Y_NUM];
     float ByPassThr;
     float Edge_Weit;
     float Tolerance;
     int IIR_frame;
     float damp;
-} DrcOhters_t;
-
-typedef struct CompressConfig_s {
-    CompressMode_t Mode;
-    uint16_t       Manual_curve[ADRC_Y_NUM];
-} CompressConfig_t;
+#if RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE
+    int gas_l0;
+    int gas_l1;
+    int gas_l2;
+    int gas_l3;
+#endif
+} adrcStaticParams_t;
 
 typedef struct DrcHandleDataV10_s {
     float DrcGain;
@@ -110,8 +114,6 @@ typedef struct DrcHandleDataV10_s {
     float LocalWeit;
     float GlobalContrast;
     float LoLitContrast;
-    CompressMode_t Mode;
-    uint16_t Manual_curve[ADRC_Y_NUM];
 } DrcHandleDataV10_t;
 
 typedef struct DrcHandleDataV11_s {
@@ -124,8 +126,6 @@ typedef struct DrcHandleDataV11_s {
     float LocalAutoWeit;
     float GlobalContrast;
     float LoLitContrast;
-    CompressMode_t Mode;
-    uint16_t       Manual_curve[ADRC_Y_NUM];
 } DrcHandleDataV11_t;
 
 typedef struct DrcHandleDataV12_s {
@@ -138,18 +138,13 @@ typedef struct DrcHandleDataV12_s {
     float LocalAutoWeit;
     float GlobalContrast;
     float LoLitContrast;
-    CompressMode_t Mode;
-    uint16_t       Manual_curve[ADRC_Y_NUM];
+
     // v12 add
     float gas_t;
-    int gas_l0;
-    int gas_l1;
-    int gas_l2;
-    int gas_l3;
     float MotionStr;
 } DrcHandleDataV12_t;
 
-typedef struct DrcHandleData_s {
+typedef struct adrcDynParams_s {
 #if RKAIQ_HAVE_DRC_V10
     DrcHandleDataV10_t Drc_v10;
 #endif
@@ -159,7 +154,7 @@ typedef struct DrcHandleData_s {
 #if RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE
     DrcHandleDataV12_t Drc_v12;
 #endif
-} DrcHandleData_t;
+} adrcDynParams_t;
 
 typedef struct AdrcAEData_s {
     bool LongFrmMode;
@@ -178,15 +173,15 @@ typedef struct CurrData_s {
     float MotionCoef;
     drc_OpMode_t ApiMode;
     AdrcAEData_t AEData;
-    DrcHandleData_t HandleData;
+    adrcDynParams_t dynParams;
 } CurrData_t;
 
 typedef struct NextData_s {
+    bool bDrcEn;
     float MotionCoef;
-    float Damp;
     AdrcAEData_t AEData;
-    DrcHandleData_t HandleData;
-    DrcOhters_t Others;
+    adrcDynParams_t dynParams;
+    adrcStaticParams_t staticParams;
 } NextData_t;
 
 typedef struct AdrcContext_s {

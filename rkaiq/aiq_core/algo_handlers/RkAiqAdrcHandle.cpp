@@ -394,10 +394,13 @@ XCamReturn RkAiqAdrcHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
-#if RKAIQ_HAVE_DRC_V12
-    adrc_proc_int->ablcV32_proc_res.blc_ob_enable = shared->res_comb.ablcV32_proc_res.blc_ob_enable;
+    adrc_proc_res_int->AdrcProcRes = &shared->fullParams->mDrcParams->data()->result;
+    adrc_proc_int->LongFrmMode = mAeProcRes.LongFrmMode;
+
+#if RKAIQ_HAVE_DRC_V12 || RKAIQ_HAVE_DRC_V12_LITE
+    adrc_proc_int->ablcV32_proc_res.blc_ob_enable = shared->res_comb.ablcV32_proc_res->blc_ob_enable;
     adrc_proc_int->ablcV32_proc_res.isp_ob_predgain =
-        shared->res_comb.ablcV32_proc_res.isp_ob_predgain;
+        shared->res_comb.ablcV32_proc_res->isp_ob_predgain;
 #endif
 
     ret = RkAiqHandle::processing();
@@ -469,13 +472,32 @@ XCamReturn RkAiqAdrcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
         } else {
             drc_param->frame_id = shared->frameId;
         }
-        drc_param->result.update = ahdr_rk->AdrcProcRes.update;
-        drc_param->result.bDrcEn = ahdr_rk->AdrcProcRes.bDrcEn;
-        if (drc_param->result.update)
-            drc_param->result.DrcProcRes = ahdr_rk->AdrcProcRes.DrcProcRes;
-    }
 
-    cur_params->mDrcParams = params->mDrcParams;
+        if (adrc_com->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            drc_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mDrcParams = params->mDrcParams;
+            drc_param->is_update = true;
+            LOGD_ATMO("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != drc_param->sync_flag) {
+            drc_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mDrcParams.ptr()) {
+                drc_param->result = cur_params->mDrcParams->data()->result;
+                drc_param->is_update = true;
+            } else {
+                LOGE_ATMO("no latest params !");
+                drc_param->is_update = false;
+            }
+            LOGD_ATMO("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            drc_param->is_update = false;
+            LOGD_ATMO("[%d] params needn't update", shared->frameId);
+        }
+    }
 
     EXIT_ANALYZER_FUNCTION();
 

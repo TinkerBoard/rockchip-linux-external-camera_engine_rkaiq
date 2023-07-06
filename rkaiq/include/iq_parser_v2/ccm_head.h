@@ -196,8 +196,6 @@ typedef struct CalibDbV2_Ccm_Para_V32_s {
     CalibDbV2_Ccm_Luma_Ccm_V2_t lumaCCM;
     // M4_STRUCT_DESC("enhanceCCM", "normal_ui_style")
     CalibDbV2_Ccm_Enhance_Para_t enhCCM;
-    // M4_STRUCT_DESC("manualCCM", "normal_ui_style")
-    CalibDbV2_Ccm_Manual_Para_t manualPara;
     // M4_STRUCT_DESC("autoCCM", "normal_ui_style")
     CalibDbV2_Ccm_Tuning_Para_t TuningPara;
 } CalibDbV2_Ccm_Para_V32_t;

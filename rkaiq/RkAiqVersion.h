@@ -701,10 +701,19 @@
  * v5.0x1.2-rc5
  * - optimize cpu usage
  * - modify blc and sharp api attribs
+ * 
+ * v5.0x1.3
+ * - optimize cpu usage extreamly 
+ * - kernel depandency: MUST contain this patch:
+ *   https://10.10.10.29/c/rk/kernel/+/191593
+ *   media: rockchip: isp: distinguish buf done or subscribed event for param
+ *   poll
+ *
+ *   Change-Id: I9b366a9f47ce24783651c93512125dca7c49917f
  */
 
-#define RK_AIQ_VERSION_REAL_V "v5.0x1.2-rc5"
-#define RK_AIQ_RELEASE_DATE "2023-06-05"
+#define RK_AIQ_VERSION_REAL_V "v5.0x1.3"
+#define RK_AIQ_RELEASE_DATE "2023-07-06"
 
 /******* DO NOT EDIT THE FOLLOWINGS ***********/
 

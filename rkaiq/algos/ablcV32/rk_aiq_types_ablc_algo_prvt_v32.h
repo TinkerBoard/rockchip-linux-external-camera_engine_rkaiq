@@ -35,7 +35,7 @@ typedef struct AblcContext_V32_s {
     AblcManualAttr_V32_t stBlc1Manual;
     AblcManualOBAttr_V32_t stBlcOBManual;
     AblcRefParams_V32_t stBlcRefParams;
-    AblcProc_V32_t ProcRes;
+    // AblcProc_V32_t ProcRes;
 
     AblcExpInfo_V32_t stExpInfo;
     AblcState_V32_t eState;

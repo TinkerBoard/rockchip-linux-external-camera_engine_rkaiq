@@ -76,7 +76,7 @@ RkAiqCamGroupManager::RkAiqCamGroupManager()
     mCamGroupReprocTh = new RkAiqCamGroupReprocTh(this);
     mRequiredMsgsMask = 1ULL << XCAM_MESSAGE_SOF_INFO_OK;
 #if RKAIQ_HAVE_AE_V1
-    mRequiredMsgsMask |= (1ULL << XCAM_MESSAGE_AEC_STATS_OK) | (1ULL << XCAM_MESSAGE_AE_PRE_RES_OK) | (1ULL << XCAM_MESSAGE_AE_PROC_RES_OK);
+    mRequiredMsgsMask |= (1ULL << XCAM_MESSAGE_AEC_STATS_OK) | (1ULL << XCAM_MESSAGE_AE_PRE_RES_OK);
 #endif
 #if RKAIQ_HAVE_AWB_V20 | RKAIQ_HAVE_AWB_V21 | RKAIQ_HAVE_AWB_V32
     mRequiredMsgsMask |= (1ULL << XCAM_MESSAGE_AWB_STATS_OK) | (1ULL << XCAM_MESSAGE_AWB_PROC_RES_OK);
@@ -121,10 +121,10 @@ RkAiqCamGroupManager::getGroupCamResult(uint32_t frameId, bool query_ready)
         if (!query_ready)
             return NULL;
 
-        if (mCamGroupResMap.size() > 12) {
+        if (mCamGroupResMap.size() > 3) {
             LOGE_CAMGROUP("camgroup result map overflow:%d, first_id: %u",
                           mCamGroupResMap.size(), mCamGroupResMap.begin()->first);
-            clearGroupCamResult_Locked(frameId - 4);
+            clearGroupCamResult_Locked(frameId - 2);
         }
         if (frameId < mClearedResultId) {
             LOGW_CAMGROUP("disorder frameId(%d) < mClearedResultId(%d)", frameId, mClearedResultId);
@@ -357,19 +357,19 @@ RkAiqCamGroupManager::setSingleCamStatusReady(rk_aiq_singlecam_result_status_t* 
 }
 
 void
-RkAiqCamGroupManager::processAiqCoreMsgs(RkAiqCore* src, SmartPtr<XCamMessage> &msg)
+RkAiqCamGroupManager::processAiqCoreMsgs(RkAiqCore* src, RkAiqCoreVdBufMsg& msg)
 {
     int camId = src->getCamPhyId();
-    uint32_t frameId = msg->frame_id;
+    uint32_t frameId = msg.frame_id;
 
     // check if the msg is required firstly
-    if (!(mRequiredMsgsMask & (1ULL << msg->msg_id))) {
+    if (!(mRequiredMsgsMask & (1ULL << msg.msg_id))) {
         LOG1_CAMGROUP("camgroup: not required core msg :%s of frameId: %d, ignore",
-                      MessageType2Str[msg->msg_id], msg->frame_id);
+                      MessageType2Str[msg.msg_id], msg.frame_id);
         return;
     }
 
-    switch (msg->msg_id) {
+    switch (msg.msg_id) {
     case XCAM_MESSAGE_AWB_STATS_OK :
     case XCAM_MESSAGE_AEC_STATS_OK :
         // TODO: should get from RkAiqAnalyzerGroup::getMsgDelayCnt
@@ -380,23 +380,23 @@ RkAiqCamGroupManager::processAiqCoreMsgs(RkAiqCore* src, SmartPtr<XCamMessage> &
 
     rk_aiq_groupcam_result_t* camGroupRes = getGroupCamResult(frameId);
     if (!camGroupRes) {
-        LOGW_CAMGROUP("camgroup: get cam result faild for msg_id:%d, camId: %d, msg_id:%d, frame: %d", msg->msg_id, camId, frameId);
+        LOGW_CAMGROUP("camgroup: get cam result faild for msg_id:%d, camId: %d, msg_id:%d, frame: %d", msg.msg_id, camId, frameId);
         return;
     }
     rk_aiq_singlecam_result_status_t* singleCamStatus = &camGroupRes->_singleCamResultsStatus[camId];
     rk_aiq_singlecam_result_t* singleCamRes = &singleCamStatus->_singleCamResults;
 
-    SmartPtr<RkAiqCoreVdBufMsg> vdBufMsg;
+    RkAiqCoreVdBufMsg* vdBufMsg = NULL;
     XCamVideoBuffer* buf = NULL;
-    vdBufMsg = msg.dynamic_cast_ptr<RkAiqCoreVdBufMsg>();
-    if (!vdBufMsg.ptr() || !vdBufMsg->msg.ptr()) {
+    vdBufMsg = &msg;
+    if (!vdBufMsg->msg.ptr()) {
         LOGW_CAMGROUP(
             "camgroup: get cam result NULL for msg_id:%d, camId: %d, frame: %d",
-            msg->msg_id, camId, frameId);
+            msg.msg_id, camId, frameId);
         goto set_bits;
     }
 
-    switch (msg->msg_id) {
+    switch (msg.msg_id) {
     case XCAM_MESSAGE_AWB_STATS_OK:
         singleCamRes->_3aResults.awb._awbStats = convert_to_XCamVideoBuffer(vdBufMsg->msg);
         break;
@@ -410,7 +410,7 @@ RkAiqCamGroupManager::processAiqCoreMsgs(RkAiqCore* src, SmartPtr<XCamMessage> &
         singleCamRes->_3aResults.aec._aePreRes = convert_to_XCamVideoBuffer(vdBufMsg->msg);
         break;
     case XCAM_MESSAGE_AE_PROC_RES_OK:
-        singleCamRes->_3aResults.aec._aeProcRes = convert_to_XCamVideoBuffer(vdBufMsg->msg);
+        //singleCamRes->_3aResults.aec._aeProcRes = convert_to_XCamVideoBuffer(vdBufMsg->msg);
         break;
     case XCAM_MESSAGE_SOF_INFO_OK: {
         auto sofInfoMsg = vdBufMsg->msg.dynamic_cast_ptr<RkAiqSofInfoWrapperProxy>();
@@ -427,12 +427,12 @@ set_bits:
     // notify the reprocess procedure
     {
         SmartLock locker (mCamGroupResMutex);
-        singleCamStatus->_validCoreMsgsBits |= ((uint64_t)1) << msg->msg_id;
+        singleCamStatus->_validCoreMsgsBits |= ((uint64_t)1) << msg.msg_id;
         singleCamRes->_3aResults._camId = camId;
         singleCamRes->_3aResults._frameId = frameId;
     }
     LOGD_CAMGROUP("camgroup: got required core msg :%s of camId:%d, frameId: %u, ",
-                  MessageType2Str[msg->msg_id], camId, frameId);
+                  MessageType2Str[msg.msg_id], camId, frameId);
     setSingleCamStatusReady(singleCamStatus, camGroupRes);
     putGroupCamResult(camGroupRes);
 }
@@ -1020,9 +1020,9 @@ RkAiqCamGroupManager::reProcess(rk_aiq_groupcam_result_t* gc_res)
             aiqParams = scam_res->_fullIspParam->data().ptr();
             // fill 3a params
             if ((aiqParams->mExposureParams.ptr())) {
-                scam_3a_res->aec.exp_tbl = &aiqParams->mExposureParams->data()->exp_tbl;
-                scam_3a_res->aec.exp_tbl_size = &aiqParams->mExposureParams->data()->exp_tbl_size;
-                scam_3a_res->aec.exp_i2c_params = &aiqParams->mExposureParams->data()->exp_i2c_params;
+                scam_3a_res->aec.exp_tbl = aiqParams->mExposureParams->data()->result.ae_proc_res_rk.exp_set_tbl;
+                scam_3a_res->aec.exp_tbl_size = &aiqParams->mExposureParams->data()->result.ae_proc_res_rk.exp_set_cnt;
+                scam_3a_res->aec.exp_i2c_params = &aiqParams->mExposureParams->data()->result.exp_i2c_params;
             } else {
                 LOGW_CAMGROUP("camId:%d, framId:%u, exp is null", i, gc_res->_frameId);
                 // frame 1,2 exp may be null now
@@ -1230,7 +1230,7 @@ RkAiqCamGroupManager::relayToHwi(rk_aiq_groupcam_result_t* gc_res)
             if ((gc_res->_validCamResBits >> i) & 1) {
                 singlecam_res = &gc_res->_singleCamResultsStatus[i]._singleCamResults;
                 if (singlecam_res->_fullIspParam->data()->mExposureParams.ptr()) {
-                    int tmp_size = singlecam_res->_fullIspParam->data()->mExposureParams->data()->exp_tbl_size;
+                    int tmp_size = singlecam_res->_fullIspParam->data()->mExposureParams->data()->result.ae_proc_res_rk.exp_set_cnt;
                     if (exp_tbl_size == -1)
                         exp_tbl_size = tmp_size;
                     else if (exp_tbl_size != tmp_size) {
@@ -1253,7 +1253,8 @@ RkAiqCamGroupManager::relayToHwi(rk_aiq_groupcam_result_t* gc_res)
                     fullParamProxy->data()->mExposureParams = singlecam_res->_fullIspParam->data()->mExposureParams;
                     if (fullParamProxy->data()->mExposureParams.ptr()) {
                         LOGD_CAMGROUP("camgroup: camId:%d, frameId:%u, exp_tbl_size:%d",
-                                      i, gc_res->_frameId, fullParamProxy->data()->mExposureParams->data()->exp_tbl_size);
+                                      i, gc_res->_frameId,
+                                      fullParamProxy->data()->mExposureParams->data()->result.ae_proc_res_rk.exp_set_cnt);
                     }
                     mBindAiqsMap[i]->applyAnalyzerResult(fullParamProxy);
                 }

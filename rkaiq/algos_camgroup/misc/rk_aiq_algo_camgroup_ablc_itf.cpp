@@ -143,12 +143,14 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             stExpInfo.arAGain[0] = pAERes->LinearExp.exp_real_params.analog_gain;
             stExpInfo.arDGain[0] = pAERes->LinearExp.exp_real_params.digital_gain * pAERes->LinearExp.exp_real_params.isp_dgain;
             stExpInfo.arTime[0] = pAERes->LinearExp.exp_real_params.integration_time;
+            stExpInfo.isp_dgain[0] = pAERes->LinearExp.exp_real_params.isp_dgain;
             stExpInfo.arIso[0] = stExpInfo.arAGain[0] * stExpInfo.arDGain[0] * 50;
         } else {
             for(int i = 0; i < 3; i++) {
                 stExpInfo.arAGain[i] = pAERes->HdrExp[i].exp_real_params.analog_gain;
                 stExpInfo.arDGain[i] = pAERes->HdrExp[i].exp_real_params.digital_gain;
                 stExpInfo.arTime[i] = pAERes->HdrExp[i].exp_real_params.integration_time;
+                stExpInfo.isp_dgain[i] = pAERes->HdrExp[i].exp_real_params.isp_dgain;
                 stExpInfo.arIso[i] = stExpInfo.arAGain[i] * stExpInfo.arDGain[i] * 50;
 
                 LOGD_ABLC("%s:%d index:%d again:%f dgain:%f time:%f iso:%d hdr_mode:%d\n",
@@ -182,7 +184,11 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
 
     for (int i = 0; i < procResParaGroup->arraySize; i++) {
-        procResParaGroup->camgroupParmasArray[i]->ablc._blcConfig->v0 = pAblcCtx->ProcRes;
+        if (pAblcCtx->isReCalculate)
+            procResParaGroup->camgroupParmasArray[i]->ablc._blcConfig->v0 = pAblcCtx->ProcRes;
+        //TODO
+        IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->ablc._blcConfig), procParaGroup->_offset_is_update) =
+            pAblcCtx->isReCalculate;
     }
 
     pAblcCtx->isReCalculate = 0;

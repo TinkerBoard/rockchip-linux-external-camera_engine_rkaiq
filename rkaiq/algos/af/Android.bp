@@ -37,7 +37,8 @@ cc_library_static {
         "-Wno-unused-parameter",
         "-Wno-extern-c-compat",
         "-Wno-missing-braces",
-        "-Wno-missing-field-initializers"
+        "-Wno-missing-field-initializers",
+        "-UNDEBUG"
     ],
 }
 

@@ -88,6 +88,8 @@ XCamReturn RkAiqAcgcHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    acgc_proc_res_int->acgc_res = &shared->fullParams->mCgcParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "acgc handle processing failed");
@@ -169,17 +171,34 @@ XCamReturn RkAiqAcgcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     }
 
     if (!acgc_com) {
-        LOGD_ANALYZER("no acgc result");
+        LOGE_ACGC("no acgc result");
         return XCAM_RETURN_NO_ERROR;
     }
 
-    if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAcgc* acgc_rk = (RkAiqAlgoProcResAcgc*)acgc_com;
+    if (acgc_com->res_com.cfg_update) {
+        mSyncFlag = shared->frameId;
+        cgc_param->sync_flag = mSyncFlag;
+        // copy from algo result
+        // set as the latest result
+        cur_params->mCgcParams = params->mCgcParams;
+        cgc_param->is_update = true;
+        LOGD_ACGC("[%d] params from algo", mSyncFlag);
+    } else if (mSyncFlag != cgc_param->sync_flag) {
+        cgc_param->sync_flag = mSyncFlag;
+        // copy from latest result
+        if (cur_params->mCgcParams.ptr()) {
+            cgc_param->result = cur_params->mCgcParams->data()->result;
+            cgc_param->is_update = true;
+        } else {
+            LOGE_ACGC("no latest params !");
+            cgc_param->is_update = false;
+        }
+        LOGD_ACGC("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+    } else {
+        // do nothing, result in buf needn't update
+        cgc_param->is_update = false;
+        LOGD_ACGC("[%d] params needn't update", shared->frameId);
     }
-
-    cgc_param->result = acgc_com->acgc_res;
-
-    cur_params->mCgcParams = params->mCgcParams;
 
     EXIT_ANALYZER_FUNCTION();
 

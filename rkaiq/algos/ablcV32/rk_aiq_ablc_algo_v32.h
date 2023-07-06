@@ -31,5 +31,5 @@ AblcResult_V32_t AblcV32Release(AblcContext_V32_t* pAblcCtx);
 AblcResult_V32_t AblcV32Process(AblcContext_V32_t* pAblcCtx, AblcExpInfo_V32_t* pExpInfo);
 AblcResult_V32_t AblcV32ParamsUpdate(AblcContext_V32_t* pAblcCtx, CalibDbV2_Blc_V32_t* pCalibDb);
 AblcResult_V32_t AblcV32_IQParams_Check(AblcParams_V32_t* pBLC0Params, AblcOBParams_V32_t* pBLCOBParams,AblcRefParams_V32_t* pBlcRef);
-
+AblcResult_V32_t Ablc_GetProcResult_V32(AblcContext_V32_t* pAblcCtx, AblcProc_V32_t* pAblcResult);
 #endif

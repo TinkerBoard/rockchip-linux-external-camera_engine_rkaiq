@@ -88,6 +88,8 @@ XCamReturn RkAiqAcsmHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    acsm_proc_res_int->acsm_res = &shared->fullParams->mCsmParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "acsm handle processing failed");
@@ -172,9 +174,30 @@ XCamReturn RkAiqAcsmHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
         csm_param->frame_id = shared->frameId;
     }
 
-    csm_param->result = acsm_com->acsm_res;
-
-    cur_params->mCsmParams = params->mCsmParams;
+    if (acsm_com->res_com.cfg_update) {
+        mSyncFlag = shared->frameId;
+        csm_param->sync_flag = mSyncFlag;
+        // copy from algo result
+        // set as the latest result
+        cur_params->mCsmParams = params->mCsmParams;
+        csm_param->is_update = true;
+        LOGD_ACSM("[%d] params from algo", mSyncFlag);
+    } else if (mSyncFlag != csm_param->sync_flag) {
+        csm_param->sync_flag = mSyncFlag;
+        // copy from latest result
+        if (cur_params->mCsmParams.ptr()) {
+            csm_param->result = cur_params->mCsmParams->data()->result;
+            csm_param->is_update = true;
+        } else {
+            LOGE_ACSM("no latest params !");
+            csm_param->is_update = false;
+        }
+        LOGD_ACSM("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+    } else {
+        // do nothing, result in buf needn't update
+        csm_param->is_update = false;
+        LOGD_ACSM("[%d] params needn't update", shared->frameId);
+    }
 
     EXIT_ANALYZER_FUNCTION();
     return ret;

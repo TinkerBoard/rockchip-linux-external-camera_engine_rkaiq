@@ -32,19 +32,19 @@ create_context(RkAiqAlgoContext **context, const AlgoCtxInstanceCfg* cfg)
 {
     XCamReturn result = XCAM_RETURN_NO_ERROR;
 
-    LOGI_ADPCC("%s: (enter)\n", __FUNCTION__ );
+    LOG1_ADPCC("%s: (enter)", __FUNCTION__ );
     AlgoCtxInstanceCfgCamGroup *cfgInt = (AlgoCtxInstanceCfgCamGroup*)cfg;
 
     AdpccContext_t* pAdpccCtx = NULL;
     AdpccResult_t ret = AdpccInit(&pAdpccCtx, (CamCalibDbV2Context_t*)(cfgInt->s_calibv2));//load json paras
     if(ret != ADPCC_RET_SUCCESS) {
         result = XCAM_RETURN_ERROR_FAILED;
-        LOGE_ADPCC("%s: Initializaion Adpcc failed (%d)\n", __FUNCTION__, ret);
+        LOGE_ADPCC("%s: Initializaion Adpcc failed (%d)", __FUNCTION__, ret);
     } else {
         *context = (RkAiqAlgoContext *)(pAdpccCtx);
     }
 
-    LOGI_ADPCC("%s: (exit)\n", __FUNCTION__ );
+    LOG1_ADPCC("%s: (exit)", __FUNCTION__ );
     return result;
 }
 
@@ -53,18 +53,18 @@ destroy_context(RkAiqAlgoContext *context)
 {
     XCamReturn result = XCAM_RETURN_NO_ERROR;
 
-    LOGI_ADPCC("%s: (enter)\n", __FUNCTION__ );
+    LOG1_ADPCC("%s: (enter)", __FUNCTION__ );
 
 #if 1
     AdpccContext_t* pAdpccCtx = (AdpccContext_t*)context;
     AdpccResult_t ret = AdpccRelease(pAdpccCtx);
     if(ret != ADPCC_RET_SUCCESS) {
         result = XCAM_RETURN_ERROR_FAILED;
-        LOGE_ADPCC("%s: release Adpcc failed (%d)\n", __FUNCTION__, ret);
+        LOGE_ADPCC("%s: release Adpcc failed (%d)", __FUNCTION__, ret);
     }
 #endif
 
-    LOGI_ADPCC("%s: (exit)\n", __FUNCTION__ );
+    LOG1_ADPCC("%s: (exit)", __FUNCTION__ );
     return result;
 }
 
@@ -73,7 +73,7 @@ prepare(RkAiqAlgoCom* params)
 {
     XCamReturn result = XCAM_RETURN_NO_ERROR;
 
-    LOGD_ADPCC("%s: (enter)\n", __FUNCTION__ );
+    LOG1_ADPCC("%s: (enter)", __FUNCTION__ );
 
     AdpccContext_t* pAdpccCtx = (AdpccContext_t *)params->ctx;
     RkAiqAlgoCamGroupPrepare* pCfgParam = (RkAiqAlgoCamGroupPrepare*)params;
@@ -83,11 +83,13 @@ prepare(RkAiqAlgoCom* params)
         AdpccResult_t ret = AdpccReloadPara(pAdpccCtx, (CamCalibDbV2Context_t*)(pCfgParam->s_calibv2));
         if(ret != ADPCC_RET_SUCCESS) {
             result = XCAM_RETURN_ERROR_FAILED;
-            LOGE_ADPCC("%s: Adpcc Reload Para failed (%d)\n", __FUNCTION__, ret);
+            LOGE_ADPCC("%s: Adpcc Reload Para failed (%d)", __FUNCTION__, ret);
         }
     }
 
-    LOGI_ADPCC("%s: (exit)\n", __FUNCTION__ );
+    pAdpccCtx->isReCal_ = true;
+
+    LOG1_ADPCC("%s: (exit)", __FUNCTION__ );
     return result;
 }
 
@@ -97,7 +99,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     XCamReturn result = XCAM_RETURN_NO_ERROR;
     int iso;
 
-    LOGI_ADPCC("%s: (enter)\n", __FUNCTION__ );
+    LOG1_ADPCC("%s: (enter)", __FUNCTION__ );
 
 #if 1
     RkAiqAlgoCamGroupProcIn* procParaGroup = (RkAiqAlgoCamGroupProcIn*)inparams;
@@ -106,7 +108,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     AdpccExpInfo_t stExpInfo;
     memset(&stExpInfo, 0x00, sizeof(AdpccExpInfo_t));
 
-    LOGD_ADPCC("%s:%d init:%d hdr mode:%d  \n",
+    LOGD_ADPCC("%s:%d init:%d hdr mode:%d",
                __FUNCTION__, __LINE__,
                inparams->u.proc.init,
                procParaGroup->working_mode);
@@ -144,15 +146,25 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             stExpInfo.arPreResAGain[0] = pAERes->LinearExp.exp_real_params.analog_gain;
             stExpInfo.arPreResDGain[0] = pAERes->LinearExp.exp_real_params.digital_gain * pAERes->LinearExp.exp_real_params.isp_dgain;
             stExpInfo.arPreResTime[0] = pAERes->LinearExp.exp_real_params.integration_time;
-            stExpInfo.arPreResIso[0] = stExpInfo.arPreResAGain[0] * 50;
+            stExpInfo.arPreResIso[0] = stExpInfo.arPreResAGain[0] * stExpInfo.arPreResDGain[0] * 50;
+
+            LOGD_ADPCC("%s:%d index:%d again:%f dgain:%f time:%f iso:%d hdr_mode:%d",
+                       __FUNCTION__, __LINE__,
+                       0,
+                       stExpInfo.arPreResAGain[0],
+                       stExpInfo.arPreResDGain[0],
+                       stExpInfo.arPreResTime[0],
+                       stExpInfo.arPreResIso[0],
+                       stExpInfo.hdr_mode);
         } else {
             for(int i = 0; i < 3; i++) {
                 stExpInfo.arPreResAGain[i] = pAERes->HdrExp[i].exp_real_params.analog_gain;
-                stExpInfo.arPreResDGain[i] = pAERes->HdrExp[i].exp_real_params.digital_gain;
+                stExpInfo.arPreResDGain[i] = pAERes->HdrExp[i].exp_real_params.digital_gain *
+                    pAERes->HdrExp[i].exp_real_params.isp_dgain;
                 stExpInfo.arPreResTime[i] = pAERes->HdrExp[i].exp_real_params.integration_time;
                 stExpInfo.arPreResIso[i] = stExpInfo.arPreResAGain[i] * stExpInfo.arPreResDGain[i] * 50;
 
-                LOGD_ADPCC("%s:%d index:%d again:%f dgain:%f time:%f iso:%d hdr_mode:%d\n",
+                LOGD_ADPCC("%s:%d index:%d again:%f dgain:%f time:%f iso:%d hdr_mode:%d",
                            __FUNCTION__, __LINE__,
                            i,
                            stExpInfo.arPreResAGain[i],
@@ -163,19 +175,36 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
             }
         }
     } else {
-        LOGE_ADPCC("%s:%d pAERes is NULL, so use default instead \n", __FUNCTION__, __LINE__);
+        LOGE_ADPCC("%s:%d pAERes is NULL, so use default instead", __FUNCTION__, __LINE__);
     }
 
-    AdpccResult_t ret = AdpccProcess(pAdpccCtx, &stExpInfo);
-    if(ret != ADPCC_RET_SUCCESS) {
-        result = XCAM_RETURN_ERROR_FAILED;
-        LOGE_ADPCC("%s: processing Adpcc failed (%d)\n", __FUNCTION__, ret);
-    }
+    if (pAdpccCtx->stExpInfo.arPreResIso[pAdpccCtx->stExpInfo.hdr_mode] !=
+        stExpInfo.arPreResIso[pAdpccCtx->stExpInfo.hdr_mode])
+        pAdpccCtx->isReCal_ = true;
 
-    
-    for (int i = 0; i < procResParaGroup->arraySize; i++) {
-        AdpccGetProcResult(pAdpccCtx,
-                           procResParaGroup->camgroupParmasArray[i]->_dpccConfig);
+
+    if (pAdpccCtx->isReCal_) {
+        AdpccResult_t ret = AdpccProcess(pAdpccCtx, &stExpInfo, procResParaGroup->camgroupParmasArray[0]->_dpccConfig);
+        if(ret != ADPCC_RET_SUCCESS) {
+            result = XCAM_RETURN_ERROR_FAILED;
+            LOGE_ADPCC("%s: processing Adpcc failed (%d)", __FUNCTION__, ret);
+        }
+
+        for (int i = 1; i < procResParaGroup->arraySize; i++) {
+            procResParaGroup->camgroupParmasArray[i]->_dpccConfig = procResParaGroup->camgroupParmasArray[0]->_dpccConfig;
+            IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->_adehazeConfig), procParaGroup->_offset_is_update) =
+                true;
+        }
+
+        outparams->cfg_update = true;
+        pAdpccCtx->isReCal_ = false;
+    } else {
+        for (int i = 1; i < procResParaGroup->arraySize; i++) {
+            procResParaGroup->camgroupParmasArray[i]->_dpccConfig = procResParaGroup->camgroupParmasArray[0]->_dpccConfig;
+            IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->_adehazeConfig), procParaGroup->_offset_is_update) =
+                false;
+        }
+        outparams->cfg_update = false;
     }
 #if 0 //TODO: Is this necessary for group algo ?
     //sensor dpcc setting
@@ -187,7 +216,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
 #endif
 
-    LOGI_ADPCC("%s: (exit)\n", __FUNCTION__ );
+    LOG1_ADPCC("%s: (exit)", __FUNCTION__ );
     return XCAM_RETURN_NO_ERROR;
 }
 

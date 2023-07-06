@@ -275,6 +275,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     }
 
     Again_GetProcResult_V1(pAgainCtx, &pAgainProcResParams->stAgainProcResult);
+    outparams->cfg_update = true;
 #endif
 
     LOGI_ANR("%s: (exit)\n", __FUNCTION__ );

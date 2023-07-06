@@ -265,10 +265,10 @@ AcnrV30_result_t Acnr_GetProcResult_V30(Acnr_Context_V30_t *pAcnrCtx, Acnr_ProcR
     }
 
     //transfer to reg value
-    cnr_fix_transfer_V30(stSelect, &pAcnrResult->stFix,  &pAcnrCtx->stExpInfo, &pAcnrCtx->stStrength);
+    cnr_fix_transfer_V30(stSelect, pAcnrResult->stFix,  &pAcnrCtx->stExpInfo, &pAcnrCtx->stStrength);
 
     if(pAcnrCtx->eMode == ACNRV30_OP_MODE_REG_MANUAL) {
-        pAcnrResult->stFix = pAcnrCtx->stManual.stFix;
+        *pAcnrResult->stFix = pAcnrCtx->stManual.stFix;
         pAcnrCtx->stStrength.percent = 1.0;
     }
 

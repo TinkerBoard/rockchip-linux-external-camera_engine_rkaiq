@@ -261,10 +261,10 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         }
 
         Aynr_GetProcResult_V2(pAynrCtx, &pAynrProcResParams->stAynrProcResult);
-        pAynrProcResParams->stAynrProcResult.isNeedUpdate = true;
+        outparams->cfg_update = true;
         LOGD_ANR("recalculate: %d delta_iso:%d \n ", pAynrCtx->isReCalculate, deltaIso);
     } else {
-        pAynrProcResParams->stAynrProcResult.isNeedUpdate = false;
+        outparams->cfg_update = false;
     }
 #endif
 

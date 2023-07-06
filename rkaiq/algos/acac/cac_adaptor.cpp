@@ -129,6 +129,7 @@ XCamReturn CacAlgoAdaptor::SetApiAttr(const rkaiq_cac_v03_api_attr_t* attr) {
         memcpy(&attr_->manual_param, &attr->manual_param, sizeof(attr->manual_param));
     }
     enable_ = attr_->enable = attr->enable;
+    isReCal_ = true;
 
     return XCAM_RETURN_NO_ERROR;
 }
@@ -147,6 +148,7 @@ XCamReturn CacAlgoAdaptor::SetApiAttr(const rkaiq_cac_v10_api_attr_t* attr) {
     }
     attr_->op_mode = attr->op_mode;
     enable_ = attr_->enable = attr->enable;
+    isReCal_ = true;
 
     return XCAM_RETURN_NO_ERROR;
 }
@@ -168,6 +170,7 @@ XCamReturn CacAlgoAdaptor::SetApiAttr(const rkaiq_cac_v11_api_attr_t* attr) {
         memcpy(&attr_->manual_param, &attr->manual_param, sizeof(attr->manual_param));
     }
     enable_ = attr_->enable = attr->enable;
+    isReCal_ = true;
 
     return XCAM_RETURN_NO_ERROR;
 }
@@ -260,6 +263,7 @@ XCamReturn CacAlgoAdaptor::Prepare(const RkAiqAlgoConfigAcac* config) {
 
     LOGD_ACAC("%s : en %d valid: %d Enter", __func__, enable_, valid_);
 
+    isReCal_ = true;
 
     if (!enable_ || !valid_) {
         return XCAM_RETURN_BYPASS;
@@ -386,6 +390,20 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
     } else {
         valid_ = true;
     }
+
+    if (attr_->op_mode == RKAIQ_CAC_API_OPMODE_AUTO &&
+        lastIso_ != input->iso)
+        isReCal_ = true;
+
+    lastIso_ = input->iso;
+    if (!isReCal_) {
+        output->res_com.cfg_update = false;
+        LOGD_ACAC("skip cac reCalc");
+        return ;
+    }
+
+    output->res_com.cfg_update = true;
+    isReCal_ = false;
 
     if (!enable_ || !valid_) {
         output->config[0].bypass_en = 1;

@@ -81,6 +81,8 @@ XCamReturn RkAiqAcacV11HandleInt::processing() {
     auto* shared = (RkAiqCore::RkAiqAlgosGroupShared_t*)getGroupShared();
     if (!shared) return XCAM_RETURN_BYPASS;
 
+    acac_proc_res_int->config = &shared->fullParams->mCacV32Params->data()->result.cfg;
+
     RKAiqAecExpInfo_t* aeCurExp = &shared->curExp;
     acac_proc_int->hdr_ratio = 1;
     acac_proc_int->iso = 50;
@@ -268,12 +270,34 @@ XCamReturn RkAiqAcacV11HandleInt::genIspResult(RkAiqFullParams* params,
             cac_param->frame_id = shared->frameId;
         }
         cac_param->result.enable = cac_rk->enable;
-        memcpy(&cac_param->result.cfg, &cac_rk->config[0], sizeof(cac_rk->config[0]));
+
+        if (cac_com->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            cac_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mCacV32Params = params->mCacV32Params;
+            cac_param->is_update = true;
+            LOGD_ACAC("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != cac_param->sync_flag) {
+            cac_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mCacV32Params.ptr()) {
+                cac_param->result = cur_params->mCacV32Params->data()->result;
+                cac_param->is_update = true;
+            } else {
+                LOGE_ACAC("no latest params !");
+                cac_param->is_update = false;
+            }
+            LOGD_ACAC("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            cac_param->is_update = false;
+            LOGD_ACAC("[%d] params needn't update", shared->frameId);
+        }
     } else {
         cac_param->result.enable = false;
     }
-
-    cur_params->mCacV32Params = params->mCacV32Params;
 
     EXIT_ANALYZER_FUNCTION();
     return ret;

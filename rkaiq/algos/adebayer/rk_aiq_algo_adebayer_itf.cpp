@@ -189,18 +189,20 @@ processing
             pAdebayerCtx->is_reconfig = false;
         }
 
-        if (pAdebayerCtx->config.updatecfg)
+        if (pAdebayerCtx->config.updatecfg) {
             AdebayerProcess(pAdebayerCtx, iso);
-
-    }
-
 #if RKAIQ_HAVE_DEBAYER_V1
-    AdebayerGetProcResult(pAdebayerCtx, &pAdebayerProcResParams->debayerResV1);
+            AdebayerGetProcResult(pAdebayerCtx, &pAdebayerProcResParams->debayerResV1);
 #endif
 
 #if RKAIQ_HAVE_DEBAYER_V2 || RKAIQ_HAVE_DEBAYER_V2_LITE
-    AdebayerGetProcResult(pAdebayerCtx, &pAdebayerProcResParams->debayerResV2);
+            AdebayerGetProcResult(pAdebayerCtx, &pAdebayerProcResParams->debayerResV2);
 #endif
+            outparams->cfg_update = true;
+        } else {
+            outparams->cfg_update = false;
+        }
+    }
 
     LOGV_ADEBAYER("%s: (exit)\n", __FUNCTION__ );
     return XCAM_RETURN_NO_ERROR;

@@ -562,6 +562,23 @@ typedef struct CalibDbV2_Wb_Awb_Ext_Com_Para_t {
     CalibDbV2_Awb_gain_offset_cfg_t wbGainOffset;
 } CalibDbV2_Wb_Awb_Ext_Com_Para_t;
 
+
+typedef struct CalibDbV2_Awb_Ava_Site_Rec_s{
+    // M4_BOOL_DESC("enable", "1")
+    bool  enable;
+    // M4_ARRAY_DESC("frameNum", "u32", M4_SIZE(1,1), M4_RANGE(0,255), "3", M4_DIGIT(0), M4_DYNAMIC(0))
+    unsigned int frameNum;
+    // M4_STRING_DESC("fullFileName", M4_SIZE(1,1), M4_RANGE(0, 255), "/tmp/avaSiteInfo", M4_DYNAMIC(0))
+    char  fullFileName[100];
+    // M4_BOOL_DESC("avaEnable", "1")
+    bool  avaEnable;
+    // M4_ARRAY_DESC("wbgainTh", "f32", M4_SIZE(1,1), M4_RANGE(0,8), "0.2", M4_DIGIT(4), M4_DYNAMIC(0))
+    float wbgainTh;
+    // M4_ARRAY_DESC("wbgainTh", "f32", M4_SIZE(1,1), M4_RANGE(0,255), "2", M4_DIGIT(4), M4_DYNAMIC(0))
+    float lvValueTh;
+}CalibDbV2_Awb_Ava_Site_Rec_t;
+
+
 typedef struct CalibDbV2_Wb_Awb_Ext_Para_V32_s {
     // M4_STRING_DESC("lightSourceForFirstFrame", M4_SIZE(1,1), M4_RANGE(-128, 127), "default", M4_DYNAMIC(0))
     char *lightSourceForFirstFrame;
@@ -602,14 +619,16 @@ typedef struct CalibDbV2_Wb_Awb_Ext_Para_V32_s {
     int weightForNightGainCalc_len;
     // M4_STRUCT_DESC("singleColorProces", "normal_ui_style")
     CalibDbV2_Awb_Sgc_t singleColorProces;
-    // M4_ARRAY_DESC("lineRgBg", "f32", M4_SIZE(1,3), M4_RANGE(-2147483648,2147483647), "1", M4_DIGIT(4), M4_DYNAMIC(0), M4_HIDE(1))
+    // M4_ARRAY_DESC("lineRgBg", "f32", M4_SIZE(1,3), M4_RANGE(-2147483648,2147483647), "1", M4_DIGIT(6), M4_DYNAMIC(0), M4_HIDE(1))
     float lineRgBg[3];
-    // M4_ARRAY_DESC("lineRgProjCCT", "f32", M4_SIZE(1,3), M4_RANGE(-2147483648,2147483647), "1", M4_DIGIT(4), M4_DYNAMIC(0), M4_HIDE(1))
+    // M4_ARRAY_DESC("lineRgProjCCT", "f32", M4_SIZE(1,3), M4_RANGE(-2147483648,2147483647), "1", M4_DIGIT(6), M4_DYNAMIC(0), M4_HIDE(1))
     float lineRgProjCCT[3];
     // M4_STRUCT_DESC("remosaicCfg", "normal_ui_style")
     CalibDbV2_Awb_Remosaic_Para_t remosaicCfg;
     // M4_STRUCT_DESC("wbGainOffset", "normal_ui_style")
     CalibDbV2_Awb_gain_offset_cfg_t wbGainOffset;
+    // M4_STRUCT_DESC("avaSiteRec", "normal_ui_style")
+    CalibDbV2_Awb_Ava_Site_Rec_t avaSiteRec;
 } CalibDbV2_Wb_Awb_Ext_Para_V32_t;
 
 typedef struct CalibDbV2_Wb_Awb_Para_V20_t {

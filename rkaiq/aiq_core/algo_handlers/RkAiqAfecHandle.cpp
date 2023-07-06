@@ -92,6 +92,8 @@ XCamReturn RkAiqAfecHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    afec_proc_res_int->afec_result = &shared->fullParams->mFecParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "afec handle processing failed");
@@ -228,29 +230,32 @@ XCamReturn RkAiqAfecHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
         } else {
             fec_params->frame_id = shared->frameId;
         }
-        if (afec_rk->afec_result.update) {
-            fec_params->update_mask |= RKAIQ_ISPP_FEC_ID;
-            fec_params->result.fec_en = afec_rk->afec_result.sw_fec_en;
-            if (fec_params->result.fec_en) {
-                fec_params->result.crop_en      = afec_rk->afec_result.crop_en;
-                fec_params->result.crop_width   = afec_rk->afec_result.crop_width;
-                fec_params->result.crop_height  = afec_rk->afec_result.crop_height;
-                fec_params->result.mesh_density = afec_rk->afec_result.mesh_density;
-                fec_params->result.mesh_size    = afec_rk->afec_result.mesh_size;
-                fec_params->result.mesh_buf_fd  = afec_rk->afec_result.mesh_buf_fd;
-                // memcpy(fec_params->result.sw_mesh_xi, afec_rk->afec_result.meshxi,
-                // sizeof(fec_params->result.sw_mesh_xi)); memcpy(fec_params->result.sw_mesh_xf,
-                // afec_rk->afec_result.meshxf, sizeof(fec_params->result.sw_mesh_xf));
-                // memcpy(fec_params->result.sw_mesh_yi, afec_rk->afec_result.meshyi,
-                // sizeof(fec_params->result.sw_mesh_yi)); memcpy(fec_params->result.sw_mesh_yf,
-                // afec_rk->afec_result.meshyf, sizeof(fec_params->result.sw_mesh_yf));
+
+        if (afec_com->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            fec_params->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mFecParams = params->mFecParams;
+            fec_params->is_update = true;
+            LOGD_AFEC("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != fec_params->sync_flag) {
+            fec_params->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mFecParams.ptr()) {
+                fec_params->result = cur_params->mFecParams->data()->result;
+                fec_params->is_update = true;
+            } else {
+                LOGE_AFEC("no latest params !");
+                fec_params->is_update = false;
             }
+            LOGD_AFEC("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
         } else {
-            fec_params->update_mask &= ~RKAIQ_ISPP_FEC_ID;
+            // do nothing, result in buf needn't update
+            fec_params->is_update = false;
+            LOGD_AFEC("[%d] params needn't update", shared->frameId);
         }
     }
-
-    cur_params->mFecParams = params->mFecParams;
 
     EXIT_ANALYZER_FUNCTION();
 

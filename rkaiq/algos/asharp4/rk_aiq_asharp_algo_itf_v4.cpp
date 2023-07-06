@@ -278,11 +278,11 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
         }
 
         Asharp_GetProcResult_V4(pAsharpCtx, &pAsharpProcResParams->stAsharpProcResult);
-        pAsharpProcResParams->stAsharpProcResult.isNeedUpdate = true;
+        outparams->cfg_update = true;
 
         LOGD_ASHARP("recalculate: %d delta_iso:%d \n ", pAsharpCtx->isReCalculate, DeltaIso);
     } else {
-        pAsharpProcResParams->stAsharpProcResult.isNeedUpdate = false;
+        outparams->cfg_update = false;
     }
 
     pAsharpCtx->isReCalculate = 0;

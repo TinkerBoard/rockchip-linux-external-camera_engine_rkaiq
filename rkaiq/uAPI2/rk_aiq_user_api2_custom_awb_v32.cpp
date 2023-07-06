@@ -233,9 +233,9 @@ void _customAwbRes2rkAwbRes( RkAiqAlgoProcResAwb* rkAwbProcRes,
 {
 
     rkAwbProcRes->awbConverged = customAwbProcRes->IsConverged;
-    rkAwbProcRes->awb_gain_algo= customAwbProcRes->awb_gain_algo;
+    memcpy(rkAwbProcRes->awb_gain_algo, &customAwbProcRes->awb_gain_algo, sizeof(rk_aiq_wb_gain_t));
     rkAwbProcRes->awb_smooth_factor = customAwbProcRes->awb_smooth_factor;
-    rkAwbProcRes->awb_hw32_para=  awbHwConfig;
+    *rkAwbProcRes->awb_hw32_para=  awbHwConfig;
 }
 
 static XCamReturn customAwbStatsRelease( rk_aiq_customAwb_stats_t *customStats)

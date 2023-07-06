@@ -24,6 +24,40 @@ extern "C" {
 
 typedef struct rk_ispfec_ctx_s rk_ispfec_ctx_t;
 
+enum rk_ispfec_update_mesh_mode {
+    RK_ISPFEC_UPDATE_MESH_ONLINE              = 0,    	// generate lut online
+    RK_ISPFEC_UPDATE_MESH_FROM_FILE,          			// external file import mesh
+};
+
+enum rk_ispfec_correct_direction {
+    RK_ISPFEC_CORRECT_DIRECTION_X = 0x1,
+    RK_ISPFEC_CORRECT_DIRECTION_Y,
+    RK_ISPFEC_CORRECT_DIRECTION_XY
+};
+
+enum rk_ispfec_correct_style {
+    RK_ISPFEC_KEEP_ASPECT_RATIO_REDUCE_FOV = 0x1,
+    RK_ISPFEC_COMPRES_IMAGE_KEEP_FOV,
+};
+
+/**
+ * the following prarams are only effective in 'RK_ISPFEC_UPDATE_MESH_ON_LINE'.
+ *
+ * @light_center: the optical center of the lens.
+ * @coefficient: the distortion coefficient of the lens.
+ * @direction: configure the correction direction of the generated mesh.
+ * @style: configure the correction style of the generated mesh.
+ * @correct_level: the distortion type of FEC.
+ */
+typedef struct gen_mesh_online_info_s {
+    double  light_center[2];
+    double  coeff[4];
+    enum rk_ispfec_correct_direction 	direction;
+    enum rk_ispfec_correct_style 		style;
+
+    int     correct_level;
+} gen_mesh_online_info_t;
+
 typedef struct mesh_info_s {
     int dmaFd;
     void* vir_addr;
@@ -32,18 +66,30 @@ typedef struct mesh_info_s {
 } mesh_info_t;
 
 typedef struct rk_ispfec_cfg_s {
-    // 分辨率
-    int width;
-    int height;
+    // 输入输出的分辨率
+    int in_width;
+    int in_height;
+    int out_width;
+    int out_height;
     // 输入输出的 v4l2 fmt
     int in_fourcc;
     int out_fourcc;
     // mesh 表 buf fd，外部分配，可用 rk_ispfec_api_calFecMeshsize 计算size
-    char mesh_file_path[128];
     mesh_info_t mesh_xint;
     mesh_info_t mesh_xfra;
     mesh_info_t mesh_yint;
     mesh_info_t mesh_yfra;
+
+    enum rk_ispfec_update_mesh_mode mesh_upd_mode;
+
+    /**
+     * @UPDATE_MESH_ONLINE :   configure the online info from fec calibration for 'mesh_file_path'
+     * @UPDATE_MESH_FROM_FILE: configure the path of mesh file for 'mesh_online'
+     */
+    union {
+        char mesh_file_path[128];
+        gen_mesh_online_info_t mesh_online;
+    } u;
 } rk_ispfec_cfg_t;
 
 rk_ispfec_ctx_t* rk_ispfec_api_init(rk_ispfec_cfg_t* cfg);

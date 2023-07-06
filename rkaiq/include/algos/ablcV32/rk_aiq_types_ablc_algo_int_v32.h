@@ -104,8 +104,6 @@ typedef struct AblcProc_V32_s {
     short int isp_ob_offset;
     float isp_ob_predgain;
     int isp_ob_max;
-
-    bool isNeedUpdate;
 } AblcProc_V32_t;
 
 typedef struct rk_aiq_blc_attrib_V32_s {

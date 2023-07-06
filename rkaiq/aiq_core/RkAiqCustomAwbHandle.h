@@ -28,10 +28,13 @@ public:
     explicit RkAiqCustomAwbHandle(RkAiqAlgoDesComm* des, RkAiqCore* aiqCore)
         : RkAiqAwbHandleInt (des, aiqCore) {};
     virtual ~RkAiqCustomAwbHandle() {
+        deInit();
     };
     virtual XCamReturn updateConfig(bool needSync);
     virtual XCamReturn processing();
     virtual XCamReturn genIspResult(RkAiqFullParams* params, RkAiqFullParams* cur_params);
+    virtual void init();
+    virtual void deInit();
 };
 
 

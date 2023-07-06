@@ -163,13 +163,10 @@ typedef struct Abayertnr_Auto_Attr_V2_s
 typedef struct Abayertnr_ProcResult_V2_s {
 
     //for sw simultaion
-    RK_Bayertnr_Params_V2_Select_t st3DSelect;
+    //RK_Bayertnr_Params_V2_Select_t st3DSelect;
 
     //for hw register
-    RK_Bayertnr_Fix_V2_t st3DFix;
-
-    bool isNeedUpdate;
-
+    RK_Bayertnr_Fix_V2_t* st3DFix;
 } Abayertnr_ProcResult_V2_t;
 
 

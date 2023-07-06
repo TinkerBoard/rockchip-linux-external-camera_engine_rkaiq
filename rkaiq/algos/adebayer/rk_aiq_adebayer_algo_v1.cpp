@@ -370,7 +370,7 @@ AdebayerGetProcResult
         return XCAM_RETURN_ERROR_PARAM;
     }
 
-    pAdebayerResult->config = pAdebayerCtx->config;
+    *pAdebayerResult->config = pAdebayerCtx->config;
     pAdebayerCtx->config.updatecfg = false;
     LOGV_ADEBAYER("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return XCAM_RETURN_NO_ERROR;

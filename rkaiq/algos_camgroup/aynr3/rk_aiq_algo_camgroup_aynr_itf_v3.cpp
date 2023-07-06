@@ -222,6 +222,9 @@ static XCamReturn groupAynrV3Processing(const RkAiqAlgoCom* inparams, RkAiqAlgoR
     if(CHECK_ISP_HW_V30()) {
         Aynr_Context_V3_t * aynr_contex_v3 = aynr_group_contex->aynr_contex_v3;
         Aynr_ProcResult_V3_t stAynrResultV3;
+        RK_YNR_Fix_V3_t stFix;
+        stAynrResultV3.stFix = &stFix;
+
         deltaIso = abs(stExpInfoV3.arIso[stExpInfoV3.hdr_mode] - aynr_contex_v3->stExpInfo.arIso[stExpInfoV3.hdr_mode]);
         if(deltaIso > AYNRV3_RECALCULATE_DELTA_ISO) {
             aynr_contex_v3->isReCalculate |= 1;
@@ -234,17 +237,20 @@ static XCamReturn groupAynrV3Processing(const RkAiqAlgoCom* inparams, RkAiqAlgoR
                 LOGE_ANR("%s: processing ANR failed (%d)\n", __FUNCTION__, ret);
             }
             Aynr_GetProcResult_V3(aynr_contex_v3, &stAynrResultV3);
-            stAynrResultV3.isNeedUpdate = true;
+            outparams->cfg_update = true;
             LOGD_ANR("recalculate: %d delta_iso:%d \n ", aynr_contex_v3->isReCalculate, deltaIso);
         } else {
-            stAynrResultV3 = aynr_contex_v3->stProcResult;
-            stAynrResultV3.isNeedUpdate = true;
+            outparams->cfg_update = false;
         }
 
         for (int i = 0; i < procResParaGroup->arraySize; i++) {
-            *(procResParaGroup->camgroupParmasArray[i]->aynr._aynr_procRes_v3._stFix) = stAynrResultV3.stFix;
-            memcpy(procResParaGroup->camgroupParmasArray[i]->aynr_sigma._aynr_sigma_v3,
-                   stAynrResultV3.stSelect.sigma, sizeof(stAynrResultV3.stSelect.sigma));
+            if (aynr_contex_v3->isReCalculate) {
+                *(procResParaGroup->camgroupParmasArray[i]->aynr._aynr_procRes_v3._stFix) = *stAynrResultV3.stFix;
+                memcpy(procResParaGroup->camgroupParmasArray[i]->aynr_sigma._aynr_sigma_v3,
+                       stAynrResultV3.stSelect->sigma, sizeof(stAynrResultV3.stSelect->sigma));
+            }
+            IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->aynr._aynr_procRes_v3._stFix), procParaGroup->_offset_is_update) =
+                outparams->cfg_update;
         }
         aynr_contex_v3->isReCalculate = 0;
     }

@@ -1668,6 +1668,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV2xCtx(CalibDbV2_AF_t* af)
     if (TuningPara->video_contrast_af.ZoomCfg.StopStep)
         calib_free(TuningPara->video_contrast_af.ZoomCfg.StopStep);
 
+#if RKAIQ_HAVE_PDAF
     if (TuningPara->pdaf.pdIsoPara) {
         for (int i = 0; i < TuningPara->pdaf.pdIsoPara_len; i++) {
             if (TuningPara->pdaf.pdIsoPara[i].fineSearchTbl)
@@ -1675,6 +1676,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV2xCtx(CalibDbV2_AF_t* af)
         }
         calib_free(TuningPara->pdaf.pdIsoPara);
     }
+    if (TuningPara->pdaf.pdResoInf)
+        calib_free(TuningPara->pdaf.pdResoInf);
+#endif
 
     return 0;
 }
@@ -1760,6 +1764,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV32Ctx(CalibDbV2_AFV32_t* af)
     if (TuningPara->meascfg_tbl)
         calib_free(TuningPara->meascfg_tbl);
 
+#if RKAIQ_HAVE_PDAF
     if (TuningPara->pdaf.pdIsoPara) {
         for (int i = 0; i < TuningPara->pdaf.pdIsoPara_len; i++) {
             if (TuningPara->pdaf.pdIsoPara[i].fineSearchTbl)
@@ -1767,6 +1772,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV32Ctx(CalibDbV2_AFV32_t* af)
         }
         calib_free(TuningPara->pdaf.pdIsoPara);
     }
+    if (TuningPara->pdaf.pdResoInf)
+        calib_free(TuningPara->pdaf.pdResoInf);
+#endif
 
     return 0;
 }
@@ -1852,6 +1860,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV31Ctx(CalibDbV2_AFV31_t* af)
     if (TuningPara->meascfg_tbl)
         calib_free(TuningPara->meascfg_tbl);
 
+#if RKAIQ_HAVE_PDAF
     if (TuningPara->pdaf.pdIsoPara) {
         for (int i = 0; i < TuningPara->pdaf.pdIsoPara_len; i++) {
             if (TuningPara->pdaf.pdIsoPara[i].fineSearchTbl)
@@ -1859,6 +1868,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV31Ctx(CalibDbV2_AFV31_t* af)
         }
         calib_free(TuningPara->pdaf.pdIsoPara);
     }
+    if (TuningPara->pdaf.pdResoInf)
+        calib_free(TuningPara->pdaf.pdResoInf);
+#endif
 
     return 0;
 }
@@ -1944,6 +1956,7 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV30Ctx(CalibDbV2_AFV30_t* af)
     if (TuningPara->meascfg_tbl)
         calib_free(TuningPara->meascfg_tbl);
 
+#if RKAIQ_HAVE_PDAF
     if (TuningPara->pdaf.pdIsoPara) {
         for (int i = 0; i < TuningPara->pdaf.pdIsoPara_len; i++) {
             if (TuningPara->pdaf.pdIsoPara[i].fineSearchTbl)
@@ -1951,6 +1964,9 @@ int RkAiqCalibDbV2::CamCalibDbFreeAfV30Ctx(CalibDbV2_AFV30_t* af)
         }
         calib_free(TuningPara->pdaf.pdIsoPara);
     }
+    if (TuningPara->pdaf.pdResoInf)
+        calib_free(TuningPara->pdaf.pdResoInf);
+#endif
 
     return 0;
 }

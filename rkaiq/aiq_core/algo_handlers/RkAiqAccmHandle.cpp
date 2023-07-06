@@ -298,8 +298,8 @@ XCamReturn RkAiqAccmHandleInt::processing() {
     // TODO should check if the rk awb algo used
     XCamVideoBuffer* xCamAwbProcRes = shared->res_comb.awb_proc_res;
     if (xCamAwbProcRes) {
-        RkAiqAlgoProcResAwb* awb_res =
-            (RkAiqAlgoProcResAwb*)xCamAwbProcRes->map(xCamAwbProcRes);
+        RkAiqAlgoProcResAwbShared_t* awb_res =
+            (RkAiqAlgoProcResAwbShared_t*)xCamAwbProcRes->map(xCamAwbProcRes);
         if (awb_res) {
             if (awb_res->awb_gain_algo.grgain < DIVMIN || awb_res->awb_gain_algo.gbgain < DIVMIN) {
                 LOGW("get wrong awb gain from AWB module ,use default value ");
@@ -351,9 +351,9 @@ XCamReturn RkAiqAccmHandleInt::processing() {
     }
 
 #if RKAIQ_HAVE_BLC_V32
-    if (shared->res_comb.ablcV32_proc_res.blc_ob_enable) {
-        if (shared->res_comb.ablcV32_proc_res.isp_ob_predgain >= 1.0f) {
-            accm_proc_int->accm_sw_info.sensorGain *=  shared->res_comb.ablcV32_proc_res.isp_ob_predgain;
+    if (shared->res_comb.ablcV32_proc_res->blc_ob_enable) {
+        if (shared->res_comb.ablcV32_proc_res->isp_ob_predgain >= 1.0f) {
+            accm_proc_int->accm_sw_info.sensorGain *=  shared->res_comb.ablcV32_proc_res->isp_ob_predgain;
         }
     }
 #endif
@@ -434,14 +434,44 @@ XCamReturn RkAiqAccmHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
 #endif
 #endif
 
-    if (!this->getAlgoId()) {
-        RkAiqAlgoProcResAccm* accm_rk_int = (RkAiqAlgoProcResAccm*)accm_com;
-    }
+    if (accm_com->res_com.cfg_update) {
+        mSyncFlag = shared->frameId;
+        ccm_param->sync_flag = mSyncFlag;
+        // copy from algo result
+        // set as the latest result
 #if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-    cur_params->mCcmV32Params = params->mCcmV32Params;
+        cur_params->mCcmV32Params = params->mCcmV32Params;
 #else
-    cur_params->mCcmParams = params->mCcmParams;
+        cur_params->mCcmParams = params->mCcmParams;
 #endif
+        ccm_param->is_update = true;
+        LOGD_ACCM("[%d] params from algo", mSyncFlag);
+    } else if (mSyncFlag != ccm_param->sync_flag) {
+        ccm_param->sync_flag = mSyncFlag;
+        // copy from latest result
+#if defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
+        if (cur_params->mCcmV32Params.ptr()) {
+            ccm_param->result = cur_params->mCcmV32Params->data()->result;
+            ccm_param->is_update = true;
+        } else {
+            LOGE_ACCM("no latest params !");
+            ccm_param->is_update = false;
+        }
+#else
+        if (cur_params->mCcmParams.ptr()) {
+            ccm_param->result = cur_params->mCcmParams->data()->result;
+            ccm_param->is_update = true;
+        } else {
+            LOGE_ACCM("no latest params !");
+            ccm_param->is_update = false;
+        }
+#endif
+        LOGD_ACCM("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+    } else {
+        // do nothing, result in buf needn't update
+        ccm_param->is_update = false;
+        LOGD_ACCM("[%d] params needn't update", shared->frameId);
+    }
 
     EXIT_ANALYZER_FUNCTION();
 

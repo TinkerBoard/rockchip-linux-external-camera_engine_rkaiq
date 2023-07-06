@@ -602,8 +602,9 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
                         main_scene.c_str(), sub_scene.c_str());
 
     if (!calibdbv2_ctx.calib_scene) {
-        LOGE("Failed to find params of %s:%s scene in json, using default scene",
-             main_scene.c_str(), sub_scene.c_str());
+        if (!main_scene.empty() && !sub_scene.empty())
+            LOGE("Failed to find params of %s:%s scene in json, using default scene",
+                 main_scene.c_str(), sub_scene.c_str());
         calibdbv2_ctx = RkAiqCalibDbV2::toDefaultCalibDb(ctx->_calibDbProj);
     }
     ctx->_rkAiqManager->setAiqCalibDb(&calibdbv2_ctx);

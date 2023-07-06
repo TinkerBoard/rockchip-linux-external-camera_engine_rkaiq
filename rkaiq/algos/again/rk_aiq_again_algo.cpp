@@ -362,15 +362,16 @@ Again_result_t Again_GetProcResult_V1(Again_Context_V1_t *pAgainCtx, Again_ProcR
         return AGAIN_RET_INVALID_PARM;
     }
 
+    RK_GAIN_Params_V1_Select_t* stSelect = NULL;
     if(pAgainCtx->eMode == AGAIN_OP_MODE_AUTO) {
-        pAgainResult->stSelect = pAgainCtx->stAuto.stSelect;
+        stSelect = &pAgainCtx->stAuto.stSelect;
     } else if(pAgainCtx->eMode == AGAIN_OP_MODE_MANUAL) {
-        pAgainResult->stSelect= pAgainCtx->stManual.stSelect;
+        stSelect= &pAgainCtx->stManual.stSelect;
     }
 		
     //transfer to reg value
-	gain_fix_transfer_v1(&pAgainResult->stSelect, &pAgainResult->stFix, &pAgainCtx->stExpInfo, pAgainCtx->stGainState.ratio);
-	pAgainResult->stFix.gain_table_en = pAgainCtx->mfnr_local_gain_en;
+	gain_fix_transfer_v1(stSelect, pAgainResult->stFix, &pAgainCtx->stExpInfo, pAgainCtx->stGainState.ratio);
+	pAgainResult->stFix->gain_table_en = pAgainCtx->mfnr_local_gain_en;
 	
     LOGI_ANR("%s(%d): exit!\n", __FUNCTION__, __LINE__);
     return AGAIN_RET_SUCCESS;

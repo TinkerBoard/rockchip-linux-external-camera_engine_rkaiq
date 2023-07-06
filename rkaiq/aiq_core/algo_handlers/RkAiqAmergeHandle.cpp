@@ -319,6 +319,9 @@ XCamReturn RkAiqAmergeHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    amerge_proc_res_int->AmergeProcRes = &shared->fullParams->mMergeParams->data()->result;
+    amerge_proc_int->LongFrmMode = mAeProcRes.LongFrmMode;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "amerge handle processing failed");
@@ -390,10 +393,31 @@ XCamReturn RkAiqAmergeHandleInt::genIspResult(RkAiqFullParams* params,
             merge_param->frame_id = shared->frameId;
         }
 
-        merge_param->result = amerge_rk->AmergeProcRes;
+        if (amerge_com->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            merge_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mMergeParams = params->mMergeParams;
+            merge_param->is_update = true;
+            LOGD_AMERGE("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != merge_param->sync_flag) {
+            merge_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mMergeParams.ptr()) {
+                merge_param->result = cur_params->mMergeParams->data()->result;
+                merge_param->is_update = true;
+            } else {
+                LOGE_AMERGE("no latest params !");
+                merge_param->is_update = false;
+            }
+            LOGD_AMERGE("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            merge_param->is_update = false;
+            LOGD_AMERGE("[%d] params needn't update", shared->frameId);
+        }
     }
-
-    cur_params->mMergeParams = params->mMergeParams;
 
     EXIT_ANALYZER_FUNCTION();
 

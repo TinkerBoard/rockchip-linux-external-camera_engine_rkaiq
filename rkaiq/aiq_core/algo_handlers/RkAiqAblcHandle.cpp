@@ -215,6 +215,8 @@ XCamReturn RkAiqAblcHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    mProcResShared->result.ablc_proc_res = &shared->fullParams->mBlcV21Params->data()->result.v0;
+
     ret = RkAiqHandle::processing();
     if (ret < 0) {
         LOGE_ANALYZER("ablc handle processing failed ret %d", ret);
@@ -247,26 +249,36 @@ XCamReturn RkAiqAblcHandleInt::processing() {
         return ret;
     }
 
+    if (!mProcResShared->result.res_com.cfg_update) {
+        mProcResShared->result.ablc_proc_res = mLatestparam;
+        LOGD_ABLC("[%d] copy results from latest !", shared->frameId);
+    }
 
     if (mAiqCore->mAlogsComSharedParams.init) {
         RkAiqCore::RkAiqAlgosGroupShared_t* grpShared = nullptr;
         uint64_t grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_AWB);
         if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
             if (grpShared)
-                memcpy(&grpShared->res_comb.ablc_proc_res, &mProcResShared->result.ablc_proc_res,
-                       sizeof(mProcResShared->result.ablc_proc_res));
+                grpShared->res_comb.ablc_proc_res = mProcResShared->result.ablc_proc_res;
         }
         grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_GRP0);
         if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
             if (grpShared)
-                memcpy(&grpShared->res_comb.ablc_proc_res, &mProcResShared->result.ablc_proc_res,
-                       sizeof(mProcResShared->result.ablc_proc_res));
+                grpShared->res_comb.ablc_proc_res = mProcResShared->result.ablc_proc_res;
+        }
+        grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_GRP1);
+        if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
+            if (grpShared)
+                grpShared->res_comb.ablc_proc_res = mProcResShared->result.ablc_proc_res;
+        }
+        grpMask = grpId2GrpMask(RK_AIQ_CORE_ANALYZE_DHAZ);
+        if (!mAiqCore->getGroupSharedParams(grpMask, grpShared)) {
+            if (grpShared)
+                grpShared->res_comb.ablc_proc_res = mProcResShared->result.ablc_proc_res;
         }
     } else if (mPostShared) {
-        SmartPtr<BufferProxy> msg_data = new BufferProxy(mProcResShared);
-        msg_data->set_sequence(shared->frameId);
-        SmartPtr<XCamMessage> msg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_BLC_PROC_RES_OK, shared->frameId, msg_data);
+        mProcResShared->set_sequence(shared->frameId);
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_BLC_PROC_RES_OK, shared->frameId, mProcResShared);
         mAiqCore->post_message(msg);
     }
 
@@ -310,12 +322,8 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
     if (!mProcResShared.ptr())
         return XCAM_RETURN_NO_ERROR;
     RkAiqAlgoProcResAblc* ablc_com             = (RkAiqAlgoProcResAblc*)&mProcResShared->result;
-#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-    rk_aiq_isp_blc_params_v21_t* blc_param = params->mBlcV21Params->data().ptr();
-#else
-    rk_aiq_isp_blc_params_v20_t* blc_param = params->mBlcParams->data().ptr();
-#endif
 
+    rk_aiq_isp_blc_params_v21_t* blc_param = params->mBlcV21Params->data().ptr();
 
     if (!ablc_com) {
         LOGD_ANALYZER("no ablc result");
@@ -332,19 +340,31 @@ XCamReturn RkAiqAblcHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullPa
             blc_param->frame_id = shared->frameId;
         }
 
-
-#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-        memcpy(&blc_param->result.v0, &ablc_rk->ablc_proc_res, sizeof(rk_aiq_isp_blc_t));
-#else
-        memcpy(&blc_param->result, &ablc_rk->ablc_proc_res, sizeof(rk_aiq_isp_blc_t));
-#endif
+        if (ablc_com->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            blc_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            cur_params->mBlcV21Params = params->mBlcV21Params;
+            mLatestparam = &cur_params->mBlcV21Params->data()->result.v0;
+            blc_param->is_update = true;
+            LOGD_ABLC("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != blc_param->sync_flag) {
+            blc_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mBlcV21Params.ptr()) {
+                blc_param->result = cur_params->mBlcV21Params->data()->result;
+                blc_param->is_update = true;
+            } else {
+                LOGD_ABLC("no latest params !");
+                blc_param->is_update = false;
+            }
+            LOGD_ABLC("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            blc_param->is_update = false;
+            LOGD_ABLC("[%d] params needn't update", shared->frameId);
+        }
     }
-
-#if defined(ISP_HW_V21) || defined(ISP_HW_V30) || defined(ISP_HW_V32) || defined(ISP_HW_V32_LITE)
-    cur_params->mBlcV21Params = params->mBlcV21Params;
-#else
-    cur_params->mBlcParams = params->mBlcParams;
-#endif
 
     mProcResShared = NULL;
 

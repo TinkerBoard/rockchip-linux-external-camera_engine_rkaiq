@@ -262,17 +262,17 @@ Abayertnr_result_V23_t Abayertnr_GetProcResult_V23(Abayertnr_Context_V23_t *pAba
     }
 
     //transfer to reg value
-    bayertnr_fix_transfer_V23(st3DSelect, &pAbayertnrResult->st3DFix, &pAbayertnrCtx->stStrength, &pAbayertnrCtx->stExpInfo);
+    bayertnr_fix_transfer_V23(st3DSelect, pAbayertnrResult->st3DFix, &pAbayertnrCtx->stStrength, &pAbayertnrCtx->stExpInfo);
 
     if(pAbayertnrCtx->eMode == ABAYERTNRV23_OP_MODE_REG_MANUAL) {
-        pAbayertnrResult->st3DFix = pAbayertnrCtx->stManual.st3DFix;
+        *pAbayertnrResult->st3DFix = pAbayertnrCtx->stManual.st3DFix;
         pAbayertnrCtx->stStrength.percent = 1.0;
     }
 
     LOGD_ANR("%s:%d abayertnr eMode:%d bypass:%d iso:%d fstrength:%f\n",
              __FUNCTION__, __LINE__,
              pAbayertnrCtx->eMode,
-             pAbayertnrResult->st3DFix.bypass_en,
+             pAbayertnrResult->st3DFix->bypass_en,
              pAbayertnrCtx->stExpInfo.arIso[pAbayertnrCtx->stExpInfo.hdr_mode],
              pAbayertnrCtx->stStrength.percent);
 

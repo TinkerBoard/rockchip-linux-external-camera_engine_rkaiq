@@ -566,10 +566,10 @@ XCamReturn convertSensorLscOTP(resolution_t *cur_res, alsc_otp_grad_t *otpGrad,
     if (!otpGrad->flag)
         return XCAM_RETURN_BYPASS;
 
-    if ((cur_res->width > otpGrad->width && \
-         cur_res->height > otpGrad->height) || \
-        (cur_res->width < otpGrad->width && \
-         cur_res->height < otpGrad->height)) {
+    if ((cur_res->width >= otpGrad->width && \
+         cur_res->height >= otpGrad->height) || \
+        (cur_res->width <= otpGrad->width && \
+         cur_res->height <= otpGrad->height)) {
         convertLscTableParameter(cur_res, otpGrad, bayerPattern);
     }
 

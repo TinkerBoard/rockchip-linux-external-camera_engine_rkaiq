@@ -23,6 +23,7 @@
 
 #include <functional>
 #include <map>
+#include <array>
 
 #include "MessageBus.h"
 #include "RkAiqCoreConfig.h"
@@ -32,6 +33,7 @@
 #include "video_buffer.h"
 #include "xcam_std.h"
 #include "xcam_thread.h"
+#include "safe_list_ex.h"
 
 // using namespace XCam;
 namespace RkCam {
@@ -40,16 +42,18 @@ class RkAiqAnalyzeGroupManager;
 class RkAiqCore;
 class RkAiqAnalyzeGroupMsgHdlThread;
 
+#define MAX_MESSAGES 5
 // TODO(Cody): This is just workaround for current implementation
 //using MessageHandleWrapper = std::function<XCamReturn(const std::list<SmartPtr<XCamMessage>>&)>;
-typedef std::function<XCamReturn(std::list<SmartPtr<XCamMessage>>&, uint32_t, uint64_t)>
+typedef std::function<XCamReturn(std::array<RkAiqCoreVdBufMsg, MAX_MESSAGES>&, int, uint32_t, uint64_t)>
     MessageHandleWrapper;
 
 class RkAiqAnalyzerGroup {
  public:
     struct GroupMessage {
-        std::list<SmartPtr<XCamMessage>> msgList;
+        std::array<RkAiqCoreVdBufMsg, MAX_MESSAGES> msgList;
         uint64_t msg_flags;
+        int msg_cnts;
     };
 
     RkAiqAnalyzerGroup(RkAiqCore* aiqCore, enum rk_aiq_core_analyze_type_e type,
@@ -59,8 +63,8 @@ class RkAiqAnalyzerGroup {
 
     void setConcreteHandler(const MessageHandleWrapper handler) { mHandler = handler; }
     XCamReturn start();
-    bool pushMsg(const SmartPtr<XCamMessage>& msg);
-    bool msgHandle(const SmartPtr<XCamMessage>& msg);
+    bool pushMsg(RkAiqCoreVdBufMsg& msg);
+    bool msgHandle(RkAiqCoreVdBufMsg* msg);
     XCamReturn stop();
 
     rk_aiq_core_analyze_type_e getType() const { return mGroupType; }
@@ -106,7 +110,7 @@ class RkAiqAnalyzeGroupMsgHdlThread : public Thread {
         mMsgsQueue.resume_pop();
     };
 
-    bool push_msg(const SmartPtr<XCamMessage>& buffer) {
+    bool push_msg(RkAiqCoreVdBufMsg& buffer) {
         mMsgsQueue.push(buffer);
         return true;
     };
@@ -122,7 +126,7 @@ class RkAiqAnalyzeGroupMsgHdlThread : public Thread {
 
  private:
     std::vector<RkAiqAnalyzerGroup*> mHandlerGroups;
-    SafeList<XCamMessage> mMsgsQueue;
+    SafeListEx<RkAiqCoreVdBufMsg> mMsgsQueue;
 };
 
 class RkAiqAnalyzeGroupManager {
@@ -139,7 +143,7 @@ class RkAiqAnalyzeGroupManager {
     void setDelayCnts(int delayCnts);
 
     XCamReturn firstAnalyze();
-    XCamReturn handleMessage(const SmartPtr<XCamMessage> &msg);
+    XCamReturn handleMessage(RkAiqCoreVdBufMsg& msg);
     std::vector<SmartPtr<RkAiqHandle>>& getGroupAlgoList(rk_aiq_core_analyze_type_e group) {
         return mGroupAlgoListMap[group];
     }
@@ -153,10 +157,10 @@ class RkAiqAnalyzeGroupManager {
     }
 
  protected:
-    XCamReturn groupMessageHandler(std::list<SmartPtr<XCamMessage>>& msgs, uint32_t id,
+    XCamReturn groupMessageHandler(std::array<RkAiqCoreVdBufMsg, MAX_MESSAGES>& msgs, int msg_cnts, uint32_t id,
                                    uint64_t grpId);
 #if defined(RKAIQ_HAVE_THUMBNAILS)
-    XCamReturn thumbnailsGroupMessageHandler(std::list<SmartPtr<XCamMessage>>& msgs, uint32_t id,
+    XCamReturn thumbnailsGroupMessageHandler(std::array<RkAiqCoreVdBufMsg, MAX_MESSAGES>& msgs, int msg_cnts, uint32_t id,
                                              uint64_t grpId);
 #endif
  private:

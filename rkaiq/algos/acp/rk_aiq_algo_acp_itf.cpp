@@ -96,6 +96,8 @@ prepare(RkAiqAlgoCom* params)
 #endif
     }
 
+    params->ctx->acpCtx.isReCal_ = true;
+
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -111,7 +113,13 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     RkAiqAlgoProcResAcp* res_com = (RkAiqAlgoProcResAcp*)outparams;
     RkAiqAlgoContext* ctx = inparams->ctx;
 
-    res_com->acp_res = ctx->acpCtx.params;
+    if (ctx->acpCtx.isReCal_) {
+        *res_com->acp_res = ctx->acpCtx.params;
+        outparams->cfg_update = true;
+        ctx->acpCtx.isReCal_ = false;
+    } else {
+        outparams->cfg_update = false;
+    }
 
     return XCAM_RETURN_NO_ERROR;
 }

@@ -20,6 +20,33 @@ namespace RkCam {
 
 //#define BYPASS_CUSTOM_AWB
 
+void
+RkAiqCustomAwbHandle::init() {
+    if (mIsMulRun) {
+        // reuse parent's resources, contains:
+        // mConfig, mProcInParam, mProcOutParam
+        RkAiqAwbHandleInt* parent =  dynamic_cast<RkAiqAwbHandleInt*>(mParentHdl);
+        if (!parent)
+            LOGE_AWB("no parent awb handler in multiple handler mode !");
+        mConfig      = parent->mConfig;
+        mProcInParam = parent->mProcInParam;
+        mProcOutParam = parent->mProcOutParam;
+    } else {
+        RkAiqAwbHandleInt::init();
+    }
+}
+
+void
+RkAiqCustomAwbHandle::deInit() {
+    if (mIsMulRun) {
+        mConfig      = NULL;
+        mProcInParam = NULL;
+        mProcOutParam = NULL;
+    } else {
+        RkAiqAwbHandleInt::deInit();
+    }
+}
+
 XCamReturn RkAiqCustomAwbHandle::updateConfig(bool needSync) {
     ENTER_ANALYZER_FUNCTION();
 
@@ -51,13 +78,6 @@ XCamReturn RkAiqCustomAwbHandle::processing() {
         }
     }
 
-    RkAiqAlgoProcAwb* awb_proc_int = (RkAiqAlgoProcAwb*)mProcInParam;
-#if RKAIQ_HAVE_BLC_V32
-    RkAiqCore::RkAiqAlgosGroupShared_t* shared =
-        (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
-    awb_proc_int->ablcProcResV32= shared->res_comb.ablcV32_proc_res;
-    awb_proc_int->ablcProcResVaid = true;
-#endif
     return RkAiqAwbHandleInt::processing();
 
     EXIT_ANALYZER_FUNCTION();

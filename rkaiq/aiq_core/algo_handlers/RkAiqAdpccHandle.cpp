@@ -174,6 +174,8 @@ XCamReturn RkAiqAdpccHandleInt::processing() {
         (RkAiqCore::RkAiqAlgosGroupShared_t*)(getGroupShared());
     RkAiqCore::RkAiqAlgosComShared_t* sharedCom = &mAiqCore->mAlogsComSharedParams;
 
+    adpcc_proc_res_int->stAdpccProcResult = &shared->fullParams->mDpccParams->data()->result;
+
     ret = RkAiqHandle::processing();
     if (ret) {
         RKAIQCORE_CHECK_RET(ret, "adpcc handle processing failed");
@@ -254,10 +256,32 @@ XCamReturn RkAiqAdpccHandleInt::genIspResult(RkAiqFullParams* params, RkAiqFullP
         } else {
             dpcc_param->frame_id = shared->frameId;
         }
-        memcpy(&dpcc_param->result, &adpcc_rk->stAdpccProcResult, sizeof(rk_aiq_isp_dpcc_t));
-    }
 
-    cur_params->mDpccParams = params->mDpccParams;
+        if (adpcc_com->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            dpcc_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mDpccParams = params->mDpccParams;
+            dpcc_param->is_update = true;
+            LOGD_ADPCC("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != dpcc_param->sync_flag) {
+            dpcc_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mDpccParams.ptr()) {
+                dpcc_param->result = cur_params->mDpccParams->data()->result;
+                dpcc_param->is_update = true;
+            } else {
+                LOGE_ADPCC("no latest params !");
+                dpcc_param->is_update = false;
+            }
+            LOGD_ADPCC("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            dpcc_param->is_update = false;
+            LOGD_ADPCC("[%d] params needn't update", shared->frameId);
+        }
+    }
 
     EXIT_ANALYZER_FUNCTION();
 

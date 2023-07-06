@@ -113,6 +113,9 @@ bool RkAiqCore::isGroupAlgo(int algoType) {
     return policy[algoType] == CamProfiles::AlgoSchedPolicy::kGroupOnly;
 }
 
+#define RKAIQ_DISABLE_CORETHRD
+#define RKAIQ_DISABLE_EVTSTHRD
+
 RkAiqCore::RkAiqCore(int isp_hw_ver)
     :
 #ifndef RKAIQ_DISABLE_CORETHRD
@@ -121,10 +124,12 @@ RkAiqCore::RkAiqCore(int isp_hw_ver)
 #if defined(ISP_HW_V20)
     mRkAiqCorePpTh(new RkAiqCoreThread(this)),
 #endif
-    mRkAiqCoreEvtsTh(new RkAiqCoreEvtsThread(this))
-    , mState(RK_AIQ_CORE_STATE_INVALID)
+#ifndef RKAIQ_DISABLE_CORETHRD
+    mRkAiqCoreEvtsTh(new RkAiqCoreEvtsThread(this)),
+#endif
+    mState(RK_AIQ_CORE_STATE_INVALID)
     , mCb(NULL)
-    , mIsSingleThread(false)
+    , mIsSingleThread(true)
     , mAiqParamsPool(new RkAiqFullParamsPool("RkAiqFullParams", RkAiqCore::DEFAULT_POOL_SIZE))
     , mAiqCpslParamsPool(new RkAiqCpslParamsPool("RkAiqCpslParamsPool", RkAiqCore::DEFAULT_POOL_SIZE))
     , mAiqStatsPool(nullptr)
@@ -368,8 +373,10 @@ RkAiqCore::start()
         mRkAiqCorePpTh->start();
     }
 #endif
+#ifndef RKAIQ_DISABLE_CORETHRD
     mRkAiqCoreEvtsTh->triger_start();
     mRkAiqCoreEvtsTh->start();
+#endif
 
 #if RKAIQ_HAVE_PDAF
     uint64_t deps = mRkAiqCoreGroupManager->getGrpDeps(RK_AIQ_CORE_ANALYZE_AF);
@@ -416,8 +423,10 @@ RkAiqCore::stop()
         mRkAiqCorePpTh->stop();
     }
 #endif
+#ifndef RKAIQ_DISABLE_CORETHRD
     mRkAiqCoreEvtsTh->triger_stop();
     mRkAiqCoreEvtsTh->stop();
+#endif
 
     mRkAiqCoreGroupManager->stop();
 #if defined(RKAIQ_HAVE_THUMBNAILS)
@@ -440,6 +449,9 @@ RkAiqCore::stop()
     {
         SmartLock locker (_mFullParam_mutex);
         mFullParamsPendingMap.clear();
+        mLatestParamsDoneId = 0;
+        mLatestEvtsId = 0;
+        mLatestStatsId = 0;
     }
     EXIT_ANALYZER_FUNCTION();
 
@@ -599,15 +611,17 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
         SmartPtr<RkAiqFullParams> curParams = mAiqCurParams->data();
         if (curParams.ptr() && curParams->mExposureParams.ptr()) {
             shared->curExp =
-                curParams->mExposureParams->data()->aecExpInfo;
+                curParams->mExposureParams->data()->result.new_ae_exp;
         }
         mapIter++;
     }
 
-    analyzeInternal(RK_AIQ_CORE_ANALYZE_AE);
+    //TODO: this will lead no initial ae params
+    //analyzeInternal(RK_AIQ_CORE_ANALYZE_AE);
     analyzeInternal(RK_AIQ_CORE_ANALYZE_ALL);
     mFullParamsPendingMap.clear();
-    freeSharebuf(RK_AIQ_CORE_ANALYZE_GRP1);
+    for (uint32_t i = 0; i < RK_AIQ_CORE_ANALYZE_MAX; i++)
+        freeSharebuf(i);
     // syncVicapScaleMode();
 
     mAlogsComSharedParams.init = false;
@@ -621,49 +635,40 @@ RkAiqCore::prepare(const rk_aiq_exposure_sensor_descriptor* sensor_des,
 
 void RkAiqCore::getDummyAlgoRes(int type, uint32_t frame_id) {
     if (type == RK_AIQ_ALGO_TYPE_AE) {
-        SmartPtr<BufferProxy> bp = new BufferProxy(new RkAiqAlgoPreResAeIntShared);
+        SmartPtr<VideoBuffer> bp = new RkAiqAlgoPreResAeIntShared;
         bp->set_sequence(frame_id);
-        SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_AE_PRE_RES_OK, frame_id, bp);
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_AE_PRE_RES_OK, frame_id, bp);
         post_message(msg);
 
-        bp = new BufferProxy(new RkAiqAlgoProcResAeIntShared);
-        bp->set_sequence(frame_id);
-        msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_AE_PROC_RES_OK, frame_id, bp);
-        post_message(msg);
     } else if (type == RK_AIQ_ALGO_TYPE_AWB) {
-        SmartPtr<BufferProxy> bp = new BufferProxy(new RkAiqAlgoProcResAwbIntShared);
+        SmartPtr<VideoBuffer> bp = new RkAiqAlgoProcResAwbIntShared;
         bp->set_sequence(frame_id);
-        SmartPtr<XCamMessage> msg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_AWB_PROC_RES_OK, frame_id, bp);
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_AWB_PROC_RES_OK, frame_id, bp);
         post_message(msg);
     } else if (type == RK_AIQ_ALGO_TYPE_ABLC) {
 #if ISP_HW_V32
-        SmartPtr<BufferProxy> bp = new BufferProxy(new RkAiqAlgoProcResAblcV32IntShared);
+        SmartPtr<VideoBuffer> bp = new RkAiqAlgoProcResAblcV32IntShared;
 #else
-        SmartPtr<BufferProxy> bp = new BufferProxy(new RkAiqAlgoProcResAblcIntShared);
+        SmartPtr<VideoBuffer> bp = new RkAiqAlgoProcResAblcIntShared;
 #endif
         bp->set_sequence(frame_id);
 #if ISP_HW_V32
-        SmartPtr<XCamMessage> msg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_BLC_V32_PROC_RES_OK, frame_id, bp);
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_BLC_V32_PROC_RES_OK, frame_id, bp);
 #else
-        SmartPtr<XCamMessage> msg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_BLC_PROC_RES_OK, frame_id, bp);
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_BLC_PROC_RES_OK, frame_id, bp);
 #endif
         post_message(msg);
     } else if (type == RK_AIQ_ALGO_TYPE_AYNR) {
 #if ISP_HW_V32
-        SmartPtr<BufferProxy> bp = new BufferProxy(new RkAiqAlgoProcResAynrV22IntShared);
+        SmartPtr<VideoBuffer> bp = new RkAiqAlgoProcResAynrV22IntShared;
 #else
-        SmartPtr<BufferProxy> bp = new BufferProxy(new RkAiqAlgoProcResAynrV3IntShared);
+        SmartPtr<VideoBuffer> bp = new RkAiqAlgoProcResAynrV3IntShared;
 #endif
         bp->set_sequence(frame_id);
 #if ISP_HW_V32
-        SmartPtr<XCamMessage> msg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_YNR_V22_PROC_RES_OK, frame_id, bp);
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_YNR_V22_PROC_RES_OK, frame_id, bp);
 #else
-        SmartPtr<XCamMessage> msg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_YNR_V3_PROC_RES_OK, frame_id, bp);
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_YNR_V3_PROC_RES_OK, frame_id, bp);
 #endif
         post_message(msg);
     }
@@ -731,6 +736,11 @@ RkAiqCore::analyzeInternal(enum rk_aiq_core_analyze_type_e grp_type)
                     }
                     shared->fullParams = aiqParams;
                     got_buffer = true;
+                    if (shared->frameId < mLatestParamsDoneId) {
+                        LOGW_ANALYZER("[%u] < [%u], skip grp_type 0x%x process !",
+                                      shared->frameId, mLatestParamsDoneId, grp_type);
+                        return NULL;
+                    }
                 }
                 if (mAlogsComSharedParams.init || !isGroupAlgo(type)) {
                     ret = curHdl->updateConfig(true);
@@ -755,16 +765,7 @@ XCamReturn RkAiqCore::freeSharebuf(uint64_t grpId) {
     uint64_t grpMask = grpId2GrpMask(grpId);
     if (!getGroupSharedParams(grpMask, shared)) {
         if (shared) {
-            if (shared->aecStatsBuf) {
-                shared->aecStatsBuf->unref(shared->aecStatsBuf);
-                shared->aecStatsBuf = nullptr;
-            }
-            if (shared->awbStatsBuf) {
-                shared->awbStatsBuf->unref(shared->awbStatsBuf);
-                shared->awbStatsBuf = nullptr;
-            }
             if (shared->afStatsBuf) {
-                shared->afStatsBuf->unref(shared->afStatsBuf);
                 shared->afStatsBuf = nullptr;
             }
             if (shared->ispStats) {
@@ -800,7 +801,6 @@ XCamReturn RkAiqCore::freeSharebuf(uint64_t grpId) {
                 shared->nrImg = nullptr;
             }
             if (shared->pdafStatsBuf) {
-                shared->pdafStatsBuf->unref(shared->pdafStatsBuf);
                 shared->pdafStatsBuf = nullptr;
             }
             if (shared->res_comb.ae_pre_res) {
@@ -830,12 +830,14 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, int type, uint32_t fra
         if (mAiqIsp##lc##ParamsPool->has_free_items()) {        \
             aiqParams->m##lc##Params                        = mAiqIsp##lc##ParamsPool->get_item(); \
             aiqParams->m##lc##Params->data()->frame_id      = frame_id;                            \
+            aiqParams->m##lc##Params->data()->is_update = false;                            \
         } else {                                                                                   \
             LOGE_ANALYZER("no free %s buffer for Id: %d !", #BC, frame_id);                                              \
             return XCAM_RETURN_ERROR_MEM;                                                          \
         } \
     } else { \
         aiqParams->m##lc##Params->data()->frame_id      = frame_id;                            \
+        aiqParams->m##lc##Params->data()->is_update = false;                            \
     }
 
 #define NEW_PARAMS_BUFFER_WITH_V(lc, BC, v)                                         \
@@ -843,12 +845,14 @@ RkAiqCore::getAiqParamsBuffer(RkAiqFullParams* aiqParams, int type, uint32_t fra
         if (mAiqIsp##lc##V##v##ParamsPool->has_free_items()) {                          \
             aiqParams->m##lc##V##v##Params = mAiqIsp##lc##V##v##ParamsPool->get_item(); \
             aiqParams->m##lc##V##v##Params->data()->frame_id = frame_id;                \
+            aiqParams->m##lc##V##v##Params->data()->is_update = false;                \
         } else {                                                                        \
             LOGE_ANALYZER("no free %s buffer for Id: %d !", #BC, frame_id);                                   \
             return XCAM_RETURN_ERROR_MEM;                                               \
         } \
     } else { \
             aiqParams->m##lc##V##v##Params->data()->frame_id = frame_id;                \
+            aiqParams->m##lc##V##v##Params->data()->is_update = false;                \
     }
 
     switch (type) {
@@ -1105,6 +1109,13 @@ RkAiqCore::pushStats(SmartPtr<VideoBuffer> &buffer)
     ENTER_ANALYZER_FUNCTION();
 
     XCAM_ASSERT(buffer.ptr());
+    mLatestStatsId = buffer->get_sequence();
+    int32_t delta = mLatestStatsId - mLatestEvtsId;
+    if (delta > 3) {
+        LOGW_ANALYZER("stats delta: %d, skip stats %u", delta, mLatestStatsId);
+        return XCAM_RETURN_NO_ERROR;
+    }
+
 #ifndef RKAIQ_DISABLE_CORETHRD
     mRkAiqCoreTh->push_stats(buffer);
 #else
@@ -1122,8 +1133,21 @@ RkAiqCore::pushEvts(SmartPtr<ispHwEvt_t> &evts)
 
     XCAM_ASSERT(evts.ptr());
 
-    if (evts->evt_code == V4L2_EVENT_FRAME_SYNC)
+    if (evts->evt_code == V4L2_EVENT_FRAME_SYNC) {
+        Isp20Evt* isp20Evts =
+            evts.get_cast_ptr<Isp20Evt>();
+        mLatestEvtsId = isp20Evts->sequence;
+        int32_t delta = mLatestEvtsId - mLatestStatsId;
+        if (delta > 3) {
+            LOGW_ANALYZER("sof delta: %d, skip sof %u", delta, mLatestEvtsId);
+            return XCAM_RETURN_NO_ERROR;
+        }
+#ifndef RKAIQ_DISABLE_CORETHRD
         mRkAiqCoreEvtsTh->push_evts(evts);
+#else
+        XCamReturn ret = events_analyze (evts);
+#endif
+    }
     EXIT_ANALYZER_FUNCTION();
 
     return XCAM_RETURN_NO_ERROR;
@@ -1299,7 +1323,7 @@ std::bitset<RK_AIQ_ALGO_TYPE_MAX> RkAiqCore::getReqAlgoResMask(int algoType) {
         break;
     case RK_AIQ_ALGO_TYPE_AF:
         tmp[RESULT_TYPE_AF_PARAM]    = 1;
-        tmp[RESULT_TYPE_FOCUS_PARAM] = 1;
+        //tmp[RESULT_TYPE_FOCUS_PARAM] = 1;
         break;
     case RK_AIQ_ALGO_TYPE_ADPCC:
         tmp[RESULT_TYPE_DPCC_PARAM] = 1;
@@ -1769,6 +1793,8 @@ RkAiqCore::analyze(const SmartPtr<VideoBuffer> &buffer)
         SmartPtr<RkAiqAfStatsProxy> afStat = NULL;
         SmartPtr<RkAiqAtmoStatsProxy> tmoStat = NULL;
         SmartPtr<RkAiqAdehazeStatsProxy> dehazeStat = NULL;
+        LOGD_ANALYZER("new stats: camId:%d, sequence(%d)",
+                      mAlogsComSharedParams.mCamPhyId, buffer->get_sequence());
         if (mTranslator->getParams(buffer))
             return ret;
         handleAecStats(buffer, aecStat);
@@ -1837,7 +1863,7 @@ RkAiqCore::analyze(const SmartPtr<VideoBuffer> &buffer)
             break;
         }
         if (type != -1) {
-            SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(static_cast<XCamMessageType>(type),
+            RkAiqCoreVdBufMsg msg(static_cast<XCamMessageType>(type),
                     buffer->get_sequence(), buffer);
             post_message(msg);
         }
@@ -1850,12 +1876,12 @@ XCamReturn
 RkAiqCore::events_analyze(const SmartPtr<ispHwEvt_t> &evts)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    SmartPtr<RkAiqExpParamsProxy> preExpParams = nullptr;
-    SmartPtr<RkAiqExpParamsProxy> curExpParams = nullptr;
-    SmartPtr<RkAiqExpParamsProxy> nxtExpParams = nullptr;
+    SmartPtr<RkAiqSensorExpParamsProxy> preExpParams = nullptr;
+    SmartPtr<RkAiqSensorExpParamsProxy> curExpParams = nullptr;
+    SmartPtr<RkAiqSensorExpParamsProxy> nxtExpParams = nullptr;
 
-    const SmartPtr<Isp20Evt> isp20Evts =
-        evts.dynamic_cast_ptr<Isp20Evt>();
+    Isp20Evt* isp20Evts =
+        evts.get_cast_ptr<Isp20Evt>();
     uint32_t sequence = isp20Evts->sequence;
     if (sequence == (uint32_t)(-1))
         return ret;
@@ -1907,7 +1933,7 @@ RkAiqCore::events_analyze(const SmartPtr<ispHwEvt_t> &evts)
             mFrmInterval = sofTime - mSofTime;
         mSofTime = sofTime;
 
-        SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_SOF_INFO_OK, id, sofInfo);
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_SOF_INFO_OK, id, sofInfo);
         post_message(msg);
 
         mLastAnalyzedId = id;
@@ -2404,7 +2430,7 @@ const rk_aiq_mems_sensor_intf_t* RkAiqCore::getMemsSensorIntf() {
     return mMemsSensorIntf;
 }
 
-void RkAiqCore::post_message (SmartPtr<XCamMessage> &msg)
+void RkAiqCore::post_message (RkAiqCoreVdBufMsg& msg)
 {
     mRkAiqCoreGroupManager->handleMessage(msg);
 #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -2436,6 +2462,7 @@ XCamReturn RkAiqCore::groupAnalyze(uint64_t grpId, const RkAiqAlgosGroupShared_t
                     fullParam = item->second.proxy;
                     fullParam->data()->mFrmId = item->first;
                     item = mFullParamsPendingMap.erase(item);
+                    mLatestParamsDoneId = fullParam->data()->mFrmId;
                     LOGD_ANALYZER("[%d]:%p fullParams done !", fullParam->data()->mFrmId, fullParam->data().ptr());
                 } else
                     break;
@@ -2452,9 +2479,10 @@ XCamReturn RkAiqCore::groupAnalyze(uint64_t grpId, const RkAiqAlgosGroupShared_t
             if (counts > FULLPARMAS_MAX_PENDING_SIZE) {
                 auto item = mFullParamsPendingMap.begin();
                 fullParam = item->second.proxy;
+                LOGW_ANALYZER("force [%d->%d]:%p fullParams done !", item->first, shared->frameId, fullParam->data().ptr());
                 mFullParamsPendingMap.erase(item);
                 fullParam->data()->mFrmId = shared->frameId;
-                LOGW_ANALYZER("force [%d->%d]:%p fullParams done !", item->first, shared->frameId, fullParam->data().ptr());
+                mLatestParamsDoneId = fullParam->data()->mFrmId;
             }
         }
     }
@@ -2507,7 +2535,7 @@ void RkAiqCore::newAiqParamsPool()
                 if (!mAiqAecStatsPool.ptr())
                     mAiqAecStatsPool = new RkAiqAecStatsPool("RkAiqAecStatsPool", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqExpParamsPool =
-                    new RkAiqExpParamsPool("RkAiqExpParams", 4);
+                    new RkAiqExpParamsPool("RkAiqExpParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIrisParamsPool = new RkAiqIrisParamsPool("RkAiqIrisParams", RkAiqCore::DEFAULT_POOL_SIZE);
                 mAiqIspAecParamsPool =
                     new RkAiqIspAecParamsPool("RkAiqIspAecParams", RkAiqCore::DEFAULT_POOL_SIZE);
@@ -2744,34 +2772,23 @@ void RkAiqCore::newPdafStatsPool() {
     const CamCalibDbContext_t* aiqCalib     = mAlogsComSharedParams.calibv2;
     uint32_t max_cnt                        = mAiqPdafStatsPool->get_free_buffer_size();
     SmartPtr<RkAiqPdafStatsProxy> pdafStats = NULL;
-    CalibDbV2_Af_Pdaf_t* pdaf;
-    int pd_size;
+    CalibDbV2_Af_Pdaf_t* pdaf = NULL;
+    int pd_size = 0;
 
-    if (CHECK_ISP_HW_V32()) {
-        CalibDbV2_AFV31_t* af_v31 =
-            (CalibDbV2_AFV31_t*)(CALIBDBV2_GET_MODULE_PTR((void*)aiqCalib, af_v31));
-        pdaf = &af_v31->TuningPara.pdaf;
-    } else if (CHECK_ISP_HW_V30()) {
+    if (CHECK_ISP_HW_V30()) {
         CalibDbV2_AFV30_t* af_v30 =
             (CalibDbV2_AFV30_t*)(CALIBDBV2_GET_MODULE_PTR((void*)aiqCalib, af_v30));
         pdaf = &af_v30->TuningPara.pdaf;
-    } else if (CHECK_ISP_HW_V32_LITE()) {
-        CalibDbV2_AFV32_t* af_v32 =
-            (CalibDbV2_AFV32_t*)(CALIBDBV2_GET_MODULE_PTR((void*)aiqCalib, af_v32));
-        pdaf = &af_v32->TuningPara.pdaf;
-    } else {
-        CalibDbV2_AF_t* af = (CalibDbV2_AF_t*)CALIBDBV2_GET_MODULE_PTR((void*)aiqCalib, af);
-        pdaf               = &af->TuningPara.pdaf;
+        pd_size = pdaf->pdMaxWidth * pdaf->pdMaxHeight * sizeof(short);
     }
 
-    pd_size = pdaf->pdWidth * pdaf->pdHeight * sizeof(short);
-    if (pd_size > 0 && pdaf->enable) {
+    if (pd_size > 0 && pdaf && pdaf->enable) {
         for (uint32_t i = 0; i < max_cnt; i++) {
             pdafStats = mAiqPdafStatsPool->get_item();
 
             rk_aiq_isp_pdaf_stats_t* pdaf_stats = &pdafStats->data().ptr()->pdaf_stats;
-            pdaf_stats->pdWidth                 = pdaf->pdWidth;
-            pdaf_stats->pdHeight                = pdaf->pdHeight;
+            pdaf_stats->pdWidth                 = pdaf->pdMaxWidth;
+            pdaf_stats->pdHeight                = pdaf->pdMaxHeight;
             pdaf_stats->pdLData                 = (unsigned short*)malloc(pd_size);
             pdaf_stats->pdRData                 = (unsigned short*)malloc(pd_size);
         }
@@ -2900,7 +2917,7 @@ XCamReturn RkAiqCore::handleIspStats(const SmartPtr<VideoBuffer>& buffer,
     }
 
     uint32_t id = buffer->get_sequence();
-    SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_ISP_STATS_OK,
+    RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_ISP_STATS_OK,
             id, ispStatsInt);
     post_message(msg);
 
@@ -2933,7 +2950,7 @@ out:
     aecStat_ret = aecStats;
 
     uint32_t id = buffer->get_sequence();
-    SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_AEC_STATS_OK,
+    RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_AEC_STATS_OK,
             id, aecStats);
     post_message(msg);
 
@@ -2966,7 +2983,7 @@ out:
     awbStat_ret = awbStats;
 
     uint32_t id = buffer->get_sequence();
-    SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_AWB_STATS_OK,
+    RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_AWB_STATS_OK,
             id, awbStats);
     post_message(msg);
 
@@ -3003,10 +3020,8 @@ out:
         mAfStatsTime = buffer->get_timestamp();
         if (((ABS(mAfStatsTime - mPdafStatsTime) < mFrmInterval / 2LL) && mIspOnline) ||
                 ((mAfStatsTime - mPdafStatsTime < mFrmInterval) && (mAfStatsTime >= mPdafStatsTime) && !mIspOnline)) {
-            SmartPtr<XCamMessage> afStatsMsg =
-                new RkAiqCoreVdBufMsg(XCAM_MESSAGE_AF_STATS_OK, mAfStatsFrmId, mAfStats);
-            SmartPtr<XCamMessage> pdafStatsMsg =
-                new RkAiqCoreVdBufMsg(XCAM_MESSAGE_PDAF_STATS_OK, mAfStatsFrmId, mPdafStats);
+            RkAiqCoreVdBufMsg afStatsMsg (XCAM_MESSAGE_AF_STATS_OK, mAfStatsFrmId, mAfStats);
+            RkAiqCoreVdBufMsg pdafStatsMsg (XCAM_MESSAGE_PDAF_STATS_OK, mAfStatsFrmId, mPdafStats);
             post_message(afStatsMsg);
             post_message(pdafStatsMsg);
             mAfStats = NULL;
@@ -3014,8 +3029,7 @@ out:
         }
     } else {
         uint32_t id = buffer->get_sequence();
-        SmartPtr<XCamMessage> msg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_AF_STATS_OK, id, afStats);
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_AF_STATS_OK, id, afStats);
         post_message(msg);
     }
 
@@ -3044,10 +3058,8 @@ XCamReturn RkAiqCore::handlePdafStats(const SmartPtr<VideoBuffer>& buffer) {
     mPdafStatsTime = buffer->get_timestamp();
     if (((ABS(mAfStatsTime - mPdafStatsTime) < mFrmInterval / 2LL) && mIspOnline) ||
             ((mAfStatsTime - mPdafStatsTime < mFrmInterval) && (mAfStatsTime >= mPdafStatsTime) && !mIspOnline)) {
-        SmartPtr<XCamMessage> afStatsMsg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_AF_STATS_OK, mAfStatsFrmId, mAfStats);
-        SmartPtr<XCamMessage> pdafStatsMsg =
-            new RkAiqCoreVdBufMsg(XCAM_MESSAGE_PDAF_STATS_OK, mAfStatsFrmId, mPdafStats);
+        RkAiqCoreVdBufMsg afStatsMsg (XCAM_MESSAGE_AF_STATS_OK, mAfStatsFrmId, mAfStats);
+        RkAiqCoreVdBufMsg pdafStatsMsg (XCAM_MESSAGE_PDAF_STATS_OK, mAfStatsFrmId, mPdafStats);
 
         post_message(afStatsMsg);
         post_message(pdafStatsMsg);
@@ -3081,7 +3093,7 @@ XCamReturn RkAiqCore::handleAtmoStats(const SmartPtr<VideoBuffer>& buffer,
 
 out:
     uint32_t id = buffer->get_sequence();
-    SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_ATMO_STATS_OK,
+    RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_ATMO_STATS_OK,
             id, tmoStat);
     post_message(msg);
 
@@ -3110,7 +3122,7 @@ XCamReturn RkAiqCore::handleAdehazeStats(const SmartPtr<VideoBuffer>& buffer,
 
 out:
     uint32_t id = buffer->get_sequence();
-    SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_ADEHAZE_STATS_OK,
+    RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_ADEHAZE_STATS_OK,
             id, dehazeStat);
     post_message(msg);
 
@@ -3142,7 +3154,7 @@ out:
     uint32_t id = buffer->get_sequence();
     orbStats->setId(id);
     orbStats->setType(RK_AIQ_SHARED_TYPE_ORB_STATS);
-    SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_ORB_STATS_OK,
+    RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_ORB_STATS_OK,
             id, orbStats);
     post_message(msg);
 
@@ -3153,7 +3165,7 @@ XCamReturn
 RkAiqCore::handleVicapScaleBufs(const SmartPtr<VideoBuffer> &buffer)
 {
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
-    SmartPtr<V4l2BufferProxy> buf_proxy = buffer.dynamic_cast_ptr<V4l2BufferProxy>();
+    V4l2BufferProxy* buf_proxy = buffer.get_cast_ptr<V4l2BufferProxy>();
     int *reserved = (int *)buf_proxy->get_reserved();
     int raw_index = reserved[0];
     int bpp = reserved[1];
@@ -3213,7 +3225,7 @@ RkAiqCore::handleVicapScaleBufs(const SmartPtr<VideoBuffer> &buffer)
     if (mVicapBufs->info.ready && mVicapBufs->info.frame_id > 2) {
         mVicapBufs->info.bpp = bpp;
         SmartPtr<BufferProxy> bp = new BufferProxy(mVicapBufs);
-        SmartPtr<XCamMessage> msg = new RkAiqCoreVdBufMsg(XCAM_MESSAGE_VICAP_POLL_SCL_OK,
+        RkAiqCoreVdBufMsg msg(XCAM_MESSAGE_VICAP_POLL_SCL_OK,
                 mVicapBufs->info.frame_id, bp);
         post_message(msg);
         mVicapBufs.release();

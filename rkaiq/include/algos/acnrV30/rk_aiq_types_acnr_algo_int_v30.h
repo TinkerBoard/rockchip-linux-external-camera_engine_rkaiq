@@ -198,10 +198,7 @@ typedef struct Acnr_ProcResult_V30_s {
     //RK_CNR_Params_V30_Select_t stSelect;
 
     //for hw register
-    RK_CNR_Fix_V30_t stFix;
-
-    bool isNeedUpdate;
-
+    RK_CNR_Fix_V30_t* stFix;
 } Acnr_ProcResult_V30_t;
 
 

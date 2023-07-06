@@ -75,6 +75,8 @@ XCamReturn RkAiqAcacV3HandleInt::processing() {
     auto* shared = (RkAiqCore::RkAiqAlgosGroupShared_t*)getGroupShared();
     if (!shared) return XCAM_RETURN_BYPASS;
 
+    acac_proc_res_int->config = shared->fullParams->mCacV3xParams->data()->result.cfg;
+
     RKAiqAecExpInfo_t* aeCurExp = &shared->curExp;
     if (aeCurExp != NULL) {
         if ((rk_aiq_working_mode_t)sharedCom->working_mode == RK_AIQ_WORKING_MODE_NORMAL) {
@@ -226,11 +228,32 @@ XCamReturn RkAiqAcacV3HandleInt::genIspResult(RkAiqFullParams* params,
             cac_param->frame_id = shared->frameId;
         }
         cac_param->result.enable = cac_rk->enable;
-        memcpy(&cac_param->result.cfg[0], &cac_rk->config[0], sizeof(cac_rk->config[0]));
-        memcpy(&cac_param->result.cfg[1], &cac_rk->config[1], sizeof(cac_rk->config[1]));
-    }
 
-    cur_params->mCacV3xParams = params->mCacV3xParams;
+        if (cac_com->res_com.cfg_update) {
+            mSyncFlag = shared->frameId;
+            cac_param->sync_flag = mSyncFlag;
+            // copy from algo result
+            // set as the latest result
+            cur_params->mCacV3xParams = params->mCacV3xParams;
+            cac_param->is_update = true;
+            LOGD_ACAC("[%d] params from algo", mSyncFlag);
+        } else if (mSyncFlag != cac_param->sync_flag) {
+            cac_param->sync_flag = mSyncFlag;
+            // copy from latest result
+            if (cur_params->mCacV3xParams.ptr()) {
+                cac_param->result = cur_params->mCacV3xParams->data()->result;
+                cac_param->is_update = true;
+            } else {
+                LOGE_ACAC("no latest params !");
+                cac_param->is_update = false;
+            }
+            LOGD_ACAC("[%d] params from latest [%d]", shared->frameId, mSyncFlag);
+        } else {
+            // do nothing, result in buf needn't update
+            cac_param->is_update = false;
+            LOGD_ACAC("[%d] params needn't update", shared->frameId);
+        }
+    }
 
     EXIT_ANALYZER_FUNCTION();
     return ret;

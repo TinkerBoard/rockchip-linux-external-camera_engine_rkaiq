@@ -186,7 +186,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
     stExpInfo.bayertnr_en = 1;
 
     if(pAbayernrProcParams != NULL) {
-        stExpInfo.blc_ob_predgain = pAbayernrProcParams->stAblcV32_proc_res.isp_ob_predgain;
+        stExpInfo.blc_ob_predgain = pAbayernrProcParams->stAblcV32_proc_res->isp_ob_predgain;
         stExpInfo.bayertnr_en = pAbayernrProcParams->bayertnr_en;
         if(stExpInfo.blc_ob_predgain != pAbayernrCtx->stExpInfo.blc_ob_predgain
                 || stExpInfo.bayertnr_en != pAbayernrCtx->stExpInfo.bayertnr_en) {
@@ -324,9 +324,9 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 
         LOGD_ANR("recalculate: %d delta_iso:%d \n ", pAbayernrCtx->isReCalculate, delta_iso);
 
-        pAbayernrProcResParams->stArawnrProcResult.isNeedUpdate = true;
+        pAbayernrProcResParams->res_com.cfg_update = true;
     } else {
-        pAbayernrProcResParams->stArawnrProcResult.isNeedUpdate = false;
+        pAbayernrProcResParams->res_com.cfg_update = false;
     }
 
     pAbayernrCtx->isReCalculate = 0;

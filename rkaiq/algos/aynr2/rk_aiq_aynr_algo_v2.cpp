@@ -262,16 +262,17 @@ Aynr_result_t Aynr_GetProcResult_V2(Aynr_Context_V2_t *pAynrCtx, Aynr_ProcResult
         return AYNR_RET_INVALID_PARM;
     }
 
+    RK_YNR_Params_V2_Select_t* stSelect = NULL;
     if(pAynrCtx->eMode == AYNR_OP_MODE_AUTO) {
-        pAynrResult->stSelect = pAynrCtx->stAuto.stSelect;
+        stSelect = &pAynrCtx->stAuto.stSelect;
     } else if(pAynrCtx->eMode == AYNR_OP_MODE_MANUAL) {
         //TODO
-        pAynrResult->stSelect = pAynrCtx->stManual.stSelect;
+        stSelect = &pAynrCtx->stManual.stSelect;
         pAynrCtx->fYnr_SF_Strength = 1.0;
     }
 
     //transfer to reg value
-    ynr_fix_transfer_V2(&pAynrResult->stSelect, &pAynrResult->stFix, pAynrCtx->fYnr_SF_Strength, &pAynrCtx->stExpInfo);
+    ynr_fix_transfer_V2(stSelect, pAynrResult->stFix, pAynrCtx->fYnr_SF_Strength, &pAynrCtx->stExpInfo);
 
 
     LOGI_ANR("%s(%d): exit!\n", __FUNCTION__, __LINE__);

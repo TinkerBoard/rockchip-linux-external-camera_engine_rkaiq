@@ -21,7 +21,7 @@
 namespace RkCam {
 
 XCamReturn
-Isp20Evt::getExpInfoParams(SmartPtr<RkAiqExpParamsProxy>& expInfo, uint32_t frameId)
+Isp20Evt::getExpInfoParams(SmartPtr<RkAiqSensorExpParamsProxy>& expInfo, uint32_t frameId)
 {
     ENTER_CAMHW_FUNCTION();
     SmartLock locker (_mutex);

@@ -49,7 +49,6 @@ typedef struct AgicFullParam_s {
 
 typedef struct AgicContext_s {
     AgicConfig_t ConfigData;
-    AgicProcResult_t ProcRes;
     AgicState_t state;
     AgicFullParam_t full_param;
     union {
@@ -74,7 +73,7 @@ XCamReturn AgicConfig(AgicContext_t* pAgicCtx, AgicConfig_t* pAgicConfig);
 XCamReturn AgicReConfig(AgicContext_t* pAgicCtx, AgicConfig_t* pAgicConfig);
 XCamReturn AgicPreProcess(AgicContext_t* pAgicCtx);
 XCamReturn AgicProcess(AgicContext_t* pAgicCtx, int ISO, int mode);
-XCamReturn AgicGetProcResult(AgicContext_t* pAgicCtx);
+XCamReturn AgicGetProcResult(AgicContext_t* pAgicCtx, AgicProcResult_t* pAgicRes);
 void GicV1CalibToAttr(CalibDbV2_Gic_V20_t* calib, rkaiq_gic_v1_api_attr_t* attr);
 void GicV2CalibToAttr(CalibDbV2_Gic_V21_t* calib, rkaiq_gic_v2_api_attr_t* attr);
 

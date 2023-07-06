@@ -17,6 +17,8 @@
 
 #include "rk_ispfec_api.h"
 #include "RkIspFecHwMgr.h"
+#include "RkIspFecGenMesh.h"
+#include "RkIspFecVersion.h"
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -42,7 +44,22 @@ typedef struct rk_ispfec_ctx_s {
     };
     pthread_mutex_t _mutex;
     int _state;
+
+    RkIspFecGenMesh* _fecGenMesh;
 } rk_ispfec_ctx_t;
+
+static
+void _print_versions()
+{
+    printf("\n"
+         "************************** VERSION INFOS **************************\n"
+         "version release date: %s\n"
+         "         IspFec:       %s\n"
+         "************************ VERSION INFOS END ************************\n"
+         , RK_ISP_FEC_RELEASE_DATE
+         , RK_ISP_FEC_VERSION
+        );
+}
 
 static int
 _load_mesh(const char* file, void* vir_addr, size_t size)
@@ -90,49 +107,86 @@ _load_mesh(const char* file, void* vir_addr, size_t size)
 static int
 _configure(rk_ispfec_ctx_t* ctx, rk_ispfec_cfg_t* cfg)
 {
-#define MESH_FILE_MAX_LEN 256 
-    char mesh_file[MESH_FILE_MAX_LEN] = {'\0'};
+    #define MESH_FILE_MAX_LEN 256
     int ret = 0;
 
-    if (ctx == NULL)
-        return -1;
+    pthread_mutex_lock (&ctx->_mutex);
 
-    // load mesh_xint
-    snprintf(mesh_file, MESH_FILE_MAX_LEN, "%s/%s", cfg->mesh_file_path, cfg->mesh_xint.mesh_file);
-    ret = _load_mesh(mesh_file, cfg->mesh_xint.vir_addr, cfg->mesh_xint.size);
-    if (ret) {
-        printf("E: load mesh_xint error!\n");
-        goto err;
-    }
-    // load mesh_xfra
-    snprintf(mesh_file, MESH_FILE_MAX_LEN, "%s/%s", cfg->mesh_file_path, cfg->mesh_xfra.mesh_file);
-    ret = _load_mesh(mesh_file, cfg->mesh_xfra.vir_addr, cfg->mesh_xfra.size);
-    if (ret) {
-        printf("E: load mesh_xfra error!\n");
-        goto err;
-    }
+    if (cfg->mesh_upd_mode == RK_ISPFEC_UPDATE_MESH_ONLINE) {
+#ifdef GENMESH_ONLINE
+        if (!ctx->_fecGenMesh) {
+            ctx->_fecGenMesh = new RkIspFecGenMesh();
+            if (!ctx->_fecGenMesh) {
+                printf("E: Failed to new RkIspFecGenMesh\n");
+                goto err;
+            }
+        }
 
-    // load mesh_yint
-    snprintf(mesh_file, MESH_FILE_MAX_LEN, "%s/%s", cfg->mesh_file_path, cfg->mesh_yint.mesh_file);
-    ret = _load_mesh(mesh_file, cfg->mesh_yint.vir_addr, cfg->mesh_yint.size);
-    if (ret) {
-        printf("E: load mesh_yint error!\n");
-        goto err;
-    }
+        ret = ctx->_fecGenMesh->init(cfg->in_width, cfg->in_height, cfg->out_width, cfg->out_height,
+                                cfg->u.mesh_online.light_center, cfg->u.mesh_online.coeff,
+                                cfg->u.mesh_online.direction, cfg->u.mesh_online.style);
+        if (ret < 0) {
+            printf("E: Failed to init RkIspFecGenMesh\n");
+            goto err;
+        }
 
-    // load mesh_yfra
-    snprintf(mesh_file, MESH_FILE_MAX_LEN, "%s/%s", cfg->mesh_file_path, cfg->mesh_yfra.mesh_file);
-    ret = _load_mesh(mesh_file, cfg->mesh_yfra.vir_addr, cfg->mesh_yfra.size);
-    if (ret) {
-        printf("E: load mesh_yfra error!\n");
-        goto err;
+        ctx->_fecGenMesh->setMeshBuf(cfg->mesh_xint.vir_addr, cfg->mesh_yint.vir_addr,
+                                     cfg->mesh_xfra.vir_addr, cfg->mesh_yfra.vir_addr);
+
+        ret = ctx->_fecGenMesh->genMesh(cfg->u.mesh_online.correct_level);
+        if (ret < 0) {
+            printf("E: Failed to genMesh RkIspFecGenMesh\n");
+            goto err;
+        }
+#endif
+    } else {
+        char mesh_file[MESH_FILE_MAX_LEN] = {'\0'};
+
+        if (ctx == NULL)
+            return -1;
+
+        // load mesh_xint
+        snprintf(mesh_file, MESH_FILE_MAX_LEN, "%s/%s", cfg->u.mesh_file_path, cfg->mesh_xint.mesh_file);
+        ret = _load_mesh(mesh_file, cfg->mesh_xint.vir_addr, cfg->mesh_xint.size);
+        if (ret) {
+            printf("E: load mesh_xint error!\n");
+            goto err;
+        }
+        // load mesh_xfra
+        snprintf(mesh_file, MESH_FILE_MAX_LEN, "%s/%s", cfg->u.mesh_file_path, cfg->mesh_xfra.mesh_file);
+        ret = _load_mesh(mesh_file, cfg->mesh_xfra.vir_addr, cfg->mesh_xfra.size);
+        if (ret) {
+            printf("E: load mesh_xfra error!\n");
+            goto err;
+        }
+
+        // load mesh_yint
+        snprintf(mesh_file, MESH_FILE_MAX_LEN, "%s/%s", cfg->u.mesh_file_path, cfg->mesh_yint.mesh_file);
+        ret = _load_mesh(mesh_file, cfg->mesh_yint.vir_addr, cfg->mesh_yint.size);
+        if (ret) {
+            printf("E: load mesh_yint error!\n");
+            goto err;
+        }
+
+        // load mesh_yfra
+        snprintf(mesh_file, MESH_FILE_MAX_LEN, "%s/%s", cfg->u.mesh_file_path, cfg->mesh_yfra.mesh_file);
+        ret = _load_mesh(mesh_file, cfg->mesh_yfra.vir_addr, cfg->mesh_yfra.size);
+        if (ret) {
+            printf("E: load mesh_yfra error!\n");
+            goto err;
+        }
+//#ifdef GENMESH_ONLINE
     }
+//#endif
 
     memcpy(&ctx->_cfg, cfg, sizeof(rk_ispfec_cfg_t));
     ctx->_isCfg = true;
 
+    pthread_mutex_unlock (&ctx->_mutex);
+
     return 0;
 err:
+    pthread_mutex_unlock (&ctx->_mutex);
     return -1;
 }
 
@@ -151,6 +205,13 @@ rk_ispfec_api_deinit(rk_ispfec_ctx_t* ctx)
     ctx->_state = rk_ispfec_ctx_t::STATE_QUIT;
     pthread_mutex_unlock (&ctx->_mutex);
 
+#ifdef GENMESH_ONLINE
+    if (ctx->_fecGenMesh) {
+        ctx->_fecGenMesh->deinit();
+        delete ctx->_fecGenMesh;
+    }
+#endif
+
     ctx->_fecHwMgr->deinit();
     pthread_mutex_destroy (&ctx->_mutex);
 
@@ -162,6 +223,8 @@ rk_ispfec_api_deinit(rk_ispfec_ctx_t* ctx)
 rk_ispfec_ctx_t*
 rk_ispfec_api_init(rk_ispfec_cfg_t* cfg)
 {
+    _print_versions();
+
     rk_ispfec_ctx_t* ctx = new rk_ispfec_ctx_t();
 
     ctx->_state = rk_ispfec_ctx_t::STATE_IDLE;
@@ -172,11 +235,13 @@ rk_ispfec_api_init(rk_ispfec_cfg_t* cfg)
         goto err;
     }
     ctx->_isCfg = false;
+    ctx->_fecGenMesh = NULL;
     ctx->_fecHwMgr = RkIspFecHwMgr::getInstance();
     if (!ctx->_fecHwMgr) {
         printf("get RkIspFecHwMgr failed: %d \n", ret);
         goto err;
     }
+
     if (cfg) {
         ret = _configure(ctx, cfg);
         if (ret) {
@@ -184,6 +249,7 @@ rk_ispfec_api_init(rk_ispfec_cfg_t* cfg)
             goto err;
         }
     }
+
     return ctx;
 err:
     if (ctx) {
@@ -201,16 +267,20 @@ rk_ispfec_api_prepare(rk_ispfec_ctx_t* ctx, rk_ispfec_cfg_t* cfg)
     if (ctx == NULL)
         return -1;
 
+#if 0
     while (ctx->_state == rk_ispfec_ctx_t::STATE_RUNNING) {
         usleep(1 * 1000);
         printf("I: in Running state, wait to IDLE ! \n");
     }
+#endif
+
 
     if (cfg) {
         ret = _configure(ctx, cfg);
         if (ret)
             ctx->_isCfg = false;
     }
+
 
     return ret;
 }
@@ -230,15 +300,16 @@ rk_ispfec_api_process(rk_ispfec_ctx_t* ctx, int src_fd, int dst_fd)
         return 0;
     }
     ctx->_state = rk_ispfec_ctx_t::STATE_RUNNING;
-    pthread_mutex_unlock (&ctx->_mutex);
 
     if (!ctx->_isCfg) {
         printf("E: not configured !\n");
         goto out;
     }
 
-    param.width         = ctx->_cfg.width;
-    param.height        = ctx->_cfg.height;
+    param.in_width      = ctx->_cfg.in_width;
+    param.in_height     = ctx->_cfg.in_height;
+    param.out_width     = ctx->_cfg.out_width;
+    param.out_height    = ctx->_cfg.out_height;
     param.in_fourcc     = V4L2_PIX_FMT_NV12;
     param.out_fourcc    = V4L2_PIX_FMT_NV12;
     param.in_pic_fd     = src_fd;
@@ -254,7 +325,6 @@ rk_ispfec_api_process(rk_ispfec_ctx_t* ctx, int src_fd, int dst_fd)
     }
 
 out:
-    pthread_mutex_lock (&ctx->_mutex);
     ctx->_state = rk_ispfec_ctx_t::STATE_IDLE;
     pthread_mutex_unlock (&ctx->_mutex);
 

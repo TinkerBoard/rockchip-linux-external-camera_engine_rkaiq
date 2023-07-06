@@ -23,11 +23,6 @@ AdpccResult_t AdpccReConfig(AdpccContext_t *pAdpccCtx, AdpccConfig_t* pAdpccConf
 
 AdpccResult_t AdpccPreProcess(AdpccContext_t *pAdpccCtx);
 
-AdpccResult_t AdpccProcess(AdpccContext_t *pAdpccCtx, AdpccExpInfo_t *pExpInfo);
-
-AdpccResult_t AdpccGetProcResult(AdpccContext_t *pAdpccCtx, AdpccProcResult_t* pAdpccResult);
-
-
-
+AdpccResult_t AdpccProcess(AdpccContext_t *pAdpccCtx, AdpccExpInfo_t *pExpInfo, AdpccProcResult_t* pAdpccResult);
 
 #endif

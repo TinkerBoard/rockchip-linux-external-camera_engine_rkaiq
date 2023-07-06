@@ -84,6 +84,7 @@ static RkAiqGrpCondition_t awbGrpCond[] = {
     [1] = {XCAM_MESSAGE_AE_PRE_RES_OK, 0},
     [2] = {XCAM_MESSAGE_AWB_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
     [3] = {XCAM_MESSAGE_BLC_V32_PROC_RES_OK, 0},
+    [4] = {XCAM_MESSAGE_AEC_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
 };
 static RkAiqGrpConditions_t awbGrpConds = {grp_conds_array_info(awbGrpCond)};
 
@@ -103,20 +104,17 @@ static RkAiqGrpConditions_t otherGrpCondsV21 = {grp_conds_array_info(otherGrpCon
 static RkAiqGrpCondition_t grp0Cond[] = {
     [0] = {XCAM_MESSAGE_SOF_INFO_OK, 0},
     [1] = {XCAM_MESSAGE_AE_PRE_RES_OK, 0},
-    [2] = {XCAM_MESSAGE_AE_PROC_RES_OK, 0},
-    //[3] = {XCAM_MESSAGE_AEC_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
-    [3] = {XCAM_MESSAGE_BLC_V32_PROC_RES_OK, 0},
-    [4] = {XCAM_MESSAGE_AWB_PROC_RES_OK, 0},
+    [2] = {XCAM_MESSAGE_BLC_V32_PROC_RES_OK, 0},
+    [3] = {XCAM_MESSAGE_AWB_PROC_RES_OK, 0},
 };
 static RkAiqGrpConditions_t grp0Conds = {grp_conds_array_info(grp0Cond)};
 
 static RkAiqGrpCondition_t grpDhazCond[] = {
     [0] = {XCAM_MESSAGE_SOF_INFO_OK, 0},
     [1] = {XCAM_MESSAGE_AE_PRE_RES_OK, 0},
-    [2] = {XCAM_MESSAGE_AE_PROC_RES_OK, 0},
-    [3] = {XCAM_MESSAGE_BLC_V32_PROC_RES_OK, 0},
-    [4] = {XCAM_MESSAGE_ADEHAZE_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
-    [5] = {XCAM_MESSAGE_YNR_V22_PROC_RES_OK, 0},
+    [2] = {XCAM_MESSAGE_BLC_V32_PROC_RES_OK, 0},
+    [3] = {XCAM_MESSAGE_ADEHAZE_STATS_OK, ISP_PARAMS_EFFECT_DELAY_CNT},
+    [4] = {XCAM_MESSAGE_YNR_V22_PROC_RES_OK, 0},
 };
 static RkAiqGrpConditions_t grpDhazConds = {grp_conds_array_info(grpDhazCond)};
 
@@ -134,8 +132,7 @@ static RkAiqGrpConditions_t otherGrpCondsV3x = {grp_conds_array_info(otherGrpCon
 
 static RkAiqGrpCondition_t grpAfdCond[] = {
     [0] = {XCAM_MESSAGE_SOF_INFO_OK, 0},
-    [1] = {XCAM_MESSAGE_AE_PROC_RES_OK, 0},
-    [2] = {XCAM_MESSAGE_VICAP_POLL_SCL_OK, 0},
+    [1] = {XCAM_MESSAGE_VICAP_POLL_SCL_OK, 0},
 };
 
 static RkAiqGrpConditions_t grpAfdConds = {grp_conds_array_info(grpAfdCond)};

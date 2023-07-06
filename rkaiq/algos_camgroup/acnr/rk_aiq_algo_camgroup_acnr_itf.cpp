@@ -223,6 +223,9 @@ static XCamReturn groupAcnrProcessing(const RkAiqAlgoCom* inparams, RkAiqAlgoRes
     if(CHECK_ISP_HW_V21()) {
         Acnr_Context_V1_t * acnr_contex_v1 = acnr_group_contex->acnr_contex_v1;
         Acnr_ProcResult_V1_t stAcnrResultV1;
+        RK_CNR_Fix_V1_t stFix;
+        stAcnrResultV1.stFix = &stFix;
+
         deltaIso = abs(stExpInfoV1.arIso[stExpInfoV1.hdr_mode] - acnr_contex_v1->stExpInfo.arIso[stExpInfoV1.hdr_mode]);
         if(deltaIso > ACNRV1_RECALCULATE_DELTA_ISO) {
             acnr_contex_v1->isReCalculate |= 1;
@@ -234,14 +237,16 @@ static XCamReturn groupAcnrProcessing(const RkAiqAlgoCom* inparams, RkAiqAlgoRes
                 ret = XCAM_RETURN_ERROR_FAILED;
                 LOGE_ANR("%s: processing ANR failed (%d)\n", __FUNCTION__, ret);
             }
-            stAcnrResultV1.isNeedUpdate = true;
+            outparams->cfg_update = true;
             LOGD_ANR("recalculate: %d delta_iso:%d \n ", acnr_contex_v1->isReCalculate, deltaIso);
         } else {
-            stAcnrResultV1.isNeedUpdate = false;
+            outparams->cfg_update = false;
         }
         Acnr_GetProcResult_V1(acnr_contex_v1, &stAcnrResultV1);
         for (int i = 0; i < procResParaGroup->arraySize; i++) {
-            *(procResParaGroup->camgroupParmasArray[i]->acnr._acnr_procRes_v1) = stAcnrResultV1.stFix;
+            *(procResParaGroup->camgroupParmasArray[i]->acnr._acnr_procRes_v1) = *stAcnrResultV1.stFix;
+            IS_UPDATE_MEM((procResParaGroup->camgroupParmasArray[i]->acnr._acnr_procRes_v1), procParaGroup->_offset_is_update) =
+                outparams->cfg_update;
         }
         acnr_contex_v1->isReCalculate = 0;
 
