@@ -42,7 +42,7 @@ XCamReturn  rk_aiq_user_api2_aie_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                 algoHandle<RkAiqAieHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AIE);
 
             if (singleCam_algo_handle) {
-                return singleCam_algo_handle->setAttrib(attr);
+                ret = singleCam_algo_handle->setAttrib(attr);
             }
         }
 #else

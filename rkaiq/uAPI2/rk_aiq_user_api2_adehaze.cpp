@@ -278,6 +278,7 @@ XCamReturn rk_aiq_user_api2_adehaze_v11_setSwAttrib(const rk_aiq_sys_ctx_t* sys_
                                                     const adehaze_sw_v11_t* attr) {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ADHAZ);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
 #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -293,7 +294,7 @@ XCamReturn rk_aiq_user_api2_adehaze_v11_setSwAttrib(const rk_aiq_sys_ctx_t* sys_
 
                 RkAiqAdehazeHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAdehazeHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_ADHAZ);
-                if (singleCam_algo_handle) return singleCam_algo_handle->setSwAttribV11(attr);
+                if (singleCam_algo_handle) ret = singleCam_algo_handle->setSwAttribV11(attr);
             }
         }
 #else
@@ -308,7 +309,7 @@ XCamReturn rk_aiq_user_api2_adehaze_v11_setSwAttrib(const rk_aiq_sys_ctx_t* sys_
         }
     }
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn rk_aiq_user_api2_adehaze_v11_getSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
@@ -362,6 +363,7 @@ XCamReturn rk_aiq_user_api2_adehaze_v12_setSwAttrib(const rk_aiq_sys_ctx_t* sys_
                                                     const adehaze_sw_v12_t* attr) {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_ADHAZ);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
 #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -377,7 +379,7 @@ XCamReturn rk_aiq_user_api2_adehaze_v12_setSwAttrib(const rk_aiq_sys_ctx_t* sys_
 
                 RkAiqAdehazeHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAdehazeHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_ADHAZ);
-                if (singleCam_algo_handle) return singleCam_algo_handle->setSwAttribV12(attr);
+                if (singleCam_algo_handle) ret = singleCam_algo_handle->setSwAttribV12(attr);
             }
         }
 #else
@@ -392,7 +394,7 @@ XCamReturn rk_aiq_user_api2_adehaze_v12_setSwAttrib(const rk_aiq_sys_ctx_t* sys_
         }
     }
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn rk_aiq_user_api2_adehaze_v12_getSwAttrib(const rk_aiq_sys_ctx_t* sys_ctx,

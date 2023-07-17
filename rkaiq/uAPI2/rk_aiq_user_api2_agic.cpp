@@ -117,6 +117,7 @@ XCamReturn rk_aiq_user_api2_agic_v2_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
                                               const rkaiq_gic_v2_api_attr_t* attr) {
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AGIC);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
 #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -132,7 +133,7 @@ XCamReturn rk_aiq_user_api2_agic_v2_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
 
                 RkAiqAgicHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAgicHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AGIC);
-                if (singleCam_algo_handle) return singleCam_algo_handle->setAttribV2(attr);
+                if (singleCam_algo_handle) ret = singleCam_algo_handle->setAttribV2(attr);
             }
         }
 #else
@@ -147,7 +148,7 @@ XCamReturn rk_aiq_user_api2_agic_v2_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,
         }
     }
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn rk_aiq_user_api2_agic_v2_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx,

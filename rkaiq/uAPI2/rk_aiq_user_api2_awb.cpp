@@ -128,6 +128,7 @@ rk_aiq_user_api2_awbV30_SetAllAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uap
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
     RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
 #ifdef RKAIQ_ENABLE_CAMGROUP
     RkAiqCamGroupAwbHandleInt* algo_handle =
@@ -144,7 +145,7 @@ rk_aiq_user_api2_awbV30_SetAllAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uap
             RkAiqAwbV21HandleInt* singleCam_algo_handle =
                 algoHandle<RkAiqAwbV21HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
             if (singleCam_algo_handle)
-                return singleCam_algo_handle->setWbV21Attrib((rk_aiq_uapiV2_wbV21_attrib_t&)attr);
+                ret = singleCam_algo_handle->setWbV21Attrib((rk_aiq_uapiV2_wbV21_attrib_t&)attr);
         }
     }
 #else
@@ -159,7 +160,7 @@ rk_aiq_user_api2_awbV30_SetAllAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uap
         }
     }
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 #else
     return XCAM_RETURN_ERROR_UNKNOWN;
 #endif
@@ -330,6 +331,7 @@ XCamReturn
 rk_aiq_user_api2_awb_Lock(const rk_aiq_sys_ctx_t* sys_ctx)
 {
     RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
 #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -347,7 +349,7 @@ rk_aiq_user_api2_awb_Lock(const rk_aiq_sys_ctx_t* sys_ctx)
             RkAiqAwbHandleInt* singleCam_algo_handle =
                 algoHandle<RkAiqAwbHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
             if (singleCam_algo_handle)
-                return singleCam_algo_handle->lock();
+                ret = singleCam_algo_handle->lock();
         }
     }
 #else
@@ -361,13 +363,14 @@ rk_aiq_user_api2_awb_Lock(const rk_aiq_sys_ctx_t* sys_ctx)
             return algo_handle->lock();
         }
     }
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
 rk_aiq_user_api2_awb_Unlock(const rk_aiq_sys_ctx_t* sys_ctx)
 {
     RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
 #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -385,7 +388,7 @@ rk_aiq_user_api2_awb_Unlock(const rk_aiq_sys_ctx_t* sys_ctx)
             RkAiqAwbHandleInt* singleCam_algo_handle =
                 algoHandle<RkAiqAwbHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
             if (singleCam_algo_handle)
-                return singleCam_algo_handle->unlock();
+                ret = singleCam_algo_handle->unlock();
         }
     }
 #else
@@ -399,7 +402,7 @@ rk_aiq_user_api2_awb_Unlock(const rk_aiq_sys_ctx_t* sys_ctx)
             return algo_handle->unlock();
         }
     }
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -408,6 +411,7 @@ rk_aiq_user_api2_awb_SetWpModeAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uap
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
     RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
     #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -425,7 +429,7 @@ rk_aiq_user_api2_awb_SetWpModeAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uap
                 RkAiqAwbHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAwbHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
                 if (singleCam_algo_handle)
-                    return singleCam_algo_handle->setWbOpModeAttrib(attr);
+                    ret = singleCam_algo_handle->setWbOpModeAttrib(attr);
             }
         }
     #else
@@ -439,7 +443,7 @@ rk_aiq_user_api2_awb_SetWpModeAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_uap
             return algo_handle->setWbOpModeAttrib(attr);
         }
     }
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -486,6 +490,7 @@ rk_aiq_user_api2_awb_SetMwbAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_wb_mwb
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
     RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
     #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -503,7 +508,7 @@ rk_aiq_user_api2_awb_SetMwbAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_wb_mwb
                 RkAiqAwbHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAwbHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
                 if (singleCam_algo_handle)
-                    return singleCam_algo_handle->setMwbAttrib(attr);
+                    ret = singleCam_algo_handle->setMwbAttrib(attr);
             }
         }
     #else
@@ -517,13 +522,14 @@ rk_aiq_user_api2_awb_SetMwbAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_wb_mwb
             return algo_handle->setMwbAttrib(attr);
         }
     }
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
 rk_aiq_user_api2_awb_GetMwbAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_wb_mwb_attrib_t *attr)
 {
     RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
     #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -541,7 +547,7 @@ rk_aiq_user_api2_awb_GetMwbAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_wb_mwb
                 RkAiqAwbHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAwbHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
                 if (singleCam_algo_handle)
-                    return singleCam_algo_handle->getMwbAttrib(attr);
+                    ret = singleCam_algo_handle->getMwbAttrib(attr);
             }
         }
     #else
@@ -555,7 +561,7 @@ rk_aiq_user_api2_awb_GetMwbAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_wb_mwb
             return algo_handle->getMwbAttrib(attr);
         }
     }
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 
@@ -566,6 +572,7 @@ rk_aiq_user_api2_awb_SetWbGainAdjustAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_a
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
     RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
     #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -583,7 +590,7 @@ rk_aiq_user_api2_awb_SetWbGainAdjustAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_a
                 RkAiqAwbHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAwbHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
                 if (singleCam_algo_handle)
-                    return singleCam_algo_handle->setWbAwbWbGainAdjustAttrib(attr);
+                    ret = singleCam_algo_handle->setWbAwbWbGainAdjustAttrib(attr);
             }
         }
     #else
@@ -597,7 +604,7 @@ rk_aiq_user_api2_awb_SetWbGainAdjustAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_a
             return algo_handle->setWbAwbWbGainAdjustAttrib(attr);
         }
     }
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -644,6 +651,7 @@ rk_aiq_user_api2_awb_SetWbGainOffsetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_a
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
     RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
     #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -661,7 +669,7 @@ rk_aiq_user_api2_awb_SetWbGainOffsetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_a
                 RkAiqAwbHandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAwbHandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
                 if (singleCam_algo_handle)
-                    return singleCam_algo_handle->setWbAwbWbGainOffsetAttrib(attr);
+                    ret = singleCam_algo_handle->setWbAwbWbGainOffsetAttrib(attr);
             }
         }
     #else
@@ -675,7 +683,7 @@ rk_aiq_user_api2_awb_SetWbGainOffsetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_a
             return algo_handle->setWbAwbWbGainOffsetAttrib(attr);
         }
     }
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -724,6 +732,7 @@ rk_aiq_user_api2_awb_SetMultiWindowAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_ai
     CHECK_USER_API_ENABLE2(sys_ctx);
     CHECK_USER_API_ENABLE(RK_AIQ_ALGO_TYPE_AWB);
     RKAIQ_API_SMART_LOCK(sys_ctx);
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
 
     if (sys_ctx->cam_type == RK_AIQ_CAM_TYPE_GROUP) {
     #ifdef RKAIQ_ENABLE_CAMGROUP
@@ -741,7 +750,7 @@ rk_aiq_user_api2_awb_SetMultiWindowAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_ai
                 RkAiqAwbV21HandleInt* singleCam_algo_handle =
                     algoHandle<RkAiqAwbV21HandleInt>(camCtx, RK_AIQ_ALGO_TYPE_AWB);
                 if (singleCam_algo_handle)
-                    return singleCam_algo_handle->setWbAwbMultiWindowAttrib(attr);
+                    ret = singleCam_algo_handle->setWbAwbMultiWindowAttrib(attr);
             }
         }
     #else
@@ -755,7 +764,7 @@ rk_aiq_user_api2_awb_SetMultiWindowAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_ai
             return algo_handle->setWbAwbMultiWindowAttrib(attr);
         }
     }
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 #else
     return XCAM_RETURN_ERROR_UNKNOWN;
 #endif
